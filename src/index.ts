@@ -3,6 +3,23 @@ import { AuthorizonConfig, authorizationClient, ResourceStub } from "./client";
 import { enforcer } from './enforcer';
 import { sidecarUrl } from "./constants";
 
+export interface ResourceConfig {
+  name: string;
+  type: string;
+  path: string;
+  description?: string;
+  actions?: ActionDefinition[];
+  attributes?: Record<string, any>;
+}
+
+export interface ActionConfig {
+  name: string;
+  title?: string;
+  description?: string;
+  path?: string;
+  attributes?: Record<string, any>;
+}
+
 export const init = (
   config: AuthorizonConfig
 ): void => {
@@ -10,38 +27,25 @@ export const init = (
   authorizationClient.initialize(config);
 }
 
-export const resource = (
-  name: string,
-  type: string,
-  path: string,
-  description?: string,
-  actions: ActionDefinition[] = [],
-  attributes: Record<string, any> = {},
-): ResourceStub => {
+export const resource = (config: ResourceConfig): ResourceStub => {
   const resource = new ResourceDefinition(
-    name,
-    type,
-    path,
-    description,
-    actions,
-    attributes,
+    config.name,
+    config.type,
+    config.path,
+    config.description,
+    config.actions || [],
+    config.attributes || {},
   );
   return authorizationClient.addResource(resource);
 }
 
-export const action = (
-  name: string,
-  title?: string,
-  description?: string,
-  path?: string,
-  attributes: Record<string, any> = {},
-): ActionDefinition => {
+export const action = (config: ActionConfig): ActionDefinition => {
   return new ActionDefinition(
-    name,
-    title,
-    description,
-    path,
-    attributes,
+    config.name,
+    config.title,
+    config.description,
+    config.path,
+    config.attributes || {},
   );
 }
 
