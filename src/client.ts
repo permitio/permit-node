@@ -153,7 +153,7 @@ export class AuthorizationClient {
   public async syncOrg(
     orgId: string,
     orgName: string,
-    orgMetadata: Dict = {}
+    // orgMetadata: Dict = {}
   ): Promise<Dict | Error> {
     this.throwIfNotInitialized();
     const data = {
