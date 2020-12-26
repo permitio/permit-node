@@ -1,3 +1,6 @@
+import { dictZip } from './utils/dict';
+import { escapeRegex, matchAll, RegexMatch } from './utils/regex';
+
 export interface PatternWithContext {
   pattern: RegExp;
   contextVars: string[];
@@ -13,50 +16,36 @@ export interface ResourceMatch {
   context: Record<string, string>;
 }
 
-const PLACEHOLDER: string = "(\w+)";
-
-function escapeRegex(s: string): string {
-  return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-}
-
-// Equivalent to python dict(zip(['AB', 'CD', 'EF', 'GH'],[1, 2, 3, 4])) in javascript
-function dictZip(keys: string[], values: string[]): Record<string, string> | undefined {
-  if (keys.length === values.length) {
-    return keys.reduce((acc: Record<string, string>, curr: string, index: number) => {
-      acc[curr] = values[index];
-      return acc;
-    }, {});
-  } else {
-    return undefined;
-  }
-}
-
 export function extractPatternAndContext(path: string): PatternWithContext {
   if (path.endsWith("/")) {
     path = path.slice(0, -1); // remove last "/"
   }
 
-  const parts: string[] = path.split("/");
+  const regex: RegExp = /\:(\w+)/;
+  const PLACEHOLDER: string = "(\\w+)";
+
+  const matches: RegexMatch[] = matchAll(regex, path);
+
+  const parts: string[] = [];
   const contextVars: string[] = [];
 
-  parts.forEach((part: string, i: number) => {
-    const regex: RegExp = /\{(\w+)\}/;
-    let match;
-    let partContainsVariable: boolean = false;
+  let currentIndex = 0;
+  for (let match of matches) {
+    // save param name to context vars
+    contextVars.push(match.groups[1]);
+    // push (escaped) chunk before match
+    parts.push(escapeRegex(path.slice(currentIndex, match.start)));
+    // push placeholder regex instead of match
+    parts.push(PLACEHOLDER);
+    // advance the index after the match end
+    currentIndex += match.start + match.length;
+  }
 
-    while ((match = regex.exec(part)) !== null) {
-      contextVars.push(match[1]);
-      partContainsVariable = true;
-    };
+  if (currentIndex < path.length) {
+    parts.push(escapeRegex(path.slice(currentIndex)))
+  }
 
-    if (partContainsVariable) {
-      parts[i] = PLACEHOLDER;
-    } else {
-      parts[i] = escapeRegex(parts[i]);
-    }
-  });
-
-  const pattern: RegExp = new RegExp("^" + parts.join("/") + "[/]?$");
+  const pattern: RegExp = new RegExp(parts.join(""));
   return {
     pattern: pattern,
     contextVars: contextVars
@@ -187,6 +176,9 @@ export class ResourceRegistry {
     return action
   }
 
+  public get paths(): string[] {
+    return Array.from(this.processedPaths.values());
+  }
 
   public static actionKey(action: ActionDefinition): string {
     return `${action.resourceName}:${action.name}`;
