@@ -59,3 +59,20 @@ export const updatePolicyData = authorizationClient.updatePolicyData;
 
 export const isAllowed = enforcer.isAllowed;
 export const transformResourceContext = enforcer.addTransform;
+
+const authorizon = {
+  init: init,
+  resource: resource,
+  action: action,
+  syncUser: syncUser,
+  syncOrg: syncOrg,
+  deleteOrg: deleteOrg,
+  addUserToOrg: addUserToOrg,
+  getOrgsForUser: getOrgsForUser,
+  assignRole: assignRole,
+  updatePolicyData: updatePolicyData,
+  isAllowed: isAllowed,
+  transformResourceContext: transformResourceContext,
+};
+
+export default authorizon;
