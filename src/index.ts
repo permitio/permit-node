@@ -49,16 +49,17 @@ export const action = (config: ActionConfig): ActionDefinition => {
   );
 }
 
-export const syncUser = authorizationClient.syncUser;
-export const syncOrg = authorizationClient.syncOrg;
-export const deleteOrg = authorizationClient.deleteOrg;
-export const addUserToOrg = authorizationClient.addUserToOrg;
-export const getOrgsForUser = authorizationClient.getOrgsForUser;
-export const assignRole = authorizationClient.assignRole;
-export const updatePolicyData = authorizationClient.updatePolicyData;
+const client = authorizationClient;
+export const syncUser = client.syncUser.bind(client);
+export const syncOrg = client.syncOrg.bind(client);
+export const deleteOrg = client.deleteOrg.bind(client);
+export const addUserToOrg = client.addUserToOrg.bind(client);
+export const getOrgsForUser = client.getOrgsForUser.bind(client);
+export const assignRole = client.assignRole.bind(client);
+export const updatePolicyData = client.updatePolicyData.bind(client);
 
-export const isAllowed = enforcer.isAllowed;
-export const transformResourceContext = enforcer.addTransform;
+export const isAllowed = enforcer.isAllowed.bind(enforcer);
+export const transformResourceContext = enforcer.addTransform.bind(enforcer);
 
 const authorizon = {
   init: init,
