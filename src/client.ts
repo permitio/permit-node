@@ -42,6 +42,7 @@ export class AuthorizationClient {
   }
 
   public initialize(config: AuthorizonConfig): void {
+    this.initialized = true;
     this.config = config;
     this.client = axios.create({
       baseURL: `${sidecarUrl}/`,
@@ -50,7 +51,6 @@ export class AuthorizationClient {
       },
     });
     this.syncResources();
-    this.initialized = true;
   }
 
   public get token(): string {
