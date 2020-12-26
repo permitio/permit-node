@@ -73,7 +73,7 @@ export class AuthorizationClient {
 
   private maybeSyncResource(resource: ResourceDefinition): void {
     if (this.initialized && !this.registry.isSynced(resource)) {
-      console.log(`syncing resource: ${resource}`);
+      console.log(`syncing resource: ${resource.repr()}`);
       this.client.put<SyncObjectResponse>("sdk/resource", resource.dict())
         .then(response => {
           this.registry.markAsSynced(resource, response.data.id);
@@ -92,7 +92,7 @@ export class AuthorizationClient {
     resourceId = action.resourceId;
 
     if (this.initialized && !this.registry.isSynced(action)) {
-      console.log(`syncing action: ${action}`);
+      console.log(`syncing action: ${action.repr()}`);
       this.client.put<SyncObjectResponse>(
         `sdk/resource/${resourceId}/action`, action.dict()
       )

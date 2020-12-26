@@ -45,7 +45,7 @@ export function extractPatternAndContext(path: string): PatternWithContext {
     parts.push(escapeRegex(path.slice(currentIndex)))
   }
 
-  const pattern: RegExp = new RegExp(parts.join(""));
+  const pattern: RegExp = new RegExp("^" + parts.join("") + "\\/?$");
   return {
     pattern: pattern,
     contextVars: contextVars
@@ -93,6 +93,10 @@ export class ActionDefinition {
       resourceId: this.resourceId,
     }
   }
+
+  public repr(): string {
+    return `Action( name=${this.name}, path=${this.path} )`;
+  }
 }
 
 export class ResourceDefinition {
@@ -126,6 +130,10 @@ export class ResourceDefinition {
       actions: this.actions.map(a => a.dict()),
       attributes: this.attributes,
     }
+  }
+
+  public repr(): string {
+    return `Resource(name="${this.name}", path="${this.path}", actions=[${this.actions.map(a => a.name)}])`;
   }
 }
 
@@ -231,8 +239,9 @@ export class ResourceRegistry {
       if (match) {
         const resourceDef = this.resources[potential.resourceName] || undefined;
         let context = {};
-        if (potential.contextVars.length == match.length) {
-          context = dictZip(potential.contextVars, match) || {};
+        const capturedGroups = match.slice(1); // the first group is the entire string
+        if (potential.contextVars.length == capturedGroups.length) {
+          context = dictZip(potential.contextVars, capturedGroups) || {};
         }
 
         return {

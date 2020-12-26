@@ -35,7 +35,9 @@ test('paths are processed correctly', async (t) => {
     ]
   });
 
-  t.is(resourceRegistry.paths.length, 3);
+  t.is(resourceRegistry.paths.length, 2);
   const result = resourceRegistry.getResourceByPath("/api/v1/boards/2/tasks/25");
-  t.not(result, null);
+  t.is(result?.resourceName, 'task');
+  t.is(result?.context['listId'], '2');
+  t.is(result?.context['taskId'], '25');
 });
