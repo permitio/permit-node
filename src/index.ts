@@ -1,7 +1,9 @@
-import { ResourceDefinition, ActionDefinition } from "./registry";
-import { AuthorizonConfig, authorizationClient, ResourceStub } from "./client";
+import { authorizationClient, AuthorizonConfig, ResourceStub } from './client';
+import { sidecarUrl } from './constants';
 import { enforcer } from './enforcer';
-import { sidecarUrl } from "./constants";
+import { ActionDefinition, ResourceDefinition } from './registry';
+
+export { mapApp } from './appMapper/appMapper';
 
 export interface ResourceConfig {
   name: string;
@@ -20,12 +22,10 @@ export interface ActionConfig {
   attributes?: Record<string, any>;
 }
 
-export const init = (
-  config: AuthorizonConfig
-): void => {
+export const init = (config: AuthorizonConfig): void => {
   console.log(`authorizon.init(), sidecarUrl: ${sidecarUrl}`);
   authorizationClient.initialize(config);
-}
+};
 
 export const resource = (config: ResourceConfig): ResourceStub => {
   const resource = new ResourceDefinition(
@@ -34,10 +34,10 @@ export const resource = (config: ResourceConfig): ResourceStub => {
     config.path,
     config.description,
     config.actions || [],
-    config.attributes || {},
+    config.attributes || {}
   );
   return authorizationClient.addResource(resource);
-}
+};
 
 export const action = (config: ActionConfig): ActionDefinition => {
   return new ActionDefinition(
@@ -45,9 +45,9 @@ export const action = (config: ActionConfig): ActionDefinition => {
     config.title,
     config.description,
     config.path,
-    config.attributes || {},
+    config.attributes || {}
   );
-}
+};
 
 const client = authorizationClient;
 export const syncUser = client.syncUser.bind(client);
