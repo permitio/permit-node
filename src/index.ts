@@ -1,9 +1,11 @@
 import { authorizationClient, AuthorizonConfig, ResourceStub } from './client';
 import { sidecarUrl } from './constants';
 import { enforcer } from './enforcer';
+import { hook } from './plugin';
 import { ActionDefinition, ResourceDefinition } from './registry';
 
-export { mapApp } from './appMapper/appMapper';
+// Set hooks to auto decorate host application
+hook();
 
 export interface ResourceConfig {
   name: string;
