@@ -3,6 +3,9 @@
  * + additional change to expose the callback function
  */
 
+// File adopted from JS:
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import _ from 'lodash';
 
 // var debug = require('debug')('express-list-endpoints')
@@ -49,20 +52,15 @@ const hasParams = function (pathRegexp: string) {
 /**
  * Utility function for parseExpressRoute
  */
-function parseSingleRoute(
-  route: any,
-  basePath: string,
-  path: string,
-  layer?: any
-) {
+function parseSingleRoute(route: any, basePath: string, path: string) {
   const methods = getRouteMethods(route);
   const middleware = getRouteMiddleware(route);
   return {
     path: basePath + (basePath && path === '/' ? '' : path),
     methods,
     middleware,
-    layer: layer,
-    route: route,
+    // layer: layer,
+    // route: route,
     namedMethods: _.fromPairs(
       _.reject(_.zip(methods, middleware), ([, v]) => v === undefined)
     ),
@@ -75,16 +73,16 @@ function parseSingleRoute(
  * @param {Object} layer The layer that  wraps the route
  * @return {Object[]} Endpoints info
  */
-const parseExpressRoute = function (route: any, basePath: any, layer?: any) {
+const parseExpressRoute = function (route: any, basePath: any) {
   const endpoints = [];
 
   if (Array.isArray(route.path)) {
     route.path.forEach(function (path: string) {
-      const endpoint = parseSingleRoute(route, basePath, path, layer);
+      const endpoint = parseSingleRoute(route, basePath, path);
       endpoints.push(endpoint);
     });
   } else {
-    const endpoint = parseSingleRoute(route, basePath, route.path, layer);
+    const endpoint = parseSingleRoute(route, basePath, route.path);
     endpoints.push(endpoint);
   }
 
@@ -133,7 +131,7 @@ const parseEndpoints = function (
       {
         path: basePath,
         methods: [],
-        middlewares: [],
+        middleware: [],
       },
     ]);
   } else {
@@ -146,11 +144,7 @@ const parseEndpoints = function (
       path: any;
     }) {
       if (stackItem.route) {
-        const newEndpoints = parseExpressRoute(
-          stackItem.route,
-          basePath,
-          stackItem
-        );
+        const newEndpoints = parseExpressRoute(stackItem.route, basePath);
 
         endpoints = addEndpoints(endpoints, newEndpoints);
       } else if (STACK_ITEM_VALID_NAMES.indexOf(stackItem.name) > -1) {
