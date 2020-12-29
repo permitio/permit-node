@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios'; // eslint-disable-line
-import { sidecarUrl } from './constants';
+
+import { config } from './config';
 import { logger } from './logger';
 import {
   resourceRegistry,
@@ -42,7 +43,7 @@ export class ResourceStub {
 }
 
 export class AuthorizationClient {
-  private initialized: boolean = false;
+  private initialized = false;
   private registry: ResourceRegistry;
   private config: AuthorizonConfig = { token: '' };
   private client: AxiosInstance = axios.create();
@@ -51,13 +52,13 @@ export class AuthorizationClient {
     this.registry = resourceRegistry;
   }
 
-  public initialize(config: AuthorizonConfig): void {
+  public initialize(configOptions: AuthorizonConfig): void {
     this.initialized = true;
-    this.config = config;
+    this.config = configOptions;
     this.client = axios.create({
-      baseURL: `${sidecarUrl}/`,
+      baseURL: `${config.sidecarUrl}/`,
       headers: {
-        Authorization: `Bearer ${config.token}`,
+        Authorization: `Bearer ${configOptions.token}`,
       },
     });
     this.syncResources();
@@ -101,11 +102,10 @@ export class AuthorizationClient {
   }
 
   private maybeSyncAction(action: ActionDefinition): void {
-    let resourceId: string;
     if (!action.resourceId) {
       return;
     }
-    resourceId = action.resourceId;
+    const resourceId: string = action.resourceId;
 
     if (this.initialized && !this.registry.isSynced(action)) {
       logger.info(`syncing action: ${action.repr()}`);

@@ -1,6 +1,6 @@
 import Hook from 'require-in-the-middle';
 
-import { mapApp } from './appMapper/appMapper';
+import { appManager } from './appManager';
 import { logger } from './logger';
 
 /**
@@ -18,7 +18,7 @@ export function hook() {
           // Wrap call for createServer - to catch passed app
           if (prop === 'createServer') {
             return (listener: any) => {
-              mapApp(listener);
+              appManager.manage(name, listener);
               // Proxy the call to the original app
               return Reflect.get(target, prop, receiver)(listener);
             };

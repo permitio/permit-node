@@ -1,11 +1,12 @@
 import { mapApp } from './appMapper/appMapper';
 
-class AppManager {
+export class AppManager {
   resources: Record<string, any> = {};
 
   manage(name: string, app: any): void {
+    // TODO support mixed HTTP/HTTPS server (via name merging resources mutual to http and https )
     this.resources[name] = mapApp(app);
   }
 }
 
-const appManager = new AppManager();
+export const appManager = new AppManager();

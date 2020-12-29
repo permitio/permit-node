@@ -1,8 +1,8 @@
 import { authorizationClient, AuthorizonConfig, ResourceStub } from './client';
-import { sidecarUrl } from './constants';
 import { enforcer } from './enforcer';
 import { logger } from './logger';
 import { hook } from './plugin';
+import { config } from './config';
 import { ActionDefinition, ResourceDefinition } from './registry';
 
 // Set hooks to auto decorate host application
@@ -25,9 +25,9 @@ export interface ActionConfig {
   attributes?: Record<string, any>;
 }
 
-export const init = (config: AuthorizonConfig): void => {
-  logger.info(`authorizon.init(), sidecarUrl: ${sidecarUrl}`);
-  authorizationClient.initialize(config);
+export const init = (configOptions: AuthorizonConfig): void => {
+  logger.info(`authorizon.init(), sidecarUrl: ${config.sidecarUrl}`);
+  authorizationClient.initialize(configOptions);
 };
 
 export const resource = (config: ResourceConfig): ResourceStub => {
