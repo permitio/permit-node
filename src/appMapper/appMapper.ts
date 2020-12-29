@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { ResourceConfig } from '..';
+import { ResourceConfig } from '../commands';
 import { logger } from '../logger';
 import { ActionDefinition } from '../registry';
 
