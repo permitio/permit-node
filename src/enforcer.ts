@@ -1,7 +1,9 @@
 import axios, { AxiosInstance } from 'axios'; // eslint-disable-line
-import { sidecarUrl } from './constants';
 import { logger } from './logger';
+import { config } from './config';
 import Resource from './resource';
+
+const sidecarUrl = config.sidecarUrl;
 
 export interface Context {
   [id: string]: string;
