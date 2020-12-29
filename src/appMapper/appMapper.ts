@@ -154,7 +154,7 @@ function isExpressApp(app: any): boolean {
 export function mapApp(app: any): ResourceConfig[] {
   if (isExpressApp(app)) {
     const resources = endpointsToResources(mapExpressAppEndpoints(app));
-    logger.debug('Mapping Express App, resources %s', { resources });
+    logger.debug('Mapping Express App', { resources });
     return resources;
   } else {
     logger.debug('Unknown app type', { app });

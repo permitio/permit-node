@@ -1,9 +1,10 @@
 import axios, { AxiosInstance } from 'axios'; // eslint-disable-line
 import { sidecarUrl } from './constants';
+import { logger } from './logger';
 import Resource from './resource';
 
 export interface Context {
-  [id: string]: string
+  [id: string]: string;
 }
 
 export interface ContextTransform {
@@ -57,10 +58,12 @@ export class Enforcer {
     } else if (isDict(resource)) {
       resourceDict = resource;
     } else {
-      throw new Error(`Unsupported resource type: ${typeof (resource)}`);
+      throw new Error(`Unsupported resource type: ${typeof resource}`);
     }
 
-    resourceDict['context'] = this.transformContext(resourceDict['context'] || {});
+    resourceDict['context'] = this.transformContext(
+      resourceDict['context'] || {}
+    );
     return resourceDict;
   }
 
@@ -78,7 +81,11 @@ export class Enforcer {
    *
    * @returns whether or not action is allowed for given user
    */
-  public async isAllowed(user: UserType, action: ActionType, resource: ResourceType): Promise<boolean> {
+  public async isAllowed(
+    user: UserType,
+    action: ActionType,
+    resource: ResourceType
+  ): Promise<boolean> {
     const resourceDict: Dict = this.translateResource(resource);
     const input = {
       user: user,
@@ -86,12 +93,13 @@ export class Enforcer {
       resource: resourceDict,
     };
 
-    return await this.client.post<OpaResult>('allowed', input)
+    return await this.client
+      .post<OpaResult>('allowed', input)
       .then((response) => {
         return response.data.result || false;
       })
       .catch((error) => {
-        console.log(`Error in authorizon.isAllowed(): ${error}`);
+        logger.error(`Error in authorizon.isAllowed(): ${error}`);
         return false;
       });
   }

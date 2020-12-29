@@ -1,6 +1,7 @@
 import { authorizationClient, AuthorizonConfig, ResourceStub } from './client';
 import { sidecarUrl } from './constants';
 import { enforcer } from './enforcer';
+import { logger } from './logger';
 import { hook } from './plugin';
 import { ActionDefinition, ResourceDefinition } from './registry';
 
@@ -25,7 +26,7 @@ export interface ActionConfig {
 }
 
 export const init = (config: AuthorizonConfig): void => {
-  console.log(`authorizon.init(), sidecarUrl: ${sidecarUrl}`);
+  logger.info(`authorizon.init(), sidecarUrl: ${sidecarUrl}`);
   authorizationClient.initialize(config);
 };
 
