@@ -13,5 +13,7 @@ export const config = {
   isDebug: isDebug,
   // Should the module automatically plugin to map frameworks on load
   autoMapping: JSON.parse(_.get(process.env, 'AUTHZ_AUTO_MAPPING', 'true')),
+  // Print review and do nothing active
+  reviewMode: JSON.parse(_.get(process.env, 'AUTHZ_REVIEW_MODE', 'false')),
   sidecarUrl: _.get(process.env, 'AUTHZ_SIDECAR_URL', 'http://localhost:7000'),
 };

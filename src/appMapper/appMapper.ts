@@ -134,9 +134,67 @@ function endpointToResource(
   };
 }
 
+// function getPathsSharedBase(a: string, b: string, pathDelim = '/') {
+//   const aParts = a.split(pathDelim);
+//   const bParts = b.split(pathDelim);
+//   const sharedBase = [];
+//   for (let i = 0; i <= Math.min(aParts.length, bParts.length); ++i) {
+//     if (aParts[i] !== bParts[i]) {
+//       break;
+//     }
+//     sharedBase.push(aParts[i]);
+//   }
+//   return _.join(sharedBase, pathDelim);
+// }
+
+// function groupRestHoleEndpoints(
+//   endpoints: MappedEndpoint[]
+// ): Record<string, MappedEndpoint[]> {
+//   const groups: Record<string, MappedEndpoint[]> = {};
+
+//   const singleMethodEndpoints = _.filter(
+//     endpoints,
+//     (e) => e?.methods.length === 1
+//   );
+
+//   _.forEach(singleMethodEndpoints, (a) => {
+//     _.forEach(singleMethodEndpoints, (b) => {
+//       if (a.path !== b.path) {
+//         const shared = getPathsSharedBase(a.path, b.path);
+//         if (shared.length > 0) {
+//           const group: MappedEndpoint[] = _.get(groups, shared, []);
+//           group.push(a);
+//           groups[shared] = group;
+//         }
+//       }
+//     });
+//   });
+
+//   return groups;
+// }
+
+// function augmentEndpointTreeForRestHole(
+//   tree: EndpointTree,
+//   endpoints: MappedEndpoint[]
+// ) {
+//   const groups = groupRestHoleEndpoints(endpoints);
+//   _.forEach(tree, (ep, path) => {
+//     _.forEach(groups, (group, groupPath) => {
+//       const paths = _.map(group, 'path');
+//       // If the endpoint is part of a group
+//       if (_.includes(paths, path)) {
+//         //drop it from the tree
+//         tree;
+//       }
+//     });
+//   });
+// }
+
 function endpointsToResources(endpoints: MappedEndpoint[]) {
   // Layout as tree to more easily match resources with their actions
   const tree = getNestedEndpointsTree(endpoints, true);
+
+  //const groups = groupRestHoleEndpoints(endpoints);
 
   return _.map(tree, (endpoints) => {
     const [main, ...children] = <MappedEndpoint[]>endpoints;
@@ -151,13 +209,16 @@ function isExpressApp(app: any): boolean {
   );
 }
 
-export function mapApp(app: any): ResourceConfig[] {
+export function mapApp(
+  app: any
+): { resources: ResourceConfig[]; endpoints: MappedEndpoint[] } {
   if (isExpressApp(app)) {
-    const resources = endpointsToResources(mapExpressAppEndpoints(app));
+    const endpoints = mapExpressAppEndpoints(app);
+    const resources = endpointsToResources(endpoints);
     logger.debug('Mapping Express App', { resources });
-    return resources;
+    return { resources, endpoints };
   } else {
     logger.debug('Unknown app type', { app });
   }
-  return [];
+  return { resources: [], endpoints: [] };
 }
