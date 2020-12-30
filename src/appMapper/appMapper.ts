@@ -204,7 +204,6 @@ function endpointsToResources(endpoints: MappedEndpoint[]) {
     getNestedEndpointsTree(endpoints, true),
     endpoints
   );
-  prettyConsoleLog('TREE', tree);
 
   return _.map(tree, (endpoints, groupPath) => {
     const [main, ...children] = <MappedEndpoint[]>endpoints;
