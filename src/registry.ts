@@ -17,12 +17,12 @@ export interface ResourceMatch {
 }
 
 export function extractPatternAndContext(path: string): PatternWithContext {
-  if (path.endsWith("/")) {
+  if (path.endsWith('/')) {
     path = path.slice(0, -1); // remove last "/"
   }
 
   const regex: RegExp = /\:(\w+)/;
-  const PLACEHOLDER: string = "(\\w+)";
+  const PLACEHOLDER: string = '(\\w+)';
 
   const matches: RegexMatch[] = matchAll(regex, path);
 
@@ -42,19 +42,19 @@ export function extractPatternAndContext(path: string): PatternWithContext {
   }
 
   if (currentIndex < path.length) {
-    parts.push(escapeRegex(path.slice(currentIndex)))
+    parts.push(escapeRegex(path.slice(currentIndex)));
   }
 
-  const pattern: RegExp = new RegExp("^" + parts.join("") + "\\/?$");
+  const pattern: RegExp = new RegExp('^' + parts.join('') + '\\/?$');
   return {
     pattern: pattern,
-    contextVars: contextVars
-  }
+    contextVars: contextVars,
+  };
 }
 
 export class ActionDefinition {
   private _resourceId?: string = undefined;
-  private _resourceName: string = "";
+  private _resourceName: string = '';
 
   constructor(
     public readonly name: string,
@@ -62,7 +62,7 @@ export class ActionDefinition {
     public readonly description?: string,
     public readonly path?: string,
     public readonly attributes: Record<string, any> = {},
-    resourceId?: string,
+    resourceId?: string
   ) {
     this.resourceId = resourceId;
   }
@@ -91,7 +91,7 @@ export class ActionDefinition {
       path: this.path,
       attributes: this.attributes,
       resourceId: this.resourceId,
-    }
+    };
   }
 
   public repr(): string {
@@ -108,7 +108,7 @@ export class ResourceDefinition {
     public readonly path: string,
     public readonly description?: string,
     public readonly actions: ActionDefinition[] = [],
-    public readonly attributes: Record<string, any> = {},
+    public readonly attributes: Record<string, any> = {}
   ) {
     this.attributes = attributes;
   }
@@ -127,13 +127,15 @@ export class ResourceDefinition {
       type: this.type,
       path: this.path,
       description: this.description,
-      actions: this.actions.map(a => a.dict()),
+      actions: this.actions.map((a) => a.dict()),
       attributes: this.attributes,
-    }
+    };
   }
 
   public repr(): string {
-    return `Resource(name="${this.name}", path="${this.path}", actions=[${this.actions.map(a => a.name)}])`;
+    return `Resource(name="${this.name}", path="${
+      this.path
+    }", actions=[${this.actions.map((a) => a.name)}])`;
   }
 }
 
@@ -144,7 +146,7 @@ export class ResourceRegistry {
   private pathRegexes: PathRegex[] = [];
 
   get resourceList(): ResourceDefinition[] {
-    return Object.keys(this.resources).map(k => this.resources[k]);
+    return Object.keys(this.resources).map((k) => this.resources[k]);
   }
 
   public addResource(resource: ResourceDefinition) {
@@ -153,17 +155,18 @@ export class ResourceRegistry {
       this.processPath(resource.path, resource.name);
     }
 
-    resource.actions.forEach(action => {
+    resource.actions.forEach((action) => {
       action.resourceName = resource.name;
       if (action.path) {
         this.processPath(action.path, resource.name);
       }
-    })
+    });
   }
 
   public addActionToResource(
     resourceName: string,
-    action: ActionDefinition): ActionDefinition | undefined {
+    action: ActionDefinition
+  ): ActionDefinition | undefined {
     if (!(resourceName in this.resources)) {
       return undefined;
     }
@@ -172,7 +175,7 @@ export class ResourceRegistry {
     action.resourceId = resource.remoteId;
     action.resourceName = resource.name;
 
-    const existingActions = resource.actions.map(a => a.name);
+    const existingActions = resource.actions.map((a) => a.name);
 
     if (!(action.name in existingActions)) {
       resource.actions.push(action);
@@ -181,7 +184,7 @@ export class ResourceRegistry {
     if (action.path) {
       this.processPath(action.path, resource.name);
     }
-    return action
+    return action;
   }
 
   public get paths(): string[] {
@@ -201,7 +204,7 @@ export class ResourceRegistry {
     this.pathRegexes.push({
       pattern: pattern,
       contextVars: context,
-      resourceName: resourceName
+      resourceName: resourceName,
     });
 
     this.processedPaths.add(path);
@@ -219,11 +222,14 @@ export class ResourceRegistry {
     return false;
   }
 
-  public markAsSynced(obj: ResourceDefinition | ActionDefinition, remoteId: string): void {
+  public markAsSynced(
+    obj: ResourceDefinition | ActionDefinition,
+    remoteId: string
+  ): void {
     if (obj instanceof ResourceDefinition) {
       this.alreadySynced.add(obj.name);
       this.resources[obj.name].remoteId = remoteId;
-      obj.actions.forEach(action => {
+      obj.actions.forEach((action) => {
         this.alreadySynced.add(ResourceRegistry.actionKey(action));
       });
     }
@@ -234,21 +240,22 @@ export class ResourceRegistry {
   }
 
   public getResourceByPath(path: string): ResourceMatch | undefined {
-    for (let potential of this.pathRegexes) {
+    for (const potential of this.pathRegexes) {
       const match = path.match(potential.pattern);
       if (match) {
         const resourceDef = this.resources[potential.resourceName] || undefined;
         let context = {};
         const capturedGroups = match.slice(1); // the first group is the entire string
         if (potential.contextVars.length == capturedGroups.length) {
+          // TODO dictZip should probably be replaced by lodash _.zipObject
           context = dictZip(potential.contextVars, capturedGroups) || {};
         }
 
         return {
           resourceName: potential.resourceName,
           resourceDef: resourceDef,
-          context: context
-        }
+          context: context,
+        };
       }
     }
     return undefined;
