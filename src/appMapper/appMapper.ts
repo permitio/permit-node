@@ -8,6 +8,11 @@ import {
   KEY_DELIMITER,
   mapExpressAppEndpoints,
 } from './mapExpress/mapExpressApp';
+import {
+  findGroupForPath,
+  groupRestHoleEndpoints,
+  nameEndpointsInRestHoleGroups,
+} from './resthole';
 import { EndpointGroup, EndpointTree, MappedEndpoint } from './types';
 
 const SIMPLE_REST_NAMING = {
@@ -98,13 +103,20 @@ function getMethodName(method: string, endpoint: MappedEndpoint): string {
 }
 
 /**
- * Translate an endpoint to an a resource name
+ * Translate an endpoint path to a resource name
  */
-function getResourceName(endpoint: MappedEndpoint): string {
+function getResourceNameFromPath(path: string): string {
   return _.join(
-    _.reject(endpoint.path.split('/'), (i) => i.startsWith(KEY_DELIMITER)),
+    _.reject(path.split('/'), (i) => i.startsWith(KEY_DELIMITER)),
     ' '
   ).trim();
+}
+
+/**
+ * Translate an endpoint to a resource name
+ */
+function getResourceNameFromEndpoint(endpoint: MappedEndpoint): string {
+  return getResourceNameFromPath(endpoint.path);
 }
 
 function endpointToActions(endpoint: MappedEndpoint) {
@@ -118,7 +130,8 @@ function endpointToActions(endpoint: MappedEndpoint) {
 
 function endpointToResource(
   endpoint: MappedEndpoint,
-  children: MappedEndpoint[]
+  children: MappedEndpoint[],
+  groupPath?: string
 ): ResourceConfig {
   const resourceType = 'rest';
 
@@ -126,7 +139,9 @@ function endpointToResource(
   const ownActions = endpointToActions(endpoint);
 
   return {
-    name: getResourceName(endpoint),
+    name: groupPath
+      ? getResourceNameFromPath(groupPath)
+      : getResourceNameFromEndpoint(endpoint),
     type: resourceType,
     path: endpoint.path,
     description: '',
@@ -134,85 +149,13 @@ function endpointToResource(
   };
 }
 
-function getPathsSharedBase(a: string, b: string, pathDelim = '/') {
-  const aParts = a.split(pathDelim);
-  const bParts = b.split(pathDelim);
-  const sharedBase = [];
-  for (let i = 0; i <= Math.min(aParts.length, bParts.length); ++i) {
-    if (aParts[i] !== bParts[i]) {
-      break;
-    }
-    sharedBase.push(aParts[i]);
-  }
-  return _.join(sharedBase, pathDelim);
-}
-
-function groupRestHoleEndpoints(
-  endpoints: MappedEndpoint[]
-): Record<string, MappedEndpoint[]> {
-  const groups: Record<string, MappedEndpoint[]> = {};
-
-  // Get all EP that have only a single method (REST-HOLE pattern), and sort them longest first
-  const singleMethodEndpoints = _.reverse(
-    _.sortBy(
-      _.filter(endpoints, (e) => e?.methods.length === 1),
-      'path.length'
-    )
-  );
-
-  for (const a of singleMethodEndpoints) {
-    for (const b of singleMethodEndpoints) {
-      if (a.path !== b.path) {
-        const shared = getPathsSharedBase(a.path, b.path);
-        if (shared.length > 0) {
-          const group: MappedEndpoint[] = _.get(groups, shared, []);
-          group.push(a);
-          groups[shared] = group;
-          // Place only in one group (the longest - most specific)
-          break;
-        }
-      }
-    }
-  }
-  return groups;
-}
-
-function findGroupForPath(
-  path: string,
-  groups: Record<string, MappedEndpoint[]>
-) {
-  for (const [name, endpoints] of _.toPairs(groups)) {
-    const paths = _.map(endpoints, 'path');
-    // If the endpoint is part of a group
-    if (_.includes(paths, path)) {
-      // mark it
-      return { endpoints, name };
-    }
-  }
-  return undefined;
-}
-
 /**
  *
- * Heuristic to rename endpoint methods for REST-HOLE based on last route part
- * update groups in place
- * @returns groups
+ * @param tree Endpoint tree to augment
+ * @param endpoints endpoints the tree is based on
+ * Groups routes that seem to belong to a REST-hole pattern and set them together in the tree
+ * @returns a new updated tree
  */
-function nameEndpointsInRestHoleGroups(
-  groups: Record<string, MappedEndpoint[]>
-) {
-  _.forEach(groups, (eps, groupPath) =>
-    _.forEach(eps, (ep) => {
-      const lastPart: string = _.trim(ep.path.slice(groupPath.length), '/');
-      // If the last part starts with a verb- we consider it the action name
-      if (lastPart.length > 0 && ep?.methods.length > 0) {
-        ep.namedMethods[ep.methods[0]] = lastPart;
-      }
-    })
-  );
-  return groups;
-}
-
 function augmentEndpointTreeForRestHole(
   tree: EndpointTree,
   endpoints: MappedEndpoint[]
@@ -222,6 +165,7 @@ function augmentEndpointTreeForRestHole(
   const groups = nameEndpointsInRestHoleGroups(
     groupRestHoleEndpoints(endpoints)
   );
+  // clean every branch of the tree of items moved to a REST-hole group
   _.forEach(tree, (branch, branchPath) => {
     const groupsForBranch: Record<string, MappedEndpoint[]> = {};
     const newBranch: EndpointGroup = _.reject(branch, (ep) => {
@@ -250,21 +194,21 @@ function augmentEndpointTreeForRestHole(
   _.assign(newTree, groups);
   return newTree;
 }
-
+/**
+ *
+ * @param endpoints Translate endpoints to resources
+ */
 function endpointsToResources(endpoints: MappedEndpoint[]) {
   // Layout as tree to more easily match resources with their actions
   const tree = augmentEndpointTreeForRestHole(
     getNestedEndpointsTree(endpoints, true),
     endpoints
   );
-  prettyConsoleLog('tree', tree);
+  prettyConsoleLog('TREE', tree);
 
-  const groups = groupRestHoleEndpoints(endpoints);
-  prettyConsoleLog('GROUPS', groups);
-
-  return _.map(tree, (endpoints) => {
+  return _.map(tree, (endpoints, groupPath) => {
     const [main, ...children] = <MappedEndpoint[]>endpoints;
-    return endpointToResource(main, children);
+    return endpointToResource(main, children, groupPath);
   });
 }
 

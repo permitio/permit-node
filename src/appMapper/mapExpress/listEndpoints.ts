@@ -55,6 +55,11 @@ const hasParams = function (pathRegexp: string) {
 function parseSingleRoute(route: any, basePath: string, path: string) {
   const methods = getRouteMethods(route);
   const middleware = getRouteMiddleware(route);
+  // Actual functions without middleware (middleware comes first)
+  const endFunctions = _.slice(
+    middleware,
+    _.size(middleware) - _.size(methods)
+  );
   return {
     path: basePath + (basePath && path === '/' ? '' : path),
     methods,
@@ -62,7 +67,7 @@ function parseSingleRoute(route: any, basePath: string, path: string) {
     // layer: layer,
     // route: route,
     namedMethods: _.fromPairs(
-      _.reject(_.zip(methods, middleware), ([, v]) => v === undefined)
+      _.reject(_.zip(methods, endFunctions), ([, v]) => v === undefined)
     ),
   };
 }
