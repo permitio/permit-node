@@ -1,11 +1,10 @@
 import _ from 'lodash';
 
-import util from 'util';
-
 import { mapApp } from './appMapper/appMapper';
 import { MappedEndpoint } from './appMapper/types';
 import { ResourceConfig, resource as saveResource } from './commands';
 import { config } from './config';
+import { prettyConsoleLog } from './logger';
 
 export class AppManager {
   resources: Record<string, any> = {};
@@ -18,9 +17,9 @@ export class AppManager {
     const SEPARATOR_LINE = '*************************************************';
     console.log(`<Authorizon Documenting App - ${name}>`);
     console.log(SEPARATOR_LINE);
-    console.log('endpoints', util.inspect(endpoints, false, 12, true));
+    prettyConsoleLog('endpoints', endpoints);
     console.log(SEPARATOR_LINE);
-    console.log('resources', util.inspect(resources, false, 12, true));
+    prettyConsoleLog('resources', resources);
     console.log(SEPARATOR_LINE);
   }
 

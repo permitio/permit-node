@@ -1,6 +1,12 @@
+import util from 'util';
+
 import winston from 'winston';
 
 import { config } from './config';
+
+export function prettyConsoleLog(label: string, data: any) {
+  console.log(label, util.inspect(data, false, 12, true));
+}
 
 const consoleFormat = winston.format.printf(
   ({ level, message, label, timestamp }) => {
