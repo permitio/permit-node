@@ -1,7 +1,8 @@
 import _ from 'lodash';
 
 import { ResourceConfig } from '../commands';
-import { logger, prettyConsoleLog } from '../logger';
+import { AllAuthZOptions, getDecorations } from '../decorator';
+import { logger } from '../logger';
 import { ActionDefinition } from '../registry';
 
 import {
@@ -92,14 +93,18 @@ function getNestedEndpointsTree(
  * Translate a REST HTTP method to an action name
  */
 function getMethodName(method: string, endpoint: MappedEndpoint): string {
-  // TODO add logic looking at following endpoints to see if a / is followed by a ':/id' and can be it's GET can be called 'list'
-  return _.startCase(
-    _.get(
-      endpoint.namedMethods,
-      method,
-      _.get(SIMPLE_REST_NAMING, method, method)
-    )
+  let storedValue = _.get(
+    endpoint.namedMethods,
+    method,
+    _.get(SIMPLE_REST_NAMING, method, method)
   );
+  // '' not a valid function name
+  storedValue =
+    storedValue.length > 0
+      ? storedValue
+      : _.get(SIMPLE_REST_NAMING, method, method);
+  // TODO add logic looking at following endpoints to see if a / is followed by a ':/id' and can be it's GET can be called 'list'
+  return _.startCase(storedValue);
 }
 
 /**
@@ -121,11 +126,28 @@ function getResourceNameFromEndpoint(endpoint: MappedEndpoint): string {
 
 function endpointToActions(endpoint: MappedEndpoint) {
   return _.map(endpoint.methods, (method) => {
+    const func = _.get(endpoint.methodToCallable, method);
     const name = getMethodName(method, endpoint);
-    return new ActionDefinition(name, name, undefined, endpoint.path, {
-      verb: method,
-    });
+    const decorations = getDecorations(func);
+    const actionDecors = decorations.action || {};
+    return new ActionDefinition(
+      actionDecors.name || name,
+      actionDecors.title || name,
+      actionDecors.description,
+      endpoint.path,
+      {
+        verb: method,
+      }
+    );
   });
+}
+
+function extractDecorations(endpoint: MappedEndpoint): AllAuthZOptions {
+  const decorations = _.reject(
+    _.map(endpoint.middleware, (m) => getDecorations(m)),
+    (i) => i === undefined
+  );
+  return _.merge({}, ...decorations);
 }
 
 function endpointToResource(
@@ -138,13 +160,23 @@ function endpointToResource(
   const childActions = _.flatMap(children, (child) => endpointToActions(child));
   const ownActions = endpointToActions(endpoint);
 
+  const childrenResourceDecorations = _.map(
+    children,
+    (child) => extractDecorations(child)?.resource
+  );
+  const resourceDecorations = extractDecorations(endpoint)?.resource;
+  const mergedResourceDeco =
+    _.merge({}, ...childrenResourceDecorations, resourceDecorations) || {};
+
   return {
-    name: groupPath
-      ? getResourceNameFromPath(groupPath)
-      : getResourceNameFromEndpoint(endpoint),
-    type: resourceType,
+    name:
+      mergedResourceDeco.name ||
+      (groupPath
+        ? getResourceNameFromPath(groupPath)
+        : getResourceNameFromEndpoint(endpoint)),
+    type: mergedResourceDeco.type || resourceType,
     path: endpoint.path,
-    description: '',
+    description: mergedResourceDeco.description || '',
     actions: _.concat(ownActions, childActions),
   };
 }

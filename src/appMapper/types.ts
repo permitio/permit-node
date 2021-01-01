@@ -1,8 +1,9 @@
 export interface MappedEndpoint {
   path: string;
   methods: string[];
-  middleware: string | undefined[];
+  middleware: any | undefined[];
   namedMethods: Record<string, string>;
+  methodToCallable: Record<string, any>;
   regEx: RegExp;
   keys: string[];
 }

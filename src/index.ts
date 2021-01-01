@@ -1,8 +1,10 @@
 import { authorizationClient } from './client';
 // For regular require
 export { action, init, resource } from './commands';
+export { decorate } from './decorator';
 // For Default export
 import { action, init, resource } from './commands';
+import { decorate } from './decorator';
 import { enforcer } from './enforcer';
 import { hook } from './plugin';
 
@@ -34,6 +36,7 @@ const authorizon = {
   updatePolicyData: updatePolicyData,
   isAllowed: isAllowed,
   transformResourceContext: transformResourceContext,
+  decorate: decorate,
 };
 
 export default authorizon;

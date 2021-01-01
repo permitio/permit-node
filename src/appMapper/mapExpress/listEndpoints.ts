@@ -38,7 +38,7 @@ const getRouteMethods = function (route: any) {
  */
 const getRouteMiddleware = function (route: { stack: any[] }) {
   return route.stack.map(function (item: { handle: { name: any } }) {
-    return item.handle.name || undefined;
+    return item.handle || undefined;
   });
 };
 
@@ -67,8 +67,13 @@ function parseSingleRoute(route: any, basePath: string, path: string) {
     // layer: layer,
     // route: route,
     namedMethods: _.fromPairs(
-      _.reject(_.zip(methods, endFunctions), ([, v]) => v === undefined)
+      _.reject(
+        _.zip(methods, _.map(endFunctions, 'name')),
+        ([, v]) => v === undefined
+      )
     ),
+    methodToCallable: _.fromPairs(
+      _.zip(methods, endFunctions))
   };
 }
 
@@ -216,6 +221,10 @@ const addEndpoints = function (endpoints: any[], newEndpoints: any[]) {
       foundEndpoint.namedMethods = _.assign(
         foundEndpoint.namedMethods,
         newEndpoint.namedMethods
+      );
+      foundEndpoint.methodToCallable = _.assign(
+        foundEndpoint.methodToCallable,
+        newEndpoint.methodToCallable
       );
     } else {
       endpoints.push(newEndpoint);

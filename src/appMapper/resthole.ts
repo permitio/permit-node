@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import { KEY_DELIMITER, PATH_DELIMITER } from './mapExpress/mapExpressApp';
 
+import { KEY_DELIMITER, PATH_DELIMITER } from './mapExpress/mapExpressApp';
 import { MappedEndpoint } from './types';
 
 /**
