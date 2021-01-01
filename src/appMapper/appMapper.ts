@@ -21,6 +21,7 @@ const SIMPLE_REST_NAMING = {
   PUT: 'update',
   DELETE: 'remove',
   GET: 'view',
+  LIST: 'list',
 };
 
 /**
@@ -93,18 +94,15 @@ function getNestedEndpointsTree(
  * Translate a REST HTTP method to an action name
  */
 function getMethodName(method: string, endpoint: MappedEndpoint): string {
-  let storedValue = _.get(
+  let value = _.get(
     endpoint.namedMethods,
     method,
     _.get(SIMPLE_REST_NAMING, method, method)
   );
   // '' not a valid function name
-  storedValue =
-    storedValue.length > 0
-      ? storedValue
-      : _.get(SIMPLE_REST_NAMING, method, method);
-  // TODO add logic looking at following endpoints to see if a / is followed by a ':/id' and can be it's GET can be called 'list'
-  return _.startCase(storedValue);
+  value = value.length > 0 ? value : _.get(SIMPLE_REST_NAMING, method, method);
+
+  return _.startCase(value);
 }
 
 /**
@@ -124,10 +122,13 @@ function getResourceNameFromEndpoint(endpoint: MappedEndpoint): string {
   return getResourceNameFromPath(endpoint.path);
 }
 
-function endpointToActions(endpoint: MappedEndpoint) {
+function endpointToActions(endpoint: MappedEndpoint, treatGetAsList = false) {
   return _.map(endpoint.methods, (method) => {
     const func = _.get(endpoint.methodToCallable, method);
-    const name = getMethodName(method, endpoint);
+    // if treatGetAsList
+    const defactoMethodName =
+      treatGetAsList && method === 'GET' ? 'LIST' : method;
+    const name = getMethodName(defactoMethodName, endpoint);
     const decorations = getDecorations(func);
     const actionDecors = decorations.action || {};
     return new ActionDefinition(
@@ -156,9 +157,11 @@ function endpointToResource(
   groupPath?: string
 ): ResourceConfig {
   const resourceType = 'rest';
-
+  const hasChildWithGet = _.includes(_.flatMap(children, 'methods'), 'GET');
   const childActions = _.flatMap(children, (child) => endpointToActions(child));
-  const ownActions = endpointToActions(endpoint);
+  // Map our direct endpoint to actions
+  // If we have a child with 'get' method - our own 'get' should be 'list'
+  const ownActions = endpointToActions(endpoint, hasChildWithGet);
 
   const childrenResourceDecorations = _.map(
     children,
