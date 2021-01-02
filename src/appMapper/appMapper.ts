@@ -55,9 +55,10 @@ function getNestedEndpointsTree(
   let prevAddedId = false;
   //  Scan through endpoints sorted by path
   _.forEach(sortedEndpoints, (endpoint) => {
-    // New root
+    // New root (No current root, or previous root is just '/' or we are building a flat tree )
     if (
       root === null ||
+      prev?.path === '/' ||
       !endpoint.path.startsWith(root.path) ||
       (prevAddedId && flat)
     ) {
@@ -65,7 +66,7 @@ function getNestedEndpointsTree(
       tree[root.path] = [root];
       currentTree = tree;
       prev = null;
-      // Paths are nested, and no id was added
+      // Paths are nested,  no id was added
     } else if (
       prev !== null &&
       endpoint.path.startsWith(prev.path) &&
@@ -94,14 +95,24 @@ function getNestedEndpointsTree(
 /**
  * Translate a REST HTTP method to an action name
  */
-function getMethodName(method: string, endpoint: MappedEndpoint): string {
+function getMethodName(
+  method: string,
+  endpoint: MappedEndpoint,
+  treatGetAsList = false
+): string {
+  // if treatGetAsList
+  const defactoMethodName =
+    treatGetAsList && method === 'GET' ? 'LIST' : method;
   let value = _.get(
     endpoint.namedMethods,
     method,
-    _.get(SIMPLE_REST_NAMING, method, method)
+    _.get(SIMPLE_REST_NAMING, defactoMethodName, defactoMethodName)
   );
   // '' not a valid function name
-  value = value.length > 0 ? value : _.get(SIMPLE_REST_NAMING, method, method);
+  value =
+    value.length > 0
+      ? value
+      : _.get(SIMPLE_REST_NAMING, defactoMethodName, defactoMethodName);
 
   return _.startCase(value);
 }
@@ -110,6 +121,11 @@ function getMethodName(method: string, endpoint: MappedEndpoint): string {
  * Translate an endpoint path to a resource name
  */
 function getResourceNameFromPath(path: string): string {
+  // Special case
+  if (path === '/') {
+    return 'index';
+  }
+  // all other paths
   return _.join(
     _.reject(path.split('/'), (i) => i.startsWith(KEY_DELIMITER)),
     ' '
@@ -126,10 +142,7 @@ function getResourceNameFromEndpoint(endpoint: MappedEndpoint): string {
 function endpointToActions(endpoint: MappedEndpoint, treatGetAsList = false) {
   return _.map(endpoint.methods, (method) => {
     const func = _.get(endpoint.methodToCallable, method);
-    // if treatGetAsList
-    const defactoMethodName =
-      treatGetAsList && method === 'GET' ? 'LIST' : method;
-    const name = getMethodName(defactoMethodName, endpoint);
+    const name = getMethodName(method, endpoint, treatGetAsList);
     const decorations = getDecorations(func);
     const actionDecors = decorations.action || {};
     return new ActionDefinition(
