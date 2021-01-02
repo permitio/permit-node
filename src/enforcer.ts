@@ -6,7 +6,7 @@ import Resource from './resource';
 const sidecarUrl = config.sidecarUrl;
 
 export interface Context {
-  [id: string]: string;
+  [id: string]: any;
 }
 
 export interface ContextTransform {
@@ -28,6 +28,7 @@ interface OpaResult {
 }
 
 export class Enforcer {
+  private context: Context = {}; // cross-query context (global context)
   private transforms: ContextTransform[] = [];
   private client: AxiosInstance;
 
@@ -37,8 +38,20 @@ export class Enforcer {
     });
   }
 
-  public addTransform(transform: ContextTransform): void {
+  public addResourceContextTransform(transform: ContextTransform): void {
     this.transforms.push(transform);
+  }
+
+  public addContext(context: Context): void {
+    this.context = Object.assign(this.context, context);
+  }
+
+  /**
+   * merges the global context (this.context) with the context
+   * provided for this specific query (queryContext).
+   */
+  public combineContext(queryContext: Context): Context {
+    return Object.assign({}, this.context, queryContext);
   }
 
   private transformContext(initialContext: Context): Context {
@@ -80,19 +93,23 @@ export class Enforcer {
    * @param user
    * @param action
    * @param resource
+   * @param context
    *
    * @returns whether or not action is allowed for given user
    */
   public async isAllowed(
     user: UserType,
     action: ActionType,
-    resource: ResourceType
+    resource: ResourceType,
+    context: Context = {} // context provided specifically for this query
   ): Promise<boolean> {
     const resourceDict: Dict = this.translateResource(resource);
+    const queryContext = this.combineContext(context);
     const input = {
       user: user,
       action: action,
       resource: resourceDict,
+      context: queryContext,
     };
 
     return await this.client

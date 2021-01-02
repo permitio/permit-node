@@ -9,6 +9,8 @@ import {
   ResourceRegistry,
 } from './registry';
 
+import { ActionConfig } from './interface';
+
 export interface AuthorizonConfig {
   token: string;
   appName?: string;
@@ -22,21 +24,15 @@ export interface SyncObjectResponse {
 type Dict = Record<string, any>;
 
 export class ResourceStub {
-  constructor(public readonly resourceName: string) {}
+  constructor(public readonly resourceName: string) { }
 
-  public action(
-    name: string,
-    title?: string,
-    description?: string,
-    path?: string,
-    attributes: Record<string, any> = {}
-  ): void {
+  public action(config: ActionConfig): void {
     const action = new ActionDefinition(
-      name,
-      title,
-      description,
-      path,
-      attributes
+      config.name,
+      config.title,
+      config.description,
+      config.path,
+      config.attributes || {}
     );
     authorizationClient.addActionToResource(this.resourceName, action);
   }
