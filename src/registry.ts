@@ -57,11 +57,11 @@ export class ActionDefinition {
   private _resourceName: string = '';
 
   constructor(
-    public readonly name: string,
-    public readonly title?: string,
-    public readonly description?: string,
-    public readonly path?: string,
-    public readonly attributes: Record<string, any> = {},
+    public name: string,
+    public title?: string,
+    public description?: string,
+    public path?: string,
+    public attributes: Record<string, any> = {},
     resourceId?: string
   ) {
     this.resourceId = resourceId;

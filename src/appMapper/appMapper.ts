@@ -1,8 +1,9 @@
+import { rename } from 'fs';
 import _ from 'lodash';
 
-import { ResourceConfig } from '../commands';
+import { action, ResourceConfig } from '../commands';
 import { AllAuthZOptions, getDecorations } from '../decorator';
-import { logger } from '../logger';
+import { logger, prettyConsoleLog } from '../logger';
 import { ActionDefinition } from '../registry';
 
 import {
@@ -151,6 +152,29 @@ function extractDecorations(endpoint: MappedEndpoint): AllAuthZOptions {
   return _.merge({}, ...decorations);
 }
 
+function renameDuplicateActions(
+  actions: ActionDefinition[]
+): ActionDefinition[] {
+  const actionsbyName = _.groupBy(actions, 'name');
+  // Check for cases where names repeat then rename subsequent actions
+  _.forEach(actionsbyName, (actionItems) => {
+    if (actionItems.length > 1) {
+      // rename in place
+      const counter = 1;
+      // Rename all but the first
+      for (const action of _.slice(actionItems, 1)) {
+        const newName = `${action.name}-${counter}`;
+        // If title is derived from name update it too
+        if (action.name === action.title) {
+          action.title = newName;
+        }
+        action.name = newName;
+      }
+    }
+  });
+  return actions;
+}
+
 function endpointToResource(
   endpoint: MappedEndpoint,
   children: MappedEndpoint[],
@@ -171,6 +195,9 @@ function endpointToResource(
   const mergedResourceDeco =
     _.merge({}, ...childrenResourceDecorations, resourceDecorations) || {};
 
+  // combine ownActions with child; rename duplicate names (Safety)
+  const allActions = renameDuplicateActions(_.concat(ownActions, childActions));
+
   return {
     name:
       mergedResourceDeco.name ||
@@ -180,7 +207,7 @@ function endpointToResource(
     type: mergedResourceDeco.type || resourceType,
     path: endpoint.path,
     description: mergedResourceDeco.description || '',
-    actions: _.concat(ownActions, childActions),
+    actions: allActions,
   };
 }
 
@@ -239,6 +266,7 @@ function endpointsToResources(endpoints: MappedEndpoint[]) {
     getNestedEndpointsTree(endpoints, true),
     endpoints
   );
+  prettyConsoleLog('TREE', tree);
 
   return _.map(tree, (endpoints, groupPath) => {
     const [main, ...children] = <MappedEndpoint[]>endpoints;
