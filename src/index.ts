@@ -21,7 +21,8 @@ export const assignRole = client.assignRole.bind(client);
 export const updatePolicyData = client.updatePolicyData.bind(client);
 
 export const isAllowed = enforcer.isAllowed.bind(enforcer);
-export const transformResourceContext = enforcer.addTransform.bind(enforcer);
+export const transformResourceContext = enforcer.addResourceContextTransform.bind(enforcer);
+export const provideContext = enforcer.addContext.bind(enforcer);
 
 const authorizon = {
   init: init,
@@ -36,6 +37,7 @@ const authorizon = {
   updatePolicyData: updatePolicyData,
   isAllowed: isAllowed,
   transformResourceContext: transformResourceContext,
+  provideContext: provideContext,
   decorate: decorate,
 };
 
