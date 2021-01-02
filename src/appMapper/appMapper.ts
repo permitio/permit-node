@@ -1,7 +1,6 @@
-import { rename } from 'fs';
 import _ from 'lodash';
 
-import { action, ResourceConfig } from '../commands';
+import { ResourceConfig } from '../commands';
 import { AllAuthZOptions, getDecorations } from '../decorator';
 import { logger, prettyConsoleLog } from '../logger';
 import { ActionDefinition } from '../registry';
