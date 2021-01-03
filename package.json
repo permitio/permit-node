@@ -1,6 +1,6 @@
 {
   "name": "authorizon",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "authorization sdk for node.js",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
