@@ -1,4 +1,4 @@
-import { ResourceDefinition, resourceRegistry } from './registry';
+import { ResourceDefinition } from './registry';
 
 export default class Resource {
   definitionPath?: string;
@@ -19,14 +19,5 @@ export default class Resource {
       instance: this.path,
       context: this.context
     }
-  }
-
-  public static fromPath(path: string): Resource | undefined {
-    const match = resourceRegistry.getResourceByPath(path);
-    if (!match) {
-      return undefined;
-    }
-
-    return new Resource(match.resourceName, path, match.resourceDef, match.context);
   }
 }

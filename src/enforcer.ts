@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from 'axios'; // eslint-disable-line
 import { logger } from './logger';
 import { config } from './config';
 import Resource from './resource';
+import { resourceRegistry } from './registry';
 
 const sidecarUrl = config.sidecarUrl;
 
@@ -67,7 +68,8 @@ export class Enforcer {
 
     if (typeof resource === 'string') {
       // we are provided a path
-      resourceDict = Resource.fromPath(resource)?.dict() || {};
+      const resourceActionPair = resourceRegistry.getResourceAndActionFromRequestParams(resource);
+      resourceDict = (resourceActionPair !== undefined) ? resourceActionPair.resource.dict() : {};
     } else if (resource instanceof Resource) {
       resourceDict = resource.dict() || {};
     } else if (isDict(resource)) {
