@@ -36,8 +36,8 @@ test('paths are processed correctly', async (t) => {
   });
 
   t.is(resourceRegistry.paths.length, 2);
-  const result = resourceRegistry.getResourceByPath("/api/v1/boards/2/tasks/25");
-  t.is(result?.resourceName, 'task');
-  t.is(result?.context['listId'], '2');
-  t.is(result?.context['taskId'], '25');
+  const result = resourceRegistry.getResourceAndActionFromRequestParams("/api/v1/boards/2/tasks/25");
+  t.is(result?.resource.name, 'task');
+  t.is(result?.resource.context['listId'], '2');
+  t.is(result?.resource.context['taskId'], '25');
 });

@@ -7,6 +7,7 @@ import { action, init, resource } from './commands';
 import { decorate } from './decorator';
 import { enforcer } from './enforcer';
 import { hook } from './plugin';
+import { resourceRegistry } from './registry';
 
 // Set hooks to auto decorate host application
 hook();
@@ -23,6 +24,7 @@ export const updatePolicyData = client.updatePolicyData.bind(client);
 export const isAllowed = enforcer.isAllowed.bind(enforcer);
 export const transformResourceContext = enforcer.addResourceContextTransform.bind(enforcer);
 export const provideContext = enforcer.addContext.bind(enforcer);
+export const getResourceAndAction = resourceRegistry.getResourceAndActionFromRequestParams.bind(resourceRegistry);
 
 const authorizon = {
   init: init,
@@ -39,6 +41,7 @@ const authorizon = {
   transformResourceContext: transformResourceContext,
   provideContext: provideContext,
   decorate: decorate,
+  getResourceAndAction: getResourceAndAction,
 };
 
 export default authorizon;
