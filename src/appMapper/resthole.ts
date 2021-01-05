@@ -14,19 +14,31 @@ function getPathsSharedBase(a: string, b: string, pathDelim = PATH_DELIMITER) {
   const aParts = a.split(pathDelim);
   const bParts = b.split(pathDelim);
   const sharedBase = [];
-  for (let i = 0; i <= Math.min(aParts.length, bParts.length); ++i) {
+  const minLength = Math.min(aParts.length, bParts.length);
+  // All but last
+  for (let i = 0; i <= minLength; ++i) {
     if (aParts[i] !== bParts[i]) {
       break;
     }
     sharedBase.push(aParts[i]);
   }
-  return _.join(sharedBase, pathDelim);
+  // For grouping purposes - paths ending with a key are part of the same path without the key (i.e. '\p\:1' === '\p')
+  // drop last path part if it's a key
+  const cleanSharedPath = _.join(
+    sharedBase.length > 1 &&
+      sharedBase[sharedBase.length - 1].startsWith(KEY_DELIMITER)
+      ? sharedBase.slice(0, sharedBase.length - 1)
+      : sharedBase,
+    pathDelim
+  );
+
+  return cleanSharedPath;
 }
 
 export function groupRestHoleEndpoints(
   endpoints: MappedEndpoint[]
 ): Record<string, MappedEndpoint[]> {
-  const groups: Record<string, MappedEndpoint[]> = {};
+  const groups: Record<string, Record<string, MappedEndpoint>> = {};
 
   // Get all EP that have only a single method (REST-HOLE pattern), and sort them longest first
   const singleMethodEndpoints = _.reverse(
@@ -37,21 +49,52 @@ export function groupRestHoleEndpoints(
   );
 
   for (const a of singleMethodEndpoints) {
+    const sharedPaths: string[] = [];
+    // Find all endpoints that share a mutual base-path
     for (const b of singleMethodEndpoints) {
       if (a.path !== b.path) {
         const shared = getPathsSharedBase(a.path, b.path);
         if (shared.length > 0) {
-          const group: MappedEndpoint[] = _.get(groups, shared, []);
-          group.push(a);
-          groups[shared] = group;
-          // Place only in one group (the longest - most specific)
-          break;
+          sharedPaths.push(shared);
         }
       }
     }
+    // Keep only the longest paths that don't overlap
+    const longestSharedPaths = _.filter(sharedPaths, (path) => {
+      // Paths overlapping with the current path which are longer
+      const overlappingAndLonger = _.filter(
+        sharedPaths,
+        (otherPath) =>
+          path !== otherPath &&
+          otherPath.startsWith(path) &&
+          otherPath.length > path.length
+      );
+      return overlappingAndLonger.length === 0;
+    });
+    for (const groupPath of longestSharedPaths) {
+      const group: Record<string, MappedEndpoint> = _.get(
+        groups,
+        groupPath,
+        {}
+      );
+
+      // storing by path ensures uniqueness
+      group[a.path] = a;
+      groups[groupPath] = group;
+    }
   }
-  return groups;
+  // Flatten and ensure order (shortest first - likely the root node)
+  const flatGroups = _.fromPairs(
+    _.map(groups, (group, key) => [key, _.sortBy(_.values(group), 'path')])
+  );
+  return flatGroups;
 }
+
+/**          const group: MappedEndpoint[] = _.get(groups, shared, []);
+          group.push(a);
+          groups[shared] = group;
+          // Place only in one group (the longest - most specific)
+          break; */
 
 /**
  *
@@ -97,7 +140,7 @@ export function nameEndpointsInRestHoleGroups(
           ' '
         )
       );
-      // If the last part starts with a verb- we consider it the action name
+      //
       if (nameParts.length > 0 && ep?.methods.length > 0) {
         ep.namedMethods[ep.methods[0]] = nameParts;
       }

@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import { ResourceConfig } from '../commands';
 import { AllAuthZOptions, getDecorations } from '../decorator';
-import { logger, prettyConsoleLog } from '../logger';
+import { logger } from '../logger';
 import { ActionDefinition } from '../registry';
 
 import {
@@ -167,9 +167,9 @@ function extractDecorations(endpoint: MappedEndpoint): AllAuthZOptions {
 function renameDuplicateActions(
   actions: ActionDefinition[]
 ): ActionDefinition[] {
-  const actionsbyName = _.groupBy(actions, 'name');
+  const actionsByName = _.groupBy(actions, 'name');
   // Check for cases where names repeat then rename subsequent actions
-  _.forEach(actionsbyName, (actionItems) => {
+  _.forEach(actionsByName, (actionItems) => {
     if (actionItems.length > 1) {
       // rename in place
       const counter = 1;
@@ -278,7 +278,6 @@ function endpointsToResources(endpoints: MappedEndpoint[]) {
     getNestedEndpointsTree(endpoints, true),
     endpoints
   );
-  prettyConsoleLog('TREE', tree);
 
   return _.map(tree, (endpoints, groupPath) => {
     const [main, ...children] = <MappedEndpoint[]>endpoints;
