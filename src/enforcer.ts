@@ -3,8 +3,7 @@ import { logger } from './logger';
 import { config } from './config';
 import Resource from './resource';
 import { resourceRegistry } from './registry';
-
-const sidecarUrl = config.sidecarUrl;
+import { AuthorizonConfig } from './interface';
 
 export interface Context {
   [id: string]: any;
@@ -29,14 +28,26 @@ interface OpaResult {
 }
 
 export class Enforcer {
+  private initialized: boolean = false;
+  private config: AuthorizonConfig = { token: '' };
   private context: Context = {}; // cross-query context (global context)
   private transforms: ContextTransform[] = [];
   private client: AxiosInstance;
 
   constructor() {
     this.client = axios.create({
-      baseURL: `${sidecarUrl}/`,
+      baseURL: `${config.sidecarUrl}/`,
     });
+  }
+
+  public initialize(configOptions: AuthorizonConfig): void {
+    this.initialized = true;
+    this.config = configOptions;
+    if (this.config.sidecarUrl) {
+      this.client = axios.create({
+        baseURL: `${this.config.sidecarUrl}/`,
+      });
+    } // otherwise fallback to env var settings (see ctor)
   }
 
   public addResourceContextTransform(transform: ContextTransform): void {
@@ -105,6 +116,8 @@ export class Enforcer {
     resource: ResourceType,
     context: Context = {} // context provided specifically for this query
   ): Promise<boolean> {
+    this.throwIfNotInitialized();
+
     const resourceDict: Dict = this.translateResource(resource);
     const queryContext = this.combineContext(context);
     const input = {
@@ -123,6 +136,12 @@ export class Enforcer {
         logger.error(`Error in authorizon.isAllowed(): ${error}`);
         return false;
       });
+  }
+
+  private throwIfNotInitialized() {
+    if (!this.initialized) {
+      throw new Error('You must call authorizon.init() first!');
+    }
   }
 }
 

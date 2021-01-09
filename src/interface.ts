@@ -16,3 +16,10 @@ export interface ActionConfig {
   path?: string;
   attributes?: Record<string, any>;
 }
+
+export interface AuthorizonConfig {
+  token: string;
+  appName?: string;
+  serviceName?: string;
+  sidecarUrl?: string;
+}
