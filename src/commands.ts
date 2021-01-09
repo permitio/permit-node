@@ -1,13 +1,17 @@
-import { authorizationClient, AuthorizonConfig, ResourceStub } from './client';
+import { authorizationClient, ResourceStub } from './client';
+import { enforcer } from './enforcer';
 import { config } from './config';
 import { logger } from './logger';
 import { ActionDefinition, ResourceDefinition } from './registry';
-import { ActionConfig, ResourceConfig } from './interface';
-export { ActionConfig, ResourceConfig } from './interface';
+import { ActionConfig, ResourceConfig, AuthorizonConfig } from './interface';
+export { ActionConfig, ResourceConfig, AuthorizonConfig } from './interface';
 
 export const init = (configOptions: AuthorizonConfig): void => {
-  logger.info(`authorizon.init(), sidecarUrl: ${config.sidecarUrl}`);
+  // if provided via config options, sidecar url overrides the env var.
+  configOptions.sidecarUrl = configOptions.sidecarUrl ?? config.sidecarUrl;
+  logger.info(`authorizon.init(), sidecarUrl: ${configOptions.sidecarUrl}`);
   authorizationClient.initialize(configOptions);
+  enforcer.initialize(configOptions);
 };
 
 export const resource = (config: ResourceConfig): ResourceStub => {

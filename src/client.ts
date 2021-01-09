@@ -1,6 +1,5 @@
 import axios, { AxiosInstance } from 'axios'; // eslint-disable-line
 
-import { config } from './config';
 import { logger } from './logger';
 import {
   resourceRegistry,
@@ -9,13 +8,8 @@ import {
   ResourceRegistry,
 } from './registry';
 
-import { ActionConfig } from './interface';
+import { ActionConfig, AuthorizonConfig } from './interface';
 
-export interface AuthorizonConfig {
-  token: string;
-  appName?: string;
-  serviceName?: string;
-}
 
 export interface SyncObjectResponse {
   id: string;
@@ -39,7 +33,7 @@ export class ResourceStub {
 }
 
 export class AuthorizationClient {
-  private initialized = false;
+  private initialized: boolean = false;
   private registry: ResourceRegistry;
   private config: AuthorizonConfig = { token: '' };
   private client: AxiosInstance = axios.create();
@@ -52,9 +46,9 @@ export class AuthorizationClient {
     this.initialized = true;
     this.config = configOptions;
     this.client = axios.create({
-      baseURL: `${config.sidecarUrl}/`,
+      baseURL: `${this.config.sidecarUrl}/`,
       headers: {
-        Authorization: `Bearer ${configOptions.token}`,
+        Authorization: `Bearer ${this.config.token}`,
       },
     });
     this.syncResources();
