@@ -15,7 +15,19 @@ export interface SyncObjectResponse {
   id: string;
 }
 
+export interface OrgDefinition {
+  id: string;
+  name: string;
+}
+
 type Dict = Record<string, any>;
+
+interface SyncUserRequest {
+  id: string,
+  data: Dict,
+  initial_orgs?: { external_id: string, name: string }[],
+  initial_roles?: string[]
+}
 
 export class ResourceStub {
   constructor(public readonly resourceName: string) { }
@@ -146,12 +158,28 @@ export class AuthorizationClient {
     }
   }
 
-  public async syncUser(userId: string, userData: Dict): Promise<Dict | Error> {
+  public async syncUser(userId: string, userData: Dict, initialOrgs?: OrgDefinition[], initialRoles?: string[]): Promise<Dict | Error> {
     this.throwIfNotInitialized();
-    const data = {
+
+    if (initialRoles && !initialOrgs) {
+      throw new Error("You cannot assign initial roles for user without also assigning initial orgs!");
+    }
+
+    const data: SyncUserRequest = {
       id: userId,
       data: userData,
     };
+
+    if (initialOrgs) {
+      const orgs = initialOrgs.map(def => {
+        return { external_id: def.id, name: def.name };
+      });
+      data['initial_orgs'] = orgs;
+    }
+
+    if (initialRoles) {
+      data['initial_roles'] = initialRoles;
+    }
 
     return await this.client
       .put<Dict>('sdk/user', data)
