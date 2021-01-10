@@ -217,7 +217,7 @@ function endpointToResource(
         ? getResourceNameFromPath(groupPath)
         : getResourceNameFromEndpoint(endpoint)),
     type: mergedResourceDeco.type || resourceType,
-    path: endpoint.path,
+    path: groupPath !== undefined ? groupPath : endpoint.path,
     description: mergedResourceDeco.description || '',
     actions: allActions,
   };
@@ -278,6 +278,8 @@ function endpointsToResources(endpoints: MappedEndpoint[]) {
     getNestedEndpointsTree(endpoints, true),
     endpoints
   );
+
+  //prettyConsoleLog('TREE', tree);
 
   return _.map(tree, (endpoints, groupPath) => {
     const [main, ...children] = <MappedEndpoint[]>endpoints;
