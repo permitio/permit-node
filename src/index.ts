@@ -14,11 +14,15 @@ hook();
 
 const client = authorizationClient;
 export const syncUser = client.syncUser.bind(client);
+export const deleteUser = client.deleteUser.bind(client);
 export const syncOrg = client.syncOrg.bind(client);
 export const deleteOrg = client.deleteOrg.bind(client);
 export const addUserToOrg = client.addUserToOrg.bind(client);
+export const removeUserFromOrg = client.removeUserFromOrg.bind(client);
 export const getOrgsForUser = client.getOrgsForUser.bind(client);
+export const getUserRoles = client.getUserRoles.bind(client);
 export const assignRole = client.assignRole.bind(client);
+export const unassignRole = client.unassignRole.bind(client);
 export const updatePolicyData = client.updatePolicyData.bind(client);
 
 export const isAllowed = enforcer.isAllowed.bind(enforcer);
@@ -31,11 +35,15 @@ const authorizon = {
   resource: resource,
   action: action,
   syncUser: syncUser,
+  deleteUser: deleteUser,
   syncOrg: syncOrg,
   deleteOrg: deleteOrg,
   addUserToOrg: addUserToOrg,
+  removeUserFromOrg: removeUserFromOrg,
   getOrgsForUser: getOrgsForUser,
+  getUserRoles: getUserRoles,
   assignRole: assignRole,
+  unassignRole: unassignRole,
   updatePolicyData: updatePolicyData,
   isAllowed: isAllowed,
   transformResourceContext: transformResourceContext,

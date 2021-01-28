@@ -194,6 +194,16 @@ export class AuthorizationClient {
       });
   }
 
+  public async deleteUser(userId: string): Promise<void> {
+    this.throwIfNotInitialized();
+
+    this.client.delete(`sdk/user/${userId}`).catch((error: Error) => {
+      logger.error(
+        `tried to delete user with id: ${userId}, got error: ${error}`
+      );
+    });
+  }
+
   public async syncOrg(
     orgId: string,
     orgName: string
@@ -251,6 +261,29 @@ export class AuthorizationClient {
       });
   }
 
+  public async removeUserFromOrg(
+    userId: string,
+    orgId: string
+  ): Promise<Dict | Error> {
+    this.throwIfNotInitialized();
+    const data = {
+      user_id: userId,
+      org_id: orgId,
+    };
+
+    return await this.client
+      .post<Dict>('sdk/remove_user_from_org', data)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        logger.error(
+          `tried to remove user ${userId} from org ${orgId}, got error: ${error}`
+        );
+        return error;
+      });
+  }
+
   public async getOrgsForUser(userId: string): Promise<Dict | Error> {
     this.throwIfNotInitialized();
     return await this.client
@@ -286,6 +319,46 @@ export class AuthorizationClient {
       .catch((error: Error) => {
         logger.error(
           `could not assign role ${role} to ${userId} in org ${orgId}, got error: ${error}`
+        );
+        return error;
+      });
+  }
+
+  public async unassignRole(
+    role: string,
+    userId: string,
+    orgId: string
+  ): Promise<Dict | Error> {
+    this.throwIfNotInitialized();
+    const data = {
+      role: role,
+      user_id: userId,
+      org_id: orgId,
+    };
+
+    return await this.client
+      .post<Dict>('sdk/unassign_role', data)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        logger.error(
+          `could not unassign role ${role} of ${userId} in org ${orgId}, got error: ${error}`
+        );
+        return error;
+      });
+  }
+
+  public async getUserRoles(userId: string, orgId: string): Promise<Dict | Error> {
+    this.throwIfNotInitialized();
+    return await this.client
+      .get<Dict>(`sdk/users/${userId}/roles/${orgId}`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        logger.error(
+          `could not get user roles for user ${userId} in org ${orgId}, got error: ${error}`
         );
         return error;
       });

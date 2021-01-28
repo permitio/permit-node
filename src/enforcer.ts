@@ -24,7 +24,7 @@ export type ActionType = string;
 export type ResourceType = string | Resource | Dict;
 
 interface OpaResult {
-  result: boolean;
+  allow: boolean;
 }
 
 export class Enforcer {
@@ -130,7 +130,7 @@ export class Enforcer {
     return await this.client
       .post<OpaResult>('allowed', input)
       .then((response) => {
-        return response.data.result || false;
+        return response.data.allow || false;
       })
       .catch((error) => {
         logger.error(`Error in authorizon.isAllowed(): ${error}`);
