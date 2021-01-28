@@ -348,6 +348,21 @@ export class AuthorizationClient {
         return error;
       });
   }
+
+  public async getUserRoles(userId: string, orgId: string): Promise<Dict | Error> {
+    this.throwIfNotInitialized();
+    return await this.client
+      .get<Dict>(`sdk/users/${userId}/roles/${orgId}`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        logger.error(
+          `could not get user roles for user ${userId} in org ${orgId}, got error: ${error}`
+        );
+        return error;
+      });
+  }
 }
 
 export const authorizationClient = new AuthorizationClient();

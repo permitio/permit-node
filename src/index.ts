@@ -20,6 +20,7 @@ export const deleteOrg = client.deleteOrg.bind(client);
 export const addUserToOrg = client.addUserToOrg.bind(client);
 export const removeUserFromOrg = client.removeUserFromOrg.bind(client);
 export const getOrgsForUser = client.getOrgsForUser.bind(client);
+export const getUserRoles = client.getUserRoles.bind(client);
 export const assignRole = client.assignRole.bind(client);
 export const unassignRole = client.unassignRole.bind(client);
 export const updatePolicyData = client.updatePolicyData.bind(client);
@@ -40,6 +41,7 @@ const authorizon = {
   addUserToOrg: addUserToOrg,
   removeUserFromOrg: removeUserFromOrg,
   getOrgsForUser: getOrgsForUser,
+  getUserRoles: getUserRoles,
   assignRole: assignRole,
   unassignRole: unassignRole,
   updatePolicyData: updatePolicyData,
