@@ -5,7 +5,7 @@
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
-  "repository": "https://github.com/acallasec/authorizon-node",
+  "repository": "https://github.com/authorizon/authorizon-node",
   "license": "MIT",
   "keywords": [],
   "scripts": {
