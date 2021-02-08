@@ -23,3 +23,18 @@ export interface AuthorizonConfig {
   serviceName?: string;
   sidecarUrl?: string;
 }
+
+// local api interfaces
+export interface SyncedRole {
+  id: string;
+  name: string;
+  org_id?: string;
+  permissions?: string[];
+}
+
+export interface SyncedUser {
+  id: string;
+  name?: string;
+  email?: string;
+  roles: SyncedRole[];
+}

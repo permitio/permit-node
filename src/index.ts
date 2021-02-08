@@ -30,6 +30,15 @@ export const transformResourceContext = enforcer.addResourceContextTransform.bin
 export const provideContext = enforcer.addContext.bind(enforcer);
 export const getResourceAndAction = resourceRegistry.getResourceAndActionFromRequestParams.bind(resourceRegistry);
 
+// local api
+export const isUserSynced = client.isUserSynced.bind(client);
+export const getLocallyCachedUser = client.getLocallyCachedUser.bind(client);
+export const getLocallyCachedUserList = client.getLocallyCachedUserList.bind(client);
+export const getLocallyCachedUserRoles = client.getLocallyCachedUserRoles.bind(client);
+export const getLocallyCachedRoleList = client.getLocallyCachedRoleList.bind(client);
+export const getLocallyCachedRoleById = client.getLocallyCachedRoleById.bind(client);
+export const getLocallyCachedRoleByName = client.getLocallyCachedRoleByName.bind(client);
+
 const authorizon = {
   init: init,
   resource: resource,
@@ -50,6 +59,15 @@ const authorizon = {
   provideContext: provideContext,
   decorate: decorate,
   getResourceAndAction: getResourceAndAction,
+
+  // local api
+  isUserSynced: isUserSynced,
+  getLocallyCachedUser: getLocallyCachedUser,
+  getLocallyCachedUserList: getLocallyCachedUserList,
+  getLocallyCachedUserRoles: getLocallyCachedUserRoles,
+  getLocallyCachedRoleList: getLocallyCachedRoleList,
+  getLocallyCachedRoleById: getLocallyCachedRoleById,
+  getLocallyCachedRoleByName: getLocallyCachedRoleByName,
 };
 
 export default authorizon;
