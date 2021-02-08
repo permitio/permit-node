@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios'; // eslint-disable-line
+import axios, { AxiosError, AxiosInstance } from 'axios'; // eslint-disable-line
 
 import { logger } from './logger';
 import {
@@ -8,7 +8,7 @@ import {
   ResourceRegistry,
 } from './registry';
 
-import { ActionConfig, AuthorizonConfig } from './interface';
+import { ActionConfig, AuthorizonConfig, SyncedRole, SyncedUser } from './interface';
 
 
 export interface SyncObjectResponse {
@@ -28,6 +28,8 @@ interface SyncUserRequest {
   initial_orgs?: { external_id: string, name: string }[],
   initial_roles?: string[]
 }
+
+const HTTP_404_NOT_FOUND: number = 404;
 
 export class ResourceStub {
   constructor(public readonly resourceName: string) { }
@@ -363,6 +365,127 @@ export class AuthorizationClient {
         return error;
       });
   }
+
+  public async isUserSynced(userId: string): Promise<boolean> {
+    const user = await this.getLocallyCachedUser(userId);
+    if (user === null) {
+      return false;
+    }
+    return (user.id === userId);
+  }
+
+  public async getLocallyCachedUser(userId: string): Promise<SyncedUser | null> {
+    this.throwIfNotInitialized();
+    return await this.client
+      .get<SyncedUser>(`local/users/${userId}`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          if (error.response.status !== HTTP_404_NOT_FOUND) {
+            logger.error(
+              `unexpected error when calling authorizon.getLocallyCachedUser(${userId}): ${error}`
+            );
+          }
+        }
+        return null;
+      });
+  }
+
+  public async getLocallyCachedUserList(): Promise<SyncedUser[]> {
+    this.throwIfNotInitialized();
+    return await this.client
+      .get<SyncedUser[]>(`local/users`)
+      .then((response) => {
+        return response.data;
+      }).catch((error: AxiosError) => {
+        if (error.response) {
+          if (error.response.status !== HTTP_404_NOT_FOUND) {
+            logger.error(
+              `unexpected error when calling authorizon.getLocallyCachedUserList(): ${error}`
+            );
+          }
+        }
+        return [];
+      });
+  }
+
+  public async getLocallyCachedUserRoles(userId: string): Promise<SyncedRole[] | null> {
+    this.throwIfNotInitialized();
+    return await this.client
+      .get<SyncedRole[]>(`local/users/${userId}/roles`)
+      .then((response) => {
+        return response.data;
+      }).catch((error: AxiosError) => {
+        if (error.response) {
+          if (error.response.status !== HTTP_404_NOT_FOUND) {
+            logger.error(
+              `unexpected error when calling authorizon.getLocallyCachedUserRoles(${userId}): ${error}`
+            );
+          }
+        }
+        return null; // indicate user is not synced
+      });
+  }
+
+  public async getLocallyCachedRoleList(): Promise<SyncedRole[]> {
+    this.throwIfNotInitialized();
+    return await this.client
+      .get<SyncedRole[]>(`local/roles`)
+      .then((response) => {
+        return response.data;
+      }).catch((error: AxiosError) => {
+        if (error.response) {
+          if (error.response.status !== HTTP_404_NOT_FOUND) {
+            logger.error(
+              `unexpected error when calling authorizon.getLocallyCachedRoleList(): ${error}`
+            );
+          }
+        }
+        return [];
+      });
+  }
+
+  public async getLocallyCachedRoleById(roleId: string): Promise<SyncedRole | null> {
+    this.throwIfNotInitialized();
+    return await this.client
+      .get<SyncedRole>(`local/roles/${roleId}`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          if (error.response.status !== HTTP_404_NOT_FOUND) {
+            logger.error(
+              `unexpected error when calling authorizon.getLocallyCachedRoleById(${roleId}): ${error}`
+            );
+          }
+        }
+        return null;
+      });
+  }
+
+  public async getLocallyCachedRoleByName(roleName: string): Promise<SyncedRole | null> {
+    this.throwIfNotInitialized();
+    return await this.client
+      .get<SyncedRole>(`local/roles/by-name/${roleName}`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          if (error.response.status !== HTTP_404_NOT_FOUND) {
+            logger.error(
+              `unexpected error when calling authorizon.getLocallyCachedRoleByName(${roleName}): ${error}`
+            );
+          }
+        }
+        return null;
+      });
+  }
+
+
 }
 
 export const authorizationClient = new AuthorizationClient();
