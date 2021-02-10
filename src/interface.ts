@@ -29,6 +29,7 @@ export interface SyncedRole {
   id: string;
   name: string;
   org_id?: string;
+  metadata?: Record<string, any>;
   permissions?: string[];
 }
 
