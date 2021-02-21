@@ -455,6 +455,24 @@ export class AuthorizationClient {
       });
   }
 
+  public async getLocallyCachedUserOrgs(userId: string): Promise<string[] | null> {
+    this.throwIfNotInitialized();
+    return await this.client
+      .get<string[]>(`local/users/${userId}/organizations`)
+      .then((response) => {
+        return response.data;
+      }).catch((error: AxiosError) => {
+        if (error.response) {
+          if (error.response.status !== HTTP_404_NOT_FOUND) {
+            logger.error(
+              `unexpected error when calling authorizon.getLocallyCachedUserOrgs(${userId}): ${error}`
+            );
+          }
+        }
+        return null; // indicate user is not synced
+      });
+  }
+
   public async getLocallyCachedUserRoles(userId: string): Promise<SyncedRole[] | null> {
     this.throwIfNotInitialized();
     return await this.client
