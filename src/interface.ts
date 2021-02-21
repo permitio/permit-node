@@ -37,5 +37,6 @@ export interface SyncedUser {
   id: string;
   name?: string;
   email?: string;
+  metadata?: Record<string, any>;
   roles: SyncedRole[];
 }

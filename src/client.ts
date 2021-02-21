@@ -73,6 +73,7 @@ export class AuthorizationClient {
     return this.config.token;
   }
 
+  // resources and actions
   public addResource(resource: ResourceDefinition): ResourceStub {
     this.registry.addResource(resource);
     this.maybeSyncResource(resource);
@@ -93,7 +94,7 @@ export class AuthorizationClient {
     if (this.initialized && !this.registry.isSynced(resource)) {
       logger.info(`syncing resource: ${resource.repr()}`);
       this.client
-        .put<SyncObjectResponse>('sdk/resource', resource.dict())
+        .put<SyncObjectResponse>('cloud/resources', resource.dict())
         .then((response) => {
           this.registry.markAsSynced(resource, response.data.id);
         })
@@ -115,7 +116,7 @@ export class AuthorizationClient {
       logger.info(`syncing action: ${action.repr()}`);
       this.client
         .put<SyncObjectResponse>(
-          `sdk/resource/${resourceId}/action`,
+          `cloud/resources/${resourceId}/actions`,
           action.dict()
         )
         .then((response) => {
@@ -136,6 +137,7 @@ export class AuthorizationClient {
     }
   }
 
+  // policies
   public updatePolicy(): void {
     this.throwIfNotInitialized();
     this.client
@@ -160,6 +162,7 @@ export class AuthorizationClient {
     }
   }
 
+  // users
   public async syncUser(userId: string, userData: Dict, initialOrgs?: OrgDefinition[], initialRoles?: string[]): Promise<Dict | Error> {
     this.throwIfNotInitialized();
 
@@ -184,7 +187,7 @@ export class AuthorizationClient {
     }
 
     return await this.client
-      .put<Dict>('sdk/user', data)
+      .put<Dict>('cloud/users', data)
       .then((response) => {
         return response.data;
       })
@@ -196,16 +199,31 @@ export class AuthorizationClient {
       });
   }
 
+  public async getUser(userId: string): Promise<void> {
+    this.throwIfNotInitialized();
+
+    this.client.get(`cloud/users/${userId}`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        logger.error(
+          `tried to get user with id: ${userId}, got error: ${error}`
+        );
+      });
+  }
+
   public async deleteUser(userId: string): Promise<void> {
     this.throwIfNotInitialized();
 
-    this.client.delete(`sdk/user/${userId}`).catch((error: Error) => {
+    this.client.delete(`cloud/users/${userId}`).catch((error: Error) => {
       logger.error(
         `tried to delete user with id: ${userId}, got error: ${error}`
       );
     });
   }
 
+  // organizations
   public async syncOrg(
     orgId: string,
     orgName: string
@@ -218,7 +236,7 @@ export class AuthorizationClient {
     };
 
     return await this.client
-      .post<Dict>('sdk/organization', data)
+      .put<Dict>('cloud/organizations', data)
       .then((response) => {
         return response.data;
       })
@@ -233,25 +251,39 @@ export class AuthorizationClient {
   public async deleteOrg(orgId: string): Promise<void> {
     this.throwIfNotInitialized();
 
-    this.client.delete(`sdk/organization/${orgId}`).catch((error: Error) => {
+    this.client.delete(`cloud/organizations/${orgId}`).catch((error: Error) => {
       logger.error(
         `tried to delete org with id: ${orgId}, got error: ${error}`
       );
     });
   }
 
+  public async getOrg(orgId: string): Promise<void> {
+    this.throwIfNotInitialized();
+
+    this.client.get(`cloud/organizations/${orgId}`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        logger.error(
+          `tried to get org with id: ${orgId}, got error: ${error}`
+        );
+      });
+  }
+
+  // user org relationship
   public async addUserToOrg(
     userId: string,
     orgId: string
   ): Promise<Dict | Error> {
     this.throwIfNotInitialized();
     const data = {
-      user_id: userId,
-      org_id: orgId,
+      "organizations": [orgId]
     };
 
     return await this.client
-      .post<Dict>('sdk/add_user_to_org', data)
+      .post<Dict>(`cloud/users/${userId}/organizations`, data)
       .then((response) => {
         return response.data;
       })
@@ -269,12 +301,11 @@ export class AuthorizationClient {
   ): Promise<Dict | Error> {
     this.throwIfNotInitialized();
     const data = {
-      user_id: userId,
-      org_id: orgId,
+      "organizations": [orgId]
     };
 
     return await this.client
-      .post<Dict>('sdk/remove_user_from_org', data)
+      .post<Dict>(`cloud/users/${userId}/organizations`, data)
       .then((response) => {
         return response.data;
       })
@@ -289,7 +320,7 @@ export class AuthorizationClient {
   public async getOrgsForUser(userId: string): Promise<Dict | Error> {
     this.throwIfNotInitialized();
     return await this.client
-      .get<Dict>(`sdk/get_orgs_for_user/${userId}`)
+      .get<Dict>(`cloud/users/${userId}/organizations`)
       .then((response) => {
         return response.data;
       })
@@ -301,6 +332,22 @@ export class AuthorizationClient {
       });
   }
 
+  // roles
+  public async getRole(roleId: string): Promise<void> {
+    this.throwIfNotInitialized();
+
+    this.client.get(`cloud/roles/${roleId}`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        logger.error(
+          `tried to get role with id: ${roleId}, got error: ${error}`
+        );
+      });
+  }
+
+  // role assignment
   public async assignRole(
     role: string,
     userId: string,
@@ -309,12 +356,12 @@ export class AuthorizationClient {
     this.throwIfNotInitialized();
     const data = {
       role: role,
-      user_id: userId,
-      org_id: orgId,
+      user: userId,
+      scope: orgId,
     };
 
     return await this.client
-      .post<Dict>('sdk/assign_role', data)
+      .post<Dict>('cloud/role_assignments', data)
       .then((response) => {
         return response.data;
       })
@@ -332,14 +379,9 @@ export class AuthorizationClient {
     orgId: string
   ): Promise<Dict | Error> {
     this.throwIfNotInitialized();
-    const data = {
-      role: role,
-      user_id: userId,
-      org_id: orgId,
-    };
 
     return await this.client
-      .post<Dict>('sdk/unassign_role', data)
+      .delete<Dict>(`cloud/role_assignments?role=${role}&user=${userId}&scope=${orgId}`)
       .then((response) => {
         return response.data;
       })
@@ -351,10 +393,11 @@ export class AuthorizationClient {
       });
   }
 
+  // user role relationship
   public async getUserRoles(userId: string, orgId: string): Promise<Dict | Error> {
     this.throwIfNotInitialized();
     return await this.client
-      .get<Dict>(`sdk/users/${userId}/roles/${orgId}`)
+      .get<Dict>(`cloud/users/${userId}/roles?organization=${orgId}`)
       .then((response) => {
         return response.data;
       })
@@ -374,6 +417,7 @@ export class AuthorizationClient {
     return (user.id === userId);
   }
 
+  // cached object api
   public async getLocallyCachedUser(userId: string): Promise<SyncedUser | null> {
     this.throwIfNotInitialized();
     return await this.client
@@ -408,6 +452,24 @@ export class AuthorizationClient {
           }
         }
         return [];
+      });
+  }
+
+  public async getLocallyCachedUserOrgs(userId: string): Promise<string[] | null> {
+    this.throwIfNotInitialized();
+    return await this.client
+      .get<string[]>(`local/users/${userId}/organizations`)
+      .then((response) => {
+        return response.data;
+      }).catch((error: AxiosError) => {
+        if (error.response) {
+          if (error.response.status !== HTTP_404_NOT_FOUND) {
+            logger.error(
+              `unexpected error when calling authorizon.getLocallyCachedUserOrgs(${userId}): ${error}`
+            );
+          }
+        }
+        return null; // indicate user is not synced
       });
   }
 
