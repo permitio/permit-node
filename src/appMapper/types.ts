@@ -6,6 +6,7 @@ export interface MappedEndpoint {
   methodToCallable: Record<string, any>;
   regEx: RegExp;
   keys: string[];
+  prefix?: string;
 }
 
 export enum RoutesStyle {
