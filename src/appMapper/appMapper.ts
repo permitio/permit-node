@@ -210,6 +210,11 @@ function endpointToResource(
   // combine ownActions with child; rename duplicate names (Safety)
   const allActions = renameDuplicateActions(_.concat(ownActions, childActions));
 
+  let path = groupPath !== undefined ? groupPath : endpoint.path;
+  if (endpoint.prefix !== undefined) {
+    path = endpoint.prefix + path;
+  }
+
   return {
     name:
       mergedResourceDeco.name ||
@@ -217,7 +222,7 @@ function endpointToResource(
         ? getResourceNameFromPath(groupPath)
         : getResourceNameFromEndpoint(endpoint)),
     type: mergedResourceDeco.type || resourceType,
-    path: groupPath !== undefined ? groupPath : endpoint.path,
+    path: path,
     description: mergedResourceDeco.description || '',
     actions: allActions,
   };
@@ -294,13 +299,31 @@ function isExpressApp(app: any): boolean {
   );
 }
 
+function removePrefix(endpoint: MappedEndpoint, prefixes: string[]): MappedEndpoint {
+  const newEndpoint: MappedEndpoint = _.cloneDeep(endpoint);
+  for (const prefix of prefixes) {
+    if (newEndpoint.path.startsWith(prefix)) {
+      newEndpoint.path = newEndpoint.path.substring(prefix.length);
+      newEndpoint.prefix = prefix;
+      break; // only one prefix is removed
+    }
+  }
+  return newEndpoint;
+}
+
 export function mapApp(
-  app: any
+  app: any,
+  prefixes: string[],
 ): { resources: ResourceConfig[]; endpoints: MappedEndpoint[] } {
   if (isExpressApp(app)) {
     logger.debug('Mapping Express App');
     const endpoints = mapExpressAppEndpoints(app);
-    const resources = endpointsToResources(endpoints);
+    // these endpoints paths were trimmed of prefixes that should be ignored, i.e: /v1 or /api/v1
+    // by removing the prefixes, we can get a more accurate "guess" what are the resources and actions are
+    const trimmedEndpoints = (prefixes.length == 0)
+      ? endpoints
+      : endpoints.map((endpoint) => removePrefix(endpoint, prefixes));
+    const resources = endpointsToResources(trimmedEndpoints);
     return { resources, endpoints };
   } else {
     logger.debug('Unknown app type', { app });
