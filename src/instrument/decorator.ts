@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { ActionConfig, ResourceConfig } from './commands';
+import { ActionConfig, ResourceConfig } from '../commands';
 
 type ResourceOptions = Partial<ResourceConfig>;
 type ActionOptions = Partial<ActionConfig>;

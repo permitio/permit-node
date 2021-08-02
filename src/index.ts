@@ -1,10 +1,10 @@
 import { authorizationClient } from './client';
 // For regular require
 export { action, init, resource } from './commands';
-export { decorate } from './decorator';
+export { decorate } from './instrument/decorator';
 // For Default export
 import { action, init, resource } from './commands';
-import { decorate } from './decorator';
+import { decorate } from './instrument/decorator';
 import { enforcer } from './enforcer';
 import { hook } from './instrument/plugin';
 import { resourceRegistry } from './registry';
