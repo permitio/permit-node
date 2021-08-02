@@ -2,9 +2,9 @@ import _ from 'lodash';
 
 import { mapApp } from './appMapper/appMapper';
 import { MappedEndpoint } from './appMapper/types';
-import { ResourceConfig, resource as saveResource } from './commands';
-import { config } from './config';
-import { prettyConsoleLog } from './logger';
+import { ResourceConfig, resource as saveResource } from '../commands';
+import { config } from '../config';
+import { prettyConsoleLog } from '../logger';
 
 export class AppManager {
   resources: Record<string, any> = {};
@@ -27,8 +27,8 @@ export class AppManager {
     // TODO support mixed HTTP/HTTPS server (via name merging resources mutual to http and https )
     // If we have auto-mapping - map the app given to us and save its resources
     if (config.autoMapping) {
-      const { resources, endpoints } = mapApp(app, config.autoMappingIgnoredPrefixes);
-      if (config.reviewMode) {
+      const { resources, endpoints } = mapApp(app, config.autoMapping.ignoredUrlPrefixes);
+      if (config.autoMapping.reviewMode) {
         this.report(name, resources, endpoints);
       } else {
         this.resources[name] = resources;

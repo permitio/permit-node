@@ -6,7 +6,7 @@ export { decorate } from './decorator';
 import { action, init, resource } from './commands';
 import { decorate } from './decorator';
 import { enforcer } from './enforcer';
-import { hook } from './plugin';
+import { hook } from './instrument/plugin';
 import { resourceRegistry } from './registry';
 
 // Set hooks to auto decorate host application

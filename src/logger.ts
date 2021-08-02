@@ -15,16 +15,16 @@ const consoleFormat = winston.format.printf(
 );
 
 export const logger = winston.createLogger({
-  level: config.logLevel,
+  level: config.log.level,
   format: winston.format.simple(),
   transports: [
     new winston.transports.Console({
       // If not in debug - show nothing in console
-      silent: !config.isDebug,
+      silent: !config.debugMode,
       format: winston.format.combine(
-        winston.format.label({ label: config.logLabel }),
+        winston.format.label({ label: config.log.label }),
         winston.format.timestamp(),
-        config.logJSON ? winston.format.prettyPrint() : consoleFormat,
+        config.log.json ? winston.format.prettyPrint() : consoleFormat,
         winston.format.colorize({ all: true })
       ),
     }),

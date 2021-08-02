@@ -1,7 +1,7 @@
 import Hook from 'require-in-the-middle';
 
 import { appManager } from './appManager';
-import { logger } from './logger';
+import { logger } from '../logger';
 
 /**
  * Plugin (hook) into frameworks (Express) and track created apps
