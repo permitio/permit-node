@@ -1,9 +1,9 @@
 import _ from 'lodash';
 
-import { ResourceConfig } from '../../commands';
+import { ResourceConfig } from '../../resources/interfaces';
 import { AllAuthZOptions, getDecorations } from '../decorator';
 import { logger } from '../../logger';
-import { ActionDefinition } from '../../registry';
+import { ActionDefinition } from '../../resources/registry';
 
 import {
   KEY_DELIMITER,
