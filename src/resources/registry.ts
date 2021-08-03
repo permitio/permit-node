@@ -1,6 +1,6 @@
 import Resource from './resource';
-import { dictZip } from './utils/dict';
-import { escapeRegex, matchAll, RegexMatch } from './utils/regex';
+import { dictZip } from '../utils/dict';
+import { escapeRegex, matchAll, RegexMatch } from '../utils/regex';
 
 export interface PatternWithContext {
   pattern: RegExp;

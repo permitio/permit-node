@@ -1,14 +1,15 @@
-import axios, { AxiosError, AxiosInstance } from 'axios'; // eslint-disable-line
+import axios, { AxiosInstance } from 'axios'; // eslint-disable-line
 
-import { logger } from './logger';
+import { logger } from '../logger';
 import {
   resourceRegistry,
   ResourceDefinition,
   ActionDefinition,
   ResourceRegistry,
-} from './registry';
+} from '../resources/registry';
 
-import { ActionConfig, AuthorizonConfig, SyncedRole, SyncedUser } from './interface';
+import { ActionConfig } from '../interface';
+import { IAuthorizonConfig } from '../config';
 
 
 export interface SyncObjectResponse {
@@ -29,8 +30,6 @@ interface SyncUserRequest {
   initial_roles?: string[]
 }
 
-const HTTP_404_NOT_FOUND: number = 404;
-
 export class ResourceStub {
   constructor(public readonly resourceName: string) { }
 
@@ -49,16 +48,10 @@ export class ResourceStub {
 export class AuthorizationClient {
   private initialized: boolean = false;
   private registry: ResourceRegistry;
-  private config: AuthorizonConfig = { token: '' };
   private client: AxiosInstance = axios.create();
 
-  constructor() {
+  constructor(private config: IAuthorizonConfig) {
     this.registry = resourceRegistry;
-  }
-
-  public initialize(configOptions: AuthorizonConfig): void {
-    this.initialized = true;
-    this.config = configOptions;
     this.client = axios.create({
       baseURL: `${this.config.sidecarUrl}/`,
       headers: {
@@ -69,7 +62,6 @@ export class AuthorizationClient {
   }
 
   public get token(): string {
-    this.throwIfNotInitialized();
     return this.config.token;
   }
 
@@ -139,7 +131,6 @@ export class AuthorizationClient {
 
   // policies
   public updatePolicy(): void {
-    this.throwIfNotInitialized();
     this.client
       .post('update_policy')
       .catch((error) =>
@@ -148,7 +139,6 @@ export class AuthorizationClient {
   }
 
   public updatePolicyData(): void {
-    this.throwIfNotInitialized();
     this.client
       .post('update_policy_data')
       .catch((error) =>
@@ -156,15 +146,8 @@ export class AuthorizationClient {
       );
   }
 
-  private throwIfNotInitialized() {
-    if (!this.initialized) {
-      throw new Error('You must call authorizon.init() first!');
-    }
-  }
-
   // users
   public async syncUser(userId: string, userData: Dict, initialOrgs?: OrgDefinition[], initialRoles?: string[]): Promise<Dict | Error> {
-    this.throwIfNotInitialized();
 
     if (initialRoles && !initialOrgs) {
       throw new Error("You cannot assign initial roles for user without also assigning initial orgs!");
@@ -200,7 +183,6 @@ export class AuthorizationClient {
   }
 
   public async getUser(userId: string): Promise<void> {
-    this.throwIfNotInitialized();
 
     this.client.get(`cloud/users/${userId}`)
       .then((response) => {
@@ -214,7 +196,6 @@ export class AuthorizationClient {
   }
 
   public async deleteUser(userId: string): Promise<void> {
-    this.throwIfNotInitialized();
 
     this.client.delete(`cloud/users/${userId}`).catch((error: Error) => {
       logger.error(
@@ -229,7 +210,6 @@ export class AuthorizationClient {
     orgName: string
     // orgMetadata: Dict = {}
   ): Promise<Dict | Error> {
-    this.throwIfNotInitialized();
     const data = {
       external_id: orgId,
       name: orgName,
@@ -249,7 +229,6 @@ export class AuthorizationClient {
   }
 
   public async deleteOrg(orgId: string): Promise<void> {
-    this.throwIfNotInitialized();
 
     this.client.delete(`cloud/organizations/${orgId}`).catch((error: Error) => {
       logger.error(
@@ -259,7 +238,6 @@ export class AuthorizationClient {
   }
 
   public async getOrg(orgId: string): Promise<void> {
-    this.throwIfNotInitialized();
 
     this.client.get(`cloud/organizations/${orgId}`)
       .then((response) => {
@@ -277,7 +255,6 @@ export class AuthorizationClient {
     userId: string,
     orgId: string
   ): Promise<Dict | Error> {
-    this.throwIfNotInitialized();
     const data = {
       "organizations": [orgId]
     };
@@ -299,7 +276,6 @@ export class AuthorizationClient {
     userId: string,
     orgId: string
   ): Promise<Dict | Error> {
-    this.throwIfNotInitialized();
     const data = {
       "organizations": [orgId]
     };
@@ -318,7 +294,6 @@ export class AuthorizationClient {
   }
 
   public async getOrgsForUser(userId: string): Promise<Dict | Error> {
-    this.throwIfNotInitialized();
     return await this.client
       .get<Dict>(`cloud/users/${userId}/organizations`)
       .then((response) => {
@@ -334,7 +309,6 @@ export class AuthorizationClient {
 
   // roles
   public async getRole(roleId: string): Promise<void> {
-    this.throwIfNotInitialized();
 
     this.client.get(`cloud/roles/${roleId}`)
       .then((response) => {
@@ -353,7 +327,6 @@ export class AuthorizationClient {
     userId: string,
     orgId: string
   ): Promise<Dict | Error> {
-    this.throwIfNotInitialized();
     const data = {
       role: role,
       user: userId,
@@ -378,7 +351,6 @@ export class AuthorizationClient {
     userId: string,
     orgId: string
   ): Promise<Dict | Error> {
-    this.throwIfNotInitialized();
 
     return await this.client
       .delete<Dict>(`cloud/role_assignments?role=${role}&user=${userId}&scope=${orgId}`)
@@ -395,7 +367,6 @@ export class AuthorizationClient {
 
   // user role relationship
   public async getUserRoles(userId: string, orgId: string): Promise<Dict | Error> {
-    this.throwIfNotInitialized();
     return await this.client
       .get<Dict>(`cloud/users/${userId}/roles?organization=${orgId}`)
       .then((response) => {
@@ -408,146 +379,4 @@ export class AuthorizationClient {
         return error;
       });
   }
-
-  public async isUserSynced(userId: string): Promise<boolean> {
-    const user = await this.getLocallyCachedUser(userId);
-    if (user === null) {
-      return false;
-    }
-    return (user.id === userId);
-  }
-
-  // cached object api
-  public async getLocallyCachedUser(userId: string): Promise<SyncedUser | null> {
-    this.throwIfNotInitialized();
-    return await this.client
-      .get<SyncedUser>(`local/users/${userId}`)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error: AxiosError) => {
-        if (error.response) {
-          if (error.response.status !== HTTP_404_NOT_FOUND) {
-            logger.error(
-              `unexpected error when calling authorizon.getLocallyCachedUser(${userId}): ${error}`
-            );
-          }
-        }
-        return null;
-      });
-  }
-
-  public async getLocallyCachedUserList(): Promise<SyncedUser[]> {
-    this.throwIfNotInitialized();
-    return await this.client
-      .get<SyncedUser[]>(`local/users`)
-      .then((response) => {
-        return response.data;
-      }).catch((error: AxiosError) => {
-        if (error.response) {
-          if (error.response.status !== HTTP_404_NOT_FOUND) {
-            logger.error(
-              `unexpected error when calling authorizon.getLocallyCachedUserList(): ${error}`
-            );
-          }
-        }
-        return [];
-      });
-  }
-
-  public async getLocallyCachedUserOrgs(userId: string): Promise<string[] | null> {
-    this.throwIfNotInitialized();
-    return await this.client
-      .get<string[]>(`local/users/${userId}/organizations`)
-      .then((response) => {
-        return response.data;
-      }).catch((error: AxiosError) => {
-        if (error.response) {
-          if (error.response.status !== HTTP_404_NOT_FOUND) {
-            logger.error(
-              `unexpected error when calling authorizon.getLocallyCachedUserOrgs(${userId}): ${error}`
-            );
-          }
-        }
-        return null; // indicate user is not synced
-      });
-  }
-
-  public async getLocallyCachedUserRoles(userId: string): Promise<SyncedRole[] | null> {
-    this.throwIfNotInitialized();
-    return await this.client
-      .get<SyncedRole[]>(`local/users/${userId}/roles`)
-      .then((response) => {
-        return response.data;
-      }).catch((error: AxiosError) => {
-        if (error.response) {
-          if (error.response.status !== HTTP_404_NOT_FOUND) {
-            logger.error(
-              `unexpected error when calling authorizon.getLocallyCachedUserRoles(${userId}): ${error}`
-            );
-          }
-        }
-        return null; // indicate user is not synced
-      });
-  }
-
-  public async getLocallyCachedRoleList(): Promise<SyncedRole[]> {
-    this.throwIfNotInitialized();
-    return await this.client
-      .get<SyncedRole[]>(`local/roles`)
-      .then((response) => {
-        return response.data;
-      }).catch((error: AxiosError) => {
-        if (error.response) {
-          if (error.response.status !== HTTP_404_NOT_FOUND) {
-            logger.error(
-              `unexpected error when calling authorizon.getLocallyCachedRoleList(): ${error}`
-            );
-          }
-        }
-        return [];
-      });
-  }
-
-  public async getLocallyCachedRoleById(roleId: string): Promise<SyncedRole | null> {
-    this.throwIfNotInitialized();
-    return await this.client
-      .get<SyncedRole>(`local/roles/${roleId}`)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error: AxiosError) => {
-        if (error.response) {
-          if (error.response.status !== HTTP_404_NOT_FOUND) {
-            logger.error(
-              `unexpected error when calling authorizon.getLocallyCachedRoleById(${roleId}): ${error}`
-            );
-          }
-        }
-        return null;
-      });
-  }
-
-  public async getLocallyCachedRoleByName(roleName: string): Promise<SyncedRole | null> {
-    this.throwIfNotInitialized();
-    return await this.client
-      .get<SyncedRole>(`local/roles/by-name/${roleName}`)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error: AxiosError) => {
-        if (error.response) {
-          if (error.response.status !== HTTP_404_NOT_FOUND) {
-            logger.error(
-              `unexpected error when calling authorizon.getLocallyCachedRoleByName(${roleName}): ${error}`
-            );
-          }
-        }
-        return null;
-      });
-  }
-
-
 }
-
-export const authorizationClient = new AuthorizationClient();
