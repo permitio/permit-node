@@ -41,10 +41,12 @@ export interface IResource {
   id?: string;
   // the permissions service is multi-tenant by default,
   // so a resource must be defined under a tenant.
-  tenant: string;
+  tenant?: string;
   // In general, can be used to pass extra attributes on the resource,
   // this is especially relevant if the policy is ABAC (attribute-based
   // access control).
   // if using resource urls, attributes from url will be auto-populated.
   attributes?: Dict;
+  // context: temporary until we refactor the resource registry
+  context?: Dict;
 }

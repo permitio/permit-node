@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios'; // eslint-disable-line
 import { logger } from '../logger';
 import { IAuthorizonConfig } from '../config';
-import { Context, ContextStore } from './context';
+import { Context, ContextStore } from '../utils/context';
 import { IAction, IResource, IUser } from './interfaces';
 
 interface OpaResult {
@@ -22,34 +22,17 @@ export class Enforcer {
     this.contextStore = new ContextStore();
   }
 
-  // private translateResource(resource: IResource): Dict {
-  //   let resourceDict: Dict = {};
-
-  //   if (typeof resource === 'string') {
-  //     // we are provided a path
-  //     const resourceActionPair = resourceRegistry.getResourceAndActionFromRequestParams(resource);
-  //     resourceDict = (resourceActionPair !== undefined) ? resourceActionPair.resource.dict() : {};
-  //   } else if (resource instanceof Resource) {
-  //     resourceDict = resource.dict() || {};
-  //   } else if (isDict(resource)) {
-  //     resourceDict = resource;
-  //   } else {
-  //     throw new Error(`Unsupported resource type: ${typeof resource}`);
-  //   }
-
-  //   resourceDict['context'] = this.transformContext(
-  //     resourceDict['context'] || {}
-  //   );
-  //   return resourceDict;
-  // }
-
   /**
    * Usage:
    *
-   * authorizon.is_allowed(user, 'get', '/tasks/23')
-   * authorizon.is_allowed(user, 'get', '/tasks')
-   * authorizon.is_allowed(user, 'post', '/lists/3/todos/37', context={org_id=2})
-   * authorizon.is_allowed(user, 'view', task)
+   * // with (resource, action):
+   * const user = { key: 'UNIQUE_USER_ID' };
+   * authorizon.is_allowed(user, 'get', {'type': 'task', 'id': '23'})
+   * authorizon.is_allowed(user, 'get', {'type': 'task'})
+   *
+   * // with (url, method):
+   * const { resource, action } = authorizon.getUrlContext('/lists/3/todos/37', 'GET');
+   * authorizon.is_allowed(user, action, resource)
    *
    * @param user
    * @param action
