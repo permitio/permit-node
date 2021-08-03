@@ -7,7 +7,7 @@ import {
   ResourceRegistry,
 } from './registry';
 
-import { ActionConfig } from '../interface';
+import { ResourceConfig, ActionConfig } from './interfaces';
 import { IAuthorizonConfig } from '../config';
 
 
@@ -125,4 +125,26 @@ export class ResourceReporter {
       this.maybeSyncResource(resource);
     }
   }
+
+  public resource(config: ResourceConfig): ResourceStub {
+    const resource = new ResourceDefinition(
+      config.name,
+      config.type,
+      config.path,
+      config.description,
+      config.actions || [],
+      config.attributes || {}
+    );
+    return this.addResource(resource);
+  };
+
+  public action(config: ActionConfig): ActionDefinition {
+    return new ActionDefinition(
+      config.name,
+      config.title,
+      config.description,
+      config.path,
+      config.attributes || {}
+    );
+  };
 }

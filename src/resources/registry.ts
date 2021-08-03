@@ -1,8 +1,13 @@
 import { ContextStore } from '../utils/context';
-import { IResource } from '../enforcement/interfaces';
+import { IResource, IAction } from "../enforcement/interfaces";
 import { dictZip } from '../utils/dict';
 import { escapeRegex, matchAll, RegexMatch } from '../utils/regex';
-import { IUrlContext } from './interfaces';
+
+
+export interface IUrlContext {
+  resource: IResource;
+  action: IAction;
+}
 
 export interface PatternWithContext {
   pattern: RegExp;
