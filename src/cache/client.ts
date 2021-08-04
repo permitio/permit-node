@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance } from 'axios'; // eslint-disable-line
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios'; // eslint-disable-line
 
 import { logger } from '../logger';
 
@@ -22,6 +22,18 @@ export interface ISyncedUser {
   roles: ISyncedRole[];
 }
 
+export interface IAuthorizonCache {
+  isUser(userId: string): Promise<boolean>;
+  getUser(userId: string): Promise<ISyncedUser | null>;
+  getUsers(): Promise<ISyncedUser[]>;
+  getUserTenants(userId: string): Promise<string[] | null>;
+  getAssignedRoles(userId: string): Promise<ISyncedRole[] | null>;
+  getRoles(): Promise<ISyncedRole[]>;
+  getRoleById(roleId: string): Promise<ISyncedRole | null>;
+  getRoleByName(roleName: string): Promise<ISyncedRole | null>;
+  refresh(): Promise<boolean>;
+}
+
 /**
  * The LocalCacheClient is able to fetch the latest cached (i.e: synced)
  * state from the policy agent (i.e: OPA). This client is very performant
@@ -29,7 +41,7 @@ export interface ISyncedUser {
  * queries made by this client are complete private, and do not reach
  * the authorizon control plane in the cloud.
  */
-export class LocalCacheClient {
+export class LocalCacheClient implements IAuthorizonCache {
   private client: AxiosInstance;
 
   constructor(private config: IAuthorizonConfig) {
@@ -39,10 +51,6 @@ export class LocalCacheClient {
         Authorization: `Bearer ${this.config.token}`,
       },
     });
-  }
-
-  public get token(): string {
-    return this.config.token;
   }
 
   public async isUser(userId: string): Promise<boolean> {
@@ -176,25 +184,51 @@ export class LocalCacheClient {
       });
   }
 
-  private updatePolicy(): void {
-    this.client
-      .post('update_policy')
-      .catch((error) =>
-        logger.error(`tried to trigger policy update, got error: ${error}`)
-      );
+  private async updatePolicy(): Promise<boolean> {
+    return this.client
+      .post('policy-updater/trigger')
+      .then((response: AxiosResponse) => {
+        return (response.status == 200);
+      })
+      .catch(function (error) {
+        logger.error(`tried to trigger policy update, got error: ${error}`);
+        return false;
+      });
   }
 
-  private updatePolicyData(): void {
-    this.client
-      .post('update_policy_data')
-      .catch((error) =>
+  private async updatePolicyData(): Promise<boolean> {
+    return this.client
+      .post('data-updater/trigger')
+      .then((response: AxiosResponse) => {
+        return (response.status == 200);
+      })
+      .catch(function (error) {
         logger.error(`tried to trigger policy update, got error: ${error}`)
-      );
+        return false;
+      });
   }
 
-  // TODO: make async
-  public refresh(): void {
-    this.updatePolicy();
-    this.updatePolicyData();
+  public async refresh(): Promise<boolean> {
+    return this.updatePolicy().then((triggered) => {
+      if (!triggered) return false;
+
+      return this.updatePolicyData().then((triggered) => {
+        return triggered;
+      });
+    });
+  }
+
+  public getMethods(): IAuthorizonCache {
+    return {
+      isUser: this.isUser.bind(this),
+      getUser: this.getUser.bind(this),
+      getUsers: this.getUsers.bind(this),
+      getUserTenants: this.getUserTenants.bind(this),
+      getAssignedRoles: this.getAssignedRoles.bind(this),
+      getRoles: this.getRoles.bind(this),
+      getRoleById: this.getRoleById.bind(this),
+      getRoleByName: this.getRoleByName.bind(this),
+      refresh: this.refresh.bind(this),
+    }
   }
 }
