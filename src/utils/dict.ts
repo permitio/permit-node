@@ -1,3 +1,9 @@
+export type Dict = Record<string, any>;
+
+export function isDict(val: any): val is Dict {
+  return (val as Dict) !== undefined;
+}
+
 /**
  * JS Equivalent to python dict(zip())
  *
