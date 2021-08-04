@@ -59,7 +59,7 @@ export class ConfigFactory {
    * @param options - a partial configuration
    * @returns
    */
-  static build(options: Partial<IAuthorizonConfig>) {
+  static build(options: Partial<IAuthorizonConfig>): IAuthorizonConfig {
     const config = _.extend(_.assign({}, ConfigFactory.defaults()), options);
 
     // if no log level was set manually, but debug mode is set, we fix the default log level
