@@ -35,6 +35,11 @@ export class ResourceStub {
   }
 }
 
+export interface IResourceReporter {
+  resource(config: ResourceConfig): ResourceStub;
+  action(config: ActionConfig): ActionDefinition;
+}
+
 /**
  * the ResourceReporter is used to sync resources and actions
  * (the authorization enforcement points) defined by the app to the
@@ -43,7 +48,7 @@ export class ResourceStub {
  * know about the app is the available enforcement point (i.e: resources
  * and actions).
  */
-export class ResourceReporter {
+export class ResourceReporter implements IResourceReporter {
   private initialized: boolean = false;
   private client: AxiosInstance = axios.create();
 
@@ -147,4 +152,11 @@ export class ResourceReporter {
       config.attributes || {}
     );
   };
+
+  public getMethods(): IResourceReporter {
+    return {
+      resource: this.resource.bind(this),
+      action: this.action.bind(this),
+    }
+  }
 }
