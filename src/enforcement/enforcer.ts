@@ -2,16 +2,16 @@ import axios, { AxiosInstance } from 'axios'; // eslint-disable-line
 import { logger } from '../logger';
 import { IAuthorizonConfig } from '../config';
 import { Context, ContextStore } from '../utils/context';
-import { IAction, IResource, IUser } from './interfaces';
+import { IAction, IResource, IUser, OpaResult } from './interfaces';
 
-interface OpaResult {
-  allow: boolean;
+export interface IEnforcer {
+  isAllowed(user: IUser, action: IAction, resource: IResource, context: Context): Promise<boolean>;
 }
 
 /**
  * this client is dealing with evaluation of isAllowed() queries.
  */
-export class Enforcer {
+export class Enforcer implements IEnforcer {
   public contextStore: ContextStore; // cross-query context (global context)
   private client: AxiosInstance;
 
@@ -64,5 +64,11 @@ export class Enforcer {
         logger.error(`Error in authorizon.isAllowed(): ${error}`);
         return false;
       });
+  }
+
+  public getMethods(): IEnforcer {
+    return {
+      isAllowed: this.isAllowed.bind(this),
+    }
   }
 }

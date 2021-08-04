@@ -50,3 +50,7 @@ export interface IResource {
   // context: temporary until we refactor the resource registry
   context?: Dict;
 }
+
+export interface OpaResult {
+  allow: boolean;
+}
