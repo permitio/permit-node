@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { Logger } from 'winston';
 
 import { mapApp } from './appMapper/appMapper';
 import { MappedEndpoint } from './appMapper/types';
@@ -13,7 +14,10 @@ import { ResourceReporter } from '../resources/reporter';
 export class AppManager {
   resources: Record<string, any> = {};
 
-  constructor(private config: IAuthorizonConfig, private resourceReporter: ResourceReporter) {
+  constructor(
+    private config: IAuthorizonConfig,
+    private resourceReporter: ResourceReporter,
+    private logger: Logger) {
   }
 
   report(
@@ -34,7 +38,7 @@ export class AppManager {
     // TODO support mixed HTTP/HTTPS server (via name merging resources mutual to http and https )
     // If we have auto-mapping - map the app given to us and save its resources
     if (this.config.autoMapping.enable) {
-      const { resources, endpoints } = mapApp(app, this.config.autoMapping.ignoredUrlPrefixes);
+      const { resources, endpoints } = mapApp(app, this.config.autoMapping.ignoredUrlPrefixes, this.logger);
       if (this.config.autoMapping.reviewMode) {
         this.report(name, resources, endpoints);
       } else {

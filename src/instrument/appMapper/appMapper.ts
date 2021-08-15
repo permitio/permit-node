@@ -1,8 +1,8 @@
 import _ from 'lodash';
+import { Logger } from 'winston';
 
 import { ResourceConfig } from '../../resources/interfaces';
 import { AllAuthZOptions, getDecorations } from '../decorator';
-import { logger } from '../../logger';
 import { ActionDefinition } from '../../resources/registry';
 
 import {
@@ -314,6 +314,7 @@ function removePrefix(endpoint: MappedEndpoint, prefixes: string[]): MappedEndpo
 export function mapApp(
   app: any,
   prefixes: string[],
+  logger: Logger,
 ): { resources: ResourceConfig[]; endpoints: MappedEndpoint[] } {
   if (isExpressApp(app)) {
     logger.debug('Mapping Express App');

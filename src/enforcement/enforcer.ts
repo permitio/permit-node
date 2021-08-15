@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios'; // eslint-disable-line
-import { logger } from '../logger';
+import { Logger } from 'winston';
 import { IAuthorizonConfig } from '../config';
 import { Context, ContextStore } from '../utils/context';
 import { IAction, IResource, IUser, OpaResult } from './interfaces';
@@ -15,7 +15,7 @@ export class Enforcer implements IEnforcer {
   public contextStore: ContextStore; // cross-query context (global context)
   private client: AxiosInstance;
 
-  constructor(private config: IAuthorizonConfig) {
+  constructor(private config: IAuthorizonConfig, private logger: Logger) {
     this.client = axios.create({
       baseURL: `${this.config.sidecarUrl}/`,
     });
@@ -61,7 +61,7 @@ export class Enforcer implements IEnforcer {
         return response.data.allow || false;
       })
       .catch((error) => {
-        logger.error(`Error in authorizon.isAllowed(): ${error}`);
+        this.logger.error(`Error in authorizon.isAllowed(): ${error}`);
         return false;
       });
   }

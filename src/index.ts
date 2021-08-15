@@ -9,6 +9,7 @@ import { IResourceReporter, ResourceReporter } from './resources/reporter';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
 import { AppManager } from './instrument/appManager';
 import { IMutationsClient, MutationsClient } from './mutations/client';
+import { LoggerFactory } from './logger';
 
 interface IEventSubscriber {
   on(event: string | symbol, listener: (...args: any[]) => void): EventEmitter;
@@ -40,13 +41,14 @@ export class AuthorizonSDK {
   public static init(config: Partial<IAuthorizonConfig>): IAuthorizonClient {
     const events = new EventEmitter();
     const configOptions = ConfigFactory.build(config);
+    const logger = LoggerFactory.createLogger(configOptions);
     const resourceRegistry = new ResourceRegistry();
-    const resourceReporter = new ResourceReporter(configOptions, resourceRegistry);
-    const enforcer = new Enforcer(configOptions);
-    const cache = new LocalCacheClient(configOptions);
-    const mutationsClient = new MutationsClient(configOptions);
-    const appManager = new AppManager(configOptions, resourceReporter);
-    // logger.info(`authorizon.init(), sidecarUrl: ${configOptions.sidecarUrl}`);
+    const resourceReporter = new ResourceReporter(configOptions, resourceRegistry, logger);
+    const enforcer = new Enforcer(configOptions, logger);
+    const cache = new LocalCacheClient(configOptions, logger);
+    const mutationsClient = new MutationsClient(configOptions, logger);
+    const appManager = new AppManager(configOptions, resourceReporter, logger);
+    logger.info(`authorizon.init(), sidecarUrl: ${configOptions.sidecarUrl}`);
 
     // TODO: close a loop with the sidecar and backend and signal real success.
     events.emit('ready');
@@ -59,7 +61,7 @@ export class AuthorizonSDK {
       cache: cache.getMethods(),
 
       // instrumentation methods
-      instrument: () => { hook(appManager); },
+      instrument: () => { hook(appManager, logger); },
       decorate: decorate,
 
       // event emitter (read only, i.e: subscriber)

@@ -1,6 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios'; // eslint-disable-line
-
-import { logger } from '../logger';
+import { Logger } from 'winston';
 
 import { IAuthorizonConfig } from '../config';
 
@@ -44,7 +43,7 @@ export interface IAuthorizonCache {
 export class LocalCacheClient implements IAuthorizonCache {
   private client: AxiosInstance;
 
-  constructor(private config: IAuthorizonConfig) {
+  constructor(private config: IAuthorizonConfig, private logger: Logger) {
     this.client = axios.create({
       baseURL: `${this.config.sidecarUrl}/`,
       headers: {
@@ -71,7 +70,7 @@ export class LocalCacheClient implements IAuthorizonCache {
       .catch((error: AxiosError) => {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
-            logger.error(
+            this.logger.error(
               `unexpected error when calling authorizon.cache.getUser(${userId}): ${error}`
             );
           }
@@ -88,7 +87,7 @@ export class LocalCacheClient implements IAuthorizonCache {
       }).catch((error: AxiosError) => {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
-            logger.error(
+            this.logger.error(
               `unexpected error when calling authorizon.cache.getUsers(): ${error}`
             );
           }
@@ -105,7 +104,7 @@ export class LocalCacheClient implements IAuthorizonCache {
       }).catch((error: AxiosError) => {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
-            logger.error(
+            this.logger.error(
               `unexpected error when calling authorizon.cache.getUserTenants(${userId}): ${error}`
             );
           }
@@ -122,7 +121,7 @@ export class LocalCacheClient implements IAuthorizonCache {
       }).catch((error: AxiosError) => {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
-            logger.error(
+            this.logger.error(
               `unexpected error when calling authorizon.cache.getAssignedRoles(${userId}): ${error}`
             );
           }
@@ -139,7 +138,7 @@ export class LocalCacheClient implements IAuthorizonCache {
       }).catch((error: AxiosError) => {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
-            logger.error(
+            this.logger.error(
               `unexpected error when calling authorizon.cache.getRoles(): ${error}`
             );
           }
@@ -157,7 +156,7 @@ export class LocalCacheClient implements IAuthorizonCache {
       .catch((error: AxiosError) => {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
-            logger.error(
+            this.logger.error(
               `unexpected error when calling authorizon.cache.getRoleById(${roleId}): ${error}`
             );
           }
@@ -175,7 +174,7 @@ export class LocalCacheClient implements IAuthorizonCache {
       .catch((error: AxiosError) => {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
-            logger.error(
+            this.logger.error(
               `unexpected error when calling authorizon.cache.getRoleByName(${roleName}): ${error}`
             );
           }
@@ -190,8 +189,8 @@ export class LocalCacheClient implements IAuthorizonCache {
       .then((response: AxiosResponse) => {
         return (response.status == 200);
       })
-      .catch(function (error) {
-        logger.error(`tried to trigger policy update, got error: ${error}`);
+      .catch((error) => {
+        this.logger.error(`tried to trigger policy update, got error: ${error}`);
         return false;
       });
   }
@@ -202,8 +201,8 @@ export class LocalCacheClient implements IAuthorizonCache {
       .then((response: AxiosResponse) => {
         return (response.status == 200);
       })
-      .catch(function (error) {
-        logger.error(`tried to trigger policy update, got error: ${error}`)
+      .catch((error) => {
+        this.logger.error(`tried to trigger policy update, got error: ${error}`)
         return false;
       });
   }

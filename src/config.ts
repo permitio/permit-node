@@ -70,12 +70,3 @@ export class ConfigFactory {
     return config;
   }
 }
-
-/**
- * TODO: remove legacy
- */
-export var config: IAuthorizonConfig = ConfigFactory.defaults();
-
-export function setConfig(options: IAuthorizonConfig) {
-  config = options;
-}

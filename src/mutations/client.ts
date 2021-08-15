@@ -1,6 +1,5 @@
 import axios, { AxiosInstance } from 'axios'; // eslint-disable-line
-
-import { logger } from '../logger';
+import { Logger } from 'winston';
 
 import { IAuthorizonConfig } from '../config';
 import { Dict } from '../utils/dict';
@@ -60,7 +59,7 @@ export interface IMutationsClient {
 export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudMutations, IMutationsClient {
   private client: AxiosInstance = axios.create();
 
-  constructor(private config: IAuthorizonConfig) {
+  constructor(private config: IAuthorizonConfig, private logger: Logger) {
     this.client = axios.create({
       baseURL: `${this.config.sidecarUrl}/`,
       headers: {
@@ -76,7 +75,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         return response.data;
       })
       .catch((error: Error) => {
-        logger.error(
+        this.logger.error(
           `tried to get user with key: ${userKey}, got error: ${error}`
         );
       });
@@ -88,7 +87,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         return response.data;
       })
       .catch((error: Error) => {
-        logger.error(
+        this.logger.error(
           `tried to get role with id: ${roleKey}, got error: ${error}`
         );
       });
@@ -100,7 +99,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         return response.data;
       })
       .catch((error: Error) => {
-        logger.error(
+        this.logger.error(
           `tried to get org with id: ${tenantKey}, got error: ${error}`
         );
       });
@@ -119,7 +118,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         return response.data;
       })
       .catch((error: Error) => {
-        logger.error(
+        this.logger.error(
           `could not get user roles for user ${userKey}, got error: ${error}`
         );
         return error;
@@ -135,7 +134,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         return response.data;
       })
       .catch((error: Error) => {
-        logger.error(
+        this.logger.error(
           `tried to sync user with key: ${user.key}, got error: ${error}`
         );
         return error;
@@ -148,7 +147,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         return response.status;
       })
       .catch((error: Error) => {
-        logger.error(
+        this.logger.error(
           `tried to delete user with key: ${userKey}, got error: ${error}`
         );
         return error;
@@ -170,7 +169,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         return response.data;
       })
       .catch((error: Error) => {
-        logger.error(
+        this.logger.error(
           `tried to create tenant with key: ${tenant.key}, got error: ${error}`
         );
         return error;
@@ -191,7 +190,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         return response.data;
       })
       .catch((error: Error) => {
-        logger.error(
+        this.logger.error(
           `tried to update tenant with key: ${tenant.key}, got error: ${error}`
         );
         return error;
@@ -205,7 +204,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         return response.status;
       })
       .catch((error: Error) => {
-        logger.error(
+        this.logger.error(
           `tried to delete tenant with key: ${tenantKey}, got error: ${error}`
         );
         return error;
@@ -230,7 +229,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         return response.data;
       })
       .catch((error: Error) => {
-        logger.error(
+        this.logger.error(
           `could not assign role ${roleKey} to ${userKey} in tenant ${tenantKey}, got error: ${error}`
         );
         return error;
@@ -249,7 +248,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         return response.data;
       })
       .catch((error: Error) => {
-        logger.error(
+        this.logger.error(
           `could not unassign role ${roleKey} of ${userKey} in tenant ${tenantKey}, got error: ${error}`
         );
         return error;

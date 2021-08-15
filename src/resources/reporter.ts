@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios'; // eslint-disable-line
+import { Logger } from 'winston';
 
-import { logger } from '../logger';
 import {
   ResourceDefinition,
   ActionDefinition,
@@ -52,7 +52,7 @@ export class ResourceReporter implements IResourceReporter {
   private initialized: boolean = false;
   private client: AxiosInstance = axios.create();
 
-  constructor(private config: IAuthorizonConfig, private registry: ResourceRegistry) {
+  constructor(private config: IAuthorizonConfig, private registry: ResourceRegistry, private logger: Logger) {
     this.client = axios.create({
       baseURL: `${this.config.sidecarUrl}/`,
       headers: {
@@ -86,14 +86,14 @@ export class ResourceReporter implements IResourceReporter {
 
   private maybeSyncResource(resource: ResourceDefinition): void {
     if (this.initialized && !this.registry.isSynced(resource)) {
-      logger.info(`syncing resource: ${resource.repr()}`);
+      this.logger.info(`syncing resource: ${resource.repr()}`);
       this.client
         .put<SyncObjectResponse>('cloud/resources', resource.dict())
         .then((response) => {
           this.registry.markAsSynced(resource, response.data.id);
         })
         .catch((error) => {
-          logger.error(
+          this.logger.error(
             `tried to sync resource ${resource.name}, got error: ${error}`
           );
         });
@@ -107,7 +107,7 @@ export class ResourceReporter implements IResourceReporter {
     const resourceId: string = action.resourceId;
 
     if (this.initialized && !this.registry.isSynced(action)) {
-      logger.info(`syncing action: ${action.repr()}`);
+      this.logger.info(`syncing action: ${action.repr()}`);
       this.client
         .put<SyncObjectResponse>(
           `cloud/resources/${resourceId}/actions`,
@@ -117,7 +117,7 @@ export class ResourceReporter implements IResourceReporter {
           this.registry.markAsSynced(action, response.data.id);
         })
         .catch((error) => {
-          logger.error(
+          this.logger.error(
             `tried to sync action ${action.name}, got error: ${error}`
           );
         });
