@@ -12,14 +12,24 @@ export interface ITenant {
   description?: string;
 }
 
-export interface IAuthorizonReadTransaction {
+/**
+ * This interface contains *read actions* that goes outside
+ * of your local network and queries authorizon cloud api.
+ * You should be aware that these actions incur some cross-cloud latency.
+ */
+export interface IAuthorizonCloudReads {
   getUser(userKey: string): Promise<Dict>;
   getRole(roleKey: string): Promise<Dict>;
   getTenant(tenantKey: string): Promise<Dict>;
   getAssignedRoles(userKey: string, tenantKey?: string): Promise<Dict | Error>; // either in one tenant or in all tenants
 }
 
-export interface IAuthorizonWriteTransaction {
+/**
+ * This interface contains *write actions* (or mutations) that manipulate remote
+ * state by calling the authorizon api. These api calls goes *outside* your local network.
+ * You should be aware that these actions incur some cross-cloud latency.
+ */
+export interface IAuthorizonCloudMutations {
   // user mutations
   syncUser(user: IUser): Promise<Dict | Error>; // create or update
   deleteUser(userKey: string): Promise<number | Error>;
@@ -34,9 +44,20 @@ export interface IAuthorizonWriteTransaction {
   unassignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict | Error>;
 }
 
-export interface IAuthorizonTransaction extends IAuthorizonReadTransaction, IAuthorizonWriteTransaction { }
+export interface CloudReadCallback<T = void> {
+  (api: IAuthorizonCloudReads): Promise<T>;
+}
 
-export class MutationsClient implements IAuthorizonTransaction {
+export interface CloudWriteCallback<T = void> {
+  (api: IAuthorizonCloudMutations): Promise<T>;
+}
+
+export interface IMutationsClient {
+  read<T = void>(callback: CloudReadCallback<T>): Promise<T>;
+  save<T = void>(callback: CloudWriteCallback<T>): Promise<T>;
+}
+
+export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudMutations, IMutationsClient {
   private client: AxiosInstance = axios.create();
 
   constructor(private config: IAuthorizonConfig) {
@@ -235,9 +256,34 @@ export class MutationsClient implements IAuthorizonTransaction {
       });
   }
 
-  // transaction api ----------------------------------------------------------
-  // public async save(...mutations: IMutation[]): Promise<any[]> {
-  //   const callbacks = mutations.map(m => m.callback);
-  //   return Promise.all(callbacks.map(c => c()));
-  // }
+  // cloud api proxy ----------------------------------------------------------
+  public async read<T = void>(callback: CloudReadCallback<T>): Promise<T> {
+    const readProxy: IAuthorizonCloudReads = {
+      getUser: this.getUser.bind(this),
+      getRole: this.getRole.bind(this),
+      getTenant: this.getTenant.bind(this),
+      getAssignedRoles: this.getAssignedRoles.bind(this),
+    };
+    return await callback(readProxy);
+  }
+
+  public async save<T = void>(callback: CloudWriteCallback<T>): Promise<T> {
+    const writeProxy: IAuthorizonCloudMutations = {
+      syncUser: this.syncUser.bind(this),
+      deleteUser: this.deleteUser.bind(this),
+      createTenant: this.createTenant.bind(this),
+      updateTenant: this.updateTenant.bind(this),
+      deleteTenant: this.deleteTenant.bind(this),
+      assignRole: this.assignRole.bind(this),
+      unassignRole: this.unassignRole.bind(this),
+    };
+    return await callback(writeProxy);
+  }
+
+  public getMethods(): IMutationsClient {
+    return {
+      read: this.read.bind(this),
+      save: this.save.bind(this),
+    }
+  }
 }

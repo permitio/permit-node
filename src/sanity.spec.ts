@@ -35,6 +35,13 @@ test('paths are processed correctly', async (
         }),
       ]
     });
+
+    // authorizon.save((api: IAuthorizonCloudMutations): Promise<any> => {
+    //   return Promise.all([
+    //     api.createTenant({key: "teannt1", name: "Ten 1"}),
+    //     api.assignRole("uk", "admin", "tk"),
+    //   ]);
+    // });
   });
 
   // t.is(resourceRegistry.paths.length, 2);

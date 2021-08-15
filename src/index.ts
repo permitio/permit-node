@@ -8,13 +8,14 @@ import { ResourceRegistry } from './resources/registry';
 import { IResourceReporter, ResourceReporter } from './resources/reporter';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
 import { AppManager } from './instrument/appManager';
+import { IMutationsClient, MutationsClient } from './mutations/client';
 
 interface IEventSubscriber {
   on(event: string | symbol, listener: (...args: any[]) => void): EventEmitter;
   once(event: string | symbol, listener: (...args: any[]) => void): EventEmitter;
 }
 
-export interface IAuthorizonClient extends IEventSubscriber, IResourceReporter, IEnforcer {
+export interface IAuthorizonClient extends IEventSubscriber, IResourceReporter, IEnforcer, IMutationsClient {
   cache: IAuthorizonCache;
   instrument(): void;
   decorate(target: any, options: AllAuthZOptions): any;
@@ -43,6 +44,7 @@ export class AuthorizonSDK {
     const resourceReporter = new ResourceReporter(configOptions, resourceRegistry);
     const enforcer = new Enforcer(configOptions);
     const cache = new LocalCacheClient(configOptions);
+    const mutationsClient = new MutationsClient(configOptions);
     const appManager = new AppManager(configOptions, resourceReporter);
     // logger.info(`authorizon.init(), sidecarUrl: ${configOptions.sidecarUrl}`);
 
@@ -53,10 +55,13 @@ export class AuthorizonSDK {
       // exposed methods from specialized clients
       ...enforcer.getMethods(),
       ...resourceReporter.getMethods(),
+      ...mutationsClient.getMethods(),
       cache: cache.getMethods(),
+
       // instrumentation methods
       instrument: () => { hook(appManager); },
       decorate: decorate,
+
       // event emitter (read only, i.e: subscriber)
       on: events.on.bind(events),
       once: events.once.bind(events),
@@ -66,45 +71,6 @@ export class AuthorizonSDK {
 
 // const authorizon: IAuthorizonClient = AuthorizonSDK.init({});
 
-// const client = authorizationClient;
-// export const syncUser = client.syncUser.bind(client);
-// export const deleteUser = client.deleteUser.bind(client);
-// export const getUser = client.getUser.bind(client);
-// export const syncOrg = client.syncOrg.bind(client);
-// export const deleteOrg = client.deleteOrg.bind(client);
-// export const getOrg = client.getOrg.bind(client);
-// export const addUserToOrg = client.addUserToOrg.bind(client);
-// export const removeUserFromOrg = client.removeUserFromOrg.bind(client);
-// export const getOrgsForUser = client.getOrgsForUser.bind(client);
-// export const getUserRoles = client.getUserRoles.bind(client);
-// export const getRole = client.getRole.bind(client);
-// export const assignRole = client.assignRole.bind(client);
-// export const unassignRole = client.unassignRole.bind(client);
-// export const updatePolicyData = client.updatePolicyData.bind(client);
-
 // // export const transformResourceContext = enforcer.addResourceContextTransform.bind(enforcer);
 // // export const provideContext = enforcer.addContext.bind(enforcer);
 // export const getResourceAndAction = resourceRegistry.getResourceAndActionFromRequestParams.bind(resourceRegistry);
-
-
-// const authorizon2 = {
-//   syncUser: syncUser,
-//   deleteUser: deleteUser,
-//   getUser: getUser,
-//   syncOrg: syncOrg,
-//   deleteOrg: deleteOrg,
-//   getOrg: getOrg,
-//   addUserToOrg: addUserToOrg,
-//   removeUserFromOrg: removeUserFromOrg,
-//   getOrgsForUser: getOrgsForUser,
-//   getUserRoles: getUserRoles,
-//   getRole: getRole,
-//   assignRole: assignRole,
-//   unassignRole: unassignRole,
-//   updatePolicyData: updatePolicyData,
-//   transformResourceContext: transformResourceContext,
-//   provideContext: provideContext,
-//   getResourceAndAction: getResourceAndAction,
-// };
-
-// export default authorizon;
