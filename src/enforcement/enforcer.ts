@@ -5,7 +5,7 @@ import { Context, ContextStore } from '../utils/context';
 import { IAction, IResource, IUser, OpaResult } from './interfaces';
 
 export interface IEnforcer {
-  isAllowed(user: IUser, action: IAction, resource: IResource, context: Context): Promise<boolean>;
+  isAllowed(user: IUser, action: IAction, resource: IResource, context?: Context): Promise<boolean>;
 }
 
 /**
