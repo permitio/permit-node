@@ -18,7 +18,6 @@ interface IEventSubscriber {
 
 export interface IAuthorizonClient extends IEventSubscriber, IResourceReporter, IEnforcer, IMutationsClient {
   cache: IAuthorizonCache;
-  instrument(): void;
   decorate(target: any, options: AllAuthZOptions): any;
 }
 
@@ -50,6 +49,11 @@ export class AuthorizonSDK {
     const appManager = new AppManager(configOptions, resourceReporter, logger);
     logger.info(`authorizon.init(), sidecarUrl: ${configOptions.sidecarUrl}`);
 
+    // if auto mapping is enabled, hook into the http/https functions
+    if (configOptions.autoMapping.enable) {
+      hook(appManager, logger);
+    }
+
     // TODO: close a loop with the sidecar and backend and signal real success.
     events.emit('ready');
 
@@ -61,7 +65,6 @@ export class AuthorizonSDK {
       cache: cache.getMethods(),
 
       // instrumentation methods
-      instrument: () => { hook(appManager, logger); },
       decorate: decorate,
 
       // event emitter (read only, i.e: subscriber)
