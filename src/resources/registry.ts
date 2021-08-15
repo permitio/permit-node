@@ -175,6 +175,10 @@ export default class ResourceSchemaBuilder {
 }
 
 
+export interface IResourceRegistry {
+  getUrlContext(path: string, verb: string): IUrlContext | undefined;
+}
+
 export class ResourceRegistry {
   private resources: Record<string, ResourceDefinition> = {};
   private alreadySynced: Set<string> = new Set();
@@ -302,5 +306,11 @@ export class ResourceRegistry {
       }
     }
     return undefined;
+  }
+
+  public getMethods(): IResourceRegistry {
+    return {
+      getUrlContext: this.getUrlContext.bind(this),
+    };
   }
 }

@@ -4,7 +4,7 @@ import { AllAuthZOptions, decorate } from './instrument/decorator';
 import { hook } from './instrument/plugin';
 import { ConfigFactory, IAuthorizonConfig } from './config';
 import { IAuthorizonCache, LocalCacheClient } from './cache/client';
-import { ResourceRegistry } from './resources/registry';
+import { IResourceRegistry, ResourceRegistry } from './resources/registry';
 import { IResourceReporter, ResourceReporter } from './resources/reporter';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
 import { AppManager } from './instrument/appManager';
@@ -16,7 +16,7 @@ interface IEventSubscriber {
   once(event: string | symbol, listener: (...args: any[]) => void): EventEmitter;
 }
 
-export interface IAuthorizonClient extends IEventSubscriber, IResourceReporter, IEnforcer, IMutationsClient {
+export interface IAuthorizonClient extends IEventSubscriber, IResourceReporter, IEnforcer, IMutationsClient, IResourceRegistry {
   cache: IAuthorizonCache;
   decorate(target: any, options: AllAuthZOptions): any;
 }
@@ -63,6 +63,9 @@ export class AuthorizonSDK {
       ...resourceReporter.getMethods(),
       ...mutationsClient.getMethods(),
       cache: cache.getMethods(),
+
+      // resource registry (url mapper)
+      ...resourceRegistry.getMethods(),
 
       // instrumentation methods
       decorate: decorate,
