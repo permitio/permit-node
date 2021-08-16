@@ -10,6 +10,7 @@ import { Enforcer, IEnforcer } from './enforcement/enforcer';
 import { AppManager } from './instrument/appManager';
 import { IMutationsClient, MutationsClient } from './mutations/client';
 import { LoggerFactory } from './logger';
+import { RecursivePartial } from './utils/types';
 
 interface IEventSubscriber {
   on(event: string | symbol, listener: (...args: any[]) => void): EventEmitter;
@@ -37,7 +38,7 @@ export interface IAuthorizonClient extends IEventSubscriber, IResourceReporter, 
  * })
  */
 export class AuthorizonSDK {
-  public static init(config: Partial<IAuthorizonConfig>): IAuthorizonClient {
+  public static init(config: RecursivePartial<IAuthorizonConfig>): IAuthorizonClient {
     const events = new EventEmitter();
     const configOptions = ConfigFactory.build(config);
     const logger = LoggerFactory.createLogger(configOptions);

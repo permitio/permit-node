@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { RecursivePartial } from './utils/types'
 
 interface ILoggerConfig {
   level: string;
@@ -59,7 +60,7 @@ export class ConfigFactory {
    * @param options - a partial configuration
    * @returns
    */
-  static build(options: Partial<IAuthorizonConfig>): IAuthorizonConfig {
+  static build(options: RecursivePartial<IAuthorizonConfig>): IAuthorizonConfig {
     const config = _.extend(_.assign({}, ConfigFactory.defaults()), options);
 
     // if no log level was set manually, but debug mode is set, we fix the default log level
