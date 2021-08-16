@@ -61,7 +61,7 @@ export class ConfigFactory {
    * @returns
    */
   static build(options: RecursivePartial<IAuthorizonConfig>): IAuthorizonConfig {
-    const config = _.extend(_.assign({}, ConfigFactory.defaults()), options);
+    const config = _.merge(_.assign({}, ConfigFactory.defaults()), options);
 
     // if no log level was set manually, but debug mode is set, we fix the default log level
     if ((!options.log?.level) && (options.debugMode !== undefined)) {
