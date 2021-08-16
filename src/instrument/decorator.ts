@@ -10,7 +10,11 @@ export interface AllAuthZOptions {
   action: ActionOptions;
 }
 
-export function decorate(target: any, options: AllAuthZOptions) {
+type IDecoratedObject<T extends {}> = T & {
+  __authz__: Partial<AllAuthZOptions>;
+};
+
+export function decorate<T = any>(target: any, options: Partial<AllAuthZOptions>): IDecoratedObject<T> {
   _.set(target, '__authz__.resource', options.resource);
   _.set(target, '__authz__.action', options.action);
   return target;
@@ -21,4 +25,8 @@ export function getDecorations(target: any): AllAuthZOptions {
     resource: _.get(target, '__authz__.resource'),
     action: _.get(target, '__authz__.action'),
   };
+}
+
+export interface IDecoratingObject {
+  decorate<T = any>(target: T, options: Partial<AllAuthZOptions>): IDecoratedObject<T>;
 }

@@ -1,6 +1,6 @@
 // For Default export
 import { EventEmitter } from 'events';
-import { AllAuthZOptions, decorate } from './instrument/decorator';
+import { decorate, IDecoratingObject } from './instrument/decorator';
 import { hook } from './instrument/plugin';
 import { ConfigFactory, IAuthorizonConfig } from './config';
 import { IAuthorizonCache, LocalCacheClient } from './cache/client';
@@ -17,9 +17,8 @@ interface IEventSubscriber {
   once(event: string | symbol, listener: (...args: any[]) => void): EventEmitter;
 }
 
-export interface IAuthorizonClient extends IEventSubscriber, IResourceReporter, IEnforcer, IMutationsClient, IResourceRegistry {
+export interface IAuthorizonClient extends IEventSubscriber, IResourceReporter, IEnforcer, IMutationsClient, IResourceRegistry, IDecoratingObject {
   cache: IAuthorizonCache;
-  decorate(target: any, options: AllAuthZOptions): any;
 }
 
 /**
