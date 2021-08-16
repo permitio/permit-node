@@ -57,7 +57,9 @@ export class AuthorizonSDK {
     }
 
     // TODO: close a loop with the sidecar and backend and signal real success.
-    events.emit('ready');
+    setImmediate(() => {
+      events.emit('ready');
+    })
 
     return {
       // exposed methods from specialized clients
