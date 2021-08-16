@@ -47,7 +47,9 @@ export class AuthorizonSDK {
     const cache = new LocalCacheClient(configOptions, logger);
     const mutationsClient = new MutationsClient(configOptions, logger);
     const appManager = new AppManager(configOptions, resourceReporter, logger);
-    logger.info(`authorizon.init(), sidecarUrl: ${configOptions.sidecarUrl}`);
+    if (configOptions.debugMode) {
+      logger.info(`Authorizon SDK initialized with config:\n${JSON.stringify(configOptions, undefined, 2)}`);
+    }
 
     // if auto mapping is enabled, hook into the http/https functions
     if (configOptions.autoMapping.enable) {
