@@ -15,11 +15,6 @@ export interface SyncObjectResponse {
   id: string;
 }
 
-export interface OrgDefinition {
-  id: string;
-  name: string;
-}
-
 export class ResourceStub {
   constructor(private reporter: ResourceReporter, public readonly resourceName: string) { }
 

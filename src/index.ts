@@ -12,6 +12,14 @@ import { IMutationsClient, MutationsClient } from './mutations/client';
 import { LoggerFactory } from './logger';
 import { RecursivePartial } from './utils/types';
 
+// exported interfaces
+export { ISyncedUser, ISyncedRole, IAuthorizonCache } from './cache/client';
+export { IUser, IAction, IResource } from './enforcement/interfaces';
+export { ITenant, IAuthorizonCloudReads, IAuthorizonCloudMutations } from './mutations/client';
+export { ResourceConfig, ActionConfig } from './resources/interfaces';
+export { IUrlContext } from './resources/registry';
+export { Context, ContextTransform } from './utils/context';
+
 interface IEventSubscriber {
   on(event: string | symbol, listener: (...args: any[]) => void): EventEmitter;
   once(event: string | symbol, listener: (...args: any[]) => void): EventEmitter;
@@ -80,9 +88,3 @@ export class AuthorizonSDK {
     }
   }
 }
-
-// const authorizon: IAuthorizonClient = AuthorizonSDK.init({});
-
-// // export const transformResourceContext = enforcer.addResourceContextTransform.bind(enforcer);
-// // export const provideContext = enforcer.addContext.bind(enforcer);
-// export const getResourceAndAction = resourceRegistry.getResourceAndActionFromRequestParams.bind(resourceRegistry);
