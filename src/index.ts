@@ -27,6 +27,7 @@ interface IEventSubscriber {
 
 export interface IAuthorizonClient extends IEventSubscriber, IResourceReporter, IEnforcer, IMutationsClient, IResourceRegistry, IDecoratingObject {
   cache: IAuthorizonCache;
+  config: IAuthorizonConfig;
 }
 
 /**
@@ -70,6 +71,9 @@ export class AuthorizonSDK {
     })
 
     return {
+      // config
+      config: Object.freeze(configOptions),
+
       // exposed methods from specialized clients
       ...enforcer.getMethods(),
       ...resourceReporter.getMethods(),
