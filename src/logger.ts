@@ -8,11 +8,40 @@ export function prettyConsoleLog(label: string, data: any) {
   console.log(label, util.inspect(data, false, 12, true));
 }
 
+const FgGreen: string = "\x1b[32m";
+const FgCyan: string = "\x1b[36m";
+// const COLOR_RESET: string = "\x1b[0m";
+// const FgBlack: string = "\x1b[30m";
+// const FgRed: string = "\x1b[31m";
+// const FgYellow: string = "\x1b[33m";
+// const FgBlue: string = "\x1b[34m";
+// const FgMagenta: string = "\x1b[35m";
+// const FgWhite: string = "\x1b[37m";
+
 const consoleFormat = winston.format.printf(
-  ({ level, message, label, timestamp }) => {
-    return `${timestamp} [${label}] ${level}: ${message}`;
+  ({ level, message, label }) => {
+    return `${FgCyan}${label} [${level}]: ${FgGreen} ${message}`;
   }
 );
+
+const MESSAGE = Symbol.for('message')
+const LEVEL = Symbol.for('level');
+
+class SimpleConsoleTransport extends winston.transports.Console {
+  log(info: any, callback: any): void {
+    setImmediate(() => this.emit('logged', info));
+
+    if (this.stderrLevels[info[LEVEL]]) {
+      console.error(info[MESSAGE]);
+    } else {
+      console.log(info[MESSAGE]);
+    }
+
+    if (callback) {
+      callback();
+    }
+  };
+}
 
 export class LoggerFactory {
   static createLogger(config: IAuthorizonConfig): winston.Logger {
@@ -20,7 +49,7 @@ export class LoggerFactory {
       level: config.log.level,
       format: winston.format.simple(),
       transports: [
-        new winston.transports.Console({
+        new SimpleConsoleTransport({
           // If not in debug - show nothing in console
           silent: !config.debugMode,
           format: winston.format.combine(
