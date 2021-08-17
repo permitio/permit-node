@@ -100,7 +100,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
       })
       .catch((error: Error) => {
         this.logger.error(
-          `tried to get org with id: ${tenantKey}, got error: ${error}`
+          `tried to get tenant with id: ${tenantKey}, got error: ${error}`
         );
       });
   }

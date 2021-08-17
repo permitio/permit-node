@@ -8,7 +8,7 @@ const HTTP_404_NOT_FOUND: number = 404;
 export interface ISyncedRole {
   id: string;
   name: string;
-  org_id?: string;
+  tenant_id?: string;
   metadata?: Record<string, any>;
   permissions?: string[];
 }
