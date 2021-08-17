@@ -4,8 +4,12 @@ import { IAuthorizonConfig } from '../config';
 import { Context, ContextStore } from '../utils/context';
 import { IAction, IResource, IUser, OpaResult } from './interfaces';
 
+function isString(x: any): x is string {
+  return typeof x === "string";
+}
+
 export interface IEnforcer {
-  isAllowed(user: IUser, action: IAction, resource: IResource, context?: Context): Promise<boolean>;
+  isAllowed(user: IUser | string, action: IAction, resource: IResource, context?: Context): Promise<boolean>;
 }
 
 /**
@@ -42,28 +46,61 @@ export class Enforcer implements IEnforcer {
    * @returns whether or not action is allowed for given user
    */
   public async isAllowed(
-    user: IUser,
+    user: IUser | string,
     action: IAction,
     resource: IResource,
     context: Context = {} // context provided specifically for this query
   ): Promise<boolean> {
+    const normalizedUser: string = isString(user) ? user : user.key;
+
+    const normalizedResource: IResource = Enforcer.normalizeResource(resource);
+
     const queryContext = this.contextStore.getDerivedContext(context);
     const input = {
-      user: user,
+      user: normalizedUser,
       action: action,
-      resource: resource,
+      resource: normalizedResource,
       context: queryContext,
     };
 
     return await this.client
       .post<OpaResult>('allowed', input)
       .then((response) => {
-        return response.data.allow || false;
+        const decision = response.data.allow || false;
+        if (this.config.debugMode) {
+          this.logger.info(`authorizon.isAllowed(${normalizedUser}, ${action}, ${Enforcer.resourceRepr(resource)}) = ${decision}`);
+        }
+        return decision;
       })
       .catch((error) => {
-        this.logger.error(`Error in authorizon.isAllowed(): ${error}`);
+        this.logger.error(`Error in authorizon.isAllowed(${normalizedUser}, ${action}, ${Enforcer.resourceRepr(resource)}):\n${error}`);
         return false;
       });
+  }
+
+  // TODO: remove this eventually, once we decide on finalized structure of AuthzQuery
+  private static normalizeResource(resource: IResource): IResource {
+    const normalizedResource: IResource = Object.assign({}, resource);
+    if (normalizedResource.context === undefined) {
+      normalizedResource.context = {};
+    }
+
+    if (normalizedResource.context?.tenant === undefined && normalizedResource.tenant !== undefined) {
+      normalizedResource.context.tenant = normalizedResource.tenant;
+    }
+
+    return normalizedResource;
+  }
+
+  private static resourceRepr(resource: IResource): string {
+    let resourceRepr: string = resource.type;
+    if (resource.id) {
+      resourceRepr += ":" + resource.id;
+    }
+    if (resource.tenant) {
+      resourceRepr += `, tenant: ${resource.tenant}`;
+    }
+    return resourceRepr;
   }
 
   public getMethods(): IEnforcer {
