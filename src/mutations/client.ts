@@ -70,6 +70,9 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
 
   // read api -----------------------------------------------------------------
   public async getUser(userKey: string): Promise<Dict> {
+    if (this.config.debugMode) {
+      this.logger.info(`authorizon.api.getUser(${userKey})`);
+    }
     return this.client.get(`cloud/users/${userKey}`)
       .then((response) => {
         return response.data;
@@ -82,6 +85,9 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
   }
 
   public async getRole(roleKey: string): Promise<Dict> {
+    if (this.config.debugMode) {
+      this.logger.info(`authorizon.api.getRole(${roleKey})`);
+    }
     return this.client.get(`cloud/roles/${roleKey}`)
       .then((response) => {
         return response.data;
@@ -94,6 +100,9 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
   }
 
   public async getTenant(tenantKey: string): Promise<Dict> {
+    if (this.config.debugMode) {
+      this.logger.info(`authorizon.api.getTenant(${tenantKey})`);
+    }
     return this.client.get(`cloud/tenants/${tenantKey}`)
       .then((response) => {
         return response.data;
@@ -108,6 +117,9 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
   // either in one tenant or in all tenants
   // TODO: fix schema
   public async getAssignedRoles(userKey: string, tenantKey?: string): Promise<Dict | Error> {
+    if (this.config.debugMode) {
+      this.logger.info(`authorizon.api.getAssignedRoles(user=${userKey}, tenant=${tenantKey})`);
+    }
     let url = `cloud/role_assignments?user=${userKey}`;
     if (tenantKey !== undefined) {
       url += `&tenant=${tenantKey}`;
@@ -128,6 +140,9 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
   // write api ----------------------------------------------------------------
   // user mutations
   public async syncUser(user: IUser): Promise<Dict | Error> {
+    if (this.config.debugMode) {
+      this.logger.info(`authorizon.api.syncUser(${JSON.stringify(user)})`);
+    }
     return await this.client
       .put<Dict>('cloud/users', user)
       .then((response) => {
@@ -142,6 +157,9 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
   }
 
   public async deleteUser(userKey: string): Promise<number | Error> {
+    if (this.config.debugMode) {
+      this.logger.info(`authorizon.api.deleteUser(${userKey})`);
+    }
     return await this.client.delete(`cloud/users/${userKey}`)
       .then((response) => {
         return response.status;
@@ -156,6 +174,9 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
 
   // tenant mutations
   public async createTenant(tenant: ITenant): Promise<Dict | Error> {
+    if (this.config.debugMode) {
+      this.logger.info(`authorizon.api.createTenant(${JSON.stringify(tenant)})`);
+    }
     const data: Dict = {};
     data.externalId = tenant.key;
     data.name = tenant.name;
@@ -177,6 +198,9 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
   }
 
   public async updateTenant(tenant: ITenant): Promise<Dict | Error> {
+    if (this.config.debugMode) {
+      this.logger.info(`authorizon.api.updateTenant(${JSON.stringify(tenant)})`);
+    }
     const data: Dict = {};
     data.name = tenant.name;
 
@@ -198,6 +222,9 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
   }
 
   public async deleteTenant(tenantKey: string): Promise<number | Error> {
+    if (this.config.debugMode) {
+      this.logger.info(`authorizon.api.deleteTenant(${tenantKey})`);
+    }
     return await this.client
       .delete(`cloud/tenants/${tenantKey}`)
       .then((response) => {
@@ -223,6 +250,10 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
       scope: tenantKey,
     };
 
+    if (this.config.debugMode) {
+      this.logger.info(`authorizon.api.assignRole(${JSON.stringify(data)})`);
+    }
+
     return await this.client
       .post<Dict>('cloud/role_assignments', data)
       .then((response) => {
@@ -241,6 +272,14 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
     roleKey: string,
     tenantKey: string
   ): Promise<Dict | Error> {
+    if (this.config.debugMode) {
+      const data = {
+        role: roleKey,
+        user: userKey,
+        scope: tenantKey,
+      };
+      this.logger.info(`authorizon.api.assignRole(${JSON.stringify(data)})`);
+    }
 
     return await this.client
       .delete<Dict>(`cloud/role_assignments?role=${roleKey}&user=${userKey}&scope=${tenantKey}`)
