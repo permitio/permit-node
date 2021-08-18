@@ -1,12 +1,12 @@
+import { Logger } from 'winston';
 import Hook from 'require-in-the-middle';
 
-import { appManager } from './appManager';
-import { logger } from './logger';
+import { AppManager } from './appManager';
 
 /**
  * Plugin (hook) into frameworks (Express) and track created apps
  */
-export function hook() {
+export function hook(appManager: AppManager, logger: Logger) {
   //  Plugin into the http/https create server and map the app provided there/then
   Hook(['http', 'https'], undefined, (exports: any, name: string) => {
     /**

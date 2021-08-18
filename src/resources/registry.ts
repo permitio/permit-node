@@ -1,6 +1,13 @@
-import Resource from './resource';
-import { dictZip } from './utils/dict';
-import { escapeRegex, matchAll, RegexMatch } from './utils/regex';
+import { ContextStore } from '../utils/context';
+import { IResource, IAction } from "../enforcement/interfaces";
+import { dictZip } from '../utils/dict';
+import { escapeRegex, matchAll, RegexMatch } from '../utils/regex';
+
+
+export interface IUrlContext {
+  resource: IResource;
+  action: IAction;
+}
 
 export interface PatternWithContext {
   pattern: RegExp;
@@ -11,11 +18,6 @@ export interface ActionMatcher extends PatternWithContext {
   verb: string;
   resourceName: string;
   actionName: string;
-}
-
-export interface ResourceActionPair {
-  resource: Resource;
-  action: string;
 }
 
 export const NO_VERB: string = "DEFAULT";
@@ -147,11 +149,42 @@ export class ResourceDefinition {
   }
 }
 
+/**
+ * TODO: remove this class completely.
+ */
+export default class ResourceSchemaBuilder {
+  definitionPath?: string;
+
+  constructor(
+    public name: string,
+    public path: string,
+    public definition?: ResourceDefinition,
+    public context: Record<string, any> = {}
+  ) {
+    this.definitionPath = definition?.path || undefined;
+  }
+
+  public build(): IResource {
+    return {
+      type: this.name,
+      tenant: this.context['tenant'] || '',
+      attributes: this.definition?.attributes || {},
+      context: this.context,
+    }
+  }
+}
+
+
+export interface IResourceRegistry {
+  getUrlContext(path: string, verb: string): IUrlContext | undefined;
+}
+
 export class ResourceRegistry {
   private resources: Record<string, ResourceDefinition> = {};
   private alreadySynced: Set<string> = new Set();
   private processedPaths: Record<string, PatternWithContext> = {};
   private actionMatchers: ActionMatcher[] = [];
+  public contextStore: ContextStore = new ContextStore();
 
   get resourceList(): ResourceDefinition[] {
     return Object.keys(this.resources).map((k) => this.resources[k]);
@@ -248,7 +281,7 @@ export class ResourceRegistry {
     }
   }
 
-  public getResourceAndActionFromRequestParams(path: string, verb: string = NO_VERB): ResourceActionPair | undefined {
+  public getUrlContext(path: string, verb: string = NO_VERB): IUrlContext | undefined {
     for (const matcher of this.actionMatchers) {
       if (matcher.verb !== verb && verb !== NO_VERB) {
         continue;
@@ -263,14 +296,21 @@ export class ResourceRegistry {
           context = dictZip(matcher.contextVars, capturedGroups) || {};
         }
 
+        const processedContext = this.contextStore.transform(
+          this.contextStore.getDerivedContext(context));
+        const resource: IResource = (new ResourceSchemaBuilder(matcher.resourceName, path, resourceDef, processedContext)).build();
         return {
-          resource: new Resource(matcher.resourceName, path, resourceDef, context),
+          resource: resource,
           action: matcher.actionName
         };
       }
     }
     return undefined;
   }
-}
 
-export const resourceRegistry = new ResourceRegistry();
+  public getMethods(): IResourceRegistry {
+    return {
+      getUrlContext: this.getUrlContext.bind(this),
+    };
+  }
+}
