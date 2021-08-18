@@ -20,7 +20,7 @@ export interface IAuthorizonCloudReads {
   getUser(userKey: string): Promise<Dict>;
   getRole(roleKey: string): Promise<Dict>;
   getTenant(tenantKey: string): Promise<Dict>;
-  getAssignedRoles(userKey: string, tenantKey?: string): Promise<Dict | Error>; // either in one tenant or in all tenants
+  getAssignedRoles(userKey: string, tenantKey?: string): Promise<Dict>; // either in one tenant or in all tenants
 }
 
 /**
@@ -30,17 +30,17 @@ export interface IAuthorizonCloudReads {
  */
 export interface IAuthorizonCloudMutations {
   // user mutations
-  syncUser(user: IUser): Promise<Dict | Error>; // create or update
-  deleteUser(userKey: string): Promise<number | Error>;
+  syncUser(user: IUser): Promise<Dict>; // create or update
+  deleteUser(userKey: string): Promise<number>;
 
   // tenant mutations
-  createTenant(tenant: ITenant): Promise<Dict | Error>;
-  updateTenant(tenant: ITenant): Promise<Dict | Error>;
-  deleteTenant(tenantKey: string): Promise<number | Error>;
+  createTenant(tenant: ITenant): Promise<Dict>;
+  updateTenant(tenant: ITenant): Promise<Dict>;
+  deleteTenant(tenantKey: string): Promise<number>;
 
   // role mutations
-  assignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict | Error>;
-  unassignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict | Error>;
+  assignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict>;
+  unassignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict>;
 }
 
 export interface CloudReadCallback<T = void> {
@@ -81,6 +81,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         this.logger.error(
           `tried to get user with key: ${userKey}, got error: ${error}`
         );
+        throw error;
       });
   }
 
@@ -96,6 +97,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         this.logger.error(
           `tried to get role with id: ${roleKey}, got error: ${error}`
         );
+        throw error;
       });
   }
 
@@ -111,12 +113,13 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         this.logger.error(
           `tried to get tenant with id: ${tenantKey}, got error: ${error}`
         );
+        throw error;
       });
   }
 
   // either in one tenant or in all tenants
   // TODO: fix schema
-  public async getAssignedRoles(userKey: string, tenantKey?: string): Promise<Dict | Error> {
+  public async getAssignedRoles(userKey: string, tenantKey?: string): Promise<Dict> {
     if (this.config.debugMode) {
       this.logger.info(`authorizon.api.getAssignedRoles(user=${userKey}, tenant=${tenantKey})`);
     }
@@ -133,13 +136,13 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         this.logger.error(
           `could not get user roles for user ${userKey}, got error: ${error}`
         );
-        return error;
+        throw error;
       });
   }
 
   // write api ----------------------------------------------------------------
   // user mutations
-  public async syncUser(user: IUser): Promise<Dict | Error> {
+  public async syncUser(user: IUser): Promise<Dict> {
     if (this.config.debugMode) {
       this.logger.info(`authorizon.api.syncUser(${JSON.stringify(user)})`);
     }
@@ -152,11 +155,11 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         this.logger.error(
           `tried to sync user with key: ${user.key}, got error: ${error}`
         );
-        return error;
+        throw error;
       });
   }
 
-  public async deleteUser(userKey: string): Promise<number | Error> {
+  public async deleteUser(userKey: string): Promise<number> {
     if (this.config.debugMode) {
       this.logger.info(`authorizon.api.deleteUser(${userKey})`);
     }
@@ -168,12 +171,12 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         this.logger.error(
           `tried to delete user with key: ${userKey}, got error: ${error}`
         );
-        return error;
+        throw error;
       });
   }
 
   // tenant mutations
-  public async createTenant(tenant: ITenant): Promise<Dict | Error> {
+  public async createTenant(tenant: ITenant): Promise<Dict> {
     if (this.config.debugMode) {
       this.logger.info(`authorizon.api.createTenant(${JSON.stringify(tenant)})`);
     }
@@ -193,11 +196,11 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         this.logger.error(
           `tried to create tenant with key: ${tenant.key}, got error: ${error}`
         );
-        return error;
+        throw error;
       });
   }
 
-  public async updateTenant(tenant: ITenant): Promise<Dict | Error> {
+  public async updateTenant(tenant: ITenant): Promise<Dict> {
     if (this.config.debugMode) {
       this.logger.info(`authorizon.api.updateTenant(${JSON.stringify(tenant)})`);
     }
@@ -217,11 +220,11 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         this.logger.error(
           `tried to update tenant with key: ${tenant.key}, got error: ${error}`
         );
-        return error;
+        throw error;
       });
   }
 
-  public async deleteTenant(tenantKey: string): Promise<number | Error> {
+  public async deleteTenant(tenantKey: string): Promise<number> {
     if (this.config.debugMode) {
       this.logger.info(`authorizon.api.deleteTenant(${tenantKey})`);
     }
@@ -234,7 +237,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         this.logger.error(
           `tried to delete tenant with key: ${tenantKey}, got error: ${error}`
         );
-        return error;
+        throw error;
       });
   }
 
@@ -243,7 +246,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
     userKey: string,
     roleKey: string,
     tenantKey: string
-  ): Promise<Dict | Error> {
+  ): Promise<Dict> {
     const data = {
       role: roleKey,
       user: userKey,
@@ -263,7 +266,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         this.logger.error(
           `could not assign role ${roleKey} to ${userKey} in tenant ${tenantKey}, got error: ${error}`
         );
-        return error;
+        throw error;
       });
   }
 
@@ -271,7 +274,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
     userKey: string,
     roleKey: string,
     tenantKey: string
-  ): Promise<Dict | Error> {
+  ): Promise<Dict> {
     if (this.config.debugMode) {
       const data = {
         role: roleKey,
@@ -290,7 +293,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         this.logger.error(
           `could not unassign role ${roleKey} of ${userKey} in tenant ${tenantKey}, got error: ${error}`
         );
-        return error;
+        throw error;
       });
   }
 
