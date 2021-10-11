@@ -64,6 +64,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
       baseURL: `${this.config.sidecarUrl}/`,
       headers: {
         Authorization: `Bearer ${this.config.token}`,
+        "Content-Type": "application/json"
       },
     });
   }

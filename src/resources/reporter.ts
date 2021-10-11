@@ -52,6 +52,7 @@ export class ResourceReporter implements IResourceReporter {
       baseURL: `${this.config.sidecarUrl}/`,
       headers: {
         Authorization: `Bearer ${this.config.token}`,
+        "Content-Type": "application/json"
       },
     });
     this.initialized = true; // TODO: remove this

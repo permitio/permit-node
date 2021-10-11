@@ -48,6 +48,7 @@ export class LocalCacheClient implements IAuthorizonCache {
       baseURL: `${this.config.sidecarUrl}/`,
       headers: {
         Authorization: `Bearer ${this.config.token}`,
+        "Content-Type": "application/json"
       },
     });
   }
