@@ -2,14 +2,14 @@ import util from 'util';
 
 import winston from 'winston';
 
-import { IAuthorizonConfig } from './config';
+import { IPermitConfig } from './config';
 
 export function prettyConsoleLog(label: string, data: any) {
   console.log(label, util.inspect(data, false, 12, true));
 }
 
-const FgGreen: string = "\x1b[32m";
-const FgCyan: string = "\x1b[36m";
+const FgGreen: string = '\x1b[32m';
+const FgCyan: string = '\x1b[36m';
 // const COLOR_RESET: string = "\x1b[0m";
 // const FgBlack: string = "\x1b[30m";
 // const FgRed: string = "\x1b[31m";
@@ -18,13 +18,11 @@ const FgCyan: string = "\x1b[36m";
 // const FgMagenta: string = "\x1b[35m";
 // const FgWhite: string = "\x1b[37m";
 
-const consoleFormat = winston.format.printf(
-  ({ level, message, label }) => {
-    return `${FgCyan}${label} [${level}]: ${FgGreen} ${message}`;
-  }
-);
+const consoleFormat = winston.format.printf(({ level, message, label }) => {
+  return `${FgCyan}${label} [${level}]: ${FgGreen} ${message}`;
+});
 
-const MESSAGE = Symbol.for('message')
+const MESSAGE = Symbol.for('message');
 const LEVEL = Symbol.for('level');
 
 class SimpleConsoleTransport extends winston.transports.Console {
@@ -40,11 +38,11 @@ class SimpleConsoleTransport extends winston.transports.Console {
     if (callback) {
       callback();
     }
-  };
+  }
 }
 
 export class LoggerFactory {
-  static createLogger(config: IAuthorizonConfig): winston.Logger {
+  static createLogger(config: IPermitConfig): winston.Logger {
     return winston.createLogger({
       level: config.log.level,
       format: winston.format.simple(),
