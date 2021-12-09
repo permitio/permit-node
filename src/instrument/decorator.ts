@@ -10,11 +10,15 @@ export interface AllAuthZOptions {
   action: ActionOptions;
 }
 
+// eslint-ignore-next-line @typescript-eslint/ban-types
 type IDecoratedObject<T extends {}> = T & {
   __authz__: Partial<AllAuthZOptions>;
 };
 
-export function decorate<T = any>(target: any, options: Partial<AllAuthZOptions>): IDecoratedObject<T> {
+export function decorate<T = any>(
+  target: any,
+  options: Partial<AllAuthZOptions>,
+): IDecoratedObject<T> {
   _.set(target, '__authz__.resource', options.resource);
   _.set(target, '__authz__.action', options.action);
   return target;

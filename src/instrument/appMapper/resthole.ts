@@ -25,18 +25,17 @@ function getPathsSharedBase(a: string, b: string, pathDelim = PATH_DELIMITER) {
   // For grouping purposes - paths ending with a key are part of the same path without the key (i.e. '\p\:1' === '\p')
   // drop last path part if it's a key
   const cleanSharedPath = _.join(
-    sharedBase.length > 1 &&
-      sharedBase[sharedBase.length - 1].startsWith(KEY_DELIMITER)
+    sharedBase.length > 1 && sharedBase[sharedBase.length - 1].startsWith(KEY_DELIMITER)
       ? sharedBase.slice(0, sharedBase.length - 1)
       : sharedBase,
-    pathDelim
+    pathDelim,
   );
 
   return cleanSharedPath;
 }
 
 export function groupRestHoleEndpoints(
-  endpoints: MappedEndpoint[]
+  endpoints: MappedEndpoint[],
 ): Record<string, MappedEndpoint[]> {
   const groups: Record<string, Record<string, MappedEndpoint>> = {};
 
@@ -44,8 +43,8 @@ export function groupRestHoleEndpoints(
   const singleMethodEndpoints = _.reverse(
     _.sortBy(
       _.filter(endpoints, (e) => e?.methods.length === 1),
-      'path.length'
-    )
+      'path.length',
+    ),
   );
 
   for (const a of singleMethodEndpoints) {
@@ -65,18 +64,12 @@ export function groupRestHoleEndpoints(
       const overlappingAndLonger = _.filter(
         sharedPaths,
         (otherPath) =>
-          path !== otherPath &&
-          otherPath.startsWith(path) &&
-          otherPath.length > path.length
+          path !== otherPath && otherPath.startsWith(path) && otherPath.length > path.length,
       );
       return overlappingAndLonger.length === 0;
     });
     for (const groupPath of longestSharedPaths) {
-      const group: Record<string, MappedEndpoint> = _.get(
-        groups,
-        groupPath,
-        {}
-      );
+      const group: Record<string, MappedEndpoint> = _.get(groups, groupPath, {});
 
       // storing by path ensures uniqueness
       group[a.path] = a;
@@ -85,7 +78,7 @@ export function groupRestHoleEndpoints(
   }
   // Flatten and ensure order (shortest first - likely the root node)
   const flatGroups = _.fromPairs(
-    _.map(groups, (group, key) => [key, _.sortBy(_.values(group), 'path')])
+    _.map(groups, (group, key) => [key, _.sortBy(_.values(group), 'path')]),
   );
   return flatGroups;
 }
@@ -102,10 +95,7 @@ export function groupRestHoleEndpoints(
  * @param groups groups of endpoints
  * @returns the group the path belongs to, or undefined if not found
  */
-export function findGroupForPath(
-  path: string,
-  groups: Record<string, MappedEndpoint[]>
-) {
+export function findGroupForPath(path: string, groups: Record<string, MappedEndpoint[]>) {
   for (const [name, endpoints] of _.toPairs(groups)) {
     const paths = _.map(endpoints, 'path');
     // If the endpoint is part of a group
@@ -122,29 +112,22 @@ export function findGroupForPath(
  * update groups in place
  * @returns groups (updated)
  */
-export function nameEndpointsInRestHoleGroups(
-  groups: Record<string, MappedEndpoint[]>
-) {
+export function nameEndpointsInRestHoleGroups(groups: Record<string, MappedEndpoint[]>) {
   _.forEach(groups, (eps, groupPath) =>
     _.forEach(eps, (ep) => {
-      const uniqueParts: string = _.trim(
-        ep.path.slice(groupPath.length),
-        PATH_DELIMITER
-      );
+      const uniqueParts: string = _.trim(ep.path.slice(groupPath.length), PATH_DELIMITER);
       // Ignore key/id URL parts
       const nameParts: string = _.trim(
         _.join(
-          _.reject(uniqueParts.split(PATH_DELIMITER), (i) =>
-            i.startsWith(KEY_DELIMITER)
-          ),
-          ' '
-        )
+          _.reject(uniqueParts.split(PATH_DELIMITER), (i) => i.startsWith(KEY_DELIMITER)),
+          ' ',
+        ),
       );
       //
       if (nameParts.length > 0 && ep?.methods.length > 0) {
         ep.namedMethods[ep.methods[0]] = nameParts;
       }
-    })
+    }),
   );
   return groups;
 }

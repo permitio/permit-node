@@ -1,35 +1,29 @@
 // For Default export
 import { EventEmitter } from 'events';
-import { decorate, IDecoratingObject } from './instrument/decorator';
-import { hook } from './instrument/plugin';
-import { ConfigFactory, IPermitConfig } from './config';
+
 import { IPermitCache, LocalCacheClient } from './cache/client';
-import { IResourceRegistry, ResourceRegistry } from './resources/registry';
-import { IResourceReporter, ResourceReporter } from './resources/reporter';
+import { ConfigFactory, IPermitConfig } from './config';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
 import { AppManager } from './instrument/appManager';
-import { IMutationsClient, MutationsClient } from './mutations/client';
+import { decorate, IDecoratingObject } from './instrument/decorator';
+import { hook } from './instrument/plugin';
 import { LoggerFactory } from './logger';
+import { IMutationsClient, MutationsClient } from './mutations/client';
+import { IResourceRegistry, ResourceRegistry } from './resources/registry';
+import { IResourceReporter, ResourceReporter } from './resources/reporter';
 import { RecursivePartial } from './utils/types';
 
 // exported interfaces
 export { ISyncedUser, ISyncedRole, IPermitCache } from './cache/client';
 export { IUser, IAction, IResource } from './enforcement/interfaces';
-export {
-  ITenant,
-  IPermitCloudReads,
-  IPermitCloudMutations,
-} from './mutations/client';
+export { ITenant, IPermitCloudReads, IPermitCloudMutations } from './mutations/client';
 export { ResourceConfig, ActionConfig } from './resources/interfaces';
 export { IUrlContext } from './resources/registry';
 export { Context, ContextTransform } from './utils/context';
 
 interface IEventSubscriber {
   on(event: string | symbol, listener: (...args: any[]) => void): EventEmitter;
-  once(
-    event: string | symbol,
-    listener: (...args: any[]) => void
-  ): EventEmitter;
+  once(event: string | symbol, listener: (...args: any[]) => void): EventEmitter;
 }
 
 export interface IPermitClient
@@ -64,22 +58,14 @@ export class PermitSDK {
     const configOptions = ConfigFactory.build(config);
     const logger = LoggerFactory.createLogger(configOptions);
     const resourceRegistry = new ResourceRegistry();
-    const resourceReporter = new ResourceReporter(
-      configOptions,
-      resourceRegistry,
-      logger
-    );
+    const resourceReporter = new ResourceReporter(configOptions, resourceRegistry, logger);
     const enforcer = new Enforcer(configOptions, logger);
     const cache = new LocalCacheClient(configOptions, logger);
     const mutationsClient = new MutationsClient(configOptions, logger);
     const appManager = new AppManager(configOptions, resourceReporter, logger);
     if (configOptions.debugMode) {
       logger.info(
-        `Permit.io SDK initialized with config:\n${JSON.stringify(
-          configOptions,
-          undefined,
-          2
-        )}`
+        `Permit.io SDK initialized with config:\n${JSON.stringify(configOptions, undefined, 2)}`,
       );
     }
 

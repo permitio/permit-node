@@ -3,13 +3,11 @@
  * + additional change to expose the callback function
  */
 
-// File adopted from JS:
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import _ from 'lodash';
 
 // var debug = require('debug')('express-list-endpoints')
-const regexpExpressRegexp = /^\/\^\\\/(?:(:?[\w\\.-]*(?:\\\/:?[\w\\.-]*)*)|(\(\?:\(\[\^\\\/]\+\?\)\)))\\\/.*/;
+const regexpExpressRegexp =
+  /^\/\^\\\/(?:(:?[\w\\.-]*(?:\\\/:?[\w\\.-]*)*)|(\(\?:\(\[\^\\\/]\+\?\)\)))\\\/.*/;
 // var arrayPathItemRegexp = /\^[^^$]*\\\/\?\(\?=\\\/\|\$\)\|?/
 // var arrayPathsRegexp = /\(\?:((\^[^^$]*\\\/\?\(\?=\\\/\|\$\)\|?)+)\)\/i?/
 const expressRootRegexp = '/^\\/?(?=\\/|$)/i';
@@ -56,10 +54,7 @@ function parseSingleRoute(route: any, basePath: string, path: string) {
   const methods = getRouteMethods(route);
   const middleware = getRouteMiddleware(route);
   // Actual functions without middleware (middleware comes first)
-  const endFunctions = _.slice(
-    middleware,
-    _.size(middleware) - _.size(methods)
-  );
+  const endFunctions = _.slice(middleware, _.size(middleware) - _.size(methods));
   return {
     path: basePath + (basePath && path === '/' ? '' : path),
     methods,
@@ -67,13 +62,9 @@ function parseSingleRoute(route: any, basePath: string, path: string) {
     // layer: layer,
     // route: route,
     namedMethods: _.fromPairs(
-      _.reject(
-        _.zip(methods, _.map(endFunctions, 'name')),
-        ([, v]) => v === undefined
-      )
+      _.reject(_.zip(methods, _.map(endFunctions, 'name')), ([, v]) => v === undefined),
     ),
-    methodToCallable: _.fromPairs(
-      _.zip(methods, endFunctions))
+    methodToCallable: _.fromPairs(_.zip(methods, endFunctions)),
   };
 }
 
@@ -99,10 +90,7 @@ const parseExpressRoute = function (route: any, basePath: any) {
   return endpoints;
 };
 
-const parseExpressPath = function (
-  expressPathRegexp: string,
-  params: { name: string }[]
-) {
+const parseExpressPath = function (expressPathRegexp: string, params: { name: string }[]) {
   let parsedPath: any = regexpExpressRegexp.exec(expressPathRegexp);
   let parsedRegexp = expressPathRegexp;
   let paramIdx = 0;
@@ -110,9 +98,7 @@ const parseExpressPath = function (
   while (hasParams(parsedRegexp)) {
     const paramId = ':' + params[paramIdx].name;
 
-    parsedRegexp = parsedRegexp
-      .toString()
-      .replace(/\(\?:\(\[\^\\\/]\+\?\)\)/, paramId);
+    parsedRegexp = parsedRegexp.toString().replace(/\(\?:\(\[\^\\\/]\+\?\)\)/, paramId);
 
     paramIdx++;
   }
@@ -129,7 +115,7 @@ const parseExpressPath = function (
 const parseEndpoints = function (
   app: { stack: any; _router: { stack: any } },
   basePath?: string | undefined,
-  endpoints?: any
+  endpoints?: any,
 ) {
   const stack = app.stack || (app._router && app._router.stack);
 
@@ -161,11 +147,7 @@ const parseEndpoints = function (
         if (regexpExpressRegexp.test(stackItem.regexp)) {
           const parsedPath = parseExpressPath(stackItem.regexp, stackItem.keys);
 
-          parseEndpoints(
-            stackItem.handle,
-            basePath + '/' + parsedPath,
-            endpoints
-          );
+          parseEndpoints(stackItem.handle, basePath + '/' + parsedPath, endpoints);
         } else if (
           !stackItem.path &&
           stackItem.regexp &&
@@ -173,11 +155,7 @@ const parseEndpoints = function (
         ) {
           const regEcpPath = ' RegExp(' + stackItem.regexp + ') ';
 
-          parseEndpoints(
-            stackItem.handle,
-            basePath + '/' + regEcpPath,
-            endpoints
-          );
+          parseEndpoints(stackItem.handle, basePath + '/' + regEcpPath, endpoints);
         } else {
           parseEndpoints(stackItem.handle, basePath, endpoints);
         }
@@ -210,21 +188,16 @@ const addEndpoints = function (endpoints: any[], newEndpoints: any[]) {
         return foundEndpoint.methods.indexOf(method) === -1;
       });
 
-      const newMiddleware = newEndpoint.middleware.filter(function (
-        middleware: any
-      ) {
+      const newMiddleware = newEndpoint.middleware.filter(function (middleware: any) {
         return foundEndpoint.middleware.indexOf(middleware) === -1;
       });
 
       foundEndpoint.methods = foundEndpoint.methods.concat(newMethods);
       foundEndpoint.middleware = foundEndpoint.middleware.concat(newMiddleware);
-      foundEndpoint.namedMethods = _.assign(
-        foundEndpoint.namedMethods,
-        newEndpoint.namedMethods
-      );
+      foundEndpoint.namedMethods = _.assign(foundEndpoint.namedMethods, newEndpoint.namedMethods);
       foundEndpoint.methodToCallable = _.assign(
         foundEndpoint.methodToCallable,
-        newEndpoint.methodToCallable
+        newEndpoint.methodToCallable,
       );
     } else {
       endpoints.push(newEndpoint);

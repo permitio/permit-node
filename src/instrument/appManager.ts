@@ -1,15 +1,16 @@
 import _ from 'lodash';
 import { Logger } from 'winston';
 
-import { mapApp } from './appMapper/appMapper';
-import { MappedEndpoint } from './appMapper/types';
+import { IPermitConfig } from '../config';
+import { prettyConsoleLog } from '../logger';
 import {
   ResourceConfig,
   // , resource as saveResource
 } from '../resources/interfaces';
-import { prettyConsoleLog } from '../logger';
-import { IPermitConfig } from '../config';
 import { ResourceReporter } from '../resources/reporter';
+
+import { mapApp } from './appMapper/appMapper';
+import { MappedEndpoint } from './appMapper/types';
 
 export class AppManager {
   resources: Record<string, any> = {};
@@ -17,14 +18,10 @@ export class AppManager {
   constructor(
     private config: IPermitConfig,
     private resourceReporter: ResourceReporter,
-    private logger: Logger
+    private logger: Logger,
   ) {}
 
-  report(
-    name: string,
-    resources: ResourceConfig[],
-    endpoints: MappedEndpoint[]
-  ) {
+  report(name: string, resources: ResourceConfig[], endpoints: MappedEndpoint[]) {
     const SEPARATOR_LINE = '*************************************************';
     console.log(`<Permit.io Documenting App - ${name}>`);
     console.log(SEPARATOR_LINE);
@@ -41,15 +38,13 @@ export class AppManager {
       const { resources, endpoints } = mapApp(
         app,
         this.config.autoMapping.ignoredUrlPrefixes,
-        this.logger
+        this.logger,
       );
       if (this.config.autoMapping.reviewMode) {
         this.report(name, resources, endpoints);
       } else {
         this.resources[name] = resources;
-        _.forEach(resources, (resource) =>
-          this.resourceReporter.resource(resource)
-        );
+        _.forEach(resources, (resource) => this.resourceReporter.resource(resource));
       }
     }
   }
