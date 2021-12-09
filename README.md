@@ -1,3 +1,8 @@
-# authorizon
+# Permit.io client for Node.js
 
-authorization sdk for node.js
+Node.js client library for the Permit.io full-stack permissions platform.
+
+## Installation
+```
+npm install permitio
+```
