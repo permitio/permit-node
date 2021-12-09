@@ -1,5 +1,5 @@
-import { Logger } from 'winston';
 import Hook from 'require-in-the-middle';
+import { Logger } from 'winston';
 
 import { AppManager } from './appManager';
 

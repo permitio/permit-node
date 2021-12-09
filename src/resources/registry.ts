@@ -1,8 +1,7 @@
+import { IAction, IResource } from '../enforcement/interfaces';
 import { ContextStore } from '../utils/context';
-import { IResource, IAction } from "../enforcement/interfaces";
 import { dictZip } from '../utils/dict';
 import { escapeRegex, matchAll, RegexMatch } from '../utils/regex';
-
 
 export interface IUrlContext {
   resource: IResource;
@@ -20,15 +19,15 @@ export interface ActionMatcher extends PatternWithContext {
   actionName: string;
 }
 
-export const NO_VERB: string = "DEFAULT";
+export const NO_VERB = 'DEFAULT';
 
 export function extractPatternAndContext(path: string): PatternWithContext {
   if (path.endsWith('/')) {
     path = path.slice(0, -1); // remove last "/"
   }
 
-  const regex: RegExp = /\:(\w+)/;
-  const PLACEHOLDER: string = '(\\w+)';
+  const regex = /\:(\w+)/;
+  const PLACEHOLDER = '(\\w+)';
 
   const matches: RegexMatch[] = matchAll(regex, path);
 
@@ -36,7 +35,7 @@ export function extractPatternAndContext(path: string): PatternWithContext {
   const contextVars: string[] = [];
 
   let currentIndex = 0;
-  for (let match of matches) {
+  for (const match of matches) {
     // save param name to context vars
     contextVars.push(match.groups[1]);
     // push (escaped) chunk before match
@@ -51,7 +50,7 @@ export function extractPatternAndContext(path: string): PatternWithContext {
     parts.push(escapeRegex(path.slice(currentIndex)));
   }
 
-  const pattern: RegExp = new RegExp('^' + parts.join('') + '\\/?$');
+  const pattern = new RegExp('^' + parts.join('') + '\\/?$');
   return {
     pattern: pattern,
     contextVars: contextVars,
@@ -60,7 +59,7 @@ export function extractPatternAndContext(path: string): PatternWithContext {
 
 export class ActionDefinition {
   private _resourceId?: string = undefined;
-  private _resourceName: string = '';
+  private _resourceName = '';
 
   constructor(
     public name: string,
@@ -68,7 +67,7 @@ export class ActionDefinition {
     public description?: string,
     public path?: string,
     public attributes: Record<string, any> = {},
-    resourceId?: string
+    resourceId?: string,
   ) {
     this.resourceId = resourceId;
   }
@@ -119,7 +118,7 @@ export class ResourceDefinition {
     public readonly path: string,
     public readonly description?: string,
     public readonly actions: ActionDefinition[] = [],
-    public readonly attributes: Record<string, any> = {}
+    public readonly attributes: Record<string, any> = {},
   ) {
     this.attributes = attributes;
   }
@@ -144,8 +143,9 @@ export class ResourceDefinition {
   }
 
   public repr(): string {
-    return `Resource(name="${this.name}", path="${this.path
-      }", actions=[${this.actions.map((a) => a.name)}])`;
+    return `Resource(name="${this.name}", path="${this.path}", actions=[${this.actions.map(
+      (a) => a.name,
+    )}])`;
   }
 }
 
@@ -159,7 +159,7 @@ export default class ResourceSchemaBuilder {
     public name: string,
     public path: string,
     public definition?: ResourceDefinition,
-    public context: Record<string, any> = {}
+    public context: Record<string, any> = {},
   ) {
     this.definitionPath = definition?.path || undefined;
   }
@@ -170,10 +170,9 @@ export default class ResourceSchemaBuilder {
       tenant: this.context['tenant'] || '',
       attributes: this.definition?.attributes || {},
       context: this.context,
-    }
+    };
   }
 }
-
 
 export interface IResourceRegistry {
   getUrlContext(path: string, verb: string): IUrlContext | undefined;
@@ -197,14 +196,14 @@ export class ResourceRegistry {
 
     resource.actions.forEach((action) => {
       action.resourceName = resource.name;
-      const path = (action.path) ? action.path : resource.path;
+      const path = action.path ? action.path : resource.path;
       this.processActionPath(path, action.verb, resource.name, action.name);
     });
   }
 
   public addActionToResource(
     resourceName: string,
-    action: ActionDefinition
+    action: ActionDefinition,
   ): ActionDefinition | undefined {
     if (!(resourceName in this.resources)) {
       return undefined;
@@ -220,7 +219,7 @@ export class ResourceRegistry {
       resource.actions.push(action);
     }
 
-    const path = (action.path) ? action.path : resource.path;
+    const path = action.path ? action.path : resource.path;
     this.processActionPath(path, action.verb, resource.name, action.name);
     return action;
   }
@@ -236,7 +235,12 @@ export class ResourceRegistry {
   /**
    * parses the action URI (path) and http verb into a matcher regex with context vars (named params)
    */
-  private processActionPath(path: string, verb: string, resourceName: string, actionName: string): void {
+  private processActionPath(
+    path: string,
+    verb: string,
+    resourceName: string,
+    actionName: string,
+  ): void {
     let patternAndContext: PatternWithContext;
     if (this.processedPaths.hasOwnProperty(path)) {
       patternAndContext = this.processedPaths[path];
@@ -264,10 +268,7 @@ export class ResourceRegistry {
     return false;
   }
 
-  public markAsSynced(
-    obj: ResourceDefinition | ActionDefinition,
-    remoteId: string
-  ): void {
+  public markAsSynced(obj: ResourceDefinition | ActionDefinition, remoteId: string): void {
     if (obj instanceof ResourceDefinition) {
       this.alreadySynced.add(obj.name);
       this.resources[obj.name].remoteId = remoteId;
@@ -297,11 +298,17 @@ export class ResourceRegistry {
         }
 
         const processedContext = this.contextStore.transform(
-          this.contextStore.getDerivedContext(context));
-        const resource: IResource = (new ResourceSchemaBuilder(matcher.resourceName, path, resourceDef, processedContext)).build();
+          this.contextStore.getDerivedContext(context),
+        );
+        const resource: IResource = new ResourceSchemaBuilder(
+          matcher.resourceName,
+          path,
+          resourceDef,
+          processedContext,
+        ).build();
         return {
           resource: resource,
-          action: matcher.actionName
+          action: matcher.actionName,
         };
       }
     }

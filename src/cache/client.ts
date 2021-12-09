@@ -1,9 +1,9 @@
-import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios'; // eslint-disable-line
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { Logger } from 'winston';
 
 import { IPermitConfig } from '../config';
 
-const HTTP_404_NOT_FOUND: number = 404;
+const HTTP_404_NOT_FOUND = 404;
 
 export interface ISyncedRole {
   id: string;
@@ -72,7 +72,7 @@ export class LocalCacheClient implements IPermitCache {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
             this.logger.error(
-              `unexpected error when calling permit.cache.getUser(${userId}): ${error}`
+              `unexpected error when calling permit.cache.getUser(${userId}): ${error}`,
             );
           }
         }
@@ -89,9 +89,7 @@ export class LocalCacheClient implements IPermitCache {
       .catch((error: AxiosError) => {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
-            this.logger.error(
-              `unexpected error when calling permit.cache.getUsers(): ${error}`
-            );
+            this.logger.error(`unexpected error when calling permit.cache.getUsers(): ${error}`);
           }
         }
         return [];
@@ -108,7 +106,7 @@ export class LocalCacheClient implements IPermitCache {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
             this.logger.error(
-              `unexpected error when calling permit.cache.getUserTenants(${userId}): ${error}`
+              `unexpected error when calling permit.cache.getUserTenants(${userId}): ${error}`,
             );
           }
         }
@@ -126,7 +124,7 @@ export class LocalCacheClient implements IPermitCache {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
             this.logger.error(
-              `unexpected error when calling permit.cache.getAssignedRoles(${userId}): ${error}`
+              `unexpected error when calling permit.cache.getAssignedRoles(${userId}): ${error}`,
             );
           }
         }
@@ -143,9 +141,7 @@ export class LocalCacheClient implements IPermitCache {
       .catch((error: AxiosError) => {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
-            this.logger.error(
-              `unexpected error when calling permit.cache.getRoles(): ${error}`
-            );
+            this.logger.error(`unexpected error when calling permit.cache.getRoles(): ${error}`);
           }
         }
         return [];
@@ -162,7 +158,7 @@ export class LocalCacheClient implements IPermitCache {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
             this.logger.error(
-              `unexpected error when calling permit.cache.getRoleById(${roleId}): ${error}`
+              `unexpected error when calling permit.cache.getRoleById(${roleId}): ${error}`,
             );
           }
         }
@@ -180,7 +176,7 @@ export class LocalCacheClient implements IPermitCache {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
             this.logger.error(
-              `unexpected error when calling permit.cache.getRoleByName(${roleName}): ${error}`
+              `unexpected error when calling permit.cache.getRoleByName(${roleName}): ${error}`,
             );
           }
         }
@@ -195,9 +191,7 @@ export class LocalCacheClient implements IPermitCache {
         return response.status == 200;
       })
       .catch((error) => {
-        this.logger.error(
-          `tried to trigger policy update, got error: ${error}`
-        );
+        this.logger.error(`tried to trigger policy update, got error: ${error}`);
         return false;
       });
   }
@@ -209,9 +203,7 @@ export class LocalCacheClient implements IPermitCache {
         return response.status == 200;
       })
       .catch((error) => {
-        this.logger.error(
-          `tried to trigger policy update, got error: ${error}`
-        );
+        this.logger.error(`tried to trigger policy update, got error: ${error}`);
         return false;
       });
   }

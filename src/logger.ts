@@ -8,8 +8,8 @@ export function prettyConsoleLog(label: string, data: any) {
   console.log(label, util.inspect(data, false, 12, true));
 }
 
-const FgGreen: string = '\x1b[32m';
-const FgCyan: string = '\x1b[36m';
+const FgGreen = '\x1b[32m';
+const FgCyan = '\x1b[36m';
 // const COLOR_RESET: string = "\x1b[0m";
 // const FgBlack: string = "\x1b[30m";
 // const FgRed: string = "\x1b[31m";
@@ -54,7 +54,7 @@ export class LoggerFactory {
             winston.format.label({ label: config.log.label }),
             winston.format.timestamp(),
             config.log.json ? winston.format.prettyPrint() : consoleFormat,
-            winston.format.colorize({ all: true })
+            winston.format.colorize({ all: true }),
           ),
         }),
       ],

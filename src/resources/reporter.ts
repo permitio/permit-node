@@ -1,24 +1,17 @@
-import axios, { AxiosInstance } from 'axios'; // eslint-disable-line
+import axios, { AxiosInstance } from 'axios';
 import { Logger } from 'winston';
 
-import {
-  ResourceDefinition,
-  ActionDefinition,
-  ResourceRegistry,
-} from './registry';
-
-import { ResourceConfig, ActionConfig } from './interfaces';
 import { IPermitConfig } from '../config';
+
+import { ActionConfig, ResourceConfig } from './interfaces';
+import { ActionDefinition, ResourceDefinition, ResourceRegistry } from './registry';
 
 export interface SyncObjectResponse {
   id: string;
 }
 
 export class ResourceStub {
-  constructor(
-    private reporter: ResourceReporter,
-    public readonly resourceName: string
-  ) {}
+  constructor(private reporter: ResourceReporter, public readonly resourceName: string) {}
 
   public action(config: ActionConfig): void {
     const action = new ActionDefinition(
@@ -26,7 +19,7 @@ export class ResourceStub {
       config.title,
       config.description,
       config.path,
-      config.attributes || {}
+      config.attributes || {},
     );
     this.reporter.addActionToResource(this.resourceName, action);
   }
@@ -46,13 +39,13 @@ export interface IResourceReporter {
  * and actions).
  */
 export class ResourceReporter implements IResourceReporter {
-  private initialized: boolean = false;
+  private initialized = false;
   private client: AxiosInstance = axios.create();
 
   constructor(
     private config: IPermitConfig,
     private registry: ResourceRegistry,
-    private logger: Logger
+    private logger: Logger,
   ) {
     this.client = axios.create({
       baseURL: `${this.config.sidecarUrl}/`,
@@ -76,10 +69,7 @@ export class ResourceReporter implements IResourceReporter {
     return new ResourceStub(this, resource.name);
   }
 
-  public addActionToResource(
-    resourceName: string,
-    actionDef: ActionDefinition
-  ): void {
+  public addActionToResource(resourceName: string, actionDef: ActionDefinition): void {
     const action = this.registry.addActionToResource(resourceName, actionDef);
     if (action) {
       this.maybeSyncAction(action);
@@ -95,9 +85,7 @@ export class ResourceReporter implements IResourceReporter {
           this.registry.markAsSynced(resource, response.data.id);
         })
         .catch((error) => {
-          this.logger.error(
-            `tried to sync resource ${resource.name}, got error: ${error}`
-          );
+          this.logger.error(`tried to sync resource ${resource.name}, got error: ${error}`);
         });
     }
   }
@@ -111,24 +99,19 @@ export class ResourceReporter implements IResourceReporter {
     if (this.initialized && !this.registry.isSynced(action)) {
       this.logger.info(`syncing action: ${action.repr()}`);
       this.client
-        .put<SyncObjectResponse>(
-          `cloud/resources/${resourceId}/actions`,
-          action.dict()
-        )
+        .put<SyncObjectResponse>(`cloud/resources/${resourceId}/actions`, action.dict())
         .then((response) => {
           this.registry.markAsSynced(action, response.data.id);
         })
         .catch((error) => {
-          this.logger.error(
-            `tried to sync action ${action.name}, got error: ${error}`
-          );
+          this.logger.error(`tried to sync action ${action.name}, got error: ${error}`);
         });
     }
   }
 
   private syncResources(): void {
     // will also sync actions
-    for (let resource of this.registry.resourceList) {
+    for (const resource of this.registry.resourceList) {
       this.maybeSyncResource(resource);
     }
   }
@@ -140,7 +123,7 @@ export class ResourceReporter implements IResourceReporter {
       config.path,
       config.description,
       config.actions || [],
-      config.attributes || {}
+      config.attributes || {},
     );
     return this.addResource(resource);
   }
@@ -151,7 +134,7 @@ export class ResourceReporter implements IResourceReporter {
       config.title,
       config.description,
       config.path,
-      config.attributes || {}
+      config.attributes || {},
     );
   }
 

@@ -2,13 +2,10 @@ import _ from 'lodash';
 import { Logger } from 'winston';
 
 import { ResourceConfig } from '../../resources/interfaces';
-import { AllAuthZOptions, getDecorations } from '../decorator';
 import { ActionDefinition } from '../../resources/registry';
+import { AllAuthZOptions, getDecorations } from '../decorator';
 
-import {
-  KEY_DELIMITER,
-  mapExpressAppEndpoints,
-} from './mapExpress/mapExpressApp';
+import { KEY_DELIMITER, mapExpressAppEndpoints } from './mapExpress/mapExpressApp';
 import {
   findGroupForPath,
   groupRestHoleEndpoints,
@@ -39,10 +36,7 @@ const SIMPLE_REST_NAMING = {
  *
  *
  */
-function getNestedEndpointsTree(
-  endpoints: MappedEndpoint[],
-  flat = true
-): EndpointTree {
+function getNestedEndpointsTree(endpoints: MappedEndpoint[], flat = true): EndpointTree {
   const sortedEndpoints = _.sortBy(endpoints, 'path');
 
   const tree: EndpointTree = {};
@@ -66,11 +60,7 @@ function getNestedEndpointsTree(
       currentTree = tree;
       prev = null;
       // Paths are nested,  no id was added
-    } else if (
-      prev !== null &&
-      endpoint.path.startsWith(prev.path) &&
-      !prevAddedId
-    ) {
+    } else if (prev !== null && endpoint.path.startsWith(prev.path) && !prevAddedId) {
       if (flat) {
         tree[root.path].push(endpoint);
       } else {
@@ -94,24 +84,17 @@ function getNestedEndpointsTree(
 /**
  * Translate a REST HTTP method to an action name
  */
-function getMethodName(
-  method: string,
-  endpoint: MappedEndpoint,
-  treatGetAsList = false
-): string {
+function getMethodName(method: string, endpoint: MappedEndpoint, treatGetAsList = false): string {
   // if treatGetAsList
-  const defactoMethodName =
-    treatGetAsList && method === 'GET' ? 'LIST' : method;
+  const defactoMethodName = treatGetAsList && method === 'GET' ? 'LIST' : method;
   let value = _.get(
     endpoint.namedMethods,
     method,
-    _.get(SIMPLE_REST_NAMING, defactoMethodName, defactoMethodName)
+    _.get(SIMPLE_REST_NAMING, defactoMethodName, defactoMethodName),
   );
   // '' not a valid function name
   value =
-    value.length > 0
-      ? value
-      : _.get(SIMPLE_REST_NAMING, defactoMethodName, defactoMethodName);
+    value.length > 0 ? value : _.get(SIMPLE_REST_NAMING, defactoMethodName, defactoMethodName);
 
   return _.startCase(value);
 }
@@ -127,7 +110,7 @@ function getResourceNameFromPath(path: string): string {
   // all other paths
   return _.join(
     _.reject(path.split('/'), (i) => i.startsWith(KEY_DELIMITER)),
-    ' '
+    ' ',
   ).trim();
 }
 
@@ -151,7 +134,7 @@ function endpointToActions(endpoint: MappedEndpoint, treatGetAsList = false) {
       endpoint.path,
       {
         verb: method,
-      }
+      },
     );
   });
 }
@@ -159,14 +142,12 @@ function endpointToActions(endpoint: MappedEndpoint, treatGetAsList = false) {
 function extractDecorations(endpoint: MappedEndpoint): AllAuthZOptions {
   const decorations = _.reject(
     _.map(endpoint.middleware, (m) => getDecorations(m)),
-    (i) => i === undefined
+    (i) => i === undefined,
   );
   return _.merge({}, ...decorations);
 }
 
-function renameDuplicateActions(
-  actions: ActionDefinition[]
-): ActionDefinition[] {
+function renameDuplicateActions(actions: ActionDefinition[]): ActionDefinition[] {
   const actionsByName = _.groupBy(actions, 'name');
   // Check for cases where names repeat then rename subsequent actions
   _.forEach(actionsByName, (actionItems) => {
@@ -190,7 +171,7 @@ function renameDuplicateActions(
 function endpointToResource(
   endpoint: MappedEndpoint,
   children: MappedEndpoint[],
-  groupPath?: string
+  groupPath?: string,
 ): ResourceConfig {
   const resourceType = 'rest';
   const hasChildWithGet = _.includes(_.flatMap(children, 'methods'), 'GET');
@@ -201,11 +182,10 @@ function endpointToResource(
 
   const childrenResourceDecorations = _.map(
     children,
-    (child) => extractDecorations(child)?.resource
+    (child) => extractDecorations(child)?.resource,
   );
   const resourceDecorations = extractDecorations(endpoint)?.resource;
-  const mergedResourceDeco =
-    _.merge({}, ...childrenResourceDecorations, resourceDecorations) || {};
+  const mergedResourceDeco = _.merge({}, ...childrenResourceDecorations, resourceDecorations) || {};
 
   // combine ownActions with child; rename duplicate names (Safety)
   const allActions = renameDuplicateActions(_.concat(ownActions, childActions));
@@ -218,9 +198,7 @@ function endpointToResource(
   return {
     name:
       mergedResourceDeco.name ||
-      (groupPath
-        ? getResourceNameFromPath(groupPath)
-        : getResourceNameFromEndpoint(endpoint)),
+      (groupPath ? getResourceNameFromPath(groupPath) : getResourceNameFromEndpoint(endpoint)),
     type: mergedResourceDeco.type || resourceType,
     path: path,
     description: mergedResourceDeco.description || '',
@@ -237,13 +215,11 @@ function endpointToResource(
  */
 function augmentEndpointTreeForRestHole(
   tree: EndpointTree,
-  endpoints: MappedEndpoint[]
+  endpoints: MappedEndpoint[],
 ): EndpointTree {
   const newTree: EndpointTree = {};
   // Get rest-hole groups, and attempt to rename their methods
-  const groups = nameEndpointsInRestHoleGroups(
-    groupRestHoleEndpoints(endpoints)
-  );
+  const groups = nameEndpointsInRestHoleGroups(groupRestHoleEndpoints(endpoints));
   // clean every branch of the tree of items moved to a REST-hole group
   _.forEach(tree, (branch, branchPath) => {
     const groupsForBranch: Record<string, MappedEndpoint[]> = {};
@@ -251,10 +227,7 @@ function augmentEndpointTreeForRestHole(
       // if It's a regular MappedEndpoint (And not EndpointGroup/EndpointTree)
       if (ep.path) {
         // Check if the EP matches a group
-        const matchingGroup = findGroupForPath(
-          (ep as MappedEndpoint).path,
-          groups
-        );
+        const matchingGroup = findGroupForPath((ep as MappedEndpoint).path, groups);
         if (matchingGroup) {
           groupsForBranch[matchingGroup.name] = matchingGroup.endpoints;
           // remove EP
@@ -279,10 +252,7 @@ function augmentEndpointTreeForRestHole(
  */
 function endpointsToResources(endpoints: MappedEndpoint[]) {
   // Layout as tree to more easily match resources with their actions
-  const tree = augmentEndpointTreeForRestHole(
-    getNestedEndpointsTree(endpoints, true),
-    endpoints
-  );
+  const tree = augmentEndpointTreeForRestHole(getNestedEndpointsTree(endpoints, true), endpoints);
 
   //prettyConsoleLog('TREE', tree);
 
@@ -294,9 +264,7 @@ function endpointsToResources(endpoints: MappedEndpoint[]) {
 
 function isExpressApp(app: any): boolean {
   // finger printing express
-  return (
-    app.stack !== undefined || (app._router && app._router.stack !== undefined)
-  );
+  return app.stack !== undefined || (app._router && app._router.stack !== undefined);
 }
 
 function removePrefix(endpoint: MappedEndpoint, prefixes: string[]): MappedEndpoint {
@@ -321,9 +289,10 @@ export function mapApp(
     const endpoints = mapExpressAppEndpoints(app);
     // these endpoints paths were trimmed of prefixes that should be ignored, i.e: /v1 or /api/v1
     // by removing the prefixes, we can get a more accurate "guess" what are the resources and actions are
-    const trimmedEndpoints = (prefixes.length == 0)
-      ? endpoints
-      : endpoints.map((endpoint) => removePrefix(endpoint, prefixes));
+    const trimmedEndpoints =
+      prefixes.length == 0
+        ? endpoints
+        : endpoints.map((endpoint) => removePrefix(endpoint, prefixes));
     const resources = endpointsToResources(trimmedEndpoints);
     return { resources, endpoints };
   } else {

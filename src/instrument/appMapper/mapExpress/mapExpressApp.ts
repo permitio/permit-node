@@ -13,7 +13,7 @@ export function mapExpressAppEndpoints(app: express.Express): MappedEndpoint[] {
   return _.map(listEndpoints(app), (endpoint: MappedEndpoint) => {
     const regEx = pathToRegexp(endpoint.path);
     const keys = _.map(_.slice(regEx.exec(endpoint.path), 1), (key) =>
-      _.trimStart(key, KEY_DELIMITER)
+      _.trimStart(key, KEY_DELIMITER),
     );
     return {
       ...endpoint,

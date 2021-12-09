@@ -1,7 +1,9 @@
-import axios, { AxiosInstance } from 'axios'; // eslint-disable-line
+import axios, { AxiosInstance } from 'axios';
 import { Logger } from 'winston';
+
 import { IPermitConfig } from '../config';
 import { Context, ContextStore } from '../utils/context';
+
 import { IAction, IResource, IUser, OpaResult } from './interfaces';
 
 function isString(x: any): x is string {
@@ -13,7 +15,7 @@ export interface IEnforcer {
     user: IUser | string,
     action: IAction,
     resource: IResource,
-    context?: Context
+    context?: Context,
   ): Promise<boolean>;
 }
 
@@ -54,7 +56,7 @@ export class Enforcer implements IEnforcer {
     user: IUser | string,
     action: IAction,
     resource: IResource,
-    context: Context = {} // context provided specifically for this query
+    context: Context = {}, // context provided specifically for this query
   ): Promise<boolean> {
     const normalizedUser: string = isString(user) ? user : user.key;
 
@@ -75,8 +77,8 @@ export class Enforcer implements IEnforcer {
         if (this.config.debugMode) {
           this.logger.info(
             `permit.check(${normalizedUser}, ${action}, ${Enforcer.resourceRepr(
-              resource
-            )}) = ${decision}`
+              resource,
+            )}) = ${decision}`,
           );
         }
         return decision;
@@ -84,8 +86,8 @@ export class Enforcer implements IEnforcer {
       .catch((error) => {
         this.logger.error(
           `Error in permit.check(${normalizedUser}, ${action}, ${Enforcer.resourceRepr(
-            resource
-          )}):\n${error}`
+            resource,
+          )}):\n${error}`,
         );
         return false;
       });

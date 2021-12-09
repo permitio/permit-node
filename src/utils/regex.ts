@@ -1,4 +1,3 @@
-
 export function escapeRegex(s: string): string {
   return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
@@ -8,9 +7,9 @@ function makeRegexGlobal(re: RegExp): RegExp {
     return re;
   }
 
-  let flags = "g";
-  flags += (re.ignoreCase ? 'i' : '');
-  flags += (re.multiline ? 'm' : '');
+  let flags = 'g';
+  flags += re.ignoreCase ? 'i' : '';
+  flags += re.multiline ? 'm' : '';
 
   return new RegExp(re.source, flags);
 }
@@ -29,7 +28,7 @@ export interface RegexMatch {
  * @returns {Array<Array<String>>}
  */
 export function matchAll(re: RegExp, str: string): RegexMatch[] {
-  const matches = []
+  const matches = [];
 
   const regex = makeRegexGlobal(re);
 

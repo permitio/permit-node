@@ -1,4 +1,4 @@
-import { Dict } from "../utils/dict";
+import { Dict } from '../utils/dict';
 
 // user interfaces ------------------------------------------------------------
 // in case we are provided a JWT token as the user:
@@ -25,7 +25,7 @@ interface IUserProperties {
   attributes: Dict;
 }
 
-export interface IUser extends IUserKey, Partial<IUserProperties> { }
+export interface IUser extends IUserKey, Partial<IUserProperties> {}
 
 // action interfaces ----------------------------------------------------------
 export type IAction = string;

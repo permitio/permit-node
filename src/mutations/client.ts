@@ -1,9 +1,9 @@
-import axios, { AxiosInstance } from 'axios'; // eslint-disable-line
+import axios, { AxiosInstance } from 'axios';
 import { Logger } from 'winston';
 
 import { IPermitConfig } from '../config';
-import { Dict } from '../utils/dict';
 import { IUser } from '../enforcement/interfaces';
+import { Dict } from '../utils/dict';
 
 export interface ITenant {
   key: string;
@@ -39,16 +39,8 @@ export interface IPermitCloudMutations {
   deleteTenant(tenantKey: string): Promise<number>;
 
   // role mutations
-  assignRole(
-    userKey: string,
-    roleKey: string,
-    tenantKey: string
-  ): Promise<Dict>;
-  unassignRole(
-    userKey: string,
-    roleKey: string,
-    tenantKey: string
-  ): Promise<Dict>;
+  assignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict>;
+  unassignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict>;
 }
 
 export interface CloudReadCallback<T = void> {
@@ -64,8 +56,7 @@ export interface IMutationsClient {
   save<T = void>(callback: CloudWriteCallback<T>): Promise<T>;
 }
 
-export class MutationsClient
-  implements IPermitCloudReads, IPermitCloudMutations, IMutationsClient {
+export class MutationsClient implements IPermitCloudReads, IPermitCloudMutations, IMutationsClient {
   private client: AxiosInstance = axios.create();
 
   constructor(private config: IPermitConfig, private logger: Logger) {
@@ -89,9 +80,7 @@ export class MutationsClient
         return response.data;
       })
       .catch((error: Error) => {
-        this.logger.error(
-          `tried to get user with key: ${userKey}, got error: ${error}`
-        );
+        this.logger.error(`tried to get user with key: ${userKey}, got error: ${error}`);
         throw error;
       });
   }
@@ -106,9 +95,7 @@ export class MutationsClient
         return response.data;
       })
       .catch((error: Error) => {
-        this.logger.error(
-          `tried to get role with id: ${roleKey}, got error: ${error}`
-        );
+        this.logger.error(`tried to get role with id: ${roleKey}, got error: ${error}`);
         throw error;
       });
   }
@@ -123,23 +110,16 @@ export class MutationsClient
         return response.data;
       })
       .catch((error: Error) => {
-        this.logger.error(
-          `tried to get tenant with id: ${tenantKey}, got error: ${error}`
-        );
+        this.logger.error(`tried to get tenant with id: ${tenantKey}, got error: ${error}`);
         throw error;
       });
   }
 
   // either in one tenant or in all tenants
   // TODO: fix schema
-  public async getAssignedRoles(
-    userKey: string,
-    tenantKey?: string
-  ): Promise<Dict> {
+  public async getAssignedRoles(userKey: string, tenantKey?: string): Promise<Dict> {
     if (this.config.debugMode) {
-      this.logger.info(
-        `permit.api.getAssignedRoles(user=${userKey}, tenant=${tenantKey})`
-      );
+      this.logger.info(`permit.api.getAssignedRoles(user=${userKey}, tenant=${tenantKey})`);
     }
     let url = `cloud/role_assignments?user=${userKey}`;
     if (tenantKey !== undefined) {
@@ -151,9 +131,7 @@ export class MutationsClient
         return response.data;
       })
       .catch((error: Error) => {
-        this.logger.error(
-          `could not get user roles for user ${userKey}, got error: ${error}`
-        );
+        this.logger.error(`could not get user roles for user ${userKey}, got error: ${error}`);
         throw error;
       });
   }
@@ -170,9 +148,7 @@ export class MutationsClient
         return response.data;
       })
       .catch((error: Error) => {
-        this.logger.error(
-          `tried to sync user with key: ${user.key}, got error: ${error}`
-        );
+        this.logger.error(`tried to sync user with key: ${user.key}, got error: ${error}`);
         throw error;
       });
   }
@@ -187,9 +163,7 @@ export class MutationsClient
         return response.status;
       })
       .catch((error: Error) => {
-        this.logger.error(
-          `tried to delete user with key: ${userKey}, got error: ${error}`
-        );
+        this.logger.error(`tried to delete user with key: ${userKey}, got error: ${error}`);
         throw error;
       });
   }
@@ -212,9 +186,7 @@ export class MutationsClient
         return response.data;
       })
       .catch((error: Error) => {
-        this.logger.error(
-          `tried to create tenant with key: ${tenant.key}, got error: ${error}`
-        );
+        this.logger.error(`tried to create tenant with key: ${tenant.key}, got error: ${error}`);
         throw error;
       });
   }
@@ -236,9 +208,7 @@ export class MutationsClient
         return response.data;
       })
       .catch((error: Error) => {
-        this.logger.error(
-          `tried to update tenant with key: ${tenant.key}, got error: ${error}`
-        );
+        this.logger.error(`tried to update tenant with key: ${tenant.key}, got error: ${error}`);
         throw error;
       });
   }
@@ -253,19 +223,13 @@ export class MutationsClient
         return response.status;
       })
       .catch((error: Error) => {
-        this.logger.error(
-          `tried to delete tenant with key: ${tenantKey}, got error: ${error}`
-        );
+        this.logger.error(`tried to delete tenant with key: ${tenantKey}, got error: ${error}`);
         throw error;
       });
   }
 
   // role mutations
-  public async assignRole(
-    userKey: string,
-    roleKey: string,
-    tenantKey: string
-  ): Promise<Dict> {
+  public async assignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict> {
     const data = {
       role: roleKey,
       user: userKey,
@@ -283,17 +247,13 @@ export class MutationsClient
       })
       .catch((error: Error) => {
         this.logger.error(
-          `could not assign role ${roleKey} to ${userKey} in tenant ${tenantKey}, got error: ${error}`
+          `could not assign role ${roleKey} to ${userKey} in tenant ${tenantKey}, got error: ${error}`,
         );
         throw error;
       });
   }
 
-  public async unassignRole(
-    userKey: string,
-    roleKey: string,
-    tenantKey: string
-  ): Promise<Dict> {
+  public async unassignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict> {
     if (this.config.debugMode) {
       const data = {
         role: roleKey,
@@ -304,15 +264,13 @@ export class MutationsClient
     }
 
     return await this.client
-      .delete<Dict>(
-        `cloud/role_assignments?role=${roleKey}&user=${userKey}&scope=${tenantKey}`
-      )
+      .delete<Dict>(`cloud/role_assignments?role=${roleKey}&user=${userKey}&scope=${tenantKey}`)
       .then((response) => {
         return response.data;
       })
       .catch((error: Error) => {
         this.logger.error(
-          `could not unassign role ${roleKey} of ${userKey} in tenant ${tenantKey}, got error: ${error}`
+          `could not unassign role ${roleKey} of ${userKey} in tenant ${tenantKey}, got error: ${error}`,
         );
         throw error;
       });

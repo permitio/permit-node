@@ -1,5 +1,6 @@
-import { PermitSDK, IPermitClient } from './index';
 import test from 'ava';
+
+import { IPermitClient, PermitSDK } from './index';
 
 test('paths are processed correctly', async () =>
   //t

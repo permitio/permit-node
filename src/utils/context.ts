@@ -35,7 +35,7 @@ export class ContextStore {
 
   public transform(initialContext: Context): Context {
     let context = { ...initialContext };
-    for (let transform of this.transforms) {
+    for (const transform of this.transforms) {
       context = transform(context);
     }
     return context;
