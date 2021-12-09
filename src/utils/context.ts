@@ -7,7 +7,7 @@ export interface ContextTransform {
 }
 
 /**
- * Store for contexted passed as part of isAllowed() queries
+ * Store for contexted passed as part of check() queries
  */
 export class ContextStore {
   private baseContext: Context = {}; // cross-query context (global context)

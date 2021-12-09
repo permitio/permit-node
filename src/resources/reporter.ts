@@ -8,15 +8,17 @@ import {
 } from './registry';
 
 import { ResourceConfig, ActionConfig } from './interfaces';
-import { IAuthorizonConfig } from '../config';
-
+import { IPermitConfig } from '../config';
 
 export interface SyncObjectResponse {
   id: string;
 }
 
 export class ResourceStub {
-  constructor(private reporter: ResourceReporter, public readonly resourceName: string) { }
+  constructor(
+    private reporter: ResourceReporter,
+    public readonly resourceName: string
+  ) {}
 
   public action(config: ActionConfig): void {
     const action = new ActionDefinition(
@@ -38,8 +40,8 @@ export interface IResourceReporter {
 /**
  * the ResourceReporter is used to sync resources and actions
  * (the authorization enforcement points) defined by the app to the
- * authorizon control plane in the cloud, so that policy and permissions
- * may be defined by the control plane. The only data authorizon needs to
+ * permit.io control plane in the cloud, so that policy and permissions
+ * may be defined by the control plane. The only data permit.io needs to
  * know about the app is the available enforcement point (i.e: resources
  * and actions).
  */
@@ -47,12 +49,16 @@ export class ResourceReporter implements IResourceReporter {
   private initialized: boolean = false;
   private client: AxiosInstance = axios.create();
 
-  constructor(private config: IAuthorizonConfig, private registry: ResourceRegistry, private logger: Logger) {
+  constructor(
+    private config: IPermitConfig,
+    private registry: ResourceRegistry,
+    private logger: Logger
+  ) {
     this.client = axios.create({
       baseURL: `${this.config.sidecarUrl}/`,
       headers: {
         Authorization: `Bearer ${this.config.token}`,
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json',
       },
     });
     this.initialized = true; // TODO: remove this
@@ -137,7 +143,7 @@ export class ResourceReporter implements IResourceReporter {
       config.attributes || {}
     );
     return this.addResource(resource);
-  };
+  }
 
   public action(config: ActionConfig): ActionDefinition {
     return new ActionDefinition(
@@ -147,12 +153,12 @@ export class ResourceReporter implements IResourceReporter {
       config.path,
       config.attributes || {}
     );
-  };
+  }
 
   public getMethods(): IResourceReporter {
     return {
       resource: this.resource.bind(this),
       action: this.action.bind(this),
-    }
+    };
   }
 }

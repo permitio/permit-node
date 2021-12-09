@@ -4,21 +4,21 @@ import { Logger } from 'winston';
 import { mapApp } from './appMapper/appMapper';
 import { MappedEndpoint } from './appMapper/types';
 import {
-  ResourceConfig
+  ResourceConfig,
   // , resource as saveResource
 } from '../resources/interfaces';
 import { prettyConsoleLog } from '../logger';
-import { IAuthorizonConfig } from '../config';
+import { IPermitConfig } from '../config';
 import { ResourceReporter } from '../resources/reporter';
 
 export class AppManager {
   resources: Record<string, any> = {};
 
   constructor(
-    private config: IAuthorizonConfig,
+    private config: IPermitConfig,
     private resourceReporter: ResourceReporter,
-    private logger: Logger) {
-  }
+    private logger: Logger
+  ) {}
 
   report(
     name: string,
@@ -26,7 +26,7 @@ export class AppManager {
     endpoints: MappedEndpoint[]
   ) {
     const SEPARATOR_LINE = '*************************************************';
-    console.log(`<Authorizon Documenting App - ${name}>`);
+    console.log(`<Permit.io Documenting App - ${name}>`);
     console.log(SEPARATOR_LINE);
     prettyConsoleLog('endpoints', endpoints);
     console.log(SEPARATOR_LINE);
@@ -38,12 +38,18 @@ export class AppManager {
     // TODO support mixed HTTP/HTTPS server (via name merging resources mutual to http and https )
     // If we have auto-mapping - map the app given to us and save its resources
     if (this.config.autoMapping.enable) {
-      const { resources, endpoints } = mapApp(app, this.config.autoMapping.ignoredUrlPrefixes, this.logger);
+      const { resources, endpoints } = mapApp(
+        app,
+        this.config.autoMapping.ignoredUrlPrefixes,
+        this.logger
+      );
       if (this.config.autoMapping.reviewMode) {
         this.report(name, resources, endpoints);
       } else {
         this.resources[name] = resources;
-        _.forEach(resources, (resource) => this.resourceReporter.resource(resource));
+        _.forEach(resources, (resource) =>
+          this.resourceReporter.resource(resource)
+        );
       }
     }
   }

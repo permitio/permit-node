@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios'; // eslint-disable-line
 import { Logger } from 'winston';
 
-import { IAuthorizonConfig } from '../config';
+import { IPermitConfig } from '../config';
 
 const HTTP_404_NOT_FOUND: number = 404;
 
@@ -21,7 +21,7 @@ export interface ISyncedUser {
   roles: ISyncedRole[];
 }
 
-export interface IAuthorizonCache {
+export interface IPermitCache {
   isUser(userId: string): Promise<boolean>;
   getUser(userId: string): Promise<ISyncedUser | null>;
   getUsers(): Promise<ISyncedUser[]>;
@@ -38,17 +38,17 @@ export interface IAuthorizonCache {
  * state from the policy agent (i.e: OPA). This client is very performant
  * and DOES NOT go outside the local network (i.e: VPC), in other words,
  * queries made by this client are complete private, and do not reach
- * the authorizon control plane in the cloud.
+ * the permit.io control plane in the cloud.
  */
-export class LocalCacheClient implements IAuthorizonCache {
+export class LocalCacheClient implements IPermitCache {
   private client: AxiosInstance;
 
-  constructor(private config: IAuthorizonConfig, private logger: Logger) {
+  constructor(private config: IPermitConfig, private logger: Logger) {
     this.client = axios.create({
       baseURL: `${this.config.sidecarUrl}/`,
       headers: {
         Authorization: `Bearer ${this.config.token}`,
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json',
       },
     });
   }
@@ -58,7 +58,7 @@ export class LocalCacheClient implements IAuthorizonCache {
     if (user === null) {
       return false;
     }
-    return (user.id === userId);
+    return user.id === userId;
   }
 
   // cached object api
@@ -72,7 +72,7 @@ export class LocalCacheClient implements IAuthorizonCache {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
             this.logger.error(
-              `unexpected error when calling authorizon.cache.getUser(${userId}): ${error}`
+              `unexpected error when calling permit.cache.getUser(${userId}): ${error}`
             );
           }
         }
@@ -85,11 +85,12 @@ export class LocalCacheClient implements IAuthorizonCache {
       .get<ISyncedUser[]>(`local/users`)
       .then((response) => {
         return response.data;
-      }).catch((error: AxiosError) => {
+      })
+      .catch((error: AxiosError) => {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
             this.logger.error(
-              `unexpected error when calling authorizon.cache.getUsers(): ${error}`
+              `unexpected error when calling permit.cache.getUsers(): ${error}`
             );
           }
         }
@@ -102,11 +103,12 @@ export class LocalCacheClient implements IAuthorizonCache {
       .get<string[]>(`local/users/${userId}/tenants`)
       .then((response) => {
         return response.data;
-      }).catch((error: AxiosError) => {
+      })
+      .catch((error: AxiosError) => {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
             this.logger.error(
-              `unexpected error when calling authorizon.cache.getUserTenants(${userId}): ${error}`
+              `unexpected error when calling permit.cache.getUserTenants(${userId}): ${error}`
             );
           }
         }
@@ -119,11 +121,12 @@ export class LocalCacheClient implements IAuthorizonCache {
       .get<ISyncedRole[]>(`local/users/${userId}/roles`)
       .then((response) => {
         return response.data;
-      }).catch((error: AxiosError) => {
+      })
+      .catch((error: AxiosError) => {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
             this.logger.error(
-              `unexpected error when calling authorizon.cache.getAssignedRoles(${userId}): ${error}`
+              `unexpected error when calling permit.cache.getAssignedRoles(${userId}): ${error}`
             );
           }
         }
@@ -136,11 +139,12 @@ export class LocalCacheClient implements IAuthorizonCache {
       .get<ISyncedRole[]>(`local/roles`)
       .then((response) => {
         return response.data;
-      }).catch((error: AxiosError) => {
+      })
+      .catch((error: AxiosError) => {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
             this.logger.error(
-              `unexpected error when calling authorizon.cache.getRoles(): ${error}`
+              `unexpected error when calling permit.cache.getRoles(): ${error}`
             );
           }
         }
@@ -158,7 +162,7 @@ export class LocalCacheClient implements IAuthorizonCache {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
             this.logger.error(
-              `unexpected error when calling authorizon.cache.getRoleById(${roleId}): ${error}`
+              `unexpected error when calling permit.cache.getRoleById(${roleId}): ${error}`
             );
           }
         }
@@ -176,7 +180,7 @@ export class LocalCacheClient implements IAuthorizonCache {
         if (error.response) {
           if (error.response.status !== HTTP_404_NOT_FOUND) {
             this.logger.error(
-              `unexpected error when calling authorizon.cache.getRoleByName(${roleName}): ${error}`
+              `unexpected error when calling permit.cache.getRoleByName(${roleName}): ${error}`
             );
           }
         }
@@ -188,10 +192,12 @@ export class LocalCacheClient implements IAuthorizonCache {
     return this.client
       .post('policy-updater/trigger')
       .then((response: AxiosResponse) => {
-        return (response.status == 200);
+        return response.status == 200;
       })
       .catch((error) => {
-        this.logger.error(`tried to trigger policy update, got error: ${error}`);
+        this.logger.error(
+          `tried to trigger policy update, got error: ${error}`
+        );
         return false;
       });
   }
@@ -200,10 +206,12 @@ export class LocalCacheClient implements IAuthorizonCache {
     return this.client
       .post('data-updater/trigger')
       .then((response: AxiosResponse) => {
-        return (response.status == 200);
+        return response.status == 200;
       })
       .catch((error) => {
-        this.logger.error(`tried to trigger policy update, got error: ${error}`)
+        this.logger.error(
+          `tried to trigger policy update, got error: ${error}`
+        );
         return false;
       });
   }
@@ -218,7 +226,7 @@ export class LocalCacheClient implements IAuthorizonCache {
     });
   }
 
-  public getMethods(): IAuthorizonCache {
+  public getMethods(): IPermitCache {
     return {
       isUser: this.isUser.bind(this),
       getUser: this.getUser.bind(this),
@@ -229,6 +237,6 @@ export class LocalCacheClient implements IAuthorizonCache {
       getRoleById: this.getRoleById.bind(this),
       getRoleByName: this.getRoleByName.bind(this),
       refresh: this.refresh.bind(this),
-    }
+    };
   }
 }

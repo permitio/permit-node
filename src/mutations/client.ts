@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios'; // eslint-disable-line
 import { Logger } from 'winston';
 
-import { IAuthorizonConfig } from '../config';
+import { IPermitConfig } from '../config';
 import { Dict } from '../utils/dict';
 import { IUser } from '../enforcement/interfaces';
 
@@ -13,10 +13,10 @@ export interface ITenant {
 
 /**
  * This interface contains *read actions* that goes outside
- * of your local network and queries authorizon cloud api.
+ * of your local network and queries permit.io cloud api.
  * You should be aware that these actions incur some cross-cloud latency.
  */
-export interface IAuthorizonCloudReads {
+export interface IPermitCloudReads {
   getUser(userKey: string): Promise<Dict>;
   getRole(roleKey: string): Promise<Dict>;
   getTenant(tenantKey: string): Promise<Dict>;
@@ -25,10 +25,10 @@ export interface IAuthorizonCloudReads {
 
 /**
  * This interface contains *write actions* (or mutations) that manipulate remote
- * state by calling the authorizon api. These api calls goes *outside* your local network.
+ * state by calling the permit.io api. These api calls goes *outside* your local network.
  * You should be aware that these actions incur some cross-cloud latency.
  */
-export interface IAuthorizonCloudMutations {
+export interface IPermitCloudMutations {
   // user mutations
   syncUser(user: IUser): Promise<Dict>; // create or update
   deleteUser(userKey: string): Promise<number>;
@@ -39,16 +39,24 @@ export interface IAuthorizonCloudMutations {
   deleteTenant(tenantKey: string): Promise<number>;
 
   // role mutations
-  assignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict>;
-  unassignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict>;
+  assignRole(
+    userKey: string,
+    roleKey: string,
+    tenantKey: string
+  ): Promise<Dict>;
+  unassignRole(
+    userKey: string,
+    roleKey: string,
+    tenantKey: string
+  ): Promise<Dict>;
 }
 
 export interface CloudReadCallback<T = void> {
-  (api: IAuthorizonCloudReads): Promise<T>;
+  (api: IPermitCloudReads): Promise<T>;
 }
 
 export interface CloudWriteCallback<T = void> {
-  (api: IAuthorizonCloudMutations): Promise<T>;
+  (api: IPermitCloudMutations): Promise<T>;
 }
 
 export interface IMutationsClient {
@@ -56,15 +64,16 @@ export interface IMutationsClient {
   save<T = void>(callback: CloudWriteCallback<T>): Promise<T>;
 }
 
-export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudMutations, IMutationsClient {
+export class MutationsClient
+  implements IPermitCloudReads, IPermitCloudMutations, IMutationsClient {
   private client: AxiosInstance = axios.create();
 
-  constructor(private config: IAuthorizonConfig, private logger: Logger) {
+  constructor(private config: IPermitConfig, private logger: Logger) {
     this.client = axios.create({
       baseURL: `${this.config.sidecarUrl}/`,
       headers: {
         Authorization: `Bearer ${this.config.token}`,
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json',
       },
     });
   }
@@ -72,9 +81,10 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
   // read api -----------------------------------------------------------------
   public async getUser(userKey: string): Promise<Dict> {
     if (this.config.debugMode) {
-      this.logger.info(`authorizon.api.getUser(${userKey})`);
+      this.logger.info(`permit.api.getUser(${userKey})`);
     }
-    return this.client.get(`cloud/users/${userKey}`)
+    return this.client
+      .get(`cloud/users/${userKey}`)
       .then((response) => {
         return response.data;
       })
@@ -88,9 +98,10 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
 
   public async getRole(roleKey: string): Promise<Dict> {
     if (this.config.debugMode) {
-      this.logger.info(`authorizon.api.getRole(${roleKey})`);
+      this.logger.info(`permit.api.getRole(${roleKey})`);
     }
-    return this.client.get(`cloud/roles/${roleKey}`)
+    return this.client
+      .get(`cloud/roles/${roleKey}`)
       .then((response) => {
         return response.data;
       })
@@ -104,9 +115,10 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
 
   public async getTenant(tenantKey: string): Promise<Dict> {
     if (this.config.debugMode) {
-      this.logger.info(`authorizon.api.getTenant(${tenantKey})`);
+      this.logger.info(`permit.api.getTenant(${tenantKey})`);
     }
-    return this.client.get(`cloud/tenants/${tenantKey}`)
+    return this.client
+      .get(`cloud/tenants/${tenantKey}`)
       .then((response) => {
         return response.data;
       })
@@ -120,9 +132,14 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
 
   // either in one tenant or in all tenants
   // TODO: fix schema
-  public async getAssignedRoles(userKey: string, tenantKey?: string): Promise<Dict> {
+  public async getAssignedRoles(
+    userKey: string,
+    tenantKey?: string
+  ): Promise<Dict> {
     if (this.config.debugMode) {
-      this.logger.info(`authorizon.api.getAssignedRoles(user=${userKey}, tenant=${tenantKey})`);
+      this.logger.info(
+        `permit.api.getAssignedRoles(user=${userKey}, tenant=${tenantKey})`
+      );
     }
     let url = `cloud/role_assignments?user=${userKey}`;
     if (tenantKey !== undefined) {
@@ -145,7 +162,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
   // user mutations
   public async syncUser(user: IUser): Promise<Dict> {
     if (this.config.debugMode) {
-      this.logger.info(`authorizon.api.syncUser(${JSON.stringify(user)})`);
+      this.logger.info(`permit.api.syncUser(${JSON.stringify(user)})`);
     }
     return await this.client
       .put<Dict>('cloud/users', user)
@@ -162,9 +179,10 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
 
   public async deleteUser(userKey: string): Promise<number> {
     if (this.config.debugMode) {
-      this.logger.info(`authorizon.api.deleteUser(${userKey})`);
+      this.logger.info(`permit.api.deleteUser(${userKey})`);
     }
-    return await this.client.delete(`cloud/users/${userKey}`)
+    return await this.client
+      .delete(`cloud/users/${userKey}`)
       .then((response) => {
         return response.status;
       })
@@ -179,7 +197,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
   // tenant mutations
   public async createTenant(tenant: ITenant): Promise<Dict> {
     if (this.config.debugMode) {
-      this.logger.info(`authorizon.api.createTenant(${JSON.stringify(tenant)})`);
+      this.logger.info(`permit.api.createTenant(${JSON.stringify(tenant)})`);
     }
     const data: Dict = {};
     data.externalId = tenant.key;
@@ -203,7 +221,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
 
   public async updateTenant(tenant: ITenant): Promise<Dict> {
     if (this.config.debugMode) {
-      this.logger.info(`authorizon.api.updateTenant(${JSON.stringify(tenant)})`);
+      this.logger.info(`permit.api.updateTenant(${JSON.stringify(tenant)})`);
     }
     const data: Dict = {};
     data.name = tenant.name;
@@ -227,7 +245,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
 
   public async deleteTenant(tenantKey: string): Promise<number> {
     if (this.config.debugMode) {
-      this.logger.info(`authorizon.api.deleteTenant(${tenantKey})`);
+      this.logger.info(`permit.api.deleteTenant(${tenantKey})`);
     }
     return await this.client
       .delete(`cloud/tenants/${tenantKey}`)
@@ -255,7 +273,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
     };
 
     if (this.config.debugMode) {
-      this.logger.info(`authorizon.api.assignRole(${JSON.stringify(data)})`);
+      this.logger.info(`permit.api.assignRole(${JSON.stringify(data)})`);
     }
 
     return await this.client
@@ -282,11 +300,13 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
         user: userKey,
         scope: tenantKey,
       };
-      this.logger.info(`authorizon.api.assignRole(${JSON.stringify(data)})`);
+      this.logger.info(`permit.api.assignRole(${JSON.stringify(data)})`);
     }
 
     return await this.client
-      .delete<Dict>(`cloud/role_assignments?role=${roleKey}&user=${userKey}&scope=${tenantKey}`)
+      .delete<Dict>(
+        `cloud/role_assignments?role=${roleKey}&user=${userKey}&scope=${tenantKey}`
+      )
       .then((response) => {
         return response.data;
       })
@@ -300,7 +320,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
 
   // cloud api proxy ----------------------------------------------------------
   public async read<T = void>(callback: CloudReadCallback<T>): Promise<T> {
-    const readProxy: IAuthorizonCloudReads = {
+    const readProxy: IPermitCloudReads = {
       getUser: this.getUser.bind(this),
       getRole: this.getRole.bind(this),
       getTenant: this.getTenant.bind(this),
@@ -310,7 +330,7 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
   }
 
   public async save<T = void>(callback: CloudWriteCallback<T>): Promise<T> {
-    const writeProxy: IAuthorizonCloudMutations = {
+    const writeProxy: IPermitCloudMutations = {
       syncUser: this.syncUser.bind(this),
       deleteUser: this.deleteUser.bind(this),
       createTenant: this.createTenant.bind(this),
@@ -326,6 +346,6 @@ export class MutationsClient implements IAuthorizonCloudReads, IAuthorizonCloudM
     return {
       read: this.read.bind(this),
       save: this.save.bind(this),
-    }
+    };
   }
 }
