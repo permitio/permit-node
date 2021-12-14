@@ -19,7 +19,7 @@ interface IAutoMappingConfig {
 
 export interface IPermitConfig {
   token: string;
-  sidecarUrl: string;
+  pdp: string;
   debugMode: boolean;
   log: ILoggerConfig;
   autoMapping: IAutoMappingConfig;
@@ -31,7 +31,7 @@ export class ConfigFactory {
     const debugMode: boolean = JSON.parse(_.get(process.env, 'AUTHZ_DEBUG_MODE', 'false'));
     return {
       token: _.get(process.env, 'AUTHZ_LOG_LEVEL', ''),
-      sidecarUrl: _.get(process.env, 'AUTHZ_SIDECAR_URL', 'http://localhost:7000'),
+      pdp: _.get(process.env, 'AUTHZ_PDP_URL', 'http://localhost:7000'),
       // Sets debug mode - log to console
       debugMode: debugMode,
       log: {

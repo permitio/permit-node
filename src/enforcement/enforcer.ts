@@ -28,7 +28,7 @@ export class Enforcer implements IEnforcer {
 
   constructor(private config: IPermitConfig, private logger: Logger) {
     this.client = axios.create({
-      baseURL: `${this.config.sidecarUrl}/`,
+      baseURL: `${this.config.pdp}/`,
     });
     this.contextStore = new ContextStore();
   }

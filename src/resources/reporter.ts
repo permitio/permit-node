@@ -49,7 +49,7 @@ export class ResourceReporter implements IResourceReporter {
     private logger: Logger,
   ) {
     this.client = axios.create({
-      baseURL: `${this.config.sidecarUrl}/`,
+      baseURL: `${this.config.pdp}/`,
       headers: {
         Authorization: `Bearer ${this.config.token}`,
         'Content-Type': 'application/json',
