@@ -3,7 +3,7 @@ import { Logger } from 'winston';
 
 import { IPermitConfig } from '../config';
 
-import { ActionConfig, ResourceConfig } from './interfaces';
+import { ActionConfig, ResourceConfig, ResourceTypes } from './interfaces';
 import { ActionDefinition, ResourceDefinition, ResourceRegistry } from './registry';
 
 export interface SyncObjectResponse {
@@ -28,6 +28,7 @@ export class ResourceStub {
 export interface IResourceReporter {
   resource(config: ResourceConfig): ResourceStub;
   action(config: ActionConfig): ActionDefinition;
+  syncResources(config: ResourceTypes): ResourceStub[];
 }
 
 /**
@@ -55,7 +56,7 @@ export class ResourceReporter implements IResourceReporter {
       },
     });
     this.initialized = true; // TODO: remove this
-    this.syncResources();
+    this.syncResourcesToControlPlane();
   }
 
   public get token(): string {
@@ -80,7 +81,7 @@ export class ResourceReporter implements IResourceReporter {
     if (this.initialized && !this.registry.isSynced(resource)) {
       this.logger.info(`syncing resource: ${resource.repr()}`);
       this.client
-        .put<SyncObjectResponse>('cloud/resources', resource.dict())
+        .put<SyncObjectResponse>(`cloud/resources/${resource.name}`, resource.dict())
         .then((response) => {
           this.registry.markAsSynced(resource, response.data.id);
         })
@@ -109,7 +110,7 @@ export class ResourceReporter implements IResourceReporter {
     }
   }
 
-  private syncResources(): void {
+  private syncResourcesToControlPlane(): void {
     // will also sync actions
     for (const resource of this.registry.resourceList) {
       this.maybeSyncResource(resource);
@@ -138,10 +139,41 @@ export class ResourceReporter implements IResourceReporter {
     );
   }
 
+  // TODO: currently we use the old api (PUT single resource)
+  // due to mismatches with the resource registry
+  public syncResources(config: ResourceTypes): ResourceStub[] {
+    const stubs: ResourceStub[] = [];
+    for (const resource of config.resources) {
+      stubs.push(
+        this.addResource(
+          new ResourceDefinition(
+            resource.type,
+            'rest',
+            `/resources/${resource.type}`,
+            resource.description,
+            Object.keys(resource.actions).map((actionName) => {
+              const action = resource.actions[actionName];
+              return new ActionDefinition(
+                actionName,
+                action.title ?? actionName,
+                action.description,
+                action.path,
+                action.attributes || {},
+              );
+            }),
+            resource.attributes || {},
+          ),
+        ),
+      );
+    }
+    return stubs;
+  }
+
   public getMethods(): IResourceReporter {
     return {
       resource: this.resource.bind(this),
       action: this.action.bind(this),
+      syncResources: this.syncResources.bind(this),
     };
   }
 }
