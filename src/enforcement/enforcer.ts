@@ -6,6 +6,8 @@ import { Context, ContextStore } from '../utils/context';
 
 import { IAction, IResource, IUser, OpaResult } from './interfaces';
 
+const RESOURCE_DELIMITER = ':';
+
 function isString(x: any): x is string {
   return typeof x === 'string';
 }
@@ -14,7 +16,7 @@ export interface IEnforcer {
   check(
     user: IUser | string,
     action: IAction,
-    resource: IResource,
+    resource: IResource | string,
     context?: Context,
   ): Promise<boolean>;
 }
@@ -55,12 +57,13 @@ export class Enforcer implements IEnforcer {
   public async check(
     user: IUser | string,
     action: IAction,
-    resource: IResource,
+    resource: IResource | string,
     context: Context = {}, // context provided specifically for this query
   ): Promise<boolean> {
     const normalizedUser: string = isString(user) ? user : user.key;
 
-    const normalizedResource: IResource = Enforcer.normalizeResource(resource);
+    const resourceObj = isString(resource) ? Enforcer.resourceFromString(resource) : resource;
+    const normalizedResource: IResource = Enforcer.normalizeResource(resourceObj);
 
     const queryContext = this.contextStore.getDerivedContext(context);
     const input = {
@@ -77,7 +80,7 @@ export class Enforcer implements IEnforcer {
         if (this.config.debugMode) {
           this.logger.info(
             `permit.check(${normalizedUser}, ${action}, ${Enforcer.resourceRepr(
-              resource,
+              resourceObj,
             )}) = ${decision}`,
           );
         }
@@ -86,7 +89,7 @@ export class Enforcer implements IEnforcer {
       .catch((error) => {
         this.logger.error(
           `Error in permit.check(${normalizedUser}, ${action}, ${Enforcer.resourceRepr(
-            resource,
+            resourceObj,
           )}):\n${error}`,
         );
         return false;
@@ -119,6 +122,17 @@ export class Enforcer implements IEnforcer {
       resourceRepr += `, tenant: ${resource.tenant}`;
     }
     return resourceRepr;
+  }
+
+  private static resourceFromString(resource: string): IResource {
+    const parts = resource.split(RESOURCE_DELIMITER);
+    if (parts.length < 1 || parts.length > 2) {
+      throw Error(`permit.check() got invalid resource string: '${resource}'`);
+    }
+    return {
+      type: parts[0],
+      id: parts.length > 1 ? parts[1] : undefined,
+    };
   }
 
   public getMethods(): IEnforcer {
