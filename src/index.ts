@@ -14,7 +14,7 @@ import { RecursivePartial } from './utils/types';
 // exported interfaces
 export { ISyncedUser, ISyncedRole, IPermitCache } from './cache/client';
 export { IUser, IAction, IResource } from './enforcement/interfaces';
-export { ITenant, IPermitCloudReads, IPermitCloudMutations } from './mutations/client';
+export { ITenant, IReadApis, IWriteApis } from './mutations/client';
 export { ResourceConfig, ActionConfig } from './resources/interfaces';
 export { IUrlContext } from './resources/registry';
 export { Context, ContextTransform } from './utils/context';

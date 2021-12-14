@@ -11,16 +11,39 @@ export interface ITenant {
   description?: string;
 }
 
+interface IOperation<T = void> {
+  run: () => Promise<T>;
+}
+
+export type IReadOperation<T = void> = IOperation<T>;
+export type IWriteOperation<T = void> = IOperation<T>;
+
+export class ReadOperation<T> implements IReadOperation<T> {
+  constructor(private callback: () => Promise<T>) {}
+
+  public async run(): Promise<T> {
+    return await this.callback();
+  }
+}
+
+export class WriteOperation<T> implements IWriteOperation<T> {
+  constructor(private callback: () => Promise<T>) {}
+
+  public async run(): Promise<T> {
+    return await this.callback();
+  }
+}
+
 /**
  * This interface contains *read actions* that goes outside
  * of your local network and queries permit.io cloud api.
  * You should be aware that these actions incur some cross-cloud latency.
  */
-export interface IPermitCloudReads {
-  getUser(userKey: string): Promise<Dict>;
-  getRole(roleKey: string): Promise<Dict>;
-  getTenant(tenantKey: string): Promise<Dict>;
-  getAssignedRoles(userKey: string, tenantKey?: string): Promise<Dict>; // either in one tenant or in all tenants
+export interface IReadApis {
+  getUser(userKey: string): ReadOperation<Dict>;
+  getRole(roleKey: string): ReadOperation<Dict>;
+  getTenant(tenantKey: string): ReadOperation<Dict>;
+  getAssignedRoles(userKey: string, tenantKey?: string): ReadOperation<Dict>; // either in one tenant or in all tenants
 }
 
 /**
@@ -28,35 +51,38 @@ export interface IPermitCloudReads {
  * state by calling the permit.io api. These api calls goes *outside* your local network.
  * You should be aware that these actions incur some cross-cloud latency.
  */
-export interface IPermitCloudMutations {
+export interface IWriteApis {
   // user mutations
-  syncUser(user: IUser): Promise<Dict>; // create or update
-  deleteUser(userKey: string): Promise<number>;
+  syncUser(user: IUser): WriteOperation<Dict>; // create or update
+  deleteUser(userKey: string): WriteOperation<Dict>;
 
   // tenant mutations
-  createTenant(tenant: ITenant): Promise<Dict>;
-  updateTenant(tenant: ITenant): Promise<Dict>;
-  deleteTenant(tenantKey: string): Promise<number>;
+  createTenant(tenant: ITenant): WriteOperation<Dict>;
+  updateTenant(tenant: ITenant): WriteOperation<Dict>;
+  deleteTenant(tenantKey: string): WriteOperation<Dict>;
 
   // role mutations
-  assignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict>;
-  unassignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict>;
+  assignRole(userKey: string, roleKey: string, tenantKey: string): WriteOperation<Dict>;
+  unassignRole(userKey: string, roleKey: string, tenantKey: string): WriteOperation<Dict>;
 }
 
-export interface CloudReadCallback<T = void> {
-  (api: IPermitCloudReads): Promise<T>;
-}
+export interface IPermitApi extends IReadApis, IWriteApis {}
 
-export interface CloudWriteCallback<T = void> {
-  (api: IPermitCloudMutations): Promise<T>;
-}
+// export interface CloudReadCallback<T = void> {
+//   (api: IReadApis): Promise<T>;
+// }
+
+// export interface CloudWriteCallback<T = void> {
+//   (api: IWriteApis): Promise<T>;
+// }
 
 export interface IMutationsClient {
-  read<T = void>(callback: CloudReadCallback<T>): Promise<T>;
-  save<T = void>(callback: CloudWriteCallback<T>): Promise<T>;
+  read<T = void>(...operations: IReadOperation<T>[]): Promise<T[]>;
+  write<T = void>(...operations: IWriteOperation<T>[]): Promise<T[]>;
+  api: IPermitApi;
 }
 
-export class MutationsClient implements IPermitCloudReads, IPermitCloudMutations, IMutationsClient {
+export class MutationsClient implements IReadApis, IWriteApis, IMutationsClient {
   private client: AxiosInstance = axios.create();
 
   constructor(private config: IPermitConfig, private logger: Logger) {
@@ -70,225 +96,252 @@ export class MutationsClient implements IPermitCloudReads, IPermitCloudMutations
   }
 
   // read api -----------------------------------------------------------------
-  public async getUser(userKey: string): Promise<Dict> {
-    if (this.config.debugMode) {
-      this.logger.info(`permit.api.getUser(${userKey})`);
-    }
-    return this.client
-      .get(`cloud/users/${userKey}`)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error: Error) => {
-        this.logger.error(`tried to get user with key: ${userKey}, got error: ${error}`);
-        throw error;
-      });
+  public getUser(userKey: string): ReadOperation<Dict> {
+    return new ReadOperation(async () => {
+      if (this.config.debugMode) {
+        this.logger.info(`permit.api.getUser(${userKey})`);
+      }
+      return this.client
+        .get(`cloud/users/${userKey}`)
+        .then((response) => {
+          return response.data;
+        })
+        .catch((error: Error) => {
+          this.logger.error(`tried to get user with key: ${userKey}, got error: ${error}`);
+          throw error;
+        });
+    });
   }
 
-  public async getRole(roleKey: string): Promise<Dict> {
-    if (this.config.debugMode) {
-      this.logger.info(`permit.api.getRole(${roleKey})`);
-    }
-    return this.client
-      .get(`cloud/roles/${roleKey}`)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error: Error) => {
-        this.logger.error(`tried to get role with id: ${roleKey}, got error: ${error}`);
-        throw error;
-      });
+  public getRole(roleKey: string): ReadOperation<Dict> {
+    return new ReadOperation(async () => {
+      if (this.config.debugMode) {
+        this.logger.info(`permit.api.getRole(${roleKey})`);
+      }
+      return this.client
+        .get(`cloud/roles/${roleKey}`)
+        .then((response) => {
+          return response.data;
+        })
+        .catch((error: Error) => {
+          this.logger.error(`tried to get role with id: ${roleKey}, got error: ${error}`);
+          throw error;
+        });
+    });
   }
 
-  public async getTenant(tenantKey: string): Promise<Dict> {
-    if (this.config.debugMode) {
-      this.logger.info(`permit.api.getTenant(${tenantKey})`);
-    }
-    return this.client
-      .get(`cloud/tenants/${tenantKey}`)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error: Error) => {
-        this.logger.error(`tried to get tenant with id: ${tenantKey}, got error: ${error}`);
-        throw error;
-      });
+  public getTenant(tenantKey: string): ReadOperation<Dict> {
+    return new ReadOperation(async () => {
+      if (this.config.debugMode) {
+        this.logger.info(`permit.api.getTenant(${tenantKey})`);
+      }
+      return this.client
+        .get(`cloud/tenants/${tenantKey}`)
+        .then((response) => {
+          return response.data;
+        })
+        .catch((error: Error) => {
+          this.logger.error(`tried to get tenant with id: ${tenantKey}, got error: ${error}`);
+          throw error;
+        });
+    });
   }
 
   // either in one tenant or in all tenants
   // TODO: fix schema
-  public async getAssignedRoles(userKey: string, tenantKey?: string): Promise<Dict> {
-    if (this.config.debugMode) {
-      this.logger.info(`permit.api.getAssignedRoles(user=${userKey}, tenant=${tenantKey})`);
-    }
-    let url = `cloud/role_assignments?user=${userKey}`;
-    if (tenantKey !== undefined) {
-      url += `&tenant=${tenantKey}`;
-    }
-    return await this.client
-      .get<Dict>(url)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error: Error) => {
-        this.logger.error(`could not get user roles for user ${userKey}, got error: ${error}`);
-        throw error;
-      });
+  public getAssignedRoles(userKey: string, tenantKey?: string): ReadOperation<Dict> {
+    return new ReadOperation(async () => {
+      if (this.config.debugMode) {
+        this.logger.info(`permit.api.getAssignedRoles(user=${userKey}, tenant=${tenantKey})`);
+      }
+      let url = `cloud/role_assignments?user=${userKey}`;
+      if (tenantKey !== undefined) {
+        url += `&tenant=${tenantKey}`;
+      }
+      return await this.client
+        .get<Dict>(url)
+        .then((response) => {
+          return response.data;
+        })
+        .catch((error: Error) => {
+          this.logger.error(`could not get user roles for user ${userKey}, got error: ${error}`);
+          throw error;
+        });
+    });
   }
 
   // write api ----------------------------------------------------------------
   // user mutations
-  public async syncUser(user: IUser): Promise<Dict> {
-    if (this.config.debugMode) {
-      this.logger.info(`permit.api.syncUser(${JSON.stringify(user)})`);
-    }
-    return await this.client
-      .put<Dict>('cloud/users', user)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error: Error) => {
-        this.logger.error(`tried to sync user with key: ${user.key}, got error: ${error}`);
-        throw error;
-      });
+  public syncUser(user: IUser): WriteOperation<Dict> {
+    return new WriteOperation(async () => {
+      if (this.config.debugMode) {
+        this.logger.info(`permit.api.syncUser(${JSON.stringify(user)})`);
+      }
+      return await this.client
+        .put<Dict>('cloud/users', user)
+        .then((response) => {
+          return response.data;
+        })
+        .catch((error: Error) => {
+          this.logger.error(`tried to sync user with key: ${user.key}, got error: ${error}`);
+          throw error;
+        });
+    });
   }
 
-  public async deleteUser(userKey: string): Promise<number> {
-    if (this.config.debugMode) {
-      this.logger.info(`permit.api.deleteUser(${userKey})`);
-    }
-    return await this.client
-      .delete(`cloud/users/${userKey}`)
-      .then((response) => {
-        return response.status;
-      })
-      .catch((error: Error) => {
-        this.logger.error(`tried to delete user with key: ${userKey}, got error: ${error}`);
-        throw error;
-      });
+  public deleteUser(userKey: string): WriteOperation<Dict> {
+    return new WriteOperation(async () => {
+      if (this.config.debugMode) {
+        this.logger.info(`permit.api.deleteUser(${userKey})`);
+      }
+      return await this.client
+        .delete(`cloud/users/${userKey}`)
+        .then((response) => {
+          return { status: response.status };
+        })
+        .catch((error: Error) => {
+          this.logger.error(`tried to delete user with key: ${userKey}, got error: ${error}`);
+          throw error;
+        });
+    });
   }
 
   // tenant mutations
-  public async createTenant(tenant: ITenant): Promise<Dict> {
-    if (this.config.debugMode) {
-      this.logger.info(`permit.api.createTenant(${JSON.stringify(tenant)})`);
-    }
-    const data: Dict = {};
-    data.externalId = tenant.key;
-    data.name = tenant.name;
-    if (tenant.description) {
-      data.description = tenant.description;
-    }
+  public createTenant(tenant: ITenant): WriteOperation<Dict> {
+    return new WriteOperation(async () => {
+      if (this.config.debugMode) {
+        this.logger.info(`permit.api.createTenant(${JSON.stringify(tenant)})`);
+      }
+      const data: Dict = {};
+      data.externalId = tenant.key;
+      data.name = tenant.name;
+      if (tenant.description) {
+        data.description = tenant.description;
+      }
 
-    return await this.client
-      .put<Dict>('cloud/tenants', data)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error: Error) => {
-        this.logger.error(`tried to create tenant with key: ${tenant.key}, got error: ${error}`);
-        throw error;
-      });
+      return await this.client
+        .put<Dict>('cloud/tenants', data)
+        .then((response) => {
+          return response.data;
+        })
+        .catch((error: Error) => {
+          this.logger.error(`tried to create tenant with key: ${tenant.key}, got error: ${error}`);
+          throw error;
+        });
+    });
   }
 
-  public async updateTenant(tenant: ITenant): Promise<Dict> {
-    if (this.config.debugMode) {
-      this.logger.info(`permit.api.updateTenant(${JSON.stringify(tenant)})`);
-    }
-    const data: Dict = {};
-    data.name = tenant.name;
+  public updateTenant(tenant: ITenant): WriteOperation<Dict> {
+    return new WriteOperation(async () => {
+      if (this.config.debugMode) {
+        this.logger.info(`permit.api.updateTenant(${JSON.stringify(tenant)})`);
+      }
+      const data: Dict = {};
+      data.name = tenant.name;
 
-    if (tenant.description) {
-      data.description = tenant.description;
-    }
+      if (tenant.description) {
+        data.description = tenant.description;
+      }
 
-    return await this.client
-      .patch<Dict>(`cloud/tenants/${tenant.key}`, data)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error: Error) => {
-        this.logger.error(`tried to update tenant with key: ${tenant.key}, got error: ${error}`);
-        throw error;
-      });
+      return await this.client
+        .patch<Dict>(`cloud/tenants/${tenant.key}`, data)
+        .then((response) => {
+          return response.data;
+        })
+        .catch((error: Error) => {
+          this.logger.error(`tried to update tenant with key: ${tenant.key}, got error: ${error}`);
+          throw error;
+        });
+    });
   }
 
-  public async deleteTenant(tenantKey: string): Promise<number> {
-    if (this.config.debugMode) {
-      this.logger.info(`permit.api.deleteTenant(${tenantKey})`);
-    }
-    return await this.client
-      .delete(`cloud/tenants/${tenantKey}`)
-      .then((response) => {
-        return response.status;
-      })
-      .catch((error: Error) => {
-        this.logger.error(`tried to delete tenant with key: ${tenantKey}, got error: ${error}`);
-        throw error;
-      });
+  public deleteTenant(tenantKey: string): WriteOperation<Dict> {
+    return new WriteOperation(async () => {
+      if (this.config.debugMode) {
+        this.logger.info(`permit.api.deleteTenant(${tenantKey})`);
+      }
+      return await this.client
+        .delete(`cloud/tenants/${tenantKey}`)
+        .then((response) => {
+          return { status: response.status };
+        })
+        .catch((error: Error) => {
+          this.logger.error(`tried to delete tenant with key: ${tenantKey}, got error: ${error}`);
+          throw error;
+        });
+    });
   }
 
   // role mutations
-  public async assignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict> {
-    const data = {
-      role: roleKey,
-      user: userKey,
-      scope: tenantKey,
-    };
-
-    if (this.config.debugMode) {
-      this.logger.info(`permit.api.assignRole(${JSON.stringify(data)})`);
-    }
-
-    return await this.client
-      .post<Dict>('cloud/role_assignments', data)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error: Error) => {
-        this.logger.error(
-          `could not assign role ${roleKey} to ${userKey} in tenant ${tenantKey}, got error: ${error}`,
-        );
-        throw error;
-      });
-  }
-
-  public async unassignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict> {
-    if (this.config.debugMode) {
+  public assignRole(userKey: string, roleKey: string, tenantKey: string): WriteOperation<Dict> {
+    return new WriteOperation(async () => {
       const data = {
         role: roleKey,
         user: userKey,
         scope: tenantKey,
       };
-      this.logger.info(`permit.api.assignRole(${JSON.stringify(data)})`);
-    }
 
-    return await this.client
-      .delete<Dict>(`cloud/role_assignments?role=${roleKey}&user=${userKey}&scope=${tenantKey}`)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error: Error) => {
-        this.logger.error(
-          `could not unassign role ${roleKey} of ${userKey} in tenant ${tenantKey}, got error: ${error}`,
-        );
-        throw error;
-      });
+      if (this.config.debugMode) {
+        this.logger.info(`permit.api.assignRole(${JSON.stringify(data)})`);
+      }
+
+      return await this.client
+        .post<Dict>('cloud/role_assignments', data)
+        .then((response) => {
+          return response.data;
+        })
+        .catch((error: Error) => {
+          this.logger.error(
+            `could not assign role ${roleKey} to ${userKey} in tenant ${tenantKey}, got error: ${error}`,
+          );
+          throw error;
+        });
+    });
+  }
+
+  public unassignRole(userKey: string, roleKey: string, tenantKey: string): WriteOperation<Dict> {
+    return new WriteOperation(async () => {
+      if (this.config.debugMode) {
+        const data = {
+          role: roleKey,
+          user: userKey,
+          scope: tenantKey,
+        };
+        this.logger.info(`permit.api.assignRole(${JSON.stringify(data)})`);
+      }
+
+      return await this.client
+        .delete<Dict>(`cloud/role_assignments?role=${roleKey}&user=${userKey}&scope=${tenantKey}`)
+        .then((response) => {
+          return response.data;
+        })
+        .catch((error: Error) => {
+          this.logger.error(
+            `could not unassign role ${roleKey} of ${userKey} in tenant ${tenantKey}, got error: ${error}`,
+          );
+          throw error;
+        });
+    });
   }
 
   // cloud api proxy ----------------------------------------------------------
-  public async read<T = void>(callback: CloudReadCallback<T>): Promise<T> {
-    const readProxy: IPermitCloudReads = {
+  public async read<T = void>(...operations: IReadOperation<T>[]): Promise<T[]> {
+    return await Promise.all(operations.map((op) => op.run()));
+  }
+
+  public async write<T = void>(...operations: IWriteOperation<T>[]): Promise<T[]> {
+    return await Promise.all(operations.map((op) => op.run()));
+  }
+
+  public get api(): IPermitApi {
+    return {
+      // read methods
       getUser: this.getUser.bind(this),
       getRole: this.getRole.bind(this),
       getTenant: this.getTenant.bind(this),
       getAssignedRoles: this.getAssignedRoles.bind(this),
-    };
-    return await callback(readProxy);
-  }
 
-  public async save<T = void>(callback: CloudWriteCallback<T>): Promise<T> {
-    const writeProxy: IPermitCloudMutations = {
+      // write methods
       syncUser: this.syncUser.bind(this),
       deleteUser: this.deleteUser.bind(this),
       createTenant: this.createTenant.bind(this),
@@ -297,13 +350,13 @@ export class MutationsClient implements IPermitCloudReads, IPermitCloudMutations
       assignRole: this.assignRole.bind(this),
       unassignRole: this.unassignRole.bind(this),
     };
-    return await callback(writeProxy);
   }
 
   public getMethods(): IMutationsClient {
     return {
       read: this.read.bind(this),
-      save: this.save.bind(this),
+      write: this.write.bind(this),
+      api: this.api,
     };
   }
 }

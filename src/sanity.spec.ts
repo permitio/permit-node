@@ -36,6 +36,22 @@ test('paths are processed correctly', async () =>
       ],
     });
 
+    await permit.write(
+      permit.api.createTenant({ key: 'tenant1', name: 'My First Tenant' }),
+      permit.api.assignRole('mysuperid', 'Admin', 'tenant1'),
+    );
+
+    // TODO: when we support zanzibar
+    // await permit.write(
+    //   permit.relationships({
+    //     tuples: [
+    //       { user: 'alice', relation: 'reader', object: 'document:A'},
+    //       { user: 'bob', relation: 'reader', object: 'document:B'},
+    //       { user: 'charlie', relation: 'reader', object: 'document:C'},
+    //     ]
+    //   })
+    // );
+
     // const context = permit.getUrlContext("/api/v1/boards/b1/tasks/t1", "GET");
     // if (!context) {
     //   return;
