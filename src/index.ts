@@ -1,6 +1,4 @@
 // For Default export
-import { EventEmitter } from 'events';
-
 import { IPermitCache, LocalCacheClient } from './cache/client';
 import { ConfigFactory, IPermitConfig } from './config';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
@@ -16,19 +14,13 @@ import { RecursivePartial } from './utils/types';
 // exported interfaces
 export { ISyncedUser, ISyncedRole, IPermitCache } from './cache/client';
 export { IUser, IAction, IResource } from './enforcement/interfaces';
-export { ITenant, IPermitCloudReads, IPermitCloudMutations } from './mutations/client';
+export { ITenant, IReadApis, IWriteApis } from './mutations/client';
 export { ResourceConfig, ActionConfig } from './resources/interfaces';
 export { IUrlContext } from './resources/registry';
 export { Context, ContextTransform } from './utils/context';
 
-interface IEventSubscriber {
-  on(event: string | symbol, listener: (...args: any[]) => void): EventEmitter;
-  once(event: string | symbol, listener: (...args: any[]) => void): EventEmitter;
-}
-
 export interface IPermitClient
-  extends IEventSubscriber,
-    IResourceReporter,
+  extends IResourceReporter,
     IEnforcer,
     IMutationsClient,
     IResourceRegistry,
@@ -38,66 +30,62 @@ export interface IPermitClient
 }
 
 /**
- * The PermitSDK class is a simple factory that returns
- * an initialized IPermitClient object that the user can work with.
+ * Permit.io SDK for Node.js
  *
- * The permit.io client can signal when its available.
- * all actions with the client should be after the 'ready' event has fired,
- * as shown below.
+ * You can use this class to enforce permissions in your app.
  *
- * usage example:
- * const permit: IPermitClient = PermitSDK.init({ // config });
- * permit.once('ready', () => {
- *  const permitted = await permit.check(user, action, resource);
- *  ...
- * })
+ * Usage:
+ * const permit = new Permit.init({ ... }); // receives a config object of type IPermitConfig
+ * const permitted = await permit.check(user, action, resource);
  */
-export class PermitSDK {
-  public static init(config: RecursivePartial<IPermitConfig>): IPermitClient {
-    const events = new EventEmitter();
-    const configOptions = ConfigFactory.build(config);
-    const logger = LoggerFactory.createLogger(configOptions);
-    const resourceRegistry = new ResourceRegistry();
-    const resourceReporter = new ResourceReporter(configOptions, resourceRegistry, logger);
-    const enforcer = new Enforcer(configOptions, logger);
-    const cache = new LocalCacheClient(configOptions, logger);
-    const mutationsClient = new MutationsClient(configOptions, logger);
-    const appManager = new AppManager(configOptions, resourceReporter, logger);
-    if (configOptions.debugMode) {
+class _Permit {
+  private _config: IPermitConfig;
+  private _resourceRegistry: ResourceRegistry;
+  private _resourceReporter: ResourceReporter;
+  private _enforcer: Enforcer;
+  private _cache: LocalCacheClient;
+  private _mutationsClient: MutationsClient;
+  private _appManager: AppManager;
+
+  constructor(config: RecursivePartial<IPermitConfig>) {
+    this._config = ConfigFactory.build(config);
+    const logger = LoggerFactory.createLogger(this._config);
+
+    this._resourceRegistry = new ResourceRegistry();
+    this._resourceReporter = new ResourceReporter(this._config, this._resourceRegistry, logger);
+    this._enforcer = new Enforcer(this._config, logger);
+    this._cache = new LocalCacheClient(this._config, logger);
+    this._mutationsClient = new MutationsClient(this._config, logger);
+    this._appManager = new AppManager(this._config, this._resourceReporter, logger);
+    if (this._config.debugMode) {
       logger.info(
-        `Permit.io SDK initialized with config:\n${JSON.stringify(configOptions, undefined, 2)}`,
+        `Permit.io SDK initialized with config:\n${JSON.stringify(this._config, undefined, 2)}`,
       );
     }
 
     // if auto mapping is enabled, hook into the http/https functions
-    if (configOptions.autoMapping.enable) {
-      hook(appManager, logger);
+    if (this._config.autoMapping.enable) {
+      hook(this._appManager, logger);
     }
 
-    // TODO: close a loop with the sidecar and backend and signal real success.
-    setImmediate(() => {
-      events.emit('ready');
-    });
-
-    return {
+    Object.assign(this, {
       // config
-      config: Object.freeze(configOptions),
+      config: Object.freeze(this._config),
 
       // exposed methods from specialized clients
-      ...enforcer.getMethods(),
-      ...resourceReporter.getMethods(),
-      ...mutationsClient.getMethods(),
-      cache: cache.getMethods(),
+      ...this._enforcer.getMethods(),
+      ...this._resourceReporter.getMethods(),
+      ...this._mutationsClient.getMethods(),
+      cache: this._cache.getMethods(),
 
       // resource registry (url mapper)
-      ...resourceRegistry.getMethods(),
+      ...this._resourceRegistry.getMethods(),
 
       // instrumentation methods
       decorate: decorate,
-
-      // event emitter (read only, i.e: subscriber)
-      on: events.on.bind(events),
-      once: events.once.bind(events),
-    };
+    });
   }
 }
+
+type Permit = _Permit & IPermitClient;
+export const Permit = _Permit as new (config: RecursivePartial<IPermitConfig>) => Permit;
