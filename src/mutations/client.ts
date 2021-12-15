@@ -326,11 +326,17 @@ export class MutationsClient implements IReadApis, IWriteApis, IMutationsClient 
 
   // cloud api proxy ----------------------------------------------------------
   public async read<T = void>(...operations: IReadOperation<T>[]): Promise<T[]> {
+    // reads do not need to be resolved in order
     return await Promise.all(operations.map((op) => op.run()));
   }
 
   public async write<T = void>(...operations: IWriteOperation<T>[]): Promise<T[]> {
-    return await Promise.all(operations.map((op) => op.run()));
+    const results = [];
+    for (const op of operations) {
+      const result = await op.run();
+      results.push(result);
+    }
+    return results;
   }
 
   public get api(): IPermitApi {
