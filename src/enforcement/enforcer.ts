@@ -63,7 +63,7 @@ export class Enforcer implements IEnforcer {
     const normalizedUser: string = isString(user) ? user : user.key;
 
     const resourceObj = isString(resource) ? Enforcer.resourceFromString(resource) : resource;
-    const normalizedResource: IResource = Enforcer.normalizeResource(resourceObj);
+    const normalizedResource: IResource = this.normalizeResource(resourceObj);
 
     const queryContext = this.contextStore.getDerivedContext(context);
     const input = {
@@ -97,7 +97,7 @@ export class Enforcer implements IEnforcer {
   }
 
   // TODO: remove this eventually, once we decide on finalized structure of AuthzQuery
-  private static normalizeResource(resource: IResource): IResource {
+  private normalizeResource(resource: IResource): IResource {
     const normalizedResource: IResource = Object.assign({}, resource);
     if (normalizedResource.context === undefined) {
       normalizedResource.context = {};
@@ -108,6 +108,11 @@ export class Enforcer implements IEnforcer {
       normalizedResource.tenant !== undefined
     ) {
       normalizedResource.context.tenant = normalizedResource.tenant;
+    }
+
+    // if tenant is empty, we migth auto-set the default tenant according to config
+    if (!normalizedResource.tenant && this.config.multiTenancy.useDefaultTenantIfEmpty) {
+      normalizedResource.tenant = this.config.multiTenancy.defaultTenant;
     }
 
     return normalizedResource;

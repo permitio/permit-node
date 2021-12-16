@@ -17,12 +17,20 @@ interface IAutoMappingConfig {
   reviewMode: boolean;
 }
 
+interface IMultiTenancyConfig {
+  // the key of the default tenant
+  defaultTenant: string;
+  // whether or not the SDK should replace an empty tenant with the default tenant
+  useDefaultTenantIfEmpty: boolean;
+}
+
 export interface IPermitConfig {
   token: string;
   pdp: string;
   debugMode: boolean;
   log: ILoggerConfig;
   autoMapping: IAutoMappingConfig;
+  multiTenancy: IMultiTenancyConfig;
 }
 
 // returns a config
@@ -54,6 +62,10 @@ export class ConfigFactory {
           .filter((prefix) => prefix.length > 0),
         // Print review and do nothing active
         reviewMode: JSON.parse(_.get(process.env, 'AUTHZ_REVIEW_MODE', 'false')),
+      },
+      multiTenancy: {
+        defaultTenant: 'default',
+        useDefaultTenantIfEmpty: true,
       },
     };
   }
