@@ -103,16 +103,17 @@ export class Enforcer implements IEnforcer {
       normalizedResource.context = {};
     }
 
+    // if tenant is empty, we migth auto-set the default tenant according to config
+    if (!normalizedResource.tenant && this.config.multiTenancy.useDefaultTenantIfEmpty) {
+      normalizedResource.tenant = this.config.multiTenancy.defaultTenant;
+    }
+
+    // copy tenant from resource.tenant to resource.context.tenant (until we change RBAC policy)
     if (
       normalizedResource.context?.tenant === undefined &&
       normalizedResource.tenant !== undefined
     ) {
       normalizedResource.context.tenant = normalizedResource.tenant;
-    }
-
-    // if tenant is empty, we migth auto-set the default tenant according to config
-    if (!normalizedResource.tenant && this.config.multiTenancy.useDefaultTenantIfEmpty) {
-      normalizedResource.tenant = this.config.multiTenancy.defaultTenant;
     }
 
     return normalizedResource;
