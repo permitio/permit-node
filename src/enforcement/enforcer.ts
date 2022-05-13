@@ -96,8 +96,8 @@ export class Enforcer implements IEnforcer {
       .post<OpaResult>('allowed', input)
       .then((response) => {
         if (response.status !== 200) {
-          throw new PermitPDPStatusError(`Permit SDK got status: ${response.status}, please check your SDK init and make sure the PDP sidecar is configured correctly. \n\
-            Read more about setting up the PDP at https://docs.permit.io/reference/SDKs/nodejs/`);
+          throw new PermitPDPStatusError(`Permit.check() got an unexpected status code: ${response.status}, please check your SDK init and make sure the PDP sidecar is configured correctly. \n\
+            Read more about setting up the PDP at https://docs.permit.io`);
         }
         const decision = response.data.allow || false;
         if (this.config.debugMode) {
@@ -117,7 +117,7 @@ export class Enforcer implements IEnforcer {
         );
         throw new PermitConnectionError(`Permit SDK got error: ${error.message} \n
           and cannot connect to the PDP, please check your configuration and make sure the PDP is running at ${this.config.pdp} and accepting requests. \n
-          Read more about setting up the PDP at https://docs.permit.io/reference/SDKs/nodejs \n`);
+          Read more about setting up the PDP at https://docs.permit.io`);
       });
   }
 
