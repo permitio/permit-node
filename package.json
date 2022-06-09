@@ -47,7 +47,7 @@
     "lodash": "^4.17.20",
     "path-to-regexp": "^6.2.0",
     "require-in-the-middle": "^5.1.0",
-    "winston": "^3.3.3"
+    "winston": "^3.7.2"
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
