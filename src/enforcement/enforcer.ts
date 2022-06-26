@@ -37,6 +37,14 @@ export interface IEnforcer {
     action: IAction,
     resource: IResource | string,
     context?: Context,
+    timeout?: number,
+  ): Promise<boolean>;
+  checkUnsafe(
+    user: IUser | string,
+    action: IAction,
+    resource: IResource | string,
+    context?: Context,
+    timeout?: number,
   ): Promise<boolean>;
 }
 
@@ -51,6 +59,7 @@ export class Enforcer implements IEnforcer {
     this.client = axios.create({
       baseURL: `${this.config.pdp}/`,
     });
+    this.logger = logger;
     this.contextStore = new ContextStore();
   }
 
@@ -78,8 +87,22 @@ export class Enforcer implements IEnforcer {
     action: IAction,
     resource: IResource | string,
     context: Context = {}, // context provided specifically for this query
+    timeout: number = 0,
+  ): Promise<boolean> {
+    return await this.checkUnsafe(user, action, resource, context, timeout).catch((err) => {
+      this.logger.error(err);
+      return false;
+    });
+  }
+  public async checkUnsafe(
+    user: IUser | string,
+    action: IAction,
+    resource: IResource | string,
+    context: Context = {}, // context provided specifically for this query
+    timeout: number = 0,
   ): Promise<boolean> {
     const normalizedUser: string = isString(user) ? user : user.key;
+    const checkTimeout = timeout || this.config.timeout;
 
     const resourceObj = isString(resource) ? Enforcer.resourceFromString(resource) : resource;
     const normalizedResource: IResource = this.normalizeResource(resourceObj);
@@ -93,7 +116,7 @@ export class Enforcer implements IEnforcer {
     };
 
     return await this.client
-      .post<OpaResult>('allowed', input)
+      .post<OpaResult>('allowed', input, { timeout: checkTimeout })
       .then((response) => {
         if (response.status !== 200) {
           throw new PermitPDPStatusError(`Permit.check() got an unexpected status code: ${response.status}, please check your SDK init and make sure the PDP sidecar is configured correctly. \n\
@@ -115,7 +138,7 @@ export class Enforcer implements IEnforcer {
             resourceObj,
           )}):\n${error}`,
         );
-        throw new PermitConnectionError(`Permit SDK got error: ${error.message} \n
+        throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
           and cannot connect to the PDP, please check your configuration and make sure the PDP is running at ${this.config.pdp} and accepting requests. \n
           Read more about setting up the PDP at https://docs.permit.io`);
       });
@@ -169,6 +192,7 @@ export class Enforcer implements IEnforcer {
   public getMethods(): IEnforcer {
     return {
       check: this.check.bind(this),
+      checkUnsafe: this.checkUnsafe.bind(this),
     };
   }
 }
