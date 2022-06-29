@@ -39,6 +39,7 @@ export interface IEnforcer {
     context?: Context,
     config?: CheckConfig,
   ): Promise<boolean>;
+
   checkWithExceptions(
     user: IUser | string,
     action: IAction,

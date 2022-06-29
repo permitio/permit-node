@@ -57,11 +57,9 @@ class _Permit {
     this._cache = new LocalCacheClient(this._config, logger);
     this._mutationsClient = new MutationsClient(this._config, logger);
     this._appManager = new AppManager(this._config, this._resourceReporter, logger);
-    if (this._config.debugMode) {
-      logger.info(
-        `Permit.io SDK initialized with config:\n${JSON.stringify(this._config, undefined, 2)}`,
-      );
-    }
+    logger.info(
+      `Permit.io SDK initialized with config:\n${JSON.stringify(this._config, undefined, 2)}`,
+    );
 
     // if auto mapping is enabled, hook into the http/https functions
     if (this._config.autoMapping.enable) {

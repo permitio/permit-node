@@ -41,7 +41,7 @@ export class ConfigFactory {
       pdp: _.get(process.env, 'AUTHZ_PDP_URL', 'http://localhost:7000'),
       log: {
         // Log level (debug mode sets default to "debug" otherwise 'info')
-        level: _.get(process.env, 'AUTHZ_LOG_LEVEL', 'warning'),
+        level: _.get(process.env, 'AUTHZ_LOG_LEVEL', 'warn'),
         // Label added to logs
         label: _.get(process.env, 'AUTHZ_LOG_LABEL', 'Permit.io'),
         // When logging - dump full data to console as JSON
