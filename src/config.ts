@@ -28,6 +28,7 @@ export interface IPermitConfig {
   token: string;
   pdp: string;
   log: ILoggerConfig;
+  debugMode: boolean | undefined;
   autoMapping: IAutoMappingConfig;
   multiTenancy: IMultiTenancyConfig;
   timeout: number | undefined;
@@ -65,6 +66,7 @@ export class ConfigFactory {
         useDefaultTenantIfEmpty: true,
       },
       timeout: undefined,
+      debugMode: undefined,
     };
   }
 

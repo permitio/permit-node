@@ -60,6 +60,12 @@ class _Permit {
     logger.info(
       `Permit.io SDK initialized with config:\n${JSON.stringify(this._config, undefined, 2)}`,
     );
+    if (this._config.debugMode) {
+      logger.warn(
+        'Debug mode is deprecated and will be removed in the next major version.\
+                    You can control log level with log.logLevel property.',
+      );
+    }
 
     // if auto mapping is enabled, hook into the http/https functions
     if (this._config.autoMapping.enable) {
