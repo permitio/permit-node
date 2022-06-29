@@ -27,7 +27,6 @@ interface IMultiTenancyConfig {
 export interface IPermitConfig {
   token: string;
   pdp: string;
-  debugMode: boolean;
   log: ILoggerConfig;
   autoMapping: IAutoMappingConfig;
   multiTenancy: IMultiTenancyConfig;
@@ -37,15 +36,12 @@ export interface IPermitConfig {
 // returns a config
 export class ConfigFactory {
   static defaults(): IPermitConfig {
-    const debugMode: boolean = JSON.parse(_.get(process.env, 'AUTHZ_DEBUG_MODE', 'true'));
     return {
       token: _.get(process.env, 'AUTHZ_LOG_LEVEL', ''),
       pdp: _.get(process.env, 'AUTHZ_PDP_URL', 'http://localhost:7000'),
-      // Sets debug mode - log to console
-      debugMode: debugMode == false ? false : true,
       log: {
         // Log level (debug mode sets default to "debug" otherwise 'info')
-        level: _.get(process.env, 'AUTHZ_LOG_LEVEL', debugMode ? 'debug' : 'info'),
+        level: _.get(process.env, 'AUTHZ_LOG_LEVEL', 'warning'),
         // Label added to logs
         label: _.get(process.env, 'AUTHZ_LOG_LABEL', 'Permit.io'),
         // When logging - dump full data to console as JSON
@@ -79,11 +75,6 @@ export class ConfigFactory {
    */
   static build(options: RecursivePartial<IPermitConfig>): IPermitConfig {
     const config = _.merge(_.assign({}, ConfigFactory.defaults()), options);
-
-    // if no log level was set manually, but debug mode is set, we fix the default log level
-    if (!options.log?.level && options.debugMode !== undefined) {
-      config.log.level = options.debugMode ? 'debug' : 'info';
-    }
 
     return config;
   }

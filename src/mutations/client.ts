@@ -98,9 +98,7 @@ export class MutationsClient implements IReadApis, IWriteApis, IMutationsClient 
   // read api -----------------------------------------------------------------
   public getUser(userKey: string): ReadOperation<Dict> {
     return new ReadOperation(async () => {
-      if (this.config.debugMode) {
-        this.logger.info(`permit.api.getUser(${userKey})`);
-      }
+      this.logger.info(`permit.api.getUser(${userKey})`);
       return this.client
         .get(`cloud/users/${userKey}`)
         .then((response) => {
@@ -115,9 +113,7 @@ export class MutationsClient implements IReadApis, IWriteApis, IMutationsClient 
 
   public getRole(roleKey: string): ReadOperation<Dict> {
     return new ReadOperation(async () => {
-      if (this.config.debugMode) {
-        this.logger.info(`permit.api.getRole(${roleKey})`);
-      }
+      this.logger.info(`permit.api.getRole(${roleKey})`);
       return this.client
         .get(`cloud/roles/${roleKey}`)
         .then((response) => {
@@ -132,9 +128,7 @@ export class MutationsClient implements IReadApis, IWriteApis, IMutationsClient 
 
   public getTenant(tenantKey: string): ReadOperation<Dict> {
     return new ReadOperation(async () => {
-      if (this.config.debugMode) {
-        this.logger.info(`permit.api.getTenant(${tenantKey})`);
-      }
+      this.logger.info(`permit.api.getTenant(${tenantKey})`);
       return this.client
         .get(`cloud/tenants/${tenantKey}`)
         .then((response) => {
@@ -151,9 +145,7 @@ export class MutationsClient implements IReadApis, IWriteApis, IMutationsClient 
   // TODO: fix schema
   public getAssignedRoles(userKey: string, tenantKey?: string): ReadOperation<Dict> {
     return new ReadOperation(async () => {
-      if (this.config.debugMode) {
-        this.logger.info(`permit.api.getAssignedRoles(user=${userKey}, tenant=${tenantKey})`);
-      }
+      this.logger.info(`permit.api.getAssignedRoles(user=${userKey}, tenant=${tenantKey})`);
       let url = `cloud/role_assignments?user=${userKey}`;
       if (tenantKey !== undefined) {
         url += `&tenant=${tenantKey}`;
@@ -174,9 +166,7 @@ export class MutationsClient implements IReadApis, IWriteApis, IMutationsClient 
   // user mutations
   public syncUser(user: IUser): WriteOperation<Dict> {
     return new WriteOperation(async () => {
-      if (this.config.debugMode) {
-        this.logger.info(`permit.api.syncUser(${JSON.stringify(user)})`);
-      }
+      this.logger.info(`permit.api.syncUser(${JSON.stringify(user)})`);
       return await this.client
         .put<Dict>('cloud/users', user)
         .then((response) => {
@@ -191,9 +181,7 @@ export class MutationsClient implements IReadApis, IWriteApis, IMutationsClient 
 
   public deleteUser(userKey: string): WriteOperation<Dict> {
     return new WriteOperation(async () => {
-      if (this.config.debugMode) {
-        this.logger.info(`permit.api.deleteUser(${userKey})`);
-      }
+      this.logger.info(`permit.api.deleteUser(${userKey})`);
       return await this.client
         .delete(`cloud/users/${userKey}`)
         .then((response) => {
@@ -209,9 +197,7 @@ export class MutationsClient implements IReadApis, IWriteApis, IMutationsClient 
   // tenant mutations
   public createTenant(tenant: ITenant): WriteOperation<Dict> {
     return new WriteOperation(async () => {
-      if (this.config.debugMode) {
-        this.logger.info(`permit.api.createTenant(${JSON.stringify(tenant)})`);
-      }
+      this.logger.info(`permit.api.createTenant(${JSON.stringify(tenant)})`);
       const data: Dict = {};
       data.externalId = tenant.key;
       data.name = tenant.name;
@@ -233,9 +219,7 @@ export class MutationsClient implements IReadApis, IWriteApis, IMutationsClient 
 
   public updateTenant(tenant: ITenant): WriteOperation<Dict> {
     return new WriteOperation(async () => {
-      if (this.config.debugMode) {
-        this.logger.info(`permit.api.updateTenant(${JSON.stringify(tenant)})`);
-      }
+      this.logger.info(`permit.api.updateTenant(${JSON.stringify(tenant)})`);
       const data: Dict = {};
       data.name = tenant.name;
 
@@ -257,9 +241,7 @@ export class MutationsClient implements IReadApis, IWriteApis, IMutationsClient 
 
   public deleteTenant(tenantKey: string): WriteOperation<Dict> {
     return new WriteOperation(async () => {
-      if (this.config.debugMode) {
-        this.logger.info(`permit.api.deleteTenant(${tenantKey})`);
-      }
+      this.logger.info(`permit.api.deleteTenant(${tenantKey})`);
       return await this.client
         .delete(`cloud/tenants/${tenantKey}`)
         .then((response) => {
@@ -281,9 +263,7 @@ export class MutationsClient implements IReadApis, IWriteApis, IMutationsClient 
         scope: tenantKey,
       };
 
-      if (this.config.debugMode) {
-        this.logger.info(`permit.api.assignRole(${JSON.stringify(data)})`);
-      }
+      this.logger.info(`permit.api.assignRole(${JSON.stringify(data)})`);
 
       return await this.client
         .post<Dict>('cloud/role_assignments', data)
@@ -301,14 +281,12 @@ export class MutationsClient implements IReadApis, IWriteApis, IMutationsClient 
 
   public unassignRole(userKey: string, roleKey: string, tenantKey: string): WriteOperation<Dict> {
     return new WriteOperation(async () => {
-      if (this.config.debugMode) {
-        const data = {
-          role: roleKey,
-          user: userKey,
-          scope: tenantKey,
-        };
-        this.logger.info(`permit.api.assignRole(${JSON.stringify(data)})`);
-      }
+      const data = {
+        role: roleKey,
+        user: userKey,
+        scope: tenantKey,
+      };
+      this.logger.info(`permit.api.assignRole(${JSON.stringify(data)})`);
 
       return await this.client
         .delete<Dict>(`cloud/role_assignments?role=${roleKey}&user=${userKey}&scope=${tenantKey}`)
