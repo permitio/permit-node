@@ -30,7 +30,7 @@ export interface IPermitConfig {
   log: ILoggerConfig;
   autoMapping: IAutoMappingConfig;
   multiTenancy: IMultiTenancyConfig;
-  timeout: number;
+  timeout: number | undefined;
 }
 
 // returns a config
@@ -64,7 +64,7 @@ export class ConfigFactory {
         defaultTenant: 'default',
         useDefaultTenantIfEmpty: true,
       },
-      timeout: 0,
+      timeout: undefined,
     };
   }
 
