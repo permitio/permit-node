@@ -39,14 +39,6 @@ export interface IEnforcer {
     context?: Context,
     config?: CheckConfig,
   ): Promise<boolean>;
-
-  checkWithExceptions(
-    user: IUser | string,
-    action: IAction,
-    resource: IResource | string,
-    context?: Context,
-    config?: CheckConfig,
-  ): Promise<boolean>;
 }
 
 /**
@@ -92,7 +84,9 @@ export class Enforcer implements IEnforcer {
     config: CheckConfig = {},
   ): Promise<boolean> {
     return await this.checkWithExceptions(user, action, resource, context, config).catch((err) => {
-      if (config.throwExceptions) {
+      const shouldThrow =
+        config.throwOnError === undefined ? this.config.throwOnError : config.throwOnError;
+      if (shouldThrow) {
         throw err;
       } else {
         this.logger.error(err);
@@ -100,7 +94,7 @@ export class Enforcer implements IEnforcer {
       }
     });
   }
-  public async checkWithExceptions(
+  private async checkWithExceptions(
     user: IUser | string,
     action: IAction,
     resource: IResource | string,
@@ -196,7 +190,6 @@ export class Enforcer implements IEnforcer {
   public getMethods(): IEnforcer {
     return {
       check: this.check.bind(this),
-      checkWithExceptions: this.checkWithExceptions.bind(this),
     };
   }
 }
