@@ -48,8 +48,6 @@ export class LoggerFactory {
       format: winston.format.simple(),
       transports: [
         new SimpleConsoleTransport({
-          // If not in debug - show nothing in console
-          silent: !config.debugMode,
           format: winston.format.combine(
             winston.format.label({ label: config.log.label }),
             winston.format.timestamp(),

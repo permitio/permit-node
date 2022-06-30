@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import { Logger } from 'winston';
 
 import { IPermitConfig } from '../config';
-import { Context, ContextStore } from '../utils/context';
+import { CheckConfig, Context, ContextStore } from '../utils/context';
 
 import { IAction, IResource, IUser, OpaResult } from './interfaces';
 
@@ -37,6 +37,15 @@ export interface IEnforcer {
     action: IAction,
     resource: IResource | string,
     context?: Context,
+    config?: CheckConfig,
+  ): Promise<boolean>;
+
+  checkWithExceptions(
+    user: IUser | string,
+    action: IAction,
+    resource: IResource | string,
+    context?: Context,
+    config?: CheckConfig,
   ): Promise<boolean>;
 }
 
@@ -51,6 +60,7 @@ export class Enforcer implements IEnforcer {
     this.client = axios.create({
       baseURL: `${this.config.pdp}/`,
     });
+    this.logger = logger;
     this.contextStore = new ContextStore();
   }
 
@@ -70,6 +80,7 @@ export class Enforcer implements IEnforcer {
    * @param action
    * @param resource
    * @param context
+   * @param config
    *
    * @returns whether or not action is permitted for given user
    */
@@ -78,8 +89,26 @@ export class Enforcer implements IEnforcer {
     action: IAction,
     resource: IResource | string,
     context: Context = {}, // context provided specifically for this query
+    config: CheckConfig = {},
+  ): Promise<boolean> {
+    return await this.checkWithExceptions(user, action, resource, context, config).catch((err) => {
+      if (config.throwExceptions) {
+        throw err;
+      } else {
+        this.logger.error(err);
+        return false;
+      }
+    });
+  }
+  public async checkWithExceptions(
+    user: IUser | string,
+    action: IAction,
+    resource: IResource | string,
+    context: Context = {}, // context provided specifically for this query
+    config: CheckConfig = {},
   ): Promise<boolean> {
     const normalizedUser: string = isString(user) ? user : user.key;
+    const checkTimeout = config.timeout || this.config.timeout;
 
     const resourceObj = isString(resource) ? Enforcer.resourceFromString(resource) : resource;
     const normalizedResource: IResource = this.normalizeResource(resourceObj);
@@ -93,20 +122,18 @@ export class Enforcer implements IEnforcer {
     };
 
     return await this.client
-      .post<OpaResult>('allowed', input)
+      .post<OpaResult>('allowed', input, { timeout: checkTimeout })
       .then((response) => {
         if (response.status !== 200) {
           throw new PermitPDPStatusError(`Permit.check() got an unexpected status code: ${response.status}, please check your SDK init and make sure the PDP sidecar is configured correctly. \n\
             Read more about setting up the PDP at https://docs.permit.io`);
         }
         const decision = response.data.allow || false;
-        if (this.config.debugMode) {
-          this.logger.info(
-            `permit.check(${normalizedUser}, ${action}, ${Enforcer.resourceRepr(
-              resourceObj,
-            )}) = ${decision}`,
-          );
-        }
+        this.logger.info(
+          `permit.check(${normalizedUser}, ${action}, ${Enforcer.resourceRepr(
+            resourceObj,
+          )}) = ${decision}`,
+        );
         return decision;
       })
       .catch((error) => {
@@ -115,7 +142,7 @@ export class Enforcer implements IEnforcer {
             resourceObj,
           )}):\n${error}`,
         );
-        throw new PermitConnectionError(`Permit SDK got error: ${error.message} \n
+        throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
           and cannot connect to the PDP, please check your configuration and make sure the PDP is running at ${this.config.pdp} and accepting requests. \n
           Read more about setting up the PDP at https://docs.permit.io`);
       });
@@ -169,6 +196,7 @@ export class Enforcer implements IEnforcer {
   public getMethods(): IEnforcer {
     return {
       check: this.check.bind(this),
+      checkWithExceptions: this.checkWithExceptions.bind(this),
     };
   }
 }

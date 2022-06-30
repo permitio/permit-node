@@ -2,6 +2,11 @@ export interface Context {
   [id: string]: any;
 }
 
+export interface CheckConfig {
+  timeout?: number;
+  throwExceptions?: boolean;
+}
+
 export interface ContextTransform {
   (context: Context): Context;
 }

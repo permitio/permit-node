@@ -57,9 +57,13 @@ class _Permit {
     this._cache = new LocalCacheClient(this._config, logger);
     this._mutationsClient = new MutationsClient(this._config, logger);
     this._appManager = new AppManager(this._config, this._resourceReporter, logger);
+    logger.info(
+      `Permit.io SDK initialized with config:\n${JSON.stringify(this._config, undefined, 2)}`,
+    );
     if (this._config.debugMode) {
-      logger.info(
-        `Permit.io SDK initialized with config:\n${JSON.stringify(this._config, undefined, 2)}`,
+      logger.warn(
+        'Debug mode is deprecated and will be removed in the next major version.\
+                    You can control log level with log.logLevel property.',
       );
     }
 
