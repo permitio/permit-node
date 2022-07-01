@@ -4,7 +4,7 @@ export interface Context {
 
 export interface CheckConfig {
   timeout?: number;
-  throwExceptions?: boolean;
+  throwOnError?: boolean;
 }
 
 export interface ContextTransform {

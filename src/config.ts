@@ -32,6 +32,7 @@ export interface IPermitConfig {
   autoMapping: IAutoMappingConfig;
   multiTenancy: IMultiTenancyConfig;
   timeout: number | undefined;
+  throwOnError: boolean | undefined;
 }
 
 // returns a config
@@ -67,6 +68,7 @@ export class ConfigFactory {
       },
       timeout: undefined,
       debugMode: undefined,
+      throwOnError: undefined,
     };
   }
 
