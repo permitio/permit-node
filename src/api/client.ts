@@ -38,8 +38,8 @@ export interface IPermitApi {
   getTenants(): Promise<Tenant[]>;
   getResources(): Promise<Resource[]>;
   getResource(resourceKey: string): Promise<Resource | null>;
-  getResourceActions(): Promise<ResourceAction[]>;
-  getAction(actionKey: string): Promise<ResourceAction | null>;
+  getResourceActions(resourceKey: string): Promise<ResourceAction[]>;
+  getResourceAction(resourceKey: string, actionKey: string): Promise<ResourceAction | null>;
   getCurrentOrganization(): Promise<Organization | null>;
   getCurrentProject(): Promise<Project | null>;
   getCurrentEnvironment(): Promise<Environment | null>;
@@ -83,10 +83,22 @@ export class ApiClient implements IApiClient {
   }
 
   // read api -----------------------------------------------------------------
-  public getUser(userKey: string): Dict {
+  public isUser(userId: string): Promise<boolean> {
+    this.logger.info(`permit.api.isUser(${userId})`);
+    return this.getUser(userId)
+      .then((user) => {
+        return !!user.id;
+      })
+      .catch((error: Error) => {
+        this.logger.error(`permit.api.isUser(${userId}) failed: ${error.message}`);
+        throw error;
+      });
+  }
+
+  public getUser(userKey: string): Promise<User> {
     this.logger.info(`permit.api.getUser(${userKey})`);
     return this.client
-      .get(`cloud/users/${userKey}`)
+      .get(`${this.config.project}/${this.config.environment}/users/${userKey}`)
       .then((response) => {
         return response.data;
       })
@@ -95,11 +107,23 @@ export class ApiClient implements IApiClient {
         throw error;
       });
   }
+  public getUsers(): Promise<User[]> {
+    this.logger.info(`permit.api.getUsers()`);
+    return this.client
+      .get(`${this.config.project}/${this.config.environment}/users`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(`tried to get users, got error: ${error}`);
+        throw error;
+      });
+  }
 
-  public getRole(roleKey: string): Dict {
+  public getRole(roleKey: string): Promise<Role> {
     this.logger.info(`permit.api.getRole(${roleKey})`);
     return this.client
-      .get(`cloud/roles/${roleKey}`)
+      .get(`${this.config.project}/${this.config.environment}/roles/${roleKey}`)
       .then((response) => {
         return response.data;
       })
@@ -109,10 +133,23 @@ export class ApiClient implements IApiClient {
       });
   }
 
-  public getTenant(tenantKey: string): Dict {
+  public getRoles(): Promise<Role[]> {
+    this.logger.info(`permit.api.getRoles()`);
+    return this.client
+      .get(`${this.config.project}/${this.config.environment}/roles`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(`tried to get roles, got error: ${error}`);
+        throw error;
+      });
+  }
+
+  public getTenant(tenantKey: string): Promise<Tenant> {
     this.logger.info(`permit.api.getTenant(${tenantKey})`);
     return this.client
-      .get(`cloud/tenants/${tenantKey}`)
+      .get(`${this.config.project}/${this.config.environment}/tenants/${tenantKey}`)
       .then((response) => {
         return response.data;
       })
@@ -122,16 +159,83 @@ export class ApiClient implements IApiClient {
       });
   }
 
+  public getTenants(): Promise<Tenant[]> {
+    this.logger.info(`permit.api.getTenants()`);
+    return this.client
+      .get(`${this.config.project}/${this.config.environment}/tenants`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(`tried to get tenants, got error: ${error}`);
+        throw error;
+      });
+  }
+
+  public getResources(): Promise<Resource[]> {
+    this.logger.info(`permit.api.getResources()`);
+    return this.client
+      .get(`${this.config.project}/${this.config.environment}/resources`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(`tried to get resources, got error: ${error}`);
+        throw error;
+      });
+  }
+
+  public getResource(resourceKey: string): Promise<Resource> {
+    this.logger.info(`permit.api.getResource(${resourceKey})`);
+    return this.client
+      .get(`${this.config.project}/${this.config.environment}/resources/${resourceKey}`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(`tried to get resource, got error: ${error}`);
+        throw error;
+      });
+  }
+
+  public getResourceActions(resourceKey: string): Promise<ResourceAction[]> {
+    this.logger.info(`permit.api.getResourceActions()`);
+    return this.client
+      .get(`${this.config.project}/${this.config.environment}/resources/${resourceKey}/actions`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(`tried to get resourceAction, got error: ${error}`);
+        throw error;
+      });
+  }
+
+  public getResourceAction(resourceKey: string, actionKey: string): Promise<ResourceAction> {
+    this.logger.info(`permit.api.getResource(${resourceKey})`);
+    return this.client
+      .get(
+        `${this.config.project}/${this.config.environment}/resources/${resourceKey}/actions/${actionKey}`,
+      )
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(`tried to get resrouceAction, got error: ${error}`);
+        throw error;
+      });
+  }
+
   // either in one tenant or in all tenants
   // TODO: fix schema
-  public async getAssignedRoles(userKey: string, tenantKey?: string): Promise<Dict> {
+  public async getAssignedRoles(userKey: string, tenantKey?: string): Promise<RoleAssignment> {
     this.logger.info(`permit.api.getAssignedRoles(user=${userKey}, tenant=${tenantKey})`);
     let url = `cloud/role_assignments?user=${userKey}`;
     if (tenantKey !== undefined) {
       url += `&tenant=${tenantKey}`;
     }
     return await this.client
-      .get<Dict>(url)
+      .get<RoleAssignment>(url)
       .then((response) => {
         return response.data;
       })
@@ -277,11 +381,11 @@ export class ApiClient implements IApiClient {
       getRoles: this.getRoles.bind(this),
       getTenant: this.getTenant.bind(this),
       getTenants: this.getTenants.bind(this),
-      getUserTenants: this.getUserTenants.bind(this),
+      // getUserTenants: this.getUserTenants.bind(this), TODO how to do this?
       getResources: this.getResources.bind(this),
       getResource: this.getResource.bind(this),
-      getActions: this.getActions.bind(this),
-      getAction: this.getAction.bind(this),
+      getResourceActions: this.getResourceActions.bind(this),
+      getResourceAction: this.getResourceAction.bind(this),
       getCurrentOrganization: this.getCurrentOrganization.bind(this),
       getCurrentProject: this.getCurrentProject.bind(this),
       getCurrentEnvironment: this.getCurrentEnvironment.bind(this),
