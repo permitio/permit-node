@@ -2,11 +2,10 @@ import axios, { AxiosInstance } from 'axios';
 import { Logger } from 'winston';
 
 import { IPermitConfig } from '../config';
-import { IUser } from '../enforcement/interfaces';
-import { Environment } from '../types/environment';
+// import { Environment } from '../types/environment';
 import { DeleteResponse } from '../types/generic';
-import { Organization } from '../types/organization';
-import { Project } from '../types/project';
+// import { Organization } from '../types/organization';
+// import { Project } from '../types/project';
 import { Resource, ResourceCreate, ResourceUpdate } from '../types/resource';
 import {
   ResourceAction,
@@ -21,7 +20,6 @@ import {
 } from '../types/role-assignment';
 import { Tenant, TenantCreate, TenantUpdate } from '../types/tenant';
 import { User, UserCreate, UserUpdate } from '../types/user';
-import { Dict } from '../utils/dict';
 
 export interface ITenant {
   key: string;
@@ -33,17 +31,20 @@ export interface IPermitApi {
   isUser(userId: string): Promise<boolean>;
   getUser(userId: string): Promise<User | null>;
   getUsers(): Promise<User[]>;
-  getUserTenants(userId: string): Promise<Tenant[] | null>;
+  // getUserTenants(userId: string): Promise<Tenant[] | null>;
   getTenant(tenantKey: string): Promise<Tenant | null>;
   getTenants(): Promise<Tenant[]>;
+  getRole(roleKey: string): Promise<Role | null>;
+  getRoles(): Promise<Role[]>;
   getResources(): Promise<Resource[]>;
   getResource(resourceKey: string): Promise<Resource | null>;
   getResourceActions(resourceKey: string): Promise<ResourceAction[]>;
   getResourceAction(resourceKey: string, actionKey: string): Promise<ResourceAction | null>;
-  getCurrentOrganization(): Promise<Organization | null>;
-  getCurrentProject(): Promise<Project | null>;
-  getCurrentEnvironment(): Promise<Environment | null>;
-  getAssignedRoles(userId: string): Promise<Role[]>;
+
+  // getCurrentOrganization(): Promise<Organization | null>;
+  // getCurrentProject(): Promise<Project | null>;
+  // getCurrentEnvironment(): Promise<Environment | null>;
+  // getAssignedRoles(userId: string): Promise<Role[]>;
 
   createUser(user: UserCreate): Promise<User>;
   updateUser(user: UserUpdate): Promise<User>;
@@ -54,15 +55,15 @@ export interface IPermitApi {
   createResource(resource: ResourceCreate): Promise<Resource>;
   updateResource(resource: ResourceUpdate): Promise<Resource>;
   deleteResource(resourceKey: string): Promise<DeleteResponse>;
-  createAction(action: ResourceActionCreate): Promise<ResourceAction>;
-  updateAction(action: ResourceActionUpdate): Promise<ResourceAction>;
-  deleteAction(actionKey: string): Promise<DeleteResponse>;
+  createResourceAction(resourceKey: string, action: ResourceActionCreate): Promise<ResourceAction>;
+  updateResourceAction(resourceKey: string, action: ResourceActionUpdate): Promise<ResourceAction>;
+  deleteResourceAction(resourceKey: string, actionKey: string): Promise<DeleteResponse>;
   createRole(role: RoleCreate): Promise<Role>;
   updateRole(role: RoleUpdate): Promise<Role>;
   deleteRole(roleKey: string): Promise<DeleteResponse>;
   assignRole(roleAssignment: RoleAssignmentCreate): Promise<RoleAssignment>;
   unassignRole(roleAssignment: RoleAssignmentRemove): Promise<DeleteResponse>;
-  unassignRole(roleAssignmentId: string): Promise<DeleteResponse>;
+  // unassignRole(roleAssignmentId: string): Promise<DeleteResponse>;
 }
 
 export interface IApiClient {
@@ -71,15 +72,30 @@ export interface IApiClient {
 
 export class ApiClient implements IApiClient {
   private client: AxiosInstance = axios.create();
+  public userUrl: string;
+  public resourceUrl: string;
+  public roleUrl: string;
+  public tenantUrl: string;
+  public roleAssignementsUrl: string;
 
   constructor(private config: IPermitConfig, private logger: Logger) {
+    this.userUrl = `/facts/${this.config.project}/${this.config.environment}/users`;
+    this.resourceUrl = `/schema/${this.config.project}/${this.config.environment}/resources`;
+    this.roleUrl = `/schema/${this.config.project}/${this.config.environment}/roles`;
+    this.tenantUrl = `/facts/${this.config.project}/${this.config.environment}/tenants`;
+    this.roleAssignementsUrl = `/facts/${this.config.project}/${this.config.environment}/role_assignments`;
+
     this.client = axios.create({
-      baseURL: `${this.config.pdp}/`,
+      baseURL: `${this.config.permitUrl}/v2`,
       headers: {
-        Authorization: `Bearer ${this.config.token}`,
-        'Content-Type': 'application/json',
+        Cookie: 'permit_session',
       },
     });
+    // to debug axios requests
+    // this.client.interceptors.request.use(request => {
+    //   console.log('Starting Request', JSON.stringify(request, null, 2))
+    //   return request
+    // })
   }
 
   // read api -----------------------------------------------------------------
@@ -110,7 +126,7 @@ export class ApiClient implements IApiClient {
   public getUsers(): Promise<User[]> {
     this.logger.info(`permit.api.getUsers()`);
     return this.client
-      .get(`${this.config.project}/${this.config.environment}/users`)
+      .get(this.userUrl)
       .then((response) => {
         return response.data;
       })
@@ -123,7 +139,7 @@ export class ApiClient implements IApiClient {
   public getRole(roleKey: string): Promise<Role> {
     this.logger.info(`permit.api.getRole(${roleKey})`);
     return this.client
-      .get(`${this.config.project}/${this.config.environment}/roles/${roleKey}`)
+      .get(`${this.roleUrl}/${roleKey}`)
       .then((response) => {
         return response.data;
       })
@@ -136,7 +152,7 @@ export class ApiClient implements IApiClient {
   public getRoles(): Promise<Role[]> {
     this.logger.info(`permit.api.getRoles()`);
     return this.client
-      .get(`${this.config.project}/${this.config.environment}/roles`)
+      .get(this.roleUrl)
       .then((response) => {
         return response.data;
       })
@@ -149,7 +165,7 @@ export class ApiClient implements IApiClient {
   public getTenant(tenantKey: string): Promise<Tenant> {
     this.logger.info(`permit.api.getTenant(${tenantKey})`);
     return this.client
-      .get(`${this.config.project}/${this.config.environment}/tenants/${tenantKey}`)
+      .get(`${this.tenantUrl}/${tenantKey}`)
       .then((response) => {
         return response.data;
       })
@@ -162,7 +178,7 @@ export class ApiClient implements IApiClient {
   public getTenants(): Promise<Tenant[]> {
     this.logger.info(`permit.api.getTenants()`);
     return this.client
-      .get(`${this.config.project}/${this.config.environment}/tenants`)
+      .get(`${this.tenantUrl}`)
       .then((response) => {
         return response.data;
       })
@@ -175,7 +191,7 @@ export class ApiClient implements IApiClient {
   public getResources(): Promise<Resource[]> {
     this.logger.info(`permit.api.getResources()`);
     return this.client
-      .get(`${this.config.project}/${this.config.environment}/resources`)
+      .get(`${this.resourceUrl}`)
       .then((response) => {
         return response.data;
       })
@@ -188,7 +204,7 @@ export class ApiClient implements IApiClient {
   public getResource(resourceKey: string): Promise<Resource> {
     this.logger.info(`permit.api.getResource(${resourceKey})`);
     return this.client
-      .get(`${this.config.project}/${this.config.environment}/resources/${resourceKey}`)
+      .get(`${this.resourceUrl}/${resourceKey}`)
       .then((response) => {
         return response.data;
       })
@@ -201,7 +217,7 @@ export class ApiClient implements IApiClient {
   public getResourceActions(resourceKey: string): Promise<ResourceAction[]> {
     this.logger.info(`permit.api.getResourceActions()`);
     return this.client
-      .get(`${this.config.project}/${this.config.environment}/resources/${resourceKey}/actions`)
+      .get(`${this.resourceUrl}/${resourceKey}/actions`)
       .then((response) => {
         return response.data;
       })
@@ -214,9 +230,7 @@ export class ApiClient implements IApiClient {
   public getResourceAction(resourceKey: string, actionKey: string): Promise<ResourceAction> {
     this.logger.info(`permit.api.getResource(${resourceKey})`);
     return this.client
-      .get(
-        `${this.config.project}/${this.config.environment}/resources/${resourceKey}/actions/${actionKey}`,
-      )
+      .get(`${this.resourceUrl}/${resourceKey}/actions/${actionKey}`)
       .then((response) => {
         return response.data;
       })
@@ -247,44 +261,48 @@ export class ApiClient implements IApiClient {
 
   // write api ----------------------------------------------------------------
   // user mutations
-  public async syncUser(user: IUser): Promise<Dict> {
-    this.logger.info(`permit.api.syncUser(${JSON.stringify(user)})`);
+  public async createUser(user: UserCreate): Promise<User> {
+    this.logger.info(`permit.api.createUser(${JSON.stringify(user)})`);
     return await this.client
-      .put<Dict>('cloud/users', user)
+      .post<User>(this.userUrl, user)
       .then((response) => {
         return response.data;
       })
       .catch((error: Error) => {
-        this.logger.error(`tried to sync user with key: ${user.key}, got error: ${error}`);
+        this.logger.error(`tried to create user with key: ${user.key}, got error: ${error}`);
         throw error;
       });
   }
 
-  public async deleteUser(userKey: string): Promise<Dict> {
-    this.logger.info(`permit.api.deleteUser(${userKey})`);
+  public async updateUser(user: UserUpdate): Promise<User> {
+    this.logger.info(`permit.api.updateUser(${JSON.stringify(user)})`);
     return await this.client
-      .delete(`cloud/users/${userKey}`)
+      .put<User>(this.userUrl, user)
       .then((response) => {
-        return { status: response.status };
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(`tried to update user with name: ${user.firstName}, got error: ${error}`);
+        throw error;
+      });
+  }
+
+  public async deleteUser(userKey: string): Promise<DeleteResponse> {
+    this.logger.info(`permit.api.deleteUser(${JSON.stringify(userKey)})`);
+    return await this.client
+      .put<DeleteResponse>(`${this.config.project}/${this.config.environment}/users/${userKey}`)
+      .then((response) => {
+        return response.data;
       })
       .catch((error: Error) => {
         this.logger.error(`tried to delete user with key: ${userKey}, got error: ${error}`);
         throw error;
       });
   }
-
-  // tenant mutations
-  public async createTenant(tenant: ITenant): Promise<Dict> {
+  public async createTenant(tenant: TenantCreate): Promise<Tenant> {
     this.logger.info(`permit.api.createTenant(${JSON.stringify(tenant)})`);
-    const data: Dict = {};
-    data.externalId = tenant.key;
-    data.name = tenant.name;
-    if (tenant.description) {
-      data.description = tenant.description;
-    }
-
     return await this.client
-      .put<Dict>('cloud/tenants', data)
+      .post<Tenant>(`${this.tenantUrl}`, tenant)
       .then((response) => {
         return response.data;
       })
@@ -294,32 +312,24 @@ export class ApiClient implements IApiClient {
       });
   }
 
-  public async updateTenant(tenant: ITenant): Promise<Dict> {
+  public async updateTenant(tenant: TenantUpdate): Promise<Tenant> {
     this.logger.info(`permit.api.updateTenant(${JSON.stringify(tenant)})`);
-    const data: Dict = {};
-    data.name = tenant.name;
-
-    if (tenant.description) {
-      data.description = tenant.description;
-    }
-
     return await this.client
-      .patch<Dict>(`cloud/tenants/${tenant.key}`, data)
+      .put<Tenant>(`${this.tenantUrl}`, tenant)
       .then((response) => {
         return response.data;
       })
       .catch((error: Error) => {
-        this.logger.error(`tried to update tenant with key: ${tenant.key}, got error: ${error}`);
+        this.logger.error(`tried to update tenant with name: ${tenant.name}, got error: ${error}`);
         throw error;
       });
   }
-
-  public async deleteTenant(tenantKey: string): Promise<Dict> {
-    this.logger.info(`permit.api.deleteTenant(${tenantKey})`);
+  public async deleteTenant(tenantKey: string): Promise<DeleteResponse> {
+    this.logger.info(`permit.api.deleteTenant(${JSON.stringify(tenantKey)})`);
     return await this.client
-      .delete(`cloud/tenants/${tenantKey}`)
+      .put<DeleteResponse>(`${this.tenantUrl}/${tenantKey}`)
       .then((response) => {
-        return { status: response.status };
+        return response.data;
       })
       .catch((error: Error) => {
         this.logger.error(`tried to delete tenant with key: ${tenantKey}, got error: ${error}`);
@@ -327,45 +337,181 @@ export class ApiClient implements IApiClient {
       });
   }
 
-  // role mutations
-  public async assignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict> {
-    const data = {
-      role: roleKey,
-      user: userKey,
-      scope: tenantKey,
-    };
-
-    this.logger.info(`permit.api.assignRole(${JSON.stringify(data)})`);
-
+  public async createResource(resource: ResourceCreate): Promise<Resource> {
+    this.logger.info(`permit.api.createResource(${JSON.stringify(resource)})`);
     return await this.client
-      .post<Dict>('cloud/role_assignments', data)
+      .post<Resource>(`${this.resourceUrl}`, resource)
       .then((response) => {
         return response.data;
       })
       .catch((error: Error) => {
         this.logger.error(
-          `could not assign role ${roleKey} to ${userKey} in tenant ${tenantKey}, got error: ${error}`,
+          `tried to create resource with key: ${resource.key}, got error: ${error}`,
         );
         throw error;
       });
   }
 
-  public async unassignRole(userKey: string, roleKey: string, tenantKey: string): Promise<Dict> {
-    const data = {
-      role: roleKey,
-      user: userKey,
-      scope: tenantKey,
-    };
-    this.logger.info(`permit.api.assignRole(${JSON.stringify(data)})`);
-
+  public async updateResource(resource: ResourceUpdate): Promise<Resource> {
+    this.logger.info(`permit.api.updateResource(${JSON.stringify(resource)})`);
     return await this.client
-      .delete<Dict>(`cloud/role_assignments?role=${roleKey}&user=${userKey}&scope=${tenantKey}`)
+      .put<Resource>(`${this.resourceUrl}`, resource)
       .then((response) => {
         return response.data;
       })
       .catch((error: Error) => {
         this.logger.error(
-          `could not unassign role ${roleKey} of ${userKey} in tenant ${tenantKey}, got error: ${error}`,
+          `tried to update resource with name: ${resource.name}, got error: ${error}`,
+        );
+        throw error;
+      });
+  }
+
+  public async deleteResource(resourceKey: string): Promise<DeleteResponse> {
+    this.logger.info(`permit.api.deleteResource(${JSON.stringify(resourceKey)})`);
+    return await this.client
+      .put<DeleteResponse>(`${this.resourceUrl}/${resourceKey}`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(`tried to delete resource with key: ${resourceKey}, got error: ${error}`);
+        throw error;
+      });
+  }
+
+  public async createRole(role: RoleCreate): Promise<Role> {
+    this.logger.info(`permit.api.createRole(${JSON.stringify(role)})`);
+    return await this.client
+      .post<Role>(this.roleUrl, role)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(`tried to create role with key: ${role.key}, got error: ${error}`);
+        throw error;
+      });
+  }
+
+  public async updateRole(role: RoleUpdate): Promise<Role> {
+    this.logger.info(`permit.api.updateRole(${JSON.stringify(role)})`);
+    return await this.client
+      .put<Role>(this.roleUrl, role)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(`tried to update role with name: ${role.name}, got error: ${error}`);
+        throw error;
+      });
+  }
+
+  public async deleteRole(roleKey: string): Promise<DeleteResponse> {
+    this.logger.info(`permit.api.deleteRole(${JSON.stringify(roleKey)})`);
+    return await this.client
+      .put<DeleteResponse>(`${this.roleUrl}/${roleKey}`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(`tried to delete role with key: ${roleKey}, got error: ${error}`);
+        throw error;
+      });
+  }
+
+  public async createResourceAction(
+    resourceKey: string,
+    resourceAction: ResourceActionCreate,
+  ): Promise<ResourceAction> {
+    this.logger.info(`permit.api.createResourceAction(${JSON.stringify(resourceAction)})`);
+    return await this.client
+      .post<ResourceAction>(`${this.resourceUrl}/${resourceKey}/actions`, resourceAction)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(
+          `tried to create resourceAction with key: ${resourceAction.key}, got error: ${error}`,
+        );
+        throw error;
+      });
+  }
+
+  public async updateResourceAction(
+    resourceKey: string,
+    resourceAction: ResourceActionUpdate,
+  ): Promise<ResourceAction> {
+    this.logger.info(`permit.api.updateResourceAction(${JSON.stringify(resourceAction)})`);
+    return await this.client
+      .put<ResourceAction>(`${this.resourceUrl}/${resourceKey}/actions`, resourceAction)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(
+          `tried to update resourceAction with name: ${resourceAction.name}, got error: ${error}`,
+        );
+        throw error;
+      });
+  }
+
+  public async deleteResourceAction(
+    resourceKey: string,
+    resourceActionKey: string,
+  ): Promise<DeleteResponse> {
+    this.logger.info(`permit.api.deleteResourceAction(${JSON.stringify(resourceActionKey)})`);
+    return await this.client
+      .put<DeleteResponse>(`${this.resourceUrl}/${resourceKey}/actions/${resourceActionKey}`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(
+          `tried to delete resourceAction with key: ${resourceActionKey}, got error: ${error}`,
+        );
+        throw error;
+      });
+  }
+
+  // role mutations
+  public async assignRole(roleAssignment: RoleAssignmentCreate): Promise<RoleAssignment> {
+    const data: RoleAssignmentCreate = {
+      role: roleAssignment.role,
+      user: roleAssignment.user,
+      tenant: roleAssignment.tenant,
+    };
+
+    this.logger.info(`permit.api.assignRole(${JSON.stringify(data)})`);
+
+    return await this.client
+      .post<RoleAssignment>(this.roleAssignementsUrl, data)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(
+          `could not assign role ${roleAssignment.role} to ${roleAssignment.user} in tenant ${roleAssignment.tenant}, got error: ${error}`,
+        );
+        throw error;
+      });
+  }
+
+  public async unassignRole(roleAssignment: RoleAssignmentRemove): Promise<DeleteResponse> {
+    const data: RoleAssignmentRemove = {
+      role: roleAssignment.role,
+      user: roleAssignment.user,
+      tenant: roleAssignment.tenant,
+    };
+    this.logger.info(`permit.api.assignRole(${JSON.stringify(data)})`);
+
+    return await this.client
+      .delete<DeleteResponse>(this.roleAssignementsUrl, { data })
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error) => {
+        this.logger.error(
+          `could not unassign role ${roleAssignment.role} of ${roleAssignment.user} in tenant ${roleAssignment.tenant}, got error: ${error}`,
         );
         throw error;
       });
@@ -386,12 +532,15 @@ export class ApiClient implements IApiClient {
       getResource: this.getResource.bind(this),
       getResourceActions: this.getResourceActions.bind(this),
       getResourceAction: this.getResourceAction.bind(this),
-      getCurrentOrganization: this.getCurrentOrganization.bind(this),
-      getCurrentProject: this.getCurrentProject.bind(this),
-      getCurrentEnvironment: this.getCurrentEnvironment.bind(this),
+      // todo
+      // getAssignedRoles: this.getAssignedRoles.bind(this),
+      // getCurrentOrganization: this.getCurrentOrganization.bind(this),
+      // getCurrentProject: this.getCurrentProject.bind(this),
+      // getCurrentEnvironment: this.getCurrentEnvironment.bind(this),
+
+      // think about
       // getLastUpdateFromServer: this.getLastUpdateFromServer.bind(this),
       // getUptime: this.getUptime.bind(this),
-      getAssignedRoles: this.getAssignedRoles.bind(this),
 
       // write methods
       createUser: this.createUser.bind(this),
@@ -403,9 +552,9 @@ export class ApiClient implements IApiClient {
       createResource: this.createResource.bind(this),
       updateResource: this.updateResource.bind(this),
       deleteResource: this.deleteResource.bind(this),
-      createAction: this.createAction.bind(this),
-      updateAction: this.updateAction.bind(this),
-      deleteAction: this.deleteAction.bind(this),
+      createResourceAction: this.createResourceAction.bind(this),
+      updateResourceAction: this.updateResourceAction.bind(this),
+      deleteResourceAction: this.deleteResourceAction.bind(this),
       createRole: this.createRole.bind(this),
       updateRole: this.updateRole.bind(this),
       deleteRole: this.deleteRole.bind(this),
@@ -416,8 +565,6 @@ export class ApiClient implements IApiClient {
 
   public getMethods(): IApiClient {
     return {
-      // read: this.read.bind(this),
-      // write: this.write.bind(this),
       api: this.api,
     };
   }

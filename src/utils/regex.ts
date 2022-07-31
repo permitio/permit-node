@@ -34,14 +34,16 @@ export function matchAll(re: RegExp, str: string): RegexMatch[] {
 
   let groups;
   while ((groups = regex.exec(str)) !== null) {
-    const found = Array.from(groups);
-    const length = found[0].length;
-    matches.push({
-      start: groups.index,
-      end: groups.index + length - 1,
-      length: length,
-      groups: found,
-    });
+    const found: string[] = Array.from(groups);
+    if (found[0] && found[0].length > 0) {
+      const length = found[0].length;
+      matches.push({
+        start: groups.index,
+        end: groups.index + length - 1,
+        length: length,
+        groups: found,
+      });
+    }
   }
 
   return matches;

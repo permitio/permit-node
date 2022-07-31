@@ -17,7 +17,8 @@ interface IMultiTenancyConfig {
 
 export interface IPermitConfig {
   token: string;
-  pdp: string;
+  pdpUrl: string;
+  permitUrl: string;
   log: ILoggerConfig;
   checkTimeout: number | undefined;
   multiTenancy: IMultiTenancyConfig; // todo: check this
@@ -31,7 +32,8 @@ export class ConfigFactory {
   static defaults(): IPermitConfig {
     return {
       token: _.get(process.env, 'AUTHZ_LOG_LEVEL', ''),
-      pdp: _.get(process.env, 'AUTHZ_PDP_URL', 'http://localhost:7000'),
+      pdpUrl: _.get(process.env, 'AUTHZ_PDP_URL', 'http://localhost:7000'),
+      permitUrl: _.get(process.env, 'AUTHZ_PERMIT_URL', 'https://api.permit.io'),
       log: {
         // Log level (debug mode sets default to "debug" otherwise 'info')
         level: _.get(process.env, 'AUTHZ_LOG_LEVEL', 'warn'),
