@@ -4,23 +4,15 @@ import { ConfigFactory, IPermitConfig } from './config';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
 import { LoggerFactory } from './logger';
 import { IMutationsClient, MutationsClient } from './mutations/client';
-import { IResourceRegistry, ResourceRegistry } from './resources/registry';
-import { IResourceReporter, ResourceReporter } from './resources/reporter';
 import { RecursivePartial } from './utils/types';
 
 // exported interfaces
 export { ISyncedUser, ISyncedRole, IPermitCache } from './cache/client';
 export { IUser, IAction, IResource } from './enforcement/interfaces';
 export { ITenant, IReadApis, IWriteApis } from './mutations/client';
-export { ResourceConfig, ActionConfig } from './resources/interfaces';
-export { IUrlContext } from './resources/registry';
 export { Context, ContextTransform } from './utils/context';
 
-export interface IPermitClient
-  extends IResourceReporter,
-    IEnforcer,
-    IMutationsClient,
-    IResourceRegistry {
+export interface IPermitClient extends IEnforcer, IMutationsClient {
   cache: IPermitCache;
   config: IPermitConfig;
 }
@@ -36,8 +28,6 @@ export interface IPermitClient
  */
 class _Permit {
   private _config: IPermitConfig;
-  private _resourceRegistry: ResourceRegistry;
-  private _resourceReporter: ResourceReporter;
   private _enforcer: Enforcer;
   private _cache: LocalCacheClient;
   private _mutationsClient: MutationsClient;
@@ -45,9 +35,6 @@ class _Permit {
   constructor(config: RecursivePartial<IPermitConfig>) {
     this._config = ConfigFactory.build(config);
     const logger = LoggerFactory.createLogger(this._config);
-
-    this._resourceRegistry = new ResourceRegistry();
-    this._resourceReporter = new ResourceReporter(this._config, this._resourceRegistry, logger);
     this._enforcer = new Enforcer(this._config, logger);
     this._cache = new LocalCacheClient(this._config, logger);
     this._mutationsClient = new MutationsClient(this._config, logger);
@@ -61,12 +48,8 @@ class _Permit {
 
       // exposed methods from specialized clients
       ...this._enforcer.getMethods(),
-      ...this._resourceReporter.getMethods(),
       ...this._mutationsClient.getMethods(),
       cache: this._cache.getMethods(),
-
-      // resource registry (url mapper)
-      ...this._resourceRegistry.getMethods(),
     });
   }
 }
