@@ -1,5 +1,5 @@
 // For Default export
-import { IPermitCache, LocalCacheClient } from './cache/client';
+// import { IPermitCache, LocalCacheClient } from './cache/client';
 import { ConfigFactory, IPermitConfig } from './config';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
 import { LoggerFactory } from './logger';
@@ -13,7 +13,7 @@ export { IReadApis, IWriteApis } from './api/client';
 export { Context, ContextTransform } from './utils/context';
 
 export interface IPermitClient extends IEnforcer, IApiClient {
-  cache: IPermitCache;
+  // cache: IPermitCache;
   config: IPermitConfig;
 }
 
@@ -29,14 +29,14 @@ export interface IPermitClient extends IEnforcer, IApiClient {
 class _Permit {
   private _config: IPermitConfig;
   private _enforcer: Enforcer;
-  private _cache: LocalCacheClient;
+  // private _cache: LocalCacheClient;
   private _mutationsClient: MutationsClient;
 
   constructor(config: RecursivePartial<IPermitConfig>) {
     this._config = ConfigFactory.build(config);
     const logger = LoggerFactory.createLogger(this._config);
     this._enforcer = new Enforcer(this._config, logger);
-    this._cache = new LocalCacheClient(this._config, logger);
+    // this._cache = new LocalCacheClient(this._config, logger);
     this._mutationsClient = new MutationsClient(this._config, logger);
     logger.info(
       `Permit.io SDK initialized with config:\n${JSON.stringify(this._config, undefined, 2)}`,
@@ -49,7 +49,7 @@ class _Permit {
       // exposed methods from specialized clients
       ...this._enforcer.getMethods(),
       ...this._mutationsClient.getMethods(),
-      cache: this._cache.getMethods(),
+      // cache: this._cache.getMethods(),
     });
   }
 }
