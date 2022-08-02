@@ -1,10 +1,25 @@
-import axios, { AxiosInstance, AxiosPromise } from 'axios';
+import { AxiosResponse } from 'axios';
 import { Logger } from 'winston';
 
 import { IPermitConfig } from '../config';
-import { IUser } from '../enforcement/interfaces';
-import { Configuration, UserCreate, UserRead, UsersApi } from '../openapi';
-import { Dict } from '../utils/dict';
+import {
+  Configuration,
+  RoleAssignmentCreate,
+  RoleAssignmentRead,
+  RoleAssignmentRemove,
+  RoleAssignmentsApi,
+  RoleCreate,
+  RoleRead,
+  RolesApi,
+  RoleUpdate,
+  TenantCreate,
+  TenantRead,
+  TenantsApi,
+  TenantUpdate,
+  UserCreate,
+  UserRead,
+  UsersApi,
+} from '../openapi';
 
 /**
  * This interface contains *read actions* that goes outside
@@ -12,10 +27,10 @@ import { Dict } from '../utils/dict';
  * You should be aware that these actions incur some cross-cloud latency.
  */
 export interface IReadApis {
-  // getUser(userKey: string): ReadOperation<Dict>;
-  // getRole(roleKey: string): ReadOperation<Dict>;
-  // getTenant(tenantKey: string): ReadOperation<Dict>;
-  // getAssignedRoles(userKey: string, tenantKey?: string): ReadOperation<Dict>; // either in one tenant or in all tenants
+  getUser(userId: string): Promise<UserRead>;
+  getTenant(tenantId: string): Promise<TenantRead>;
+  getRole(roleId: string): Promise<RoleRead>;
+  getAssignedRoles(user: string, tenant?: string): Promise<RoleAssignmentRead[]>;
 }
 
 /**
@@ -24,18 +39,20 @@ export interface IReadApis {
  * You should be aware that these actions incur some cross-cloud latency.
  */
 export interface IWriteApis {
+  // user mutation
   createUser(user: UserCreate): Promise<[UserRead, boolean]>; // create or update
-
-  // // user mutations
-  // syncUser(user: IUser): WriteOperation<Dict>; // create or update
-  // deleteUser(userKey: string): WriteOperation<Dict>;
-  // // tenant mutations
-  // createTenant(tenant: ITenant): WriteOperation<Dict>;
-  // updateTenant(tenant: ITenant): WriteOperation<Dict>;
-  // deleteTenant(tenantKey: string): WriteOperation<Dict>;
-  // // role mutations
-  // assignRole(userKey: string, roleKey: string, tenantKey: string): WriteOperation<Dict>;
-  // unassignRole(userKey: string, roleKey: string, tenantKey: string): WriteOperation<Dict>;
+  deleteUser(userId: string): Promise<AxiosResponse<void>>;
+  // tenant mutations
+  createTenant(tenant: TenantCreate): Promise<TenantRead>;
+  updateTenant(tenantId: string, tenant: TenantUpdate): Promise<TenantRead>;
+  deleteTenant(tenantId: string): Promise<AxiosResponse<void>>;
+  // role mutations
+  createRole(role: RoleCreate): Promise<RoleRead>;
+  updateRole(roleId: string, role: RoleUpdate): Promise<RoleRead>;
+  deleteRole(roleId: string): Promise<AxiosResponse<void>>;
+  // role mutations
+  assignRole(assignedRole: RoleAssignmentCreate): Promise<RoleAssignmentRead>;
+  unassignRole(removedRole: RoleAssignmentRemove): Promise<AxiosResponse<void>>;
 }
 
 export interface IPermitApi extends IReadApis, IWriteApis {}
@@ -48,16 +65,58 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   private project: string;
   private environment: string;
   private users: UsersApi;
+  private tenants: TenantsApi;
+  private roles: RolesApi;
+  private roleAssignments: RoleAssignmentsApi;
 
   constructor(private config: IPermitConfig, private logger: Logger) {
     this.project = 'default';
     this.environment = 'prod';
-    this.users = new UsersApi(
-      new Configuration({
-        basePath: `${this.config.apiUrl}/`,
-        accessToken: this.config.token,
-      }),
-    );
+    const axiosClientConfig = new Configuration({
+      basePath: `${this.config.apiUrl}`,
+      accessToken: this.config.token,
+    });
+    this.users = new UsersApi(axiosClientConfig);
+    this.tenants = new TenantsApi(axiosClientConfig);
+    this.roles = new RolesApi(axiosClientConfig);
+    this.roleAssignments = new RoleAssignmentsApi(axiosClientConfig);
+  }
+
+  public async getUser(userId: string): Promise<UserRead> {
+    const response = await this.users.getUser({
+      projId: this.project,
+      envId: this.environment,
+      userId: userId,
+    });
+    return response.data;
+  }
+
+  public async getTenant(tenantId: string): Promise<TenantRead> {
+    const response = await this.tenants.getTenant({
+      projId: this.project,
+      envId: this.environment,
+      tenantId: tenantId,
+    });
+    return response.data;
+  }
+
+  public async getRole(roleId: string): Promise<RoleRead> {
+    const response = await this.roles.getRole({
+      projId: this.project,
+      envId: this.environment,
+      roleId: roleId,
+    });
+    return response.data;
+  }
+
+  public async getAssignedRoles(user: string, tenant?: string): Promise<RoleAssignmentRead[]> {
+    const response = await this.roleAssignments.listRoleAssignments({
+      projId: this.project,
+      envId: this.environment,
+      user: user,
+      tenant: tenant,
+    });
+    return response.data;
   }
 
   public async createUser(user: UserCreate): Promise<[UserRead, boolean]> {
@@ -70,231 +129,101 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
     return [response.data, response.status === 201];
   }
 
-  // // read api -----------------------------------------------------------------
-  // public getUser(userKey: string): ReadOperation<Dict> {
-  //   return new ReadOperation(async () => {
-  //     this.logger.info(`permit.api.getUser(${userKey})`);
-  //     return this.client
-  //       .get(`cloud/users/${userKey}`)
-  //       .then((response) => {
-  //         return response.data;
-  //       })
-  //       .catch((error: Error) => {
-  //         this.logger.error(`tried to get user with key: ${userKey}, got error: ${error}`);
-  //         throw error;
-  //       });
-  //   });
-  // }
+  public async deleteUser(userId: string): Promise<AxiosResponse<void>> {
+    return await this.users.deleteUser({
+      projId: this.project,
+      envId: this.environment,
+      userId: userId, // user id or key
+    });
+  }
 
-  // public getRole(roleKey: string): ReadOperation<Dict> {
-  //   return new ReadOperation(async () => {
-  //     this.logger.info(`permit.api.getRole(${roleKey})`);
-  //     return this.client
-  //       .get(`cloud/roles/${roleKey}`)
-  //       .then((response) => {
-  //         return response.data;
-  //       })
-  //       .catch((error: Error) => {
-  //         this.logger.error(`tried to get role with id: ${roleKey}, got error: ${error}`);
-  //         throw error;
-  //       });
-  //   });
-  // }
+  public async createTenant(tenant: TenantCreate): Promise<TenantRead> {
+    const response = await this.tenants.createTenant({
+      projId: this.project,
+      envId: this.environment,
+      tenantCreate: tenant,
+    });
+    return response.data;
+  }
 
-  // public getTenant(tenantKey: string): ReadOperation<Dict> {
-  //   return new ReadOperation(async () => {
-  //     this.logger.info(`permit.api.getTenant(${tenantKey})`);
-  //     return this.client
-  //       .get(`cloud/tenants/${tenantKey}`)
-  //       .then((response) => {
-  //         return response.data;
-  //       })
-  //       .catch((error: Error) => {
-  //         this.logger.error(`tried to get tenant with id: ${tenantKey}, got error: ${error}`);
-  //         throw error;
-  //       });
-  //   });
-  // }
+  public async updateTenant(tenantId: string, tenant: TenantUpdate): Promise<TenantRead> {
+    const response = await this.tenants.updateTenant({
+      projId: this.project,
+      envId: this.environment,
+      tenantId: tenantId,
+      tenantUpdate: tenant,
+    });
+    return response.data;
+  }
 
-  // // either in one tenant or in all tenants
-  // // TODO: fix schema
-  // public getAssignedRoles(userKey: string, tenantKey?: string): ReadOperation<Dict> {
-  //   return new ReadOperation(async () => {
-  //     this.logger.info(`permit.api.getAssignedRoles(user=${userKey}, tenant=${tenantKey})`);
-  //     let url = `cloud/role_assignments?user=${userKey}`;
-  //     if (tenantKey !== undefined) {
-  //       url += `&tenant=${tenantKey}`;
-  //     }
-  //     return await this.client
-  //       .get<Dict>(url)
-  //       .then((response) => {
-  //         return response.data;
-  //       })
-  //       .catch((error: Error) => {
-  //         this.logger.error(`could not get user roles for user ${userKey}, got error: ${error}`);
-  //         throw error;
-  //       });
-  //   });
-  // }
+  public async deleteTenant(tenantId: string): Promise<AxiosResponse<void>> {
+    return await this.tenants.deleteTenant({
+      projId: this.project,
+      envId: this.environment,
+      tenantId: tenantId,
+    });
+  }
 
-  // // write api ----------------------------------------------------------------
-  // // user mutations
-  // public syncUser(user: IUser): WriteOperation<Dict> {
-  //   return new WriteOperation(async () => {
-  //     this.logger.info(`permit.api.syncUser(${JSON.stringify(user)})`);
-  //     return await this.client
-  //       .put<Dict>('cloud/users', user)
-  //       .then((response) => {
-  //         return response.data;
-  //       })
-  //       .catch((error: Error) => {
-  //         this.logger.error(`tried to sync user with key: ${user.key}, got error: ${error}`);
-  //         throw error;
-  //       });
-  //   });
-  // }
+  public async createRole(role: RoleCreate): Promise<RoleRead> {
+    const response = await this.roles.createRole({
+      projId: this.project,
+      envId: this.environment,
+      roleCreate: role,
+    });
+    return response.data;
+  }
 
-  // public deleteUser(userKey: string): WriteOperation<Dict> {
-  //   return new WriteOperation(async () => {
-  //     this.logger.info(`permit.api.deleteUser(${userKey})`);
-  //     return await this.client
-  //       .delete(`cloud/users/${userKey}`)
-  //       .then((response) => {
-  //         return { status: response.status };
-  //       })
-  //       .catch((error: Error) => {
-  //         this.logger.error(`tried to delete user with key: ${userKey}, got error: ${error}`);
-  //         throw error;
-  //       });
-  //   });
-  // }
+  public async updateRole(roleId: string, role: RoleUpdate): Promise<RoleRead> {
+    const response = await this.roles.updateRole({
+      projId: this.project,
+      envId: this.environment,
+      roleId: roleId,
+      roleUpdate: role,
+    });
+    return response.data;
+  }
 
-  // // tenant mutations
-  // public createTenant(tenant: ITenant): WriteOperation<Dict> {
-  //   return new WriteOperation(async () => {
-  //     this.logger.info(`permit.api.createTenant(${JSON.stringify(tenant)})`);
-  //     const data: Dict = {};
-  //     data.externalId = tenant.key;
-  //     data.name = tenant.name;
-  //     if (tenant.description) {
-  //       data.description = tenant.description;
-  //     }
+  public async deleteRole(roleId: string): Promise<AxiosResponse<void>> {
+    return await this.roles.deleteRole({
+      projId: this.project,
+      envId: this.environment,
+      roleId: roleId,
+    });
+  }
 
-  //     return await this.client
-  //       .put<Dict>('cloud/tenants', data)
-  //       .then((response) => {
-  //         return response.data;
-  //       })
-  //       .catch((error: Error) => {
-  //         this.logger.error(`tried to create tenant with key: ${tenant.key}, got error: ${error}`);
-  //         throw error;
-  //       });
-  //   });
-  // }
+  public async assignRole(assignedRole: RoleAssignmentCreate): Promise<RoleAssignmentRead> {
+    const response = await this.roleAssignments.assignRole({
+      projId: this.project,
+      envId: this.environment,
+      roleAssignmentCreate: assignedRole,
+    });
+    return response.data;
+  }
 
-  // public updateTenant(tenant: ITenant): WriteOperation<Dict> {
-  //   return new WriteOperation(async () => {
-  //     this.logger.info(`permit.api.updateTenant(${JSON.stringify(tenant)})`);
-  //     const data: Dict = {};
-  //     data.name = tenant.name;
-
-  //     if (tenant.description) {
-  //       data.description = tenant.description;
-  //     }
-
-  //     return await this.client
-  //       .patch<Dict>(`cloud/tenants/${tenant.key}`, data)
-  //       .then((response) => {
-  //         return response.data;
-  //       })
-  //       .catch((error: Error) => {
-  //         this.logger.error(`tried to update tenant with key: ${tenant.key}, got error: ${error}`);
-  //         throw error;
-  //       });
-  //   });
-  // }
-
-  // public deleteTenant(tenantKey: string): WriteOperation<Dict> {
-  //   return new WriteOperation(async () => {
-  //     this.logger.info(`permit.api.deleteTenant(${tenantKey})`);
-  //     return await this.client
-  //       .delete(`cloud/tenants/${tenantKey}`)
-  //       .then((response) => {
-  //         return { status: response.status };
-  //       })
-  //       .catch((error: Error) => {
-  //         this.logger.error(`tried to delete tenant with key: ${tenantKey}, got error: ${error}`);
-  //         throw error;
-  //       });
-  //   });
-  // }
-
-  // // role mutations
-  // public assignRole(userKey: string, roleKey: string, tenantKey: string): WriteOperation<Dict> {
-  //   return new WriteOperation(async () => {
-  //     const data = {
-  //       role: roleKey,
-  //       user: userKey,
-  //       scope: tenantKey,
-  //     };
-
-  //     this.logger.info(`permit.api.assignRole(${JSON.stringify(data)})`);
-
-  //     return await this.client
-  //       .post<Dict>('cloud/role_assignments', data)
-  //       .then((response) => {
-  //         return response.data;
-  //       })
-  //       .catch((error: Error) => {
-  //         this.logger.error(
-  //           `could not assign role ${roleKey} to ${userKey} in tenant ${tenantKey}, got error: ${error}`,
-  //         );
-  //         throw error;
-  //       });
-  //   });
-  // }
-
-  // public unassignRole(userKey: string, roleKey: string, tenantKey: string): WriteOperation<Dict> {
-  //   return new WriteOperation(async () => {
-  //     const data = {
-  //       role: roleKey,
-  //       user: userKey,
-  //       scope: tenantKey,
-  //     };
-  //     this.logger.info(`permit.api.assignRole(${JSON.stringify(data)})`);
-
-  //     return await this.client
-  //       .delete<Dict>(`cloud/role_assignments?role=${roleKey}&user=${userKey}&scope=${tenantKey}`)
-  //       .then((response) => {
-  //         return response.data;
-  //       })
-  //       .catch((error: Error) => {
-  //         this.logger.error(
-  //           `could not unassign role ${roleKey} of ${userKey} in tenant ${tenantKey}, got error: ${error}`,
-  //         );
-  //         throw error;
-  //       });
-  //   });
-  // }
+  public async unassignRole(removedRole: RoleAssignmentRemove): Promise<AxiosResponse<void>> {
+    return await this.roleAssignments.unassignRole({
+      projId: this.project,
+      envId: this.environment,
+      roleAssignmentRemove: removedRole,
+    });
+  }
 
   public get api(): IPermitApi {
     return {
-      // write methods
+      getUser: this.getUser.bind(this),
+      getTenant: this.getTenant.bind(this),
+      getRole: this.getRole.bind(this),
+      getAssignedRoles: this.getAssignedRoles.bind(this),
       createUser: this.createUser.bind(this),
-
-      // // read methods
-      // getUser: this.getUser.bind(this),
-      // getRole: this.getRole.bind(this),
-      // getTenant: this.getTenant.bind(this),
-      // getAssignedRoles: this.getAssignedRoles.bind(this),
-      // // write methods
-      // syncUser: this.syncUser.bind(this),
-      // deleteUser: this.deleteUser.bind(this),
-      // createTenant: this.createTenant.bind(this),
-      // updateTenant: this.updateTenant.bind(this),
-      // deleteTenant: this.deleteTenant.bind(this),
-      // assignRole: this.assignRole.bind(this),
-      // unassignRole: this.unassignRole.bind(this),
+      deleteUser: this.deleteUser.bind(this),
+      createTenant: this.createTenant.bind(this),
+      updateTenant: this.updateTenant.bind(this),
+      deleteTenant: this.deleteTenant.bind(this),
+      createRole: this.createRole.bind(this),
+      updateRole: this.updateRole.bind(this),
+      deleteRole: this.deleteRole.bind(this),
+      assignRole: this.assignRole.bind(this),
+      unassignRole: this.unassignRole.bind(this),
     };
   }
 
