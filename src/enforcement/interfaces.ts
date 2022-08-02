@@ -1,31 +1,13 @@
 import { Dict } from '../utils/dict';
 
 // user interfaces ------------------------------------------------------------
-// in case we are provided a JWT token as the user:
-// (1) the user key is inferred from the `sub` claim
-// (2) we know how to infer certain common attributes like first name, last name and email
-// (3) unknown claims will be used as attributes
-// (*) TODO: we need to add JWT validation
-export type JWT = string;
-
-interface IUserKey {
+export interface IUser {
   key: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  attributes?: Dict;
 }
-
-interface IAssignedRole {
-  role: string; // role key
-  tenant: string; // tenant key
-}
-
-interface IUserProperties {
-  firstName: string;
-  lastName: string;
-  email: string;
-  roles: IAssignedRole[];
-  attributes: Dict;
-}
-
-export interface IUser extends IUserKey, Partial<IUserProperties> {}
 
 // action interfaces ----------------------------------------------------------
 export type IAction = string;
@@ -47,10 +29,12 @@ export interface IResource {
   // access control).
   // if using resource urls, attributes from url will be auto-populated.
   attributes?: Dict;
-  // context: temporary until we refactor the resource registry
-  context?: Dict;
 }
 
-export interface OpaResult {
+export interface PolicyDecision {
   allow: boolean;
+}
+
+export interface OpaDecisionResult {
+  result: PolicyDecision;
 }

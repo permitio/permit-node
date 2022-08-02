@@ -4,7 +4,7 @@ import { Logger } from 'winston';
 import { IPermitConfig } from '../config';
 import { CheckConfig, Context, ContextStore } from '../utils/context';
 
-import { IAction, IResource, IUser, OpaResult } from './interfaces';
+import { IAction, IResource, IUser, OpaDecisionResult, PolicyDecision } from './interfaces';
 
 const RESOURCE_DELIMITER = ':';
 
@@ -116,13 +116,14 @@ export class Enforcer implements IEnforcer {
     };
 
     return await this.client
-      .post<OpaResult>('allowed', input, { timeout: checkTimeout })
+      .post<PolicyDecision | OpaDecisionResult>('allowed', input, { timeout: checkTimeout })
       .then((response) => {
         if (response.status !== 200) {
           throw new PermitPDPStatusError(`Permit.check() got an unexpected status code: ${response.status}, please check your SDK init and make sure the PDP sidecar is configured correctly. \n\
             Read more about setting up the PDP at https://docs.permit.io`);
         }
-        const decision = response.data.allow || false;
+        const decision =
+          ('allow' in response.data ? response.data.allow : response.data.result.allow) || false;
         this.logger.info(
           `permit.check(${normalizedUser}, ${action}, ${Enforcer.resourceRepr(
             resourceObj,
@@ -145,21 +146,10 @@ export class Enforcer implements IEnforcer {
   // TODO: remove this eventually, once we decide on finalized structure of AuthzQuery
   private normalizeResource(resource: IResource): IResource {
     const normalizedResource: IResource = Object.assign({}, resource);
-    if (normalizedResource.context === undefined) {
-      normalizedResource.context = {};
-    }
 
-    // if tenant is empty, we migth auto-set the default tenant according to config
+    // if tenant is empty, we might auto-set the default tenant according to config
     if (!normalizedResource.tenant && this.config.multiTenancy.useDefaultTenantIfEmpty) {
       normalizedResource.tenant = this.config.multiTenancy.defaultTenant;
-    }
-
-    // copy tenant from resource.tenant to resource.context.tenant (until we change RBAC policy)
-    if (
-      normalizedResource.context?.tenant === undefined &&
-      normalizedResource.tenant !== undefined
-    ) {
-      normalizedResource.context.tenant = normalizedResource.tenant;
     }
 
     return normalizedResource;
