@@ -8,15 +8,6 @@ interface ILoggerConfig {
   json: boolean;
 }
 
-interface IAutoMappingConfig {
-  // Should the module automatically plugin to map REST frameworks on load
-  enable: boolean;
-  // if auto mapping is on, ignore these prefixes when analyzing paths
-  ignoredUrlPrefixes: string[];
-  // Print review and do nothing active
-  reviewMode: boolean;
-}
-
 interface IMultiTenancyConfig {
   // the key of the default tenant
   defaultTenant: string;
@@ -27,9 +18,8 @@ interface IMultiTenancyConfig {
 export interface IPermitConfig {
   token: string;
   pdp: string;
+  apiUrl: string;
   log: ILoggerConfig;
-  debugMode: boolean | undefined;
-  autoMapping: IAutoMappingConfig;
   multiTenancy: IMultiTenancyConfig;
   timeout: number | undefined;
   throwOnError: boolean | undefined;
@@ -39,35 +29,22 @@ export interface IPermitConfig {
 export class ConfigFactory {
   static defaults(): IPermitConfig {
     return {
-      token: _.get(process.env, 'AUTHZ_LOG_LEVEL', ''),
-      pdp: _.get(process.env, 'AUTHZ_PDP_URL', 'http://localhost:7000'),
+      token: _.get(process.env, 'PERMIT_API_KEY', ''),
+      pdp: _.get(process.env, 'PERMIT_PDP_URL', 'http://localhost:7000'),
+      apiUrl: _.get(process.env, 'PERMIT_API_URL', 'https://api.permit.io'),
       log: {
         // Log level (debug mode sets default to "debug" otherwise 'info')
-        level: _.get(process.env, 'AUTHZ_LOG_LEVEL', 'warn'),
+        level: _.get(process.env, 'PERMIT_LOG_LEVEL', 'info'),
         // Label added to logs
-        label: _.get(process.env, 'AUTHZ_LOG_LABEL', 'Permit.io'),
+        label: _.get(process.env, 'PERMIT_LOG_LABEL', 'Permit.io'),
         // When logging - dump full data to console as JSON
-        json: JSON.parse(_.get(process.env, 'AUTHZ_LOG_JSON', 'false')),
-      },
-      autoMapping: {
-        // Should the module automatically plugin to map frameworks on load
-        enable: JSON.parse(_.get(process.env, 'AUTHZ_AUTO_MAPPING', 'false')),
-        // if auto mapping is on, ignore these prefixes when analyzing paths
-        // expects a comma separated list, example valid values:
-        // AUTHZ_AUTO_MAPPING_IGNORED_PREFIXES=/v1
-        // AUTHZ_AUTO_MAPPING_IGNORED_PREFIXES=/v1,/ignored
-        ignoredUrlPrefixes: _.get(process.env, 'AUTHZ_AUTO_MAPPING_IGNORED_PREFIXES', '')
-          .split(',')
-          .filter((prefix) => prefix.length > 0),
-        // Print review and do nothing active
-        reviewMode: JSON.parse(_.get(process.env, 'AUTHZ_REVIEW_MODE', 'false')),
+        json: JSON.parse(_.get(process.env, 'PERMIT_LOG_JSON', 'false')),
       },
       multiTenancy: {
         defaultTenant: 'default',
         useDefaultTenantIfEmpty: true,
       },
       timeout: undefined,
-      debugMode: undefined,
       throwOnError: undefined,
     };
   }
