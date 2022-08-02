@@ -3,13 +3,13 @@ import { IPermitCache, LocalCacheClient } from './cache/client';
 import { ConfigFactory, IPermitConfig } from './config';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
 import { LoggerFactory } from './logger';
-import { IMutationsClient, MutationsClient } from './mutations/client';
+import { IMutationsClient, MutationsClient } from './api/client';
 import { RecursivePartial } from './utils/types';
 
 // exported interfaces
 export { ISyncedUser, ISyncedRole, IPermitCache } from './cache/client';
 export { IUser, IAction, IResource } from './enforcement/interfaces';
-export { ITenant, IReadApis, IWriteApis } from './mutations/client';
+export { ITenant, IReadApis, IWriteApis } from './api/client';
 export { Context, ContextTransform } from './utils/context';
 
 export interface IPermitClient extends IEnforcer, IMutationsClient {
