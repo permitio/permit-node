@@ -1,8 +1,9 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, AxiosPromise } from 'axios';
 import { Logger } from 'winston';
 
 import { IPermitConfig } from '../config';
 import { IUser } from '../enforcement/interfaces';
+import { Configuration, UserCreate, UserRead, UsersApi } from '../openapi';
 import { Dict } from '../utils/dict';
 
 /**
@@ -23,6 +24,8 @@ export interface IReadApis {
  * You should be aware that these actions incur some cross-cloud latency.
  */
 export interface IWriteApis {
+  createUser(user: UserCreate): Promise<[UserRead, boolean]>; // create or update
+
   // // user mutations
   // syncUser(user: IUser): WriteOperation<Dict>; // create or update
   // deleteUser(userKey: string): WriteOperation<Dict>;
@@ -41,17 +44,30 @@ export interface IApiClient {
   api: IPermitApi;
 }
 
-export class MutationsClient implements IReadApis, IWriteApis, IApiClient {
-  private client: AxiosInstance = axios.create();
+export class ApiClient implements IReadApis, IWriteApis, IApiClient {
+  private project: string;
+  private environment: string;
+  private users: UsersApi;
 
   constructor(private config: IPermitConfig, private logger: Logger) {
-    this.client = axios.create({
-      baseURL: `${this.config.pdp}/`,
-      headers: {
-        Authorization: `Bearer ${this.config.token}`,
-        'Content-Type': 'application/json',
-      },
+    this.project = 'default';
+    this.environment = 'prod';
+    this.users = new UsersApi(
+      new Configuration({
+        basePath: `${this.config.apiUrl}/`,
+        accessToken: this.config.token,
+      }),
+    );
+  }
+
+  public async createUser(user: UserCreate): Promise<[UserRead, boolean]> {
+    const response = await this.users.createUser({
+      projId: this.project,
+      envId: this.environment,
+      userCreate: user,
     });
+    // TODO: add Promise.race() on optional timeout (config to allow the user to add a timeout on the api call)
+    return [response.data, response.status === 201];
   }
 
   // // read api -----------------------------------------------------------------
@@ -263,6 +279,9 @@ export class MutationsClient implements IReadApis, IWriteApis, IApiClient {
 
   public get api(): IPermitApi {
     return {
+      // write methods
+      createUser: this.createUser.bind(this),
+
       // // read methods
       // getUser: this.getUser.bind(this),
       // getRole: this.getRole.bind(this),

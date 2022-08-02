@@ -3,7 +3,7 @@
 import { ConfigFactory, IPermitConfig } from './config';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
 import { LoggerFactory } from './logger';
-import { IApiClient, MutationsClient } from './api/client';
+import { IApiClient, ApiClient } from './api/client';
 import { RecursivePartial } from './utils/types';
 
 // exported interfaces
@@ -30,14 +30,14 @@ class _Permit {
   private _config: IPermitConfig;
   private _enforcer: Enforcer;
   // private _cache: LocalCacheClient;
-  private _mutationsClient: MutationsClient;
+  private _api: ApiClient;
 
   constructor(config: RecursivePartial<IPermitConfig>) {
     this._config = ConfigFactory.build(config);
     const logger = LoggerFactory.createLogger(this._config);
     this._enforcer = new Enforcer(this._config, logger);
     // this._cache = new LocalCacheClient(this._config, logger);
-    this._mutationsClient = new MutationsClient(this._config, logger);
+    this._api = new ApiClient(this._config, logger);
     logger.info(
       `Permit.io SDK initialized with config:\n${JSON.stringify(this._config, undefined, 2)}`,
     );
@@ -48,7 +48,7 @@ class _Permit {
 
       // exposed methods from specialized clients
       ...this._enforcer.getMethods(),
-      ...this._mutationsClient.getMethods(),
+      ...this._api.getMethods(),
       // cache: this._cache.getMethods(),
     });
   }

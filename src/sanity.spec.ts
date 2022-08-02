@@ -9,6 +9,12 @@ test('paths are processed correctly', async () =>
       token: 'PJUKkuwiJkKxbIoC4o4cguWxB_2gX6MyATYKc2OCM',
     });
 
+    // code example:
+    // const [user, created] = await permit.api.createUser({
+    //   key: 'asaf@permit.io',
+    //   attributes: { name: 'asaf', age: '35' },
+    // });
+
     // permit.resource({
     //   name: 'task',
     //   description: 'Todo Task',
