@@ -31,7 +31,7 @@ export class ConfigFactory {
     return {
       token: _.get(process.env, 'PERMIT_API_KEY', ''),
       pdp: _.get(process.env, 'PERMIT_PDP_URL', 'http://localhost:7000'),
-      apiUrl: _.get(process.env, 'PERMIT_API_URL', 'https://api.permit.io'),
+      apiUrl: _.get(process.env, 'PERMIT_API_URL', 'https://api-v2-prod.permit.io'),
       log: {
         // Log level (debug mode sets default to "debug" otherwise 'info')
         level: _.get(process.env, 'PERMIT_LOG_LEVEL', 'info'),
@@ -42,7 +42,7 @@ export class ConfigFactory {
       },
       multiTenancy: {
         defaultTenant: 'default',
-        useDefaultTenantIfEmpty: false,
+        useDefaultTenantIfEmpty: true,
       },
       timeout: undefined,
       throwOnError: undefined,

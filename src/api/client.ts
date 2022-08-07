@@ -4,6 +4,10 @@ import { Logger } from 'winston';
 import { IPermitConfig } from '../config';
 import {
   Configuration,
+  ResourcesApi,
+  ResourceCreate,
+  ResourceRead,
+  ResourceUpdate,
   RoleAssignmentCreate,
   RoleAssignmentRead,
   RoleAssignmentRemove,
@@ -39,13 +43,14 @@ export interface IReadApis {
  * You should be aware that these actions incur some cross-cloud latency.
  */
 export interface IWriteApis {
-  // user mutation
+  // user mutations
   createUser(user: UserCreate): Promise<[UserRead, boolean]>; // create or update
   deleteUser(userId: string): Promise<AxiosResponse<void>>;
   // tenant mutations
   createTenant(tenant: TenantCreate): Promise<TenantRead>;
   updateTenant(tenantId: string, tenant: TenantUpdate): Promise<TenantRead>;
   deleteTenant(tenantId: string): Promise<AxiosResponse<void>>;
+  listTenants(page?: number): Promise<TenantRead[]>;
   // role mutations
   createRole(role: RoleCreate): Promise<RoleRead>;
   updateRole(roleId: string, role: RoleUpdate): Promise<RoleRead>;
@@ -53,6 +58,10 @@ export interface IWriteApis {
   // role mutations
   assignRole(assignedRole: RoleAssignmentCreate): Promise<RoleAssignmentRead>;
   unassignRole(removedRole: RoleAssignmentRemove): Promise<AxiosResponse<void>>;
+  // resource mutations
+  createResource(resource: ResourceCreate): Promise<[ResourceRead, boolean]>;
+  updateResource(resourceId: string, resource: ResourceUpdate): Promise<ResourceRead>;
+  deleteResource(resourceId: string): Promise<AxiosResponse<void>>;
 }
 
 export interface IPermitApi extends IReadApis, IWriteApis {}
@@ -68,6 +77,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   private tenants: TenantsApi;
   private roles: RolesApi;
   private roleAssignments: RoleAssignmentsApi;
+  private resources: ResourcesApi;
 
   constructor(private config: IPermitConfig, private logger: Logger) {
     this.project = 'default';
@@ -80,6 +90,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
     this.tenants = new TenantsApi(axiosClientConfig);
     this.roles = new RolesApi(axiosClientConfig);
     this.roleAssignments = new RoleAssignmentsApi(axiosClientConfig);
+    this.resources = new ResourcesApi(axiosClientConfig);
   }
 
   public async getUser(userId: string): Promise<UserRead> {
@@ -96,6 +107,15 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
       projId: this.project,
       envId: this.environment,
       tenantId: tenantId,
+    });
+    return response.data;
+  }
+
+  public async listTenants(page?: number): Promise<TenantRead[]> {
+    const response = await this.tenants.listTenants({
+      projId: this.project,
+      envId: this.environment,
+      page: page,
     });
     return response.data;
   }
@@ -117,6 +137,34 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
       tenant: tenant,
     });
     return response.data;
+  }
+
+  public async createResource(resource: ResourceCreate): Promise<[ResourceRead, boolean]> {
+    const response = await this.resources.createResource({
+      projId: this.project,
+      envId: this.environment,
+      resourceCreate: resource,
+    });
+    // TODO: add Promise.race() on optional timeout (config to allow the user to add a timeout on the api call)
+    return [response.data, response.status === 201];
+  }
+
+  public async updateResource(resourceId: string, resource: ResourceUpdate): Promise<ResourceRead> {
+    const response = await this.resources.updateResource({
+      projId: this.project,
+      envId: this.environment,
+      resourceId: resourceId,
+      resourceUpdate: resource,
+    });
+    return response.data;
+  }
+
+  public async deleteResource(resourceId: string): Promise<AxiosResponse<void>> {
+    return await this.resources.deleteResource({
+      projId: this.project,
+      envId: this.environment,
+      resourceId: resourceId,
+    });
   }
 
   public async createUser(user: UserCreate): Promise<[UserRead, boolean]> {
@@ -214,11 +262,15 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
       getTenant: this.getTenant.bind(this),
       getRole: this.getRole.bind(this),
       getAssignedRoles: this.getAssignedRoles.bind(this),
+      createResource: this.createResource.bind(this),
+      updateResource: this.updateResource.bind(this),
+      deleteResource: this.deleteResource.bind(this),
       createUser: this.createUser.bind(this),
       deleteUser: this.deleteUser.bind(this),
       createTenant: this.createTenant.bind(this),
       updateTenant: this.updateTenant.bind(this),
       deleteTenant: this.deleteTenant.bind(this),
+      listTenants: this.listTenants.bind(this),
       createRole: this.createRole.bind(this),
       updateRole: this.updateRole.bind(this),
       deleteRole: this.deleteRole.bind(this),
