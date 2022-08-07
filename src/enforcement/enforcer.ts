@@ -101,7 +101,7 @@ export class Enforcer implements IEnforcer {
     context: Context = {}, // context provided specifically for this query
     config: CheckConfig = {},
   ): Promise<boolean> {
-    const normalizedUser: string = isString(user) ? user : user.key;
+    const normalizedUser: IUser = isString(user) ? { key: user } : user;
     const checkTimeout = config.timeout || this.config.timeout;
 
     const resourceObj = isString(resource) ? Enforcer.resourceFromString(resource) : resource;
