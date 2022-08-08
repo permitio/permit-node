@@ -61,7 +61,7 @@ export class Enforcer implements IEnforcer {
    *
    * // with (resource, action):
    * const user = { key: 'UNIQUE_USER_ID' };
-   * permit.check(user, 'get', {'type': 'task', 'id': '23'})
+   * permit.check(user, 'get', {'type': 'task', 'key': '23'})
    * permit.check(user, 'get', {'type': 'task'})
    *
    * // with (url, method):
@@ -184,7 +184,7 @@ export class Enforcer implements IEnforcer {
     if (resource.tenant) {
       resourceRepr += `${resource.tenant}/`;
     }
-    resourceRepr += `${resource.type}:${resource.id ?? '*'}`;
+    resourceRepr += `${resource.type}:${resource.key ?? '*'}`;
     return resourceRepr;
   }
 
@@ -195,7 +195,7 @@ export class Enforcer implements IEnforcer {
     }
     return {
       type: parts[0],
-      id: parts.length > 1 ? parts[1] : undefined,
+      key: parts.length > 1 ? parts[1] : undefined,
     };
   }
 
