@@ -51,6 +51,9 @@ export class Enforcer implements IEnforcer {
   constructor(private config: IPermitConfig, private logger: Logger) {
     this.client = axios.create({
       baseURL: `${this.config.pdp}/`,
+      headers: {
+        Authorization: "Bearer " + this.config.token,
+      },
     });
     this.logger = logger;
     this.contextStore = new ContextStore();
@@ -109,8 +112,12 @@ export class Enforcer implements IEnforcer {
 
     const queryContext = this.contextStore.getDerivedContext(context);
     const input = {
-      user: normalizedUser,
-      action: action,
+      user: {
+        id: normalizedUser,
+      },
+      action: {
+        id: action,
+      },
       resource: normalizedResource,
       context: queryContext,
     };
