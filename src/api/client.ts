@@ -100,7 +100,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         envId: this.environment,
         userId: userId,
       });
-      this.logger.info(`[${response.status}] permit.api.getUser(${userId})`);
+      this.logger.debug(`[${response.status}] permit.api.getUser(${userId})`);
       return response.data;
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -121,7 +121,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         envId: this.environment,
         tenantId: tenantId,
       });
-      this.logger.info(`[${response.status}] permit.api.getTenant(${tenantId})`);
+      this.logger.debug(`[${response.status}] permit.api.getTenant(${tenantId})`);
       return response.data;
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -142,7 +142,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         envId: this.environment,
         page: page,
       });
-      this.logger.info(`[${response.status}] permit.api.listTenants(${page ?? ''})`);
+      this.logger.debug(`[${response.status}] permit.api.listTenants(${page ?? ''})`);
       return response.data;
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -163,7 +163,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         envId: this.environment,
         roleId: roleId,
       });
-      this.logger.info(`[${response.status}] permit.api.getRole(${roleId})`);
+      this.logger.debug(`[${response.status}] permit.api.getRole(${roleId})`);
       return response.data;
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -185,7 +185,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         user: user,
         tenant: tenant,
       });
-      this.logger.info(
+      this.logger.debug(
         `[${response.status}] permit.api.getAssignedRoles(${user}, ${tenant ?? 'all tenants'})`,
       );
       return response.data;
@@ -208,7 +208,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         envId: this.environment,
         resourceCreate: resource,
       });
-      this.logger.info(
+      this.logger.debug(
         `[${response.status}] permit.api.createResource(${JSON.stringify(resource)})`,
       );
       return [response.data, response.status === 201];
@@ -232,7 +232,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         resourceId: resourceId,
         resourceUpdate: resource,
       });
-      this.logger.info(
+      this.logger.debug(
         `[${response.status}] permit.api.updateResource(${resourceId}, ${JSON.stringify(
           resource,
         )})`,
@@ -257,7 +257,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         envId: this.environment,
         resourceId: resourceId,
       });
-      this.logger.info(`[${response.status}] permit.api.deleteResource(${resourceId})`);
+      this.logger.debug(`[${response.status}] permit.api.deleteResource(${resourceId})`);
       return response;
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -278,7 +278,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         envId: this.environment,
         userCreate: user,
       });
-      this.logger.info(`[${response.status}] permit.api.createUser(${JSON.stringify(user)})`);
+      this.logger.debug(`[${response.status}] permit.api.createUser(${JSON.stringify(user)})`);
       return [response.data, response.status === 201];
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -299,7 +299,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         envId: this.environment,
         userId: userId, // user id or key
       });
-      this.logger.info(`[${response.status}] permit.api.deleteUser(${userId})`);
+      this.logger.debug(`[${response.status}] permit.api.deleteUser(${userId})`);
       return response;
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -320,7 +320,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         envId: this.environment,
         tenantCreate: tenant,
       });
-      this.logger.info(`[${response.status}] permit.api.createTenant(${JSON.stringify(tenant)})`);
+      this.logger.debug(`[${response.status}] permit.api.createTenant(${JSON.stringify(tenant)})`);
       return response.data;
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -342,7 +342,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         tenantId: tenantId,
         tenantUpdate: tenant,
       });
-      this.logger.info(
+      this.logger.debug(
         `[${response.status}] permit.api.updateTenant(${tenantId}, ${JSON.stringify(tenant)})`,
       );
       return response.data;
@@ -365,7 +365,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         envId: this.environment,
         tenantId: tenantId,
       });
-      this.logger.info(`[${response.status}] permit.api.deleteTenant(${tenantId})`);
+      this.logger.debug(`[${response.status}] permit.api.deleteTenant(${tenantId})`);
       return response;
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -386,7 +386,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         envId: this.environment,
         roleCreate: role,
       });
-      this.logger.info(`[${response.status}] permit.api.createRole(${JSON.stringify(role)})`);
+      this.logger.debug(`[${response.status}] permit.api.createRole(${JSON.stringify(role)})`);
       return response.data;
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -408,7 +408,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         roleId: roleId,
         roleUpdate: role,
       });
-      this.logger.info(
+      this.logger.debug(
         `[${response.status}] permit.api.updateRole(${roleId}, ${JSON.stringify(role)})`,
       );
       return response.data;
@@ -431,7 +431,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         envId: this.environment,
         roleId: roleId,
       });
-      this.logger.info(`[${response.status}] permit.api.deleteRole(${roleId})`);
+      this.logger.debug(`[${response.status}] permit.api.deleteRole(${roleId})`);
       return response;
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -452,7 +452,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         envId: this.environment,
         roleAssignmentCreate: assignedRole,
       });
-      this.logger.info(
+      this.logger.debug(
         `[${response.status}] permit.api.assignRole(${JSON.stringify(assignedRole)})`,
       );
       return response.data;
@@ -475,7 +475,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         envId: this.environment,
         roleAssignmentRemove: removedRole,
       });
-      this.logger.info(
+      this.logger.debug(
         `[${response.status}] permit.api.unassignRole(${JSON.stringify(removedRole)})`,
       );
       return response;
