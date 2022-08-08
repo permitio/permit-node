@@ -1,5 +1,5 @@
-import { AxiosResponse } from 'axios';
-import { Logger } from 'winston';
+import axios, { AxiosResponse } from 'axios';
+import { exceptions, Logger } from 'winston';
 
 import { IPermitConfig } from '../config';
 import {
@@ -94,184 +94,401 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async getUser(userId: string): Promise<UserRead> {
-    this.logger.info(`permit.api.getUser(${userId})`);
-    const response = await this.users.getUser({
-      projId: this.project,
-      envId: this.environment,
-      userId: userId,
-    });
-    return response.data;
+    try {
+      const response = await this.users.getUser({
+        projId: this.project,
+        envId: this.environment,
+        userId: userId,
+      });
+      this.logger.info(`[${response.status}] permit.api.getUser(${userId})`);
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.getUser(${userId}), err: ${JSON.stringify(
+            err?.response?.data,
+          )}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async getTenant(tenantId: string): Promise<TenantRead> {
-    this.logger.info(`permit.api.getTenant(${tenantId});`);
-    const response = await this.tenants.getTenant({
-      projId: this.project,
-      envId: this.environment,
-      tenantId: tenantId,
-    });
-    return response.data;
+    try {
+      const response = await this.tenants.getTenant({
+        projId: this.project,
+        envId: this.environment,
+        tenantId: tenantId,
+      });
+      this.logger.info(`[${response.status}] permit.api.getTenant(${tenantId})`);
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.getTenant(${tenantId}), err: ${JSON.stringify(
+            err?.response?.data,
+          )}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async listTenants(page?: number): Promise<TenantRead[]> {
-    this.logger.info(`permit.api.listTenants(${page ?? ''});`);
-    const response = await this.tenants.listTenants({
-      projId: this.project,
-      envId: this.environment,
-      page: page,
-    });
-    return response.data;
+    try {
+      const response = await this.tenants.listTenants({
+        projId: this.project,
+        envId: this.environment,
+        page: page,
+      });
+      this.logger.info(`[${response.status}] permit.api.listTenants(${page ?? ''})`);
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.listTenants(${page ?? ''}), err: ${JSON.stringify(
+            err?.response?.data,
+          )}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async getRole(roleId: string): Promise<RoleRead> {
-    this.logger.info(`permit.api.getRole(${roleId});`);
-    const response = await this.roles.getRole({
-      projId: this.project,
-      envId: this.environment,
-      roleId: roleId,
-    });
-    return response.data;
+    try {
+      const response = await this.roles.getRole({
+        projId: this.project,
+        envId: this.environment,
+        roleId: roleId,
+      });
+      this.logger.info(`[${response.status}] permit.api.getRole(${roleId})`);
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.getRole(${roleId}), err: ${JSON.stringify(
+            err?.response?.data,
+          )}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async getAssignedRoles(user: string, tenant?: string): Promise<RoleAssignmentRead[]> {
-    this.logger.info(`permit.api.getAssignedRoles(${user}, ${tenant ?? 'all tenants'});`);
-    const response = await this.roleAssignments.listRoleAssignments({
-      projId: this.project,
-      envId: this.environment,
-      user: user,
-      tenant: tenant,
-    });
-    return response.data;
+    try {
+      const response = await this.roleAssignments.listRoleAssignments({
+        projId: this.project,
+        envId: this.environment,
+        user: user,
+        tenant: tenant,
+      });
+      this.logger.info(
+        `[${response.status}] permit.api.getAssignedRoles(${user}, ${tenant ?? 'all tenants'})`,
+      );
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.getAssignedRoles(${user}, ${
+            tenant ?? 'all tenants'
+          }), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async createResource(resource: ResourceCreate): Promise<[ResourceRead, boolean]> {
-    this.logger.info(`permit.api.createResource(${resource});`);
-    const response = await this.resources.createResource({
-      projId: this.project,
-      envId: this.environment,
-      resourceCreate: resource,
-    });
-    // TODO: add Promise.race() on optional timeout (config to allow the user to add a timeout on the api call)
-    return [response.data, response.status === 201];
+    try {
+      const response = await this.resources.createResource({
+        projId: this.project,
+        envId: this.environment,
+        resourceCreate: resource,
+      });
+      this.logger.info(
+        `[${response.status}] permit.api.createResource(${JSON.stringify(resource)})`,
+      );
+      return [response.data, response.status === 201];
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.createResource(${JSON.stringify(
+            resource,
+          )}), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async updateResource(resourceId: string, resource: ResourceUpdate): Promise<ResourceRead> {
-    this.logger.info(`permit.api.updateResource(${resourceId}, ${resource});`);
-    const response = await this.resources.updateResource({
-      projId: this.project,
-      envId: this.environment,
-      resourceId: resourceId,
-      resourceUpdate: resource,
-    });
-    return response.data;
+    try {
+      const response = await this.resources.updateResource({
+        projId: this.project,
+        envId: this.environment,
+        resourceId: resourceId,
+        resourceUpdate: resource,
+      });
+      this.logger.info(
+        `[${response.status}] permit.api.updateResource(${resourceId}, ${JSON.stringify(
+          resource,
+        )})`,
+      );
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.updateResource(${resourceId}, ${JSON.stringify(
+            resource,
+          )}), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async deleteResource(resourceId: string): Promise<AxiosResponse<void>> {
-    this.logger.info(`permit.api.deleteResource(${resourceId});`);
-    return await this.resources.deleteResource({
-      projId: this.project,
-      envId: this.environment,
-      resourceId: resourceId,
-    });
+    try {
+      const response = await this.resources.deleteResource({
+        projId: this.project,
+        envId: this.environment,
+        resourceId: resourceId,
+      });
+      this.logger.info(`[${response.status}] permit.api.deleteResource(${resourceId})`);
+      return response;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${
+            err?.response?.status
+          }] permit.api.deleteResource(${resourceId}), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async createUser(user: UserCreate): Promise<[UserRead, boolean]> {
-    this.logger.info(`permit.api.createUser(${user});`);
-    const response = await this.users.createUser({
-      projId: this.project,
-      envId: this.environment,
-      userCreate: user,
-    });
-    // TODO: add Promise.race() on optional timeout (config to allow the user to add a timeout on the api call)
-    return [response.data, response.status === 201];
+    try {
+      const response = await this.users.createUser({
+        projId: this.project,
+        envId: this.environment,
+        userCreate: user,
+      });
+      this.logger.info(`[${response.status}] permit.api.createUser(${JSON.stringify(user)})`);
+      return [response.data, response.status === 201];
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.createUser(${JSON.stringify(
+            user,
+          )}), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async deleteUser(userId: string): Promise<AxiosResponse<void>> {
-    this.logger.info(`permit.api.deleteUser(${userId});`);
-    return await this.users.deleteUser({
-      projId: this.project,
-      envId: this.environment,
-      userId: userId, // user id or key
-    });
+    try {
+      const response = await this.users.deleteUser({
+        projId: this.project,
+        envId: this.environment,
+        userId: userId, // user id or key
+      });
+      this.logger.info(`[${response.status}] permit.api.deleteUser(${userId})`);
+      return response;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.deleteUser(${userId}), err: ${JSON.stringify(
+            err?.response?.data,
+          )}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async createTenant(tenant: TenantCreate): Promise<TenantRead> {
-    this.logger.info(`permit.api.createTenant(${tenant});`);
-    const response = await this.tenants.createTenant({
-      projId: this.project,
-      envId: this.environment,
-      tenantCreate: tenant,
-    });
-    return response.data;
+    try {
+      const response = await this.tenants.createTenant({
+        projId: this.project,
+        envId: this.environment,
+        tenantCreate: tenant,
+      });
+      this.logger.info(`[${response.status}] permit.api.createTenant(${JSON.stringify(tenant)})`);
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.createTenant(${JSON.stringify(
+            tenant,
+          )}), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async updateTenant(tenantId: string, tenant: TenantUpdate): Promise<TenantRead> {
-    this.logger.info(`permit.api.updateTenant(${tenantId}, ${tenant});`);
-    const response = await this.tenants.updateTenant({
-      projId: this.project,
-      envId: this.environment,
-      tenantId: tenantId,
-      tenantUpdate: tenant,
-    });
-    return response.data;
+    try {
+      const response = await this.tenants.updateTenant({
+        projId: this.project,
+        envId: this.environment,
+        tenantId: tenantId,
+        tenantUpdate: tenant,
+      });
+      this.logger.info(
+        `[${response.status}] permit.api.updateTenant(${tenantId}, ${JSON.stringify(tenant)})`,
+      );
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.updateTenant(${tenantId}, ${JSON.stringify(
+            tenant,
+          )}), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async deleteTenant(tenantId: string): Promise<AxiosResponse<void>> {
-    this.logger.info(`permit.api.deleteTenant(${tenantId});`);
-    return await this.tenants.deleteTenant({
-      projId: this.project,
-      envId: this.environment,
-      tenantId: tenantId,
-    });
+    try {
+      const response = await this.tenants.deleteTenant({
+        projId: this.project,
+        envId: this.environment,
+        tenantId: tenantId,
+      });
+      this.logger.info(`[${response.status}] permit.api.deleteTenant(${tenantId})`);
+      return response;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.deleteTenant(${tenantId}), err: ${JSON.stringify(
+            err?.response?.data,
+          )}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async createRole(role: RoleCreate): Promise<RoleRead> {
-    this.logger.info(`permit.api.createRole(${role});`);
-    const response = await this.roles.createRole({
-      projId: this.project,
-      envId: this.environment,
-      roleCreate: role,
-    });
-    return response.data;
+    try {
+      const response = await this.roles.createRole({
+        projId: this.project,
+        envId: this.environment,
+        roleCreate: role,
+      });
+      this.logger.info(`[${response.status}] permit.api.createRole(${JSON.stringify(role)})`);
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.createRole(${JSON.stringify(
+            role,
+          )}), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async updateRole(roleId: string, role: RoleUpdate): Promise<RoleRead> {
-    this.logger.info(`permit.api.updateRole(${roleId}, ${role});`);
-    const response = await this.roles.updateRole({
-      projId: this.project,
-      envId: this.environment,
-      roleId: roleId,
-      roleUpdate: role,
-    });
-    return response.data;
+    try {
+      const response = await this.roles.updateRole({
+        projId: this.project,
+        envId: this.environment,
+        roleId: roleId,
+        roleUpdate: role,
+      });
+      this.logger.info(
+        `[${response.status}] permit.api.updateRole(${roleId}, ${JSON.stringify(role)})`,
+      );
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.updateRole(${roleId}, ${JSON.stringify(
+            role,
+          )}), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async deleteRole(roleId: string): Promise<AxiosResponse<void>> {
-    this.logger.info(`permit.api.deleteRole(${roleId});`);
-    return await this.roles.deleteRole({
-      projId: this.project,
-      envId: this.environment,
-      roleId: roleId,
-    });
+    try {
+      const response = await this.roles.deleteRole({
+        projId: this.project,
+        envId: this.environment,
+        roleId: roleId,
+      });
+      this.logger.info(`[${response.status}] permit.api.deleteRole(${roleId})`);
+      return response;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.deleteRole(${roleId}), err: ${JSON.stringify(
+            err?.response?.data,
+          )}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async assignRole(assignedRole: RoleAssignmentCreate): Promise<RoleAssignmentRead> {
-    this.logger.info(`permit.api.assignRole(${assignedRole});`);
-    const response = await this.roleAssignments.assignRole({
-      projId: this.project,
-      envId: this.environment,
-      roleAssignmentCreate: assignedRole,
-    });
-    return response.data;
+    try {
+      const response = await this.roleAssignments.assignRole({
+        projId: this.project,
+        envId: this.environment,
+        roleAssignmentCreate: assignedRole,
+      });
+      this.logger.info(
+        `[${response.status}] permit.api.assignRole(${JSON.stringify(assignedRole)})`,
+      );
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.assignRole(${JSON.stringify(
+            assignedRole,
+          )}), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public async unassignRole(removedRole: RoleAssignmentRemove): Promise<AxiosResponse<void>> {
-    this.logger.info(`permit.api.unassignRole(${removedRole});`);
-    return await this.roleAssignments.unassignRole({
-      projId: this.project,
-      envId: this.environment,
-      roleAssignmentRemove: removedRole,
-    });
+    try {
+      const response = await this.roleAssignments.unassignRole({
+        projId: this.project,
+        envId: this.environment,
+        roleAssignmentRemove: removedRole,
+      });
+      this.logger.info(
+        `[${response.status}] permit.api.unassignRole(${JSON.stringify(removedRole)})`,
+      );
+      return response;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.unassignRole(${JSON.stringify(
+            removedRole,
+          )}), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
   }
 
   public get api(): IPermitApi {
