@@ -42,7 +42,7 @@ export class ConfigFactory {
       },
       multiTenancy: {
         defaultTenant: 'default',
-        useDefaultTenantIfEmpty: false,
+        useDefaultTenantIfEmpty: true,
       },
       timeout: undefined,
       throwOnError: undefined,
