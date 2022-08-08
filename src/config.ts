@@ -33,8 +33,8 @@ export class ConfigFactory {
       pdp: _.get(process.env, 'PERMIT_PDP_URL', 'http://localhost:7000'),
       apiUrl: _.get(process.env, 'PERMIT_API_URL', 'https://api.permit.io'),
       log: {
-        // Log level (debug mode sets default to "debug" otherwise 'info')
-        level: _.get(process.env, 'PERMIT_LOG_LEVEL', 'info'),
+        // log level, default is warn (warnings and errors)
+        level: _.get(process.env, 'PERMIT_LOG_LEVEL', 'warn'),
         // Label added to logs
         label: _.get(process.env, 'PERMIT_LOG_LABEL', 'Permit.io'),
         // When logging - dump full data to console as JSON
@@ -42,7 +42,7 @@ export class ConfigFactory {
       },
       multiTenancy: {
         defaultTenant: 'default',
-        useDefaultTenantIfEmpty: false,
+        useDefaultTenantIfEmpty: true,
       },
       timeout: undefined,
       throwOnError: undefined,

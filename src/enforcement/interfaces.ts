@@ -2,10 +2,15 @@ import { Dict } from '../utils/dict';
 
 // user interfaces ------------------------------------------------------------
 export interface IUser {
+  // the customer-side id of the user (the user *key*)
   key: string;
+  // the user's first name (optional)
   firstName?: string;
+  // the user's first name (optional)
   lastName?: string;
+  // the user's email (optional)
   email?: string;
+  // custom attributes on the user, can be used in ABAC
   attributes?: Dict;
 }
 
@@ -17,10 +22,11 @@ export interface IResource {
   // the type of the resource respresents a namespace of resources
   // i.e: all "task" resources are objects under the "task" namespace
   type: string;
-  // if no id is used (i.e: undefined), the question asked is:
+  // the customer-side id of the resource (the resource *key*)
+  // if no key is used (i.e: undefined), the question asked is:
   // can the user perform the action on *all* the resources of
   // this type? (i.e: all resources in this resource namespace)
-  id?: string;
+  key?: string;
   // the permissions service is multi-tenant by default,
   // so a resource must be defined under a tenant.
   tenant?: string;
