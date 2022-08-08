@@ -129,7 +129,7 @@ export class Enforcer implements IEnforcer {
         }
         const decision =
           ('allow' in response.data ? response.data.allow : response.data.result.allow) || false;
-        this.logger.debug(
+        this.logger.info(
           `permit.check(${Enforcer.userRepr(normalizedUser)}, ${action}, ${Enforcer.resourceRepr(
             resourceObj,
           )}) = ${decision}`,
