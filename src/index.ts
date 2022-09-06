@@ -44,7 +44,7 @@ class _Permit {
     );
     logger.warn(
       'Debug mode is deprecated and will be removed in the next major version.\
-                    You can control log level with log.logLevel property.',
+                    You can control log level with log.level property.',
     );
 
     Object.assign(this, {
