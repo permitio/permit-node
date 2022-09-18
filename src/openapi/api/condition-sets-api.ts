@@ -31,45 +31,45 @@ import {
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
+import { ConditionSetCreate } from '../types';
+// @ts-ignore
+import { ConditionSetRead } from '../types';
+// @ts-ignore
+import { ConditionSetType } from '../types';
+// @ts-ignore
+import { ConditionSetUpdate } from '../types';
+// @ts-ignore
 import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PaginatedResultUserRead } from '../types';
-// @ts-ignore
-import { TenantCreate } from '../types';
-// @ts-ignore
-import { TenantRead } from '../types';
-// @ts-ignore
-import { TenantUpdate } from '../types';
 /**
- * TenantsApi - axios parameter creator
+ * ConditionSetsApi - axios parameter creator
  * @export
  */
-export const TenantsApiAxiosParamCreator = function (configuration?: Configuration) {
+export const ConditionSetsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * Creates a new tenant inside the Permit.io system.  If the tenant is already created: will return 200 instead of 201, and will return the existing tenant object in the response body.
-     * @summary Create Tenant
+     * Creates a new condition set (can be either a user set or a resource set).
+     * @summary Create Condition Set
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {TenantCreate} tenantCreate
+     * @param {ConditionSetCreate} conditionSetCreate
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    createTenant: async (
+    createConditionSet: async (
       projId: string,
       envId: string,
-      tenantCreate: TenantCreate,
+      conditionSetCreate: ConditionSetCreate,
       permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
-      assertParamExists('createTenant', 'projId', projId);
+      assertParamExists('createConditionSet', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
-      assertParamExists('createTenant', 'envId', envId);
-      // verify required parameter 'tenantCreate' is not null or undefined
-      assertParamExists('createTenant', 'tenantCreate', tenantCreate);
-      const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants`
+      assertParamExists('createConditionSet', 'envId', envId);
+      // verify required parameter 'conditionSetCreate' is not null or undefined
+      assertParamExists('createConditionSet', 'conditionSetCreate', conditionSetCreate);
+      const localVarPath = `/v2/schema/{proj_id}/{env_id}/condition_sets`
         .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
         .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -97,7 +97,7 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        tenantCreate,
+        conditionSetCreate,
         localVarRequestOptions,
         configuration,
       );
@@ -108,32 +108,32 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     * Deletes the tenant and all its related data.
-     * @summary Delete Tenant
+     * Deletes a condition set and all its related data. This includes any permissions granted to said condition set (i.e: any matching condition set rules).
+     * @summary Delete Condition Set
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteTenant: async (
+    deleteConditionSet: async (
       projId: string,
       envId: string,
-      tenantId: string,
+      conditionSetId: string,
       permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
-      assertParamExists('deleteTenant', 'projId', projId);
+      assertParamExists('deleteConditionSet', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
-      assertParamExists('deleteTenant', 'envId', envId);
-      // verify required parameter 'tenantId' is not null or undefined
-      assertParamExists('deleteTenant', 'tenantId', tenantId);
-      const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}`
+      assertParamExists('deleteConditionSet', 'envId', envId);
+      // verify required parameter 'conditionSetId' is not null or undefined
+      assertParamExists('deleteConditionSet', 'conditionSetId', conditionSetId);
+      const localVarPath = `/v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}`
         .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
         .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'tenant_id'}}`, encodeURIComponent(String(tenantId)));
+        .replace(`{${'condition_set_id'}}`, encodeURIComponent(String(conditionSetId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -163,32 +163,32 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     * Gets a tenant, if such tenant exists. Otherwise returns 404.
-     * @summary Get Tenant
+     * Gets a single condition set, if such condition set exists.
+     * @summary Get Condition Set
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTenant: async (
+    getConditionSet: async (
       projId: string,
       envId: string,
-      tenantId: string,
+      conditionSetId: string,
       permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
-      assertParamExists('getTenant', 'projId', projId);
+      assertParamExists('getConditionSet', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
-      assertParamExists('getTenant', 'envId', envId);
-      // verify required parameter 'tenantId' is not null or undefined
-      assertParamExists('getTenant', 'tenantId', tenantId);
-      const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}`
+      assertParamExists('getConditionSet', 'envId', envId);
+      // verify required parameter 'conditionSetId' is not null or undefined
+      assertParamExists('getConditionSet', 'conditionSetId', conditionSetId);
+      const localVarPath = `/v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}`
         .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
         .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'tenant_id'}}`, encodeURIComponent(String(tenantId)));
+        .replace(`{${'condition_set_id'}}`, encodeURIComponent(String(conditionSetId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -218,37 +218,32 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *
-     * @summary List Tenant Users
+     * Lists all condition sets matching a filter.
+     * @summary List Condition Sets
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [search] Text search for the email field
+     * @param {ConditionSetType} [type] if provided, will return only the condition sets of the specified type. e.g: only user sets.
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listTenantUsers: async (
+    listConditionSets: async (
       projId: string,
-      tenantId: string,
       envId: string,
-      search?: string,
+      type?: ConditionSetType,
       page?: number,
       perPage?: number,
       permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
-      assertParamExists('listTenantUsers', 'projId', projId);
-      // verify required parameter 'tenantId' is not null or undefined
-      assertParamExists('listTenantUsers', 'tenantId', tenantId);
+      assertParamExists('listConditionSets', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
-      assertParamExists('listTenantUsers', 'envId', envId);
-      const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users`
+      assertParamExists('listConditionSets', 'envId', envId);
+      const localVarPath = `/v2/schema/{proj_id}/{env_id}/condition_sets`
         .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'tenant_id'}}`, encodeURIComponent(String(tenantId)))
         .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -265,8 +260,8 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-      if (search !== undefined) {
-        localVarQueryParameter['search'] = search;
+      if (type !== undefined) {
+        localVarQueryParameter['type'] = type;
       }
 
       if (page !== undefined) {
@@ -291,98 +286,36 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     * Lists all the tenants defined within an environment.
-     * @summary List Tenants
+     * Partially updates a condition set. Fields that will be provided will be completely overwritten.
+     * @summary Update Condition Set
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
+     * @param {ConditionSetUpdate} conditionSetUpdate
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listTenants: async (
+    updateConditionSet: async (
       projId: string,
       envId: string,
-      page?: number,
-      perPage?: number,
+      conditionSetId: string,
+      conditionSetUpdate: ConditionSetUpdate,
       permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
-      assertParamExists('listTenants', 'projId', projId);
+      assertParamExists('updateConditionSet', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
-      assertParamExists('listTenants', 'envId', envId);
-      const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication HTTPBearer required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
-
-      if (page !== undefined) {
-        localVarQueryParameter['page'] = page;
-      }
-
-      if (perPage !== undefined) {
-        localVarQueryParameter['per_page'] = perPage;
-      }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     * Partially updates the tenant definition. Fields that will be provided will be completely overwritten.
-     * @summary Update Tenant
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {TenantUpdate} tenantUpdate
-     * @param {string} [permitSession]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    updateTenant: async (
-      projId: string,
-      envId: string,
-      tenantId: string,
-      tenantUpdate: TenantUpdate,
-      permitSession?: string,
-      options: AxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('updateTenant', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('updateTenant', 'envId', envId);
-      // verify required parameter 'tenantId' is not null or undefined
-      assertParamExists('updateTenant', 'tenantId', tenantId);
-      // verify required parameter 'tenantUpdate' is not null or undefined
-      assertParamExists('updateTenant', 'tenantUpdate', tenantUpdate);
-      const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}`
+      assertParamExists('updateConditionSet', 'envId', envId);
+      // verify required parameter 'conditionSetId' is not null or undefined
+      assertParamExists('updateConditionSet', 'conditionSetId', conditionSetId);
+      // verify required parameter 'conditionSetUpdate' is not null or undefined
+      assertParamExists('updateConditionSet', 'conditionSetUpdate', conditionSetUpdate);
+      const localVarPath = `/v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}`
         .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
         .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'tenant_id'}}`, encodeURIComponent(String(tenantId)));
+        .replace(`{${'condition_set_id'}}`, encodeURIComponent(String(conditionSetId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -408,7 +341,7 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        tenantUpdate,
+        conditionSetUpdate,
         localVarRequestOptions,
         configuration,
       );
@@ -422,120 +355,117 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
 };
 
 /**
- * TenantsApi - functional programming interface
+ * ConditionSetsApi - functional programming interface
  * @export
  */
-export const TenantsApiFp = function (configuration?: Configuration) {
-  const localVarAxiosParamCreator = TenantsApiAxiosParamCreator(configuration);
+export const ConditionSetsApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = ConditionSetsApiAxiosParamCreator(configuration);
   return {
     /**
-     * Creates a new tenant inside the Permit.io system.  If the tenant is already created: will return 200 instead of 201, and will return the existing tenant object in the response body.
-     * @summary Create Tenant
+     * Creates a new condition set (can be either a user set or a resource set).
+     * @summary Create Condition Set
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {TenantCreate} tenantCreate
+     * @param {ConditionSetCreate} conditionSetCreate
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async createTenant(
+    async createConditionSet(
       projId: string,
       envId: string,
-      tenantCreate: TenantCreate,
+      conditionSetCreate: ConditionSetCreate,
       permitSession?: string,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TenantRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.createTenant(
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ConditionSetRead>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.createConditionSet(
         projId,
         envId,
-        tenantCreate,
+        conditionSetCreate,
         permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     * Deletes the tenant and all its related data.
-     * @summary Delete Tenant
+     * Deletes a condition set and all its related data. This includes any permissions granted to said condition set (i.e: any matching condition set rules).
+     * @summary Delete Condition Set
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async deleteTenant(
+    async deleteConditionSet(
       projId: string,
       envId: string,
-      tenantId: string,
+      conditionSetId: string,
       permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.deleteTenant(
+      const localVarAxiosArgs = await localVarAxiosParamCreator.deleteConditionSet(
         projId,
         envId,
-        tenantId,
+        conditionSetId,
         permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     * Gets a tenant, if such tenant exists. Otherwise returns 404.
-     * @summary Get Tenant
+     * Gets a single condition set, if such condition set exists.
+     * @summary Get Condition Set
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getTenant(
+    async getConditionSet(
       projId: string,
       envId: string,
-      tenantId: string,
+      conditionSetId: string,
       permitSession?: string,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TenantRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getTenant(
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ConditionSetRead>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getConditionSet(
         projId,
         envId,
-        tenantId,
+        conditionSetId,
         permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     *
-     * @summary List Tenant Users
+     * Lists all condition sets matching a filter.
+     * @summary List Condition Sets
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [search] Text search for the email field
+     * @param {ConditionSetType} [type] if provided, will return only the condition sets of the specified type. e.g: only user sets.
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async listTenantUsers(
+    async listConditionSets(
       projId: string,
-      tenantId: string,
       envId: string,
-      search?: string,
+      type?: ConditionSetType,
       page?: number,
       perPage?: number,
       permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResultUserRead>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ConditionSetRead>>
     > {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.listTenantUsers(
+      const localVarAxiosArgs = await localVarAxiosParamCreator.listConditionSets(
         projId,
-        tenantId,
         envId,
-        search,
+        type,
         page,
         perPage,
         permitSession,
@@ -544,58 +474,29 @@ export const TenantsApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     * Lists all the tenants defined within an environment.
-     * @summary List Tenants
+     * Partially updates a condition set. Fields that will be provided will be completely overwritten.
+     * @summary Update Condition Set
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
+     * @param {ConditionSetUpdate} conditionSetUpdate
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async listTenants(
+    async updateConditionSet(
       projId: string,
       envId: string,
-      page?: number,
-      perPage?: number,
+      conditionSetId: string,
+      conditionSetUpdate: ConditionSetUpdate,
       permitSession?: string,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TenantRead>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.listTenants(
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ConditionSetRead>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.updateConditionSet(
         projId,
         envId,
-        page,
-        perPage,
-        permitSession,
-        options,
-      );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
-     * Partially updates the tenant definition. Fields that will be provided will be completely overwritten.
-     * @summary Update Tenant
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {TenantUpdate} tenantUpdate
-     * @param {string} [permitSession]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async updateTenant(
-      projId: string,
-      envId: string,
-      tenantId: string,
-      tenantUpdate: TenantUpdate,
-      permitSession?: string,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TenantRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.updateTenant(
-        projId,
-        envId,
-        tenantId,
-        tenantUpdate,
+        conditionSetId,
+        conditionSetUpdate,
         permitSession,
         options,
       );
@@ -605,424 +506,357 @@ export const TenantsApiFp = function (configuration?: Configuration) {
 };
 
 /**
- * TenantsApi - factory interface
+ * ConditionSetsApi - factory interface
  * @export
  */
-export const TenantsApiFactory = function (
+export const ConditionSetsApiFactory = function (
   configuration?: Configuration,
   basePath?: string,
   axios?: AxiosInstance,
 ) {
-  const localVarFp = TenantsApiFp(configuration);
+  const localVarFp = ConditionSetsApiFp(configuration);
   return {
     /**
-     * Creates a new tenant inside the Permit.io system.  If the tenant is already created: will return 200 instead of 201, and will return the existing tenant object in the response body.
-     * @summary Create Tenant
+     * Creates a new condition set (can be either a user set or a resource set).
+     * @summary Create Condition Set
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {TenantCreate} tenantCreate
+     * @param {ConditionSetCreate} conditionSetCreate
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    createTenant(
+    createConditionSet(
       projId: string,
       envId: string,
-      tenantCreate: TenantCreate,
+      conditionSetCreate: ConditionSetCreate,
       permitSession?: string,
       options?: any,
-    ): AxiosPromise<TenantRead> {
+    ): AxiosPromise<ConditionSetRead> {
       return localVarFp
-        .createTenant(projId, envId, tenantCreate, permitSession, options)
+        .createConditionSet(projId, envId, conditionSetCreate, permitSession, options)
         .then((request) => request(axios, basePath));
     },
     /**
-     * Deletes the tenant and all its related data.
-     * @summary Delete Tenant
+     * Deletes a condition set and all its related data. This includes any permissions granted to said condition set (i.e: any matching condition set rules).
+     * @summary Delete Condition Set
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteTenant(
+    deleteConditionSet(
       projId: string,
       envId: string,
-      tenantId: string,
+      conditionSetId: string,
       permitSession?: string,
       options?: any,
     ): AxiosPromise<void> {
       return localVarFp
-        .deleteTenant(projId, envId, tenantId, permitSession, options)
+        .deleteConditionSet(projId, envId, conditionSetId, permitSession, options)
         .then((request) => request(axios, basePath));
     },
     /**
-     * Gets a tenant, if such tenant exists. Otherwise returns 404.
-     * @summary Get Tenant
+     * Gets a single condition set, if such condition set exists.
+     * @summary Get Condition Set
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTenant(
+    getConditionSet(
       projId: string,
       envId: string,
-      tenantId: string,
+      conditionSetId: string,
       permitSession?: string,
       options?: any,
-    ): AxiosPromise<TenantRead> {
+    ): AxiosPromise<ConditionSetRead> {
       return localVarFp
-        .getTenant(projId, envId, tenantId, permitSession, options)
+        .getConditionSet(projId, envId, conditionSetId, permitSession, options)
         .then((request) => request(axios, basePath));
     },
     /**
-     *
-     * @summary List Tenant Users
+     * Lists all condition sets matching a filter.
+     * @summary List Condition Sets
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [search] Text search for the email field
+     * @param {ConditionSetType} [type] if provided, will return only the condition sets of the specified type. e.g: only user sets.
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listTenantUsers(
+    listConditionSets(
       projId: string,
-      tenantId: string,
       envId: string,
-      search?: string,
+      type?: ConditionSetType,
       page?: number,
       perPage?: number,
       permitSession?: string,
       options?: any,
-    ): AxiosPromise<PaginatedResultUserRead> {
+    ): AxiosPromise<Array<ConditionSetRead>> {
       return localVarFp
-        .listTenantUsers(projId, tenantId, envId, search, page, perPage, permitSession, options)
+        .listConditionSets(projId, envId, type, page, perPage, permitSession, options)
         .then((request) => request(axios, basePath));
     },
     /**
-     * Lists all the tenants defined within an environment.
-     * @summary List Tenants
+     * Partially updates a condition set. Fields that will be provided will be completely overwritten.
+     * @summary Update Condition Set
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
+     * @param {ConditionSetUpdate} conditionSetUpdate
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listTenants(
+    updateConditionSet(
       projId: string,
       envId: string,
-      page?: number,
-      perPage?: number,
+      conditionSetId: string,
+      conditionSetUpdate: ConditionSetUpdate,
       permitSession?: string,
       options?: any,
-    ): AxiosPromise<Array<TenantRead>> {
+    ): AxiosPromise<ConditionSetRead> {
       return localVarFp
-        .listTenants(projId, envId, page, perPage, permitSession, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     * Partially updates the tenant definition. Fields that will be provided will be completely overwritten.
-     * @summary Update Tenant
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {TenantUpdate} tenantUpdate
-     * @param {string} [permitSession]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    updateTenant(
-      projId: string,
-      envId: string,
-      tenantId: string,
-      tenantUpdate: TenantUpdate,
-      permitSession?: string,
-      options?: any,
-    ): AxiosPromise<TenantRead> {
-      return localVarFp
-        .updateTenant(projId, envId, tenantId, tenantUpdate, permitSession, options)
+        .updateConditionSet(
+          projId,
+          envId,
+          conditionSetId,
+          conditionSetUpdate,
+          permitSession,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
 };
 
 /**
- * Request parameters for createTenant operation in TenantsApi.
+ * Request parameters for createConditionSet operation in ConditionSetsApi.
  * @export
- * @interface TenantsApiCreateTenantRequest
+ * @interface ConditionSetsApiCreateConditionSetRequest
  */
-export interface TenantsApiCreateTenantRequest {
+export interface ConditionSetsApiCreateConditionSetRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiCreateTenant
+   * @memberof ConditionSetsApiCreateConditionSet
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiCreateTenant
+   * @memberof ConditionSetsApiCreateConditionSet
    */
   readonly envId: string;
 
   /**
    *
-   * @type {TenantCreate}
-   * @memberof TenantsApiCreateTenant
+   * @type {ConditionSetCreate}
+   * @memberof ConditionSetsApiCreateConditionSet
    */
-  readonly tenantCreate: TenantCreate;
+  readonly conditionSetCreate: ConditionSetCreate;
 
   /**
    *
    * @type {string}
-   * @memberof TenantsApiCreateTenant
+   * @memberof ConditionSetsApiCreateConditionSet
    */
   readonly permitSession?: string;
 }
 
 /**
- * Request parameters for deleteTenant operation in TenantsApi.
+ * Request parameters for deleteConditionSet operation in ConditionSetsApi.
  * @export
- * @interface TenantsApiDeleteTenantRequest
+ * @interface ConditionSetsApiDeleteConditionSetRequest
  */
-export interface TenantsApiDeleteTenantRequest {
+export interface ConditionSetsApiDeleteConditionSetRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiDeleteTenant
+   * @memberof ConditionSetsApiDeleteConditionSet
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiDeleteTenant
+   * @memberof ConditionSetsApiDeleteConditionSet
    */
   readonly envId: string;
 
   /**
-   * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+   * Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiDeleteTenant
+   * @memberof ConditionSetsApiDeleteConditionSet
    */
-  readonly tenantId: string;
+  readonly conditionSetId: string;
 
   /**
    *
    * @type {string}
-   * @memberof TenantsApiDeleteTenant
+   * @memberof ConditionSetsApiDeleteConditionSet
    */
   readonly permitSession?: string;
 }
 
 /**
- * Request parameters for getTenant operation in TenantsApi.
+ * Request parameters for getConditionSet operation in ConditionSetsApi.
  * @export
- * @interface TenantsApiGetTenantRequest
+ * @interface ConditionSetsApiGetConditionSetRequest
  */
-export interface TenantsApiGetTenantRequest {
+export interface ConditionSetsApiGetConditionSetRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiGetTenant
+   * @memberof ConditionSetsApiGetConditionSet
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiGetTenant
+   * @memberof ConditionSetsApiGetConditionSet
    */
   readonly envId: string;
 
   /**
-   * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+   * Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiGetTenant
+   * @memberof ConditionSetsApiGetConditionSet
    */
-  readonly tenantId: string;
+  readonly conditionSetId: string;
 
   /**
    *
    * @type {string}
-   * @memberof TenantsApiGetTenant
+   * @memberof ConditionSetsApiGetConditionSet
    */
   readonly permitSession?: string;
 }
 
 /**
- * Request parameters for listTenantUsers operation in TenantsApi.
+ * Request parameters for listConditionSets operation in ConditionSetsApi.
  * @export
- * @interface TenantsApiListTenantUsersRequest
+ * @interface ConditionSetsApiListConditionSetsRequest
  */
-export interface TenantsApiListTenantUsersRequest {
+export interface ConditionSetsApiListConditionSetsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiListTenantUsers
+   * @memberof ConditionSetsApiListConditionSets
    */
   readonly projId: string;
 
   /**
-   * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiListTenantUsers
-   */
-  readonly tenantId: string;
-
-  /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiListTenantUsers
+   * @memberof ConditionSetsApiListConditionSets
    */
   readonly envId: string;
 
   /**
-   * Text search for the email field
-   * @type {string}
-   * @memberof TenantsApiListTenantUsers
+   * if provided, will return only the condition sets of the specified type. e.g: only user sets.
+   * @type {ConditionSetType}
+   * @memberof ConditionSetsApiListConditionSets
    */
-  readonly search?: string;
+  readonly type?: ConditionSetType;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof TenantsApiListTenantUsers
+   * @memberof ConditionSetsApiListConditionSets
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof TenantsApiListTenantUsers
+   * @memberof ConditionSetsApiListConditionSets
    */
   readonly perPage?: number;
 
   /**
    *
    * @type {string}
-   * @memberof TenantsApiListTenantUsers
+   * @memberof ConditionSetsApiListConditionSets
    */
   readonly permitSession?: string;
 }
 
 /**
- * Request parameters for listTenants operation in TenantsApi.
+ * Request parameters for updateConditionSet operation in ConditionSetsApi.
  * @export
- * @interface TenantsApiListTenantsRequest
+ * @interface ConditionSetsApiUpdateConditionSetRequest
  */
-export interface TenantsApiListTenantsRequest {
+export interface ConditionSetsApiUpdateConditionSetRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiListTenants
+   * @memberof ConditionSetsApiUpdateConditionSet
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiListTenants
+   * @memberof ConditionSetsApiUpdateConditionSet
    */
   readonly envId: string;
 
   /**
-   * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof TenantsApiListTenants
+   * Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof ConditionSetsApiUpdateConditionSet
    */
-  readonly page?: number;
+  readonly conditionSetId: string;
 
   /**
-   * The number of results per page (max 100).
-   * @type {number}
-   * @memberof TenantsApiListTenants
+   *
+   * @type {ConditionSetUpdate}
+   * @memberof ConditionSetsApiUpdateConditionSet
    */
-  readonly perPage?: number;
+  readonly conditionSetUpdate: ConditionSetUpdate;
 
   /**
    *
    * @type {string}
-   * @memberof TenantsApiListTenants
+   * @memberof ConditionSetsApiUpdateConditionSet
    */
   readonly permitSession?: string;
 }
 
 /**
- * Request parameters for updateTenant operation in TenantsApi.
+ * ConditionSetsApi - object-oriented interface
  * @export
- * @interface TenantsApiUpdateTenantRequest
- */
-export interface TenantsApiUpdateTenantRequest {
-  /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiUpdateTenant
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiUpdateTenant
-   */
-  readonly envId: string;
-
-  /**
-   * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiUpdateTenant
-   */
-  readonly tenantId: string;
-
-  /**
-   *
-   * @type {TenantUpdate}
-   * @memberof TenantsApiUpdateTenant
-   */
-  readonly tenantUpdate: TenantUpdate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof TenantsApiUpdateTenant
-   */
-  readonly permitSession?: string;
-}
-
-/**
- * TenantsApi - object-oriented interface
- * @export
- * @class TenantsApi
+ * @class ConditionSetsApi
  * @extends {BaseAPI}
  */
-export class TenantsApi extends BaseAPI {
+export class ConditionSetsApi extends BaseAPI {
   /**
-   * Creates a new tenant inside the Permit.io system.  If the tenant is already created: will return 200 instead of 201, and will return the existing tenant object in the response body.
-   * @summary Create Tenant
-   * @param {TenantsApiCreateTenantRequest} requestParameters Request parameters.
+   * Creates a new condition set (can be either a user set or a resource set).
+   * @summary Create Condition Set
+   * @param {ConditionSetsApiCreateConditionSetRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @memberof ConditionSetsApi
    */
-  public createTenant(
-    requestParameters: TenantsApiCreateTenantRequest,
+  public createConditionSet(
+    requestParameters: ConditionSetsApiCreateConditionSetRequest,
     options?: AxiosRequestConfig,
   ) {
-    return TenantsApiFp(this.configuration)
-      .createTenant(
+    return ConditionSetsApiFp(this.configuration)
+      .createConditionSet(
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.tenantCreate,
+        requestParameters.conditionSetCreate,
         requestParameters.permitSession,
         options,
       )
@@ -1030,22 +864,22 @@ export class TenantsApi extends BaseAPI {
   }
 
   /**
-   * Deletes the tenant and all its related data.
-   * @summary Delete Tenant
-   * @param {TenantsApiDeleteTenantRequest} requestParameters Request parameters.
+   * Deletes a condition set and all its related data. This includes any permissions granted to said condition set (i.e: any matching condition set rules).
+   * @summary Delete Condition Set
+   * @param {ConditionSetsApiDeleteConditionSetRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @memberof ConditionSetsApi
    */
-  public deleteTenant(
-    requestParameters: TenantsApiDeleteTenantRequest,
+  public deleteConditionSet(
+    requestParameters: ConditionSetsApiDeleteConditionSetRequest,
     options?: AxiosRequestConfig,
   ) {
-    return TenantsApiFp(this.configuration)
-      .deleteTenant(
+    return ConditionSetsApiFp(this.configuration)
+      .deleteConditionSet(
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.tenantId,
+        requestParameters.conditionSetId,
         requestParameters.permitSession,
         options,
       )
@@ -1053,19 +887,22 @@ export class TenantsApi extends BaseAPI {
   }
 
   /**
-   * Gets a tenant, if such tenant exists. Otherwise returns 404.
-   * @summary Get Tenant
-   * @param {TenantsApiGetTenantRequest} requestParameters Request parameters.
+   * Gets a single condition set, if such condition set exists.
+   * @summary Get Condition Set
+   * @param {ConditionSetsApiGetConditionSetRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @memberof ConditionSetsApi
    */
-  public getTenant(requestParameters: TenantsApiGetTenantRequest, options?: AxiosRequestConfig) {
-    return TenantsApiFp(this.configuration)
-      .getTenant(
+  public getConditionSet(
+    requestParameters: ConditionSetsApiGetConditionSetRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return ConditionSetsApiFp(this.configuration)
+      .getConditionSet(
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.tenantId,
+        requestParameters.conditionSetId,
         requestParameters.permitSession,
         options,
       )
@@ -1073,23 +910,22 @@ export class TenantsApi extends BaseAPI {
   }
 
   /**
-   *
-   * @summary List Tenant Users
-   * @param {TenantsApiListTenantUsersRequest} requestParameters Request parameters.
+   * Lists all condition sets matching a filter.
+   * @summary List Condition Sets
+   * @param {ConditionSetsApiListConditionSetsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @memberof ConditionSetsApi
    */
-  public listTenantUsers(
-    requestParameters: TenantsApiListTenantUsersRequest,
+  public listConditionSets(
+    requestParameters: ConditionSetsApiListConditionSetsRequest,
     options?: AxiosRequestConfig,
   ) {
-    return TenantsApiFp(this.configuration)
-      .listTenantUsers(
+    return ConditionSetsApiFp(this.configuration)
+      .listConditionSets(
         requestParameters.projId,
-        requestParameters.tenantId,
         requestParameters.envId,
-        requestParameters.search,
+        requestParameters.type,
         requestParameters.page,
         requestParameters.perPage,
         requestParameters.permitSession,
@@ -1099,47 +935,23 @@ export class TenantsApi extends BaseAPI {
   }
 
   /**
-   * Lists all the tenants defined within an environment.
-   * @summary List Tenants
-   * @param {TenantsApiListTenantsRequest} requestParameters Request parameters.
+   * Partially updates a condition set. Fields that will be provided will be completely overwritten.
+   * @summary Update Condition Set
+   * @param {ConditionSetsApiUpdateConditionSetRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @memberof ConditionSetsApi
    */
-  public listTenants(
-    requestParameters: TenantsApiListTenantsRequest,
+  public updateConditionSet(
+    requestParameters: ConditionSetsApiUpdateConditionSetRequest,
     options?: AxiosRequestConfig,
   ) {
-    return TenantsApiFp(this.configuration)
-      .listTenants(
+    return ConditionSetsApiFp(this.configuration)
+      .updateConditionSet(
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.page,
-        requestParameters.perPage,
-        requestParameters.permitSession,
-        options,
-      )
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   * Partially updates the tenant definition. Fields that will be provided will be completely overwritten.
-   * @summary Update Tenant
-   * @param {TenantsApiUpdateTenantRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TenantsApi
-   */
-  public updateTenant(
-    requestParameters: TenantsApiUpdateTenantRequest,
-    options?: AxiosRequestConfig,
-  ) {
-    return TenantsApiFp(this.configuration)
-      .updateTenant(
-        requestParameters.projId,
-        requestParameters.envId,
-        requestParameters.tenantId,
-        requestParameters.tenantUpdate,
+        requestParameters.conditionSetId,
+        requestParameters.conditionSetUpdate,
         requestParameters.permitSession,
         options,
       )

@@ -15,25 +15,25 @@
 /**
  *
  * @export
- * @interface ProjectUpdate
+ * @interface ConditionSetUpdate
  */
-export interface ProjectUpdate {
+export interface ConditionSetUpdate {
   /**
-   * The name of the project
+   * A descriptive name for the set, i.e: \'US based employees\' or \'Users behind VPN\'
    * @type {string}
-   * @memberof ProjectUpdate
+   * @memberof ConditionSetUpdate
    */
   name?: string;
   /**
-   * a longer description outlining the project objectives
+   * an optional longer description of the set
    * @type {string}
-   * @memberof ProjectUpdate
+   * @memberof ConditionSetUpdate
    */
   description?: string;
   /**
-   * the settings for this project
+   * a boolean expression that consists of multiple conditions, with and/or logic.
    * @type {object}
-   * @memberof ProjectUpdate
+   * @memberof ConditionSetUpdate
    */
-  settings?: object;
+  conditions?: object;
 }

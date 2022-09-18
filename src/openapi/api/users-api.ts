@@ -33,6 +33,8 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 // @ts-ignore
 import { HTTPValidationError } from '../types';
 // @ts-ignore
+import { PaginatedResultUserRead } from '../types';
+// @ts-ignore
 import { RoleAssignmentRead } from '../types';
 // @ts-ignore
 import { UserCreate } from '../types';
@@ -292,6 +294,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
      * @summary List Users
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} [search] Text search for the email field
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {string} [permitSession]
@@ -301,6 +304,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
     listUsers: async (
       projId: string,
       envId: string,
+      search?: string,
       page?: number,
       perPage?: number,
       permitSession?: string,
@@ -327,6 +331,10 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (search !== undefined) {
+        localVarQueryParameter['search'] = search;
+      }
 
       if (page !== undefined) {
         localVarQueryParameter['page'] = page;
@@ -603,6 +611,7 @@ export const UsersApiFp = function (configuration?: Configuration) {
      * @summary List Users
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} [search] Text search for the email field
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {string} [permitSession]
@@ -612,14 +621,18 @@ export const UsersApiFp = function (configuration?: Configuration) {
     async listUsers(
       projId: string,
       envId: string,
+      search?: string,
       page?: number,
       perPage?: number,
       permitSession?: string,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserRead>>> {
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResultUserRead>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listUsers(
         projId,
         envId,
+        search,
         page,
         perPage,
         permitSession,
@@ -790,6 +803,7 @@ export const UsersApiFactory = function (
      * @summary List Users
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} [search] Text search for the email field
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {string} [permitSession]
@@ -799,13 +813,14 @@ export const UsersApiFactory = function (
     listUsers(
       projId: string,
       envId: string,
+      search?: string,
       page?: number,
       perPage?: number,
       permitSession?: string,
       options?: any,
-    ): AxiosPromise<Array<UserRead>> {
+    ): AxiosPromise<PaginatedResultUserRead> {
       return localVarFp
-        .listUsers(projId, envId, page, perPage, permitSession, options)
+        .listUsers(projId, envId, search, page, perPage, permitSession, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -1025,6 +1040,13 @@ export interface UsersApiListUsersRequest {
   readonly envId: string;
 
   /**
+   * Text search for the email field
+   * @type {string}
+   * @memberof UsersApiListUsers
+   */
+  readonly search?: string;
+
+  /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
    * @memberof UsersApiListUsers
@@ -1234,6 +1256,7 @@ export class UsersApi extends BaseAPI {
       .listUsers(
         requestParameters.projId,
         requestParameters.envId,
+        requestParameters.search,
         requestParameters.page,
         requestParameters.perPage,
         requestParameters.permitSession,

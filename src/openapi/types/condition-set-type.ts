@@ -13,21 +13,14 @@
  */
 
 /**
- *
+ * An enumeration.
  * @export
- * @interface EnvironmentUpdate
+ * @enum {string}
  */
-export interface EnvironmentUpdate {
-  /**
-   * The name of the environment
-   * @type {string}
-   * @memberof EnvironmentUpdate
-   */
-  name?: string;
-  /**
-   * an optional longer description of the environment
-   * @type {string}
-   * @memberof EnvironmentUpdate
-   */
-  description?: string;
-}
+
+export const ConditionSetType = {
+  Userset: 'userset',
+  Resourceset: 'resourceset',
+} as const;
+
+export type ConditionSetType = typeof ConditionSetType[keyof typeof ConditionSetType];

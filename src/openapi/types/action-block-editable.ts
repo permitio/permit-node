@@ -15,25 +15,19 @@
 /**
  *
  * @export
- * @interface ProjectUpdate
+ * @interface ActionBlockEditable
  */
-export interface ProjectUpdate {
+export interface ActionBlockEditable {
   /**
-   * The name of the project
+   * a more descriptive name for the action
    * @type {string}
-   * @memberof ProjectUpdate
+   * @memberof ActionBlockEditable
    */
   name?: string;
   /**
-   * a longer description outlining the project objectives
+   * optional description string explaining what this action represents in your system
    * @type {string}
-   * @memberof ProjectUpdate
+   * @memberof ActionBlockEditable
    */
   description?: string;
-  /**
-   * the settings for this project
-   * @type {object}
-   * @memberof ProjectUpdate
-   */
-  settings?: object;
 }

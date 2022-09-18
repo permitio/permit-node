@@ -15,25 +15,31 @@
 /**
  *
  * @export
- * @interface ProjectUpdate
+ * @interface ActionBlockRead
  */
-export interface ProjectUpdate {
+export interface ActionBlockRead {
   /**
-   * The name of the project
+   * a more descriptive name for the action
    * @type {string}
-   * @memberof ProjectUpdate
+   * @memberof ActionBlockRead
    */
   name?: string;
   /**
-   * a longer description outlining the project objectives
+   * optional description string explaining what this action represents in your system
    * @type {string}
-   * @memberof ProjectUpdate
+   * @memberof ActionBlockRead
    */
   description?: string;
   /**
-   * the settings for this project
-   * @type {object}
-   * @memberof ProjectUpdate
+   * Unique id of the action
+   * @type {string}
+   * @memberof ActionBlockRead
    */
-  settings?: object;
+  id: string;
+  /**
+   * action key
+   * @type {string}
+   * @memberof ActionBlockRead
+   */
+  key?: string;
 }

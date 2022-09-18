@@ -33,43 +33,41 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 // @ts-ignore
 import { HTTPValidationError } from '../types';
 // @ts-ignore
-import { PaginatedResultUserRead } from '../types';
+import { ResourceInstanceCreate } from '../types';
 // @ts-ignore
-import { TenantCreate } from '../types';
+import { ResourceInstanceRead } from '../types';
 // @ts-ignore
-import { TenantRead } from '../types';
-// @ts-ignore
-import { TenantUpdate } from '../types';
+import { ResourceInstanceUpdate } from '../types';
 /**
- * TenantsApi - axios parameter creator
+ * ResourceInstancesApi - axios parameter creator
  * @export
  */
-export const TenantsApiAxiosParamCreator = function (configuration?: Configuration) {
+export const ResourceInstancesApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * Creates a new tenant inside the Permit.io system.  If the tenant is already created: will return 200 instead of 201, and will return the existing tenant object in the response body.
-     * @summary Create Tenant
+     * Creates a new instance inside the Permit.io system.  If the instance is already created: will return 200 instead of 201, and will return the existing instance object in the response body.
+     * @summary Create Resource Instance
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {TenantCreate} tenantCreate
+     * @param {ResourceInstanceCreate} resourceInstanceCreate
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    createTenant: async (
+    createResourceInstance: async (
       projId: string,
       envId: string,
-      tenantCreate: TenantCreate,
+      resourceInstanceCreate: ResourceInstanceCreate,
       permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
-      assertParamExists('createTenant', 'projId', projId);
+      assertParamExists('createResourceInstance', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
-      assertParamExists('createTenant', 'envId', envId);
-      // verify required parameter 'tenantCreate' is not null or undefined
-      assertParamExists('createTenant', 'tenantCreate', tenantCreate);
-      const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants`
+      assertParamExists('createResourceInstance', 'envId', envId);
+      // verify required parameter 'resourceInstanceCreate' is not null or undefined
+      assertParamExists('createResourceInstance', 'resourceInstanceCreate', resourceInstanceCreate);
+      const localVarPath = `/v2/facts/{proj_id}/{env_id}/resource_instances`
         .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
         .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -97,7 +95,7 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        tenantCreate,
+        resourceInstanceCreate,
         localVarRequestOptions,
         configuration,
       );
@@ -108,32 +106,32 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     * Deletes the tenant and all its related data.
-     * @summary Delete Tenant
+     * Deletes the instance and all its related data.
+     * @summary Delete Resource Instance
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} instanceId Either the unique id of the resource instance, or the URL-friendly key of the resource instance (i.e: the \&quot;slug\&quot;).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteTenant: async (
+    deleteResourceInstance: async (
       projId: string,
       envId: string,
-      tenantId: string,
+      instanceId: string,
       permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
-      assertParamExists('deleteTenant', 'projId', projId);
+      assertParamExists('deleteResourceInstance', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
-      assertParamExists('deleteTenant', 'envId', envId);
-      // verify required parameter 'tenantId' is not null or undefined
-      assertParamExists('deleteTenant', 'tenantId', tenantId);
-      const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}`
+      assertParamExists('deleteResourceInstance', 'envId', envId);
+      // verify required parameter 'instanceId' is not null or undefined
+      assertParamExists('deleteResourceInstance', 'instanceId', instanceId);
+      const localVarPath = `/v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}`
         .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
         .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'tenant_id'}}`, encodeURIComponent(String(tenantId)));
+        .replace(`{${'instance_id'}}`, encodeURIComponent(String(instanceId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -163,32 +161,32 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     * Gets a tenant, if such tenant exists. Otherwise returns 404.
-     * @summary Get Tenant
+     * Gets a instance, if such instance exists. Otherwise returns 404.
+     * @summary Get Resource Instance
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} instanceId Either the unique id of the resource instance, or the URL-friendly key of the resource instance (i.e: the \&quot;slug\&quot;).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTenant: async (
+    getResourceInstance: async (
       projId: string,
       envId: string,
-      tenantId: string,
+      instanceId: string,
       permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
-      assertParamExists('getTenant', 'projId', projId);
+      assertParamExists('getResourceInstance', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
-      assertParamExists('getTenant', 'envId', envId);
-      // verify required parameter 'tenantId' is not null or undefined
-      assertParamExists('getTenant', 'tenantId', tenantId);
-      const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}`
+      assertParamExists('getResourceInstance', 'envId', envId);
+      // verify required parameter 'instanceId' is not null or undefined
+      assertParamExists('getResourceInstance', 'instanceId', instanceId);
+      const localVarPath = `/v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}`
         .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
         .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'tenant_id'}}`, encodeURIComponent(String(tenantId)));
+        .replace(`{${'instance_id'}}`, encodeURIComponent(String(instanceId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -218,81 +216,8 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *
-     * @summary List Tenant Users
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [search] Text search for the email field
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    listTenantUsers: async (
-      projId: string,
-      tenantId: string,
-      envId: string,
-      search?: string,
-      page?: number,
-      perPage?: number,
-      permitSession?: string,
-      options: AxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('listTenantUsers', 'projId', projId);
-      // verify required parameter 'tenantId' is not null or undefined
-      assertParamExists('listTenantUsers', 'tenantId', tenantId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('listTenantUsers', 'envId', envId);
-      const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'tenant_id'}}`, encodeURIComponent(String(tenantId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication HTTPBearer required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
-
-      if (search !== undefined) {
-        localVarQueryParameter['search'] = search;
-      }
-
-      if (page !== undefined) {
-        localVarQueryParameter['page'] = page;
-      }
-
-      if (perPage !== undefined) {
-        localVarQueryParameter['per_page'] = perPage;
-      }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     * Lists all the tenants defined within an environment.
-     * @summary List Tenants
+     * Lists all the resource instances defined within an environment.
+     * @summary List Resource Instances
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
@@ -301,7 +226,7 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listTenants: async (
+    listResourceInstances: async (
       projId: string,
       envId: string,
       page?: number,
@@ -310,10 +235,10 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
-      assertParamExists('listTenants', 'projId', projId);
+      assertParamExists('listResourceInstances', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
-      assertParamExists('listTenants', 'envId', envId);
-      const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants`
+      assertParamExists('listResourceInstances', 'envId', envId);
+      const localVarPath = `/v2/facts/{proj_id}/{env_id}/resource_instances`
         .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
         .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -353,36 +278,36 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     * Partially updates the tenant definition. Fields that will be provided will be completely overwritten.
-     * @summary Update Tenant
+     * Partially updates the instance definition. Fields that will be provided will be completely overwritten.
+     * @summary Update Resource Instance
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {TenantUpdate} tenantUpdate
+     * @param {string} instanceId Either the unique id of the resource instance, or the URL-friendly key of the resource instance (i.e: the \&quot;slug\&quot;).
+     * @param {ResourceInstanceUpdate} resourceInstanceUpdate
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    updateTenant: async (
+    updateResourceInstance: async (
       projId: string,
       envId: string,
-      tenantId: string,
-      tenantUpdate: TenantUpdate,
+      instanceId: string,
+      resourceInstanceUpdate: ResourceInstanceUpdate,
       permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
-      assertParamExists('updateTenant', 'projId', projId);
+      assertParamExists('updateResourceInstance', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
-      assertParamExists('updateTenant', 'envId', envId);
-      // verify required parameter 'tenantId' is not null or undefined
-      assertParamExists('updateTenant', 'tenantId', tenantId);
-      // verify required parameter 'tenantUpdate' is not null or undefined
-      assertParamExists('updateTenant', 'tenantUpdate', tenantUpdate);
-      const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}`
+      assertParamExists('updateResourceInstance', 'envId', envId);
+      // verify required parameter 'instanceId' is not null or undefined
+      assertParamExists('updateResourceInstance', 'instanceId', instanceId);
+      // verify required parameter 'resourceInstanceUpdate' is not null or undefined
+      assertParamExists('updateResourceInstance', 'resourceInstanceUpdate', resourceInstanceUpdate);
+      const localVarPath = `/v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}`
         .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
         .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'tenant_id'}}`, encodeURIComponent(String(tenantId)));
+        .replace(`{${'instance_id'}}`, encodeURIComponent(String(instanceId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -408,7 +333,7 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        tenantUpdate,
+        resourceInstanceUpdate,
         localVarRequestOptions,
         configuration,
       );
@@ -422,147 +347,112 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
 };
 
 /**
- * TenantsApi - functional programming interface
+ * ResourceInstancesApi - functional programming interface
  * @export
  */
-export const TenantsApiFp = function (configuration?: Configuration) {
-  const localVarAxiosParamCreator = TenantsApiAxiosParamCreator(configuration);
+export const ResourceInstancesApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = ResourceInstancesApiAxiosParamCreator(configuration);
   return {
     /**
-     * Creates a new tenant inside the Permit.io system.  If the tenant is already created: will return 200 instead of 201, and will return the existing tenant object in the response body.
-     * @summary Create Tenant
+     * Creates a new instance inside the Permit.io system.  If the instance is already created: will return 200 instead of 201, and will return the existing instance object in the response body.
+     * @summary Create Resource Instance
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {TenantCreate} tenantCreate
+     * @param {ResourceInstanceCreate} resourceInstanceCreate
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async createTenant(
+    async createResourceInstance(
       projId: string,
       envId: string,
-      tenantCreate: TenantCreate,
+      resourceInstanceCreate: ResourceInstanceCreate,
       permitSession?: string,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TenantRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.createTenant(
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceInstanceRead>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.createResourceInstance(
         projId,
         envId,
-        tenantCreate,
+        resourceInstanceCreate,
         permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     * Deletes the tenant and all its related data.
-     * @summary Delete Tenant
+     * Deletes the instance and all its related data.
+     * @summary Delete Resource Instance
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} instanceId Either the unique id of the resource instance, or the URL-friendly key of the resource instance (i.e: the \&quot;slug\&quot;).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async deleteTenant(
+    async deleteResourceInstance(
       projId: string,
       envId: string,
-      tenantId: string,
+      instanceId: string,
       permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.deleteTenant(
+      const localVarAxiosArgs = await localVarAxiosParamCreator.deleteResourceInstance(
         projId,
         envId,
-        tenantId,
+        instanceId,
         permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     * Gets a tenant, if such tenant exists. Otherwise returns 404.
-     * @summary Get Tenant
+     * Gets a instance, if such instance exists. Otherwise returns 404.
+     * @summary Get Resource Instance
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} instanceId Either the unique id of the resource instance, or the URL-friendly key of the resource instance (i.e: the \&quot;slug\&quot;).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getTenant(
+    async getResourceInstance(
       projId: string,
       envId: string,
-      tenantId: string,
+      instanceId: string,
       permitSession?: string,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TenantRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getTenant(
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceInstanceRead>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getResourceInstance(
         projId,
         envId,
-        tenantId,
+        instanceId,
         permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     *
-     * @summary List Tenant Users
+     * Lists all the resource instances defined within an environment.
+     * @summary List Resource Instances
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [search] Text search for the email field
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async listTenantUsers(
+    async listResourceInstances(
       projId: string,
-      tenantId: string,
       envId: string,
-      search?: string,
       page?: number,
       perPage?: number,
       permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResultUserRead>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ResourceInstanceRead>>
     > {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.listTenantUsers(
-        projId,
-        tenantId,
-        envId,
-        search,
-        page,
-        perPage,
-        permitSession,
-        options,
-      );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
-     * Lists all the tenants defined within an environment.
-     * @summary List Tenants
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async listTenants(
-      projId: string,
-      envId: string,
-      page?: number,
-      perPage?: number,
-      permitSession?: string,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TenantRead>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.listTenants(
+      const localVarAxiosArgs = await localVarAxiosParamCreator.listResourceInstances(
         projId,
         envId,
         page,
@@ -573,29 +463,29 @@ export const TenantsApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     * Partially updates the tenant definition. Fields that will be provided will be completely overwritten.
-     * @summary Update Tenant
+     * Partially updates the instance definition. Fields that will be provided will be completely overwritten.
+     * @summary Update Resource Instance
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {TenantUpdate} tenantUpdate
+     * @param {string} instanceId Either the unique id of the resource instance, or the URL-friendly key of the resource instance (i.e: the \&quot;slug\&quot;).
+     * @param {ResourceInstanceUpdate} resourceInstanceUpdate
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async updateTenant(
+    async updateResourceInstance(
       projId: string,
       envId: string,
-      tenantId: string,
-      tenantUpdate: TenantUpdate,
+      instanceId: string,
+      resourceInstanceUpdate: ResourceInstanceUpdate,
       permitSession?: string,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TenantRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.updateTenant(
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceInstanceRead>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.updateResourceInstance(
         projId,
         envId,
-        tenantId,
-        tenantUpdate,
+        instanceId,
+        resourceInstanceUpdate,
         permitSession,
         options,
       );
@@ -605,109 +495,82 @@ export const TenantsApiFp = function (configuration?: Configuration) {
 };
 
 /**
- * TenantsApi - factory interface
+ * ResourceInstancesApi - factory interface
  * @export
  */
-export const TenantsApiFactory = function (
+export const ResourceInstancesApiFactory = function (
   configuration?: Configuration,
   basePath?: string,
   axios?: AxiosInstance,
 ) {
-  const localVarFp = TenantsApiFp(configuration);
+  const localVarFp = ResourceInstancesApiFp(configuration);
   return {
     /**
-     * Creates a new tenant inside the Permit.io system.  If the tenant is already created: will return 200 instead of 201, and will return the existing tenant object in the response body.
-     * @summary Create Tenant
+     * Creates a new instance inside the Permit.io system.  If the instance is already created: will return 200 instead of 201, and will return the existing instance object in the response body.
+     * @summary Create Resource Instance
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {TenantCreate} tenantCreate
+     * @param {ResourceInstanceCreate} resourceInstanceCreate
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    createTenant(
+    createResourceInstance(
       projId: string,
       envId: string,
-      tenantCreate: TenantCreate,
+      resourceInstanceCreate: ResourceInstanceCreate,
       permitSession?: string,
       options?: any,
-    ): AxiosPromise<TenantRead> {
+    ): AxiosPromise<ResourceInstanceRead> {
       return localVarFp
-        .createTenant(projId, envId, tenantCreate, permitSession, options)
+        .createResourceInstance(projId, envId, resourceInstanceCreate, permitSession, options)
         .then((request) => request(axios, basePath));
     },
     /**
-     * Deletes the tenant and all its related data.
-     * @summary Delete Tenant
+     * Deletes the instance and all its related data.
+     * @summary Delete Resource Instance
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} instanceId Either the unique id of the resource instance, or the URL-friendly key of the resource instance (i.e: the \&quot;slug\&quot;).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteTenant(
+    deleteResourceInstance(
       projId: string,
       envId: string,
-      tenantId: string,
+      instanceId: string,
       permitSession?: string,
       options?: any,
     ): AxiosPromise<void> {
       return localVarFp
-        .deleteTenant(projId, envId, tenantId, permitSession, options)
+        .deleteResourceInstance(projId, envId, instanceId, permitSession, options)
         .then((request) => request(axios, basePath));
     },
     /**
-     * Gets a tenant, if such tenant exists. Otherwise returns 404.
-     * @summary Get Tenant
+     * Gets a instance, if such instance exists. Otherwise returns 404.
+     * @summary Get Resource Instance
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} instanceId Either the unique id of the resource instance, or the URL-friendly key of the resource instance (i.e: the \&quot;slug\&quot;).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTenant(
+    getResourceInstance(
       projId: string,
       envId: string,
-      tenantId: string,
+      instanceId: string,
       permitSession?: string,
       options?: any,
-    ): AxiosPromise<TenantRead> {
+    ): AxiosPromise<ResourceInstanceRead> {
       return localVarFp
-        .getTenant(projId, envId, tenantId, permitSession, options)
+        .getResourceInstance(projId, envId, instanceId, permitSession, options)
         .then((request) => request(axios, basePath));
     },
     /**
-     *
-     * @summary List Tenant Users
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [search] Text search for the email field
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    listTenantUsers(
-      projId: string,
-      tenantId: string,
-      envId: string,
-      search?: string,
-      page?: number,
-      perPage?: number,
-      permitSession?: string,
-      options?: any,
-    ): AxiosPromise<PaginatedResultUserRead> {
-      return localVarFp
-        .listTenantUsers(projId, tenantId, envId, search, page, perPage, permitSession, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     * Lists all the tenants defined within an environment.
-     * @summary List Tenants
+     * Lists all the resource instances defined within an environment.
+     * @summary List Resource Instances
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
@@ -716,313 +579,264 @@ export const TenantsApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listTenants(
+    listResourceInstances(
       projId: string,
       envId: string,
       page?: number,
       perPage?: number,
       permitSession?: string,
       options?: any,
-    ): AxiosPromise<Array<TenantRead>> {
+    ): AxiosPromise<Array<ResourceInstanceRead>> {
       return localVarFp
-        .listTenants(projId, envId, page, perPage, permitSession, options)
+        .listResourceInstances(projId, envId, page, perPage, permitSession, options)
         .then((request) => request(axios, basePath));
     },
     /**
-     * Partially updates the tenant definition. Fields that will be provided will be completely overwritten.
-     * @summary Update Tenant
+     * Partially updates the instance definition. Fields that will be provided will be completely overwritten.
+     * @summary Update Resource Instance
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {TenantUpdate} tenantUpdate
+     * @param {string} instanceId Either the unique id of the resource instance, or the URL-friendly key of the resource instance (i.e: the \&quot;slug\&quot;).
+     * @param {ResourceInstanceUpdate} resourceInstanceUpdate
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    updateTenant(
+    updateResourceInstance(
       projId: string,
       envId: string,
-      tenantId: string,
-      tenantUpdate: TenantUpdate,
+      instanceId: string,
+      resourceInstanceUpdate: ResourceInstanceUpdate,
       permitSession?: string,
       options?: any,
-    ): AxiosPromise<TenantRead> {
+    ): AxiosPromise<ResourceInstanceRead> {
       return localVarFp
-        .updateTenant(projId, envId, tenantId, tenantUpdate, permitSession, options)
+        .updateResourceInstance(
+          projId,
+          envId,
+          instanceId,
+          resourceInstanceUpdate,
+          permitSession,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
 };
 
 /**
- * Request parameters for createTenant operation in TenantsApi.
+ * Request parameters for createResourceInstance operation in ResourceInstancesApi.
  * @export
- * @interface TenantsApiCreateTenantRequest
+ * @interface ResourceInstancesApiCreateResourceInstanceRequest
  */
-export interface TenantsApiCreateTenantRequest {
+export interface ResourceInstancesApiCreateResourceInstanceRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiCreateTenant
+   * @memberof ResourceInstancesApiCreateResourceInstance
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiCreateTenant
+   * @memberof ResourceInstancesApiCreateResourceInstance
    */
   readonly envId: string;
 
   /**
    *
-   * @type {TenantCreate}
-   * @memberof TenantsApiCreateTenant
+   * @type {ResourceInstanceCreate}
+   * @memberof ResourceInstancesApiCreateResourceInstance
    */
-  readonly tenantCreate: TenantCreate;
+  readonly resourceInstanceCreate: ResourceInstanceCreate;
 
   /**
    *
    * @type {string}
-   * @memberof TenantsApiCreateTenant
+   * @memberof ResourceInstancesApiCreateResourceInstance
    */
   readonly permitSession?: string;
 }
 
 /**
- * Request parameters for deleteTenant operation in TenantsApi.
+ * Request parameters for deleteResourceInstance operation in ResourceInstancesApi.
  * @export
- * @interface TenantsApiDeleteTenantRequest
+ * @interface ResourceInstancesApiDeleteResourceInstanceRequest
  */
-export interface TenantsApiDeleteTenantRequest {
+export interface ResourceInstancesApiDeleteResourceInstanceRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiDeleteTenant
+   * @memberof ResourceInstancesApiDeleteResourceInstance
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiDeleteTenant
+   * @memberof ResourceInstancesApiDeleteResourceInstance
    */
   readonly envId: string;
 
   /**
-   * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+   * Either the unique id of the resource instance, or the URL-friendly key of the resource instance (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiDeleteTenant
+   * @memberof ResourceInstancesApiDeleteResourceInstance
    */
-  readonly tenantId: string;
+  readonly instanceId: string;
 
   /**
    *
    * @type {string}
-   * @memberof TenantsApiDeleteTenant
+   * @memberof ResourceInstancesApiDeleteResourceInstance
    */
   readonly permitSession?: string;
 }
 
 /**
- * Request parameters for getTenant operation in TenantsApi.
+ * Request parameters for getResourceInstance operation in ResourceInstancesApi.
  * @export
- * @interface TenantsApiGetTenantRequest
+ * @interface ResourceInstancesApiGetResourceInstanceRequest
  */
-export interface TenantsApiGetTenantRequest {
+export interface ResourceInstancesApiGetResourceInstanceRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiGetTenant
+   * @memberof ResourceInstancesApiGetResourceInstance
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiGetTenant
+   * @memberof ResourceInstancesApiGetResourceInstance
    */
   readonly envId: string;
 
   /**
-   * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+   * Either the unique id of the resource instance, or the URL-friendly key of the resource instance (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiGetTenant
+   * @memberof ResourceInstancesApiGetResourceInstance
    */
-  readonly tenantId: string;
+  readonly instanceId: string;
 
   /**
    *
    * @type {string}
-   * @memberof TenantsApiGetTenant
+   * @memberof ResourceInstancesApiGetResourceInstance
    */
   readonly permitSession?: string;
 }
 
 /**
- * Request parameters for listTenantUsers operation in TenantsApi.
+ * Request parameters for listResourceInstances operation in ResourceInstancesApi.
  * @export
- * @interface TenantsApiListTenantUsersRequest
+ * @interface ResourceInstancesApiListResourceInstancesRequest
  */
-export interface TenantsApiListTenantUsersRequest {
+export interface ResourceInstancesApiListResourceInstancesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiListTenantUsers
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiListTenantUsers
-   */
-  readonly tenantId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiListTenantUsers
-   */
-  readonly envId: string;
-
-  /**
-   * Text search for the email field
-   * @type {string}
-   * @memberof TenantsApiListTenantUsers
-   */
-  readonly search?: string;
-
-  /**
-   * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof TenantsApiListTenantUsers
-   */
-  readonly page?: number;
-
-  /**
-   * The number of results per page (max 100).
-   * @type {number}
-   * @memberof TenantsApiListTenantUsers
-   */
-  readonly perPage?: number;
-
-  /**
-   *
-   * @type {string}
-   * @memberof TenantsApiListTenantUsers
-   */
-  readonly permitSession?: string;
-}
-
-/**
- * Request parameters for listTenants operation in TenantsApi.
- * @export
- * @interface TenantsApiListTenantsRequest
- */
-export interface TenantsApiListTenantsRequest {
-  /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiListTenants
+   * @memberof ResourceInstancesApiListResourceInstances
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiListTenants
+   * @memberof ResourceInstancesApiListResourceInstances
    */
   readonly envId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof TenantsApiListTenants
+   * @memberof ResourceInstancesApiListResourceInstances
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof TenantsApiListTenants
+   * @memberof ResourceInstancesApiListResourceInstances
    */
   readonly perPage?: number;
 
   /**
    *
    * @type {string}
-   * @memberof TenantsApiListTenants
+   * @memberof ResourceInstancesApiListResourceInstances
    */
   readonly permitSession?: string;
 }
 
 /**
- * Request parameters for updateTenant operation in TenantsApi.
+ * Request parameters for updateResourceInstance operation in ResourceInstancesApi.
  * @export
- * @interface TenantsApiUpdateTenantRequest
+ * @interface ResourceInstancesApiUpdateResourceInstanceRequest
  */
-export interface TenantsApiUpdateTenantRequest {
+export interface ResourceInstancesApiUpdateResourceInstanceRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiUpdateTenant
+   * @memberof ResourceInstancesApiUpdateResourceInstance
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiUpdateTenant
+   * @memberof ResourceInstancesApiUpdateResourceInstance
    */
   readonly envId: string;
 
   /**
-   * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+   * Either the unique id of the resource instance, or the URL-friendly key of the resource instance (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiUpdateTenant
+   * @memberof ResourceInstancesApiUpdateResourceInstance
    */
-  readonly tenantId: string;
+  readonly instanceId: string;
 
   /**
    *
-   * @type {TenantUpdate}
-   * @memberof TenantsApiUpdateTenant
+   * @type {ResourceInstanceUpdate}
+   * @memberof ResourceInstancesApiUpdateResourceInstance
    */
-  readonly tenantUpdate: TenantUpdate;
+  readonly resourceInstanceUpdate: ResourceInstanceUpdate;
 
   /**
    *
    * @type {string}
-   * @memberof TenantsApiUpdateTenant
+   * @memberof ResourceInstancesApiUpdateResourceInstance
    */
   readonly permitSession?: string;
 }
 
 /**
- * TenantsApi - object-oriented interface
+ * ResourceInstancesApi - object-oriented interface
  * @export
- * @class TenantsApi
+ * @class ResourceInstancesApi
  * @extends {BaseAPI}
  */
-export class TenantsApi extends BaseAPI {
+export class ResourceInstancesApi extends BaseAPI {
   /**
-   * Creates a new tenant inside the Permit.io system.  If the tenant is already created: will return 200 instead of 201, and will return the existing tenant object in the response body.
-   * @summary Create Tenant
-   * @param {TenantsApiCreateTenantRequest} requestParameters Request parameters.
+   * Creates a new instance inside the Permit.io system.  If the instance is already created: will return 200 instead of 201, and will return the existing instance object in the response body.
+   * @summary Create Resource Instance
+   * @param {ResourceInstancesApiCreateResourceInstanceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @memberof ResourceInstancesApi
    */
-  public createTenant(
-    requestParameters: TenantsApiCreateTenantRequest,
+  public createResourceInstance(
+    requestParameters: ResourceInstancesApiCreateResourceInstanceRequest,
     options?: AxiosRequestConfig,
   ) {
-    return TenantsApiFp(this.configuration)
-      .createTenant(
+    return ResourceInstancesApiFp(this.configuration)
+      .createResourceInstance(
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.tenantCreate,
+        requestParameters.resourceInstanceCreate,
         requestParameters.permitSession,
         options,
       )
@@ -1030,22 +844,22 @@ export class TenantsApi extends BaseAPI {
   }
 
   /**
-   * Deletes the tenant and all its related data.
-   * @summary Delete Tenant
-   * @param {TenantsApiDeleteTenantRequest} requestParameters Request parameters.
+   * Deletes the instance and all its related data.
+   * @summary Delete Resource Instance
+   * @param {ResourceInstancesApiDeleteResourceInstanceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @memberof ResourceInstancesApi
    */
-  public deleteTenant(
-    requestParameters: TenantsApiDeleteTenantRequest,
+  public deleteResourceInstance(
+    requestParameters: ResourceInstancesApiDeleteResourceInstanceRequest,
     options?: AxiosRequestConfig,
   ) {
-    return TenantsApiFp(this.configuration)
-      .deleteTenant(
+    return ResourceInstancesApiFp(this.configuration)
+      .deleteResourceInstance(
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.tenantId,
+        requestParameters.instanceId,
         requestParameters.permitSession,
         options,
       )
@@ -1053,19 +867,22 @@ export class TenantsApi extends BaseAPI {
   }
 
   /**
-   * Gets a tenant, if such tenant exists. Otherwise returns 404.
-   * @summary Get Tenant
-   * @param {TenantsApiGetTenantRequest} requestParameters Request parameters.
+   * Gets a instance, if such instance exists. Otherwise returns 404.
+   * @summary Get Resource Instance
+   * @param {ResourceInstancesApiGetResourceInstanceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @memberof ResourceInstancesApi
    */
-  public getTenant(requestParameters: TenantsApiGetTenantRequest, options?: AxiosRequestConfig) {
-    return TenantsApiFp(this.configuration)
-      .getTenant(
+  public getResourceInstance(
+    requestParameters: ResourceInstancesApiGetResourceInstanceRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return ResourceInstancesApiFp(this.configuration)
+      .getResourceInstance(
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.tenantId,
+        requestParameters.instanceId,
         requestParameters.permitSession,
         options,
       )
@@ -1073,45 +890,19 @@ export class TenantsApi extends BaseAPI {
   }
 
   /**
-   *
-   * @summary List Tenant Users
-   * @param {TenantsApiListTenantUsersRequest} requestParameters Request parameters.
+   * Lists all the resource instances defined within an environment.
+   * @summary List Resource Instances
+   * @param {ResourceInstancesApiListResourceInstancesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @memberof ResourceInstancesApi
    */
-  public listTenantUsers(
-    requestParameters: TenantsApiListTenantUsersRequest,
+  public listResourceInstances(
+    requestParameters: ResourceInstancesApiListResourceInstancesRequest,
     options?: AxiosRequestConfig,
   ) {
-    return TenantsApiFp(this.configuration)
-      .listTenantUsers(
-        requestParameters.projId,
-        requestParameters.tenantId,
-        requestParameters.envId,
-        requestParameters.search,
-        requestParameters.page,
-        requestParameters.perPage,
-        requestParameters.permitSession,
-        options,
-      )
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   * Lists all the tenants defined within an environment.
-   * @summary List Tenants
-   * @param {TenantsApiListTenantsRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TenantsApi
-   */
-  public listTenants(
-    requestParameters: TenantsApiListTenantsRequest,
-    options?: AxiosRequestConfig,
-  ) {
-    return TenantsApiFp(this.configuration)
-      .listTenants(
+    return ResourceInstancesApiFp(this.configuration)
+      .listResourceInstances(
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.page,
@@ -1123,23 +914,23 @@ export class TenantsApi extends BaseAPI {
   }
 
   /**
-   * Partially updates the tenant definition. Fields that will be provided will be completely overwritten.
-   * @summary Update Tenant
-   * @param {TenantsApiUpdateTenantRequest} requestParameters Request parameters.
+   * Partially updates the instance definition. Fields that will be provided will be completely overwritten.
+   * @summary Update Resource Instance
+   * @param {ResourceInstancesApiUpdateResourceInstanceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @memberof ResourceInstancesApi
    */
-  public updateTenant(
-    requestParameters: TenantsApiUpdateTenantRequest,
+  public updateResourceInstance(
+    requestParameters: ResourceInstancesApiUpdateResourceInstanceRequest,
     options?: AxiosRequestConfig,
   ) {
-    return TenantsApiFp(this.configuration)
-      .updateTenant(
+    return ResourceInstancesApiFp(this.configuration)
+      .updateResourceInstance(
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.tenantId,
-        requestParameters.tenantUpdate,
+        requestParameters.instanceId,
+        requestParameters.resourceInstanceUpdate,
         requestParameters.permitSession,
         options,
       )

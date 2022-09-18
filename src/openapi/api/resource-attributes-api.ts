@@ -121,6 +121,8 @@ export const ResourceAttributesApiAxiosParamCreator = function (configuration?: 
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -130,6 +132,8 @@ export const ResourceAttributesApiAxiosParamCreator = function (configuration?: 
       envId: string,
       resourceId: string,
       attributeId: string,
+      page?: number,
+      perPage?: number,
       permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
@@ -161,6 +165,14 @@ export const ResourceAttributesApiAxiosParamCreator = function (configuration?: 
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (perPage !== undefined) {
+        localVarQueryParameter['per_page'] = perPage;
+      }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -425,6 +437,8 @@ export const ResourceAttributesApiFp = function (configuration?: Configuration) 
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -434,6 +448,8 @@ export const ResourceAttributesApiFp = function (configuration?: Configuration) 
       envId: string,
       resourceId: string,
       attributeId: string,
+      page?: number,
+      perPage?: number,
       permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
@@ -442,6 +458,8 @@ export const ResourceAttributesApiFp = function (configuration?: Configuration) 
         envId,
         resourceId,
         attributeId,
+        page,
+        perPage,
         permitSession,
         options,
       );
@@ -593,6 +611,8 @@ export const ResourceAttributesApiFactory = function (
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
      * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -602,11 +622,22 @@ export const ResourceAttributesApiFactory = function (
       envId: string,
       resourceId: string,
       attributeId: string,
+      page?: number,
+      perPage?: number,
       permitSession?: string,
       options?: any,
     ): AxiosPromise<void> {
       return localVarFp
-        .deleteResourceAttribute(projId, envId, resourceId, attributeId, permitSession, options)
+        .deleteResourceAttribute(
+          projId,
+          envId,
+          resourceId,
+          attributeId,
+          page,
+          perPage,
+          permitSession,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
@@ -768,6 +799,20 @@ export interface ResourceAttributesApiDeleteResourceAttributeRequest {
    * @memberof ResourceAttributesApiDeleteResourceAttribute
    */
   readonly attributeId: string;
+
+  /**
+   * Page number of the results to fetch, starting at 1.
+   * @type {number}
+   * @memberof ResourceAttributesApiDeleteResourceAttribute
+   */
+  readonly page?: number;
+
+  /**
+   * The number of results per page (max 100).
+   * @type {number}
+   * @memberof ResourceAttributesApiDeleteResourceAttribute
+   */
+  readonly perPage?: number;
 
   /**
    *
@@ -966,6 +1011,8 @@ export class ResourceAttributesApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.attributeId,
+        requestParameters.page,
+        requestParameters.perPage,
         requestParameters.permitSession,
         options,
       )

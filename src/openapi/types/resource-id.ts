@@ -13,21 +13,8 @@
  */
 
 /**
- *
+ * For ResourceSets, the id of the base resource.
  * @export
- * @interface EnvironmentUpdate
+ * @interface ResourceId
  */
-export interface EnvironmentUpdate {
-  /**
-   * The name of the environment
-   * @type {string}
-   * @memberof EnvironmentUpdate
-   */
-  name?: string;
-  /**
-   * an optional longer description of the environment
-   * @type {string}
-   * @memberof EnvironmentUpdate
-   */
-  description?: string;
-}
+export interface ResourceId {}

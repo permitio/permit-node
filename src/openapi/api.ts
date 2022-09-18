@@ -12,12 +12,15 @@
  * Do not edit the class manually.
  */
 
-export * from './api/decision-logs-api';
+export * from './api/apikeys-api';
+export * from './api/condition-set-rules-api';
+export * from './api/condition-sets-api';
 export * from './api/environments-api';
 export * from './api/organizations-api';
 export * from './api/projects-api';
 export * from './api/resource-actions-api';
 export * from './api/resource-attributes-api';
+export * from './api/resource-instances-api';
 export * from './api/resource-roles-api';
 export * from './api/resources-api';
 export * from './api/role-assignments-api';

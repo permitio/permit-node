@@ -15,19 +15,13 @@
 /**
  *
  * @export
- * @interface EnvironmentUpdate
+ * @interface ResourceInstanceUpdate
  */
-export interface EnvironmentUpdate {
+export interface ResourceInstanceUpdate {
   /**
-   * The name of the environment
-   * @type {string}
-   * @memberof EnvironmentUpdate
+   * Arbitraty resource attributes that will be used to enforce attribute-based access control policies.
+   * @type {object}
+   * @memberof ResourceInstanceUpdate
    */
-  name?: string;
-  /**
-   * an optional longer description of the environment
-   * @type {string}
-   * @memberof EnvironmentUpdate
-   */
-  description?: string;
+  attributes?: object;
 }

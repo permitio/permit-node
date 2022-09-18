@@ -19,6 +19,12 @@
  */
 export interface ProjectRead {
   /**
+   * A URL-friendly name of the project (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the project.
+   * @type {string}
+   * @memberof ProjectRead
+   */
+  key: string;
+  /**
    * Unique id of the project
    * @type {string}
    * @memberof ProjectRead
@@ -42,12 +48,6 @@ export interface ProjectRead {
    * @memberof ProjectRead
    */
   updated_at: string;
-  /**
-   * A URL-friendly name of the project (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the project.
-   * @type {string}
-   * @memberof ProjectRead
-   */
-  key: string;
   /**
    * The name of the project
    * @type {string}

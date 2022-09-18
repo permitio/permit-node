@@ -19,12 +19,6 @@
  */
 export interface OrganizationUpdate {
   /**
-   * A URL-friendly name of the organization (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the organization.
-   * @type {string}
-   * @memberof OrganizationUpdate
-   */
-  key?: string;
-  /**
    * The name of the organization, usually it\'s your company\'s name.
    * @type {string}
    * @memberof OrganizationUpdate
