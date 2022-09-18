@@ -1,12 +1,13 @@
 import axios, { AxiosResponse } from 'axios';
-import { exceptions, Logger } from 'winston';
+import { Logger } from 'winston';
 
 import { IPermitConfig } from '../config';
 import {
+  APIKeysApi,
   Configuration,
-  ResourcesApi,
   ResourceCreate,
   ResourceRead,
+  ResourcesApi,
   ResourceUpdate,
   RoleAssignmentCreate,
   RoleAssignmentRead,
@@ -32,8 +33,11 @@ import {
  */
 export interface IReadApis {
   getUser(userId: string): Promise<UserRead>;
+
   getTenant(tenantId: string): Promise<TenantRead>;
+
   getRole(roleId: string): Promise<RoleRead>;
+
   getAssignedRoles(user: string, tenant?: string): Promise<RoleAssignmentRead[]>;
 }
 
@@ -46,21 +50,33 @@ export interface IWriteApis {
   // user mutations
   createUser(user: UserCreate): Promise<[UserRead, boolean]>; // create or update
   deleteUser(userId: string): Promise<AxiosResponse<void>>;
+
   // tenant mutations
   createTenant(tenant: TenantCreate): Promise<TenantRead>;
+
   updateTenant(tenantId: string, tenant: TenantUpdate): Promise<TenantRead>;
+
   deleteTenant(tenantId: string): Promise<AxiosResponse<void>>;
+
   listTenants(page?: number): Promise<TenantRead[]>;
+
   // role mutations
   createRole(role: RoleCreate): Promise<RoleRead>;
+
   updateRole(roleId: string, role: RoleUpdate): Promise<RoleRead>;
+
   deleteRole(roleId: string): Promise<AxiosResponse<void>>;
+
   // role mutations
   assignRole(assignedRole: RoleAssignmentCreate): Promise<RoleAssignmentRead>;
+
   unassignRole(removedRole: RoleAssignmentRemove): Promise<AxiosResponse<void>>;
+
   // resource mutations
   createResource(resource: ResourceCreate): Promise<[ResourceRead, boolean]>;
+
   updateResource(resourceId: string, resource: ResourceUpdate): Promise<ResourceRead>;
+
   deleteResource(resourceId: string): Promise<AxiosResponse<void>>;
 }
 
@@ -71,8 +87,10 @@ export interface IApiClient {
 }
 
 export class ApiClient implements IReadApis, IWriteApis, IApiClient {
+  #gotScope = false;
   private project: string;
   private environment: string;
+  private scope: APIKeysApi;
   private users: UsersApi;
   private tenants: TenantsApi;
   private roles: RolesApi;
@@ -86,6 +104,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
       basePath: `${this.config.apiUrl}`,
       accessToken: this.config.token,
     });
+    this.scope = new APIKeysApi(axiosClientConfig);
     this.users = new UsersApi(axiosClientConfig);
     this.tenants = new TenantsApi(axiosClientConfig);
     this.roles = new RolesApi(axiosClientConfig);
@@ -93,7 +112,29 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
     this.resources = new ResourcesApi(axiosClientConfig);
   }
 
+  private async getScope() {
+    if (this.#gotScope) {
+      return;
+    }
+    try {
+      const response = await this.scope.getApiKeyScope();
+      this.#gotScope = true;
+      this.project = response.data.project_id;
+      this.environment = response.data.environment_id;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.getApiKeyScope(), err: ${JSON.stringify(
+            err?.response?.data,
+          )}`,
+        );
+      }
+      throw err;
+    }
+  }
+
   public async getUser(userId: string): Promise<UserRead> {
+    await this.getScope();
     try {
       const response = await this.users.getUser({
         projId: this.project,
@@ -115,6 +156,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async getTenant(tenantId: string): Promise<TenantRead> {
+    await this.getScope();
     try {
       const response = await this.tenants.getTenant({
         projId: this.project,
@@ -136,6 +178,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async listTenants(page?: number): Promise<TenantRead[]> {
+    await this.getScope();
     try {
       const response = await this.tenants.listTenants({
         projId: this.project,
@@ -157,6 +200,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async getRole(roleId: string): Promise<RoleRead> {
+    await this.getScope();
     try {
       const response = await this.roles.getRole({
         projId: this.project,
@@ -178,6 +222,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async getAssignedRoles(user: string, tenant?: string): Promise<RoleAssignmentRead[]> {
+    await this.getScope();
     try {
       const response = await this.roleAssignments.listRoleAssignments({
         projId: this.project,
@@ -202,6 +247,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async createResource(resource: ResourceCreate): Promise<[ResourceRead, boolean]> {
+    await this.getScope();
     try {
       const response = await this.resources.createResource({
         projId: this.project,
@@ -225,6 +271,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async updateResource(resourceId: string, resource: ResourceUpdate): Promise<ResourceRead> {
+    await this.getScope();
     try {
       const response = await this.resources.updateResource({
         projId: this.project,
@@ -251,6 +298,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async deleteResource(resourceId: string): Promise<AxiosResponse<void>> {
+    await this.getScope();
     try {
       const response = await this.resources.deleteResource({
         projId: this.project,
@@ -272,6 +320,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async createUser(user: UserCreate): Promise<[UserRead, boolean]> {
+    await this.getScope();
     try {
       const response = await this.users.createUser({
         projId: this.project,
@@ -293,6 +342,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async deleteUser(userId: string): Promise<AxiosResponse<void>> {
+    await this.getScope();
     try {
       const response = await this.users.deleteUser({
         projId: this.project,
@@ -314,6 +364,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async createTenant(tenant: TenantCreate): Promise<TenantRead> {
+    await this.getScope();
     try {
       const response = await this.tenants.createTenant({
         projId: this.project,
@@ -335,6 +386,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async updateTenant(tenantId: string, tenant: TenantUpdate): Promise<TenantRead> {
+    await this.getScope();
     try {
       const response = await this.tenants.updateTenant({
         projId: this.project,
@@ -359,6 +411,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async deleteTenant(tenantId: string): Promise<AxiosResponse<void>> {
+    await this.getScope();
     try {
       const response = await this.tenants.deleteTenant({
         projId: this.project,
@@ -380,6 +433,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async createRole(role: RoleCreate): Promise<RoleRead> {
+    await this.getScope();
     try {
       const response = await this.roles.createRole({
         projId: this.project,
@@ -401,6 +455,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async updateRole(roleId: string, role: RoleUpdate): Promise<RoleRead> {
+    await this.getScope();
     try {
       const response = await this.roles.updateRole({
         projId: this.project,
@@ -425,6 +480,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async deleteRole(roleId: string): Promise<AxiosResponse<void>> {
+    await this.getScope();
     try {
       const response = await this.roles.deleteRole({
         projId: this.project,
@@ -446,6 +502,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async assignRole(assignedRole: RoleAssignmentCreate): Promise<RoleAssignmentRead> {
+    await this.getScope();
     try {
       const response = await this.roleAssignments.assignRole({
         projId: this.project,
@@ -469,6 +526,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   }
 
   public async unassignRole(removedRole: RoleAssignmentRemove): Promise<AxiosResponse<void>> {
+    await this.getScope();
     try {
       const response = await this.roleAssignments.unassignRole({
         projId: this.project,
