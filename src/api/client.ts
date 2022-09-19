@@ -119,8 +119,12 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
     try {
       const response = await this.scope.getApiKeyScope();
       this.#gotScope = true;
-      this.project = response.data.project_id;
-      this.environment = response.data.environment_id;
+      if (response.data.project_id != undefined && response.data.environment_id != undefined) {
+        this.project = response.data.project_id;
+        this.environment = response.data.environment_id;
+      } else {
+        throw Error(`Invalid response from /scope: ${response.data}`);
+      }
     } catch (err) {
       if (axios.isAxiosError(err)) {
         this.logger.error(
