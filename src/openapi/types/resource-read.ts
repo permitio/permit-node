@@ -12,7 +12,11 @@
  * Do not edit the class manually.
  */
 
+// May contain unused imports in some cases
+// @ts-ignore
 import { ActionBlockRead } from './action-block-read';
+// May contain unused imports in some cases
+// @ts-ignore
 import { AttributeBlockRead } from './attribute-block-read';
 
 /**

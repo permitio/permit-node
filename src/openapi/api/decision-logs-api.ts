@@ -31,9 +31,9 @@ import {
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
-import { AuditLogs } from '../types';
-// @ts-ignore
 import { HTTPValidationError } from '../types';
+// @ts-ignore
+import { PaginatedResultOPADecisionLog } from '../types';
 /**
  * DecisionLogsApi - axios parameter creator
  * @export
@@ -43,6 +43,9 @@ export const DecisionLogsApiAxiosParamCreator = function (configuration?: Config
     /**
      *
      * @summary List PDP Decisions
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} pdpId The unique id of the pdp
      * @param {Array<string>} [users] List of user IDs to filter by
      * @param {boolean} [approved] Filter by approved decisions
      * @param {Array<string>} [resources] Filter by resources
@@ -50,11 +53,13 @@ export const DecisionLogsApiAxiosParamCreator = function (configuration?: Config
      * @param {number} [timestampTo] Filter by timestamp to
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getOpaLogs: async (
+    listPdpDecisionLogs: async (
+      projId: string,
+      envId: string,
+      pdpId: string,
       users?: Array<string>,
       approved?: boolean,
       resources?: Array<string>,
@@ -62,10 +67,18 @@ export const DecisionLogsApiAxiosParamCreator = function (configuration?: Config
       timestampTo?: number,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      const localVarPath = `/v2/decision-logs`;
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('listPdpDecisionLogs', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('listPdpDecisionLogs', 'envId', envId);
+      // verify required parameter 'pdpId' is not null or undefined
+      assertParamExists('listPdpDecisionLogs', 'pdpId', pdpId);
+      const localVarPath = `/v2/pdps/{proj_id}/{env_id}/decision-logs/{pdp_id}`
+        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
+        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
+        .replace(`{${'pdp_id'}}`, encodeURIComponent(String(pdpId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -135,6 +148,9 @@ export const DecisionLogsApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary List PDP Decisions
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} pdpId The unique id of the pdp
      * @param {Array<string>} [users] List of user IDs to filter by
      * @param {boolean} [approved] Filter by approved decisions
      * @param {Array<string>} [resources] Filter by resources
@@ -142,11 +158,13 @@ export const DecisionLogsApiFp = function (configuration?: Configuration) {
      * @param {number} [timestampTo] Filter by timestamp to
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getOpaLogs(
+    async listPdpDecisionLogs(
+      projId: string,
+      envId: string,
+      pdpId: string,
       users?: Array<string>,
       approved?: boolean,
       resources?: Array<string>,
@@ -154,10 +172,14 @@ export const DecisionLogsApiFp = function (configuration?: Configuration) {
       timestampTo?: number,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuditLogs>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getOpaLogs(
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResultOPADecisionLog>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.listPdpDecisionLogs(
+        projId,
+        envId,
+        pdpId,
         users,
         approved,
         resources,
@@ -165,7 +187,6 @@ export const DecisionLogsApiFp = function (configuration?: Configuration) {
         timestampTo,
         page,
         perPage,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -187,6 +208,9 @@ export const DecisionLogsApiFactory = function (
     /**
      *
      * @summary List PDP Decisions
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} pdpId The unique id of the pdp
      * @param {Array<string>} [users] List of user IDs to filter by
      * @param {boolean} [approved] Filter by approved decisions
      * @param {Array<string>} [resources] Filter by resources
@@ -194,11 +218,13 @@ export const DecisionLogsApiFactory = function (
      * @param {number} [timestampTo] Filter by timestamp to
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getOpaLogs(
+    listPdpDecisionLogs(
+      projId: string,
+      envId: string,
+      pdpId: string,
       users?: Array<string>,
       approved?: boolean,
       resources?: Array<string>,
@@ -206,11 +232,13 @@ export const DecisionLogsApiFactory = function (
       timestampTo?: number,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: any,
-    ): AxiosPromise<AuditLogs> {
+    ): AxiosPromise<PaginatedResultOPADecisionLog> {
       return localVarFp
-        .getOpaLogs(
+        .listPdpDecisionLogs(
+          projId,
+          envId,
+          pdpId,
           users,
           approved,
           resources,
@@ -218,7 +246,6 @@ export const DecisionLogsApiFactory = function (
           timestampTo,
           page,
           perPage,
-          permitSession,
           options,
         )
         .then((request) => request(axios, basePath));
@@ -227,66 +254,80 @@ export const DecisionLogsApiFactory = function (
 };
 
 /**
- * Request parameters for getOpaLogs operation in DecisionLogsApi.
+ * Request parameters for listPdpDecisionLogs operation in DecisionLogsApi.
  * @export
- * @interface DecisionLogsApiGetOpaLogsRequest
+ * @interface DecisionLogsApiListPdpDecisionLogsRequest
  */
-export interface DecisionLogsApiGetOpaLogsRequest {
+export interface DecisionLogsApiListPdpDecisionLogsRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof DecisionLogsApiListPdpDecisionLogs
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof DecisionLogsApiListPdpDecisionLogs
+   */
+  readonly envId: string;
+
+  /**
+   * The unique id of the pdp
+   * @type {string}
+   * @memberof DecisionLogsApiListPdpDecisionLogs
+   */
+  readonly pdpId: string;
+
   /**
    * List of user IDs to filter by
    * @type {Array<string>}
-   * @memberof DecisionLogsApiGetOpaLogs
+   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly users?: Array<string>;
 
   /**
    * Filter by approved decisions
    * @type {boolean}
-   * @memberof DecisionLogsApiGetOpaLogs
+   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly approved?: boolean;
 
   /**
    * Filter by resources
    * @type {Array<string>}
-   * @memberof DecisionLogsApiGetOpaLogs
+   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly resources?: Array<string>;
 
   /**
    * Filter by timestamp from
    * @type {number}
-   * @memberof DecisionLogsApiGetOpaLogs
+   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly timestampFrom?: number;
 
   /**
    * Filter by timestamp to
    * @type {number}
-   * @memberof DecisionLogsApiGetOpaLogs
+   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly timestampTo?: number;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof DecisionLogsApiGetOpaLogs
+   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof DecisionLogsApiGetOpaLogs
+   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly perPage?: number;
-
-  /**
-   *
-   * @type {string}
-   * @memberof DecisionLogsApiGetOpaLogs
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -299,17 +340,20 @@ export class DecisionLogsApi extends BaseAPI {
   /**
    *
    * @summary List PDP Decisions
-   * @param {DecisionLogsApiGetOpaLogsRequest} requestParameters Request parameters.
+   * @param {DecisionLogsApiListPdpDecisionLogsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof DecisionLogsApi
    */
-  public getOpaLogs(
-    requestParameters: DecisionLogsApiGetOpaLogsRequest = {},
+  public listPdpDecisionLogs(
+    requestParameters: DecisionLogsApiListPdpDecisionLogsRequest,
     options?: AxiosRequestConfig,
   ) {
     return DecisionLogsApiFp(this.configuration)
-      .getOpaLogs(
+      .listPdpDecisionLogs(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.pdpId,
         requestParameters.users,
         requestParameters.approved,
         requestParameters.resources,
@@ -317,7 +361,6 @@ export class DecisionLogsApi extends BaseAPI {
         requestParameters.timestampTo,
         requestParameters.page,
         requestParameters.perPage,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));

@@ -51,7 +51,6 @@ export const ResourceActionsApiAxiosParamCreator = function (configuration?: Con
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {ResourceActionCreate} resourceActionCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -60,7 +59,6 @@ export const ResourceActionsApiAxiosParamCreator = function (configuration?: Con
       envId: string,
       resourceId: string,
       resourceActionCreate: ResourceActionCreate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -117,7 +115,6 @@ export const ResourceActionsApiAxiosParamCreator = function (configuration?: Con
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} actionId Either the unique id of the action, or the URL-friendly key of the action (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -126,7 +123,6 @@ export const ResourceActionsApiAxiosParamCreator = function (configuration?: Con
       envId: string,
       resourceId: string,
       actionId: string,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -178,7 +174,6 @@ export const ResourceActionsApiAxiosParamCreator = function (configuration?: Con
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} actionId Either the unique id of the action, or the URL-friendly key of the action (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -187,7 +182,6 @@ export const ResourceActionsApiAxiosParamCreator = function (configuration?: Con
       envId: string,
       resourceId: string,
       actionId: string,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -240,7 +234,6 @@ export const ResourceActionsApiAxiosParamCreator = function (configuration?: Con
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -250,7 +243,6 @@ export const ResourceActionsApiAxiosParamCreator = function (configuration?: Con
       resourceId: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -307,7 +299,6 @@ export const ResourceActionsApiAxiosParamCreator = function (configuration?: Con
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} actionId Either the unique id of the action, or the URL-friendly key of the action (i.e: the \&quot;slug\&quot;).
      * @param {ResourceActionUpdate} resourceActionUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -317,7 +308,6 @@ export const ResourceActionsApiAxiosParamCreator = function (configuration?: Con
       resourceId: string,
       actionId: string,
       resourceActionUpdate: ResourceActionUpdate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -388,7 +378,6 @@ export const ResourceActionsApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {ResourceActionCreate} resourceActionCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -397,7 +386,6 @@ export const ResourceActionsApiFp = function (configuration?: Configuration) {
       envId: string,
       resourceId: string,
       resourceActionCreate: ResourceActionCreate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceActionRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createResourceAction(
@@ -405,7 +393,6 @@ export const ResourceActionsApiFp = function (configuration?: Configuration) {
         envId,
         resourceId,
         resourceActionCreate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -417,7 +404,6 @@ export const ResourceActionsApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} actionId Either the unique id of the action, or the URL-friendly key of the action (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -426,7 +412,6 @@ export const ResourceActionsApiFp = function (configuration?: Configuration) {
       envId: string,
       resourceId: string,
       actionId: string,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteResourceAction(
@@ -434,7 +419,6 @@ export const ResourceActionsApiFp = function (configuration?: Configuration) {
         envId,
         resourceId,
         actionId,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -446,7 +430,6 @@ export const ResourceActionsApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} actionId Either the unique id of the action, or the URL-friendly key of the action (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -455,7 +438,6 @@ export const ResourceActionsApiFp = function (configuration?: Configuration) {
       envId: string,
       resourceId: string,
       actionId: string,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceActionRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getResourceAction(
@@ -463,7 +445,6 @@ export const ResourceActionsApiFp = function (configuration?: Configuration) {
         envId,
         resourceId,
         actionId,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -476,7 +457,6 @@ export const ResourceActionsApiFp = function (configuration?: Configuration) {
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -486,7 +466,6 @@ export const ResourceActionsApiFp = function (configuration?: Configuration) {
       resourceId: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ResourceActionRead>>
@@ -497,7 +476,6 @@ export const ResourceActionsApiFp = function (configuration?: Configuration) {
         resourceId,
         page,
         perPage,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -510,7 +488,6 @@ export const ResourceActionsApiFp = function (configuration?: Configuration) {
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} actionId Either the unique id of the action, or the URL-friendly key of the action (i.e: the \&quot;slug\&quot;).
      * @param {ResourceActionUpdate} resourceActionUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -520,7 +497,6 @@ export const ResourceActionsApiFp = function (configuration?: Configuration) {
       resourceId: string,
       actionId: string,
       resourceActionUpdate: ResourceActionUpdate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceActionRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateResourceAction(
@@ -529,7 +505,6 @@ export const ResourceActionsApiFp = function (configuration?: Configuration) {
         resourceId,
         actionId,
         resourceActionUpdate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -555,7 +530,6 @@ export const ResourceActionsApiFactory = function (
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {ResourceActionCreate} resourceActionCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -564,18 +538,10 @@ export const ResourceActionsApiFactory = function (
       envId: string,
       resourceId: string,
       resourceActionCreate: ResourceActionCreate,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<ResourceActionRead> {
       return localVarFp
-        .createResourceAction(
-          projId,
-          envId,
-          resourceId,
-          resourceActionCreate,
-          permitSession,
-          options,
-        )
+        .createResourceAction(projId, envId, resourceId, resourceActionCreate, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -585,7 +551,6 @@ export const ResourceActionsApiFactory = function (
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} actionId Either the unique id of the action, or the URL-friendly key of the action (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -594,11 +559,10 @@ export const ResourceActionsApiFactory = function (
       envId: string,
       resourceId: string,
       actionId: string,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<void> {
       return localVarFp
-        .deleteResourceAction(projId, envId, resourceId, actionId, permitSession, options)
+        .deleteResourceAction(projId, envId, resourceId, actionId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -608,7 +572,6 @@ export const ResourceActionsApiFactory = function (
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} actionId Either the unique id of the action, or the URL-friendly key of the action (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -617,11 +580,10 @@ export const ResourceActionsApiFactory = function (
       envId: string,
       resourceId: string,
       actionId: string,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<ResourceActionRead> {
       return localVarFp
-        .getResourceAction(projId, envId, resourceId, actionId, permitSession, options)
+        .getResourceAction(projId, envId, resourceId, actionId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -632,7 +594,6 @@ export const ResourceActionsApiFactory = function (
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -642,11 +603,10 @@ export const ResourceActionsApiFactory = function (
       resourceId: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<Array<ResourceActionRead>> {
       return localVarFp
-        .listResourceActions(projId, envId, resourceId, page, perPage, permitSession, options)
+        .listResourceActions(projId, envId, resourceId, page, perPage, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -657,7 +617,6 @@ export const ResourceActionsApiFactory = function (
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} actionId Either the unique id of the action, or the URL-friendly key of the action (i.e: the \&quot;slug\&quot;).
      * @param {ResourceActionUpdate} resourceActionUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -667,19 +626,10 @@ export const ResourceActionsApiFactory = function (
       resourceId: string,
       actionId: string,
       resourceActionUpdate: ResourceActionUpdate,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<ResourceActionRead> {
       return localVarFp
-        .updateResourceAction(
-          projId,
-          envId,
-          resourceId,
-          actionId,
-          resourceActionUpdate,
-          permitSession,
-          options,
-        )
+        .updateResourceAction(projId, envId, resourceId, actionId, resourceActionUpdate, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -718,13 +668,6 @@ export interface ResourceActionsApiCreateResourceActionRequest {
    * @memberof ResourceActionsApiCreateResourceAction
    */
   readonly resourceActionCreate: ResourceActionCreate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof ResourceActionsApiCreateResourceAction
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -760,13 +703,6 @@ export interface ResourceActionsApiDeleteResourceActionRequest {
    * @memberof ResourceActionsApiDeleteResourceAction
    */
   readonly actionId: string;
-
-  /**
-   *
-   * @type {string}
-   * @memberof ResourceActionsApiDeleteResourceAction
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -802,13 +738,6 @@ export interface ResourceActionsApiGetResourceActionRequest {
    * @memberof ResourceActionsApiGetResourceAction
    */
   readonly actionId: string;
-
-  /**
-   *
-   * @type {string}
-   * @memberof ResourceActionsApiGetResourceAction
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -851,13 +780,6 @@ export interface ResourceActionsApiListResourceActionsRequest {
    * @memberof ResourceActionsApiListResourceActions
    */
   readonly perPage?: number;
-
-  /**
-   *
-   * @type {string}
-   * @memberof ResourceActionsApiListResourceActions
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -900,13 +822,6 @@ export interface ResourceActionsApiUpdateResourceActionRequest {
    * @memberof ResourceActionsApiUpdateResourceAction
    */
   readonly resourceActionUpdate: ResourceActionUpdate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof ResourceActionsApiUpdateResourceAction
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -934,7 +849,6 @@ export class ResourceActionsApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.resourceActionCreate,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -958,7 +872,6 @@ export class ResourceActionsApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.actionId,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -982,7 +895,6 @@ export class ResourceActionsApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.actionId,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1007,7 +919,6 @@ export class ResourceActionsApi extends BaseAPI {
         requestParameters.resourceId,
         requestParameters.page,
         requestParameters.perPage,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1032,7 +943,6 @@ export class ResourceActionsApi extends BaseAPI {
         requestParameters.resourceId,
         requestParameters.actionId,
         requestParameters.resourceActionUpdate,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));

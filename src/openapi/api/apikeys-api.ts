@@ -31,6 +31,8 @@ import {
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
+import { APIKeyRead } from '../types';
+// @ts-ignore
 import { APIKeyScopeRead } from '../types';
 // @ts-ignore
 import { HTTPValidationError } from '../types';
@@ -43,15 +45,59 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
     /**
      *
      * @summary Get Api Key Scope
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getApiKeyScope: async (
-      permitSession?: string,
+    getApiKeyScope: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      const localVarPath = `/v2/api-key/scope`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get Environment Api Key
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getEnvironmentApiKey: async (
+      projId: string,
+      envId: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      const localVarPath = `/v2/api-key/scope`;
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getEnvironmentApiKey', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getEnvironmentApiKey', 'envId', envId);
+      const localVarPath = `/v2/api-key/{proj_id}/{env_id}`
+        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
+        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -93,16 +139,31 @@ export const APIKeysApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get Api Key Scope
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getApiKeyScope(
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIKeyScopeRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getApiKeyScope(
-        permitSession,
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getApiKeyScope(options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Get Environment Api Key
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getEnvironmentApiKey(
+      projId: string,
+      envId: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIKeyRead>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getEnvironmentApiKey(
+        projId,
+        envId,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -124,30 +185,47 @@ export const APIKeysApiFactory = function (
     /**
      *
      * @summary Get Api Key Scope
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getApiKeyScope(permitSession?: string, options?: any): AxiosPromise<APIKeyScopeRead> {
+    getApiKeyScope(options?: any): AxiosPromise<APIKeyScopeRead> {
+      return localVarFp.getApiKeyScope(options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get Environment Api Key
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getEnvironmentApiKey(projId: string, envId: string, options?: any): AxiosPromise<APIKeyRead> {
       return localVarFp
-        .getApiKeyScope(permitSession, options)
+        .getEnvironmentApiKey(projId, envId, options)
         .then((request) => request(axios, basePath));
     },
   };
 };
 
 /**
- * Request parameters for getApiKeyScope operation in APIKeysApi.
+ * Request parameters for getEnvironmentApiKey operation in APIKeysApi.
  * @export
- * @interface APIKeysApiGetApiKeyScopeRequest
+ * @interface APIKeysApiGetEnvironmentApiKeyRequest
  */
-export interface APIKeysApiGetApiKeyScopeRequest {
+export interface APIKeysApiGetEnvironmentApiKeyRequest {
   /**
-   *
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof APIKeysApiGetApiKeyScope
+   * @memberof APIKeysApiGetEnvironmentApiKey
    */
-  readonly permitSession?: string;
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof APIKeysApiGetEnvironmentApiKey
+   */
+  readonly envId: string;
 }
 
 /**
@@ -160,17 +238,30 @@ export class APIKeysApi extends BaseAPI {
   /**
    *
    * @summary Get Api Key Scope
-   * @param {APIKeysApiGetApiKeyScopeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof APIKeysApi
    */
-  public getApiKeyScope(
-    requestParameters: APIKeysApiGetApiKeyScopeRequest = {},
+  public getApiKeyScope(options?: AxiosRequestConfig) {
+    return APIKeysApiFp(this.configuration)
+      .getApiKeyScope(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get Environment Api Key
+   * @param {APIKeysApiGetEnvironmentApiKeyRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof APIKeysApi
+   */
+  public getEnvironmentApiKey(
+    requestParameters: APIKeysApiGetEnvironmentApiKeyRequest,
     options?: AxiosRequestConfig,
   ) {
     return APIKeysApiFp(this.configuration)
-      .getApiKeyScope(requestParameters.permitSession, options)
+      .getEnvironmentApiKey(requestParameters.projId, requestParameters.envId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

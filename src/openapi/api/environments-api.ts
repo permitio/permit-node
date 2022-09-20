@@ -49,14 +49,12 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
      * @summary Create Environment
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {EnvironmentCreate} environmentCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     createEnvironment: async (
       projId: string,
       environmentCreate: EnvironmentCreate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -107,14 +105,12 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
      * @summary Delete Environment
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     deleteEnvironment: async (
       projId: string,
       envId: string,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -157,14 +153,12 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
      * @summary Get Environment
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getEnvironment: async (
       projId: string,
       envId: string,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -208,7 +202,6 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -216,7 +209,6 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
       projId: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -267,7 +259,6 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {EnvironmentUpdate} environmentUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -275,7 +266,6 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
       projId: string,
       envId: string,
       environmentUpdate: EnvironmentUpdate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -337,20 +327,17 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
      * @summary Create Environment
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {EnvironmentCreate} environmentCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async createEnvironment(
       projId: string,
       environmentCreate: EnvironmentCreate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EnvironmentRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createEnvironment(
         projId,
         environmentCreate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -360,20 +347,17 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
      * @summary Delete Environment
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async deleteEnvironment(
       projId: string,
       envId: string,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteEnvironment(
         projId,
         envId,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -383,20 +367,17 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
      * @summary Get Environment
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getEnvironment(
       projId: string,
       envId: string,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EnvironmentRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getEnvironment(
         projId,
         envId,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -407,7 +388,6 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -415,14 +395,12 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
       projId: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EnvironmentRead>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listEnvironments(
         projId,
         page,
         perPage,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -433,7 +411,6 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {EnvironmentUpdate} environmentUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -441,14 +418,12 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
       projId: string,
       envId: string,
       environmentUpdate: EnvironmentUpdate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EnvironmentRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateEnvironment(
         projId,
         envId,
         environmentUpdate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -472,18 +447,16 @@ export const EnvironmentsApiFactory = function (
      * @summary Create Environment
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {EnvironmentCreate} environmentCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     createEnvironment(
       projId: string,
       environmentCreate: EnvironmentCreate,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<EnvironmentRead> {
       return localVarFp
-        .createEnvironment(projId, environmentCreate, permitSession, options)
+        .createEnvironment(projId, environmentCreate, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -491,18 +464,12 @@ export const EnvironmentsApiFactory = function (
      * @summary Delete Environment
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteEnvironment(
-      projId: string,
-      envId: string,
-      permitSession?: string,
-      options?: any,
-    ): AxiosPromise<void> {
+    deleteEnvironment(projId: string, envId: string, options?: any): AxiosPromise<void> {
       return localVarFp
-        .deleteEnvironment(projId, envId, permitSession, options)
+        .deleteEnvironment(projId, envId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -510,18 +477,12 @@ export const EnvironmentsApiFactory = function (
      * @summary Get Environment
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getEnvironment(
-      projId: string,
-      envId: string,
-      permitSession?: string,
-      options?: any,
-    ): AxiosPromise<EnvironmentRead> {
+    getEnvironment(projId: string, envId: string, options?: any): AxiosPromise<EnvironmentRead> {
       return localVarFp
-        .getEnvironment(projId, envId, permitSession, options)
+        .getEnvironment(projId, envId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -530,7 +491,6 @@ export const EnvironmentsApiFactory = function (
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -538,11 +498,10 @@ export const EnvironmentsApiFactory = function (
       projId: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<Array<EnvironmentRead>> {
       return localVarFp
-        .listEnvironments(projId, page, perPage, permitSession, options)
+        .listEnvironments(projId, page, perPage, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -551,7 +510,6 @@ export const EnvironmentsApiFactory = function (
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {EnvironmentUpdate} environmentUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -559,11 +517,10 @@ export const EnvironmentsApiFactory = function (
       projId: string,
       envId: string,
       environmentUpdate: EnvironmentUpdate,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<EnvironmentRead> {
       return localVarFp
-        .updateEnvironment(projId, envId, environmentUpdate, permitSession, options)
+        .updateEnvironment(projId, envId, environmentUpdate, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -588,13 +545,6 @@ export interface EnvironmentsApiCreateEnvironmentRequest {
    * @memberof EnvironmentsApiCreateEnvironment
    */
   readonly environmentCreate: EnvironmentCreate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof EnvironmentsApiCreateEnvironment
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -616,13 +566,6 @@ export interface EnvironmentsApiDeleteEnvironmentRequest {
    * @memberof EnvironmentsApiDeleteEnvironment
    */
   readonly envId: string;
-
-  /**
-   *
-   * @type {string}
-   * @memberof EnvironmentsApiDeleteEnvironment
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -644,13 +587,6 @@ export interface EnvironmentsApiGetEnvironmentRequest {
    * @memberof EnvironmentsApiGetEnvironment
    */
   readonly envId: string;
-
-  /**
-   *
-   * @type {string}
-   * @memberof EnvironmentsApiGetEnvironment
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -679,13 +615,6 @@ export interface EnvironmentsApiListEnvironmentsRequest {
    * @memberof EnvironmentsApiListEnvironments
    */
   readonly perPage?: number;
-
-  /**
-   *
-   * @type {string}
-   * @memberof EnvironmentsApiListEnvironments
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -714,13 +643,6 @@ export interface EnvironmentsApiUpdateEnvironmentRequest {
    * @memberof EnvironmentsApiUpdateEnvironment
    */
   readonly environmentUpdate: EnvironmentUpdate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof EnvironmentsApiUpdateEnvironment
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -743,12 +665,7 @@ export class EnvironmentsApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return EnvironmentsApiFp(this.configuration)
-      .createEnvironment(
-        requestParameters.projId,
-        requestParameters.environmentCreate,
-        requestParameters.permitSession,
-        options,
-      )
+      .createEnvironment(requestParameters.projId, requestParameters.environmentCreate, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -765,12 +682,7 @@ export class EnvironmentsApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return EnvironmentsApiFp(this.configuration)
-      .deleteEnvironment(
-        requestParameters.projId,
-        requestParameters.envId,
-        requestParameters.permitSession,
-        options,
-      )
+      .deleteEnvironment(requestParameters.projId, requestParameters.envId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -787,12 +699,7 @@ export class EnvironmentsApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return EnvironmentsApiFp(this.configuration)
-      .getEnvironment(
-        requestParameters.projId,
-        requestParameters.envId,
-        requestParameters.permitSession,
-        options,
-      )
+      .getEnvironment(requestParameters.projId, requestParameters.envId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -813,7 +720,6 @@ export class EnvironmentsApi extends BaseAPI {
         requestParameters.projId,
         requestParameters.page,
         requestParameters.perPage,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -836,7 +742,6 @@ export class EnvironmentsApi extends BaseAPI {
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.environmentUpdate,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));

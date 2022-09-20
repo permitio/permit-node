@@ -50,7 +50,6 @@ export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: C
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ConditionSetRuleCreate} conditionSetRuleCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -58,7 +57,6 @@ export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: C
       projId: string,
       envId: string,
       conditionSetRuleCreate: ConditionSetRuleCreate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -115,7 +113,6 @@ export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: C
      * @param {string} [resourceSet] optional resource set filter, will only return rules where the permission is granted on this resource set
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -127,7 +124,6 @@ export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: C
       resourceSet?: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -191,7 +187,6 @@ export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: C
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ConditionSetRuleRemove} conditionSetRuleRemove
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -199,7 +194,6 @@ export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: C
       projId: string,
       envId: string,
       conditionSetRuleRemove: ConditionSetRuleRemove,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -262,7 +256,6 @@ export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ConditionSetRuleCreate} conditionSetRuleCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -270,7 +263,6 @@ export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
       projId: string,
       envId: string,
       conditionSetRuleCreate: ConditionSetRuleCreate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ConditionSetRuleRead>>
@@ -279,7 +271,6 @@ export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
         projId,
         envId,
         conditionSetRuleCreate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -294,7 +285,6 @@ export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
      * @param {string} [resourceSet] optional resource set filter, will only return rules where the permission is granted on this resource set
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -306,7 +296,6 @@ export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
       resourceSet?: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ConditionSetRuleRead>>
@@ -319,7 +308,6 @@ export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
         resourceSet,
         page,
         perPage,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -330,7 +318,6 @@ export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ConditionSetRuleRemove} conditionSetRuleRemove
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -338,14 +325,12 @@ export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
       projId: string,
       envId: string,
       conditionSetRuleRemove: ConditionSetRuleRemove,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.unassignSetPermissions(
         projId,
         envId,
         conditionSetRuleRemove,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -370,7 +355,6 @@ export const ConditionSetRulesApiFactory = function (
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ConditionSetRuleCreate} conditionSetRuleCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -378,11 +362,10 @@ export const ConditionSetRulesApiFactory = function (
       projId: string,
       envId: string,
       conditionSetRuleCreate: ConditionSetRuleCreate,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<Array<ConditionSetRuleRead>> {
       return localVarFp
-        .assignSetPermissions(projId, envId, conditionSetRuleCreate, permitSession, options)
+        .assignSetPermissions(projId, envId, conditionSetRuleCreate, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -395,7 +378,6 @@ export const ConditionSetRulesApiFactory = function (
      * @param {string} [resourceSet] optional resource set filter, will only return rules where the permission is granted on this resource set
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -407,21 +389,10 @@ export const ConditionSetRulesApiFactory = function (
       resourceSet?: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<Array<ConditionSetRuleRead>> {
       return localVarFp
-        .listSetPermissions(
-          projId,
-          envId,
-          userSet,
-          permission,
-          resourceSet,
-          page,
-          perPage,
-          permitSession,
-          options,
-        )
+        .listSetPermissions(projId, envId, userSet, permission, resourceSet, page, perPage, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -430,7 +401,6 @@ export const ConditionSetRulesApiFactory = function (
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ConditionSetRuleRemove} conditionSetRuleRemove
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -438,11 +408,10 @@ export const ConditionSetRulesApiFactory = function (
       projId: string,
       envId: string,
       conditionSetRuleRemove: ConditionSetRuleRemove,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<void> {
       return localVarFp
-        .unassignSetPermissions(projId, envId, conditionSetRuleRemove, permitSession, options)
+        .unassignSetPermissions(projId, envId, conditionSetRuleRemove, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -474,13 +443,6 @@ export interface ConditionSetRulesApiAssignSetPermissionsRequest {
    * @memberof ConditionSetRulesApiAssignSetPermissions
    */
   readonly conditionSetRuleCreate: ConditionSetRuleCreate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof ConditionSetRulesApiAssignSetPermissions
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -537,13 +499,6 @@ export interface ConditionSetRulesApiListSetPermissionsRequest {
    * @memberof ConditionSetRulesApiListSetPermissions
    */
   readonly perPage?: number;
-
-  /**
-   *
-   * @type {string}
-   * @memberof ConditionSetRulesApiListSetPermissions
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -572,13 +527,6 @@ export interface ConditionSetRulesApiUnassignSetPermissionsRequest {
    * @memberof ConditionSetRulesApiUnassignSetPermissions
    */
   readonly conditionSetRuleRemove: ConditionSetRuleRemove;
-
-  /**
-   *
-   * @type {string}
-   * @memberof ConditionSetRulesApiUnassignSetPermissions
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -605,7 +553,6 @@ export class ConditionSetRulesApi extends BaseAPI {
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.conditionSetRuleCreate,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -632,7 +579,6 @@ export class ConditionSetRulesApi extends BaseAPI {
         requestParameters.resourceSet,
         requestParameters.page,
         requestParameters.perPage,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -655,7 +601,6 @@ export class ConditionSetRulesApi extends BaseAPI {
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.conditionSetRuleRemove,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));

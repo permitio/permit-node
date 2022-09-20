@@ -50,7 +50,6 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RoleAssignmentCreate} roleAssignmentCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -58,7 +57,6 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
       projId: string,
       envId: string,
       roleAssignmentCreate: RoleAssignmentCreate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -115,7 +113,6 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
      * @param {string} [tenant] optional tenant filter, will only return role assignments granted in that tenant.
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -127,7 +124,6 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
       tenant?: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -191,7 +187,6 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RoleAssignmentRemove} roleAssignmentRemove
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -199,7 +194,6 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
       projId: string,
       envId: string,
       roleAssignmentRemove: RoleAssignmentRemove,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -262,7 +256,6 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RoleAssignmentCreate} roleAssignmentCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -270,14 +263,12 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
       projId: string,
       envId: string,
       roleAssignmentCreate: RoleAssignmentCreate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleAssignmentRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.assignRole(
         projId,
         envId,
         roleAssignmentCreate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -292,7 +283,6 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
      * @param {string} [tenant] optional tenant filter, will only return role assignments granted in that tenant.
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -304,7 +294,6 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
       tenant?: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<RoleAssignmentRead>>
@@ -317,7 +306,6 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
         tenant,
         page,
         perPage,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -328,7 +316,6 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RoleAssignmentRemove} roleAssignmentRemove
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -336,14 +323,12 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
       projId: string,
       envId: string,
       roleAssignmentRemove: RoleAssignmentRemove,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.unassignRole(
         projId,
         envId,
         roleAssignmentRemove,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -368,7 +353,6 @@ export const RoleAssignmentsApiFactory = function (
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RoleAssignmentCreate} roleAssignmentCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -376,11 +360,10 @@ export const RoleAssignmentsApiFactory = function (
       projId: string,
       envId: string,
       roleAssignmentCreate: RoleAssignmentCreate,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<RoleAssignmentRead> {
       return localVarFp
-        .assignRole(projId, envId, roleAssignmentCreate, permitSession, options)
+        .assignRole(projId, envId, roleAssignmentCreate, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -393,7 +376,6 @@ export const RoleAssignmentsApiFactory = function (
      * @param {string} [tenant] optional tenant filter, will only return role assignments granted in that tenant.
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -405,21 +387,10 @@ export const RoleAssignmentsApiFactory = function (
       tenant?: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<Array<RoleAssignmentRead>> {
       return localVarFp
-        .listRoleAssignments(
-          projId,
-          envId,
-          user,
-          role,
-          tenant,
-          page,
-          perPage,
-          permitSession,
-          options,
-        )
+        .listRoleAssignments(projId, envId, user, role, tenant, page, perPage, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -428,7 +399,6 @@ export const RoleAssignmentsApiFactory = function (
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RoleAssignmentRemove} roleAssignmentRemove
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -436,11 +406,10 @@ export const RoleAssignmentsApiFactory = function (
       projId: string,
       envId: string,
       roleAssignmentRemove: RoleAssignmentRemove,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<void> {
       return localVarFp
-        .unassignRole(projId, envId, roleAssignmentRemove, permitSession, options)
+        .unassignRole(projId, envId, roleAssignmentRemove, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -472,13 +441,6 @@ export interface RoleAssignmentsApiAssignRoleRequest {
    * @memberof RoleAssignmentsApiAssignRole
    */
   readonly roleAssignmentCreate: RoleAssignmentCreate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof RoleAssignmentsApiAssignRole
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -535,13 +497,6 @@ export interface RoleAssignmentsApiListRoleAssignmentsRequest {
    * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly perPage?: number;
-
-  /**
-   *
-   * @type {string}
-   * @memberof RoleAssignmentsApiListRoleAssignments
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -570,13 +525,6 @@ export interface RoleAssignmentsApiUnassignRoleRequest {
    * @memberof RoleAssignmentsApiUnassignRole
    */
   readonly roleAssignmentRemove: RoleAssignmentRemove;
-
-  /**
-   *
-   * @type {string}
-   * @memberof RoleAssignmentsApiUnassignRole
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -603,7 +551,6 @@ export class RoleAssignmentsApi extends BaseAPI {
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.roleAssignmentCreate,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -630,7 +577,6 @@ export class RoleAssignmentsApi extends BaseAPI {
         requestParameters.tenant,
         requestParameters.page,
         requestParameters.perPage,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -653,7 +599,6 @@ export class RoleAssignmentsApi extends BaseAPI {
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.roleAssignmentRemove,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));

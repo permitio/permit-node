@@ -59,7 +59,6 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserRoleCreate} userRoleCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -68,7 +67,6 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       envId: string,
       userId: string,
       userRoleCreate: UserRoleCreate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -124,7 +122,6 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {UserCreate} userCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -132,7 +129,6 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       projId: string,
       envId: string,
       userCreate: UserCreate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -185,7 +181,6 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -193,7 +188,6 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       projId: string,
       envId: string,
       userId: string,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -240,7 +234,6 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -248,7 +241,6 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       projId: string,
       envId: string,
       userId: string,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -297,7 +289,6 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} [search] Text search for the email field
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -307,7 +298,6 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       search?: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -358,13 +348,76 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
+     *
+     * @summary Replace User
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+     * @param {UserCreate} userCreate
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    replaceUser: async (
+      projId: string,
+      envId: string,
+      userId: string,
+      userCreate: UserCreate,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('replaceUser', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('replaceUser', 'envId', envId);
+      // verify required parameter 'userId' is not null or undefined
+      assertParamExists('replaceUser', 'userId', userId);
+      // verify required parameter 'userCreate' is not null or undefined
+      assertParamExists('replaceUser', 'userCreate', userCreate);
+      const localVarPath = `/v2/facts/{proj_id}/{env_id}/users/{user_id}`
+        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
+        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
+        .replace(`{${'user_id'}}`, encodeURIComponent(String(userId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        userCreate,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Unassigns the role from the user within the tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.  If the role is not actually assigned, will return 404.
      * @summary Unassign Role From User
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserRoleRemove} userRoleRemove
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -373,7 +426,6 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       envId: string,
       userId: string,
       userRoleRemove: UserRoleRemove,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -430,7 +482,6 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserUpdate} userUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -439,7 +490,6 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       envId: string,
       userId: string,
       userUpdate: UserUpdate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -506,7 +556,6 @@ export const UsersApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserRoleCreate} userRoleCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -515,7 +564,6 @@ export const UsersApiFp = function (configuration?: Configuration) {
       envId: string,
       userId: string,
       userRoleCreate: UserRoleCreate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleAssignmentRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.assignRoleToUser(
@@ -523,7 +571,6 @@ export const UsersApiFp = function (configuration?: Configuration) {
         envId,
         userId,
         userRoleCreate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -534,7 +581,6 @@ export const UsersApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {UserCreate} userCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -542,14 +588,12 @@ export const UsersApiFp = function (configuration?: Configuration) {
       projId: string,
       envId: string,
       userCreate: UserCreate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createUser(
         projId,
         envId,
         userCreate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -560,7 +604,6 @@ export const UsersApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -568,14 +611,12 @@ export const UsersApiFp = function (configuration?: Configuration) {
       projId: string,
       envId: string,
       userId: string,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteUser(
         projId,
         envId,
         userId,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -586,7 +627,6 @@ export const UsersApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -594,14 +634,12 @@ export const UsersApiFp = function (configuration?: Configuration) {
       projId: string,
       envId: string,
       userId: string,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getUser(
         projId,
         envId,
         userId,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -614,7 +652,6 @@ export const UsersApiFp = function (configuration?: Configuration) {
      * @param {string} [search] Text search for the email field
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -624,7 +661,6 @@ export const UsersApiFp = function (configuration?: Configuration) {
       search?: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResultUserRead>
@@ -635,7 +671,32 @@ export const UsersApiFp = function (configuration?: Configuration) {
         search,
         page,
         perPage,
-        permitSession,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Replace User
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+     * @param {UserCreate} userCreate
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async replaceUser(
+      projId: string,
+      envId: string,
+      userId: string,
+      userCreate: UserCreate,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserRead>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.replaceUser(
+        projId,
+        envId,
+        userId,
+        userCreate,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -647,7 +708,6 @@ export const UsersApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserRoleRemove} userRoleRemove
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -656,7 +716,6 @@ export const UsersApiFp = function (configuration?: Configuration) {
       envId: string,
       userId: string,
       userRoleRemove: UserRoleRemove,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.unassignRoleFromUser(
@@ -664,7 +723,6 @@ export const UsersApiFp = function (configuration?: Configuration) {
         envId,
         userId,
         userRoleRemove,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -676,7 +734,6 @@ export const UsersApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserUpdate} userUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -685,7 +742,6 @@ export const UsersApiFp = function (configuration?: Configuration) {
       envId: string,
       userId: string,
       userUpdate: UserUpdate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateUser(
@@ -693,7 +749,6 @@ export const UsersApiFp = function (configuration?: Configuration) {
         envId,
         userId,
         userUpdate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -719,7 +774,6 @@ export const UsersApiFactory = function (
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserRoleCreate} userRoleCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -728,11 +782,10 @@ export const UsersApiFactory = function (
       envId: string,
       userId: string,
       userRoleCreate: UserRoleCreate,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<RoleAssignmentRead> {
       return localVarFp
-        .assignRoleToUser(projId, envId, userId, userRoleCreate, permitSession, options)
+        .assignRoleToUser(projId, envId, userId, userRoleCreate, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -741,7 +794,6 @@ export const UsersApiFactory = function (
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {UserCreate} userCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -749,11 +801,10 @@ export const UsersApiFactory = function (
       projId: string,
       envId: string,
       userCreate: UserCreate,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<UserRead> {
       return localVarFp
-        .createUser(projId, envId, userCreate, permitSession, options)
+        .createUser(projId, envId, userCreate, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -762,19 +813,12 @@ export const UsersApiFactory = function (
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteUser(
-      projId: string,
-      envId: string,
-      userId: string,
-      permitSession?: string,
-      options?: any,
-    ): AxiosPromise<void> {
+    deleteUser(projId: string, envId: string, userId: string, options?: any): AxiosPromise<void> {
       return localVarFp
-        .deleteUser(projId, envId, userId, permitSession, options)
+        .deleteUser(projId, envId, userId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -783,19 +827,12 @@ export const UsersApiFactory = function (
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getUser(
-      projId: string,
-      envId: string,
-      userId: string,
-      permitSession?: string,
-      options?: any,
-    ): AxiosPromise<UserRead> {
+    getUser(projId: string, envId: string, userId: string, options?: any): AxiosPromise<UserRead> {
       return localVarFp
-        .getUser(projId, envId, userId, permitSession, options)
+        .getUser(projId, envId, userId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -806,7 +843,6 @@ export const UsersApiFactory = function (
      * @param {string} [search] Text search for the email field
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -816,11 +852,31 @@ export const UsersApiFactory = function (
       search?: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<PaginatedResultUserRead> {
       return localVarFp
-        .listUsers(projId, envId, search, page, perPage, permitSession, options)
+        .listUsers(projId, envId, search, page, perPage, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Replace User
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+     * @param {UserCreate} userCreate
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    replaceUser(
+      projId: string,
+      envId: string,
+      userId: string,
+      userCreate: UserCreate,
+      options?: any,
+    ): AxiosPromise<UserRead> {
+      return localVarFp
+        .replaceUser(projId, envId, userId, userCreate, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -830,7 +886,6 @@ export const UsersApiFactory = function (
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserRoleRemove} userRoleRemove
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -839,11 +894,10 @@ export const UsersApiFactory = function (
       envId: string,
       userId: string,
       userRoleRemove: UserRoleRemove,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<UserRead> {
       return localVarFp
-        .unassignRoleFromUser(projId, envId, userId, userRoleRemove, permitSession, options)
+        .unassignRoleFromUser(projId, envId, userId, userRoleRemove, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -853,7 +907,6 @@ export const UsersApiFactory = function (
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserUpdate} userUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -862,11 +915,10 @@ export const UsersApiFactory = function (
       envId: string,
       userId: string,
       userUpdate: UserUpdate,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<UserRead> {
       return localVarFp
-        .updateUser(projId, envId, userId, userUpdate, permitSession, options)
+        .updateUser(projId, envId, userId, userUpdate, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -905,13 +957,6 @@ export interface UsersApiAssignRoleToUserRequest {
    * @memberof UsersApiAssignRoleToUser
    */
   readonly userRoleCreate: UserRoleCreate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof UsersApiAssignRoleToUser
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -940,13 +985,6 @@ export interface UsersApiCreateUserRequest {
    * @memberof UsersApiCreateUser
    */
   readonly userCreate: UserCreate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof UsersApiCreateUser
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -975,13 +1013,6 @@ export interface UsersApiDeleteUserRequest {
    * @memberof UsersApiDeleteUser
    */
   readonly userId: string;
-
-  /**
-   *
-   * @type {string}
-   * @memberof UsersApiDeleteUser
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -1010,13 +1041,6 @@ export interface UsersApiGetUserRequest {
    * @memberof UsersApiGetUser
    */
   readonly userId: string;
-
-  /**
-   *
-   * @type {string}
-   * @memberof UsersApiGetUser
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -1059,13 +1083,41 @@ export interface UsersApiListUsersRequest {
    * @memberof UsersApiListUsers
    */
   readonly perPage?: number;
+}
+
+/**
+ * Request parameters for replaceUser operation in UsersApi.
+ * @export
+ * @interface UsersApiReplaceUserRequest
+ */
+export interface UsersApiReplaceUserRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof UsersApiReplaceUser
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof UsersApiReplaceUser
+   */
+  readonly envId: string;
+
+  /**
+   * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof UsersApiReplaceUser
+   */
+  readonly userId: string;
 
   /**
    *
-   * @type {string}
-   * @memberof UsersApiListUsers
+   * @type {UserCreate}
+   * @memberof UsersApiReplaceUser
    */
-  readonly permitSession?: string;
+  readonly userCreate: UserCreate;
 }
 
 /**
@@ -1101,13 +1153,6 @@ export interface UsersApiUnassignRoleFromUserRequest {
    * @memberof UsersApiUnassignRoleFromUser
    */
   readonly userRoleRemove: UserRoleRemove;
-
-  /**
-   *
-   * @type {string}
-   * @memberof UsersApiUnassignRoleFromUser
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -1143,13 +1188,6 @@ export interface UsersApiUpdateUserRequest {
    * @memberof UsersApiUpdateUser
    */
   readonly userUpdate: UserUpdate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof UsersApiUpdateUser
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -1177,7 +1215,6 @@ export class UsersApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.userId,
         requestParameters.userRoleCreate,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1197,7 +1234,6 @@ export class UsersApi extends BaseAPI {
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.userCreate,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1217,7 +1253,6 @@ export class UsersApi extends BaseAPI {
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.userId,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1233,13 +1268,7 @@ export class UsersApi extends BaseAPI {
    */
   public getUser(requestParameters: UsersApiGetUserRequest, options?: AxiosRequestConfig) {
     return UsersApiFp(this.configuration)
-      .getUser(
-        requestParameters.projId,
-        requestParameters.envId,
-        requestParameters.userId,
-        requestParameters.permitSession,
-        options,
-      )
+      .getUser(requestParameters.projId, requestParameters.envId, requestParameters.userId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -1259,7 +1288,26 @@ export class UsersApi extends BaseAPI {
         requestParameters.search,
         requestParameters.page,
         requestParameters.perPage,
-        requestParameters.permitSession,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Replace User
+   * @param {UsersApiReplaceUserRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UsersApi
+   */
+  public replaceUser(requestParameters: UsersApiReplaceUserRequest, options?: AxiosRequestConfig) {
+    return UsersApiFp(this.configuration)
+      .replaceUser(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.userId,
+        requestParameters.userCreate,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1283,7 +1331,6 @@ export class UsersApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.userId,
         requestParameters.userRoleRemove,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1304,7 +1351,6 @@ export class UsersApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.userId,
         requestParameters.userUpdate,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));

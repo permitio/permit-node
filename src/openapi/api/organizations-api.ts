@@ -33,6 +33,12 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 // @ts-ignore
 import { HTTPValidationError } from '../types';
 // @ts-ignore
+import { InviteCreate } from '../types';
+// @ts-ignore
+import { InviteRead } from '../types';
+// @ts-ignore
+import { MultiInviteResult } from '../types';
+// @ts-ignore
 import { OrganizationCreate } from '../types';
 // @ts-ignore
 import { OrganizationRead } from '../types';
@@ -45,16 +51,62 @@ import { OrganizationUpdate } from '../types';
 export const OrganizationsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
+     * Cancels an invite that was sent to a new member.
+     * @summary Cancel Invite
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {string} inviteId Id of the invite to cancel
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cancelInvite: async (
+      orgId: string,
+      inviteId: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'orgId' is not null or undefined
+      assertParamExists('cancelInvite', 'orgId', orgId);
+      // verify required parameter 'inviteId' is not null or undefined
+      assertParamExists('cancelInvite', 'inviteId', inviteId);
+      const localVarPath = `/v2/orgs/{org_id}/invites/{invite_id}`
+        .replace(`{${'org_id'}}`, encodeURIComponent(String(orgId)))
+        .replace(`{${'invite_id'}}`, encodeURIComponent(String(inviteId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Creates a new organization that will be owned by the authenticated actor (i.e: human team member or api key).
      * @summary Create Organization
      * @param {OrganizationCreate} organizationCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     createOrganization: async (
       organizationCreate: OrganizationCreate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'organizationCreate' is not null or undefined
@@ -99,13 +151,11 @@ export const OrganizationsApiAxiosParamCreator = function (configuration?: Confi
      * Deletes an organization (Permit.io account) and all its related data.
      * @summary Delete Organization
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     deleteOrganization: async (
       orgId: string,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'orgId' is not null or undefined
@@ -146,13 +196,11 @@ export const OrganizationsApiAxiosParamCreator = function (configuration?: Confi
      * Gets a single organization (Permit.io account) matching the given org_id, if such org exists and can be accessed by the authenticated actor.
      * @summary Get Organization
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getOrganization: async (
       orgId: string,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'orgId' is not null or undefined
@@ -190,18 +238,129 @@ export const OrganizationsApiAxiosParamCreator = function (configuration?: Confi
       };
     },
     /**
+     * Invite new members into the organization.
+     * @summary Invite Members To Organization
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {Array<InviteCreate>} inviteCreate
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    inviteMembersToOrganization: async (
+      orgId: string,
+      inviteCreate: Array<InviteCreate>,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'orgId' is not null or undefined
+      assertParamExists('inviteMembersToOrganization', 'orgId', orgId);
+      // verify required parameter 'inviteCreate' is not null or undefined
+      assertParamExists('inviteMembersToOrganization', 'inviteCreate', inviteCreate);
+      const localVarPath = `/v2/orgs/{org_id}/invites`.replace(
+        `{${'org_id'}}`,
+        encodeURIComponent(String(orgId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        inviteCreate,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Lists pending organization invites
+     * @summary List Organization Invites
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    listOrganizationInvites: async (
+      orgId: string,
+      page?: number,
+      perPage?: number,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'orgId' is not null or undefined
+      assertParamExists('listOrganizationInvites', 'orgId', orgId);
+      const localVarPath = `/v2/orgs/{org_id}/invites`.replace(
+        `{${'org_id'}}`,
+        encodeURIComponent(String(orgId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (perPage !== undefined) {
+        localVarQueryParameter['per_page'] = perPage;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Lists all the organizations that can be accessed by the authenticated actor (i.e: human team member or api key).
      * @summary List Organizations
      * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
+     * @param {number} [perPage] The number of results per page.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     listOrganizations: async (
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/v2/orgs`;
@@ -246,14 +405,12 @@ export const OrganizationsApiAxiosParamCreator = function (configuration?: Confi
      * @summary Update Organization
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {OrganizationUpdate} organizationUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     updateOrganization: async (
       orgId: string,
       organizationUpdate: OrganizationUpdate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'orgId' is not null or undefined
@@ -310,21 +467,38 @@ export const OrganizationsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = OrganizationsApiAxiosParamCreator(configuration);
   return {
     /**
+     * Cancels an invite that was sent to a new member.
+     * @summary Cancel Invite
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {string} inviteId Id of the invite to cancel
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async cancelInvite(
+      orgId: string,
+      inviteId: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.cancelInvite(
+        orgId,
+        inviteId,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
      * Creates a new organization that will be owned by the authenticated actor (i.e: human team member or api key).
      * @summary Create Organization
      * @param {OrganizationCreate} organizationCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async createOrganization(
       organizationCreate: OrganizationCreate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrganizationRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createOrganization(
         organizationCreate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -333,38 +507,69 @@ export const OrganizationsApiFp = function (configuration?: Configuration) {
      * Deletes an organization (Permit.io account) and all its related data.
      * @summary Delete Organization
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async deleteOrganization(
       orgId: string,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.deleteOrganization(
-        orgId,
-        permitSession,
-        options,
-      );
+      const localVarAxiosArgs = await localVarAxiosParamCreator.deleteOrganization(orgId, options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
      * Gets a single organization (Permit.io account) matching the given org_id, if such org exists and can be accessed by the authenticated actor.
      * @summary Get Organization
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getOrganization(
       orgId: string,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrganizationRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getOrganization(
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getOrganization(orgId, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     * Invite new members into the organization.
+     * @summary Invite Members To Organization
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {Array<InviteCreate>} inviteCreate
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async inviteMembersToOrganization(
+      orgId: string,
+      inviteCreate: Array<InviteCreate>,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MultiInviteResult>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.inviteMembersToOrganization(
         orgId,
-        permitSession,
+        inviteCreate,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     * Lists pending organization invites
+     * @summary List Organization Invites
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async listOrganizationInvites(
+      orgId: string,
+      page?: number,
+      perPage?: number,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<InviteRead>>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.listOrganizationInvites(
+        orgId,
+        page,
+        perPage,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -373,15 +578,13 @@ export const OrganizationsApiFp = function (configuration?: Configuration) {
      * Lists all the organizations that can be accessed by the authenticated actor (i.e: human team member or api key).
      * @summary List Organizations
      * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
+     * @param {number} [perPage] The number of results per page.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async listOrganizations(
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<OrganizationRead>>
@@ -389,7 +592,6 @@ export const OrganizationsApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listOrganizations(
         page,
         perPage,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -399,20 +601,17 @@ export const OrganizationsApiFp = function (configuration?: Configuration) {
      * @summary Update Organization
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {OrganizationUpdate} organizationUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async updateOrganization(
       orgId: string,
       organizationUpdate: OrganizationUpdate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrganizationRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateOrganization(
         orgId,
         organizationUpdate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -432,69 +631,106 @@ export const OrganizationsApiFactory = function (
   const localVarFp = OrganizationsApiFp(configuration);
   return {
     /**
+     * Cancels an invite that was sent to a new member.
+     * @summary Cancel Invite
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {string} inviteId Id of the invite to cancel
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cancelInvite(orgId: string, inviteId: string, options?: any): AxiosPromise<void> {
+      return localVarFp
+        .cancelInvite(orgId, inviteId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      * Creates a new organization that will be owned by the authenticated actor (i.e: human team member or api key).
      * @summary Create Organization
      * @param {OrganizationCreate} organizationCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     createOrganization(
       organizationCreate: OrganizationCreate,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<OrganizationRead> {
       return localVarFp
-        .createOrganization(organizationCreate, permitSession, options)
+        .createOrganization(organizationCreate, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes an organization (Permit.io account) and all its related data.
      * @summary Delete Organization
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteOrganization(orgId: string, permitSession?: string, options?: any): AxiosPromise<void> {
+    deleteOrganization(orgId: string, options?: any): AxiosPromise<void> {
       return localVarFp
-        .deleteOrganization(orgId, permitSession, options)
+        .deleteOrganization(orgId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Gets a single organization (Permit.io account) matching the given org_id, if such org exists and can be accessed by the authenticated actor.
      * @summary Get Organization
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getOrganization(
+    getOrganization(orgId: string, options?: any): AxiosPromise<OrganizationRead> {
+      return localVarFp.getOrganization(orgId, options).then((request) => request(axios, basePath));
+    },
+    /**
+     * Invite new members into the organization.
+     * @summary Invite Members To Organization
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {Array<InviteCreate>} inviteCreate
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    inviteMembersToOrganization(
       orgId: string,
-      permitSession?: string,
+      inviteCreate: Array<InviteCreate>,
       options?: any,
-    ): AxiosPromise<OrganizationRead> {
+    ): AxiosPromise<MultiInviteResult> {
       return localVarFp
-        .getOrganization(orgId, permitSession, options)
+        .inviteMembersToOrganization(orgId, inviteCreate, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Lists pending organization invites
+     * @summary List Organization Invites
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    listOrganizationInvites(
+      orgId: string,
+      page?: number,
+      perPage?: number,
+      options?: any,
+    ): AxiosPromise<Array<InviteRead>> {
+      return localVarFp
+        .listOrganizationInvites(orgId, page, perPage, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists all the organizations that can be accessed by the authenticated actor (i.e: human team member or api key).
      * @summary List Organizations
      * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
+     * @param {number} [perPage] The number of results per page.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     listOrganizations(
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<Array<OrganizationRead>> {
       return localVarFp
-        .listOrganizations(page, perPage, permitSession, options)
+        .listOrganizations(page, perPage, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -502,22 +738,41 @@ export const OrganizationsApiFactory = function (
      * @summary Update Organization
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {OrganizationUpdate} organizationUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     updateOrganization(
       orgId: string,
       organizationUpdate: OrganizationUpdate,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<OrganizationRead> {
       return localVarFp
-        .updateOrganization(orgId, organizationUpdate, permitSession, options)
+        .updateOrganization(orgId, organizationUpdate, options)
         .then((request) => request(axios, basePath));
     },
   };
 };
+
+/**
+ * Request parameters for cancelInvite operation in OrganizationsApi.
+ * @export
+ * @interface OrganizationsApiCancelInviteRequest
+ */
+export interface OrganizationsApiCancelInviteRequest {
+  /**
+   * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof OrganizationsApiCancelInvite
+   */
+  readonly orgId: string;
+
+  /**
+   * Id of the invite to cancel
+   * @type {string}
+   * @memberof OrganizationsApiCancelInvite
+   */
+  readonly inviteId: string;
+}
 
 /**
  * Request parameters for createOrganization operation in OrganizationsApi.
@@ -531,13 +786,6 @@ export interface OrganizationsApiCreateOrganizationRequest {
    * @memberof OrganizationsApiCreateOrganization
    */
   readonly organizationCreate: OrganizationCreate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof OrganizationsApiCreateOrganization
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -552,13 +800,6 @@ export interface OrganizationsApiDeleteOrganizationRequest {
    * @memberof OrganizationsApiDeleteOrganization
    */
   readonly orgId: string;
-
-  /**
-   *
-   * @type {string}
-   * @memberof OrganizationsApiDeleteOrganization
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -573,13 +814,55 @@ export interface OrganizationsApiGetOrganizationRequest {
    * @memberof OrganizationsApiGetOrganization
    */
   readonly orgId: string;
+}
+
+/**
+ * Request parameters for inviteMembersToOrganization operation in OrganizationsApi.
+ * @export
+ * @interface OrganizationsApiInviteMembersToOrganizationRequest
+ */
+export interface OrganizationsApiInviteMembersToOrganizationRequest {
+  /**
+   * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof OrganizationsApiInviteMembersToOrganization
+   */
+  readonly orgId: string;
 
   /**
    *
-   * @type {string}
-   * @memberof OrganizationsApiGetOrganization
+   * @type {Array<InviteCreate>}
+   * @memberof OrganizationsApiInviteMembersToOrganization
    */
-  readonly permitSession?: string;
+  readonly inviteCreate: Array<InviteCreate>;
+}
+
+/**
+ * Request parameters for listOrganizationInvites operation in OrganizationsApi.
+ * @export
+ * @interface OrganizationsApiListOrganizationInvitesRequest
+ */
+export interface OrganizationsApiListOrganizationInvitesRequest {
+  /**
+   * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof OrganizationsApiListOrganizationInvites
+   */
+  readonly orgId: string;
+
+  /**
+   * Page number of the results to fetch, starting at 1.
+   * @type {number}
+   * @memberof OrganizationsApiListOrganizationInvites
+   */
+  readonly page?: number;
+
+  /**
+   * The number of results per page (max 100).
+   * @type {number}
+   * @memberof OrganizationsApiListOrganizationInvites
+   */
+  readonly perPage?: number;
 }
 
 /**
@@ -596,18 +879,11 @@ export interface OrganizationsApiListOrganizationsRequest {
   readonly page?: number;
 
   /**
-   * The number of results per page (max 100).
+   * The number of results per page.
    * @type {number}
    * @memberof OrganizationsApiListOrganizations
    */
   readonly perPage?: number;
-
-  /**
-   *
-   * @type {string}
-   * @memberof OrganizationsApiListOrganizations
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -629,13 +905,6 @@ export interface OrganizationsApiUpdateOrganizationRequest {
    * @memberof OrganizationsApiUpdateOrganization
    */
   readonly organizationUpdate: OrganizationUpdate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof OrganizationsApiUpdateOrganization
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -645,6 +914,23 @@ export interface OrganizationsApiUpdateOrganizationRequest {
  * @extends {BaseAPI}
  */
 export class OrganizationsApi extends BaseAPI {
+  /**
+   * Cancels an invite that was sent to a new member.
+   * @summary Cancel Invite
+   * @param {OrganizationsApiCancelInviteRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof OrganizationsApi
+   */
+  public cancelInvite(
+    requestParameters: OrganizationsApiCancelInviteRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return OrganizationsApiFp(this.configuration)
+      .cancelInvite(requestParameters.orgId, requestParameters.inviteId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
   /**
    * Creates a new organization that will be owned by the authenticated actor (i.e: human team member or api key).
    * @summary Create Organization
@@ -658,11 +944,7 @@ export class OrganizationsApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return OrganizationsApiFp(this.configuration)
-      .createOrganization(
-        requestParameters.organizationCreate,
-        requestParameters.permitSession,
-        options,
-      )
+      .createOrganization(requestParameters.organizationCreate, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -679,7 +961,7 @@ export class OrganizationsApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return OrganizationsApiFp(this.configuration)
-      .deleteOrganization(requestParameters.orgId, requestParameters.permitSession, options)
+      .deleteOrganization(requestParameters.orgId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -696,7 +978,46 @@ export class OrganizationsApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return OrganizationsApiFp(this.configuration)
-      .getOrganization(requestParameters.orgId, requestParameters.permitSession, options)
+      .getOrganization(requestParameters.orgId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Invite new members into the organization.
+   * @summary Invite Members To Organization
+   * @param {OrganizationsApiInviteMembersToOrganizationRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof OrganizationsApi
+   */
+  public inviteMembersToOrganization(
+    requestParameters: OrganizationsApiInviteMembersToOrganizationRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return OrganizationsApiFp(this.configuration)
+      .inviteMembersToOrganization(requestParameters.orgId, requestParameters.inviteCreate, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Lists pending organization invites
+   * @summary List Organization Invites
+   * @param {OrganizationsApiListOrganizationInvitesRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof OrganizationsApi
+   */
+  public listOrganizationInvites(
+    requestParameters: OrganizationsApiListOrganizationInvitesRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return OrganizationsApiFp(this.configuration)
+      .listOrganizationInvites(
+        requestParameters.orgId,
+        requestParameters.page,
+        requestParameters.perPage,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -713,12 +1034,7 @@ export class OrganizationsApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return OrganizationsApiFp(this.configuration)
-      .listOrganizations(
-        requestParameters.page,
-        requestParameters.perPage,
-        requestParameters.permitSession,
-        options,
-      )
+      .listOrganizations(requestParameters.page, requestParameters.perPage, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -735,12 +1051,7 @@ export class OrganizationsApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return OrganizationsApiFp(this.configuration)
-      .updateOrganization(
-        requestParameters.orgId,
-        requestParameters.organizationUpdate,
-        requestParameters.permitSession,
-        options,
-      )
+      .updateOrganization(requestParameters.orgId, requestParameters.organizationUpdate, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
