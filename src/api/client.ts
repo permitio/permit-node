@@ -32,6 +32,8 @@ import {
  * You should be aware that these actions incur some cross-cloud latency.
  */
 export interface IReadApis {
+  listUsers(): Promise<UserRead[]>;
+
   getUser(userId: string): Promise<UserRead>;
 
   getTenant(tenantId: string): Promise<TenantRead>;
@@ -129,6 +131,29 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
       if (axios.isAxiosError(err)) {
         this.logger.error(
           `[${err?.response?.status}] permit.api.getApiKeyScope(), err: ${JSON.stringify(
+            err?.response?.data,
+          )}`,
+        );
+      }
+      throw err;
+    }
+  }
+
+  public async listUsers(): Promise<UserRead[]> {
+    await this.getScope();
+
+    try {
+      const response = await this.users.listUsers({
+        projId: this.project,
+        envId: this.environment,
+      });
+
+      this.logger.debug(`[${response.status}] permit.api.listUsers()`);
+      return response.data.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.getUser(), err: ${JSON.stringify(
             err?.response?.data,
           )}`,
         );
@@ -555,6 +580,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
 
   public get api(): IPermitApi {
     return {
+      listUsers: this.listUsers.bind(this),
       getUser: this.getUser.bind(this),
       getTenant: this.getTenant.bind(this),
       getRole: this.getRole.bind(this),
