@@ -50,7 +50,8 @@ export interface IReadApis {
  */
 export interface IWriteApis {
   // user mutations
-  createUser(user: UserCreate): Promise<[UserRead, boolean]>; // create or update
+  createUser(user: UserCreate): Promise<[UserRead, boolean]>;
+  syncUser(user: UserCreate): Promise<UserRead>;
   deleteUser(userId: string): Promise<AxiosResponse<void>>;
 
   // tenant mutations
@@ -370,6 +371,29 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
     }
   }
 
+  public async syncUser(user: UserCreate): Promise<UserRead> {
+    await this.getScope();
+    try {
+      const response = await this.users.replaceUser({
+        projId: this.project,
+        envId: this.environment,
+        userId: user.key,
+        userCreate: user,
+      });
+      this.logger.debug(`[${response.status}] permit.api.syncUser(${JSON.stringify(user)})`);
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.syncUser(${JSON.stringify(
+            user,
+          )}), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
+  }
+
   public async deleteUser(userId: string): Promise<AxiosResponse<void>> {
     await this.getScope();
     try {
@@ -589,6 +613,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
       updateResource: this.updateResource.bind(this),
       deleteResource: this.deleteResource.bind(this),
       createUser: this.createUser.bind(this),
+      syncUser: this.syncUser.bind(this),
       deleteUser: this.deleteUser.bind(this),
       createTenant: this.createTenant.bind(this),
       updateTenant: this.updateTenant.bind(this),
