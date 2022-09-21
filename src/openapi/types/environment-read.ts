@@ -19,6 +19,12 @@
  */
 export interface EnvironmentRead {
   /**
+   * A URL-friendly name of the environment (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the environment.
+   * @type {string}
+   * @memberof EnvironmentRead
+   */
+  key: string;
+  /**
    * Unique id of the environment
    * @type {string}
    * @memberof EnvironmentRead
@@ -48,12 +54,6 @@ export interface EnvironmentRead {
    * @memberof EnvironmentRead
    */
   updated_at: string;
-  /**
-   * A URL-friendly name of the environment (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the environment.
-   * @type {string}
-   * @memberof EnvironmentRead
-   */
-  key: string;
   /**
    * The name of the environment
    * @type {string}

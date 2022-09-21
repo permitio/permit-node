@@ -12,8 +12,12 @@
  * Do not edit the class manually.
  */
 
-import { ActionBlock } from './action-block';
-import { AttributeBlock } from './attribute-block';
+// May contain unused imports in some cases
+// @ts-ignore
+import { ActionBlockEditable } from './action-block-editable';
+// May contain unused imports in some cases
+// @ts-ignore
+import { AttributeBlockEditable } from './attribute-block-editable';
 
 /**
  *
@@ -46,17 +50,17 @@ export interface ResourceCreate {
    */
   description?: string;
   /**
-   *      A actions definition block, typically contained within a resource type definition block.     The actions represents the ways you can interact with a protected resource.
-   * @type {{ [key: string]: ActionBlock; }}
+   *          A actions definition block, typically contained within a resource type definition block.         The actions represents the ways you can interact with a protected resource.
+   * @type {{ [key: string]: ActionBlockEditable; }}
    * @memberof ResourceCreate
    */
-  actions: { [key: string]: ActionBlock };
+  actions: { [key: string]: ActionBlockEditable };
   /**
    * Attributes that each resource of this type defines, and can be used in your ABAC policies.
-   * @type {{ [key: string]: AttributeBlock; }}
+   * @type {{ [key: string]: AttributeBlockEditable; }}
    * @memberof ResourceCreate
    */
-  attributes?: { [key: string]: AttributeBlock };
+  attributes?: { [key: string]: AttributeBlockEditable };
   /**
    * Roles defined on this resource. The key is the role name, and the value contains the role properties such as granted permissions, base roles, etc.
    * @type {object}

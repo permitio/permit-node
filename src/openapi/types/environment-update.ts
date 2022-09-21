@@ -19,12 +19,6 @@
  */
 export interface EnvironmentUpdate {
   /**
-   * A URL-friendly name of the environment (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the environment.
-   * @type {string}
-   * @memberof EnvironmentUpdate
-   */
-  key?: string;
-  /**
    * The name of the environment
    * @type {string}
    * @memberof EnvironmentUpdate

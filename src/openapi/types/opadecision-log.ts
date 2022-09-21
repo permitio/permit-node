@@ -12,7 +12,8 @@
  * Do not edit the class manually.
  */
 
-import { AllowedResult } from './allowed-result';
+// May contain unused imports in some cases
+// @ts-ignore
 import { Labels } from './labels';
 
 /**
@@ -21,6 +22,12 @@ import { Labels } from './labels';
  * @interface OPADecisionLog
  */
 export interface OPADecisionLog {
+  /**
+   *
+   * @type {string}
+   * @memberof OPADecisionLog
+   */
+  decision_id: string;
   /**
    *
    * @type {Labels}
@@ -33,12 +40,6 @@ export interface OPADecisionLog {
    * @memberof OPADecisionLog
    */
   run_id?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof OPADecisionLog
-   */
-  decision_id: string;
   /**
    *
    * @type {string}
@@ -59,8 +60,8 @@ export interface OPADecisionLog {
   input?: object;
   /**
    *
-   * @type {AllowedResult}
+   * @type {object}
    * @memberof OPADecisionLog
    */
-  result?: AllowedResult;
+  result?: object;
 }

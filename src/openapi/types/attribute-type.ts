@@ -13,7 +13,7 @@
  */
 
 /**
- * supported attribute primitives
+ *      supported attribute primitives
  * @export
  * @enum {string}
  */

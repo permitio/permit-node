@@ -19,12 +19,6 @@
  */
 export interface ProjectUpdate {
   /**
-   * A URL-friendly name of the project (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the project.
-   * @type {string}
-   * @memberof ProjectUpdate
-   */
-  key?: string;
-  /**
    * The name of the project
    * @type {string}
    * @memberof ProjectUpdate

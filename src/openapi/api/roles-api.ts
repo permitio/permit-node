@@ -55,7 +55,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -64,7 +63,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       envId: string,
       roleId: string,
       parentRoleId: string,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -115,7 +113,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {AddRolePermissions} addRolePermissions
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -124,7 +121,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       envId: string,
       roleId: string,
       addRolePermissions: AddRolePermissions,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -180,7 +176,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RoleCreate} roleCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -188,7 +183,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       projId: string,
       envId: string,
       roleCreate: RoleCreate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -241,7 +235,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -249,7 +242,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       projId: string,
       envId: string,
       roleId: string,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -296,7 +288,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -304,7 +295,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       projId: string,
       envId: string,
       roleId: string,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -352,7 +342,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -361,7 +350,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       envId: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -414,7 +402,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -423,7 +410,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       envId: string,
       roleId: string,
       parentRoleId: string,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -474,7 +460,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {RemoveRolePermissions} removeRolePermissions
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -483,7 +468,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       envId: string,
       roleId: string,
       removeRolePermissions: RemoveRolePermissions,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -544,7 +528,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {RoleUpdate} roleUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -553,7 +536,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       envId: string,
       roleId: string,
       roleUpdate: RoleUpdate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -620,7 +602,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -629,7 +610,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
       envId: string,
       roleId: string,
       parentRoleId: string,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.addParentRole(
@@ -637,7 +617,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
         envId,
         roleId,
         parentRoleId,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -649,7 +628,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {AddRolePermissions} addRolePermissions
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -658,7 +636,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
       envId: string,
       roleId: string,
       addRolePermissions: AddRolePermissions,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.assignPermissionsToRole(
@@ -666,7 +643,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
         envId,
         roleId,
         addRolePermissions,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -677,7 +653,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RoleCreate} roleCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -685,14 +660,12 @@ export const RolesApiFp = function (configuration?: Configuration) {
       projId: string,
       envId: string,
       roleCreate: RoleCreate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createRole(
         projId,
         envId,
         roleCreate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -703,7 +676,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -711,14 +683,12 @@ export const RolesApiFp = function (configuration?: Configuration) {
       projId: string,
       envId: string,
       roleId: string,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteRole(
         projId,
         envId,
         roleId,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -729,7 +699,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -737,14 +706,12 @@ export const RolesApiFp = function (configuration?: Configuration) {
       projId: string,
       envId: string,
       roleId: string,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getRole(
         projId,
         envId,
         roleId,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -756,7 +723,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -765,7 +731,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
       envId: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<RoleRead>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listRoles(
@@ -773,7 +738,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
         envId,
         page,
         perPage,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -785,7 +749,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -794,7 +757,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
       envId: string,
       roleId: string,
       parentRoleId: string,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.removeParentRole(
@@ -802,7 +764,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
         envId,
         roleId,
         parentRoleId,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -814,7 +775,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {RemoveRolePermissions} removeRolePermissions
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -823,7 +783,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
       envId: string,
       roleId: string,
       removeRolePermissions: RemoveRolePermissions,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.removePermissionsFromRole(
@@ -831,7 +790,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
         envId,
         roleId,
         removeRolePermissions,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -843,7 +801,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {RoleUpdate} roleUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -852,7 +809,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
       envId: string,
       roleId: string,
       roleUpdate: RoleUpdate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateRole(
@@ -860,7 +816,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
         envId,
         roleId,
         roleUpdate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -886,7 +841,6 @@ export const RolesApiFactory = function (
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -895,11 +849,10 @@ export const RolesApiFactory = function (
       envId: string,
       roleId: string,
       parentRoleId: string,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<RoleRead> {
       return localVarFp
-        .addParentRole(projId, envId, roleId, parentRoleId, permitSession, options)
+        .addParentRole(projId, envId, roleId, parentRoleId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -909,7 +862,6 @@ export const RolesApiFactory = function (
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {AddRolePermissions} addRolePermissions
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -918,11 +870,10 @@ export const RolesApiFactory = function (
       envId: string,
       roleId: string,
       addRolePermissions: AddRolePermissions,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<RoleRead> {
       return localVarFp
-        .assignPermissionsToRole(projId, envId, roleId, addRolePermissions, permitSession, options)
+        .assignPermissionsToRole(projId, envId, roleId, addRolePermissions, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -931,7 +882,6 @@ export const RolesApiFactory = function (
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RoleCreate} roleCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -939,11 +889,10 @@ export const RolesApiFactory = function (
       projId: string,
       envId: string,
       roleCreate: RoleCreate,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<RoleRead> {
       return localVarFp
-        .createRole(projId, envId, roleCreate, permitSession, options)
+        .createRole(projId, envId, roleCreate, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -952,19 +901,12 @@ export const RolesApiFactory = function (
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteRole(
-      projId: string,
-      envId: string,
-      roleId: string,
-      permitSession?: string,
-      options?: any,
-    ): AxiosPromise<void> {
+    deleteRole(projId: string, envId: string, roleId: string, options?: any): AxiosPromise<void> {
       return localVarFp
-        .deleteRole(projId, envId, roleId, permitSession, options)
+        .deleteRole(projId, envId, roleId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -973,19 +915,12 @@ export const RolesApiFactory = function (
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getRole(
-      projId: string,
-      envId: string,
-      roleId: string,
-      permitSession?: string,
-      options?: any,
-    ): AxiosPromise<RoleRead> {
+    getRole(projId: string, envId: string, roleId: string, options?: any): AxiosPromise<RoleRead> {
       return localVarFp
-        .getRole(projId, envId, roleId, permitSession, options)
+        .getRole(projId, envId, roleId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -995,7 +930,6 @@ export const RolesApiFactory = function (
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -1004,11 +938,10 @@ export const RolesApiFactory = function (
       envId: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<Array<RoleRead>> {
       return localVarFp
-        .listRoles(projId, envId, page, perPage, permitSession, options)
+        .listRoles(projId, envId, page, perPage, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -1018,7 +951,6 @@ export const RolesApiFactory = function (
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -1027,11 +959,10 @@ export const RolesApiFactory = function (
       envId: string,
       roleId: string,
       parentRoleId: string,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<RoleRead> {
       return localVarFp
-        .removeParentRole(projId, envId, roleId, parentRoleId, permitSession, options)
+        .removeParentRole(projId, envId, roleId, parentRoleId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -1041,7 +972,6 @@ export const RolesApiFactory = function (
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {RemoveRolePermissions} removeRolePermissions
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -1050,18 +980,10 @@ export const RolesApiFactory = function (
       envId: string,
       roleId: string,
       removeRolePermissions: RemoveRolePermissions,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<RoleRead> {
       return localVarFp
-        .removePermissionsFromRole(
-          projId,
-          envId,
-          roleId,
-          removeRolePermissions,
-          permitSession,
-          options,
-        )
+        .removePermissionsFromRole(projId, envId, roleId, removeRolePermissions, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -1071,7 +993,6 @@ export const RolesApiFactory = function (
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {RoleUpdate} roleUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -1080,11 +1001,10 @@ export const RolesApiFactory = function (
       envId: string,
       roleId: string,
       roleUpdate: RoleUpdate,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<RoleRead> {
       return localVarFp
-        .updateRole(projId, envId, roleId, roleUpdate, permitSession, options)
+        .updateRole(projId, envId, roleId, roleUpdate, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -1123,13 +1043,6 @@ export interface RolesApiAddParentRoleRequest {
    * @memberof RolesApiAddParentRole
    */
   readonly parentRoleId: string;
-
-  /**
-   *
-   * @type {string}
-   * @memberof RolesApiAddParentRole
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -1165,13 +1078,6 @@ export interface RolesApiAssignPermissionsToRoleRequest {
    * @memberof RolesApiAssignPermissionsToRole
    */
   readonly addRolePermissions: AddRolePermissions;
-
-  /**
-   *
-   * @type {string}
-   * @memberof RolesApiAssignPermissionsToRole
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -1200,13 +1106,6 @@ export interface RolesApiCreateRoleRequest {
    * @memberof RolesApiCreateRole
    */
   readonly roleCreate: RoleCreate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof RolesApiCreateRole
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -1235,13 +1134,6 @@ export interface RolesApiDeleteRoleRequest {
    * @memberof RolesApiDeleteRole
    */
   readonly roleId: string;
-
-  /**
-   *
-   * @type {string}
-   * @memberof RolesApiDeleteRole
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -1270,13 +1162,6 @@ export interface RolesApiGetRoleRequest {
    * @memberof RolesApiGetRole
    */
   readonly roleId: string;
-
-  /**
-   *
-   * @type {string}
-   * @memberof RolesApiGetRole
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -1312,13 +1197,6 @@ export interface RolesApiListRolesRequest {
    * @memberof RolesApiListRoles
    */
   readonly perPage?: number;
-
-  /**
-   *
-   * @type {string}
-   * @memberof RolesApiListRoles
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -1354,13 +1232,6 @@ export interface RolesApiRemoveParentRoleRequest {
    * @memberof RolesApiRemoveParentRole
    */
   readonly parentRoleId: string;
-
-  /**
-   *
-   * @type {string}
-   * @memberof RolesApiRemoveParentRole
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -1396,13 +1267,6 @@ export interface RolesApiRemovePermissionsFromRoleRequest {
    * @memberof RolesApiRemovePermissionsFromRole
    */
   readonly removeRolePermissions: RemoveRolePermissions;
-
-  /**
-   *
-   * @type {string}
-   * @memberof RolesApiRemovePermissionsFromRole
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -1438,13 +1302,6 @@ export interface RolesApiUpdateRoleRequest {
    * @memberof RolesApiUpdateRole
    */
   readonly roleUpdate: RoleUpdate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof RolesApiUpdateRole
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -1472,7 +1329,6 @@ export class RolesApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.roleId,
         requestParameters.parentRoleId,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1496,7 +1352,6 @@ export class RolesApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.roleId,
         requestParameters.addRolePermissions,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1516,7 +1371,6 @@ export class RolesApi extends BaseAPI {
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.roleCreate,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1536,7 +1390,6 @@ export class RolesApi extends BaseAPI {
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.roleId,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1552,13 +1405,7 @@ export class RolesApi extends BaseAPI {
    */
   public getRole(requestParameters: RolesApiGetRoleRequest, options?: AxiosRequestConfig) {
     return RolesApiFp(this.configuration)
-      .getRole(
-        requestParameters.projId,
-        requestParameters.envId,
-        requestParameters.roleId,
-        requestParameters.permitSession,
-        options,
-      )
+      .getRole(requestParameters.projId, requestParameters.envId, requestParameters.roleId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -1577,7 +1424,6 @@ export class RolesApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.page,
         requestParameters.perPage,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1601,7 +1447,6 @@ export class RolesApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.roleId,
         requestParameters.parentRoleId,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1625,7 +1470,6 @@ export class RolesApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.roleId,
         requestParameters.removeRolePermissions,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1646,7 +1490,6 @@ export class RolesApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.roleId,
         requestParameters.roleUpdate,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));

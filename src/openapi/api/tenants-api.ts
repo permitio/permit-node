@@ -33,6 +33,8 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 // @ts-ignore
 import { HTTPValidationError } from '../types';
 // @ts-ignore
+import { PaginatedResultUserRead } from '../types';
+// @ts-ignore
 import { TenantCreate } from '../types';
 // @ts-ignore
 import { TenantRead } from '../types';
@@ -50,7 +52,6 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {TenantCreate} tenantCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -58,7 +59,6 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       projId: string,
       envId: string,
       tenantCreate: TenantCreate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -111,7 +111,6 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -119,7 +118,6 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       projId: string,
       envId: string,
       tenantId: string,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -166,7 +164,6 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -174,7 +171,6 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       projId: string,
       envId: string,
       tenantId: string,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -216,13 +212,83 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
+     *
+     * @summary List Tenant Users
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} [search] Text search for the email field
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    listTenantUsers: async (
+      projId: string,
+      tenantId: string,
+      envId: string,
+      search?: string,
+      page?: number,
+      perPage?: number,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('listTenantUsers', 'projId', projId);
+      // verify required parameter 'tenantId' is not null or undefined
+      assertParamExists('listTenantUsers', 'tenantId', tenantId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('listTenantUsers', 'envId', envId);
+      const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users`
+        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
+        .replace(`{${'tenant_id'}}`, encodeURIComponent(String(tenantId)))
+        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (search !== undefined) {
+        localVarQueryParameter['search'] = search;
+      }
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (perPage !== undefined) {
+        localVarQueryParameter['per_page'] = perPage;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Lists all the tenants defined within an environment.
      * @summary List Tenants
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -231,7 +297,6 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       envId: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -284,7 +349,6 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {TenantUpdate} tenantUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -293,7 +357,6 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       envId: string,
       tenantId: string,
       tenantUpdate: TenantUpdate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -359,7 +422,6 @@ export const TenantsApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {TenantCreate} tenantCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -367,14 +429,12 @@ export const TenantsApiFp = function (configuration?: Configuration) {
       projId: string,
       envId: string,
       tenantCreate: TenantCreate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TenantRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createTenant(
         projId,
         envId,
         tenantCreate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -385,7 +445,6 @@ export const TenantsApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -393,14 +452,12 @@ export const TenantsApiFp = function (configuration?: Configuration) {
       projId: string,
       envId: string,
       tenantId: string,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteTenant(
         projId,
         envId,
         tenantId,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -411,7 +468,6 @@ export const TenantsApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -419,14 +475,46 @@ export const TenantsApiFp = function (configuration?: Configuration) {
       projId: string,
       envId: string,
       tenantId: string,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TenantRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getTenant(
         projId,
         envId,
         tenantId,
-        permitSession,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary List Tenant Users
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} [search] Text search for the email field
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async listTenantUsers(
+      projId: string,
+      tenantId: string,
+      envId: string,
+      search?: string,
+      page?: number,
+      perPage?: number,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResultUserRead>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.listTenantUsers(
+        projId,
+        tenantId,
+        envId,
+        search,
+        page,
+        perPage,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -438,7 +526,6 @@ export const TenantsApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -447,7 +534,6 @@ export const TenantsApiFp = function (configuration?: Configuration) {
       envId: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TenantRead>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listTenants(
@@ -455,7 +541,6 @@ export const TenantsApiFp = function (configuration?: Configuration) {
         envId,
         page,
         perPage,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -467,7 +552,6 @@ export const TenantsApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {TenantUpdate} tenantUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -476,7 +560,6 @@ export const TenantsApiFp = function (configuration?: Configuration) {
       envId: string,
       tenantId: string,
       tenantUpdate: TenantUpdate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TenantRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateTenant(
@@ -484,7 +567,6 @@ export const TenantsApiFp = function (configuration?: Configuration) {
         envId,
         tenantId,
         tenantUpdate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -509,7 +591,6 @@ export const TenantsApiFactory = function (
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {TenantCreate} tenantCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -517,11 +598,10 @@ export const TenantsApiFactory = function (
       projId: string,
       envId: string,
       tenantCreate: TenantCreate,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<TenantRead> {
       return localVarFp
-        .createTenant(projId, envId, tenantCreate, permitSession, options)
+        .createTenant(projId, envId, tenantCreate, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -530,7 +610,6 @@ export const TenantsApiFactory = function (
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -538,11 +617,10 @@ export const TenantsApiFactory = function (
       projId: string,
       envId: string,
       tenantId: string,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<void> {
       return localVarFp
-        .deleteTenant(projId, envId, tenantId, permitSession, options)
+        .deleteTenant(projId, envId, tenantId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -551,7 +629,6 @@ export const TenantsApiFactory = function (
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -559,11 +636,35 @@ export const TenantsApiFactory = function (
       projId: string,
       envId: string,
       tenantId: string,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<TenantRead> {
       return localVarFp
-        .getTenant(projId, envId, tenantId, permitSession, options)
+        .getTenant(projId, envId, tenantId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary List Tenant Users
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} [search] Text search for the email field
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    listTenantUsers(
+      projId: string,
+      tenantId: string,
+      envId: string,
+      search?: string,
+      page?: number,
+      perPage?: number,
+      options?: any,
+    ): AxiosPromise<PaginatedResultUserRead> {
+      return localVarFp
+        .listTenantUsers(projId, tenantId, envId, search, page, perPage, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -573,7 +674,6 @@ export const TenantsApiFactory = function (
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -582,11 +682,10 @@ export const TenantsApiFactory = function (
       envId: string,
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<Array<TenantRead>> {
       return localVarFp
-        .listTenants(projId, envId, page, perPage, permitSession, options)
+        .listTenants(projId, envId, page, perPage, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -596,7 +695,6 @@ export const TenantsApiFactory = function (
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {TenantUpdate} tenantUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -605,11 +703,10 @@ export const TenantsApiFactory = function (
       envId: string,
       tenantId: string,
       tenantUpdate: TenantUpdate,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<TenantRead> {
       return localVarFp
-        .updateTenant(projId, envId, tenantId, tenantUpdate, permitSession, options)
+        .updateTenant(projId, envId, tenantId, tenantUpdate, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -641,13 +738,6 @@ export interface TenantsApiCreateTenantRequest {
    * @memberof TenantsApiCreateTenant
    */
   readonly tenantCreate: TenantCreate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof TenantsApiCreateTenant
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -676,13 +766,6 @@ export interface TenantsApiDeleteTenantRequest {
    * @memberof TenantsApiDeleteTenant
    */
   readonly tenantId: string;
-
-  /**
-   *
-   * @type {string}
-   * @memberof TenantsApiDeleteTenant
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -711,13 +794,55 @@ export interface TenantsApiGetTenantRequest {
    * @memberof TenantsApiGetTenant
    */
   readonly tenantId: string;
+}
+
+/**
+ * Request parameters for listTenantUsers operation in TenantsApi.
+ * @export
+ * @interface TenantsApiListTenantUsersRequest
+ */
+export interface TenantsApiListTenantUsersRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof TenantsApiListTenantUsers
+   */
+  readonly projId: string;
 
   /**
-   *
+   * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiGetTenant
+   * @memberof TenantsApiListTenantUsers
    */
-  readonly permitSession?: string;
+  readonly tenantId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof TenantsApiListTenantUsers
+   */
+  readonly envId: string;
+
+  /**
+   * Text search for the email field
+   * @type {string}
+   * @memberof TenantsApiListTenantUsers
+   */
+  readonly search?: string;
+
+  /**
+   * Page number of the results to fetch, starting at 1.
+   * @type {number}
+   * @memberof TenantsApiListTenantUsers
+   */
+  readonly page?: number;
+
+  /**
+   * The number of results per page (max 100).
+   * @type {number}
+   * @memberof TenantsApiListTenantUsers
+   */
+  readonly perPage?: number;
 }
 
 /**
@@ -753,13 +878,6 @@ export interface TenantsApiListTenantsRequest {
    * @memberof TenantsApiListTenants
    */
   readonly perPage?: number;
-
-  /**
-   *
-   * @type {string}
-   * @memberof TenantsApiListTenants
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -795,13 +913,6 @@ export interface TenantsApiUpdateTenantRequest {
    * @memberof TenantsApiUpdateTenant
    */
   readonly tenantUpdate: TenantUpdate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof TenantsApiUpdateTenant
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -828,7 +939,6 @@ export class TenantsApi extends BaseAPI {
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.tenantCreate,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -851,7 +961,6 @@ export class TenantsApi extends BaseAPI {
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.tenantId,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -871,7 +980,31 @@ export class TenantsApi extends BaseAPI {
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.tenantId,
-        requestParameters.permitSession,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary List Tenant Users
+   * @param {TenantsApiListTenantUsersRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TenantsApi
+   */
+  public listTenantUsers(
+    requestParameters: TenantsApiListTenantUsersRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return TenantsApiFp(this.configuration)
+      .listTenantUsers(
+        requestParameters.projId,
+        requestParameters.tenantId,
+        requestParameters.envId,
+        requestParameters.search,
+        requestParameters.page,
+        requestParameters.perPage,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -895,7 +1028,6 @@ export class TenantsApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.page,
         requestParameters.perPage,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -919,7 +1051,6 @@ export class TenantsApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.tenantId,
         requestParameters.tenantUpdate,
-        requestParameters.permitSession,
         options,
       )
       .then((request) => request(this.axios, this.basePath));

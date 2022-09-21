@@ -12,6 +12,8 @@
  * Do not edit the class manually.
  */
 
+// May contain unused imports in some cases
+// @ts-ignore
 import { UserRole } from './user-role';
 
 /**
@@ -50,24 +52,6 @@ export interface UserRead {
    * @memberof UserRead
    */
   environment_id: string;
-  /**
-   * Date and time when the user was created (ISO_8601 format).
-   * @type {string}
-   * @memberof UserRead
-   */
-  created_at: string;
-  /**
-   * Date and time when the user was last updated/modified (ISO_8601 format).
-   * @type {string}
-   * @memberof UserRead
-   */
-  updated_at: string;
-  /**
-   * Date and time when the user was last active (ISO_8601 format). In other words, this is the last time a permission check was done on that user.
-   * @type {string}
-   * @memberof UserRead
-   */
-  last_active_at: string;
   /**
    *
    * @type {Array<UserRole>}

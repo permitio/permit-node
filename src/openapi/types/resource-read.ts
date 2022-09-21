@@ -12,8 +12,12 @@
  * Do not edit the class manually.
  */
 
-import { ActionBlock } from './action-block';
-import { AttributeBlock } from './attribute-block';
+// May contain unused imports in some cases
+// @ts-ignore
+import { ActionBlockRead } from './action-block-read';
+// May contain unused imports in some cases
+// @ts-ignore
+import { AttributeBlockRead } from './attribute-block-read';
 
 /**
  *
@@ -82,17 +86,17 @@ export interface ResourceRead {
    */
   description?: string;
   /**
-   *      A actions definition block, typically contained within a resource type definition block.     The actions represents the ways you can interact with a protected resource.
-   * @type {{ [key: string]: ActionBlock; }}
+   *          A actions definition block, typically contained within a resource type definition block.         The actions represents the ways you can interact with a protected resource.
+   * @type {{ [key: string]: ActionBlockRead; }}
    * @memberof ResourceRead
    */
-  actions: { [key: string]: ActionBlock };
+  actions?: { [key: string]: ActionBlockRead };
   /**
    * Attributes that each resource of this type defines, and can be used in your ABAC policies.
-   * @type {{ [key: string]: AttributeBlock; }}
+   * @type {{ [key: string]: AttributeBlockRead; }}
    * @memberof ResourceRead
    */
-  attributes?: { [key: string]: AttributeBlock };
+  attributes?: { [key: string]: AttributeBlockRead };
   /**
    * Roles defined on this resource. The key is the role name, and the value contains the role properties such as granted permissions, base roles, etc.
    * @type {object}

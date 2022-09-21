@@ -48,13 +48,11 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
      * Creates a new project under the active organization.
      * @summary Create Project
      * @param {ProjectCreate} projectCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     createProject: async (
       projectCreate: ProjectCreate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projectCreate' is not null or undefined
@@ -99,13 +97,11 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
      * Deletes the project and all its related data.
      * @summary Delete Project
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     deleteProject: async (
       projId: string,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -146,15 +142,10 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
      * Gets a single project matching the given proj_id, if such project exists.
      * @summary Get Project
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getProject: async (
-      projId: string,
-      permitSession?: string,
-      options: AxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
+    getProject: async (projId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('getProject', 'projId', projId);
       const localVarPath = `/v2/projects/{proj_id}`.replace(
@@ -194,14 +185,12 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
      * @summary List Projects
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     listProjects: async (
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/v2/projects`;
@@ -246,14 +235,12 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
      * @summary Update Project
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {ProjectUpdate} projectUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     updateProject: async (
       projId: string,
       projectUpdate: ProjectUpdate,
-      permitSession?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -313,18 +300,15 @@ export const ProjectsApiFp = function (configuration?: Configuration) {
      * Creates a new project under the active organization.
      * @summary Create Project
      * @param {ProjectCreate} projectCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async createProject(
       projectCreate: ProjectCreate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createProject(
         projectCreate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -333,40 +317,28 @@ export const ProjectsApiFp = function (configuration?: Configuration) {
      * Deletes the project and all its related data.
      * @summary Delete Project
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async deleteProject(
       projId: string,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.deleteProject(
-        projId,
-        permitSession,
-        options,
-      );
+      const localVarAxiosArgs = await localVarAxiosParamCreator.deleteProject(projId, options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
      * Gets a single project matching the given proj_id, if such project exists.
      * @summary Get Project
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getProject(
       projId: string,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getProject(
-        projId,
-        permitSession,
-        options,
-      );
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getProject(projId, options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -374,20 +346,17 @@ export const ProjectsApiFp = function (configuration?: Configuration) {
      * @summary List Projects
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async listProjects(
       page?: number,
       perPage?: number,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ProjectRead>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listProjects(
         page,
         perPage,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -397,20 +366,17 @@ export const ProjectsApiFp = function (configuration?: Configuration) {
      * @summary Update Project
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {ProjectUpdate} projectUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async updateProject(
       projId: string,
       projectUpdate: ProjectUpdate,
-      permitSession?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateProject(
         projId,
         projectUpdate,
-        permitSession,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -433,62 +399,45 @@ export const ProjectsApiFactory = function (
      * Creates a new project under the active organization.
      * @summary Create Project
      * @param {ProjectCreate} projectCreate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    createProject(
-      projectCreate: ProjectCreate,
-      permitSession?: string,
-      options?: any,
-    ): AxiosPromise<ProjectRead> {
+    createProject(projectCreate: ProjectCreate, options?: any): AxiosPromise<ProjectRead> {
       return localVarFp
-        .createProject(projectCreate, permitSession, options)
+        .createProject(projectCreate, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes the project and all its related data.
      * @summary Delete Project
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteProject(projId: string, permitSession?: string, options?: any): AxiosPromise<void> {
-      return localVarFp
-        .deleteProject(projId, permitSession, options)
-        .then((request) => request(axios, basePath));
+    deleteProject(projId: string, options?: any): AxiosPromise<void> {
+      return localVarFp.deleteProject(projId, options).then((request) => request(axios, basePath));
     },
     /**
      * Gets a single project matching the given proj_id, if such project exists.
      * @summary Get Project
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getProject(projId: string, permitSession?: string, options?: any): AxiosPromise<ProjectRead> {
-      return localVarFp
-        .getProject(projId, permitSession, options)
-        .then((request) => request(axios, basePath));
+    getProject(projId: string, options?: any): AxiosPromise<ProjectRead> {
+      return localVarFp.getProject(projId, options).then((request) => request(axios, basePath));
     },
     /**
      * Lists all the projects under the active organization.
      * @summary List Projects
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    listProjects(
-      page?: number,
-      perPage?: number,
-      permitSession?: string,
-      options?: any,
-    ): AxiosPromise<Array<ProjectRead>> {
+    listProjects(page?: number, perPage?: number, options?: any): AxiosPromise<Array<ProjectRead>> {
       return localVarFp
-        .listProjects(page, perPage, permitSession, options)
+        .listProjects(page, perPage, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -496,18 +445,16 @@ export const ProjectsApiFactory = function (
      * @summary Update Project
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {ProjectUpdate} projectUpdate
-     * @param {string} [permitSession]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     updateProject(
       projId: string,
       projectUpdate: ProjectUpdate,
-      permitSession?: string,
       options?: any,
     ): AxiosPromise<ProjectRead> {
       return localVarFp
-        .updateProject(projId, projectUpdate, permitSession, options)
+        .updateProject(projId, projectUpdate, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -525,13 +472,6 @@ export interface ProjectsApiCreateProjectRequest {
    * @memberof ProjectsApiCreateProject
    */
   readonly projectCreate: ProjectCreate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof ProjectsApiCreateProject
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -546,13 +486,6 @@ export interface ProjectsApiDeleteProjectRequest {
    * @memberof ProjectsApiDeleteProject
    */
   readonly projId: string;
-
-  /**
-   *
-   * @type {string}
-   * @memberof ProjectsApiDeleteProject
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -567,13 +500,6 @@ export interface ProjectsApiGetProjectRequest {
    * @memberof ProjectsApiGetProject
    */
   readonly projId: string;
-
-  /**
-   *
-   * @type {string}
-   * @memberof ProjectsApiGetProject
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -595,13 +521,6 @@ export interface ProjectsApiListProjectsRequest {
    * @memberof ProjectsApiListProjects
    */
   readonly perPage?: number;
-
-  /**
-   *
-   * @type {string}
-   * @memberof ProjectsApiListProjects
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -623,13 +542,6 @@ export interface ProjectsApiUpdateProjectRequest {
    * @memberof ProjectsApiUpdateProject
    */
   readonly projectUpdate: ProjectUpdate;
-
-  /**
-   *
-   * @type {string}
-   * @memberof ProjectsApiUpdateProject
-   */
-  readonly permitSession?: string;
 }
 
 /**
@@ -652,7 +564,7 @@ export class ProjectsApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return ProjectsApiFp(this.configuration)
-      .createProject(requestParameters.projectCreate, requestParameters.permitSession, options)
+      .createProject(requestParameters.projectCreate, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -669,7 +581,7 @@ export class ProjectsApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return ProjectsApiFp(this.configuration)
-      .deleteProject(requestParameters.projId, requestParameters.permitSession, options)
+      .deleteProject(requestParameters.projId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -683,7 +595,7 @@ export class ProjectsApi extends BaseAPI {
    */
   public getProject(requestParameters: ProjectsApiGetProjectRequest, options?: AxiosRequestConfig) {
     return ProjectsApiFp(this.configuration)
-      .getProject(requestParameters.projId, requestParameters.permitSession, options)
+      .getProject(requestParameters.projId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -700,12 +612,7 @@ export class ProjectsApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return ProjectsApiFp(this.configuration)
-      .listProjects(
-        requestParameters.page,
-        requestParameters.perPage,
-        requestParameters.permitSession,
-        options,
-      )
+      .listProjects(requestParameters.page, requestParameters.perPage, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -722,12 +629,7 @@ export class ProjectsApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return ProjectsApiFp(this.configuration)
-      .updateProject(
-        requestParameters.projId,
-        requestParameters.projectUpdate,
-        requestParameters.permitSession,
-        options,
-      )
+      .updateProject(requestParameters.projId, requestParameters.projectUpdate, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
