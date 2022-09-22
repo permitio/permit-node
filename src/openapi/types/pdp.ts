@@ -16,5 +16,5 @@
  * @type Pdp
  * @export
  */
-// import type { PdpValues } from '../types/mo/PdpValues';
-// export type Pdp = PdpValues;
+import type { PdpValues } from './pdp-values';
+export type Pdp = PdpValues;
