@@ -9,37 +9,43 @@ test('paths are processed correctly', async () =>
       token: 'PJUKkuwiJkKxbIoC4o4cguWxB_2gX6MyATYKc2OCM',
     });
 
-    permit.resource({
-      name: 'task',
-      description: 'Todo Task',
-      type: 'rest',
-      path: '/api/v1/boards/:listId/tasks',
-      actions: [
-        permit.action({
-          name: 'list',
-          title: 'List',
-          description: 'list all tasks',
-          path: '/api/v1/boards/:listId/tasks',
-          attributes: {
-            verb: 'GET',
-          },
-        }),
-        permit.action({
-          name: 'retrieve',
-          title: 'Retrieve',
-          description: 'Retrieve task details',
-          path: '/api/v1/boards/:listId/tasks/:taskId',
-          attributes: {
-            verb: 'GET',
-          },
-        }),
-      ],
-    });
+    // code example:
+    // const [user, created] = await permit.api.createUser({
+    //   key: 'asaf@permit.io',
+    //   attributes: { name: 'asaf', age: '35' },
+    // });
 
-    await permit.write(
-      permit.api.createTenant({ key: 'tenant1', name: 'My First Tenant' }),
-      permit.api.assignRole('mysuperid', 'Admin', 'tenant1'),
-    );
+    // permit.resource({
+    //   name: 'task',
+    //   description: 'Todo Task',
+    //   type: 'rest',
+    //   path: '/api/v1/boards/:listId/tasks',
+    //   actions: [
+    //     permit.action({
+    //       name: 'list',
+    //       title: 'List',
+    //       description: 'list all tasks',
+    //       path: '/api/v1/boards/:listId/tasks',
+    //       attributes: {
+    //         verb: 'GET',
+    //       },
+    //     }),
+    //     permit.action({
+    //       name: 'retrieve',
+    //       title: 'Retrieve',
+    //       description: 'Retrieve task details',
+    //       path: '/api/v1/boards/:listId/tasks/:taskId',
+    //       attributes: {
+    //         verb: 'GET',
+    //       },
+    //     }),
+    //   ],
+    // });
+
+    // await permit.write(
+    //   permit.api.createTenant({ key: 'tenant1', name: 'My First Tenant' }),
+    //   permit.api.assignRole('mysuperid', 'Admin', 'tenant1'),
+    // );
 
     // TODO: when we support zanzibar
     // await permit.write(

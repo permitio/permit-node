@@ -4,7 +4,7 @@ import { Logger } from 'winston';
 import { IPermitConfig } from '../config';
 import { CheckConfig, Context, ContextStore } from '../utils/context';
 
-import { IAction, IResource, IUser, OpaResult } from './interfaces';
+import { IAction, IResource, IUser, OpaDecisionResult, PolicyDecision } from './interfaces';
 
 const RESOURCE_DELIMITER = ':';
 
@@ -61,7 +61,7 @@ export class Enforcer implements IEnforcer {
    *
    * // with (resource, action):
    * const user = { key: 'UNIQUE_USER_ID' };
-   * permit.check(user, 'get', {'type': 'task', 'id': '23'})
+   * permit.check(user, 'get', {'type': 'task', 'key': '23'})
    * permit.check(user, 'get', {'type': 'task'})
    *
    * // with (url, method):
@@ -101,7 +101,7 @@ export class Enforcer implements IEnforcer {
     context: Context = {}, // context provided specifically for this query
     config: CheckConfig = {},
   ): Promise<boolean> {
-    const normalizedUser: string = isString(user) ? user : user.key;
+    const normalizedUser: IUser = isString(user) ? { key: user } : user;
     const checkTimeout = config.timeout || this.config.timeout;
 
     const resourceObj = isString(resource) ? Enforcer.resourceFromString(resource) : resource;
@@ -116,26 +116,40 @@ export class Enforcer implements IEnforcer {
     };
 
     return await this.client
-      .post<OpaResult>('allowed', input, { timeout: checkTimeout })
+      .post<PolicyDecision | OpaDecisionResult>('allowed', input, {
+        headers: {
+          Authorization: `Bearer ${this.config.token}`,
+        },
+        timeout: checkTimeout,
+      })
       .then((response) => {
         if (response.status !== 200) {
           throw new PermitPDPStatusError(`Permit.check() got an unexpected status code: ${response.status}, please check your SDK init and make sure the PDP sidecar is configured correctly. \n\
             Read more about setting up the PDP at https://docs.permit.io`);
         }
-        const decision = response.data.allow || false;
+        const decision =
+          ('allow' in response.data ? response.data.allow : response.data.result.allow) || false;
         this.logger.info(
-          `permit.check(${normalizedUser}, ${action}, ${Enforcer.resourceRepr(
+          `permit.check(${Enforcer.userRepr(normalizedUser)}, ${action}, ${Enforcer.resourceRepr(
             resourceObj,
           )}) = ${decision}`,
         );
         return decision;
       })
       .catch((error) => {
-        this.logger.error(
-          `Error in permit.check(${normalizedUser}, ${action}, ${Enforcer.resourceRepr(
-            resourceObj,
-          )}):\n${error}`,
-        );
+        const errorMessage = `Error in permit.check(${Enforcer.userRepr(
+          normalizedUser,
+        )}, ${action}, ${Enforcer.resourceRepr(resourceObj)})`;
+
+        if (axios.isAxiosError(error)) {
+          const errorStatusCode: string = error.response?.status.toString() || '';
+          const errorDetails: string = error?.response?.data
+            ? JSON.stringify(error.response.data)
+            : error.message;
+          this.logger.error(`[${errorStatusCode}] ${errorMessage}, err: ${errorDetails}`);
+        } else {
+          this.logger.error(`${errorMessage}\n${error}`);
+        }
         throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
           and cannot connect to the PDP, please check your configuration and make sure the PDP is running at ${this.config.pdp} and accepting requests. \n
           Read more about setting up the PDP at https://docs.permit.io`);
@@ -145,34 +159,32 @@ export class Enforcer implements IEnforcer {
   // TODO: remove this eventually, once we decide on finalized structure of AuthzQuery
   private normalizeResource(resource: IResource): IResource {
     const normalizedResource: IResource = Object.assign({}, resource);
-    if (normalizedResource.context === undefined) {
-      normalizedResource.context = {};
-    }
 
-    // if tenant is empty, we migth auto-set the default tenant according to config
+    // if tenant is empty, we might auto-set the default tenant according to config
     if (!normalizedResource.tenant && this.config.multiTenancy.useDefaultTenantIfEmpty) {
       normalizedResource.tenant = this.config.multiTenancy.defaultTenant;
-    }
-
-    // copy tenant from resource.tenant to resource.context.tenant (until we change RBAC policy)
-    if (
-      normalizedResource.context?.tenant === undefined &&
-      normalizedResource.tenant !== undefined
-    ) {
-      normalizedResource.context.tenant = normalizedResource.tenant;
     }
 
     return normalizedResource;
   }
 
+  private static userRepr(user: IUser): string {
+    if (user.attributes || user.email) {
+      return JSON.stringify(user);
+    }
+    return user.key;
+  }
+
   private static resourceRepr(resource: IResource): string {
-    let resourceRepr: string = resource.type;
-    if (resource.id) {
-      resourceRepr += ':' + resource.id;
+    if (resource.attributes && resource.attributes.length > 0) {
+      return JSON.stringify(resource);
     }
+
+    let resourceRepr: string = '';
     if (resource.tenant) {
-      resourceRepr += `, tenant: ${resource.tenant}`;
+      resourceRepr += `${resource.tenant}/`;
     }
+    resourceRepr += `${resource.type}:${resource.key ?? '*'}`;
     return resourceRepr;
   }
 
@@ -183,7 +195,7 @@ export class Enforcer implements IEnforcer {
     }
     return {
       type: parts[0],
-      id: parts.length > 1 ? parts[1] : undefined,
+      key: parts.length > 1 ? parts[1] : undefined,
     };
   }
 
