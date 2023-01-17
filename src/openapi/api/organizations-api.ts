@@ -43,6 +43,8 @@ import { OrganizationCreate } from '../types';
 // @ts-ignore
 import { OrganizationRead } from '../types';
 // @ts-ignore
+import { OrganizationReadWithAPIKey } from '../types';
+// @ts-ignore
 import { OrganizationUpdate } from '../types';
 /**
  * OrganizationsApi - axios parameter creator
@@ -194,6 +196,42 @@ export const OrganizationsApiAxiosParamCreator = function (configuration?: Confi
     },
     /**
      * Gets a single organization (Permit.io account) matching the given org_id, if such org exists and can be accessed by the authenticated actor.
+     * @summary Get Active Organization
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getActiveOrganization: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      const localVarPath = `/v2/orgs/active/org`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Gets a single organization (Permit.io account) matching the given org_id, if such org exists and can be accessed by the authenticated actor.
      * @summary Get Organization
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
@@ -242,12 +280,16 @@ export const OrganizationsApiAxiosParamCreator = function (configuration?: Confi
      * @summary Invite Members To Organization
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {Array<InviteCreate>} inviteCreate
+     * @param {string} [inviterName]
+     * @param {string} [inviterEmail]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     inviteMembersToOrganization: async (
       orgId: string,
       inviteCreate: Array<InviteCreate>,
+      inviterName?: string,
+      inviterEmail?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'orgId' is not null or undefined
@@ -272,6 +314,14 @@ export const OrganizationsApiAxiosParamCreator = function (configuration?: Confi
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (inviterName !== undefined) {
+        localVarQueryParameter['inviter_name'] = inviterName;
+      }
+
+      if (inviterEmail !== undefined) {
+        localVarQueryParameter['inviter_email'] = inviterEmail;
+      }
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -354,7 +404,7 @@ export const OrganizationsApiAxiosParamCreator = function (configuration?: Confi
      * Lists all the organizations that can be accessed by the authenticated actor (i.e: human team member or api key).
      * @summary List Organizations
      * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page.
+     * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -496,7 +546,9 @@ export const OrganizationsApiFp = function (configuration?: Configuration) {
     async createOrganization(
       organizationCreate: OrganizationCreate,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrganizationRead>> {
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrganizationReadWithAPIKey>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createOrganization(
         organizationCreate,
         options,
@@ -519,6 +571,18 @@ export const OrganizationsApiFp = function (configuration?: Configuration) {
     },
     /**
      * Gets a single organization (Permit.io account) matching the given org_id, if such org exists and can be accessed by the authenticated actor.
+     * @summary Get Active Organization
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getActiveOrganization(
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrganizationRead>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getActiveOrganization(options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     * Gets a single organization (Permit.io account) matching the given org_id, if such org exists and can be accessed by the authenticated actor.
      * @summary Get Organization
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
@@ -536,17 +600,23 @@ export const OrganizationsApiFp = function (configuration?: Configuration) {
      * @summary Invite Members To Organization
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {Array<InviteCreate>} inviteCreate
+     * @param {string} [inviterName]
+     * @param {string} [inviterEmail]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async inviteMembersToOrganization(
       orgId: string,
       inviteCreate: Array<InviteCreate>,
+      inviterName?: string,
+      inviterEmail?: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MultiInviteResult>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.inviteMembersToOrganization(
         orgId,
         inviteCreate,
+        inviterName,
+        inviterEmail,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -578,7 +648,7 @@ export const OrganizationsApiFp = function (configuration?: Configuration) {
      * Lists all the organizations that can be accessed by the authenticated actor (i.e: human team member or api key).
      * @summary List Organizations
      * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page.
+     * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -653,7 +723,7 @@ export const OrganizationsApiFactory = function (
     createOrganization(
       organizationCreate: OrganizationCreate,
       options?: any,
-    ): AxiosPromise<OrganizationRead> {
+    ): AxiosPromise<OrganizationReadWithAPIKey> {
       return localVarFp
         .createOrganization(organizationCreate, options)
         .then((request) => request(axios, basePath));
@@ -672,6 +742,15 @@ export const OrganizationsApiFactory = function (
     },
     /**
      * Gets a single organization (Permit.io account) matching the given org_id, if such org exists and can be accessed by the authenticated actor.
+     * @summary Get Active Organization
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getActiveOrganization(options?: any): AxiosPromise<OrganizationRead> {
+      return localVarFp.getActiveOrganization(options).then((request) => request(axios, basePath));
+    },
+    /**
+     * Gets a single organization (Permit.io account) matching the given org_id, if such org exists and can be accessed by the authenticated actor.
      * @summary Get Organization
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
@@ -685,16 +764,20 @@ export const OrganizationsApiFactory = function (
      * @summary Invite Members To Organization
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {Array<InviteCreate>} inviteCreate
+     * @param {string} [inviterName]
+     * @param {string} [inviterEmail]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     inviteMembersToOrganization(
       orgId: string,
       inviteCreate: Array<InviteCreate>,
+      inviterName?: string,
+      inviterEmail?: string,
       options?: any,
     ): AxiosPromise<MultiInviteResult> {
       return localVarFp
-        .inviteMembersToOrganization(orgId, inviteCreate, options)
+        .inviteMembersToOrganization(orgId, inviteCreate, inviterName, inviterEmail, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -720,7 +803,7 @@ export const OrganizationsApiFactory = function (
      * Lists all the organizations that can be accessed by the authenticated actor (i.e: human team member or api key).
      * @summary List Organizations
      * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page.
+     * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -835,6 +918,20 @@ export interface OrganizationsApiInviteMembersToOrganizationRequest {
    * @memberof OrganizationsApiInviteMembersToOrganization
    */
   readonly inviteCreate: Array<InviteCreate>;
+
+  /**
+   *
+   * @type {string}
+   * @memberof OrganizationsApiInviteMembersToOrganization
+   */
+  readonly inviterName?: string;
+
+  /**
+   *
+   * @type {string}
+   * @memberof OrganizationsApiInviteMembersToOrganization
+   */
+  readonly inviterEmail?: string;
 }
 
 /**
@@ -879,7 +976,7 @@ export interface OrganizationsApiListOrganizationsRequest {
   readonly page?: number;
 
   /**
-   * The number of results per page.
+   * The number of results per page (max 100).
    * @type {number}
    * @memberof OrganizationsApiListOrganizations
    */
@@ -967,6 +1064,19 @@ export class OrganizationsApi extends BaseAPI {
 
   /**
    * Gets a single organization (Permit.io account) matching the given org_id, if such org exists and can be accessed by the authenticated actor.
+   * @summary Get Active Organization
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof OrganizationsApi
+   */
+  public getActiveOrganization(options?: AxiosRequestConfig) {
+    return OrganizationsApiFp(this.configuration)
+      .getActiveOrganization(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Gets a single organization (Permit.io account) matching the given org_id, if such org exists and can be accessed by the authenticated actor.
    * @summary Get Organization
    * @param {OrganizationsApiGetOrganizationRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
@@ -995,7 +1105,13 @@ export class OrganizationsApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return OrganizationsApiFp(this.configuration)
-      .inviteMembersToOrganization(requestParameters.orgId, requestParameters.inviteCreate, options)
+      .inviteMembersToOrganization(
+        requestParameters.orgId,
+        requestParameters.inviteCreate,
+        requestParameters.inviterName,
+        requestParameters.inviterEmail,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 

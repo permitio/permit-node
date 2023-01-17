@@ -50,6 +50,7 @@ export const OPALDataApiAxiosParamCreator = function (configuration?: Configurat
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {boolean} [internalUpdateCache]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -57,6 +58,7 @@ export const OPALDataApiAxiosParamCreator = function (configuration?: Configurat
       orgId: string,
       projId: string,
       envId: string,
+      internalUpdateCache?: boolean,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'orgId' is not null or undefined
@@ -83,6 +85,10 @@ export const OPALDataApiAxiosParamCreator = function (configuration?: Configurat
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (internalUpdateCache !== undefined) {
+        localVarQueryParameter['__internal_update_cache'] = internalUpdateCache;
+      }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -293,6 +299,7 @@ export const OPALDataApiFp = function (configuration?: Configuration) {
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {boolean} [internalUpdateCache]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -300,12 +307,14 @@ export const OPALDataApiFp = function (configuration?: Configuration) {
       orgId: string,
       projId: string,
       envId: string,
+      internalUpdateCache?: boolean,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FullData>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getAllData(
         orgId,
         projId,
         envId,
+        internalUpdateCache,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -413,6 +422,7 @@ export const OPALDataApiFactory = function (
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {boolean} [internalUpdateCache]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -420,10 +430,11 @@ export const OPALDataApiFactory = function (
       orgId: string,
       projId: string,
       envId: string,
+      internalUpdateCache?: boolean,
       options?: any,
     ): AxiosPromise<FullData> {
       return localVarFp
-        .getAllData(orgId, projId, envId, options)
+        .getAllData(orgId, projId, envId, internalUpdateCache, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -520,6 +531,13 @@ export interface OPALDataApiGetAllDataRequest {
    * @memberof OPALDataApiGetAllData
    */
   readonly envId: string;
+
+  /**
+   *
+   * @type {boolean}
+   * @memberof OPALDataApiGetAllData
+   */
+  readonly internalUpdateCache?: boolean;
 }
 
 /**
@@ -655,6 +673,7 @@ export class OPALDataApi extends BaseAPI {
         requestParameters.orgId,
         requestParameters.projId,
         requestParameters.envId,
+        requestParameters.internalUpdateCache,
         options,
       )
       .then((request) => request(this.axios, this.basePath));

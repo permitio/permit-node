@@ -12,6 +12,19 @@
  * Do not edit the class manually.
  */
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { APIKeyOwnerType } from './apikey-owner-type';
+// May contain unused imports in some cases
+// @ts-ignore
+import { MemberAccessLevel } from './member-access-level';
+// May contain unused imports in some cases
+// @ts-ignore
+import { MemberAccessObj } from './member-access-obj';
+// May contain unused imports in some cases
+// @ts-ignore
+import { OrgMemberRead } from './org-member-read';
+
 /**
  *
  * @export
@@ -23,11 +36,65 @@ export interface APIKeyRead {
    * @type {string}
    * @memberof APIKeyRead
    */
+  organization_id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof APIKeyRead
+   */
+  project_id?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof APIKeyRead
+   */
+  environment_id?: string;
+  /**
+   *
+   * @type {MemberAccessObj}
+   * @memberof APIKeyRead
+   */
+  object_type?: MemberAccessObj;
+  /**
+   *
+   * @type {MemberAccessLevel}
+   * @memberof APIKeyRead
+   */
+  access_level?: MemberAccessLevel;
+  /**
+   *
+   * @type {APIKeyOwnerType}
+   * @memberof APIKeyRead
+   */
+  owner_type: APIKeyOwnerType;
+  /**
+   *
+   * @type {string}
+   * @memberof APIKeyRead
+   */
   id: string;
   /**
    *
    * @type {string}
    * @memberof APIKeyRead
    */
-  secret: string;
+  secret?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof APIKeyRead
+   */
+  created_at: string;
+  /**
+   *
+   * @type {OrgMemberRead}
+   * @memberof APIKeyRead
+   */
+  created_by_member: OrgMemberRead;
+  /**
+   *
+   * @type {string}
+   * @memberof APIKeyRead
+   */
+  last_used_at?: string;
 }

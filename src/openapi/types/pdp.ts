@@ -12,9 +12,12 @@
  * Do not edit the class manually.
  */
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { PdpValues } from './pdp-values';
+
 /**
  * @type Pdp
  * @export
  */
-import type { PdpValues } from './pdp-values';
 export type Pdp = PdpValues;

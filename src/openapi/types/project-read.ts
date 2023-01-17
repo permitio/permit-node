@@ -25,6 +25,12 @@ export interface ProjectRead {
    */
   key: string;
   /**
+   * Optional namespace for URNs. If empty, URNs will be generated from project key.
+   * @type {string}
+   * @memberof ProjectRead
+   */
+  urn_namespace?: string;
+  /**
    * Unique id of the project
    * @type {string}
    * @memberof ProjectRead
@@ -66,4 +72,10 @@ export interface ProjectRead {
    * @memberof ProjectRead
    */
   settings?: object;
+  /**
+   * the id of the policy repo to use for this project
+   * @type {string}
+   * @memberof ProjectRead
+   */
+  active_policy_repo_id?: string;
 }

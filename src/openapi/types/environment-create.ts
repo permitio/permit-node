@@ -36,4 +36,10 @@ export interface EnvironmentCreate {
    * @memberof EnvironmentCreate
    */
   description?: string;
+  /**
+   * when using gitops feature, an optional branch name for the environment
+   * @type {string}
+   * @memberof EnvironmentCreate
+   */
+  custom_branch_name?: string;
 }

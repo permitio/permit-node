@@ -13,11 +13,15 @@
  */
 
 export * from './api/apikeys-api';
+export * from './api/audit-elements-data-api';
+export * from './api/audit-logs-api';
 export * from './api/authentication-api';
 export * from './api/condition-set-rules-api';
 export * from './api/condition-sets-api';
 export * from './api/decision-logs-api';
 export * from './api/decision-logs-ingress-api';
+export * from './api/default-api';
+export * from './api/elements-configs-api';
 export * from './api/environments-api';
 export * from './api/instructions-api';
 export * from './api/members-api';
@@ -25,6 +29,7 @@ export * from './api/opaldata-api';
 export * from './api/organizations-api';
 export * from './api/policy-api';
 export * from './api/policy-decision-points-api';
+export * from './api/policy-git-repositories-api';
 export * from './api/projects-api';
 export * from './api/resource-actions-api';
 export * from './api/resource-attributes-api';
@@ -34,4 +39,6 @@ export * from './api/resources-api';
 export * from './api/role-assignments-api';
 export * from './api/roles-api';
 export * from './api/tenants-api';
+export * from './api/user-attributes-api';
 export * from './api/users-api';
+export * from './api/users-elements-data-api';

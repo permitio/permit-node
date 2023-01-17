@@ -66,4 +66,10 @@ export interface EnvironmentRead {
    * @memberof EnvironmentRead
    */
   description?: string;
+  /**
+   * when using gitops feature, an optional branch name for the environment
+   * @type {string}
+   * @memberof EnvironmentRead
+   */
+  custom_branch_name?: string;
 }
