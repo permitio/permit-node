@@ -21,6 +21,7 @@
 export const APIKeyOwnerType = {
   PdpConfig: 'pdp_config',
   Member: 'member',
+  Elements: 'elements',
 } as const;
 
 export type APIKeyOwnerType = typeof APIKeyOwnerType[keyof typeof APIKeyOwnerType];

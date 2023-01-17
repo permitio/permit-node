@@ -31,13 +31,17 @@ import {
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
+import { AuthnMeRead } from '../types';
+// @ts-ignore
 import { DevLogin } from '../types';
+// @ts-ignore
+import { EmbeddedLoginRequestOutput } from '../types';
 // @ts-ignore
 import { HTTPValidationError } from '../types';
 // @ts-ignore
 import { LoginResult } from '../types';
 // @ts-ignore
-import { ViewerContext } from '../types';
+import { UserLoginRequestInput } from '../types';
 /**
  * AuthenticationApi - axios parameter creator
  * @export
@@ -90,6 +94,55 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
       };
     },
     /**
+     *
+     * @summary Elements Login As
+     * @param {UserLoginRequestInput} userLoginRequestInput
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    elementsLoginAs: async (
+      userLoginRequestInput: UserLoginRequestInput,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'userLoginRequestInput' is not null or undefined
+      assertParamExists('elementsLoginAs', 'userLoginRequestInput', userLoginRequestInput);
+      const localVarPath = `/v2/auth/elements_login_as`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        userLoginRequestInput,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * The login endpoint allows the frontend app to exchange a user JWT with a user session. The user session is stored on an httpOnly + secure cookie.
      * @summary Login
      * @param {string} [inviteCode] An optional invite code to an existing organization. If the invite code is provided and is valid, the member will gain access to that organization.
@@ -131,12 +184,86 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
       };
     },
     /**
-     * The logout endpoint deletes the session cookie of a logged in user and invalidates cached VCs.
-     * @summary Logout
+     * The login endpoint allows the frontend app to exchange a user JWT with a user session. The user session is stored on an httpOnly + secure cookie.
+     * @summary Login Elements
+     * @param {string} token
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    logout: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    loginElements: async (
+      token: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'token' is not null or undefined
+      assertParamExists('loginElements', 'token', token);
+      const localVarPath = `/v2/auth/login_elements`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      if (token !== undefined) {
+        localVarQueryParameter['token'] = token;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * The logout endpoint deletes the session cookie of a logged in user and invalidates cached VCs.
+     * @summary Logout Get
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    logoutGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      const localVarPath = `/v2/auth/logout`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * The logout endpoint deletes the session cookie of a logged in user and invalidates cached VCs.
+     * @summary Logout Post
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    logoutPost: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/v2/auth/logout`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -264,6 +391,25 @@ export const AuthenticationApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
+     *
+     * @summary Elements Login As
+     * @param {UserLoginRequestInput} userLoginRequestInput
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async elementsLoginAs(
+      userLoginRequestInput: UserLoginRequestInput,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<EmbeddedLoginRequestOutput>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.elementsLoginAs(
+        userLoginRequestInput,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
      * The login endpoint allows the frontend app to exchange a user JWT with a user session. The user session is stored on an httpOnly + secure cookie.
      * @summary Login
      * @param {string} [inviteCode] An optional invite code to an existing organization. If the invite code is provided and is valid, the member will gain access to that organization.
@@ -278,15 +424,41 @@ export const AuthenticationApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     * The logout endpoint deletes the session cookie of a logged in user and invalidates cached VCs.
-     * @summary Logout
+     * The login endpoint allows the frontend app to exchange a user JWT with a user session. The user session is stored on an httpOnly + secure cookie.
+     * @summary Login Elements
+     * @param {string} token
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async logout(
+    async loginElements(
+      token: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LoginResult>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.loginElements(token, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     * The logout endpoint deletes the session cookie of a logged in user and invalidates cached VCs.
+     * @summary Logout Get
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async logoutGet(
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.logout(options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.logoutGet(options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     * The logout endpoint deletes the session cookie of a logged in user and invalidates cached VCs.
+     * @summary Logout Post
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async logoutPost(
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.logoutPost(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -297,7 +469,7 @@ export const AuthenticationApiFp = function (configuration?: Configuration) {
      */
     async me(
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ViewerContext>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthnMeRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.me(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
@@ -340,6 +512,21 @@ export const AuthenticationApiFactory = function (
       return localVarFp.devLogin(devLogin, options).then((request) => request(axios, basePath));
     },
     /**
+     *
+     * @summary Elements Login As
+     * @param {UserLoginRequestInput} userLoginRequestInput
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    elementsLoginAs(
+      userLoginRequestInput: UserLoginRequestInput,
+      options?: any,
+    ): AxiosPromise<EmbeddedLoginRequestOutput> {
+      return localVarFp
+        .elementsLoginAs(userLoginRequestInput, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      * The login endpoint allows the frontend app to exchange a user JWT with a user session. The user session is stored on an httpOnly + secure cookie.
      * @summary Login
      * @param {string} [inviteCode] An optional invite code to an existing organization. If the invite code is provided and is valid, the member will gain access to that organization.
@@ -350,13 +537,32 @@ export const AuthenticationApiFactory = function (
       return localVarFp.login(inviteCode, options).then((request) => request(axios, basePath));
     },
     /**
-     * The logout endpoint deletes the session cookie of a logged in user and invalidates cached VCs.
-     * @summary Logout
+     * The login endpoint allows the frontend app to exchange a user JWT with a user session. The user session is stored on an httpOnly + secure cookie.
+     * @summary Login Elements
+     * @param {string} token
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    logout(options?: any): AxiosPromise<void> {
-      return localVarFp.logout(options).then((request) => request(axios, basePath));
+    loginElements(token: string, options?: any): AxiosPromise<LoginResult> {
+      return localVarFp.loginElements(token, options).then((request) => request(axios, basePath));
+    },
+    /**
+     * The logout endpoint deletes the session cookie of a logged in user and invalidates cached VCs.
+     * @summary Logout Get
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    logoutGet(options?: any): AxiosPromise<void> {
+      return localVarFp.logoutGet(options).then((request) => request(axios, basePath));
+    },
+    /**
+     * The logout endpoint deletes the session cookie of a logged in user and invalidates cached VCs.
+     * @summary Logout Post
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    logoutPost(options?: any): AxiosPromise<void> {
+      return localVarFp.logoutPost(options).then((request) => request(axios, basePath));
     },
     /**
      *
@@ -364,7 +570,7 @@ export const AuthenticationApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    me(options?: any): AxiosPromise<ViewerContext> {
+    me(options?: any): AxiosPromise<AuthnMeRead> {
       return localVarFp.me(options).then((request) => request(axios, basePath));
     },
     /**
@@ -397,6 +603,20 @@ export interface AuthenticationApiDevLoginRequest {
 }
 
 /**
+ * Request parameters for elementsLoginAs operation in AuthenticationApi.
+ * @export
+ * @interface AuthenticationApiElementsLoginAsRequest
+ */
+export interface AuthenticationApiElementsLoginAsRequest {
+  /**
+   *
+   * @type {UserLoginRequestInput}
+   * @memberof AuthenticationApiElementsLoginAs
+   */
+  readonly userLoginRequestInput: UserLoginRequestInput;
+}
+
+/**
  * Request parameters for login operation in AuthenticationApi.
  * @export
  * @interface AuthenticationApiLoginRequest
@@ -408,6 +628,20 @@ export interface AuthenticationApiLoginRequest {
    * @memberof AuthenticationApiLogin
    */
   readonly inviteCode?: string;
+}
+
+/**
+ * Request parameters for loginElements operation in AuthenticationApi.
+ * @export
+ * @interface AuthenticationApiLoginElementsRequest
+ */
+export interface AuthenticationApiLoginElementsRequest {
+  /**
+   *
+   * @type {string}
+   * @memberof AuthenticationApiLoginElements
+   */
+  readonly token: string;
 }
 
 /**
@@ -449,6 +683,23 @@ export class AuthenticationApi extends BaseAPI {
   }
 
   /**
+   *
+   * @summary Elements Login As
+   * @param {AuthenticationApiElementsLoginAsRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof AuthenticationApi
+   */
+  public elementsLoginAs(
+    requestParameters: AuthenticationApiElementsLoginAsRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return AuthenticationApiFp(this.configuration)
+      .elementsLoginAs(requestParameters.userLoginRequestInput, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
    * The login endpoint allows the frontend app to exchange a user JWT with a user session. The user session is stored on an httpOnly + secure cookie.
    * @summary Login
    * @param {AuthenticationApiLoginRequest} requestParameters Request parameters.
@@ -466,15 +717,45 @@ export class AuthenticationApi extends BaseAPI {
   }
 
   /**
-   * The logout endpoint deletes the session cookie of a logged in user and invalidates cached VCs.
-   * @summary Logout
+   * The login endpoint allows the frontend app to exchange a user JWT with a user session. The user session is stored on an httpOnly + secure cookie.
+   * @summary Login Elements
+   * @param {AuthenticationApiLoginElementsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AuthenticationApi
    */
-  public logout(options?: AxiosRequestConfig) {
+  public loginElements(
+    requestParameters: AuthenticationApiLoginElementsRequest,
+    options?: AxiosRequestConfig,
+  ) {
     return AuthenticationApiFp(this.configuration)
-      .logout(options)
+      .loginElements(requestParameters.token, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * The logout endpoint deletes the session cookie of a logged in user and invalidates cached VCs.
+   * @summary Logout Get
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof AuthenticationApi
+   */
+  public logoutGet(options?: AxiosRequestConfig) {
+    return AuthenticationApiFp(this.configuration)
+      .logoutGet(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * The logout endpoint deletes the session cookie of a logged in user and invalidates cached VCs.
+   * @summary Logout Post
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof AuthenticationApi
+   */
+  public logoutPost(options?: AxiosRequestConfig) {
+    return AuthenticationApiFp(this.configuration)
+      .logoutPost(options)
       .then((request) => request(this.axios, this.basePath));
   }
 

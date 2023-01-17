@@ -36,4 +36,16 @@ export interface ConditionSetRuleRemove {
    * @memberof ConditionSetRuleRemove
    */
   resource_set: string;
+  /**
+   * if True, will set the condition set rule to the role\'s autogen user-set.
+   * @type {boolean}
+   * @memberof ConditionSetRuleRemove
+   */
+  is_role?: boolean;
+  /**
+   * if True, will set the condition set rule to the resource\'s autogen resource-set.
+   * @type {boolean}
+   * @memberof ConditionSetRuleRemove
+   */
+  is_resource?: boolean;
 }

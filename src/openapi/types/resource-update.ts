@@ -55,16 +55,4 @@ export interface ResourceUpdate {
    * @memberof ResourceUpdate
    */
   attributes?: { [key: string]: AttributeBlockEditable };
-  /**
-   * Roles defined on this resource. The key is the role name, and the value contains the role properties such as granted permissions, base roles, etc.
-   * @type {object}
-   * @memberof ResourceUpdate
-   */
-  roles?: object;
-  /**
-   * Relations to other resources. The key is the relation name, and the value is the destination resource.
-   * @type {object}
-   * @memberof ResourceUpdate
-   */
-  relations?: object;
 }

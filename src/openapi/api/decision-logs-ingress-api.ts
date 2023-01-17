@@ -107,7 +107,7 @@ export const DecisionLogsIngressApiFp = function (configuration?: Configuration)
     async insertOpaDecisionLogs(
       requestBody: Array<object>,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.insertOpaDecisionLogs(
         requestBody,
         options,
@@ -135,7 +135,7 @@ export const DecisionLogsIngressApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    insertOpaDecisionLogs(requestBody: Array<object>, options?: any): AxiosPromise<any> {
+    insertOpaDecisionLogs(requestBody: Array<object>, options?: any): AxiosPromise<void> {
       return localVarFp
         .insertOpaDecisionLogs(requestBody, options)
         .then((request) => request(axios, basePath));

@@ -19,7 +19,7 @@
  */
 export interface UserCreate {
   /**
-   * A unique id by which Permit will identify the user for permission checks. You will later pass this ID to the `permit.check()` API. You can use anything for this ID, the user email, a UUID or anything else as long as it\'s unique on your end. The user key must be url-friendly (slugified).
+   * A unique id by which Permit will identify the user for permission checks.
    * @type {string}
    * @memberof UserCreate
    */

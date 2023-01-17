@@ -13,7 +13,7 @@
  */
 
 /**
- *      supported attribute primitives
+ * supported attribute primitives
  * @export
  * @enum {string}
  */
@@ -23,6 +23,7 @@ export const AttributeType = {
   Number: 'number',
   String: 'string',
   Time: 'time',
+  Array: 'array',
   Json: 'json',
 } as const;
 

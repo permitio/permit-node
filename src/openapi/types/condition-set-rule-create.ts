@@ -36,4 +36,16 @@ export interface ConditionSetRuleCreate {
    * @memberof ConditionSetRuleCreate
    */
   resource_set: string;
+  /**
+   * if True, will set the condition set rule to the role\'s autogen user-set.
+   * @type {boolean}
+   * @memberof ConditionSetRuleCreate
+   */
+  is_role?: boolean;
+  /**
+   * if True, will set the condition set rule to the resource\'s autogen resource-set.
+   * @type {boolean}
+   * @memberof ConditionSetRuleCreate
+   */
+  is_resource?: boolean;
 }

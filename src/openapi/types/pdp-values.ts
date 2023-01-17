@@ -30,4 +30,10 @@ export interface PdpValues {
    * @memberof PdpValues
    */
   OPA_DECISION_LOG_INGRESS_ROUTE: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PdpValues
+   */
+  OPA_DECISION_LOG_INGRESS_BACKEND_TIER_URL: string;
 }

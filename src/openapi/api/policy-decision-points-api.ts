@@ -35,6 +35,8 @@ import { HTTPValidationError } from '../types';
 // @ts-ignore
 import { PDPConfigRead } from '../types';
 // @ts-ignore
+import { PDPStateUpdate } from '../types';
+// @ts-ignore
 import { RemoteConfig } from '../types';
 /**
  * PolicyDecisionPointsApi - axios parameter creator
@@ -44,11 +46,60 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
   return {
     /**
      * Gets the configuration values for the currently authenticated PDP container.  The PDP authenticates with an API key scoped to a given Permit.io environment. The system identifies the PDP via its API key and then returns all the configuration values required for the container to run correctly.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
-     * @summary Get connected PDP configuration
+     * @summary Get connected PDP configuration and push state
+     * @param {PDPStateUpdate} pDPStateUpdate
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getAuthenticatingPdpConfigValues: async (
+      pDPStateUpdate: PDPStateUpdate,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'pDPStateUpdate' is not null or undefined
+      assertParamExists('getAuthenticatingPdpConfigValues', 'pDPStateUpdate', pDPStateUpdate);
+      const localVarPath = `/v2/pdps/me/config`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        pDPStateUpdate,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Gets the configuration values for the currently authenticated PDP container.  The PDP authenticates with an API key scoped to a given Permit.io environment. The system identifies the PDP via its API key and then returns all the configuration values required for the container to run correctly.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
+     * @summary Get connected PDP configuration
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getAuthenticatingPdpConfigValuesLegacy: async (
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/v2/pdps/me/config`;
@@ -258,16 +309,32 @@ export const PolicyDecisionPointsApiFp = function (configuration?: Configuration
   return {
     /**
      * Gets the configuration values for the currently authenticated PDP container.  The PDP authenticates with an API key scoped to a given Permit.io environment. The system identifies the PDP via its API key and then returns all the configuration values required for the container to run correctly.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
-     * @summary Get connected PDP configuration
+     * @summary Get connected PDP configuration and push state
+     * @param {PDPStateUpdate} pDPStateUpdate
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getAuthenticatingPdpConfigValues(
+      pDPStateUpdate: PDPStateUpdate,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RemoteConfig>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthenticatingPdpConfigValues(
+        pDPStateUpdate,
         options,
       );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     * Gets the configuration values for the currently authenticated PDP container.  The PDP authenticates with an API key scoped to a given Permit.io environment. The system identifies the PDP via its API key and then returns all the configuration values required for the container to run correctly.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
+     * @summary Get connected PDP configuration
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getAuthenticatingPdpConfigValuesLegacy(
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RemoteConfig>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getAuthenticatingPdpConfigValuesLegacy(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -358,13 +425,28 @@ export const PolicyDecisionPointsApiFactory = function (
   return {
     /**
      * Gets the configuration values for the currently authenticated PDP container.  The PDP authenticates with an API key scoped to a given Permit.io environment. The system identifies the PDP via its API key and then returns all the configuration values required for the container to run correctly.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
+     * @summary Get connected PDP configuration and push state
+     * @param {PDPStateUpdate} pDPStateUpdate
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getAuthenticatingPdpConfigValues(
+      pDPStateUpdate: PDPStateUpdate,
+      options?: any,
+    ): AxiosPromise<RemoteConfig> {
+      return localVarFp
+        .getAuthenticatingPdpConfigValues(pDPStateUpdate, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Gets the configuration values for the currently authenticated PDP container.  The PDP authenticates with an API key scoped to a given Permit.io environment. The system identifies the PDP via its API key and then returns all the configuration values required for the container to run correctly.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
      * @summary Get connected PDP configuration
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getAuthenticatingPdpConfigValues(options?: any): AxiosPromise<RemoteConfig> {
+    getAuthenticatingPdpConfigValuesLegacy(options?: any): AxiosPromise<RemoteConfig> {
       return localVarFp
-        .getAuthenticatingPdpConfigValues(options)
+        .getAuthenticatingPdpConfigValuesLegacy(options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -428,6 +510,20 @@ export const PolicyDecisionPointsApiFactory = function (
     },
   };
 };
+
+/**
+ * Request parameters for getAuthenticatingPdpConfigValues operation in PolicyDecisionPointsApi.
+ * @export
+ * @interface PolicyDecisionPointsApiGetAuthenticatingPdpConfigValuesRequest
+ */
+export interface PolicyDecisionPointsApiGetAuthenticatingPdpConfigValuesRequest {
+  /**
+   *
+   * @type {PDPStateUpdate}
+   * @memberof PolicyDecisionPointsApiGetAuthenticatingPdpConfigValues
+   */
+  readonly pDPStateUpdate: PDPStateUpdate;
+}
 
 /**
  * Request parameters for getPdpConfigValues operation in PolicyDecisionPointsApi.
@@ -529,14 +625,31 @@ export interface PolicyDecisionPointsApiRotatePdpApiKeyRequest {
 export class PolicyDecisionPointsApi extends BaseAPI {
   /**
    * Gets the configuration values for the currently authenticated PDP container.  The PDP authenticates with an API key scoped to a given Permit.io environment. The system identifies the PDP via its API key and then returns all the configuration values required for the container to run correctly.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
+   * @summary Get connected PDP configuration and push state
+   * @param {PolicyDecisionPointsApiGetAuthenticatingPdpConfigValuesRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PolicyDecisionPointsApi
+   */
+  public getAuthenticatingPdpConfigValues(
+    requestParameters: PolicyDecisionPointsApiGetAuthenticatingPdpConfigValuesRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return PolicyDecisionPointsApiFp(this.configuration)
+      .getAuthenticatingPdpConfigValues(requestParameters.pDPStateUpdate, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Gets the configuration values for the currently authenticated PDP container.  The PDP authenticates with an API key scoped to a given Permit.io environment. The system identifies the PDP via its API key and then returns all the configuration values required for the container to run correctly.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
    * @summary Get connected PDP configuration
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof PolicyDecisionPointsApi
    */
-  public getAuthenticatingPdpConfigValues(options?: AxiosRequestConfig) {
+  public getAuthenticatingPdpConfigValuesLegacy(options?: AxiosRequestConfig) {
     return PolicyDecisionPointsApiFp(this.configuration)
-      .getAuthenticatingPdpConfigValues(options)
+      .getAuthenticatingPdpConfigValuesLegacy(options)
       .then((request) => request(this.axios, this.basePath));
   }
 

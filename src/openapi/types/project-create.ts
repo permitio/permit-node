@@ -25,6 +25,12 @@ export interface ProjectCreate {
    */
   key: string;
   /**
+   * Optional namespace for URNs. If empty, URNs will be generated from project key.
+   * @type {string}
+   * @memberof ProjectCreate
+   */
+  urn_namespace?: string;
+  /**
    * The name of the project
    * @type {string}
    * @memberof ProjectCreate
@@ -42,4 +48,10 @@ export interface ProjectCreate {
    * @memberof ProjectCreate
    */
   settings?: object;
+  /**
+   * the id of the policy repo to use for this project
+   * @type {string}
+   * @memberof ProjectCreate
+   */
+  active_policy_repo_id?: string;
 }

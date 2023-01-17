@@ -97,16 +97,4 @@ export interface ResourceRead {
    * @memberof ResourceRead
    */
   attributes?: { [key: string]: AttributeBlockRead };
-  /**
-   * Roles defined on this resource. The key is the role name, and the value contains the role properties such as granted permissions, base roles, etc.
-   * @type {object}
-   * @memberof ResourceRead
-   */
-  roles?: object;
-  /**
-   * Relations to other resources. The key is the relation name, and the value is the destination resource.
-   * @type {object}
-   * @memberof ResourceRead
-   */
-  relations?: object;
 }

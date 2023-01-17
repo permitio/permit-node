@@ -35,6 +35,8 @@ import { EnvironmentCreate } from '../types';
 // @ts-ignore
 import { EnvironmentRead } from '../types';
 // @ts-ignore
+import { EnvironmentStats } from '../types';
+// @ts-ignore
 import { EnvironmentUpdate } from '../types';
 // @ts-ignore
 import { HTTPValidationError } from '../types';
@@ -254,6 +256,54 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
       };
     },
     /**
+     *
+     * @summary Stats Environments
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    statsEnvironments: async (
+      projId: string,
+      envId: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('statsEnvironments', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('statsEnvironments', 'envId', envId);
+      const localVarPath = `/v2/projects/{proj_id}/envs/{env_id}/stats`
+        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
+        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Updates the environment.
      * @summary Update Environment
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -406,6 +456,26 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
+     *
+     * @summary Stats Environments
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async statsEnvironments(
+      projId: string,
+      envId: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EnvironmentStats>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.statsEnvironments(
+        projId,
+        envId,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
      * Updates the environment.
      * @summary Update Environment
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -502,6 +572,23 @@ export const EnvironmentsApiFactory = function (
     ): AxiosPromise<Array<EnvironmentRead>> {
       return localVarFp
         .listEnvironments(projId, page, perPage, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Stats Environments
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    statsEnvironments(
+      projId: string,
+      envId: string,
+      options?: any,
+    ): AxiosPromise<EnvironmentStats> {
+      return localVarFp
+        .statsEnvironments(projId, envId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -618,6 +705,27 @@ export interface EnvironmentsApiListEnvironmentsRequest {
 }
 
 /**
+ * Request parameters for statsEnvironments operation in EnvironmentsApi.
+ * @export
+ * @interface EnvironmentsApiStatsEnvironmentsRequest
+ */
+export interface EnvironmentsApiStatsEnvironmentsRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof EnvironmentsApiStatsEnvironments
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof EnvironmentsApiStatsEnvironments
+   */
+  readonly envId: string;
+}
+
+/**
  * Request parameters for updateEnvironment operation in EnvironmentsApi.
  * @export
  * @interface EnvironmentsApiUpdateEnvironmentRequest
@@ -722,6 +830,23 @@ export class EnvironmentsApi extends BaseAPI {
         requestParameters.perPage,
         options,
       )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Stats Environments
+   * @param {EnvironmentsApiStatsEnvironmentsRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof EnvironmentsApi
+   */
+  public statsEnvironments(
+    requestParameters: EnvironmentsApiStatsEnvironmentsRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return EnvironmentsApiFp(this.configuration)
+      .statsEnvironments(requestParameters.projId, requestParameters.envId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

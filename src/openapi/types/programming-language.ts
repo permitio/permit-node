@@ -23,6 +23,7 @@ export const ProgrammingLanguage = {
   Python: 'python',
   Dotnet: 'dotnet',
   Java: 'java',
+  KongGateway: 'kong_gateway',
 } as const;
 
 export type ProgrammingLanguage = typeof ProgrammingLanguage[keyof typeof ProgrammingLanguage];

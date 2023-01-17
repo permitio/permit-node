@@ -36,4 +36,10 @@ export interface ProjectUpdate {
    * @memberof ProjectUpdate
    */
   settings?: object;
+  /**
+   * the id of the policy repo to use for this project
+   * @type {string}
+   * @memberof ProjectUpdate
+   */
+  active_policy_repo_id?: string;
 }

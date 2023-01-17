@@ -30,4 +30,10 @@ export interface EnvironmentUpdate {
    * @memberof EnvironmentUpdate
    */
   description?: string;
+  /**
+   * when using gitops feature, an optional branch name for the environment
+   * @type {string}
+   * @memberof EnvironmentUpdate
+   */
+  custom_branch_name?: string;
 }
