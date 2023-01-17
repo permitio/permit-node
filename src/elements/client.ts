@@ -4,12 +4,12 @@ import { Logger } from 'winston';
 import { IPermitConfig } from '../config';
 import { AuthenticationApi, Configuration, EmbeddedLoginRequestOutput } from '../openapi';
 
-export interface EmbeddedLoginRequestOutputWithContext extends EmbeddedLoginRequestOutput {
-  context?: any;
+export interface EmbeddedLoginRequestOutputWithContent extends EmbeddedLoginRequestOutput {
+  content?: any;
 }
 
 export interface IPermitElementsApi {
-  loginAs({ userId, tenantId }: loginAsSchema): Promise<EmbeddedLoginRequestOutputWithContext>;
+  loginAs({ userId, tenantId }: loginAsSchema): Promise<EmbeddedLoginRequestOutputWithContent>;
 }
 
 export interface IElementsApiClient {
@@ -35,7 +35,7 @@ export class ElementsClient implements IElementsApiClient {
   public async loginAs({
     userId,
     tenantId,
-  }: loginAsSchema): Promise<EmbeddedLoginRequestOutputWithContext> {
+  }: loginAsSchema): Promise<EmbeddedLoginRequestOutputWithContent> {
     try {
       const response = await this.authApi.elementsLoginAs({
         userLoginRequestInput: {
@@ -44,8 +44,8 @@ export class ElementsClient implements IElementsApiClient {
         },
       });
       this.logger.debug(`[${response.status}] permit.api.loginAs(${userId})`);
-      const res: EmbeddedLoginRequestOutputWithContext = response.data;
-      res['context'] = { url: response.data.redirect_url };
+      const res: EmbeddedLoginRequestOutputWithContent = response.data;
+      res['content'] = { url: response.data.redirect_url };
       return res;
     } catch (err) {
       if (axios.isAxiosError(err)) {
