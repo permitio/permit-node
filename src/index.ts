@@ -5,6 +5,7 @@ import { Enforcer, IEnforcer } from './enforcement/enforcer';
 import { LoggerFactory } from './logger';
 import { IApiClient, ApiClient } from './api/client';
 import { RecursivePartial } from './utils/types';
+import { ElementsClient } from './elements/client';
 
 // exported interfaces
 export { ISyncedUser, ISyncedRole, IPermitCache } from './cache/client';
@@ -31,6 +32,7 @@ class _Permit {
   private _enforcer: Enforcer;
   // private _cache: LocalCacheClient;
   private _api: ApiClient;
+  private _elements: ElementsClient;
 
   constructor(config: RecursivePartial<IPermitConfig>) {
     this._config = ConfigFactory.build(config);
@@ -38,6 +40,7 @@ class _Permit {
     this._enforcer = new Enforcer(this._config, logger);
     // this._cache = new LocalCacheClient(this._config, logger);
     this._api = new ApiClient(this._config, logger);
+    this._elements = new ElementsClient(this._config, logger);
     logger.debug(
       `Permit.io SDK initialized with config:\n${JSON.stringify(this._config, undefined, 2)}`,
     );
@@ -49,6 +52,7 @@ class _Permit {
       // exposed methods from specialized clients
       ...this._enforcer.getMethods(),
       ...this._api.getMethods(),
+      ...this._elements.getMethods(),
       // cache: this._cache.getMethods(),
     });
   }
