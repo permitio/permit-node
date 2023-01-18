@@ -12,6 +12,13 @@ export interface IPermitElementsApi {
   loginAs({ userId, tenantId }: loginAsSchema): Promise<EmbeddedLoginRequestOutputWithContent>;
 }
 
+export enum ElementsApiErrors {
+  USER_NOT_FOUND = 'User not found',
+  TENANT_NOT_FOUND = 'Tenant not found',
+  INVALID_PERMISSION_LEVEL = 'Invalid user permission level',
+  FORBIDDEN_ACCESS = 'Forbidden access',
+}
+
 export interface IElementsApiClient {
   elements: IPermitElementsApi;
 }
