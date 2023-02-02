@@ -24,6 +24,7 @@ import {
   UserCreate,
   UserRead,
   UsersApi,
+  UserUpdate,
 } from '../openapi';
 
 /**
@@ -33,6 +34,8 @@ import {
  */
 export interface IReadApis {
   listUsers(): Promise<UserRead[]>;
+
+  listRoles(): Promise<RoleRead[]>;
 
   getUser(userId: string): Promise<UserRead>;
 
@@ -50,7 +53,8 @@ export interface IReadApis {
  */
 export interface IWriteApis {
   // user mutations
-  createUser(user: UserCreate): Promise<[UserRead, boolean]>;
+  createUser(user: UserCreate): Promise<UserRead>;
+  updateUser(userId: string, user: UserUpdate): Promise<UserRead>;
   syncUser(user: UserCreate): Promise<UserRead>;
   deleteUser(userId: string): Promise<AxiosResponse<void>>;
 
@@ -76,7 +80,7 @@ export interface IWriteApis {
   unassignRole(removedRole: RoleAssignmentRemove): Promise<AxiosResponse<void>>;
 
   // resource mutations
-  createResource(resource: ResourceCreate): Promise<[ResourceRead, boolean]>;
+  createResource(resource: ResourceCreate): Promise<ResourceRead>;
 
   updateResource(resourceId: string, resource: ResourceUpdate): Promise<ResourceRead>;
 
@@ -155,6 +159,29 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
       if (axios.isAxiosError(err)) {
         this.logger.error(
           `[${err?.response?.status}] permit.api.getUser(), err: ${JSON.stringify(
+            err?.response?.data,
+          )}`,
+        );
+      }
+      throw err;
+    }
+  }
+
+  public async listRoles(): Promise<RoleRead[]> {
+    await this.getScope();
+
+    try {
+      const response = await this.roles.listRoles({
+        projId: this.project,
+        envId: this.environment,
+      });
+
+      this.logger.debug(`[${response.status}] permit.api.listRoles()`);
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.listRoles(), err: ${JSON.stringify(
             err?.response?.data,
           )}`,
         );
@@ -276,7 +303,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
     }
   }
 
-  public async createResource(resource: ResourceCreate): Promise<[ResourceRead, boolean]> {
+  public async createResource(resource: ResourceCreate): Promise<ResourceRead> {
     await this.getScope();
     try {
       const response = await this.resources.createResource({
@@ -287,7 +314,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
       this.logger.debug(
         `[${response.status}] permit.api.createResource(${JSON.stringify(resource)})`,
       );
-      return [response.data, response.status === 201];
+      return response.data;
     } catch (err) {
       if (axios.isAxiosError(err)) {
         this.logger.error(
@@ -349,7 +376,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
     }
   }
 
-  public async createUser(user: UserCreate): Promise<[UserRead, boolean]> {
+  public async createUser(user: UserCreate): Promise<UserRead> {
     await this.getScope();
     try {
       const response = await this.users.createUser({
@@ -358,7 +385,7 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
         userCreate: user,
       });
       this.logger.debug(`[${response.status}] permit.api.createUser(${JSON.stringify(user)})`);
-      return [response.data, response.status === 201];
+      return response.data;
     } catch (err) {
       if (axios.isAxiosError(err)) {
         this.logger.error(
@@ -386,6 +413,29 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
       if (axios.isAxiosError(err)) {
         this.logger.error(
           `[${err?.response?.status}] permit.api.syncUser(${JSON.stringify(
+            user,
+          )}), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
+  }
+
+  public async updateUser(userId: string, user: UserUpdate): Promise<UserRead> {
+    await this.getScope();
+    try {
+      const response = await this.users.updateUser({
+        projId: this.project,
+        envId: this.environment,
+        userId,
+        userUpdate: user,
+      });
+      this.logger.debug(`[${response.status}] permit.api.updateUser(${JSON.stringify(user)})`);
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.updateUser(${JSON.stringify(
             user,
           )}), err: ${JSON.stringify(err?.response?.data)}`,
         );
@@ -605,6 +655,8 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   public get api(): IPermitApi {
     return {
       listUsers: this.listUsers.bind(this),
+      listRoles: this.listRoles.bind(this),
+      updateUser: this.updateUser.bind(this),
       getUser: this.getUser.bind(this),
       getTenant: this.getTenant.bind(this),
       getRole: this.getRole.bind(this),
