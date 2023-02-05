@@ -1,6 +1,6 @@
 {
   "name": "permitio",
-  "version": "0.0.5",
+  "version": "1.1.1-rc1",
   "description": "Node.js client library for the Permit.io full-stack permissions platform",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
