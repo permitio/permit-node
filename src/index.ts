@@ -5,7 +5,7 @@ import { Enforcer, IEnforcer } from './enforcement/enforcer';
 import { LoggerFactory } from './logger';
 import { IApiClient, ApiClient } from './api/client';
 import { RecursivePartial } from './utils/types';
-import { ElementsClient } from './elements/client';
+import { ElementsClient, IElementsApiClient } from './elements/client';
 
 // exported interfaces
 export { ISyncedUser, ISyncedRole, IPermitCache } from './cache/client';
@@ -13,7 +13,7 @@ export { IUser, IAction, IResource } from './enforcement/interfaces';
 export { IReadApis, IWriteApis } from './api/client';
 export { Context, ContextTransform } from './utils/context';
 
-export interface IPermitClient extends IEnforcer, IApiClient {
+export interface IPermitClient extends IEnforcer, IApiClient, IElementsApiClient {
   // cache: IPermitCache;
   config: IPermitConfig;
 }
