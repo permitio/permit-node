@@ -30,7 +30,7 @@ export class ConfigFactory {
   static defaults(): IPermitConfig {
     return {
       token: _.get(process.env, 'PERMIT_API_KEY', ''),
-      pdp: _.get(process.env, 'PERMIT_PDP_URL', 'http://localhost:7000'),
+      pdp: _.get(process.env, 'PERMIT_PDP_URL', 'http://localhost:7766'),
       apiUrl: _.get(process.env, 'PERMIT_API_URL', 'https://api.permit.io'),
       log: {
         // log level, default is warn (warnings and errors)
