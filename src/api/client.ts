@@ -4,6 +4,15 @@ import { Logger } from 'winston';
 import { IPermitConfig } from '../config';
 import {
   APIKeysApi,
+  ConditionSetCreate,
+  ConditionSetRead,
+  ConditionSetRuleCreate,
+  ConditionSetRuleRead,
+  ConditionSetRuleRemove,
+  ConditionSetRulesApi,
+  ConditionSetsApi,
+  ConditionSetType,
+  ConditionSetUpdate,
   Configuration,
   ResourceCreate,
   ResourceRead,
@@ -44,6 +53,10 @@ export interface IReadApis {
   getRole(roleId: string): Promise<RoleRead>;
 
   getAssignedRoles(user: string, tenant?: string): Promise<RoleAssignmentRead[]>;
+
+  listConditionSets(type: string, page: number, per_page: number): Promise<ConditionSetRead[]>;
+
+  listConditionSetsRules(page: number, per_page: number): Promise<ConditionSetRuleRead[]>;
 }
 
 /**
@@ -85,6 +98,22 @@ export interface IWriteApis {
   updateResource(resourceId: string, resource: ResourceUpdate): Promise<ResourceRead>;
 
   deleteResource(resourceId: string): Promise<AxiosResponse<void>>;
+
+  // condition set mutations
+  createConditionSet(conditionSet: ConditionSetCreate): Promise<ConditionSetRead>;
+
+  updateConditionSet(
+    conditionSetId: string,
+    conditionSet: ConditionSetUpdate,
+  ): Promise<ConditionSetRead>;
+
+  deleteConditionSet(conditionSetId: string): Promise<AxiosResponse<void>>;
+
+  // condition set rule mutations
+
+  assignConditionSetRule(conditionSetRule: ConditionSetRuleCreate): Promise<ConditionSetRuleRead[]>;
+
+  unassignConditionSetRule(conditionSetRule: ConditionSetRuleRemove): Promise<AxiosResponse<void>>;
 }
 
 export interface IPermitApi extends IReadApis, IWriteApis {}
@@ -101,6 +130,8 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
   private users: UsersApi;
   private tenants: TenantsApi;
   private roles: RolesApi;
+  private conditionSets: ConditionSetsApi;
+  private conditionSetRules: ConditionSetRulesApi;
   private roleAssignments: RoleAssignmentsApi;
   private resources: ResourcesApi;
 
@@ -115,6 +146,8 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
     this.users = new UsersApi(axiosClientConfig);
     this.tenants = new TenantsApi(axiosClientConfig);
     this.roles = new RolesApi(axiosClientConfig);
+    this.conditionSets = new ConditionSetsApi(axiosClientConfig);
+    this.conditionSetRules = new ConditionSetRulesApi(axiosClientConfig);
     this.roleAssignments = new RoleAssignmentsApi(axiosClientConfig);
     this.resources = new ResourcesApi(axiosClientConfig);
   }
@@ -174,6 +207,64 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
       const response = await this.roles.listRoles({
         projId: this.project,
         envId: this.environment,
+      });
+
+      this.logger.debug(`[${response.status}] permit.api.listRoles()`);
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.listRoles(), err: ${JSON.stringify(
+            err?.response?.data,
+          )}`,
+        );
+      }
+      throw err;
+    }
+  }
+
+  public async listConditionSets(
+    type: ConditionSetType,
+    page: number,
+    perPage: number,
+  ): Promise<ConditionSetRead[]> {
+    await this.getScope();
+
+    try {
+      const response = await this.conditionSets.listConditionSets({
+        projId: this.project,
+        envId: this.environment,
+        type: type,
+        page: page,
+        perPage: perPage,
+      });
+
+      this.logger.debug(`[${response.status}] permit.api.listRoles()`);
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.listRoles(), err: ${JSON.stringify(
+            err?.response?.data,
+          )}`,
+        );
+      }
+      throw err;
+    }
+  }
+
+  public async listConditionSetsRules(
+    page: number,
+    perPage: number,
+  ): Promise<ConditionSetRuleRead[]> {
+    await this.getScope();
+
+    try {
+      const response = await this.conditionSetRules.listSetPermissions({
+        projId: this.project,
+        envId: this.environment,
+        page: page,
+        perPage: perPage,
       });
 
       this.logger.debug(`[${response.status}] permit.api.listRoles()`);
@@ -652,10 +743,148 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
     }
   }
 
+  public async createConditionSet(conditionSet: ConditionSetCreate): Promise<ConditionSetRead> {
+    await this.getScope();
+    try {
+      const response = await this.conditionSets.createConditionSet({
+        projId: this.project,
+        envId: this.environment,
+        conditionSetCreate: conditionSet,
+      });
+      this.logger.debug(
+        `[${response.status}] permit.api.createConditionSet(${JSON.stringify(conditionSet)})`,
+      );
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.createConditionSet(${JSON.stringify(
+            conditionSet,
+          )}), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
+  }
+
+  public async updateConditionSet(
+    conditionSetId: string,
+    conditionSet: ConditionSetUpdate,
+  ): Promise<ConditionSetRead> {
+    await this.getScope();
+    try {
+      const response = await this.conditionSets.updateConditionSet({
+        projId: this.project,
+        envId: this.environment,
+        conditionSetId: conditionSetId,
+        conditionSetUpdate: conditionSet,
+      });
+      this.logger.debug(
+        `[${response.status}] permit.api.updateConditionSet(${conditionSetId}, ${JSON.stringify(
+          conditionSet,
+        )})`,
+      );
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${
+            err?.response?.status
+          }] permit.api.updateConditionSet(${conditionSetId}, ${JSON.stringify(
+            conditionSet,
+          )}), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
+  }
+
+  public async deleteConditionSet(conditionSetId: string): Promise<AxiosResponse<void>> {
+    await this.getScope();
+    try {
+      const response = await this.conditionSets.deleteConditionSet({
+        projId: this.project,
+        envId: this.environment,
+        conditionSetId: conditionSetId,
+      });
+      this.logger.debug(`[${response.status}] permit.api.deleteConditionSet(${conditionSetId})`);
+      return response;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${
+            err?.response?.status
+          }] permit.api.deleteConditionSet(${conditionSetId}), err: ${JSON.stringify(
+            err?.response?.data,
+          )}`,
+        );
+      }
+      throw err;
+    }
+  }
+
+  public async assignConditionSetRule(
+    conditionSetRule: ConditionSetRuleCreate,
+  ): Promise<ConditionSetRuleRead[]> {
+    await this.getScope();
+    try {
+      const response = await this.conditionSetRules.assignSetPermissions({
+        projId: this.project,
+        envId: this.environment,
+        conditionSetRuleCreate: conditionSetRule,
+      });
+      this.logger.debug(
+        `[${response.status}] permit.api.createConditionSetRule(${JSON.stringify(
+          conditionSetRule,
+        )})`,
+      );
+      return response.data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.createConditionSetRule(${JSON.stringify(
+            conditionSetRule,
+          )}), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
+  }
+
+  public async unassignConditionSetRule(
+    conditionSetRule: ConditionSetRuleRemove,
+  ): Promise<AxiosResponse<void>> {
+    await this.getScope();
+    try {
+      const response = await this.conditionSetRules.unassignSetPermissions({
+        projId: this.project,
+        envId: this.environment,
+        conditionSetRuleRemove: conditionSetRule,
+      });
+      this.logger.debug(
+        `[${response.status}] permit.api.deleteConditionSetRule(${JSON.stringify(
+          conditionSetRule,
+        )})`,
+      );
+      return response;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        this.logger.error(
+          `[${err?.response?.status}] permit.api.deleteConditionSetRule(${JSON.stringify(
+            conditionSetRule,
+          )}), err: ${JSON.stringify(err?.response?.data)}`,
+        );
+      }
+      throw err;
+    }
+  }
+
   public get api(): IPermitApi {
     return {
       listUsers: this.listUsers.bind(this),
       listRoles: this.listRoles.bind(this),
+      listConditionSets: this.listConditionSets.bind(this),
+      listConditionSetsRules: this.listConditionSetsRules.bind(this),
       updateUser: this.updateUser.bind(this),
       getUser: this.getUser.bind(this),
       getTenant: this.getTenant.bind(this),
@@ -676,6 +905,11 @@ export class ApiClient implements IReadApis, IWriteApis, IApiClient {
       deleteRole: this.deleteRole.bind(this),
       assignRole: this.assignRole.bind(this),
       unassignRole: this.unassignRole.bind(this),
+      createConditionSet: this.createConditionSet.bind(this),
+      updateConditionSet: this.updateConditionSet.bind(this),
+      deleteConditionSet: this.deleteConditionSet.bind(this),
+      assignConditionSetRule: this.assignConditionSetRule.bind(this),
+      unassignConditionSetRule: this.unassignConditionSetRule.bind(this),
     };
   }
 
