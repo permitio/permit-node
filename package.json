@@ -34,10 +34,10 @@
     "doc:json": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --json build/docs/typedoc.json",
     "doc:publish": "gh-pages -m \"[ci skip] Updates\" -d build/docs",
     "version": "standard-version",
-    "reset-hard": "git clean -dfx && git reset --hard && yarn",
+    "reset-hard": "git clean -dfx && git reset --hard && npm install",
     "prepare": "npm run build && husky install",
     "prepare-release": "run-s reset-hard test cov:check doc:html version doc:publish",
-    "generate-openapi-client": "openapi-generator-cli generate -i http://localhost:8000/v2/openapi.json -g typescript-axios -o src/openapi/ --additional-properties=useSingleRequestParameter=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=types && yarn fix:prettier"
+    "generate-openapi-client": "openapi-generator-cli generate -i http://localhost:8000/v2/openapi.json -g typescript-axios -o src/openapi/ --additional-properties=useSingleRequestParameter=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=types && npm run fix:prettier"
   },
   "engines": {
     "node": ">=10"
@@ -48,7 +48,7 @@
     "lodash": "^4.17.21",
     "path-to-regexp": "^6.2.1",
     "require-in-the-middle": "^5.1.0",
-    "winston": "^3.3.3"
+    "pino": "8.11.0"
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",

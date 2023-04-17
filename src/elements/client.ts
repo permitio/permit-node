@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Logger } from 'winston';
+import { Logger } from 'pino';
 
 import { IPermitConfig } from '../config';
 import { AuthenticationApi, Configuration, EmbeddedLoginRequestOutput } from '../openapi';

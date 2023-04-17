@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
-import { Logger } from 'winston';
+import { Logger } from 'pino';
 
 import { IPermitConfig } from '../config';
 
