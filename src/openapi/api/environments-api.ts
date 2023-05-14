@@ -31,6 +31,8 @@ import {
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
+import { EnvironmentCopy } from '../types';
+// @ts-ignore
 import { EnvironmentCreate } from '../types';
 // @ts-ignore
 import { EnvironmentRead } from '../types';
@@ -46,6 +48,65 @@ import { HTTPValidationError } from '../types';
  */
 export const EnvironmentsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
+    /**
+     * Copy environment  This endpoint either duplicates an existing environment to a new environment in the same project, or copies from an existing environment to another existing environment.  The `scope` object controls which objects will be copied to the target environment.  To clone to a new environment, the user must have write permissions to the containing project. To clone into an existing environment, the user must have write permissions to the target environment.  Copying environments across projects or organizations is not allowed.
+     * @summary Copy Environment
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {EnvironmentCopy} environmentCopy
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    copyEnvironment: async (
+      projId: string,
+      envId: string,
+      environmentCopy: EnvironmentCopy,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('copyEnvironment', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('copyEnvironment', 'envId', envId);
+      // verify required parameter 'environmentCopy' is not null or undefined
+      assertParamExists('copyEnvironment', 'environmentCopy', environmentCopy);
+      const localVarPath = `/v2/projects/{proj_id}/envs/{env_id}/copy`
+        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
+        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        environmentCopy,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
     /**
      * Creates a new environment under a given project.
      * @summary Create Environment
@@ -373,6 +434,29 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = EnvironmentsApiAxiosParamCreator(configuration);
   return {
     /**
+     * Copy environment  This endpoint either duplicates an existing environment to a new environment in the same project, or copies from an existing environment to another existing environment.  The `scope` object controls which objects will be copied to the target environment.  To clone to a new environment, the user must have write permissions to the containing project. To clone into an existing environment, the user must have write permissions to the target environment.  Copying environments across projects or organizations is not allowed.
+     * @summary Copy Environment
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {EnvironmentCopy} environmentCopy
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async copyEnvironment(
+      projId: string,
+      envId: string,
+      environmentCopy: EnvironmentCopy,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EnvironmentRead>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.copyEnvironment(
+        projId,
+        envId,
+        environmentCopy,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
      * Creates a new environment under a given project.
      * @summary Create Environment
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -513,6 +597,25 @@ export const EnvironmentsApiFactory = function (
   const localVarFp = EnvironmentsApiFp(configuration);
   return {
     /**
+     * Copy environment  This endpoint either duplicates an existing environment to a new environment in the same project, or copies from an existing environment to another existing environment.  The `scope` object controls which objects will be copied to the target environment.  To clone to a new environment, the user must have write permissions to the containing project. To clone into an existing environment, the user must have write permissions to the target environment.  Copying environments across projects or organizations is not allowed.
+     * @summary Copy Environment
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {EnvironmentCopy} environmentCopy
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    copyEnvironment(
+      projId: string,
+      envId: string,
+      environmentCopy: EnvironmentCopy,
+      options?: any,
+    ): AxiosPromise<EnvironmentRead> {
+      return localVarFp
+        .copyEnvironment(projId, envId, environmentCopy, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      * Creates a new environment under a given project.
      * @summary Create Environment
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -612,6 +715,34 @@ export const EnvironmentsApiFactory = function (
     },
   };
 };
+
+/**
+ * Request parameters for copyEnvironment operation in EnvironmentsApi.
+ * @export
+ * @interface EnvironmentsApiCopyEnvironmentRequest
+ */
+export interface EnvironmentsApiCopyEnvironmentRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof EnvironmentsApiCopyEnvironment
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof EnvironmentsApiCopyEnvironment
+   */
+  readonly envId: string;
+
+  /**
+   *
+   * @type {EnvironmentCopy}
+   * @memberof EnvironmentsApiCopyEnvironment
+   */
+  readonly environmentCopy: EnvironmentCopy;
+}
 
 /**
  * Request parameters for createEnvironment operation in EnvironmentsApi.
@@ -760,6 +891,28 @@ export interface EnvironmentsApiUpdateEnvironmentRequest {
  * @extends {BaseAPI}
  */
 export class EnvironmentsApi extends BaseAPI {
+  /**
+   * Copy environment  This endpoint either duplicates an existing environment to a new environment in the same project, or copies from an existing environment to another existing environment.  The `scope` object controls which objects will be copied to the target environment.  To clone to a new environment, the user must have write permissions to the containing project. To clone into an existing environment, the user must have write permissions to the target environment.  Copying environments across projects or organizations is not allowed.
+   * @summary Copy Environment
+   * @param {EnvironmentsApiCopyEnvironmentRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof EnvironmentsApi
+   */
+  public copyEnvironment(
+    requestParameters: EnvironmentsApiCopyEnvironmentRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return EnvironmentsApiFp(this.configuration)
+      .copyEnvironment(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.environmentCopy,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
   /**
    * Creates a new environment under a given project.
    * @summary Create Environment

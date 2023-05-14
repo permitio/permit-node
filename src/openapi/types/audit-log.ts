@@ -12,10 +12,6 @@
  * Do not edit the class manually.
  */
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { RawData } from './raw-data';
-
 /**
  *
  * @export
@@ -30,16 +26,28 @@ export interface AuditLog {
   id: string;
   /**
    *
-   * @type {RawData}
+   * @type {any}
    * @memberof AuditLog
    */
-  raw_data: RawData;
+  input?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof AuditLog
+   */
+  result?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof AuditLog
+   */
+  context?: any;
   /**
    *
    * @type {string}
    * @memberof AuditLog
    */
-  action: string;
+  action?: string;
   /**
    *
    * @type {string}
@@ -51,7 +59,7 @@ export interface AuditLog {
    * @type {string}
    * @memberof AuditLog
    */
-  query: string;
+  query?: string;
   /**
    *
    * @type {string}

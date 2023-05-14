@@ -12,6 +12,10 @@
  * Do not edit the class manually.
  */
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { OrgMemberReadWithGrants } from './org-member-read-with-grants';
+
 /**
  *
  * @export
@@ -54,4 +58,10 @@ export interface Statistics {
    * @memberof Statistics
    */
   has_decision_logs: boolean;
+  /**
+   *
+   * @type {Array<OrgMemberReadWithGrants>}
+   * @memberof Statistics
+   */
+  members: Array<OrgMemberReadWithGrants>;
 }

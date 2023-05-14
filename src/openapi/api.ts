@@ -31,6 +31,8 @@ export * from './api/policy-api';
 export * from './api/policy-decision-points-api';
 export * from './api/policy-git-repositories-api';
 export * from './api/projects-api';
+export * from './api/proxy-config-api';
+export * from './api/resource-action-groups-api';
 export * from './api/resource-actions-api';
 export * from './api/resource-attributes-api';
 export * from './api/resource-instances-api';

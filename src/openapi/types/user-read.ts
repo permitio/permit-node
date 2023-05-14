@@ -14,6 +14,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { UserInTenant } from './user-in-tenant';
+// May contain unused imports in some cases
+// @ts-ignore
 import { UserRole } from './user-role';
 
 /**
@@ -54,8 +57,15 @@ export interface UserRead {
   environment_id: string;
   /**
    *
+   * @type {Array<UserInTenant>}
+   * @memberof UserRead
+   */
+  associated_tenants?: Array<UserInTenant>;
+  /**
+   *
    * @type {Array<UserRole>}
    * @memberof UserRead
+   * @deprecated
    */
   roles?: Array<UserRole>;
   /**
@@ -77,7 +87,7 @@ export interface UserRead {
    */
   last_name?: string;
   /**
-   * Arbitraty user attributes that will be used to enforce attribute-based access control policies.
+   * Arbitrary user attributes that will be used to enforce attribute-based access control policies.
    * @type {object}
    * @memberof UserRead
    */

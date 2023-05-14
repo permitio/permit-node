@@ -31,6 +31,10 @@ import {
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
+import { BulkRoleAssignmentReport } from '../types';
+// @ts-ignore
+import { BulkRoleUnAssignmentReport } from '../types';
+// @ts-ignore
 import { HTTPValidationError } from '../types';
 // @ts-ignore
 import { RoleAssignmentCreate } from '../types';
@@ -94,6 +98,124 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
         roleAssignmentCreate,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Bulk Assign Role
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {Array<RoleAssignmentCreate>} roleAssignmentCreate
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    bulkAssignRole: async (
+      projId: string,
+      envId: string,
+      roleAssignmentCreate: Array<RoleAssignmentCreate>,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('bulkAssignRole', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('bulkAssignRole', 'envId', envId);
+      // verify required parameter 'roleAssignmentCreate' is not null or undefined
+      assertParamExists('bulkAssignRole', 'roleAssignmentCreate', roleAssignmentCreate);
+      const localVarPath = `/v2/facts/{proj_id}/{env_id}/role_assignments/bulk`
+        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
+        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        roleAssignmentCreate,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Bulk Unassign Role
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {Array<RoleAssignmentRemove>} roleAssignmentRemove
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    bulkUnassignRole: async (
+      projId: string,
+      envId: string,
+      roleAssignmentRemove: Array<RoleAssignmentRemove>,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('bulkUnassignRole', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('bulkUnassignRole', 'envId', envId);
+      // verify required parameter 'roleAssignmentRemove' is not null or undefined
+      assertParamExists('bulkUnassignRole', 'roleAssignmentRemove', roleAssignmentRemove);
+      const localVarPath = `/v2/facts/{proj_id}/{env_id}/role_assignments/bulk`
+        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
+        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        roleAssignmentRemove,
         localVarRequestOptions,
         configuration,
       );
@@ -274,6 +396,56 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
+     *
+     * @summary Bulk Assign Role
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {Array<RoleAssignmentCreate>} roleAssignmentCreate
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async bulkAssignRole(
+      projId: string,
+      envId: string,
+      roleAssignmentCreate: Array<RoleAssignmentCreate>,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<BulkRoleAssignmentReport>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.bulkAssignRole(
+        projId,
+        envId,
+        roleAssignmentCreate,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Bulk Unassign Role
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {Array<RoleAssignmentRemove>} roleAssignmentRemove
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async bulkUnassignRole(
+      projId: string,
+      envId: string,
+      roleAssignmentRemove: Array<RoleAssignmentRemove>,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<BulkRoleUnAssignmentReport>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.bulkUnassignRole(
+        projId,
+        envId,
+        roleAssignmentRemove,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
      * Lists the role assignments defined within an environment.  - If the `user` filter is present, will only return the role assignments of that user. - If the `tenant` filter is present, will only return the role assignments in that tenant. - If the `role` filter is present, will only return role assignments that are granting that role.
      * @summary List Role Assignments
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -367,6 +539,44 @@ export const RoleAssignmentsApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
+     *
+     * @summary Bulk Assign Role
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {Array<RoleAssignmentCreate>} roleAssignmentCreate
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    bulkAssignRole(
+      projId: string,
+      envId: string,
+      roleAssignmentCreate: Array<RoleAssignmentCreate>,
+      options?: any,
+    ): AxiosPromise<BulkRoleAssignmentReport> {
+      return localVarFp
+        .bulkAssignRole(projId, envId, roleAssignmentCreate, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Bulk Unassign Role
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {Array<RoleAssignmentRemove>} roleAssignmentRemove
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    bulkUnassignRole(
+      projId: string,
+      envId: string,
+      roleAssignmentRemove: Array<RoleAssignmentRemove>,
+      options?: any,
+    ): AxiosPromise<BulkRoleUnAssignmentReport> {
+      return localVarFp
+        .bulkUnassignRole(projId, envId, roleAssignmentRemove, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      * Lists the role assignments defined within an environment.  - If the `user` filter is present, will only return the role assignments of that user. - If the `tenant` filter is present, will only return the role assignments in that tenant. - If the `role` filter is present, will only return role assignments that are granting that role.
      * @summary List Role Assignments
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -441,6 +651,62 @@ export interface RoleAssignmentsApiAssignRoleRequest {
    * @memberof RoleAssignmentsApiAssignRole
    */
   readonly roleAssignmentCreate: RoleAssignmentCreate;
+}
+
+/**
+ * Request parameters for bulkAssignRole operation in RoleAssignmentsApi.
+ * @export
+ * @interface RoleAssignmentsApiBulkAssignRoleRequest
+ */
+export interface RoleAssignmentsApiBulkAssignRoleRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof RoleAssignmentsApiBulkAssignRole
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof RoleAssignmentsApiBulkAssignRole
+   */
+  readonly envId: string;
+
+  /**
+   *
+   * @type {Array<RoleAssignmentCreate>}
+   * @memberof RoleAssignmentsApiBulkAssignRole
+   */
+  readonly roleAssignmentCreate: Array<RoleAssignmentCreate>;
+}
+
+/**
+ * Request parameters for bulkUnassignRole operation in RoleAssignmentsApi.
+ * @export
+ * @interface RoleAssignmentsApiBulkUnassignRoleRequest
+ */
+export interface RoleAssignmentsApiBulkUnassignRoleRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof RoleAssignmentsApiBulkUnassignRole
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof RoleAssignmentsApiBulkUnassignRole
+   */
+  readonly envId: string;
+
+  /**
+   *
+   * @type {Array<RoleAssignmentRemove>}
+   * @memberof RoleAssignmentsApiBulkUnassignRole
+   */
+  readonly roleAssignmentRemove: Array<RoleAssignmentRemove>;
 }
 
 /**
@@ -551,6 +817,50 @@ export class RoleAssignmentsApi extends BaseAPI {
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.roleAssignmentCreate,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Bulk Assign Role
+   * @param {RoleAssignmentsApiBulkAssignRoleRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof RoleAssignmentsApi
+   */
+  public bulkAssignRole(
+    requestParameters: RoleAssignmentsApiBulkAssignRoleRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return RoleAssignmentsApiFp(this.configuration)
+      .bulkAssignRole(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.roleAssignmentCreate,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Bulk Unassign Role
+   * @param {RoleAssignmentsApiBulkUnassignRoleRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof RoleAssignmentsApi
+   */
+  public bulkUnassignRole(
+    requestParameters: RoleAssignmentsApiBulkUnassignRoleRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return RoleAssignmentsApiFp(this.configuration)
+      .bulkUnassignRole(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.roleAssignmentRemove,
         options,
       )
       .then((request) => request(this.axios, this.basePath));

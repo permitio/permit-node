@@ -17,6 +17,9 @@
 import { OPALClient } from './opalclient';
 // May contain unused imports in some cases
 // @ts-ignore
+import { OpalCommon } from './opal-common';
+// May contain unused imports in some cases
+// @ts-ignore
 import { PDPContext } from './pdpcontext';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -30,10 +33,10 @@ import { Pdp } from './pdp';
 export interface RemoteConfig {
   /**
    *
-   * @type {object}
+   * @type {OpalCommon}
    * @memberof RemoteConfig
    */
-  opal_common?: object;
+  opal_common?: OpalCommon;
   /**
    *
    * @type {OPALClient}

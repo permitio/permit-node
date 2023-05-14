@@ -14,7 +14,16 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { ConditionSetData } from './condition-set-data';
+// May contain unused imports in some cases
+// @ts-ignore
+import { ResourceTypeData } from './resource-type-data';
+// May contain unused imports in some cases
+// @ts-ignore
 import { RoleData } from './role-data';
+// May contain unused imports in some cases
+// @ts-ignore
+import { TenantData } from './tenant-data';
 // May contain unused imports in some cases
 // @ts-ignore
 import { UserData } from './user-data';
@@ -33,6 +42,12 @@ export interface FullData {
   users: { [key: string]: UserData };
   /**
    *
+   * @type {{ [key: string]: TenantData; }}
+   * @memberof FullData
+   */
+  tenants: { [key: string]: TenantData };
+  /**
+   *
    * @type {{ [key: string]: RoleData; }}
    * @memberof FullData
    */
@@ -43,4 +58,16 @@ export interface FullData {
    * @memberof FullData
    */
   condition_set_rules: { [key: string]: { [key: string]: { [key: string]: Array<string> } } };
+  /**
+   *
+   * @type {{ [key: string]: ResourceTypeData; }}
+   * @memberof FullData
+   */
+  resource_types: { [key: string]: ResourceTypeData };
+  /**
+   *
+   * @type {{ [key: string]: ConditionSetData; }}
+   * @memberof FullData
+   */
+  condition_sets: { [key: string]: ConditionSetData };
 }

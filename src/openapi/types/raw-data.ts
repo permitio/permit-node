@@ -14,6 +14,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { AVPEngineDecisionLog } from './avpengine-decision-log';
+// May contain unused imports in some cases
+// @ts-ignore
 import { DummyEngineModel } from './dummy-engine-model';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -66,20 +69,32 @@ export interface RawData {
   path: string;
   /**
    *
-   * @type {any}
+   * @type {object}
    * @memberof RawData
    */
-  input?: any;
+  input: object;
   /**
    *
-   * @type {any}
+   * @type {object}
    * @memberof RawData
    */
-  result?: any;
+  result: object;
   /**
    *
    * @type {OPAMetrics}
    * @memberof RawData
    */
   metrics: OPAMetrics;
+  /**
+   *
+   * @type {string}
+   * @memberof RawData
+   */
+  tenant: string;
+  /**
+   *
+   * @type {number}
+   * @memberof RawData
+   */
+  process_time_ms?: number;
 }

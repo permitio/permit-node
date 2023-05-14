@@ -12,6 +12,10 @@
  * Do not edit the class manually.
  */
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { ParentId } from './parent-id';
+
 /**
  *
  * @export
@@ -36,4 +40,10 @@ export interface ConditionSetUpdate {
    * @memberof ConditionSetUpdate
    */
   conditions?: object;
+  /**
+   *
+   * @type {ParentId}
+   * @memberof ConditionSetUpdate
+   */
+  parent_id?: ParentId;
 }

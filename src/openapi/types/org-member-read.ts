@@ -17,6 +17,9 @@
 import { IdentityRead } from './identity-read';
 // May contain unused imports in some cases
 // @ts-ignore
+import { InviteRead } from './invite-read';
+// May contain unused imports in some cases
+// @ts-ignore
 import { OnboardingStep } from './onboarding-step';
 
 /**
@@ -115,6 +118,12 @@ export interface OrgMemberRead {
    * @memberof OrgMemberRead
    */
   identities: Array<IdentityRead>;
+  /**
+   *
+   * @type {InviteRead}
+   * @memberof OrgMemberRead
+   */
+  invite?: InviteRead;
   /**
    * Custom permit.io dashboard settings, such as preferred theme, etc.
    * @type {object}

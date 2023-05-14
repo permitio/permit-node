@@ -30,4 +30,10 @@ export interface ActionBlockEditable {
    * @memberof ActionBlockEditable
    */
   description?: string;
+  /**
+   *
+   * @type {object}
+   * @memberof ActionBlockEditable
+   */
+  attributes?: object;
 }

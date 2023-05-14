@@ -23,7 +23,7 @@ import { UserRead } from './user-read';
  */
 export interface PaginatedResultUserRead {
   /**
-   *
+   * List of Users
    * @type {Array<UserRead>}
    * @memberof PaginatedResultUserRead
    */

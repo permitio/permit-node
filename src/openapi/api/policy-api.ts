@@ -31,7 +31,9 @@ import {
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
-import { DataSourceConfig } from '../types';
+import { HTTPValidationError } from '../types';
+// @ts-ignore
+import { PermitBackendOpalApiDataDataSourceConfig } from '../types';
 /**
  * PolicyApi - axios parameter creator
  * @export
@@ -41,10 +43,14 @@ export const PolicyApiAxiosParamCreator = function (configuration?: Configuratio
     /**
      *
      * @summary Get Opal Data Sources
+     * @param {string} [token]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getOpalDataSources: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    getOpalDataSources: async (
+      token?: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
       const localVarPath = `/v2/opal/data/config`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -56,6 +62,10 @@ export const PolicyApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      if (token !== undefined) {
+        localVarQueryParameter['token'] = token;
+      }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -73,10 +83,12 @@ export const PolicyApiAxiosParamCreator = function (configuration?: Configuratio
     /**
      *
      * @summary Get Opal Data Sources
+     * @param {string} [token]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getOpalDataSourcesOpalDataConfigGet: async (
+      token?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/opal/data/config`;
@@ -90,6 +102,10 @@ export const PolicyApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      if (token !== undefined) {
+        localVarQueryParameter['token'] = token;
+      }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -117,25 +133,40 @@ export const PolicyApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get Opal Data Sources
+     * @param {string} [token]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getOpalDataSources(
+      token?: string,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DataSourceConfig>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getOpalDataSources(options);
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<PermitBackendOpalApiDataDataSourceConfig>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getOpalDataSources(token, options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
      *
      * @summary Get Opal Data Sources
+     * @param {string} [token]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getOpalDataSourcesOpalDataConfigGet(
+      token?: string,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DataSourceConfig>> {
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<PermitBackendOpalApiDataDataSourceConfig>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getOpalDataSourcesOpalDataConfigGet(
+        token,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -157,25 +188,63 @@ export const PolicyApiFactory = function (
     /**
      *
      * @summary Get Opal Data Sources
+     * @param {string} [token]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getOpalDataSources(options?: any): AxiosPromise<DataSourceConfig> {
-      return localVarFp.getOpalDataSources(options).then((request) => request(axios, basePath));
+    getOpalDataSources(
+      token?: string,
+      options?: any,
+    ): AxiosPromise<PermitBackendOpalApiDataDataSourceConfig> {
+      return localVarFp
+        .getOpalDataSources(token, options)
+        .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Get Opal Data Sources
+     * @param {string} [token]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getOpalDataSourcesOpalDataConfigGet(options?: any): AxiosPromise<DataSourceConfig> {
+    getOpalDataSourcesOpalDataConfigGet(
+      token?: string,
+      options?: any,
+    ): AxiosPromise<PermitBackendOpalApiDataDataSourceConfig> {
       return localVarFp
-        .getOpalDataSourcesOpalDataConfigGet(options)
+        .getOpalDataSourcesOpalDataConfigGet(token, options)
         .then((request) => request(axios, basePath));
     },
   };
 };
+
+/**
+ * Request parameters for getOpalDataSources operation in PolicyApi.
+ * @export
+ * @interface PolicyApiGetOpalDataSourcesRequest
+ */
+export interface PolicyApiGetOpalDataSourcesRequest {
+  /**
+   *
+   * @type {string}
+   * @memberof PolicyApiGetOpalDataSources
+   */
+  readonly token?: string;
+}
+
+/**
+ * Request parameters for getOpalDataSourcesOpalDataConfigGet operation in PolicyApi.
+ * @export
+ * @interface PolicyApiGetOpalDataSourcesOpalDataConfigGetRequest
+ */
+export interface PolicyApiGetOpalDataSourcesOpalDataConfigGetRequest {
+  /**
+   *
+   * @type {string}
+   * @memberof PolicyApiGetOpalDataSourcesOpalDataConfigGet
+   */
+  readonly token?: string;
+}
 
 /**
  * PolicyApi - object-oriented interface
@@ -187,26 +256,34 @@ export class PolicyApi extends BaseAPI {
   /**
    *
    * @summary Get Opal Data Sources
+   * @param {PolicyApiGetOpalDataSourcesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof PolicyApi
    */
-  public getOpalDataSources(options?: AxiosRequestConfig) {
+  public getOpalDataSources(
+    requestParameters: PolicyApiGetOpalDataSourcesRequest = {},
+    options?: AxiosRequestConfig,
+  ) {
     return PolicyApiFp(this.configuration)
-      .getOpalDataSources(options)
+      .getOpalDataSources(requestParameters.token, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
    * @summary Get Opal Data Sources
+   * @param {PolicyApiGetOpalDataSourcesOpalDataConfigGetRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof PolicyApi
    */
-  public getOpalDataSourcesOpalDataConfigGet(options?: AxiosRequestConfig) {
+  public getOpalDataSourcesOpalDataConfigGet(
+    requestParameters: PolicyApiGetOpalDataSourcesOpalDataConfigGetRequest = {},
+    options?: AxiosRequestConfig,
+  ) {
     return PolicyApiFp(this.configuration)
-      .getOpalDataSourcesOpalDataConfigGet(options)
+      .getOpalDataSourcesOpalDataConfigGet(requestParameters.token, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

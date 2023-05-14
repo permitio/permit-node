@@ -287,6 +287,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} [search] Text search for the email field
+     * @param {string} [role] Match users with a specific role
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -296,6 +297,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       projId: string,
       envId: string,
       search?: string,
+      role?: string,
       page?: number,
       perPage?: number,
       options: AxiosRequestConfig = {},
@@ -324,6 +326,10 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
 
       if (search !== undefined) {
         localVarQueryParameter['search'] = search;
+      }
+
+      if (role !== undefined) {
+        localVarQueryParameter['role'] = role;
       }
 
       if (page !== undefined) {
@@ -650,6 +656,7 @@ export const UsersApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} [search] Text search for the email field
+     * @param {string} [role] Match users with a specific role
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -659,6 +666,7 @@ export const UsersApiFp = function (configuration?: Configuration) {
       projId: string,
       envId: string,
       search?: string,
+      role?: string,
       page?: number,
       perPage?: number,
       options?: AxiosRequestConfig,
@@ -669,6 +677,7 @@ export const UsersApiFp = function (configuration?: Configuration) {
         projId,
         envId,
         search,
+        role,
         page,
         perPage,
         options,
@@ -717,7 +726,7 @@ export const UsersApiFp = function (configuration?: Configuration) {
       userId: string,
       userRoleRemove: UserRoleRemove,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserRead>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.unassignRoleFromUser(
         projId,
         envId,
@@ -841,6 +850,7 @@ export const UsersApiFactory = function (
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} [search] Text search for the email field
+     * @param {string} [role] Match users with a specific role
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -850,12 +860,13 @@ export const UsersApiFactory = function (
       projId: string,
       envId: string,
       search?: string,
+      role?: string,
       page?: number,
       perPage?: number,
       options?: any,
     ): AxiosPromise<PaginatedResultUserRead> {
       return localVarFp
-        .listUsers(projId, envId, search, page, perPage, options)
+        .listUsers(projId, envId, search, role, page, perPage, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -895,7 +906,7 @@ export const UsersApiFactory = function (
       userId: string,
       userRoleRemove: UserRoleRemove,
       options?: any,
-    ): AxiosPromise<UserRead> {
+    ): AxiosPromise<void> {
       return localVarFp
         .unassignRoleFromUser(projId, envId, userId, userRoleRemove, options)
         .then((request) => request(axios, basePath));
@@ -1069,6 +1080,13 @@ export interface UsersApiListUsersRequest {
    * @memberof UsersApiListUsers
    */
   readonly search?: string;
+
+  /**
+   * Match users with a specific role
+   * @type {string}
+   * @memberof UsersApiListUsers
+   */
+  readonly role?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
@@ -1286,6 +1304,7 @@ export class UsersApi extends BaseAPI {
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.search,
+        requestParameters.role,
         requestParameters.page,
         requestParameters.perPage,
         options,

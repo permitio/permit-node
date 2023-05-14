@@ -20,6 +20,7 @@
 
 export const Engine = {
   Opa: 'OPA',
+  Avp: 'AVP',
 } as const;
 
 export type Engine = typeof Engine[keyof typeof Engine];
