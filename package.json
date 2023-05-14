@@ -37,7 +37,7 @@
     "reset-hard": "git clean -dfx && git reset --hard && yarn",
     "prepare": "npm run build && husky install",
     "prepare-release": "run-s reset-hard test cov:check doc:html version doc:publish",
-    "generate-openapi-client": "openapi-generator-cli generate -i http://localhost:8000/v2/openapi.json -g typescript-axios -o src/openapi/ --additional-properties=useSingleRequestParameter=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=types && yarn fix:prettier"
+    "generate-openapi-client": "openapi-generator-cli generate -i https://api.permit.io/v2/openapi.json -g typescript-axios -o src/openapi/ --additional-properties=useSingleRequestParameter=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=types --skip-validate-spec && yarn fix:prettier"
   },
   "engines": {
     "node": ">=10"
