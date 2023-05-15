@@ -10,7 +10,6 @@ import { RecursivePartial } from './utils/types';
 
 // exported interfaces
 export { IUser, IAction, IResource } from './enforcement/interfaces';
-export { IReadApis, IWriteApis } from './api/api-client';
 export { Context, ContextTransform } from './utils/context';
 
 export interface IPermitClient extends IEnforcer, IApiClient, IElementsApiClient {

@@ -115,6 +115,11 @@ export interface IDeprecatedWriteApis {
 
   assignConditionSetRule(conditionSetRule: ConditionSetRuleCreate): Promise<ConditionSetRuleRead[]>;
 
+  /**
+   * Unassign a condition set rule, meaning a userset won't be allowed to perform an action on a resource set.
+   *
+   * @deprecated
+   */
   unassignConditionSetRule(conditionSetRule: ConditionSetRuleRemove): Promise<AxiosResponse<void>>;
 }
 
