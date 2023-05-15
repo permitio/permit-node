@@ -3,10 +3,10 @@ import { Logger } from 'winston';
 import { IPermitConfig } from '../config';
 
 import { DeprecatedApiClient, IDeprecatedPermitApi } from './deprecated';
-import { IPermitUsersApi, PermitUsersApi } from './users';
+import { IUsersApi, UsersApi } from './users';
 
 export interface IPermitApi extends IDeprecatedPermitApi {
-  users: IPermitUsersApi;
+  users: IUsersApi;
 }
 
 export interface IApiClient {
@@ -15,11 +15,11 @@ export interface IApiClient {
 
 export class ApiClient {
   private deprecatedApi: DeprecatedApiClient;
-  public users: IPermitUsersApi;
+  public users: IUsersApi;
 
   constructor(config: IPermitConfig, logger: Logger) {
     this.deprecatedApi = new DeprecatedApiClient(config, logger);
-    this.users = new PermitUsersApi(config, logger);
+    this.users = new UsersApi(config, logger);
   }
 
   public get api(): IPermitApi {

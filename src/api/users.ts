@@ -2,14 +2,14 @@ import { Logger } from 'winston';
 
 import { IPermitConfig } from '../config';
 import {
+  RoleAssignmentsApi as AutogenRoleAssignmentsApi,
+  UsersApi as AutogenUsersApi,
   PaginatedResultUserRead,
   RoleAssignmentCreate,
   RoleAssignmentRead,
   RoleAssignmentRemove,
-  RoleAssignmentsApi,
   UserCreate,
   UserRead,
-  UsersApi,
   UserUpdate,
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
@@ -48,7 +48,7 @@ export interface IGetUserRoles {
   readonly perPage?: number;
 }
 
-export interface IPermitUsersApi {
+export interface IUsersApi {
   list(pagination?: IPagination): Promise<PaginatedResultUserRead>;
   get(userKey: string): Promise<UserRead>;
   getByKey(userKey: string): Promise<UserRead>;
@@ -62,14 +62,18 @@ export interface IPermitUsersApi {
   getAssignedRoles({ user, tenant, page, perPage }: IGetUserRoles): Promise<RoleAssignmentRead[]>;
 }
 
-export class PermitUsersApi extends BasePermitApi implements IPermitUsersApi {
-  private users: UsersApi;
-  private roleAssignments: RoleAssignmentsApi;
+export class UsersApi extends BasePermitApi implements IUsersApi {
+  private users: AutogenUsersApi;
+  private roleAssignments: AutogenRoleAssignmentsApi;
 
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
-    this.users = new UsersApi(this.openapiClientConfig, BASE_PATH, this.config.axiosInstance);
-    this.roleAssignments = new RoleAssignmentsApi(
+    this.users = new AutogenUsersApi(
+      this.openapiClientConfig,
+      BASE_PATH,
+      this.config.axiosInstance,
+    );
+    this.roleAssignments = new AutogenRoleAssignmentsApi(
       this.openapiClientConfig,
       BASE_PATH,
       this.config.axiosInstance,
