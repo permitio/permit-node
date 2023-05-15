@@ -36,9 +36,11 @@ class _Permit {
   constructor(config: RecursivePartial<IPermitConfig>) {
     this._config = ConfigFactory.build(config);
     const logger = LoggerFactory.createLogger(this._config);
+
     this._enforcer = new Enforcer(this._config, logger);
     this._api = new ApiClient(this._config, logger);
     this._elements = new ElementsClient(this._config, logger);
+
     logger.debug(
       `Permit.io SDK initialized with config:\n${JSON.stringify(this._config, undefined, 2)}`,
     );

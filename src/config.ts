@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 import { RecursivePartial } from './utils/types';
+import { ApiContext } from './api/context';
 
 interface ILoggerConfig {
   level: string;
@@ -23,6 +24,7 @@ export interface IPermitConfig {
   multiTenancy: IMultiTenancyConfig;
   timeout: number | undefined;
   throwOnError: boolean | undefined;
+  apiContext: ApiContext;
 }
 
 // returns a config
@@ -46,6 +48,7 @@ export class ConfigFactory {
       },
       timeout: undefined,
       throwOnError: undefined,
+      apiContext: new ApiContext(),
     };
   }
 
@@ -56,7 +59,6 @@ export class ConfigFactory {
    */
   static build(options: RecursivePartial<IPermitConfig>): IPermitConfig {
     const config = _.merge(_.assign({}, ConfigFactory.defaults()), options);
-
     return config;
   }
 }
