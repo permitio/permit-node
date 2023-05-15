@@ -1,4 +1,6 @@
 // For Default export
+import winston from 'winston';
+
 import { ApiClient, IApiClient } from './api/api-client';
 import { ElementsClient, IElementsApiClient } from './api/elements';
 import { ConfigFactory, IPermitConfig } from './config';
@@ -26,19 +28,20 @@ export interface IPermitClient extends IEnforcer, IApiClient, IElementsApiClient
  */
 class _Permit {
   private _config: IPermitConfig;
+  private _logger: winston.Logger;
   private _api: ApiClient;
   private _enforcer: Enforcer;
   private _elements: ElementsClient;
 
   constructor(config: RecursivePartial<IPermitConfig>) {
     this._config = ConfigFactory.build(config);
-    const logger = LoggerFactory.createLogger(this._config);
+    this._logger = LoggerFactory.createLogger(this._config);
+    this._api = new ApiClient(this._config, this._logger);
 
-    this._enforcer = new Enforcer(this._config, logger);
-    this._api = new ApiClient(this._config, logger);
-    this._elements = new ElementsClient(this._config, logger);
+    this._enforcer = new Enforcer(this._config, this._logger);
+    this._elements = new ElementsClient(this._config, this._logger);
 
-    logger.debug(
+    this._logger.debug(
       `Permit.io SDK initialized with config:\n${JSON.stringify(this._config, undefined, 2)}`,
     );
 

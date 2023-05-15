@@ -180,7 +180,7 @@ export class Enforcer implements IEnforcer {
       return JSON.stringify(resource);
     }
 
-    let resourceRepr: string = '';
+    let resourceRepr = '';
     if (resource.tenant) {
       resourceRepr += `${resource.tenant}/`;
     }

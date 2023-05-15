@@ -1,8 +1,16 @@
+import { PermitConnectionError } from '../enforcement/enforcer';
+
 export enum ApiKeyLevel {
-  WAIT_FOR_INIT,
-  ORGANIZATION_LEVEL_API_KEY,
-  PROJECT_LEVEL_API_KEY,
-  ENVIRONMENT_LEVEL_API_KEY,
+  WAIT_FOR_INIT = 'WAIT_FOR_INIT',
+  ORGANIZATION_LEVEL_API_KEY = 'ORGANIZATION_LEVEL_API_KEY',
+  PROJECT_LEVEL_API_KEY = 'PROJECT_LEVEL_API_KEY',
+  ENVIRONMENT_LEVEL_API_KEY = 'ENVIRONMENT_LEVEL_API_KEY',
+}
+
+export class PermitContextError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
 }
 
 export class ApiContext {
@@ -53,5 +61,21 @@ export class ApiContext {
     this._organization = org;
     this._project = project;
     this._environment = environment;
+  }
+
+  public get environmentContext(): { projId: string; envId: string } {
+    if (
+      this._level !== ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY ||
+      this._project === null ||
+      this._environment === null
+    ) {
+      throw new PermitConnectionError(
+        `You cannot get environment context, current api context is: ${this._level.toString()}`,
+      );
+    }
+    return {
+      projId: this._project,
+      envId: this._environment,
+    };
   }
 }
