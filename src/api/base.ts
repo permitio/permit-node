@@ -87,6 +87,13 @@ export abstract class BasePermitApi {
       await this.setContextFromApiKey();
     }
 
+    if (callLevel !== this.config.apiContext.level) {
+      throw new PermitContextError(
+        `You're trying to use an SDK method that's requires an API Key with level: ${callLevel}, ` +
+          `however the SDK is running with an API key with level ${this.config.apiContext.level}. `,
+      );
+    }
+
     // verify context matches requested call level
     if (
       callLevel === ApiKeyLevel.PROJECT_LEVEL_API_KEY &&
