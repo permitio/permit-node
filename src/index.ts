@@ -1,16 +1,15 @@
 // For Default export
 // import { IPermitCache, LocalCacheClient } from './cache/client';
+import { ApiClient, IApiClient } from './api/api-client';
+import { ElementsClient, IElementsApiClient } from './api/elements';
 import { ConfigFactory, IPermitConfig } from './config';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
 import { LoggerFactory } from './logger';
-import { IApiClient, ApiClient } from './api/client';
 import { RecursivePartial } from './utils/types';
-import { ElementsClient, IElementsApiClient } from './elements/client';
 
 // exported interfaces
-export { ISyncedUser, ISyncedRole, IPermitCache } from './cache/client';
 export { IUser, IAction, IResource } from './enforcement/interfaces';
-export { IReadApis, IWriteApis } from './api/client';
+export { IReadApis, IWriteApis } from './api/api-client';
 export { Context, ContextTransform } from './utils/context';
 
 export interface IPermitClient extends IEnforcer, IApiClient, IElementsApiClient {
@@ -38,7 +37,6 @@ class _Permit {
     this._config = ConfigFactory.build(config);
     const logger = LoggerFactory.createLogger(this._config);
     this._enforcer = new Enforcer(this._config, logger);
-    // this._cache = new LocalCacheClient(this._config, logger);
     this._api = new ApiClient(this._config, logger);
     this._elements = new ElementsClient(this._config, logger);
     logger.debug(
@@ -53,7 +51,6 @@ class _Permit {
       ...this._enforcer.getMethods(),
       ...this._api.getMethods(),
       ...this._elements.getMethods(),
-      // cache: this._cache.getMethods(),
     });
   }
 }
