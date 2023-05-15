@@ -1,5 +1,4 @@
 // For Default export
-// import { IPermitCache, LocalCacheClient } from './cache/client';
 import { ApiClient, IApiClient } from './api/api-client';
 import { ElementsClient, IElementsApiClient } from './api/elements';
 import { ConfigFactory, IPermitConfig } from './config';
@@ -13,7 +12,6 @@ export { IReadApis, IWriteApis } from './api/api-client';
 export { Context, ContextTransform } from './utils/context';
 
 export interface IPermitClient extends IEnforcer, IApiClient, IElementsApiClient {
-  // cache: IPermitCache;
   config: IPermitConfig;
 }
 
@@ -28,9 +26,8 @@ export interface IPermitClient extends IEnforcer, IApiClient, IElementsApiClient
  */
 class _Permit {
   private _config: IPermitConfig;
-  private _enforcer: Enforcer;
-  // private _cache: LocalCacheClient;
   private _api: ApiClient;
+  private _enforcer: Enforcer;
   private _elements: ElementsClient;
 
   constructor(config: RecursivePartial<IPermitConfig>) {

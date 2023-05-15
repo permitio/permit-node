@@ -1,7 +1,8 @@
+import globalAxios, { AxiosInstance } from 'axios';
 import _ from 'lodash';
 
-import { RecursivePartial } from './utils/types';
 import { ApiContext } from './api/context';
+import { RecursivePartial } from './utils/types';
 
 interface ILoggerConfig {
   level: string;
@@ -25,6 +26,7 @@ export interface IPermitConfig {
   timeout: number | undefined;
   throwOnError: boolean | undefined;
   apiContext: ApiContext;
+  axiosInstance: AxiosInstance;
 }
 
 // returns a config
@@ -49,6 +51,7 @@ export class ConfigFactory {
       timeout: undefined,
       throwOnError: undefined,
       apiContext: new ApiContext(),
+      axiosInstance: globalAxios,
     };
   }
 
