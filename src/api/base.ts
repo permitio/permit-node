@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Logger } from 'winston';
 
 import { IPermitConfig } from '../config';
@@ -6,6 +6,25 @@ import { APIKeysApi, Configuration } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
 
 import { ApiKeyLevel, PermitContextError } from './context';
+
+export class PermitApiError<T> extends Error {
+  constructor(message: string, public originalError: AxiosError<T>) {
+    super(message);
+  }
+
+  public get request(): any {
+    return this.originalError.request;
+  }
+
+  public get response(): AxiosResponse<T> | undefined {
+    return this.originalError.response;
+  }
+}
+
+export interface IPagination {
+  page?: number;
+  perPage?: number;
+}
 
 export abstract class BasePermitApi {
   protected openapiClientConfig: Configuration;
@@ -69,7 +88,10 @@ export abstract class BasePermitApi {
     }
 
     // verify context matches requested call level
-    if (callLevel === ApiKeyLevel.PROJECT_LEVEL_API_KEY && this.config.apiContext.project == null) {
+    if (
+      callLevel === ApiKeyLevel.PROJECT_LEVEL_API_KEY &&
+      this.config.apiContext.project === null
+    ) {
       throw new PermitContextError(
         "You're trying to use an SDK method that's specific to a project," +
           "but you haven't set the current project in your client's context yet," +
@@ -81,7 +103,7 @@ export abstract class BasePermitApi {
 
     if (
       callLevel == ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY &&
-      this.config.apiContext.environment == null
+      this.config.apiContext.environment === null
     ) {
       throw new PermitContextError(
         "You're trying to use an SDK method that's specific to an environment," +
@@ -90,6 +112,20 @@ export abstract class BasePermitApi {
           'Please set the context to a specific' +
           'environment using `permit.set_context()` method.',
       );
+    }
+  }
+
+  protected handleApiError(err: unknown): never {
+    if (axios.isAxiosError(err)) {
+      // this is an http response with an error status code
+      const message = `Got error status code: ${err.response?.status}`;
+      // log this to the SDK logger
+      this.logger.error(`${message}, err: ${JSON.stringify(err?.response?.data)}`);
+      // and throw a permit error exception
+      throw new PermitApiError(message, err);
+    } else {
+      // unexpected error, just throw
+      throw err;
     }
   }
 }
