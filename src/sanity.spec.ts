@@ -8,7 +8,6 @@ test('paths are processed correctly', async () =>
     const permit = new Permit({
       token: 'PJUKkuwiJkKxbIoC4o4cguWxB_2gX6MyATYKc2OCM',
     });
-    // permit.api.users.list()
 
     // code example:
     // const [user, created] = await permit.api.createUser({

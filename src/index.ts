@@ -6,6 +6,7 @@ import { ElementsClient, IElementsApiClient } from './api/elements';
 import { ConfigFactory, IPermitConfig } from './config';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
 import { LoggerFactory } from './logger';
+import { AxiosLoggingInterceptor } from './utils/http-logger';
 import { RecursivePartial } from './utils/types';
 
 // exported interfaces
@@ -35,6 +36,7 @@ class _Permit {
   constructor(config: RecursivePartial<IPermitConfig>) {
     this._config = ConfigFactory.build(config);
     this._logger = LoggerFactory.createLogger(this._config);
+    AxiosLoggingInterceptor.setupInterceptor(this._config, this._logger);
     this._api = new ApiClient(this._config, this._logger);
 
     this._enforcer = new Enforcer(this._config, this._logger);
