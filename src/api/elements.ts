@@ -1,8 +1,10 @@
-import axios from 'axios';
 import { Logger } from 'winston';
 
 import { IPermitConfig } from '../config';
-import { AuthenticationApi, Configuration, EmbeddedLoginRequestOutput } from '../openapi';
+import { AuthenticationApi, EmbeddedLoginRequestOutput } from '../openapi';
+import { BASE_PATH } from '../openapi/base';
+
+import { BasePermitApi } from './base';
 
 export interface EmbeddedLoginRequestOutputWithContent extends EmbeddedLoginRequestOutput {
   content?: any;
@@ -28,15 +30,16 @@ export interface loginAsSchema {
   tenantId: string;
 }
 
-export class ElementsClient implements IElementsApiClient {
+export class ElementsClient extends BasePermitApi implements IElementsApiClient {
   private authApi: AuthenticationApi;
 
-  constructor(private config: IPermitConfig, private logger: Logger) {
-    const axiosClientConfig = new Configuration({
-      basePath: `${this.config.apiUrl}`,
-      accessToken: this.config.token,
-    });
-    this.authApi = new AuthenticationApi(axiosClientConfig);
+  constructor(config: IPermitConfig, logger: Logger) {
+    super(config, logger);
+    this.authApi = new AuthenticationApi(
+      this.openapiClientConfig,
+      BASE_PATH,
+      this.config.axiosInstance,
+    );
   }
 
   public async loginAs({
@@ -50,19 +53,12 @@ export class ElementsClient implements IElementsApiClient {
           tenant_id: tenantId,
         },
       });
-      this.logger.debug(`[${response.status}] permit.api.loginAs(${userId})`);
-      const res: EmbeddedLoginRequestOutputWithContent = response.data;
-      res['content'] = { url: response.data.redirect_url };
-      return res;
+      return {
+        ...response.data,
+        content: { url: response.data.redirect_url },
+      };
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.loginAs(${userId}), err: ${JSON.stringify(
-            err?.response?.data,
-          )}`,
-        );
-      }
-      throw err;
+      this.handleApiError(err);
     }
   }
 
