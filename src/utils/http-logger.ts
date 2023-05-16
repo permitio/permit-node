@@ -8,7 +8,7 @@ export class AxiosLoggingInterceptor {
     // Add a request interceptor
     config.axiosInstance.interceptors.request.use(
       function (request: AxiosRequestConfig) {
-        logger.info(`Sending HTTP request: ${request?.method} ${request?.url}`);
+        logger.debug(`Sending HTTP request: ${request?.method?.toUpperCase()} ${request?.url}`);
         return request;
       },
       function (error: any) {
@@ -20,8 +20,10 @@ export class AxiosLoggingInterceptor {
     // Add a response interceptor
     config.axiosInstance.interceptors.response.use(
       function (response: AxiosResponse<any>) {
-        logger.info(
-          `Received HTTP response: ${response?.request?.method} ${response?.request?.url}, status: ${response?.status}`,
+        logger.debug(
+          `Received HTTP response: ${response?.config?.method?.toUpperCase()} ${
+            response?.config?.url
+          }, status: ${response?.status}`,
         );
         return response;
       },
