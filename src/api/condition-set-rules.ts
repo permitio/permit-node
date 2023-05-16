@@ -20,7 +20,7 @@ export interface IListConditionSetRules extends IPagination {
 
 export interface IConditionSetRulesApi {
   list(params: IListConditionSetRules): Promise<ConditionSetRuleRead[]>;
-  create(rule: ConditionSetRuleCreate): Promise<ConditionSetRuleRead[]>;
+  create(rule: ConditionSetRuleCreate): Promise<ConditionSetRuleRead>;
   delete(rule: ConditionSetRuleRemove): Promise<void>;
 }
 
@@ -55,7 +55,7 @@ export class ConditionSetRulesApi extends BasePermitApi implements IConditionSet
     }
   }
 
-  public async create(rule: ConditionSetRuleCreate): Promise<ConditionSetRuleRead[]> {
+  public async create(rule: ConditionSetRuleCreate): Promise<ConditionSetRuleRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
       return (
@@ -63,7 +63,7 @@ export class ConditionSetRulesApi extends BasePermitApi implements IConditionSet
           ...this.config.apiContext.environmentContext,
           conditionSetRuleCreate: rule,
         })
-      ).data;
+      ).data[0];
     } catch (err) {
       this.handleApiError(err);
     }
