@@ -2,10 +2,13 @@ import { Logger } from 'winston';
 
 import { IPermitConfig } from '../config';
 import {
+  APIKeyRead,
+  APIKeysApi as AutogenAPIKeysApi,
   EnvironmentsApi as AutogenEnvironmentsApi,
   EnvironmentCopy,
   EnvironmentCreate,
   EnvironmentRead,
+  EnvironmentStats,
   EnvironmentUpdate,
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
@@ -38,10 +41,16 @@ export interface IEnvironmentsApi {
 
 export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
   private environments: AutogenEnvironmentsApi;
+  private apiKeys: AutogenAPIKeysApi;
 
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
     this.environments = new AutogenEnvironmentsApi(
+      this.openapiClientConfig,
+      BASE_PATH,
+      this.config.axiosInstance,
+    );
+    this.apiKeys = new AutogenAPIKeysApi(
       this.openapiClientConfig,
       BASE_PATH,
       this.config.axiosInstance,
@@ -69,6 +78,34 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
     try {
       return (
         await this.environments.getEnvironment({
+          projId: projectKey,
+          envId: environmentKey,
+        })
+      ).data;
+    } catch (err) {
+      this.handleApiError(err);
+    }
+  }
+
+  public async getStats(projectKey: string, environmentKey: string): Promise<EnvironmentStats> {
+    await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
+    try {
+      return (
+        await this.environments.statsEnvironments({
+          projId: projectKey,
+          envId: environmentKey,
+        })
+      ).data;
+    } catch (err) {
+      this.handleApiError(err);
+    }
+  }
+
+  public async getApiKey(projectKey: string, environmentKey: string): Promise<APIKeyRead> {
+    await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
+    try {
+      return (
+        await this.apiKeys.getEnvironmentApiKey({
           projId: projectKey,
           envId: environmentKey,
         })

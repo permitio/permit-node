@@ -138,4 +138,17 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
       this.handleApiError(err);
     }
   }
+
+  public async deleteTenantUser(tenantKey: string, userKey: string): Promise<void> {
+    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    try {
+      await this.tenants.deleteTenantUser({
+        ...this.config.apiContext.environmentContext,
+        tenantId: tenantKey,
+        userId: userKey,
+      });
+    } catch (err) {
+      this.handleApiError(err);
+    }
+  }
 }
