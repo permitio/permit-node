@@ -1,62 +1,92 @@
 // For Default export
 import winston from 'winston';
 
-import { ApiClient, IApiClient } from './api/api-client';
-import { ElementsClient, IElementsApiClient } from './api/elements';
+import { ApiClient, IPermitApi } from './api/api-client';
+import { ElementsClient, IPermitElementsApi } from './api/elements';
 import { ConfigFactory, IPermitConfig } from './config';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
+import { IResource, IUser } from './enforcement/interfaces';
 import { LoggerFactory } from './logger';
+import { CheckConfig, Context } from './utils/context';
 import { AxiosLoggingInterceptor } from './utils/http-logger';
 import { RecursivePartial } from './utils/types';
 
 // exported interfaces
 export { IUser, IAction, IResource } from './enforcement/interfaces';
+export { PermitConnectionError, PermitError, PermitPDPStatusError } from './enforcement/enforcer';
 export { Context, ContextTransform } from './utils/context';
+export { ApiContext, PermitContextError, ApiKeyLevel } from './api/context';
+export { PermitApiError } from './api/base';
 
-export interface IPermitClient extends IEnforcer, IApiClient, IElementsApiClient {
+export interface IPermitClient extends IEnforcer {
   config: IPermitConfig;
+  api: IPermitApi;
+  elements: IPermitElementsApi;
 }
 
-/**
- * Permit.io SDK for Node.js
- *
- * You can use this class to enforce permissions in your app.
- *
- * Usage:
- * const permit = new Permit.init({ ... }); // receives a config object of type IPermitConfig
- * const permitted = await permit.check(user, action, resource);
- */
-class _Permit {
-  private _config: IPermitConfig;
-  private _logger: winston.Logger;
-  private _api: ApiClient;
-  private _enforcer: Enforcer;
-  private _elements: ElementsClient;
+export class Permit implements IPermitClient {
+  private logger: winston.Logger;
+  private enforcer: IEnforcer;
+
+  /**
+   * Access the SDK configuration using this property.
+   * Once the SDK is initialized, the configuration is read-only.
+   *
+   * Usage example:
+   *
+   * ```typescript
+   * const permit = new Permit(config);
+   * const pdpUrl = permit.config.pdp;
+   * ```
+   */
+  public readonly config: IPermitConfig;
+
+  /**
+   * Access the Permit REST API using this property.
+   *
+   * Usage example:
+   *
+   * ```typescript
+   * const permit = new Permit(config);
+   * permit.api.roles.create(...);
+   * ```
+   */
+  public readonly api: IPermitApi;
+
+  /**
+   * Access the Permit Elements API using this property.
+   *
+   * Usage example:
+   *
+   * ```typescript
+   * const permit = new Permit(config);
+   * permit.elements.loginAs(user, tenant);
+   * ```
+   */
+  public readonly elements: IPermitElementsApi;
 
   constructor(config: RecursivePartial<IPermitConfig>) {
-    this._config = ConfigFactory.build(config);
-    this._logger = LoggerFactory.createLogger(this._config);
-    AxiosLoggingInterceptor.setupInterceptor(this._config, this._logger);
-    this._api = new ApiClient(this._config, this._logger);
+    this.config = ConfigFactory.build(config);
+    this.logger = LoggerFactory.createLogger(this.config);
+    AxiosLoggingInterceptor.setupInterceptor(this.config, this.logger);
 
-    this._enforcer = new Enforcer(this._config, this._logger);
-    this._elements = new ElementsClient(this._config, this._logger);
+    this.api = new ApiClient(this.config, this.logger);
 
-    this._logger.debug(
-      `Permit.io SDK initialized with config:\n${JSON.stringify(this._config, undefined, 2)}`,
+    this.enforcer = new Enforcer(this.config, this.logger);
+    this.elements = new ElementsClient(this.config, this.logger);
+
+    this.logger.debug(
+      `Permit.io SDK initialized with config:\n${JSON.stringify(this.config, undefined, 2)}`,
     );
+  }
 
-    Object.assign(this, {
-      // config
-      config: Object.freeze(this._config),
-
-      // exposed methods from specialized clients
-      ...this._enforcer.getMethods(),
-      ...this._api.getMethods(),
-      ...this._elements.getMethods(),
-    });
+  public async check(
+    user: string | IUser,
+    action: string,
+    resource: string | IResource,
+    context?: Context | undefined,
+    config?: CheckConfig | undefined,
+  ): Promise<boolean> {
+    return await this.enforcer.check(user, action, resource, context, config);
   }
 }
-
-type Permit = _Permit & IPermitClient;
-export const Permit = _Permit as new (config: RecursivePartial<IPermitConfig>) => Permit;

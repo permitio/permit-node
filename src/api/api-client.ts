@@ -31,29 +31,22 @@ export interface IPermitApi extends IDeprecatedPermitApi {
   users: IUsersApi;
 }
 
-export interface IApiClient {
-  api: IPermitApi;
-}
-
-export class ApiClient {
-  private deprecatedApi: DeprecatedApiClient;
-
-  public conditionSetRules: IConditionSetRulesApi;
-  public conditionSets: IConditionSetsApi;
-  public projects: IProjectsApi;
-  public environments: IEnvironmentsApi;
-  public actionGroups: IResourceActionGroupsApi;
-  public resourceActions: IResourceActionsApi;
-  public resourceAttributes: IResourceAttributesApi;
-  public resources: IResourcesApi;
-  public roleAssignments: IRoleAssignmentsApi;
-  public roles: IRolesApi;
-  public tenants: ITenantsApi;
-  public users: IUsersApi;
+export class ApiClient extends DeprecatedApiClient implements IPermitApi {
+  public readonly conditionSetRules: IConditionSetRulesApi;
+  public readonly conditionSets: IConditionSetsApi;
+  public readonly projects: IProjectsApi;
+  public readonly environments: IEnvironmentsApi;
+  public readonly actionGroups: IResourceActionGroupsApi;
+  public readonly resourceActions: IResourceActionsApi;
+  public readonly resourceAttributes: IResourceAttributesApi;
+  public readonly resources: IResourcesApi;
+  public readonly roleAssignments: IRoleAssignmentsApi;
+  public readonly roles: IRolesApi;
+  public readonly tenants: ITenantsApi;
+  public readonly users: IUsersApi;
 
   constructor(config: IPermitConfig, logger: Logger) {
-    this.deprecatedApi = new DeprecatedApiClient(config, logger);
-
+    super(config, logger);
     this.conditionSetRules = new ConditionSetRulesApi(config, logger);
     this.conditionSets = new ConditionSetsApi(config, logger);
     this.projects = new ProjectsApi(config, logger);
@@ -66,31 +59,5 @@ export class ApiClient {
     this.roles = new RolesApi(config, logger);
     this.tenants = new TenantsApi(config, logger);
     this.users = new UsersApi(config, logger);
-  }
-
-  public get api(): IPermitApi {
-    return {
-      // deprecated
-      ...this.deprecatedApi.getMethods(),
-      // new api
-      conditionSetRules: this.conditionSetRules,
-      conditionSets: this.conditionSets,
-      projects: this.projects,
-      environments: this.environments,
-      actionGroups: this.actionGroups,
-      resourceActions: this.resourceActions,
-      resourceAttributes: this.resourceAttributes,
-      resources: this.resources,
-      roleAssignments: this.roleAssignments,
-      roles: this.roles,
-      tenants: this.tenants,
-      users: this.users,
-    };
-  }
-
-  public getMethods(): IApiClient {
-    return {
-      api: this.api,
-    };
   }
 }

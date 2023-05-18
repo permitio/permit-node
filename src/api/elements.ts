@@ -21,16 +21,12 @@ export enum ElementsApiErrors {
   FORBIDDEN_ACCESS = 'Forbidden access',
 }
 
-export interface IElementsApiClient {
-  elements: IPermitElementsApi;
-}
-
 export interface loginAsSchema {
   userId: string;
   tenantId: string;
 }
 
-export class ElementsClient extends BasePermitApi implements IElementsApiClient {
+export class ElementsClient extends BasePermitApi implements IPermitElementsApi {
   private authApi: AuthenticationApi;
 
   constructor(config: IPermitConfig, logger: Logger) {
@@ -60,17 +56,5 @@ export class ElementsClient extends BasePermitApi implements IElementsApiClient 
     } catch (err) {
       this.handleApiError(err);
     }
-  }
-
-  public get elements(): IPermitElementsApi {
-    return {
-      loginAs: this.loginAs.bind(this),
-    };
-  }
-
-  public getMethods(): IElementsApiClient {
-    return {
-      elements: this.elements,
-    };
   }
 }
