@@ -22,7 +22,13 @@ export class PermitApiError<T> extends Error {
 }
 
 export interface IPagination {
+  /**
+   * the page number to fetch (default: 1)
+   */
   page?: number;
+  /**
+   * how many items to fetch per page (default: 100)
+   */
   perPage?: number;
 }
 
