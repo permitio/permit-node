@@ -1,46 +1,85 @@
 import { Dict } from '../utils/dict';
 
-// user interfaces ------------------------------------------------------------
+/**
+ * Respresents a user that is attempting to do an action on a protected resource.
+ * Passed as part of the input to the permit.check() function.
+ */
 export interface IUser {
-  // the customer-side id of the user (the user *key*)
+  /**
+   * The user key, which is the customer-side ID of the user.
+   */
   key: string;
-  // the user's first name (optional)
+  /**
+   * The first name of the user (optional).
+   */
   firstName?: string;
-  // the user's first name (optional)
+  /**
+   * The last name of the user (optional).
+   */
   lastName?: string;
-  // the user's email (optional)
+  /**
+   * The email address of the user (optional).
+   */
   email?: string;
-  // custom attributes on the user, can be used in ABAC
+  /**
+   * Custom attributes associated with the user, which can be used in ABAC (Attribute-Based Access Control).
+   */
   attributes?: Dict;
 }
 
-// action interfaces ----------------------------------------------------------
+/**
+ * Respresents an action the user is attempting to do on a protected resource.
+ * Passed as part of the input to the permit.check() function.
+ */
 export type IAction = string;
 
-// resource interfaces --------------------------------------------------------
+/**
+ * Respresents a protected resource passed to the permit.check() function.
+ * The permit.check() function will check if the user is authorized to access
+ * the resource described by this interface, according to the specified check parameters.
+ */
 export interface IResource {
-  // the type of the resource respresents a namespace of resources
-  // i.e: all "task" resources are objects under the "task" namespace
+  /**
+   * The resource type, represents a namespace of resources.
+   * For example, all `task` resources are objects under the `task` namespace.
+   */
   type: string;
-  // the customer-side id of the resource (the resource *key*)
-  // if no key is used (i.e: undefined), the question asked is:
-  // can the user perform the action on *all* the resources of
-  // this type? (i.e: all resources in this resource namespace)
+  /**
+   * The key of the resource instance, which is the customer-side ID of the resource.
+   * Can be used by relationship-based access control policies or by attribute-based
+   * access control policies. If no key is provided (i.e: undefined), the authorization
+   * query is: Can the user perform the action on *any* resource of this type?
+   * (i.e., all resources in this resource namespace)
+   */
   key?: string;
-  // the permissions service is multi-tenant by default,
-  // so a resource must be defined under a tenant.
+  /**
+   * The tenant under which the resource is defined.
+   * The permissions service is multi-tenant by default, so a resource must be associated with a tenant.
+   */
   tenant?: string;
-  // In general, can be used to pass extra attributes on the resource,
-  // this is especially relevant if the policy is ABAC (attribute-based
-  // access control).
-  // if using resource urls, attributes from url will be auto-populated.
+  /**
+   * Extra attributes associated with the resource.
+   * This is particularly relevant if the policy is ABAC (Attribute-Based Access Control).
+   */
   attributes?: Dict;
 }
 
+/**
+ * Represents the decision made by a policy.
+ */
 export interface PolicyDecision {
+  /**
+   * Specifies whether the action is allowed or not.
+   */
   allow: boolean;
 }
 
+/**
+ * Represents the result of a policy decision made by OPA (Open Policy Agent).
+ */
 export interface OpaDecisionResult {
+  /**
+   * The policy decision result.
+   */
   result: PolicyDecision;
 }

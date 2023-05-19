@@ -19,8 +19,20 @@ export { ApiContext, PermitContextError, ApiKeyLevel } from './api/context';
 export { PermitApiError } from './api/base';
 
 export interface IPermitClient extends IEnforcer {
+  /**
+   * Access the SDK configuration using this property.
+   * Once the SDK is initialized, the configuration is read-only.
+   */
   config: IPermitConfig;
+
+  /**
+   * Access the Permit REST API using this property.
+   */
   api: IPermitApi;
+
+  /**
+   * Access the Permit Elements API using this property.
+   */
   elements: IPermitElementsApi;
 }
 
