@@ -13,7 +13,17 @@ export interface EmbeddedLoginRequestOutputWithContent extends EmbeddedLoginRequ
   content?: any;
 }
 
+/**
+ * Interface for interacting with the Permit Elements API.
+ */
 export interface IPermitElementsApi {
+  /**
+   * Logs in as a user in the context of a specific tenant.
+   * @param loginData - The login data containing the user key and tenant key.
+   * @returns The embedded login authentication session data.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   loginAs({ userId, tenantId }: loginAsSchema): Promise<EmbeddedLoginRequestOutputWithContent>;
 }
 

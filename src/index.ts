@@ -12,6 +12,8 @@ import { AxiosLoggingInterceptor } from './utils/http-logger';
 import { RecursivePartial } from './utils/types';
 
 // exported interfaces
+export * from './api';
+export { IPermitConfig } from './config';
 export { IUser, IAction, IResource } from './enforcement/interfaces';
 export { PermitConnectionError, PermitError, PermitPDPStatusError } from './enforcement/enforcer';
 export { Context, ContextTransform } from './utils/context';
