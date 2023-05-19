@@ -8,20 +8,111 @@ import { BasePermitApi, IPagination } from './base';
 import { ApiKeyLevel } from './context';
 
 export interface IRolesApi {
+  /**
+   * Retrieves a list of roles.
+   *
+   * @param pagination The pagination options, @see {@link IPagination}
+   * @returns A promise that resolves to an array of roles.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   list(pagination?: IPagination): Promise<RoleRead[]>;
+
+  /**
+   * Retrieves a role by its key.
+   *
+   * @param roleKey The key of the role.
+   * @returns A promise that resolves to the role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   get(roleKey: string): Promise<RoleRead>;
+
+  /**
+   * Retrieves a role by its key.
+   * Alias for the {@link get} method.
+   *
+   * @param roleKey The key of the role.
+   * @returns A promise that resolves to the role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   getByKey(roleKey: string): Promise<RoleRead>;
+
+  /**
+   * Retrieves a role by its ID.
+   * Alias for the {@link get} method.
+   *
+   * @param roleId The ID of the role.
+   * @returns A promise that resolves to the role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   getById(roleId: string): Promise<RoleRead>;
+
+  /**
+   * Creates a new role.
+   *
+   * @param roleData The data for the new role.
+   * @returns A promise that resolves to the created role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   create(roleData: RoleCreate): Promise<RoleRead>;
+
+  /**
+   * Updates a role.
+   *
+   * @param roleKey The key of the role.
+   * @param roleData The updated data for the role.
+   * @returns A promise that resolves to the updated role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   update(roleKey: string, roleData: RoleUpdate): Promise<RoleRead>;
+
+  /**
+   * Deletes a role.
+   *
+   * @param roleKey The key of the role to delete.
+   * @returns A promise that resolves when the role is deleted.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   delete(roleKey: string): Promise<void>;
+
+  /**
+   * Assigns permissions to a role.
+   * @param roleKey - The key of the role.
+   * @param permissions - An array of permission keys (<resourceKey:actionKey>) to be assigned to the role.
+   * @returns A promise that resolves to a RoleRead object representing the updated role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   assignPermissions(roleKey: string, permissions: string[]): Promise<RoleRead>;
+
+  /**
+   * Removes permissions from a role.
+   * @param roleKey - The key of the role.
+   * @param permissions - An array of permission keys (<resourceKey:actionKey>) to be removed from the role.
+   * @returns A promise that resolves to a RoleRead object representing the updated role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   removePermissions(roleKey: string, permissions: string[]): Promise<RoleRead>;
 }
 
+/**
+ * The RolesApi class provides methods for interacting with Permit Roles.
+ */
 export class RolesApi extends BasePermitApi implements IRolesApi {
   private roles: AutogenRolesApi;
 
+  /**
+   * Creates an instance of the RolesApi.
+   * @param config - The configuration object for the Permit SDK.
+   * @param logger - The logger instance for logging.
+   */
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
     this.roles = new AutogenRolesApi(
@@ -31,6 +122,14 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
     );
   }
 
+  /**
+   * Retrieves a list of roles.
+   *
+   * @param pagination The pagination options, @see {@link IPagination}
+   * @returns A promise that resolves to an array of roles.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   public async list(pagination?: IPagination): Promise<RoleRead[]> {
     const { page = 1, perPage = 100 } = pagination ?? {};
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -47,6 +146,14 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
     }
   }
 
+  /**
+   * Retrieves a role by its key.
+   *
+   * @param roleKey The key of the role.
+   * @returns A promise that resolves to the role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   public async get(roleKey: string): Promise<RoleRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -61,14 +168,40 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
     }
   }
 
+  /**
+   * Retrieves a role by its key.
+   * Alias for the {@link get} method.
+   *
+   * @param roleKey The key of the role.
+   * @returns A promise that resolves to the role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   public async getByKey(roleKey: string): Promise<RoleRead> {
     return await this.get(roleKey);
   }
 
+  /**
+   * Retrieves a role by its ID.
+   * Alias for the {@link get} method.
+   *
+   * @param roleId The ID of the role.
+   * @returns A promise that resolves to the role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   public async getById(roleId: string): Promise<RoleRead> {
     return await this.get(roleId);
   }
 
+  /**
+   * Creates a new role.
+   *
+   * @param roleData The data for the new role.
+   * @returns A promise that resolves to the created role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   public async create(roleData: RoleCreate): Promise<RoleRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -83,6 +216,15 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
     }
   }
 
+  /**
+   * Updates a role.
+   *
+   * @param roleKey The key of the role.
+   * @param roleData The updated data for the role.
+   * @returns A promise that resolves to the updated role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   public async update(roleKey: string, roleData: RoleUpdate): Promise<RoleRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -98,6 +240,14 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
     }
   }
 
+  /**
+   * Deletes a role.
+   *
+   * @param roleKey The key of the role to delete.
+   * @returns A promise that resolves when the role is deleted.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   public async delete(roleKey: string): Promise<void> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -110,6 +260,14 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
     }
   }
 
+  /**
+   * Assigns permissions to a role.
+   * @param roleKey - The key of the role.
+   * @param permissions - An array of permission keys (<resourceKey:actionKey>) to be assigned to the role.
+   * @returns A promise that resolves to a RoleRead object representing the updated role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   public async assignPermissions(roleKey: string, permissions: string[]): Promise<RoleRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -127,6 +285,14 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
     }
   }
 
+  /**
+   * Removes permissions from a role.
+   * @param roleKey - The key of the role.
+   * @param permissions - An array of permission keys (<resourceKey:actionKey>) to be removed from the role.
+   * @returns A promise that resolves to a RoleRead object representing the updated role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
   public async removePermissions(roleKey: string, permissions: string[]): Promise<RoleRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {

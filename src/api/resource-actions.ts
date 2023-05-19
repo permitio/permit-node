@@ -226,7 +226,7 @@ export class ResourceActionsApi extends BasePermitApi implements IResourceAction
   }
 
   /**
-   * Updates an existing environment.
+   * Updates an existing action.
    *
    * @param resourceKey - The resource key.
    * @param actionKey - The key of the action to modify.
