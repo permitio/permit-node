@@ -35,29 +35,23 @@ import {
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
 
-import { BasePermitApi } from './base';
-import { ApiKeyLevel } from './context';
+import { BasePermitApi, PermitApiError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { ApiContext, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 /**
  * This interface contains *read actions* that goes outside
  * of your local network and queries permit.io cloud api.
  * You should be aware that these actions incur some cross-cloud latency.
+ * @see {@link DeprecatedApiClient} for implementation and docs.
  */
 export interface IDeprecatedReadApis {
   listUsers(): Promise<UserRead[]>;
-
   listRoles(): Promise<RoleRead[]>;
-
   getUser(userId: string): Promise<UserRead>;
-
   getTenant(tenantId: string): Promise<TenantRead>;
-
   getRole(roleId: string): Promise<RoleRead>;
-
   getAssignedRoles(user: string, tenant?: string): Promise<RoleAssignmentRead[]>;
-
   listConditionSets(type: string, page: number, per_page: number): Promise<ConditionSetRead[]>;
-
   listConditionSetsRules(page: number, per_page: number): Promise<ConditionSetRuleRead[]>;
 }
 
@@ -65,66 +59,43 @@ export interface IDeprecatedReadApis {
  * This interface contains *write actions* (or mutations) that manipulate remote
  * state by calling the permit.io api. These api calls goes *outside* your local network.
  * You should be aware that these actions incur some cross-cloud latency.
+ * @see {@link DeprecatedApiClient} for implementation and docs.
  */
 export interface IDeprecatedWriteApis {
-  // user mutations
   createUser(user: UserCreate): Promise<UserRead>;
   updateUser(userId: string, user: UserUpdate): Promise<UserRead>;
   syncUser(user: UserCreate): Promise<UserRead>;
   deleteUser(userId: string): Promise<AxiosResponse<void>>;
-
-  // tenant mutations
   createTenant(tenant: TenantCreate): Promise<TenantRead>;
-
   updateTenant(tenantId: string, tenant: TenantUpdate): Promise<TenantRead>;
-
   deleteTenant(tenantId: string): Promise<AxiosResponse<void>>;
-
   listTenants(page?: number): Promise<TenantRead[]>;
-
-  // role mutations
   createRole(role: RoleCreate): Promise<RoleRead>;
-
   updateRole(roleId: string, role: RoleUpdate): Promise<RoleRead>;
-
   deleteRole(roleId: string): Promise<AxiosResponse<void>>;
-
-  // role mutations
   assignRole(assignedRole: RoleAssignmentCreate): Promise<RoleAssignmentRead>;
-
   unassignRole(removedRole: RoleAssignmentRemove): Promise<AxiosResponse<void>>;
-
-  // resource mutations
   createResource(resource: ResourceCreate): Promise<ResourceRead>;
-
   updateResource(resourceId: string, resource: ResourceUpdate): Promise<ResourceRead>;
-
   deleteResource(resourceId: string): Promise<AxiosResponse<void>>;
-
-  // condition set mutations
   createConditionSet(conditionSet: ConditionSetCreate): Promise<ConditionSetRead>;
-
   updateConditionSet(
     conditionSetId: string,
     conditionSet: ConditionSetUpdate,
   ): Promise<ConditionSetRead>;
-
   deleteConditionSet(conditionSetId: string): Promise<AxiosResponse<void>>;
-
-  // condition set rule mutations
-
   assignConditionSetRule(conditionSetRule: ConditionSetRuleCreate): Promise<ConditionSetRuleRead[]>;
-
-  /**
-   * Unassign a condition set rule, meaning a userset won't be allowed to perform an action on a resource set.
-   *
-   * @deprecated
-   */
   unassignConditionSetRule(conditionSetRule: ConditionSetRuleRemove): Promise<AxiosResponse<void>>;
 }
 
 export interface IDeprecatedPermitApi extends IDeprecatedReadApis, IDeprecatedWriteApis {}
 
+/**
+ * Contains all the deprecated `permit.api.` methods in one place.
+ * The SDK now replaced all `permit.api.createRole()` with `permit.api.roles.create()`
+ * due to the large number of API endpoints, trying to allow more user-friendly code
+ * autocomplete behavior.
+ */
 export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPermitApi {
   private _users: UsersApi;
   private _tenants: TenantsApi;
@@ -134,6 +105,11 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
   private _roleAssignments: RoleAssignmentsApi;
   private _resources: ResourcesApi;
 
+  /**
+   * Creates an instance of DeprecatedApiClient.
+   * @param config - The configuration object for the Permit SDK.
+   * @param logger - The logger object for logging.
+   */
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
     this._users = new UsersApi(this.openapiClientConfig, BASE_PATH, this.config.axiosInstance);
@@ -161,6 +137,13 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     );
   }
 
+  /**
+   * Retrieves a list of users.
+   * @returns A promise that resolves to an array of UserRead objects representing the users.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.users.list()
+   */
   public async listUsers(): Promise<UserRead[]> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
 
@@ -183,6 +166,13 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Retrieves a list of roles.
+   * @returns A promise that resolves to an array of RoleRead objects representing the roles.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.roles.list()
+   */
   public async listRoles(): Promise<RoleRead[]> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
 
@@ -205,6 +195,16 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Retrieves a list of condition sets.
+   * @param type - The type of the condition set, either `userset` or `resourceset`.
+   * @param page - The page number.
+   * @param perPage - The number of items per page.
+   * @returns A promise that resolves to an array of ConditionSetRead objects representing the condition sets.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.conditionSets.list()
+   */
   public async listConditionSets(
     type: ConditionSetType,
     page: number,
@@ -234,6 +234,15 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Retrieves a list of condition set rules.
+   * @param page - The page number.
+   * @param perPage - The number of items per page.
+   * @returns A promise that resolves to an array of ConditionSetRuleRead objects representing the condition set rules.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.conditionSetRules.list()
+   */
   public async listConditionSetsRules(
     page: number,
     perPage: number,
@@ -261,6 +270,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Retrieves a user by ID or key
+   * @param userId - The ID or the key of the user.
+   * @returns A promise that resolves to a UserRead object representing the user.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.users.get()
+   */
   public async getUser(userId: string): Promise<UserRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -282,6 +299,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Retrieves a tenant by ID or key.
+   * @param tenantId - The ID or the key of the tenant.
+   * @returns A promise that resolves to a TenantRead object representing the tenant.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.tenants.get()
+   */
   public async getTenant(tenantId: string): Promise<TenantRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -303,6 +328,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Retrieves a list of tenants.
+   * @param page - The page number.
+   * @returns A promise that resolves to an array of TenantRead objects representing the tenants.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.tenants.list()
+   */
   public async listTenants(page?: number): Promise<TenantRead[]> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -324,6 +357,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Retrieves a role by ID or key.
+   * @param roleId - The ID or the key of the role.
+   * @returns A promise that resolves to a RoleRead object representing the role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.roles.get()
+   */
   public async getRole(roleId: string): Promise<RoleRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -345,6 +386,15 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Retrieves the assigned roles for a user (either in a single tenant or in all tenants).
+   * @param user - The ID or key of the user.
+   * @param tenant - The ID or key of the tenant, optional. If provided, only roles assigned within this tenant will be returned.
+   * @returns A promise that resolves to an array of RoleAssignmentRead objects representing the assigned roles.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.users.getAssignedRoles()
+   */
   public async getAssignedRoles(user: string, tenant?: string): Promise<RoleAssignmentRead[]> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -369,6 +419,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Creates a new resource.
+   * @param resource - The resource to create.
+   * @returns A promise that resolves to a ResourceRead object representing the created resource.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.resources.create()
+   */
   public async createResource(resource: ResourceCreate): Promise<ResourceRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -392,6 +450,15 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Updates an existing resource.
+   * @param resourceId - The ID or key of the resource to update.
+   * @param resource - The updated resource data.
+   * @returns A promise that resolves to a ResourceRead object representing the updated resource.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.resources.update()
+   */
   public async updateResource(resourceId: string, resource: ResourceUpdate): Promise<ResourceRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -418,6 +485,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Deletes a resource.
+   * @param resourceId - The ID or key of the resource to delete.
+   * @returns A promise that resolves when the resource is deleted.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.resources.delete()
+   */
   public async deleteResource(resourceId: string): Promise<AxiosResponse<void>> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -439,6 +514,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Creates a new user.
+   * @param user - The user to create.
+   * @returns A promise that resolves to a UserRead object representing the created user.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.users.create()
+   */
   public async createUser(user: UserCreate): Promise<UserRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -460,6 +543,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Creates or Updates in place a user.
+   * @param user - The user to create or update.
+   * @returns A promise that resolves to a UserRead object representing the synced user.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.users.sync()
+   */
   public async syncUser(user: UserCreate): Promise<UserRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -482,6 +573,15 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Updates an existing user.
+   * @param userId - The ID or key of the user to update.
+   * @param user - The updated user data.
+   * @returns A promise that resolves to a UserRead object representing the updated user.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.users.update()
+   */
   public async updateUser(userId: string, user: UserUpdate): Promise<UserRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -504,6 +604,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Deletes a user.
+   * @param userId - The ID or key of the user to delete.
+   * @returns A promise that resolves when the user is deleted.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.users.delete()
+   */
   public async deleteUser(userId: string): Promise<AxiosResponse<void>> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -525,6 +633,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Creates a new tenant.
+   * @param tenant - The tenant to create.
+   * @returns A promise that resolves to a TenantRead object representing the created tenant.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.tenants.create()
+   */
   public async createTenant(tenant: TenantCreate): Promise<TenantRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -546,6 +662,15 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Updates an existing tenant.
+   * @param tenantId - The ID or key of the tenant to update.
+   * @param tenant - The updated tenant data.
+   * @returns A promise that resolves to a TenantRead object representing the updated tenant.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.tenants.update()
+   */
   public async updateTenant(tenantId: string, tenant: TenantUpdate): Promise<TenantRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -570,6 +695,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Deletes a tenant.
+   * @param tenantId - The ID or key of the tenant to delete.
+   * @returns A promise that resolves when the tenant is deleted.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.tenants.delete()
+   */
   public async deleteTenant(tenantId: string): Promise<AxiosResponse<void>> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -591,6 +724,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Creates a new role.
+   * @param role - The role to create.
+   * @returns A promise that resolves to a RoleRead object representing the created role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.roles.create()
+   */
   public async createRole(role: RoleCreate): Promise<RoleRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -612,6 +753,15 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Updates an existing role.
+   * @param roleId - The ID or key of the role to update.
+   * @param role - The updated role data.
+   * @returns A promise that resolves to a RoleRead object representing the updated role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.roles.update()
+   */
   public async updateRole(roleId: string, role: RoleUpdate): Promise<RoleRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -636,6 +786,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Deletes a role.
+   * @param roleId - The ID or key of the role to delete.
+   * @returns A promise that resolves when the role is deleted.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.roles.delete()
+   */
   public async deleteRole(roleId: string): Promise<AxiosResponse<void>> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -657,6 +815,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Assigns a role to a user.
+   * @param assignedRole - The role assignment data.
+   * @returns A promise that resolves to a RoleAssignmentRead object representing the assigned role.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.users.assignRole()
+   */
   public async assignRole(assignedRole: RoleAssignmentCreate): Promise<RoleAssignmentRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -680,6 +846,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Unassigns a role from a user.
+   * @param removedRole - The role unassignment data.
+   * @returns A promise that resolves when the role is unassigned.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.users.unassignRole()
+   */
   public async unassignRole(removedRole: RoleAssignmentRemove): Promise<AxiosResponse<void>> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -703,6 +877,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Creates a new condition set.
+   * @param conditionSet - The condition set to create.
+   * @returns A promise that resolves to a ConditionSetRead object representing the created condition set.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.conditionSets.create()
+   */
   public async createConditionSet(conditionSet: ConditionSetCreate): Promise<ConditionSetRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -726,6 +908,15 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Updates an existing condition set.
+   * @param conditionSetId - The ID or key of the condition set to update.
+   * @param conditionSet - The updated condition set data.
+   * @returns A promise that resolves to a ConditionSetRead object representing the updated condition set.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.conditionSets.update()
+   */
   public async updateConditionSet(
     conditionSetId: string,
     conditionSet: ConditionSetUpdate,
@@ -757,6 +948,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Deletes a condition set.
+   * @param conditionSetId - The ID or key of the condition set to delete.
+   * @returns A promise that resolves when the condition set is deleted.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.conditionSets.delete()
+   */
   public async deleteConditionSet(conditionSetId: string): Promise<AxiosResponse<void>> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     try {
@@ -780,6 +979,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Creates a condition set rule (i.e: grants permission to a userset to act on a resourceset).
+   * @param conditionSetRule - The condition set rule data.
+   * @returns A promise that resolves to a ConditionSetRuleRead object representing the assigned condition set rule.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.conditionSetRules.create()
+   */
   public async assignConditionSetRule(
     conditionSetRule: ConditionSetRuleCreate,
   ): Promise<ConditionSetRuleRead[]> {
@@ -807,6 +1014,14 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     }
   }
 
+  /**
+   * Removes a condition set rule (i.e: unassigns permission from a userset to act on a resourceset).
+   * @param conditionSetRuleId - The ID or key of the condition set rule to remove.
+   * @returns A promise that resolves when the condition set rule is deleted.
+   * @throws {PermitApiError} If the API returns an error HTTP status code.
+   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @deprecated replaced with permit.api.conditionSetRules.delete()
+   */
   public async unassignConditionSetRule(
     conditionSetRule: ConditionSetRuleRemove,
   ): Promise<AxiosResponse<void>> {
