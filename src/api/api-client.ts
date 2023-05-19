@@ -91,17 +91,76 @@ export interface IPermitApi extends IDeprecatedPermitApi {
 }
 
 export class ApiClient extends DeprecatedApiClient implements IPermitApi {
+  /**
+   * API for managing condition set rules.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Condition-Set-Rules}
+   */
   public readonly conditionSetRules: IConditionSetRulesApi;
+
+  /**
+   * API for managing condition sets.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Condition-Sets}
+   */
   public readonly conditionSets: IConditionSetsApi;
+
+  /**
+   * API for managing projects.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Projects}
+   */
   public readonly projects: IProjectsApi;
+
+  /**
+   * API for managing environments.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Environments}
+   */
   public readonly environments: IEnvironmentsApi;
+
+  /**
+   * API for managing resource action groups.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Resource-Action-Groups}
+   */
   public readonly actionGroups: IResourceActionGroupsApi;
+
+  /**
+   * API for managing resource actions.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Resource-Actions}
+   */
   public readonly resourceActions: IResourceActionsApi;
+
+  /**
+   * API for managing resource attributes.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Resource-Attributes}
+   */
   public readonly resourceAttributes: IResourceAttributesApi;
+
+  /**
+   * API for managing resources.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Resources}
+   */
   public readonly resources: IResourcesApi;
+
+  /**
+   * API for managing role assignments.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Role-Assignments}
+   */
   public readonly roleAssignments: IRoleAssignmentsApi;
+
+  /**
+   * API for managing roles.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Roles}
+   */
   public readonly roles: IRolesApi;
+
+  /**
+   * API for managing tenants.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Tenants}
+   */
   public readonly tenants: ITenantsApi;
+
+  /**
+   * API for managing users.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Users}
+   */
   public readonly users: IUsersApi;
 
   /**

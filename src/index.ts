@@ -31,16 +31,17 @@ export interface IPermitClient extends IEnforcer {
  * Example usage:
  *
  * ```typescript
- * // the
+ * import { Permit } from 'permitio';
+ *
  * const permit = new Permit({
- *   // this is typically an Environment-level API key, the same API Key you would use for the PDP container.
+ *   // this is typically the same API Key you would use for the PDP container
  *   token: "[YOUR_API_KEY]",
  *   // in production, you might need to change this url to fit your deployment
  *   pdp: "http://localhost:7766",
  *   ...
  * });
  *
- * // creates (or updates) a user on that can be assigned roles and permissions.
+ * // creates (or updates) a user on that can be assigned roles and permissions
  * const { user } = await permit.api.users.sync({
  *   // the user key must be a unique id of the user
  *   key: 'auth0|elon',
@@ -48,19 +49,18 @@ export interface IPermitClient extends IEnforcer {
  *   email: 'elonmusk@tesla.com',
  *   first_name: 'Elon',
  *   last_name: 'Musk',
- *   // user attributes can be stored on permit and be used by attribute-based access control policies.
+ *   // user attributes can be used in attribute-based access-control policies
  *   attributes: {
  *     age: 50,
  *     favoriteColor: 'red',
  *   },
  * });
  *
- * // 'document' is a resource key, where resource is meant as a resource type and not a specific instance
+ * // 'document' is the protected resource we are enforcing access to
  * const resource = 'document';
- * // the action we are trying to do on the resource
+ * // the action the user is trying to do on the resource
  * const action = 'read';
  *
- * // you can pass an entire user object, or just the user key (user.key) as the first param.
  * const permitted = await permit.check(user, action, resource);
  * if (permitted) {
  *     console.log('User is authorized to read a document.');
@@ -110,6 +110,11 @@ export class Permit implements IPermitClient {
    */
   public readonly elements: IPermitElementsApi;
 
+  /**
+   * Constructs a new instance of the {@link Permit} class with the specified configuration.
+   *
+   * @param config - The configuration for the Permit SDK.
+   */
   constructor(config: RecursivePartial<IPermitConfig>) {
     this.config = ConfigFactory.build(config);
     this.logger = LoggerFactory.createLogger(this.config);
