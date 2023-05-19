@@ -17,17 +17,76 @@ import { ITenantsApi, TenantsApi } from './tenants';
 import { IUsersApi, UsersApi } from './users';
 
 export interface IPermitApi extends IDeprecatedPermitApi {
+  /**
+   * API for managing condition set rules.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Condition-Set-Rules}
+   */
   conditionSetRules: IConditionSetRulesApi;
+
+  /**
+   * API for managing condition sets.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Condition-Sets}
+   */
   conditionSets: IConditionSetsApi;
+
+  /**
+   * API for managing projects.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Projects}
+   */
   projects: IProjectsApi;
+
+  /**
+   * API for managing environments.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Environments}
+   */
   environments: IEnvironmentsApi;
+
+  /**
+   * API for managing resource action groups.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Resource-Action-Groups}
+   */
   actionGroups: IResourceActionGroupsApi;
+
+  /**
+   * API for managing resource actions.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Resource-Actions}
+   */
   resourceActions: IResourceActionsApi;
+
+  /**
+   * API for managing resource attributes.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Resource-Attributes}
+   */
   resourceAttributes: IResourceAttributesApi;
+
+  /**
+   * API for managing resources.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Resources}
+   */
   resources: IResourcesApi;
+
+  /**
+   * API for managing role assignments.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Role-Assignments}
+   */
   roleAssignments: IRoleAssignmentsApi;
+
+  /**
+   * API for managing roles.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Roles}
+   */
   roles: IRolesApi;
+
+  /**
+   * API for managing tenants.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Tenants}
+   */
   tenants: ITenantsApi;
+
+  /**
+   * API for managing users.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Users}
+   */
   users: IUsersApi;
 }
 
@@ -45,6 +104,12 @@ export class ApiClient extends DeprecatedApiClient implements IPermitApi {
   public readonly tenants: ITenantsApi;
   public readonly users: IUsersApi;
 
+  /**
+   * Constructs a new instance of the ApiClient class with the specified configuration and logger.
+   *
+   * @param config - The configuration for the Permit API client.
+   * @param logger - The logger instance.
+   */
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
     this.conditionSetRules = new ConditionSetRulesApi(config, logger);

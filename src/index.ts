@@ -24,6 +24,51 @@ export interface IPermitClient extends IEnforcer {
   elements: IPermitElementsApi;
 }
 
+/**
+ * The `Permit` class represents the main entry point for interacting with the Permit.io SDK.
+ * The SDK constructor expects an object implementing the {@link IPermitConfig} interface.
+ *
+ * Example usage:
+ *
+ * ```typescript
+ * // the
+ * const permit = new Permit({
+ *   // this is typically an Environment-level API key, the same API Key you would use for the PDP container.
+ *   token: "[YOUR_API_KEY]",
+ *   // in production, you might need to change this url to fit your deployment
+ *   pdp: "http://localhost:7766",
+ *   ...
+ * });
+ *
+ * // creates (or updates) a user on that can be assigned roles and permissions.
+ * const { user } = await permit.api.users.sync({
+ *   // the user key must be a unique id of the user
+ *   key: 'auth0|elon',
+ *   // optional params
+ *   email: 'elonmusk@tesla.com',
+ *   first_name: 'Elon',
+ *   last_name: 'Musk',
+ *   // user attributes can be stored on permit and be used by attribute-based access control policies.
+ *   attributes: {
+ *     age: 50,
+ *     favoriteColor: 'red',
+ *   },
+ * });
+ *
+ * // 'document' is a resource key, where resource is meant as a resource type and not a specific instance
+ * const resource = 'document';
+ * // the action we are trying to do on the resource
+ * const action = 'read';
+ *
+ * // you can pass an entire user object, or just the user key (user.key) as the first param.
+ * const permitted = await permit.check(user, action, resource);
+ * if (permitted) {
+ *     console.log('User is authorized to read a document.');
+ * } else {
+ *     console.log('User is not authorized to read a document.');
+ * }
+ * ```
+ */
 export class Permit implements IPermitClient {
   private logger: winston.Logger;
   private enforcer: IEnforcer;
@@ -80,6 +125,17 @@ export class Permit implements IPermitClient {
     );
   }
 
+  /**
+   * Checks if a `user` is authorized to perform an `action` on a `resource` within the specified context.
+   *
+   * @param user     - The user object representing the user.
+   * @param action   - The action to be performed on the resource.
+   * @param resource - The resource object representing the resource.
+   * @param context  - The context object representing the context in which the action is performed.
+   * @returns `true` if the user is authorized, `false` otherwise.
+   * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
+   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
+   */
   public async check(
     user: string | IUser,
     action: string,
