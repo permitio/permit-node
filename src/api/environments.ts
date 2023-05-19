@@ -29,8 +29,8 @@ export interface IEnvironmentsApi {
    *
    * @param params - the filters and pagination options, @see {@link IListEnvironments}
    * @returns A promise that resolves to an array of EnvironmentRead objects representing the listed environments.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   list(params: IListEnvironments): Promise<EnvironmentRead[]>;
 
@@ -40,8 +40,8 @@ export interface IEnvironmentsApi {
    * @param projectKey - The project key.
    * @param environmentKey - The environment key.
    * @returns A promise that resolves to an EnvironmentRead object representing the retrieved environment.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   get(projectKey: string, environmentKey: string): Promise<EnvironmentRead>;
 
@@ -52,8 +52,8 @@ export interface IEnvironmentsApi {
    * @param projectKey - The project key.
    * @param environmentKey - The environment key.
    * @returns A promise that resolves to an EnvironmentRead object representing the retrieved environment.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getByKey(projectKey: string, environmentKey: string): Promise<EnvironmentRead>;
 
@@ -64,8 +64,8 @@ export interface IEnvironmentsApi {
    * @param projectId - The project ID.
    * @param environmentId - The environment ID.
    * @returns A promise that resolves to an EnvironmentRead object representing the retrieved environment.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getById(projectId: string, environmentId: string): Promise<EnvironmentRead>;
 
@@ -75,8 +75,8 @@ export interface IEnvironmentsApi {
    * @param projectKey - The project key.
    * @param environmentKey - The environment key.
    * @returns A promise that resolves to an EnvironmentStats object representing the statistics data.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getStats(projectKey: string, environmentKey: string): Promise<EnvironmentStats>;
 
@@ -87,8 +87,8 @@ export interface IEnvironmentsApi {
    * @param projectKey - The project key.
    * @param environmentKey - The environment key.
    * @returns A promise that resolves to an APIKeyRead object containing the API key and its metadata.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getApiKey(projectKey: string, environmentKey: string): Promise<APIKeyRead>;
 
@@ -98,8 +98,8 @@ export interface IEnvironmentsApi {
    * @param projectKey - The project key.
    * @param environmentData - The data for creating the environment.
    * @returns A promise that resolves to an EnvironmentRead object representing the created environment.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   create(projectKey: string, environmentData: EnvironmentCreate): Promise<EnvironmentRead>;
 
@@ -110,8 +110,8 @@ export interface IEnvironmentsApi {
    * @param environmentKey - The environment key.
    * @param environmentData - The data for updating the environment.
    * @returns A promise that resolves to an EnvironmentRead object representing the updated environment.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   update(
     projectKey: string,
@@ -131,8 +131,8 @@ export interface IEnvironmentsApi {
    * @param environmentKey - The environment key.
    * @param copyParams - The parameters for copying the environment.
    * @returns A promise that resolves to an EnvironmentRead object representing the copied environment.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   copy(
     projectKey: string,
@@ -146,8 +146,8 @@ export interface IEnvironmentsApi {
    * @param projectKey - The project key.
    * @param environmentKey - The environment key.
    * @returns A promise that resolves when the environment is successfully deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   delete(projectKey: string, environmentKey: string): Promise<void>;
 }
@@ -183,8 +183,8 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
    *
    * @param params - the filters and pagination options, @see {@link IListEnvironments}
    * @returns A promise that resolves to an array of EnvironmentRead objects representing the listed environments.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async list(params: IListEnvironments): Promise<EnvironmentRead[]> {
     const { projectKey, page = 1, perPage = 100 } = params;
@@ -208,8 +208,8 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
    * @param projectKey - The project key.
    * @param environmentKey - The environment key.
    * @returns A promise that resolves to an EnvironmentRead object representing the retrieved environment.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(projectKey: string, environmentKey: string): Promise<EnvironmentRead> {
     await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
@@ -232,8 +232,8 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
    * @param projectKey - The project key.
    * @param environmentKey - The environment key.
    * @returns A promise that resolves to an EnvironmentRead object representing the retrieved environment.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getByKey(projectKey: string, environmentKey: string): Promise<EnvironmentRead> {
     return await this.get(projectKey, environmentKey);
@@ -246,8 +246,8 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
    * @param projectId - The project ID.
    * @param environmentId - The environment ID.
    * @returns A promise that resolves to an EnvironmentRead object representing the retrieved environment.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getById(projectId: string, environmentId: string): Promise<EnvironmentRead> {
     return await this.get(projectId, environmentId);
@@ -259,8 +259,8 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
    * @param projectKey - The project key.
    * @param environmentKey - The environment key.
    * @returns A promise that resolves to an EnvironmentStats object representing the statistics data.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getStats(projectKey: string, environmentKey: string): Promise<EnvironmentStats> {
     await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
@@ -283,8 +283,8 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
    * @param projectKey - The project key.
    * @param environmentKey - The environment key.
    * @returns A promise that resolves to an APIKeyRead object containing the API key and its metadata.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getApiKey(projectKey: string, environmentKey: string): Promise<APIKeyRead> {
     await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
@@ -306,8 +306,8 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
    * @param projectKey - The project key.
    * @param environmentData - The data for creating the environment.
    * @returns A promise that resolves to an EnvironmentRead object representing the created environment.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async create(
     projectKey: string,
@@ -333,8 +333,8 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
    * @param environmentKey - The environment key.
    * @param environmentData - The data for updating the environment.
    * @returns A promise that resolves to an EnvironmentRead object representing the updated environment.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async update(
     projectKey: string,
@@ -367,8 +367,8 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
    * @param environmentKey - The environment key.
    * @param copyParams - The parameters for copying the environment.
    * @returns A promise that resolves to an EnvironmentRead object representing the copied environment.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async copy(
     projectKey: string,
@@ -395,8 +395,8 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
    * @param projectKey - The project key.
    * @param environmentKey - The environment key.
    * @returns A promise that resolves when the environment is successfully deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(projectKey: string, environmentKey: string): Promise<void> {
     await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);

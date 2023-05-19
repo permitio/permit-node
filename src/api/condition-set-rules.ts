@@ -37,8 +37,8 @@ export interface IConditionSetRulesApi {
    *
    * @param params - parameters for filtering and pagination, @see {@link IListConditionSetRules}
    * @returns A promise that resolves to an array of condition set rules.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   list(params: IListConditionSetRules): Promise<ConditionSetRuleRead[]>;
 
@@ -47,8 +47,8 @@ export interface IConditionSetRulesApi {
    *
    * @param rule - The condition set rule to create.
    * @returns A promise that resolves to the created condition set rule.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   create(rule: ConditionSetRuleCreate): Promise<ConditionSetRuleRead>;
 
@@ -57,8 +57,8 @@ export interface IConditionSetRulesApi {
    *
    * @param rule - The condition set rule to delete.
    * @returns A promise that resolves when the condition set rule is deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   delete(rule: ConditionSetRuleRemove): Promise<void>;
 }
@@ -85,8 +85,8 @@ export class ConditionSetRulesApi extends BasePermitApi implements IConditionSet
    *
    * @param params - parameters for filtering and pagination, @see {@link IListConditionSetRules}
    * @returns A promise that resolves to an array of condition set rules.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async list(params: IListConditionSetRules): Promise<ConditionSetRuleRead[]> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -112,8 +112,8 @@ export class ConditionSetRulesApi extends BasePermitApi implements IConditionSet
    *
    * @param rule - The condition set rule to create.
    * @returns A promise that resolves to the created condition set rule.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async create(rule: ConditionSetRuleCreate): Promise<ConditionSetRuleRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -134,8 +134,8 @@ export class ConditionSetRulesApi extends BasePermitApi implements IConditionSet
    *
    * @param rule - The condition set rule to delete.
    * @returns A promise that resolves when the condition set rule is deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(rule: ConditionSetRuleRemove): Promise<void> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);

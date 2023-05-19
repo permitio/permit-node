@@ -18,8 +18,8 @@ export interface IProjectsApi {
    *
    * @param pagination The pagination options, @see {@link IPagination}
    * @returns A promise that resolves to an array of projects.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   list(pagination?: IPagination): Promise<ProjectRead[]>;
 
@@ -28,8 +28,8 @@ export interface IProjectsApi {
    *
    * @param projectKey The key of the project.
    * @returns A promise that resolves to the project.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   get(projectKey: string): Promise<ProjectRead>;
 
@@ -39,8 +39,8 @@ export interface IProjectsApi {
    *
    * @param projectKey The key of the project.
    * @returns A promise that resolves to the project.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getByKey(projectKey: string): Promise<ProjectRead>;
 
@@ -50,8 +50,8 @@ export interface IProjectsApi {
    *
    * @param projectId The ID of the project.
    * @returns A promise that resolves to the project.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getById(projectId: string): Promise<ProjectRead>;
 
@@ -60,8 +60,8 @@ export interface IProjectsApi {
    *
    * @param projectData The data for the new project.
    * @returns A promise that resolves to the created project.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   create(projectData: ProjectCreate): Promise<ProjectRead>;
 
@@ -71,8 +71,8 @@ export interface IProjectsApi {
    * @param projectKey The key of the project.
    * @param projectData The updated data for the project.
    * @returns A promise that resolves to the updated project.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   update(projectKey: string, projectData: ProjectUpdate): Promise<ProjectRead>;
 
@@ -81,8 +81,8 @@ export interface IProjectsApi {
    *
    * @param projectKey The key of the project to delete.
    * @returns A promise that resolves when the project is deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   delete(projectKey: string): Promise<void>;
 }
@@ -112,8 +112,8 @@ export class ProjectsApi extends BasePermitApi implements IProjectsApi {
    *
    * @param pagination The pagination options, @see {@link IPagination}
    * @returns A promise that resolves to an array of projects.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async list(pagination?: IPagination): Promise<ProjectRead[]> {
     const { page = 1, perPage = 100 } = pagination ?? {};
@@ -135,8 +135,8 @@ export class ProjectsApi extends BasePermitApi implements IProjectsApi {
    *
    * @param projectKey The key of the project.
    * @returns A promise that resolves to the project.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(projectKey: string): Promise<ProjectRead> {
     await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
@@ -157,8 +157,8 @@ export class ProjectsApi extends BasePermitApi implements IProjectsApi {
    *
    * @param projectKey The key of the project.
    * @returns A promise that resolves to the project.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getByKey(projectKey: string): Promise<ProjectRead> {
     return await this.get(projectKey);
@@ -170,8 +170,8 @@ export class ProjectsApi extends BasePermitApi implements IProjectsApi {
    *
    * @param projectId The ID of the project.
    * @returns A promise that resolves to the project.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getById(projectId: string): Promise<ProjectRead> {
     return await this.get(projectId);
@@ -182,8 +182,8 @@ export class ProjectsApi extends BasePermitApi implements IProjectsApi {
    *
    * @param projectData The data for the new project.
    * @returns A promise that resolves to the created project.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async create(projectData: ProjectCreate): Promise<ProjectRead> {
     await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
@@ -204,8 +204,8 @@ export class ProjectsApi extends BasePermitApi implements IProjectsApi {
    * @param projectKey The key of the project.
    * @param projectData The updated data for the project.
    * @returns A promise that resolves to the updated project.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async update(projectKey: string, projectData: ProjectUpdate): Promise<ProjectRead> {
     await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
@@ -226,8 +226,8 @@ export class ProjectsApi extends BasePermitApi implements IProjectsApi {
    *
    * @param projectKey The key of the project to delete.
    * @returns A promise that resolves when the project is deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(projectKey: string): Promise<void> {
     await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);

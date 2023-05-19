@@ -128,7 +128,7 @@ export class ApiContext {
   /**
    * Get the API project and environment parameters from an environment-level context.
    * @returns An object containing the project and environment IDs.
-   * @throws {PermitContextError} If the API context is not set to environment level or the project or environment is null.
+   * @throws {@link PermitContextError} If the API context is not set to environment level or the project or environment is null.
    */
   public get environmentContext(): { projId: string; envId: string } {
     if (

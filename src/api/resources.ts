@@ -23,8 +23,8 @@ export interface IResourcesApi {
    *
    * @param pagination The pagination options, @see {@link IPagination}
    * @returns A promise that resolves to an array of resources.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   list(pagination?: IPagination): Promise<ResourceRead[]>;
 
@@ -33,8 +33,8 @@ export interface IResourcesApi {
    *
    * @param resourceKey The key of the resource.
    * @returns A promise that resolves to the resource.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   get(resourceKey: string): Promise<ResourceRead>;
 
@@ -44,8 +44,8 @@ export interface IResourcesApi {
    *
    * @param resourceKey The key of the resource.
    * @returns A promise that resolves to the resource.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getByKey(resourceKey: string): Promise<ResourceRead>;
 
@@ -55,8 +55,8 @@ export interface IResourcesApi {
    *
    * @param resourceId The ID of the resource.
    * @returns A promise that resolves to the resource.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getById(resourceId: string): Promise<ResourceRead>;
 
@@ -65,8 +65,8 @@ export interface IResourcesApi {
    *
    * @param resourceData The data for the new resource.
    * @returns A promise that resolves to the created resource.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   create(resourceData: ResourceCreate): Promise<ResourceRead>;
 
@@ -76,8 +76,8 @@ export interface IResourcesApi {
    * @param resourceKey The key of the resource.
    * @param resourceData The updated data for the resource.
    * @returns A promise that resolves to the updated resource.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   replace(resourceKey: string, resourceData: ResourceReplace): Promise<ResourceRead>;
 
@@ -87,8 +87,8 @@ export interface IResourcesApi {
    * @param resourceKey The key of the resource.
    * @param resourceData The updated data for the resource.
    * @returns A promise that resolves to the updated resource.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   update(resourceKey: string, resourceData: ResourceUpdate): Promise<ResourceRead>;
 
@@ -97,8 +97,8 @@ export interface IResourcesApi {
    *
    * @param resourceKey The key of the resource to delete.
    * @returns A promise that resolves when the resource is deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   delete(resourceKey: string): Promise<void>;
 }
@@ -128,8 +128,8 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
    *
    * @param pagination The pagination options, @see {@link IPagination}
    * @returns A promise that resolves to an array of resources.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async list(pagination?: IPagination): Promise<ResourceRead[]> {
     const { page = 1, perPage = 100 } = pagination ?? {};
@@ -152,8 +152,8 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
    *
    * @param resourceKey The key of the resource.
    * @returns A promise that resolves to the resource.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(resourceKey: string): Promise<ResourceRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -175,8 +175,8 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
    *
    * @param resourceKey The key of the resource.
    * @returns A promise that resolves to the resource.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getByKey(resourceKey: string): Promise<ResourceRead> {
     return await this.get(resourceKey);
@@ -188,8 +188,8 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
    *
    * @param resourceId The ID of the resource.
    * @returns A promise that resolves to the resource.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getById(resourceId: string): Promise<ResourceRead> {
     return await this.get(resourceId);
@@ -200,8 +200,8 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
    *
    * @param resourceData The data for the new resource.
    * @returns A promise that resolves to the created resource.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async create(resourceData: ResourceCreate): Promise<ResourceRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -223,8 +223,8 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
    * @param resourceKey The key of the resource.
    * @param resourceData The updated data for the resource.
    * @returns A promise that resolves to the updated resource.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async replace(resourceKey: string, resourceData: ResourceReplace): Promise<ResourceRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -247,8 +247,8 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
    * @param resourceKey The key of the resource.
    * @param resourceData The updated data for the resource.
    * @returns A promise that resolves to the updated resource.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async update(resourceKey: string, resourceData: ResourceUpdate): Promise<ResourceRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -270,8 +270,8 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
    *
    * @param resourceKey The key of the resource to delete.
    * @returns A promise that resolves when the resource is deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(resourceKey: string): Promise<void> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);

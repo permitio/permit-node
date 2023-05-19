@@ -24,8 +24,8 @@ export interface IResourceAttributesApi {
    * Retrieves a list of all attributes that are defined for a given resource.
    * @param params - pagination and filtering params, @see {@link IListAttributes}
    * @returns A promise that resolves to an array of ResourceAttributeRead objects representing the attributes.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   list(params: IListAttributes): Promise<ResourceAttributeRead[]>;
 
@@ -35,8 +35,8 @@ export interface IResourceAttributesApi {
    * @param resourceKey - The resource key.
    * @param attributeKey - The attribute key.
    * @returns A promise that resolves to a ResourceAttributeRead object representing the attribute.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   get(resourceKey: string, attributeKey: string): Promise<ResourceAttributeRead>;
 
@@ -47,8 +47,8 @@ export interface IResourceAttributesApi {
    * @param resourceKey - The resource key.
    * @param attributeKey - The attribute key.
    * @returns A promise that resolves to a ResourceAttributeRead object representing the attribute.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getByKey(resourceKey: string, attributeKey: string): Promise<ResourceAttributeRead>;
 
@@ -59,8 +59,8 @@ export interface IResourceAttributesApi {
    * @param resourceId - The resource ID.
    * @param attributeId - The attribute ID.
    * @returns A promise that resolves to a ResourceAttributeRead object representing the attribute.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getById(resourceId: string, attributeId: string): Promise<ResourceAttributeRead>;
 
@@ -70,8 +70,8 @@ export interface IResourceAttributesApi {
    * @param resourceKey - The resource key.
    * @param attributeData - The attribute data.
    * @returns A promise that resolves to a ResourceAttributeRead object representing the created attribute.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   create(
     resourceKey: string,
@@ -85,8 +85,8 @@ export interface IResourceAttributesApi {
    * @param attributeKey - The key of the attribute to modify.
    * @param attributeData - The data for updating the attribute.
    * @returns A promise that resolves to a ResourceAttributeRead object representing the updated attribute.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   update(
     resourceKey: string,
@@ -99,8 +99,8 @@ export interface IResourceAttributesApi {
    * @param resourceKey - The resource key.
    * @param attributeKey - The attribute key.
    * @returns A promise that resolves when the attribute is successfully deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   delete(resourceKey: string, attributeKey: string): Promise<void>;
 }
@@ -129,8 +129,8 @@ export class ResourceAttributesApi extends BasePermitApi implements IResourceAtt
    * Retrieves a list of all attributes that are defined for a given resource.
    * @param params - pagination and filtering params, @see {@link IListAttributes}
    * @returns A promise that resolves to an array of ResourceAttributeRead objects representing the attributes.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async list(params: IListAttributes): Promise<ResourceAttributeRead[]> {
     const { resourceKey, page = 1, perPage = 100 } = params;
@@ -155,8 +155,8 @@ export class ResourceAttributesApi extends BasePermitApi implements IResourceAtt
    * @param resourceKey - The resource key.
    * @param attributeKey - The attribute key.
    * @returns A promise that resolves to a ResourceAttributeRead object representing the attribute.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(resourceKey: string, attributeKey: string): Promise<ResourceAttributeRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -180,8 +180,8 @@ export class ResourceAttributesApi extends BasePermitApi implements IResourceAtt
    * @param resourceKey - The resource key.
    * @param attributeKey - The attribute key.
    * @returns A promise that resolves to a ResourceAttributeRead object representing the attribute.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getByKey(resourceKey: string, attributeKey: string): Promise<ResourceAttributeRead> {
     return await this.get(resourceKey, attributeKey);
@@ -194,8 +194,8 @@ export class ResourceAttributesApi extends BasePermitApi implements IResourceAtt
    * @param resourceId - The resource ID.
    * @param attributeId - The attribute ID.
    * @returns A promise that resolves to a ResourceAttributeRead object representing the attribute.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getById(resourceId: string, attributeId: string): Promise<ResourceAttributeRead> {
     return await this.get(resourceId, attributeId);
@@ -207,8 +207,8 @@ export class ResourceAttributesApi extends BasePermitApi implements IResourceAtt
    * @param resourceKey - The resource key.
    * @param attributeData - The attribute data.
    * @returns A promise that resolves to a ResourceAttributeRead object representing the created attribute.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async create(
     resourceKey: string,
@@ -235,8 +235,8 @@ export class ResourceAttributesApi extends BasePermitApi implements IResourceAtt
    * @param attributeKey - The key of the attribute to modify.
    * @param attributeData - The data for updating the attribute.
    * @returns A promise that resolves to a ResourceAttributeRead object representing the updated attribute.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async update(
     resourceKey: string,
@@ -263,8 +263,8 @@ export class ResourceAttributesApi extends BasePermitApi implements IResourceAtt
    * @param resourceKey - The resource key.
    * @param attributeKey - The attribute key.
    * @returns A promise that resolves when the attribute is successfully deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(resourceKey: string, attributeKey: string): Promise<void> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);

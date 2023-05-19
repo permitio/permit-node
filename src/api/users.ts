@@ -61,8 +61,8 @@ export interface IUsersApi {
    *
    * @param pagination The pagination options, @see {@link IPagination}
    * @returns A promise that resolves to a PaginatedResultUserRead object containing the list of users.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   list(pagination?: IPagination): Promise<PaginatedResultUserRead>;
 
@@ -71,8 +71,8 @@ export interface IUsersApi {
    *
    * @param userKey The key of the user.
    * @returns A promise that resolves to the user.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   get(userKey: string): Promise<UserRead>;
 
@@ -82,8 +82,8 @@ export interface IUsersApi {
    *
    * @param userKey The key of the user.
    * @returns A promise that resolves to the user.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getByKey(userKey: string): Promise<UserRead>;
 
@@ -93,8 +93,8 @@ export interface IUsersApi {
    *
    * @param userId The ID of the user.
    * @returns A promise that resolves to the user.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getById(userId: string): Promise<UserRead>;
 
@@ -103,8 +103,8 @@ export interface IUsersApi {
    *
    * @param userData The data for the new user.
    * @returns A promise that resolves to the created user.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   create(userData: UserCreate): Promise<UserRead>;
 
@@ -114,8 +114,8 @@ export interface IUsersApi {
    * @param userKey The key of the user.
    * @param userData The updated data for the user.
    * @returns A promise that resolves to the updated user.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   update(userKey: string, userData: UserUpdate): Promise<UserRead>;
 
@@ -124,8 +124,8 @@ export interface IUsersApi {
    *
    * @param userData - The data of the user to be synchronized.
    * @returns A promise that resolves with the result of the user creation or update operation.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   sync(userData: UserCreate): Promise<ICreateOrUpdateUserResult>;
 
@@ -134,8 +134,8 @@ export interface IUsersApi {
    *
    * @param userKey The key of the user to delete.
    * @returns A promise that resolves when the user is deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   delete(userKey: string): Promise<void>;
 
@@ -144,8 +144,8 @@ export interface IUsersApi {
    *
    * @param assignment - The role assignment details.
    * @returns A promise that resolves with the assigned role.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   assignRole(assignment: RoleAssignmentCreate): Promise<RoleAssignmentRead>;
 
@@ -154,8 +154,8 @@ export interface IUsersApi {
    *
    * @param unassignment - The role unassignment details.
    * @returns A promise that resolves when the role is successfully unassigned from the user.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   unassignRole(unassignment: RoleAssignmentRemove): Promise<void>;
 
@@ -165,8 +165,8 @@ export interface IUsersApi {
    *
    * @param roleFilters - The filters for retrieving role assignments.
    * @returns A promise that resolves with an array of role assignments for the user.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getAssignedRoles({ user, tenant, page, perPage }: IGetUserRoles): Promise<RoleAssignmentRead[]>;
 }
@@ -202,8 +202,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    *
    * @param pagination The pagination options, @see {@link IPagination}
    * @returns A promise that resolves to a PaginatedResultUserRead object containing the list of users.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async list(pagination?: IPagination): Promise<PaginatedResultUserRead> {
     const { page = 1, perPage = 100 } = pagination ?? {};
@@ -226,8 +226,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    *
    * @param userKey The key of the user.
    * @returns A promise that resolves to the user.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(userKey: string): Promise<UserRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -249,8 +249,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    *
    * @param userKey The key of the user.
    * @returns A promise that resolves to the user.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getByKey(userKey: string): Promise<UserRead> {
     return await this.get(userKey);
@@ -262,8 +262,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    *
    * @param userId The ID of the user.
    * @returns A promise that resolves to the user.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getById(userId: string): Promise<UserRead> {
     return await this.get(userId);
@@ -274,8 +274,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    *
    * @param userData The data for the new user.
    * @returns A promise that resolves to the created user.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async create(userData: UserCreate): Promise<UserRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -297,8 +297,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    * @param userKey The key of the user.
    * @param userData The updated data for the user.
    * @returns A promise that resolves to the updated user.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async update(userKey: string, userData: UserUpdate): Promise<UserRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -320,8 +320,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    *
    * @param userData - The data of the user to be synchronized.
    * @returns A promise that resolves with the result of the user creation or update operation.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async sync(userData: UserCreate): Promise<ICreateOrUpdateUserResult> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -345,8 +345,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    *
    * @param userKey The key of the user to delete.
    * @returns A promise that resolves when the user is deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(userKey: string): Promise<void> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -365,8 +365,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    *
    * @param assignment - The role assignment details.
    * @returns A promise that resolves with the assigned role.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async assignRole(assignment: RoleAssignmentCreate): Promise<RoleAssignmentRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -387,8 +387,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    *
    * @param unassignment - The role unassignment details.
    * @returns A promise that resolves when the role is successfully unassigned from the user.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async unassignRole(unassignment: RoleAssignmentRemove): Promise<void> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -410,8 +410,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    *
    * @param roleFilters - The filters for retrieving role assignments.
    * @returns A promise that resolves with an array of role assignments for the user.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getAssignedRoles({
     user,

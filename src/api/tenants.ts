@@ -23,8 +23,8 @@ export interface ITenantsApi {
    *
    * @param pagination The pagination options, @see {@link IPagination}
    * @returns A promise that resolves to an array of tenants.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   list(pagination?: IPagination): Promise<TenantRead[]>;
 
@@ -33,8 +33,8 @@ export interface ITenantsApi {
    *
    * @param params - pagination and filtering params.
    * @returns A promise that resolves to a PaginatedResultUserRead object containing the list of tenant users.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   listTenantUsers(params: IListTenantUsers): Promise<PaginatedResultUserRead>;
 
@@ -43,8 +43,8 @@ export interface ITenantsApi {
    *
    * @param tenantKey The key of the tenant.
    * @returns A promise that resolves to the tenant.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   get(tenantKey: string): Promise<TenantRead>;
 
@@ -54,8 +54,8 @@ export interface ITenantsApi {
    *
    * @param tenantKey The key of the tenant.
    * @returns A promise that resolves to the tenant.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getByKey(tenantKey: string): Promise<TenantRead>;
 
@@ -65,8 +65,8 @@ export interface ITenantsApi {
    *
    * @param tenantId The ID of the tenant.
    * @returns A promise that resolves to the tenant.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getById(tenantId: string): Promise<TenantRead>;
 
@@ -75,8 +75,8 @@ export interface ITenantsApi {
    *
    * @param tenantData The data for the new tenant.
    * @returns A promise that resolves to the created tenant.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   create(tenantData: TenantCreate): Promise<TenantRead>;
 
@@ -86,8 +86,8 @@ export interface ITenantsApi {
    * @param tenantKey The key of the tenant.
    * @param tenantData The updated data for the tenant.
    * @returns A promise that resolves to the updated tenant.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   update(tenantKey: string, tenantData: TenantUpdate): Promise<TenantRead>;
 
@@ -96,8 +96,8 @@ export interface ITenantsApi {
    *
    * @param tenantKey The key of the tenant to delete.
    * @returns A promise that resolves when the tenant is deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   delete(tenantKey: string): Promise<void>;
 
@@ -107,8 +107,8 @@ export interface ITenantsApi {
    * @param tenantKey - The key of the tenant from which the user will be deleted.
    * @param userKey - The key of the user to be deleted.
    * @returns A promise that resolves when the user is successfully deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   deleteTenantUser(tenantKey: string, userKey: string): Promise<void>;
 }
@@ -138,8 +138,8 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
    *
    * @param pagination The pagination options, @see {@link IPagination}
    * @returns A promise that resolves to an array of tenants.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async list(pagination?: IPagination): Promise<TenantRead[]> {
     const { page = 1, perPage = 100 } = pagination ?? {};
@@ -162,8 +162,8 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
    *
    * @param params - pagination and filtering params.
    * @returns A promise that resolves to a PaginatedResultUserRead object containing the list of tenant users.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async listTenantUsers({
     tenantKey,
@@ -190,8 +190,8 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
    *
    * @param tenantKey The key of the tenant.
    * @returns A promise that resolves to the tenant.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(tenantKey: string): Promise<TenantRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -213,8 +213,8 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
    *
    * @param tenantKey The key of the tenant.
    * @returns A promise that resolves to the tenant.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getByKey(tenantKey: string): Promise<TenantRead> {
     return await this.get(tenantKey);
@@ -226,8 +226,8 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
    *
    * @param tenantId The ID of the tenant.
    * @returns A promise that resolves to the tenant.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getById(tenantId: string): Promise<TenantRead> {
     return await this.get(tenantId);
@@ -238,8 +238,8 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
    *
    * @param tenantData The data for the new tenant.
    * @returns A promise that resolves to the created tenant.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async create(tenantData: TenantCreate): Promise<TenantRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -261,8 +261,8 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
    * @param tenantKey The key of the tenant.
    * @param tenantData The updated data for the tenant.
    * @returns A promise that resolves to the updated tenant.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async update(tenantKey: string, tenantData: TenantUpdate): Promise<TenantRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -284,8 +284,8 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
    *
    * @param tenantKey The key of the tenant to delete.
    * @returns A promise that resolves when the tenant is deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(tenantKey: string): Promise<void> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -305,8 +305,8 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
    * @param tenantKey - The key of the tenant from which the user will be deleted.
    * @param userKey - The key of the user to be deleted.
    * @returns A promise that resolves when the user is successfully deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async deleteTenantUser(tenantKey: string, userKey: string): Promise<void> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);

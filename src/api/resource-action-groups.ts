@@ -23,8 +23,8 @@ export interface IResourceActionGroupsApi {
    * Retrieves a list of all action groups that are defined for a given resource.
    * @param params - pagination and filtering params, @see {@link IListActionGroups}
    * @returns A promise that resolves to an array of ResourceActionGroupRead objects representing the action groups.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   list(params: IListActionGroups): Promise<ResourceActionGroupRead[]>;
 
@@ -34,8 +34,8 @@ export interface IResourceActionGroupsApi {
    * @param resourceKey - The resource key.
    * @param groupKey - The group key.
    * @returns A promise that resolves to a ResourceActionGroupRead object representing the action group.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   get(resourceKey: string, groupKey: string): Promise<ResourceActionGroupRead>;
 
@@ -46,8 +46,8 @@ export interface IResourceActionGroupsApi {
    * @param resourceKey - The resource key.
    * @param groupKey - The group key.
    * @returns A promise that resolves to a ResourceActionGroupRead object representing the action group.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getByKey(resourceKey: string, groupKey: string): Promise<ResourceActionGroupRead>;
 
@@ -58,8 +58,8 @@ export interface IResourceActionGroupsApi {
    * @param resourceId - The resource ID.
    * @param groupId - The group ID.
    * @returns A promise that resolves to a ResourceActionGroupRead object representing the action group.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getById(resourceId: string, groupId: string): Promise<ResourceActionGroupRead>;
 
@@ -68,8 +68,8 @@ export interface IResourceActionGroupsApi {
    * @param resourceKey - The resource key.
    * @param groupData - The action group data.
    * @returns A promise that resolves to a ResourceActionGroupRead object representing the created action group.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   create(
     resourceKey: string,
@@ -81,8 +81,8 @@ export interface IResourceActionGroupsApi {
    * @param resourceKey - The resource key.
    * @param groupKey - The group key.
    * @returns A promise that resolves when the action group is successfully deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   delete(resourceKey: string, groupKey: string): Promise<void>;
 }
@@ -111,8 +111,8 @@ export class ResourceActionGroupsApi extends BasePermitApi implements IResourceA
    * Retrieves a list of all action groups that are defined for a given resource.
    * @param params - pagination and filtering params, @see {@link IListActionGroups}
    * @returns A promise that resolves to an array of ResourceActionGroupRead objects representing the action groups.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async list(params: IListActionGroups): Promise<ResourceActionGroupRead[]> {
     const { resourceKey, page = 1, perPage = 100 } = params;
@@ -137,8 +137,8 @@ export class ResourceActionGroupsApi extends BasePermitApi implements IResourceA
    * @param resourceKey - The resource key.
    * @param groupKey - The group key.
    * @returns A promise that resolves to a ResourceActionGroupRead object representing the action group.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(resourceKey: string, groupKey: string): Promise<ResourceActionGroupRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -162,8 +162,8 @@ export class ResourceActionGroupsApi extends BasePermitApi implements IResourceA
    * @param resourceKey - The resource key.
    * @param groupKey - The group key.
    * @returns A promise that resolves to a ResourceActionGroupRead object representing the action group.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getByKey(resourceKey: string, groupKey: string): Promise<ResourceActionGroupRead> {
     return await this.get(resourceKey, groupKey);
@@ -176,8 +176,8 @@ export class ResourceActionGroupsApi extends BasePermitApi implements IResourceA
    * @param resourceId - The resource ID.
    * @param groupId - The group ID.
    * @returns A promise that resolves to a ResourceActionGroupRead object representing the action group.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getById(resourceId: string, groupId: string): Promise<ResourceActionGroupRead> {
     return await this.get(resourceId, groupId);
@@ -188,8 +188,8 @@ export class ResourceActionGroupsApi extends BasePermitApi implements IResourceA
    * @param resourceKey - The resource key.
    * @param groupData - The action group data.
    * @returns A promise that resolves to a ResourceActionGroupRead object representing the created action group.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async create(
     resourceKey: string,
@@ -214,8 +214,8 @@ export class ResourceActionGroupsApi extends BasePermitApi implements IResourceA
    * @param resourceKey - The resource key.
    * @param groupKey - The group key.
    * @returns A promise that resolves when the action group is successfully deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(resourceKey: string, groupKey: string): Promise<void> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);

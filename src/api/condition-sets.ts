@@ -18,8 +18,8 @@ export interface IConditionSetsApi {
    *
    * @param pagination The pagination options, @see {@link IPagination}
    * @returns A promise that resolves to an array of condition sets.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   list(pagination?: IPagination): Promise<ConditionSetRead[]>;
 
@@ -28,8 +28,8 @@ export interface IConditionSetsApi {
    *
    * @param conditionSetKey The key of the condition set.
    * @returns A promise that resolves to the condition set.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   get(conditionSetKey: string): Promise<ConditionSetRead>;
 
@@ -39,8 +39,8 @@ export interface IConditionSetsApi {
    *
    * @param conditionSetKey The key of the condition set.
    * @returns A promise that resolves to the condition set.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getByKey(conditionSetKey: string): Promise<ConditionSetRead>;
 
@@ -50,8 +50,8 @@ export interface IConditionSetsApi {
    *
    * @param conditionSetId The ID of the condition set.
    * @returns A promise that resolves to the condition set.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getById(conditionSetId: string): Promise<ConditionSetRead>;
 
@@ -60,8 +60,8 @@ export interface IConditionSetsApi {
    *
    * @param conditionSetData The data for the new condition set.
    * @returns A promise that resolves to the created condition set.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   create(conditionSetData: ConditionSetCreate): Promise<ConditionSetRead>;
 
@@ -71,8 +71,8 @@ export interface IConditionSetsApi {
    * @param conditionSetKey The key of the condition set.
    * @param conditionSetData The updated data for the condition set.
    * @returns A promise that resolves to the updated condition set.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   update(conditionSetKey: string, conditionSetData: ConditionSetUpdate): Promise<ConditionSetRead>;
 
@@ -81,8 +81,8 @@ export interface IConditionSetsApi {
    *
    * @param conditionSetKey The key of the condition set to delete.
    * @returns A promise that resolves when the condition set is deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   delete(conditionSetKey: string): Promise<void>;
 }
@@ -112,8 +112,8 @@ export class ConditionSetsApi extends BasePermitApi implements IConditionSetsApi
    *
    * @param pagination The pagination options, @see {@link IPagination}
    * @returns A promise that resolves to an array of condition sets.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async list(pagination?: IPagination): Promise<ConditionSetRead[]> {
     const { page = 1, perPage = 100 } = pagination ?? {};
@@ -136,8 +136,8 @@ export class ConditionSetsApi extends BasePermitApi implements IConditionSetsApi
    *
    * @param conditionSetKey The key of the condition set.
    * @returns A promise that resolves to the condition set.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(conditionSetKey: string): Promise<ConditionSetRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -159,8 +159,8 @@ export class ConditionSetsApi extends BasePermitApi implements IConditionSetsApi
    *
    * @param conditionSetKey The key of the condition set.
    * @returns A promise that resolves to the condition set.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getByKey(conditionSetKey: string): Promise<ConditionSetRead> {
     return await this.get(conditionSetKey);
@@ -172,8 +172,8 @@ export class ConditionSetsApi extends BasePermitApi implements IConditionSetsApi
    *
    * @param conditionSetId The ID of the condition set.
    * @returns A promise that resolves to the condition set.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getById(conditionSetId: string): Promise<ConditionSetRead> {
     return await this.get(conditionSetId);
@@ -184,8 +184,8 @@ export class ConditionSetsApi extends BasePermitApi implements IConditionSetsApi
    *
    * @param conditionSetData The data for the new condition set.
    * @returns A promise that resolves to the created condition set.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async create(conditionSetData: ConditionSetCreate): Promise<ConditionSetRead> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -207,8 +207,8 @@ export class ConditionSetsApi extends BasePermitApi implements IConditionSetsApi
    * @param conditionSetKey The key of the condition set.
    * @param conditionSetData The updated data for the condition set.
    * @returns A promise that resolves to the updated condition set.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async update(
     conditionSetKey: string,
@@ -233,8 +233,8 @@ export class ConditionSetsApi extends BasePermitApi implements IConditionSetsApi
    *
    * @param conditionSetKey The key of the condition set to delete.
    * @returns A promise that resolves when the condition set is deleted.
-   * @throws {PermitApiError} If the API returns an error HTTP status code.
-   * @throws {PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(conditionSetKey: string): Promise<void> {
     await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
