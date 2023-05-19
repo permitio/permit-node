@@ -13,6 +13,8 @@ import { BASE_PATH } from '../openapi/base';
 import { BasePermitApi, IPagination } from './base';
 import { ApiKeyLevel } from './context';
 
+export { ResourceCreate, ResourceRead, ResourceReplace, ResourceUpdate } from '../openapi';
+
 export interface IListResourceUsers extends IPagination {
   resourceKey: string;
 }

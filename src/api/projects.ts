@@ -12,6 +12,8 @@ import { BASE_PATH } from '../openapi/base';
 import { BasePermitApi, IPagination } from './base';
 import { ApiKeyLevel } from './context';
 
+export { ProjectCreate, ProjectRead, ProjectUpdate } from '../openapi';
+
 export interface IProjectsApi {
   /**
    * Retrieves a list of projects.

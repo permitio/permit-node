@@ -16,6 +16,15 @@ import { BASE_PATH } from '../openapi/base';
 import { BasePermitApi, IPagination, PermitApiError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { ApiContext, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
+export {
+  APIKeyRead,
+  EnvironmentCopy,
+  EnvironmentCreate,
+  EnvironmentRead,
+  EnvironmentStats,
+  EnvironmentUpdate,
+} from '../openapi';
+
 export interface IListEnvironments extends IPagination {
   /**
    * only environments under the project with this key will be listed.

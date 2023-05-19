@@ -7,6 +7,8 @@ import { BASE_PATH } from '../openapi/base';
 import { BasePermitApi, IPagination } from './base';
 import { ApiKeyLevel } from './context';
 
+export { RoleCreate, RoleRead, RoleUpdate } from '../openapi';
+
 export interface IRolesApi {
   /**
    * Retrieves a list of roles.

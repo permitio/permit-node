@@ -13,6 +13,8 @@ import { BASE_PATH } from '../openapi/base';
 import { BasePermitApi, IPagination } from './base';
 import { ApiKeyLevel } from './context';
 
+export { PaginatedResultUserRead, TenantCreate, TenantRead, TenantUpdate } from '../openapi';
+
 export interface IListTenantUsers extends IPagination {
   tenantKey: string;
 }

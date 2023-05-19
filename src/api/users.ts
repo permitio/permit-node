@@ -17,6 +17,16 @@ import { BASE_PATH } from '../openapi/base';
 import { BasePermitApi, IPagination } from './base';
 import { ApiKeyLevel } from './context';
 
+export {
+  PaginatedResultUserRead,
+  RoleAssignmentCreate,
+  RoleAssignmentRead,
+  RoleAssignmentRemove,
+  UserCreate,
+  UserRead,
+  UserUpdate,
+} from '../openapi';
+
 export interface ICreateOrUpdateUserResult {
   /**
    * the created or updated user

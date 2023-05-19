@@ -14,6 +14,14 @@ import { BASE_PATH } from '../openapi/base';
 import { BasePermitApi, IPagination } from './base';
 import { ApiKeyLevel } from './context';
 
+export {
+  BulkRoleAssignmentReport,
+  BulkRoleUnAssignmentReport,
+  RoleAssignmentCreate,
+  RoleAssignmentRead,
+  RoleAssignmentRemove,
+} from '../openapi';
+
 /**
  * Represents the parameters for listing role assignments.
  */

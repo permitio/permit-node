@@ -12,6 +12,8 @@ import { BASE_PATH } from '../openapi/base';
 import { BasePermitApi, IPagination, PermitApiError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { ApiContext, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
+export { ConditionSetCreate, ConditionSetRead, ConditionSetUpdate } from '../openapi';
+
 export interface IConditionSetsApi {
   /**
    * Retrieves a list of condition sets.
