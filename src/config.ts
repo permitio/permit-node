@@ -49,7 +49,7 @@ export class ConfigFactory {
         useDefaultTenantIfEmpty: true,
       },
       timeout: undefined,
-      throwOnError: undefined,
+      throwOnError: true,
       apiContext: new ApiContext(),
       axiosInstance: globalAxios,
     };
