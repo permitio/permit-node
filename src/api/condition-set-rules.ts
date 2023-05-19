@@ -66,6 +66,11 @@ export interface IConditionSetRulesApi {
 export class ConditionSetRulesApi extends BasePermitApi implements IConditionSetRulesApi {
   private setRules: AutogenConditionSetRulesApi;
 
+  /**
+   * Creates an instance of the ConditionSetRulesApi.
+   * @param config - The configuration object for the Permit SDK.
+   * @param logger - The logger instance for logging.
+   */
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
     this.setRules = new AutogenConditionSetRulesApi(

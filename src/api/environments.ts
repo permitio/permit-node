@@ -153,7 +153,7 @@ export interface IEnvironmentsApi {
 }
 
 /**
- * Represents the Environments API client.
+ * The EnvironmentsApi class provides methods for interacting with Permit Environments.
  */
 export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
   private environments: AutogenEnvironmentsApi;
@@ -161,7 +161,7 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
 
   /**
    * Creates an instance of the EnvironmentsApi.
-   * @param config - The configuration object for the Permit API.
+   * @param config - The configuration object for the Permit SDK.
    * @param logger - The logger instance for logging.
    */
   constructor(config: IPermitConfig, logger: Logger) {

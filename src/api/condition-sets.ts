@@ -93,6 +93,11 @@ export interface IConditionSetsApi {
 export class ConditionSetsApi extends BasePermitApi implements IConditionSetsApi {
   private conditionSets: AutogenConditionSetsApi;
 
+  /**
+   * Creates an instance of the ConditionSetsApi.
+   * @param config - The configuration object for the Permit SDK.
+   * @param logger - The logger instance for logging.
+   */
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
     this.conditionSets = new AutogenConditionSetsApi(
