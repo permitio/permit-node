@@ -10,16 +10,16 @@ export function prettyConsoleLog(label: string, data: any) {
 
 const FgGreen = '\x1b[32m';
 const FgCyan = '\x1b[36m';
-// const COLOR_RESET: string = "\x1b[0m";
+// const COLOR_RESET: string = '\x1b[0m';
 // const FgBlack: string = "\x1b[30m";
 // const FgRed: string = "\x1b[31m";
 // const FgYellow: string = "\x1b[33m";
 // const FgBlue: string = "\x1b[34m";
 // const FgMagenta: string = "\x1b[35m";
-// const FgWhite: string = "\x1b[37m";
+const FgWhite = '\x1b[37m';
 
 const consoleFormat = winston.format.printf(({ level, message, label }) => {
-  return `${FgCyan}${label} [${level}]: ${FgGreen} ${message}`;
+  return `${FgCyan}${label} ${FgGreen}[${level}]${FgWhite}: ${message}`;
 });
 
 const MESSAGE = Symbol.for('message');

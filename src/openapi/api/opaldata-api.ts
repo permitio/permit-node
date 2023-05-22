@@ -35,9 +35,15 @@ import { FullData } from '../types';
 // @ts-ignore
 import { HTTPValidationError } from '../types';
 // @ts-ignore
-import { RoleData } from '../types';
+import { ResponseGetDataForConditionSetV2InternalOpalDataOrgIdProjIdEnvIdConditionSetsConditionSetIdGet } from '../types';
 // @ts-ignore
-import { UserData } from '../types';
+import { ResponseGetDataForResourceV2InternalOpalDataOrgIdProjIdEnvIdResourceTypesResourceIdGet } from '../types';
+// @ts-ignore
+import { ResponseGetDataForRoleV2InternalOpalDataOrgIdProjIdEnvIdRolesRoleIdGet } from '../types';
+// @ts-ignore
+import { ResponseGetDataForTenantV2InternalOpalDataOrgIdProjIdEnvIdTenantsTenantIdGet } from '../types';
+// @ts-ignore
+import { ResponseGetDataForUserV2InternalOpalDataOrgIdProjIdEnvIdUsersUserIdGet } from '../types';
 /**
  * OPALDataApi - axios parameter creator
  * @export
@@ -89,6 +95,124 @@ export const OPALDataApiAxiosParamCreator = function (configuration?: Configurat
       if (internalUpdateCache !== undefined) {
         localVarQueryParameter['__internal_update_cache'] = internalUpdateCache;
       }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get Data For Condition Set
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getDataForConditionSet: async (
+      orgId: string,
+      projId: string,
+      envId: string,
+      conditionSetId: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'orgId' is not null or undefined
+      assertParamExists('getDataForConditionSet', 'orgId', orgId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getDataForConditionSet', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getDataForConditionSet', 'envId', envId);
+      // verify required parameter 'conditionSetId' is not null or undefined
+      assertParamExists('getDataForConditionSet', 'conditionSetId', conditionSetId);
+      const localVarPath =
+        `/v2/internal/opal_data/{org_id}/{proj_id}/{env_id}/condition_sets/{condition_set_id}`
+          .replace(`{${'org_id'}}`, encodeURIComponent(String(orgId)))
+          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
+          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
+          .replace(`{${'condition_set_id'}}`, encodeURIComponent(String(conditionSetId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get Data For Resource
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} resourceId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getDataForResource: async (
+      orgId: string,
+      projId: string,
+      envId: string,
+      resourceId: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'orgId' is not null or undefined
+      assertParamExists('getDataForResource', 'orgId', orgId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getDataForResource', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getDataForResource', 'envId', envId);
+      // verify required parameter 'resourceId' is not null or undefined
+      assertParamExists('getDataForResource', 'resourceId', resourceId);
+      const localVarPath =
+        `/v2/internal/opal_data/{org_id}/{proj_id}/{env_id}/resource_types/{resource_id}`
+          .replace(`{${'org_id'}}`, encodeURIComponent(String(orgId)))
+          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
+          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
+          .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -227,6 +351,64 @@ export const OPALDataApiAxiosParamCreator = function (configuration?: Configurat
     },
     /**
      *
+     * @summary Get Data For Tenant
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} tenantId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getDataForTenant: async (
+      orgId: string,
+      projId: string,
+      envId: string,
+      tenantId: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'orgId' is not null or undefined
+      assertParamExists('getDataForTenant', 'orgId', orgId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getDataForTenant', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getDataForTenant', 'envId', envId);
+      // verify required parameter 'tenantId' is not null or undefined
+      assertParamExists('getDataForTenant', 'tenantId', tenantId);
+      const localVarPath = `/v2/internal/opal_data/{org_id}/{proj_id}/{env_id}/tenants/{tenant_id}`
+        .replace(`{${'org_id'}}`, encodeURIComponent(String(orgId)))
+        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
+        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
+        .replace(`{${'tenant_id'}}`, encodeURIComponent(String(tenantId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Get Data For User
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -321,6 +503,68 @@ export const OPALDataApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Get Data For Condition Set
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getDataForConditionSet(
+      orgId: string,
+      projId: string,
+      envId: string,
+      conditionSetId: string,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ResponseGetDataForConditionSetV2InternalOpalDataOrgIdProjIdEnvIdConditionSetsConditionSetIdGet>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getDataForConditionSet(
+        orgId,
+        projId,
+        envId,
+        conditionSetId,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Get Data For Resource
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} resourceId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getDataForResource(
+      orgId: string,
+      projId: string,
+      envId: string,
+      resourceId: string,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ResponseGetDataForResourceV2InternalOpalDataOrgIdProjIdEnvIdResourceTypesResourceIdGet>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getDataForResource(
+        orgId,
+        projId,
+        envId,
+        resourceId,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Get Data For Role
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -335,7 +579,12 @@ export const OPALDataApiFp = function (configuration?: Configuration) {
       envId: string,
       roleId: string,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleData>> {
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ResponseGetDataForRoleV2InternalOpalDataOrgIdProjIdEnvIdRolesRoleIdGet>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getDataForRole(
         orgId,
         projId,
@@ -378,6 +627,37 @@ export const OPALDataApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Get Data For Tenant
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} tenantId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getDataForTenant(
+      orgId: string,
+      projId: string,
+      envId: string,
+      tenantId: string,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ResponseGetDataForTenantV2InternalOpalDataOrgIdProjIdEnvIdTenantsTenantIdGet>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getDataForTenant(
+        orgId,
+        projId,
+        envId,
+        tenantId,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Get Data For User
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -392,7 +672,12 @@ export const OPALDataApiFp = function (configuration?: Configuration) {
       envId: string,
       userId: string,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserData>> {
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ResponseGetDataForUserV2InternalOpalDataOrgIdProjIdEnvIdUsersUserIdGet>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getDataForUser(
         orgId,
         projId,
@@ -439,6 +724,48 @@ export const OPALDataApiFactory = function (
     },
     /**
      *
+     * @summary Get Data For Condition Set
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getDataForConditionSet(
+      orgId: string,
+      projId: string,
+      envId: string,
+      conditionSetId: string,
+      options?: any,
+    ): AxiosPromise<ResponseGetDataForConditionSetV2InternalOpalDataOrgIdProjIdEnvIdConditionSetsConditionSetIdGet> {
+      return localVarFp
+        .getDataForConditionSet(orgId, projId, envId, conditionSetId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get Data For Resource
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} resourceId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getDataForResource(
+      orgId: string,
+      projId: string,
+      envId: string,
+      resourceId: string,
+      options?: any,
+    ): AxiosPromise<ResponseGetDataForResourceV2InternalOpalDataOrgIdProjIdEnvIdResourceTypesResourceIdGet> {
+      return localVarFp
+        .getDataForResource(orgId, projId, envId, resourceId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Get Data For Role
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -453,7 +780,7 @@ export const OPALDataApiFactory = function (
       envId: string,
       roleId: string,
       options?: any,
-    ): AxiosPromise<RoleData> {
+    ): AxiosPromise<ResponseGetDataForRoleV2InternalOpalDataOrgIdProjIdEnvIdRolesRoleIdGet> {
       return localVarFp
         .getDataForRole(orgId, projId, envId, roleId, options)
         .then((request) => request(axios, basePath));
@@ -483,6 +810,27 @@ export const OPALDataApiFactory = function (
     },
     /**
      *
+     * @summary Get Data For Tenant
+     * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} tenantId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getDataForTenant(
+      orgId: string,
+      projId: string,
+      envId: string,
+      tenantId: string,
+      options?: any,
+    ): AxiosPromise<ResponseGetDataForTenantV2InternalOpalDataOrgIdProjIdEnvIdTenantsTenantIdGet> {
+      return localVarFp
+        .getDataForTenant(orgId, projId, envId, tenantId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Get Data For User
      * @param {string} orgId Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -497,7 +845,7 @@ export const OPALDataApiFactory = function (
       envId: string,
       userId: string,
       options?: any,
-    ): AxiosPromise<UserData> {
+    ): AxiosPromise<ResponseGetDataForUserV2InternalOpalDataOrgIdProjIdEnvIdUsersUserIdGet> {
       return localVarFp
         .getDataForUser(orgId, projId, envId, userId, options)
         .then((request) => request(axios, basePath));
@@ -538,6 +886,76 @@ export interface OPALDataApiGetAllDataRequest {
    * @memberof OPALDataApiGetAllData
    */
   readonly internalUpdateCache?: boolean;
+}
+
+/**
+ * Request parameters for getDataForConditionSet operation in OPALDataApi.
+ * @export
+ * @interface OPALDataApiGetDataForConditionSetRequest
+ */
+export interface OPALDataApiGetDataForConditionSetRequest {
+  /**
+   * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof OPALDataApiGetDataForConditionSet
+   */
+  readonly orgId: string;
+
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof OPALDataApiGetDataForConditionSet
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof OPALDataApiGetDataForConditionSet
+   */
+  readonly envId: string;
+
+  /**
+   *
+   * @type {string}
+   * @memberof OPALDataApiGetDataForConditionSet
+   */
+  readonly conditionSetId: string;
+}
+
+/**
+ * Request parameters for getDataForResource operation in OPALDataApi.
+ * @export
+ * @interface OPALDataApiGetDataForResourceRequest
+ */
+export interface OPALDataApiGetDataForResourceRequest {
+  /**
+   * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof OPALDataApiGetDataForResource
+   */
+  readonly orgId: string;
+
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof OPALDataApiGetDataForResource
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof OPALDataApiGetDataForResource
+   */
+  readonly envId: string;
+
+  /**
+   *
+   * @type {string}
+   * @memberof OPALDataApiGetDataForResource
+   */
+  readonly resourceId: string;
 }
 
 /**
@@ -618,6 +1036,41 @@ export interface OPALDataApiGetDataForSetRuleRequest {
 }
 
 /**
+ * Request parameters for getDataForTenant operation in OPALDataApi.
+ * @export
+ * @interface OPALDataApiGetDataForTenantRequest
+ */
+export interface OPALDataApiGetDataForTenantRequest {
+  /**
+   * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof OPALDataApiGetDataForTenant
+   */
+  readonly orgId: string;
+
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof OPALDataApiGetDataForTenant
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof OPALDataApiGetDataForTenant
+   */
+  readonly envId: string;
+
+  /**
+   *
+   * @type {string}
+   * @memberof OPALDataApiGetDataForTenant
+   */
+  readonly tenantId: string;
+}
+
+/**
  * Request parameters for getDataForUser operation in OPALDataApi.
  * @export
  * @interface OPALDataApiGetDataForUserRequest
@@ -681,6 +1134,52 @@ export class OPALDataApi extends BaseAPI {
 
   /**
    *
+   * @summary Get Data For Condition Set
+   * @param {OPALDataApiGetDataForConditionSetRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof OPALDataApi
+   */
+  public getDataForConditionSet(
+    requestParameters: OPALDataApiGetDataForConditionSetRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return OPALDataApiFp(this.configuration)
+      .getDataForConditionSet(
+        requestParameters.orgId,
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.conditionSetId,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get Data For Resource
+   * @param {OPALDataApiGetDataForResourceRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof OPALDataApi
+   */
+  public getDataForResource(
+    requestParameters: OPALDataApiGetDataForResourceRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return OPALDataApiFp(this.configuration)
+      .getDataForResource(
+        requestParameters.orgId,
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.resourceId,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
    * @summary Get Data For Role
    * @param {OPALDataApiGetDataForRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
@@ -721,6 +1220,29 @@ export class OPALDataApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.userSetId,
         requestParameters.resourceSetId,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get Data For Tenant
+   * @param {OPALDataApiGetDataForTenantRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof OPALDataApi
+   */
+  public getDataForTenant(
+    requestParameters: OPALDataApiGetDataForTenantRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return OPALDataApiFp(this.configuration)
+      .getDataForTenant(
+        requestParameters.orgId,
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.tenantId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));

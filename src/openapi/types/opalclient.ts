@@ -12,6 +12,13 @@
  * Do not edit the class manually.
  */
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { OPALHttpFetcherConfig } from './opalhttp-fetcher-config';
+// May contain unused imports in some cases
+// @ts-ignore
+import { OPALUpdateCallback } from './opalupdate-callback';
+
 /**
  *
  * @export
@@ -60,4 +67,22 @@ export interface OPALClient {
    * @memberof OPALClient
    */
   SCOPE_ID?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof OPALClient
+   */
+  SHOULD_REPORT_ON_DATA_UPDATES?: boolean;
+  /**
+   *
+   * @type {OPALUpdateCallback}
+   * @memberof OPALClient
+   */
+  DEFAULT_UPDATE_CALLBACKS?: OPALUpdateCallback;
+  /**
+   *
+   * @type {OPALHttpFetcherConfig}
+   * @memberof OPALClient
+   */
+  DEFAULT_UPDATE_CALLBACK_CONFIG?: OPALHttpFetcherConfig;
 }

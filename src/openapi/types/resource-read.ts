@@ -97,4 +97,10 @@ export interface ResourceRead {
    * @memberof ResourceRead
    */
   attributes?: { [key: string]: AttributeBlockRead };
+  /**
+   *
+   * @type {{ [key: string]: Array<string>; }}
+   * @memberof ResourceRead
+   */
+  action_groups?: { [key: string]: Array<string> };
 }

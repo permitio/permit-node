@@ -37,7 +37,7 @@ export interface UserUpdate {
    */
   last_name?: string;
   /**
-   * Arbitraty user attributes that will be used to enforce attribute-based access control policies.
+   * Arbitrary user attributes that will be used to enforce attribute-based access control policies.
    * @type {object}
    * @memberof UserUpdate
    */

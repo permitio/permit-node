@@ -113,7 +113,7 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
       };
     },
     /**
-     * Assign permissions to role.  If some of the permissions specified are already unassigned, will skip them.
+     * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
      * @summary Assign Permissions to Role
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
@@ -678,7 +678,7 @@ export const ResourceRolesApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     * Assign permissions to role.  If some of the permissions specified are already unassigned, will skip them.
+     * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
      * @summary Assign Permissions to Role
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
@@ -940,7 +940,7 @@ export const ResourceRolesApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     * Assign permissions to role.  If some of the permissions specified are already unassigned, will skip them.
+     * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
      * @summary Assign Permissions to Role
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
@@ -1523,7 +1523,7 @@ export class ResourceRolesApi extends BaseAPI {
   }
 
   /**
-   * Assign permissions to role.  If some of the permissions specified are already unassigned, will skip them.
+   * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
    * @summary Assign Permissions to Role
    * @param {ResourceRolesApiAssignPermissionsToResourceRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.

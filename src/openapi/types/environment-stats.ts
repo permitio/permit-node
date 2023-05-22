@@ -14,6 +14,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { Jwks } from './jwks';
+// May contain unused imports in some cases
+// @ts-ignore
 import { PDPConfigRead } from './pdpconfig-read';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -79,6 +82,12 @@ export interface EnvironmentStats {
    * @memberof EnvironmentStats
    */
   custom_branch_name?: string;
+  /**
+   *
+   * @type {Jwks}
+   * @memberof EnvironmentStats
+   */
+  jwks?: Jwks;
   /**
    *
    * @type {Array<PDPConfigRead>}

@@ -32,6 +32,17 @@ export class PermitPDPStatusError extends PermitError {
 }
 
 export interface IEnforcer {
+  /**
+   * Checks if a `user` is authorized to perform an `action` on a `resource` within the specified context.
+   *
+   * @param user     - The user object representing the user.
+   * @param action   - The action to be performed on the resource.
+   * @param resource - The resource object representing the resource.
+   * @param context  - The context object representing the context in which the action is performed.
+   * @returns `true` if the user is authorized, `false` otherwise.
+   * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
+   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
+   */
   check(
     user: IUser | string,
     action: IAction,
@@ -42,12 +53,18 @@ export interface IEnforcer {
 }
 
 /**
- * this client is dealing with evaluation of check() queries.
+ * The {@link Enforcer} class is responsible for performing permission checks against the PDP.
+ * It implements the {@link IEnforcer} interface.
  */
 export class Enforcer implements IEnforcer {
   public contextStore: ContextStore; // cross-query context (global context)
   private client: AxiosInstance;
 
+  /**
+   * Creates an instance of the Enforcer class.
+   * @param config - The configuration object for the Permit SDK.
+   * @param logger - The logger instance for logging.
+   */
   constructor(private config: IPermitConfig, private logger: Logger) {
     this.client = axios.create({
       baseURL: `${this.config.pdp}/`,
@@ -57,24 +74,15 @@ export class Enforcer implements IEnforcer {
   }
 
   /**
-   * Usage:
+   * Checks if a `user` is authorized to perform an `action` on a `resource` within the specified context.
    *
-   * // with (resource, action):
-   * const user = { key: 'UNIQUE_USER_ID' };
-   * permit.check(user, 'get', {'type': 'task', 'key': '23'})
-   * permit.check(user, 'get', {'type': 'task'})
-   *
-   * // with (url, method):
-   * const { resource, action } = permit.getUrlContext('/lists/3/todos/37', 'GET');
-   * permit.check(user, action, resource)
-   *
-   * @param user
-   * @param action
-   * @param resource
-   * @param context
-   * @param config
-   *
-   * @returns whether or not action is permitted for given user
+   * @param user     - The user object representing the user.
+   * @param action   - The action to be performed on the resource.
+   * @param resource - The resource object representing the resource.
+   * @param context  - The context object representing the context in which the action is performed.
+   * @returns `true` if the user is authorized, `false` otherwise.
+   * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
+   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
    */
   public async check(
     user: IUser | string,
@@ -180,7 +188,7 @@ export class Enforcer implements IEnforcer {
       return JSON.stringify(resource);
     }
 
-    let resourceRepr: string = '';
+    let resourceRepr = '';
     if (resource.tenant) {
       resourceRepr += `${resource.tenant}/`;
     }

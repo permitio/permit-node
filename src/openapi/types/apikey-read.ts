@@ -17,6 +17,9 @@
 import { APIKeyOwnerType } from './apikey-owner-type';
 // May contain unused imports in some cases
 // @ts-ignore
+import { EnvironmentRead } from './environment-read';
+// May contain unused imports in some cases
+// @ts-ignore
 import { MemberAccessLevel } from './member-access-level';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -24,6 +27,9 @@ import { MemberAccessObj } from './member-access-obj';
 // May contain unused imports in some cases
 // @ts-ignore
 import { OrgMemberRead } from './org-member-read';
+// May contain unused imports in some cases
+// @ts-ignore
+import { ProjectRead } from './project-read';
 
 /**
  *
@@ -72,6 +78,12 @@ export interface APIKeyRead {
    * @type {string}
    * @memberof APIKeyRead
    */
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof APIKeyRead
+   */
   id: string;
   /**
    *
@@ -90,11 +102,23 @@ export interface APIKeyRead {
    * @type {OrgMemberRead}
    * @memberof APIKeyRead
    */
-  created_by_member: OrgMemberRead;
+  created_by_member?: OrgMemberRead;
   /**
    *
    * @type {string}
    * @memberof APIKeyRead
    */
   last_used_at?: string;
+  /**
+   *
+   * @type {EnvironmentRead}
+   * @memberof APIKeyRead
+   */
+  env?: EnvironmentRead;
+  /**
+   *
+   * @type {ProjectRead}
+   * @memberof APIKeyRead
+   */
+  project?: ProjectRead;
 }

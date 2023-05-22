@@ -31,6 +31,12 @@ export interface ResourceActionRead {
    */
   description?: string;
   /**
+   * optional dictionary of key-value pairs that can be used to store arbitrary metadata about this action. This metadata can be used to filter actions using query parameters with attr_ prefix
+   * @type {object}
+   * @memberof ResourceActionRead
+   */
+  attributes?: object;
+  /**
    * A URL-friendly name of the action (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the action.
    * @type {string}
    * @memberof ResourceActionRead

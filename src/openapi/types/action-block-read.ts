@@ -31,6 +31,12 @@ export interface ActionBlockRead {
    */
   description?: string;
   /**
+   *
+   * @type {object}
+   * @memberof ActionBlockRead
+   */
+  attributes?: object;
+  /**
    * Unique id of the action
    * @type {string}
    * @memberof ActionBlockRead

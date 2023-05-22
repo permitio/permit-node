@@ -23,7 +23,7 @@ import { APIKeyRead } from './apikey-read';
  */
 export interface PaginatedResultAPIKeyRead {
   /**
-   *
+   * List of Api Keys
    * @type {Array<APIKeyRead>}
    * @memberof PaginatedResultAPIKeyRead
    */

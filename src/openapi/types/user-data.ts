@@ -12,10 +12,6 @@
  * Do not edit the class manually.
  */
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { Attributes } from './attributes';
-
 /**
  *
  * @export
@@ -30,8 +26,8 @@ export interface UserData {
   roleAssignments?: { [key: string]: Array<string> };
   /**
    *
-   * @type {{ [key: string]: Attributes; }}
+   * @type {object}
    * @memberof UserData
    */
-  attributes?: { [key: string]: Attributes };
+  attributes?: object;
 }

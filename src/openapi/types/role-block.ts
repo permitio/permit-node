@@ -30,10 +30,4 @@ export interface RoleBlock {
    * @memberof RoleBlock
    */
   permissions?: Array<string>;
-  /**
-   * list of role keys that define what roles this role extends. In other words: this role will automatically inherit all the permissions of the given roles in this list.
-   * @type {Array<string>}
-   * @memberof RoleBlock
-   */
-  extends?: Array<string>;
 }

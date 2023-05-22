@@ -23,7 +23,7 @@ import { ElementsConfigRead } from './elements-config-read';
  */
 export interface PaginatedResultElementsConfigRead {
   /**
-   *
+   * List of Elements Configs
    * @type {Array<ElementsConfigRead>}
    * @memberof PaginatedResultElementsConfigRead
    */

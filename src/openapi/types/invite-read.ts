@@ -15,6 +15,9 @@
 // May contain unused imports in some cases
 // @ts-ignore
 import { InviteStatus } from './invite-status';
+// May contain unused imports in some cases
+// @ts-ignore
+import { MemberAccessLevel } from './member-access-level';
 
 /**
  *
@@ -23,6 +26,12 @@ import { InviteStatus } from './invite-status';
  */
 export interface InviteRead {
   /**
+   * Unique id of the invite
+   * @type {string}
+   * @memberof InviteRead
+   */
+  member_id?: string;
+  /**
    * The invited member\'s email address
    * @type {string}
    * @memberof InviteRead
@@ -30,10 +39,10 @@ export interface InviteRead {
   email: string;
   /**
    * The role the member will be assigned with
-   * @type {string}
+   * @type {MemberAccessLevel}
    * @memberof InviteRead
    */
-  role: string;
+  role?: MemberAccessLevel;
   /**
    * Unique id of the invite
    * @type {string}

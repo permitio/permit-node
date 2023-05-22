@@ -33,7 +33,11 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 // @ts-ignore
 import { HTTPValidationError } from '../types';
 // @ts-ignore
-import { OrgMemberRead } from '../types';
+import { OrgMemberCreate } from '../types';
+// @ts-ignore
+import { OrgMemberReadWithGrants } from '../types';
+// @ts-ignore
+import { OrgMemberRemovePermissions } from '../types';
 // @ts-ignore
 import { OrgMemberUpdate } from '../types';
 /**
@@ -42,6 +46,67 @@ import { OrgMemberUpdate } from '../types';
  */
 export const MembersApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
+    /**
+     * Create an organization member if needed, and grant it permissions.  The member can be specified either by ID (for an existing member), or by email (for either an existing member or a new one).  For a new member, an invite will be sent.
+     * @summary Create Organization Members
+     * @param {OrgMemberCreate} orgMemberCreate
+     * @param {string} [inviterName]
+     * @param {string} [inviterEmail]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    createOrganizationMembers: async (
+      orgMemberCreate: OrgMemberCreate,
+      inviterName?: string,
+      inviterEmail?: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'orgMemberCreate' is not null or undefined
+      assertParamExists('createOrganizationMembers', 'orgMemberCreate', orgMemberCreate);
+      const localVarPath = `/v2/members`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (inviterName !== undefined) {
+        localVarQueryParameter['inviter_name'] = inviterName;
+      }
+
+      if (inviterEmail !== undefined) {
+        localVarQueryParameter['inviter_email'] = inviterEmail;
+      }
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        orgMemberCreate,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
     /**
      * Deletes an account member matching the given id or email address. The member will be removed from the active account in permit.io.  If the member is the only member in its account (organization), returns 400 (bad request), due to nobody remains with access to the account, meaning deletion of the entire account (org). To completely remove an account, call DELETE `/orgs/{org}`.
      * @summary Delete Organization Member
@@ -81,6 +146,59 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
         ...headersFromBaseOptions,
         ...options.headers,
       };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Remove permissions from a member. If the last permissions a member has are removed, the member is also deleted.
+     * @summary Delete Organization Permissions
+     * @param {OrgMemberRemovePermissions} orgMemberRemovePermissions
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    deleteOrganizationPermissions: async (
+      orgMemberRemovePermissions: OrgMemberRemovePermissions,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'orgMemberRemovePermissions' is not null or undefined
+      assertParamExists(
+        'deleteOrganizationPermissions',
+        'orgMemberRemovePermissions',
+        orgMemberRemovePermissions,
+      );
+      const localVarPath = `/v2/members`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        orgMemberRemovePermissions,
+        localVarRequestOptions,
+        configuration,
+      );
 
       return {
         url: toPathString(localVarUrlObj),
@@ -169,14 +287,18 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     * Lists all the account members that have access to the current active account. The active account/organization is determined by the API Key used or by the authenticated session id.
+     * Lists all the account members that current active account has access to, optionally filtering by project or environment. The active account/organization is determined by the API Key used or by the authenticated session id.
      * @summary List Organization Members
+     * @param {string} [projectId]
+     * @param {string} [envId]
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     listOrganizationMembers: async (
+      projectId?: string,
+      envId?: string,
       page?: number,
       perPage?: number,
       options: AxiosRequestConfig = {},
@@ -196,6 +318,14 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (projectId !== undefined) {
+        localVarQueryParameter['project_id'] = projectId;
+      }
+
+      if (envId !== undefined) {
+        localVarQueryParameter['env_id'] = envId;
+      }
 
       if (page !== undefined) {
         localVarQueryParameter['page'] = page;
@@ -285,6 +415,31 @@ export const MembersApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = MembersApiAxiosParamCreator(configuration);
   return {
     /**
+     * Create an organization member if needed, and grant it permissions.  The member can be specified either by ID (for an existing member), or by email (for either an existing member or a new one).  For a new member, an invite will be sent.
+     * @summary Create Organization Members
+     * @param {OrgMemberCreate} orgMemberCreate
+     * @param {string} [inviterName]
+     * @param {string} [inviterEmail]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async createOrganizationMembers(
+      orgMemberCreate: OrgMemberCreate,
+      inviterName?: string,
+      inviterEmail?: string,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrgMemberReadWithGrants>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.createOrganizationMembers(
+        orgMemberCreate,
+        inviterName,
+        inviterEmail,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
      * Deletes an account member matching the given id or email address. The member will be removed from the active account in permit.io.  If the member is the only member in its account (organization), returns 400 (bad request), due to nobody remains with access to the account, meaning deletion of the entire account (org). To completely remove an account, call DELETE `/orgs/{org}`.
      * @summary Delete Organization Member
      * @param {string} memberId Either the unique id (UUID) of the account member, or the email address of the account member.
@@ -302,6 +457,23 @@ export const MembersApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
+     * Remove permissions from a member. If the last permissions a member has are removed, the member is also deleted.
+     * @summary Delete Organization Permissions
+     * @param {OrgMemberRemovePermissions} orgMemberRemovePermissions
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async deleteOrganizationPermissions(
+      orgMemberRemovePermissions: OrgMemberRemovePermissions,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.deleteOrganizationPermissions(
+        orgMemberRemovePermissions,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
      * Gets the authenticated account member\'s details.
      * @summary Get the authenticated account member
      * @param {*} [options] Override http request option.
@@ -309,7 +481,9 @@ export const MembersApiFp = function (configuration?: Configuration) {
      */
     async getAuthenticatedMember(
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrgMemberRead>> {
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrgMemberReadWithGrants>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthenticatedMember(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
@@ -323,7 +497,9 @@ export const MembersApiFp = function (configuration?: Configuration) {
     async getOrganizationMember(
       memberId: string,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrgMemberRead>> {
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrgMemberReadWithGrants>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getOrganizationMember(
         memberId,
         options,
@@ -331,19 +507,27 @@ export const MembersApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     * Lists all the account members that have access to the current active account. The active account/organization is determined by the API Key used or by the authenticated session id.
+     * Lists all the account members that current active account has access to, optionally filtering by project or environment. The active account/organization is determined by the API Key used or by the authenticated session id.
      * @summary List Organization Members
+     * @param {string} [projectId]
+     * @param {string} [envId]
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async listOrganizationMembers(
+      projectId?: string,
+      envId?: string,
       page?: number,
       perPage?: number,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<OrgMemberRead>>> {
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<OrgMemberReadWithGrants>>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listOrganizationMembers(
+        projectId,
+        envId,
         page,
         perPage,
         options,
@@ -362,7 +546,9 @@ export const MembersApiFp = function (configuration?: Configuration) {
       memberId: string,
       orgMemberUpdate: OrgMemberUpdate,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrgMemberRead>> {
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrgMemberReadWithGrants>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateOrganizationMember(
         memberId,
         orgMemberUpdate,
@@ -385,6 +571,25 @@ export const MembersApiFactory = function (
   const localVarFp = MembersApiFp(configuration);
   return {
     /**
+     * Create an organization member if needed, and grant it permissions.  The member can be specified either by ID (for an existing member), or by email (for either an existing member or a new one).  For a new member, an invite will be sent.
+     * @summary Create Organization Members
+     * @param {OrgMemberCreate} orgMemberCreate
+     * @param {string} [inviterName]
+     * @param {string} [inviterEmail]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    createOrganizationMembers(
+      orgMemberCreate: OrgMemberCreate,
+      inviterName?: string,
+      inviterEmail?: string,
+      options?: any,
+    ): AxiosPromise<OrgMemberReadWithGrants> {
+      return localVarFp
+        .createOrganizationMembers(orgMemberCreate, inviterName, inviterEmail, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      * Deletes an account member matching the given id or email address. The member will be removed from the active account in permit.io.  If the member is the only member in its account (organization), returns 400 (bad request), due to nobody remains with access to the account, meaning deletion of the entire account (org). To completely remove an account, call DELETE `/orgs/{org}`.
      * @summary Delete Organization Member
      * @param {string} memberId Either the unique id (UUID) of the account member, or the email address of the account member.
@@ -397,12 +602,27 @@ export const MembersApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
+     * Remove permissions from a member. If the last permissions a member has are removed, the member is also deleted.
+     * @summary Delete Organization Permissions
+     * @param {OrgMemberRemovePermissions} orgMemberRemovePermissions
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    deleteOrganizationPermissions(
+      orgMemberRemovePermissions: OrgMemberRemovePermissions,
+      options?: any,
+    ): AxiosPromise<void> {
+      return localVarFp
+        .deleteOrganizationPermissions(orgMemberRemovePermissions, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      * Gets the authenticated account member\'s details.
      * @summary Get the authenticated account member
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getAuthenticatedMember(options?: any): AxiosPromise<OrgMemberRead> {
+    getAuthenticatedMember(options?: any): AxiosPromise<OrgMemberReadWithGrants> {
       return localVarFp.getAuthenticatedMember(options).then((request) => request(axios, basePath));
     },
     /**
@@ -412,26 +632,30 @@ export const MembersApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getOrganizationMember(memberId: string, options?: any): AxiosPromise<OrgMemberRead> {
+    getOrganizationMember(memberId: string, options?: any): AxiosPromise<OrgMemberReadWithGrants> {
       return localVarFp
         .getOrganizationMember(memberId, options)
         .then((request) => request(axios, basePath));
     },
     /**
-     * Lists all the account members that have access to the current active account. The active account/organization is determined by the API Key used or by the authenticated session id.
+     * Lists all the account members that current active account has access to, optionally filtering by project or environment. The active account/organization is determined by the API Key used or by the authenticated session id.
      * @summary List Organization Members
+     * @param {string} [projectId]
+     * @param {string} [envId]
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     listOrganizationMembers(
+      projectId?: string,
+      envId?: string,
       page?: number,
       perPage?: number,
       options?: any,
-    ): AxiosPromise<Array<OrgMemberRead>> {
+    ): AxiosPromise<Array<OrgMemberReadWithGrants>> {
       return localVarFp
-        .listOrganizationMembers(page, perPage, options)
+        .listOrganizationMembers(projectId, envId, page, perPage, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -446,13 +670,41 @@ export const MembersApiFactory = function (
       memberId: string,
       orgMemberUpdate: OrgMemberUpdate,
       options?: any,
-    ): AxiosPromise<OrgMemberRead> {
+    ): AxiosPromise<OrgMemberReadWithGrants> {
       return localVarFp
         .updateOrganizationMember(memberId, orgMemberUpdate, options)
         .then((request) => request(axios, basePath));
     },
   };
 };
+
+/**
+ * Request parameters for createOrganizationMembers operation in MembersApi.
+ * @export
+ * @interface MembersApiCreateOrganizationMembersRequest
+ */
+export interface MembersApiCreateOrganizationMembersRequest {
+  /**
+   *
+   * @type {OrgMemberCreate}
+   * @memberof MembersApiCreateOrganizationMembers
+   */
+  readonly orgMemberCreate: OrgMemberCreate;
+
+  /**
+   *
+   * @type {string}
+   * @memberof MembersApiCreateOrganizationMembers
+   */
+  readonly inviterName?: string;
+
+  /**
+   *
+   * @type {string}
+   * @memberof MembersApiCreateOrganizationMembers
+   */
+  readonly inviterEmail?: string;
+}
 
 /**
  * Request parameters for deleteOrganizationMember operation in MembersApi.
@@ -466,6 +718,20 @@ export interface MembersApiDeleteOrganizationMemberRequest {
    * @memberof MembersApiDeleteOrganizationMember
    */
   readonly memberId: string;
+}
+
+/**
+ * Request parameters for deleteOrganizationPermissions operation in MembersApi.
+ * @export
+ * @interface MembersApiDeleteOrganizationPermissionsRequest
+ */
+export interface MembersApiDeleteOrganizationPermissionsRequest {
+  /**
+   *
+   * @type {OrgMemberRemovePermissions}
+   * @memberof MembersApiDeleteOrganizationPermissions
+   */
+  readonly orgMemberRemovePermissions: OrgMemberRemovePermissions;
 }
 
 /**
@@ -488,6 +754,20 @@ export interface MembersApiGetOrganizationMemberRequest {
  * @interface MembersApiListOrganizationMembersRequest
  */
 export interface MembersApiListOrganizationMembersRequest {
+  /**
+   *
+   * @type {string}
+   * @memberof MembersApiListOrganizationMembers
+   */
+  readonly projectId?: string;
+
+  /**
+   *
+   * @type {string}
+   * @memberof MembersApiListOrganizationMembers
+   */
+  readonly envId?: string;
+
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
@@ -532,6 +812,28 @@ export interface MembersApiUpdateOrganizationMemberRequest {
  */
 export class MembersApi extends BaseAPI {
   /**
+   * Create an organization member if needed, and grant it permissions.  The member can be specified either by ID (for an existing member), or by email (for either an existing member or a new one).  For a new member, an invite will be sent.
+   * @summary Create Organization Members
+   * @param {MembersApiCreateOrganizationMembersRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof MembersApi
+   */
+  public createOrganizationMembers(
+    requestParameters: MembersApiCreateOrganizationMembersRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return MembersApiFp(this.configuration)
+      .createOrganizationMembers(
+        requestParameters.orgMemberCreate,
+        requestParameters.inviterName,
+        requestParameters.inviterEmail,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
    * Deletes an account member matching the given id or email address. The member will be removed from the active account in permit.io.  If the member is the only member in its account (organization), returns 400 (bad request), due to nobody remains with access to the account, meaning deletion of the entire account (org). To completely remove an account, call DELETE `/orgs/{org}`.
    * @summary Delete Organization Member
    * @param {MembersApiDeleteOrganizationMemberRequest} requestParameters Request parameters.
@@ -545,6 +847,23 @@ export class MembersApi extends BaseAPI {
   ) {
     return MembersApiFp(this.configuration)
       .deleteOrganizationMember(requestParameters.memberId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Remove permissions from a member. If the last permissions a member has are removed, the member is also deleted.
+   * @summary Delete Organization Permissions
+   * @param {MembersApiDeleteOrganizationPermissionsRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof MembersApi
+   */
+  public deleteOrganizationPermissions(
+    requestParameters: MembersApiDeleteOrganizationPermissionsRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return MembersApiFp(this.configuration)
+      .deleteOrganizationPermissions(requestParameters.orgMemberRemovePermissions, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -579,7 +898,7 @@ export class MembersApi extends BaseAPI {
   }
 
   /**
-   * Lists all the account members that have access to the current active account. The active account/organization is determined by the API Key used or by the authenticated session id.
+   * Lists all the account members that current active account has access to, optionally filtering by project or environment. The active account/organization is determined by the API Key used or by the authenticated session id.
    * @summary List Organization Members
    * @param {MembersApiListOrganizationMembersRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
@@ -591,7 +910,13 @@ export class MembersApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return MembersApiFp(this.configuration)
-      .listOrganizationMembers(requestParameters.page, requestParameters.perPage, options)
+      .listOrganizationMembers(
+        requestParameters.projectId,
+        requestParameters.envId,
+        requestParameters.page,
+        requestParameters.perPage,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 
