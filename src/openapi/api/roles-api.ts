@@ -37,6 +37,8 @@ import { HTTPValidationError } from '../types';
 // @ts-ignore
 import { RemoveRolePermissions } from '../types';
 // @ts-ignore
+import { ResponseListRolesV2SchemaProjIdEnvIdRolesGet } from '../types';
+// @ts-ignore
 import { RoleCreate } from '../types';
 // @ts-ignore
 import { RoleRead } from '../types';
@@ -48,64 +50,6 @@ import { RoleUpdate } from '../types';
  */
 export const RolesApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
-    /**
-     * This endpoint is part of the role hierarchy feature.  Makes role with id `role_id` extend the role with id `parent_role_id`. In other words, `role_id` will automatically be assigned any permissions that are granted to `parent_role_id`.  We can say the `role_id` **extends** `parent_role_id` or **inherits** from `parent_role_id`.  If `role_id` is already an ancestor of `parent_role_id`, the request will fail with HTTP 400 to prevent a cycle in the role hierarchy.
-     * @summary Add Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    addParentRole: async (
-      projId: string,
-      envId: string,
-      roleId: string,
-      parentRoleId: string,
-      options: AxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('addParentRole', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('addParentRole', 'envId', envId);
-      // verify required parameter 'roleId' is not null or undefined
-      assertParamExists('addParentRole', 'roleId', roleId);
-      // verify required parameter 'parentRoleId' is not null or undefined
-      assertParamExists('addParentRole', 'parentRoleId', parentRoleId);
-      const localVarPath = `/v2/schema/{proj_id}/{env_id}/roles/{role_id}/parents/{parent_role_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)))
-        .replace(`{${'parent_role_id'}}`, encodeURIComponent(String(parentRoleId)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication HTTPBearer required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
     /**
      * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
      * @summary Assign Permissions To Role
@@ -340,6 +284,8 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
      * @summary List Roles
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} [search] Text search for the roles name or key
+     * @param {boolean} [includeTotalCount] Include total count in response
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -348,6 +294,8 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
     listRoles: async (
       projId: string,
       envId: string,
+      search?: string,
+      includeTotalCount?: boolean,
       page?: number,
       perPage?: number,
       options: AxiosRequestConfig = {},
@@ -374,6 +322,14 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
+      if (search !== undefined) {
+        localVarQueryParameter['search'] = search;
+      }
+
+      if (includeTotalCount !== undefined) {
+        localVarQueryParameter['include_total_count'] = includeTotalCount;
+      }
+
       if (page !== undefined) {
         localVarQueryParameter['page'] = page;
       }
@@ -381,64 +337,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       if (perPage !== undefined) {
         localVarQueryParameter['per_page'] = perPage;
       }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     * This endpoint is part of the role hierarchy feature.  Removes `parent_role_id` from the list of parent roles of role with id `role_id`. In other words, `role_id` will no longer be automatically assigned permissions that are granted to `parent_role_id`.  We can say the `role_id` **not longer extends** `parent_role_id` or **no longer inherits** from `parent_role_id`.
-     * @summary Remove Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    removeParentRole: async (
-      projId: string,
-      envId: string,
-      roleId: string,
-      parentRoleId: string,
-      options: AxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('removeParentRole', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('removeParentRole', 'envId', envId);
-      // verify required parameter 'roleId' is not null or undefined
-      assertParamExists('removeParentRole', 'roleId', roleId);
-      // verify required parameter 'parentRoleId' is not null or undefined
-      assertParamExists('removeParentRole', 'parentRoleId', parentRoleId);
-      const localVarPath = `/v2/schema/{proj_id}/{env_id}/roles/{role_id}/parents/{parent_role_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)))
-        .replace(`{${'parent_role_id'}}`, encodeURIComponent(String(parentRoleId)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication HTTPBearer required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -596,32 +494,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = RolesApiAxiosParamCreator(configuration);
   return {
     /**
-     * This endpoint is part of the role hierarchy feature.  Makes role with id `role_id` extend the role with id `parent_role_id`. In other words, `role_id` will automatically be assigned any permissions that are granted to `parent_role_id`.  We can say the `role_id` **extends** `parent_role_id` or **inherits** from `parent_role_id`.  If `role_id` is already an ancestor of `parent_role_id`, the request will fail with HTTP 400 to prevent a cycle in the role hierarchy.
-     * @summary Add Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async addParentRole(
-      projId: string,
-      envId: string,
-      roleId: string,
-      parentRoleId: string,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.addParentRole(
-        projId,
-        envId,
-        roleId,
-        parentRoleId,
-        options,
-      );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
      * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
      * @summary Assign Permissions To Role
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -721,6 +593,8 @@ export const RolesApiFp = function (configuration?: Configuration) {
      * @summary List Roles
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} [search] Text search for the roles name or key
+     * @param {boolean} [includeTotalCount] Include total count in response
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -729,41 +603,24 @@ export const RolesApiFp = function (configuration?: Configuration) {
     async listRoles(
       projId: string,
       envId: string,
+      search?: string,
+      includeTotalCount?: boolean,
       page?: number,
       perPage?: number,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<RoleRead>>> {
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ResponseListRolesV2SchemaProjIdEnvIdRolesGet>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listRoles(
         projId,
         envId,
+        search,
+        includeTotalCount,
         page,
         perPage,
-        options,
-      );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
-     * This endpoint is part of the role hierarchy feature.  Removes `parent_role_id` from the list of parent roles of role with id `role_id`. In other words, `role_id` will no longer be automatically assigned permissions that are granted to `parent_role_id`.  We can say the `role_id` **not longer extends** `parent_role_id` or **no longer inherits** from `parent_role_id`.
-     * @summary Remove Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async removeParentRole(
-      projId: string,
-      envId: string,
-      roleId: string,
-      parentRoleId: string,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.removeParentRole(
-        projId,
-        envId,
-        roleId,
-        parentRoleId,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -834,27 +691,6 @@ export const RolesApiFactory = function (
 ) {
   const localVarFp = RolesApiFp(configuration);
   return {
-    /**
-     * This endpoint is part of the role hierarchy feature.  Makes role with id `role_id` extend the role with id `parent_role_id`. In other words, `role_id` will automatically be assigned any permissions that are granted to `parent_role_id`.  We can say the `role_id` **extends** `parent_role_id` or **inherits** from `parent_role_id`.  If `role_id` is already an ancestor of `parent_role_id`, the request will fail with HTTP 400 to prevent a cycle in the role hierarchy.
-     * @summary Add Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    addParentRole(
-      projId: string,
-      envId: string,
-      roleId: string,
-      parentRoleId: string,
-      options?: any,
-    ): AxiosPromise<RoleRead> {
-      return localVarFp
-        .addParentRole(projId, envId, roleId, parentRoleId, options)
-        .then((request) => request(axios, basePath));
-    },
     /**
      * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
      * @summary Assign Permissions To Role
@@ -928,6 +764,8 @@ export const RolesApiFactory = function (
      * @summary List Roles
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} [search] Text search for the roles name or key
+     * @param {boolean} [includeTotalCount] Include total count in response
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -936,33 +774,14 @@ export const RolesApiFactory = function (
     listRoles(
       projId: string,
       envId: string,
+      search?: string,
+      includeTotalCount?: boolean,
       page?: number,
       perPage?: number,
       options?: any,
-    ): AxiosPromise<Array<RoleRead>> {
+    ): AxiosPromise<ResponseListRolesV2SchemaProjIdEnvIdRolesGet> {
       return localVarFp
-        .listRoles(projId, envId, page, perPage, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     * This endpoint is part of the role hierarchy feature.  Removes `parent_role_id` from the list of parent roles of role with id `role_id`. In other words, `role_id` will no longer be automatically assigned permissions that are granted to `parent_role_id`.  We can say the `role_id` **not longer extends** `parent_role_id` or **no longer inherits** from `parent_role_id`.
-     * @summary Remove Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    removeParentRole(
-      projId: string,
-      envId: string,
-      roleId: string,
-      parentRoleId: string,
-      options?: any,
-    ): AxiosPromise<RoleRead> {
-      return localVarFp
-        .removeParentRole(projId, envId, roleId, parentRoleId, options)
+        .listRoles(projId, envId, search, includeTotalCount, page, perPage, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -1009,41 +828,6 @@ export const RolesApiFactory = function (
     },
   };
 };
-
-/**
- * Request parameters for addParentRole operation in RolesApi.
- * @export
- * @interface RolesApiAddParentRoleRequest
- */
-export interface RolesApiAddParentRoleRequest {
-  /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RolesApiAddParentRole
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RolesApiAddParentRole
-   */
-  readonly envId: string;
-
-  /**
-   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RolesApiAddParentRole
-   */
-  readonly roleId: string;
-
-  /**
-   * Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RolesApiAddParentRole
-   */
-  readonly parentRoleId: string;
-}
 
 /**
  * Request parameters for assignPermissionsToRole operation in RolesApi.
@@ -1185,6 +969,20 @@ export interface RolesApiListRolesRequest {
   readonly envId: string;
 
   /**
+   * Text search for the roles name or key
+   * @type {string}
+   * @memberof RolesApiListRoles
+   */
+  readonly search?: string;
+
+  /**
+   * Include total count in response
+   * @type {boolean}
+   * @memberof RolesApiListRoles
+   */
+  readonly includeTotalCount?: boolean;
+
+  /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
    * @memberof RolesApiListRoles
@@ -1197,41 +995,6 @@ export interface RolesApiListRolesRequest {
    * @memberof RolesApiListRoles
    */
   readonly perPage?: number;
-}
-
-/**
- * Request parameters for removeParentRole operation in RolesApi.
- * @export
- * @interface RolesApiRemoveParentRoleRequest
- */
-export interface RolesApiRemoveParentRoleRequest {
-  /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RolesApiRemoveParentRole
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RolesApiRemoveParentRole
-   */
-  readonly envId: string;
-
-  /**
-   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RolesApiRemoveParentRole
-   */
-  readonly roleId: string;
-
-  /**
-   * Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RolesApiRemoveParentRole
-   */
-  readonly parentRoleId: string;
 }
 
 /**
@@ -1311,29 +1074,6 @@ export interface RolesApiUpdateRoleRequest {
  * @extends {BaseAPI}
  */
 export class RolesApi extends BaseAPI {
-  /**
-   * This endpoint is part of the role hierarchy feature.  Makes role with id `role_id` extend the role with id `parent_role_id`. In other words, `role_id` will automatically be assigned any permissions that are granted to `parent_role_id`.  We can say the `role_id` **extends** `parent_role_id` or **inherits** from `parent_role_id`.  If `role_id` is already an ancestor of `parent_role_id`, the request will fail with HTTP 400 to prevent a cycle in the role hierarchy.
-   * @summary Add Parent Role
-   * @param {RolesApiAddParentRoleRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof RolesApi
-   */
-  public addParentRole(
-    requestParameters: RolesApiAddParentRoleRequest,
-    options?: AxiosRequestConfig,
-  ) {
-    return RolesApiFp(this.configuration)
-      .addParentRole(
-        requestParameters.projId,
-        requestParameters.envId,
-        requestParameters.roleId,
-        requestParameters.parentRoleId,
-        options,
-      )
-      .then((request) => request(this.axios, this.basePath));
-  }
-
   /**
    * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
    * @summary Assign Permissions To Role
@@ -1422,31 +1162,10 @@ export class RolesApi extends BaseAPI {
       .listRoles(
         requestParameters.projId,
         requestParameters.envId,
+        requestParameters.search,
+        requestParameters.includeTotalCount,
         requestParameters.page,
         requestParameters.perPage,
-        options,
-      )
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   * This endpoint is part of the role hierarchy feature.  Removes `parent_role_id` from the list of parent roles of role with id `role_id`. In other words, `role_id` will no longer be automatically assigned permissions that are granted to `parent_role_id`.  We can say the `role_id` **not longer extends** `parent_role_id` or **no longer inherits** from `parent_role_id`.
-   * @summary Remove Parent Role
-   * @param {RolesApiRemoveParentRoleRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof RolesApi
-   */
-  public removeParentRole(
-    requestParameters: RolesApiRemoveParentRoleRequest,
-    options?: AxiosRequestConfig,
-  ) {
-    return RolesApiFp(this.configuration)
-      .removeParentRole(
-        requestParameters.projId,
-        requestParameters.envId,
-        requestParameters.roleId,
-        requestParameters.parentRoleId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));

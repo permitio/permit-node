@@ -12,9 +12,13 @@
  * Do not edit the class manually.
  */
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings } from './permit-backend-schemas-schema-derived-role-derived-role-settings';
+
 /**
- *
+ * @type Settings
+ * the settings of the derived role
  * @export
- * @interface Settings
  */
-export interface Settings {}
+export type Settings = PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings;

@@ -8,7 +8,6 @@ export * from './avpengine-decision-log';
 export * from './action-block-editable';
 export * from './action-block-read';
 export * from './action-obj';
-export * from './activity-details';
 export * from './activity-details-list';
 export * from './activity-details-object';
 export * from './activity-details-object-data';

@@ -15,6 +15,9 @@
 // May contain unused imports in some cases
 // @ts-ignore
 import { ElementsPermissionLevel } from './elements-permission-level';
+// May contain unused imports in some cases
+// @ts-ignore
+import { RoleDerivation } from './role-derivation';
 
 /**
  *
@@ -46,6 +49,12 @@ export interface ElementsRoleRead {
    * @memberof ElementsRoleRead
    */
   attributes?: object;
+  /**
+   *
+   * @type {RoleDerivation}
+   * @memberof ElementsRoleRead
+   */
+  role_derivation?: RoleDerivation;
   /**
    * A URL-friendly name of the role (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the role.
    * @type {string}

@@ -14,6 +14,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { DerivedRole } from './derived-role';
+// May contain unused imports in some cases
+// @ts-ignore
 import { ResourceTypeData } from './resource-type-data';
 
 /**
@@ -28,4 +31,10 @@ export interface ResponseGetDataForResourceV2InternalOpalDataOrgIdProjIdEnvIdRes
    * @memberof ResponseGetDataForResourceV2InternalOpalDataOrgIdProjIdEnvIdResourceTypesResourceIdGet
    */
   actions: Array<string>;
+  /**
+   *
+   * @type {{ [key: string]: DerivedRole; }}
+   * @memberof ResponseGetDataForResourceV2InternalOpalDataOrgIdProjIdEnvIdResourceTypesResourceIdGet
+   */
+  derived_roles: { [key: string]: DerivedRole };
 }

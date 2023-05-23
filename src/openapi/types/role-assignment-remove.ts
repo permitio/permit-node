@@ -29,7 +29,13 @@ export interface RoleAssignmentRemove {
    * @type {string}
    * @memberof RoleAssignmentRemove
    */
-  tenant: string;
+  tenant?: string;
+  /**
+   * the tenant the role is associated with (accepts either the tenant id or the tenant key)
+   * @type {string}
+   * @memberof RoleAssignmentRemove
+   */
+  resource_instance?: string;
   /**
    * the user the role will be unassigned from (accepts either the user id or the user key)
    * @type {string}

@@ -12,6 +12,10 @@
  * Do not edit the class manually.
  */
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { RoleDerivation } from './role-derivation';
+
 /**
  *
  * @export
@@ -42,6 +46,12 @@ export interface RoleRead {
    * @memberof RoleRead
    */
   attributes?: object;
+  /**
+   *
+   * @type {RoleDerivation}
+   * @memberof RoleRead
+   */
+  role_derivation?: RoleDerivation;
   /**
    * A URL-friendly name of the role (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the role.
    * @type {string}

@@ -12,6 +12,10 @@
  * Do not edit the class manually.
  */
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { RoleDerivation1 } from './role-derivation1';
+
 /**
  *
  * @export
@@ -42,4 +46,10 @@ export interface ResourceRoleUpdate {
    * @memberof ResourceRoleUpdate
    */
   attributes?: object;
+  /**
+   *
+   * @type {RoleDerivation1}
+   * @memberof ResourceRoleUpdate
+   */
+  role_derivation?: RoleDerivation1;
 }

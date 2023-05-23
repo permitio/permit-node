@@ -14,18 +14,17 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ActivityDetailsList } from './activity-details-list';
+import { DerivedRoleBlockRead } from './derived-role-block-read';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ActivityDetailsObject } from './activity-details-object';
+import { DerivedRoleRuleRead } from './derived-role-rule-read';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ActivityDetailsObjectData } from './activity-details-object-data';
+import { Settings } from './settings';
 
 /**
- * @type ActivityDetails
+ * @type RoleDerivation2
+ * Derived role that inherit will be applied on this role
  * @export
  */
-export type ActivityDetails =
-  | ({ kind: 'list' } & ActivityDetailsList)
-  | ({ kind: 'object' } & ActivityDetailsObject);
+export type RoleDerivation2 = DerivedRoleBlockRead;

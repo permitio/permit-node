@@ -60,6 +60,12 @@ export interface FullData {
   condition_set_rules: { [key: string]: { [key: string]: { [key: string]: Array<string> } } };
   /**
    *
+   * @type {{ [key: string]: { [key: string]: { [key: string]: Array<string>; }; }; }}
+   * @memberof FullData
+   */
+  relationships: { [key: string]: { [key: string]: { [key: string]: Array<string> } } };
+  /**
+   *
    * @type {{ [key: string]: ResourceTypeData; }}
    * @memberof FullData
    */
@@ -70,4 +76,10 @@ export interface FullData {
    * @memberof FullData
    */
   condition_sets: { [key: string]: ConditionSetData };
+  /**
+   *
+   * @type {{ [key: string]: { [key: string]: Array<string>; }; }}
+   * @memberof FullData
+   */
+  role_assignments: { [key: string]: { [key: string]: Array<string> } };
 }

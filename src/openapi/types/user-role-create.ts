@@ -29,5 +29,11 @@ export interface UserRoleCreate {
    * @type {string}
    * @memberof UserRoleCreate
    */
-  tenant: string;
+  tenant?: string;
+  /**
+   * the tenant the role is associated with (accepts either the tenant id or the tenant key)
+   * @type {string}
+   * @memberof UserRoleCreate
+   */
+  resource_instance?: string;
 }

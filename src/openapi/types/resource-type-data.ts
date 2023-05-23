@@ -12,6 +12,10 @@
  * Do not edit the class manually.
  */
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { DerivedRole } from './derived-role';
+
 /**
  *
  * @export
@@ -24,4 +28,10 @@ export interface ResourceTypeData {
    * @memberof ResourceTypeData
    */
   actions: Array<string>;
+  /**
+   *
+   * @type {{ [key: string]: DerivedRole; }}
+   * @memberof ResourceTypeData
+   */
+  derived_roles: { [key: string]: DerivedRole };
 }
