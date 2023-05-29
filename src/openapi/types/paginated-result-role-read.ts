@@ -14,24 +14,30 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { DerivedRole } from './derived-role';
+import { RoleRead } from './role-read';
 
 /**
  *
  * @export
- * @interface ResourceTypeData
+ * @interface PaginatedResultRoleRead
  */
-export interface ResourceTypeData {
+export interface PaginatedResultRoleRead {
+  /**
+   * List of Roles
+   * @type {Array<RoleRead>}
+   * @memberof PaginatedResultRoleRead
+   */
+  data: Array<RoleRead>;
   /**
    *
-   * @type {Array<string>}
-   * @memberof ResourceTypeData
+   * @type {number}
+   * @memberof PaginatedResultRoleRead
    */
-  actions: Array<string>;
+  total_count: number;
   /**
    *
-   * @type {{ [key: string]: DerivedRole; }}
-   * @memberof ResourceTypeData
+   * @type {number}
+   * @memberof PaginatedResultRoleRead
    */
-  derived_roles: { [key: string]: DerivedRole };
+  page_count?: number;
 }

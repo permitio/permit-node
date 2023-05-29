@@ -12,6 +12,10 @@
  * Do not edit the class manually.
  */
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { GrantedTo2 } from './granted-to2';
+
 /**
  *
  * @export
@@ -42,6 +46,12 @@ export interface ResourceRoleRead {
    * @memberof ResourceRoleRead
    */
   attributes?: object;
+  /**
+   *
+   * @type {GrantedTo2}
+   * @memberof ResourceRoleRead
+   */
+  granted_to?: GrantedTo2;
   /**
    * A URL-friendly name of the role (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the role.
    * @type {string}
@@ -78,6 +88,12 @@ export interface ResourceRoleRead {
    * @memberof ResourceRoleRead
    */
   resource_id: string;
+  /**
+   * The unique resource key that the role belongs to.
+   * @type {string}
+   * @memberof ResourceRoleRead
+   */
+  resource: string;
   /**
    * Date and time when the role was created (ISO_8601 format).
    * @type {string}
