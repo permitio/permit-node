@@ -29,7 +29,13 @@ export interface RoleAssignmentCreate {
    * @type {string}
    * @memberof RoleAssignmentCreate
    */
-  tenant: string;
+  tenant?: string;
+  /**
+   * the resource instance the role is associated with (accepts either the resource instance id or key using this format resource_type:resource_instance)
+   * @type {string}
+   * @memberof RoleAssignmentCreate
+   */
+  resource_instance?: string;
   /**
    * the user the role will be assigned to (accepts either the user id or the user key)
    * @type {string}

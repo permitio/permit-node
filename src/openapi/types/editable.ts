@@ -19,43 +19,37 @@ import { GrantedTo1 } from './granted-to1';
 /**
  *
  * @export
- * @interface RoleCreate
+ * @interface Editable
  */
-export interface RoleCreate {
-  /**
-   * A URL-friendly name of the role (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the role.
-   * @type {string}
-   * @memberof RoleCreate
-   */
-  key: string;
+export interface Editable {
   /**
    * The name of the role
    * @type {string}
-   * @memberof RoleCreate
+   * @memberof Editable
    */
   name: string;
   /**
    * optional description string explaining what this role represents, or what permissions are granted to it.
    * @type {string}
-   * @memberof RoleCreate
+   * @memberof Editable
    */
   description?: string;
   /**
    * list of action keys that define what actions this resource role is permitted to do
    * @type {Array<string>}
-   * @memberof RoleCreate
+   * @memberof Editable
    */
   permissions?: Array<string>;
   /**
    * optional dictionary of key-value pairs that can be used to store arbitrary metadata about this role. This metadata can be used to filter role using query parameters with attr_ prefix, currently supports only \'equals\' operator
    * @type {object}
-   * @memberof RoleCreate
+   * @memberof Editable
    */
   attributes?: object;
   /**
    *
    * @type {GrantedTo1}
-   * @memberof RoleCreate
+   * @memberof Editable
    */
   granted_to?: GrantedTo1;
 }

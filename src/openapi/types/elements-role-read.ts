@@ -15,6 +15,9 @@
 // May contain unused imports in some cases
 // @ts-ignore
 import { ElementsPermissionLevel } from './elements-permission-level';
+// May contain unused imports in some cases
+// @ts-ignore
+import { GrantedTo } from './granted-to';
 
 /**
  *
@@ -46,6 +49,12 @@ export interface ElementsRoleRead {
    * @memberof ElementsRoleRead
    */
   attributes?: object;
+  /**
+   *
+   * @type {GrantedTo}
+   * @memberof ElementsRoleRead
+   */
+  granted_to?: GrantedTo;
   /**
    * A URL-friendly name of the role (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the role.
    * @type {string}
