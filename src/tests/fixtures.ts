@@ -1,7 +1,7 @@
 import { ExecutionContext } from 'ava';
 import winston from 'winston';
 
-import { IPermitClient, Permit } from '../index';
+import { IPermitClient, Permit, PermitApiError } from '../index';
 import { LoggerFactory } from '../logger';
 
 export type TestContext = { permit: IPermitClient; logger: winston.Logger };
@@ -9,6 +9,16 @@ export type TestContext = { permit: IPermitClient; logger: winston.Logger };
 export const printBreak = () => {
   console.log('\n\n ----------- \n\n');
 };
+
+export function handleApiError(
+  error: PermitApiError<any>,
+  message: string,
+  t: ExecutionContext<TestContext>,
+): void {
+  const err = `${message}: status=${error.response?.status}, url=${error.request.url}, method=${error.request.method}, details=${error.response?.data}`;
+  t.context.logger.error(err);
+  t.fail(err);
+}
 
 export const provideTestExecutionContext = (t: ExecutionContext<TestContext>) => {
   // config
