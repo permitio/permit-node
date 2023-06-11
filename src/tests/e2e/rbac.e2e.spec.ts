@@ -1,43 +1,9 @@
 import anyTest, { TestInterface } from 'ava';
-import winston from 'winston';
 
-import { LoggerFactory } from './logger';
+import { printBreak, provideTestExecutionContext, TestContext } from '../fixtures';
 
-import { Permit } from './index';
-import { IPermitClient } from './index';
-
-const test = anyTest as TestInterface<{ permit: IPermitClient; logger: winston.Logger }>;
-
-const printBreak = () => {
-  console.log('\n\n ----------- \n\n');
-};
-
-test.before((t) => {
-  // config
-  const defaultPDPAddress: string =
-    process.env.CLOUD_PDP === 'true' ? 'https://cloudpdp.api.permit.io' : 'http://localhost:7766';
-  const defaultApiAddress: string =
-    process.env.API_TIER === 'prod' ? 'https://api.permit.io' : 'http://localhost:8000';
-
-  const token: string = process.env.PDP_API_KEY || '';
-  const pdpAddress: string = process.env.PDP_URL || defaultPDPAddress;
-  const apiUrl = process.env.PDP_CONTROL_PLANE || defaultApiAddress;
-
-  if (!token) {
-    t.fail('PDP_API_KEY is not configured, test cannot run!');
-  }
-
-  t.context.permit = new Permit({
-    token,
-    pdp: pdpAddress,
-    apiUrl,
-    log: {
-      level: 'debug',
-    },
-  });
-
-  t.context.logger = LoggerFactory.createLogger(t.context.permit.config);
-});
+const test = anyTest as TestInterface<TestContext>;
+test.before(provideTestExecutionContext);
 
 test('Permission check e2e test', async (t) => {
   const permit = t.context.permit;
