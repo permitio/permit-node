@@ -114,7 +114,7 @@ export class ConfigFactory {
       timeout: undefined,
       throwOnError: true,
       apiContext: new ApiContext(),
-      axiosInstance: globalAxios,
+      axiosInstance: globalAxios.create(),
     };
   }
 
