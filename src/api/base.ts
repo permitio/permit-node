@@ -5,7 +5,7 @@ import { IPermitConfig } from '../config';
 import { APIKeysApi, Configuration } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
 
-import { ApiKeyLevel, PermitContextError } from './context';
+import { API_ACCESS_LEVELS, ApiKeyLevel, PermitContextError } from './context';
 
 export class PermitApiError<T> extends Error {
   constructor(message: string, public originalError: AxiosError<T>) {
@@ -48,10 +48,11 @@ export abstract class BasePermitApi {
     try {
       const response = await this.scopeApi.getApiKeyScope();
 
-      if (response.data.organization_id !== undefined) {
-        if (response.data.project_id !== undefined) {
-          if (response.data.environment_id !== undefined) {
+      if (response.data.organization_id !== undefined && response.data.organization_id !== null) {
+        if (response.data.project_id !== undefined && response.data.project_id !== null) {
+          if (response.data.environment_id !== undefined && response.data.environment_id !== null) {
             // set environment level context
+            this.logger.debug(`setting: environment-level api context`);
             this.config.apiContext.setEnvironmentLevelContext(
               response.data.organization_id,
               response.data.project_id,
@@ -61,6 +62,7 @@ export abstract class BasePermitApi {
           }
 
           // set project level context
+          this.logger.debug(`setting: project-level api context`);
           this.config.apiContext.setProjectLevelContext(
             response.data.organization_id,
             response.data.project_id,
@@ -69,6 +71,7 @@ export abstract class BasePermitApi {
         }
 
         // set org level context
+        this.logger.debug(`setting: organization-level api context`);
         this.config.apiContext.setOrganizationLevelContext(response.data.organization_id);
         return;
       }
@@ -88,16 +91,21 @@ export abstract class BasePermitApi {
     }
   }
 
-  protected async ensureContext(callLevel: ApiKeyLevel): Promise<void> {
+  public async ensureContext(callLevel: ApiKeyLevel): Promise<void> {
     if (this.config.apiContext.level === ApiKeyLevel.WAIT_FOR_INIT) {
       await this.setContextFromApiKey();
     }
 
     if (callLevel !== this.config.apiContext.level) {
-      throw new PermitContextError(
-        `You're trying to use an SDK method that's requires an API Key with level: ${callLevel}, ` +
-          `however the SDK is running with an API key with level ${this.config.apiContext.level}. `,
-      );
+      const requiredLevel = API_ACCESS_LEVELS.indexOf(callLevel);
+      const actualLevel = API_ACCESS_LEVELS.indexOf(this.config.apiContext.level);
+      if (requiredLevel === -1 || actualLevel === -1 || requiredLevel < actualLevel) {
+        throw new PermitContextError(
+          `You're trying to use an SDK method that's requires an API Key with level: ${callLevel}, ` +
+            `however the SDK is running with an API key with level ${this.config.apiContext.level}. `,
+        );
+      }
+      return;
     }
 
     // verify context matches requested call level
@@ -116,7 +124,7 @@ export abstract class BasePermitApi {
 
     if (
       callLevel == ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY &&
-      this.config.apiContext.environment === null
+      (this.config.apiContext.project === null || this.config.apiContext.environment === null)
     ) {
       throw new PermitContextError(
         "You're trying to use an SDK method that's specific to an environment," +

@@ -29,6 +29,12 @@ export enum ApiKeyLevel {
   ENVIRONMENT_LEVEL_API_KEY = 'ENVIRONMENT_LEVEL_API_KEY',
 }
 
+export const API_ACCESS_LEVELS: ApiKeyLevel[] = [
+  ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY,
+  ApiKeyLevel.PROJECT_LEVEL_API_KEY,
+  ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY,
+];
+
 /**
  * The `PermitContextError` class represents an error that occurs when an API method
  * is called with either insufficient level of API key authorization (i.e: trying to

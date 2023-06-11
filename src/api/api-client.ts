@@ -4,6 +4,7 @@ import { IPermitConfig } from '../config';
 
 import { ConditionSetRulesApi, IConditionSetRulesApi } from './condition-set-rules';
 import { ConditionSetsApi, IConditionSetsApi } from './condition-sets';
+import { ApiContext, ApiKeyLevel } from './context';
 import { DeprecatedApiClient, IDeprecatedPermitApi } from './deprecated';
 import { EnvironmentsApi, IEnvironmentsApi } from './environments';
 import { IProjectsApi, ProjectsApi } from './projects';
@@ -88,6 +89,14 @@ export interface IPermitApi extends IDeprecatedPermitApi {
    * @see {@link https://api.permit.io/v2/redoc#tag/Users}
    */
   users: IUsersApi;
+
+  /**
+   * Verifies that the current api context is as expected or throws exception.
+   *
+   * @param callLevel the required permit api context
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required context.
+   */
+  ensureContext(callLevel: ApiKeyLevel): Promise<void>;
 }
 
 export class ApiClient extends DeprecatedApiClient implements IPermitApi {

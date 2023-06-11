@@ -197,7 +197,7 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
    */
   public async list(params: IListEnvironments): Promise<EnvironmentRead[]> {
     const { projectKey, page = 1, perPage = 100 } = params;
-    await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
+    await this.ensureContext(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
     try {
       return (
         await this.environments.listEnvironments({
@@ -221,7 +221,7 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(projectKey: string, environmentKey: string): Promise<EnvironmentRead> {
-    await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
+    await this.ensureContext(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
     try {
       return (
         await this.environments.getEnvironment({
@@ -272,7 +272,7 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getStats(projectKey: string, environmentKey: string): Promise<EnvironmentStats> {
-    await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
+    await this.ensureContext(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
     try {
       return (
         await this.environments.statsEnvironments({
@@ -296,7 +296,7 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async getApiKey(projectKey: string, environmentKey: string): Promise<APIKeyRead> {
-    await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
+    await this.ensureContext(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
     try {
       return (
         await this.apiKeys.getEnvironmentApiKey({
@@ -322,7 +322,7 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
     projectKey: string,
     environmentData: EnvironmentCreate,
   ): Promise<EnvironmentRead> {
-    await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
+    await this.ensureContext(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
     try {
       return (
         await this.environments.createEnvironment({
@@ -350,7 +350,7 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
     environmentKey: string,
     environmentData: EnvironmentUpdate,
   ): Promise<EnvironmentRead> {
-    await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
+    await this.ensureContext(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
     try {
       return (
         await this.environments.updateEnvironment({
@@ -384,7 +384,7 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
     environmentKey: string,
     copyParams: EnvironmentCopy,
   ): Promise<EnvironmentRead> {
-    await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
+    await this.ensureContext(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
     try {
       return (
         await this.environments.copyEnvironment({
@@ -408,7 +408,7 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(projectKey: string, environmentKey: string): Promise<void> {
-    await this.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
+    await this.ensureContext(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
     try {
       await this.environments.deleteEnvironment({
         projId: projectKey,
