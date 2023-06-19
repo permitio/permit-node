@@ -166,6 +166,7 @@ test('Permission check e2e test', async (t) => {
     const relationships = [
       // finance folder contains 2 documents
       [`${folder.key}:finance`, 'parent', `${document.key}:budget23`, permitTenant.key],
+      // TODO: add missing relationships commented out below because of 409 conflict
       // [`${folder.key}:finance`, 'parent', `${document.key}:june-expenses`, permitTenant.key],
       // rnd folder contains 2 documents
       [`${folder.key}:rnd`, 'parent', `${document.key}:architecture`, permitTenant.key],
