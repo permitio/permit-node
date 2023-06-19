@@ -11,7 +11,7 @@ import {
 import { BASE_PATH } from '../openapi/base';
 
 import { BasePermitApi, IPagination } from './base';
-import { ApiKeyLevel } from './context';
+import { ApiContextLevel, ApiKeyLevel } from './context';
 
 export { PaginatedResultUserRead, TenantCreate, TenantRead, TenantUpdate } from '../openapi';
 
@@ -145,7 +145,8 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
    */
   public async list(pagination?: IPagination): Promise<TenantRead[]> {
     const { page = 1, perPage = 100 } = pagination ?? {};
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.tenants.listTenants({
@@ -172,7 +173,8 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
     page = 1,
     perPage = 100,
   }: IListTenantUsers): Promise<PaginatedResultUserRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.tenants.listTenantUsers({
@@ -196,7 +198,8 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(tenantKey: string): Promise<TenantRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.tenants.getTenant({
@@ -244,7 +247,8 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async create(tenantData: TenantCreate): Promise<TenantRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.tenants.createTenant({
@@ -267,7 +271,8 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async update(tenantKey: string, tenantData: TenantUpdate): Promise<TenantRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.tenants.updateTenant({
@@ -290,7 +295,8 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(tenantKey: string): Promise<void> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       await this.tenants.deleteTenant({
         ...this.config.apiContext.environmentContext,
@@ -311,7 +317,8 @@ export class TenantsApi extends BasePermitApi implements ITenantsApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async deleteTenantUser(tenantKey: string, userKey: string): Promise<void> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       await this.tenants.deleteTenantUser({
         ...this.config.apiContext.environmentContext,

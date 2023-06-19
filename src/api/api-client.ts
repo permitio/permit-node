@@ -4,7 +4,7 @@ import { IPermitConfig } from '../config';
 
 import { ConditionSetRulesApi, IConditionSetRulesApi } from './condition-set-rules';
 import { ConditionSetsApi, IConditionSetsApi } from './condition-sets';
-import { ApiContext, ApiKeyLevel } from './context';
+import { ApiContextLevel } from './context';
 import { DeprecatedApiClient, IDeprecatedPermitApi } from './deprecated';
 import { EnvironmentsApi, IEnvironmentsApi } from './environments';
 import { IProjectsApi, ProjectsApi } from './projects';
@@ -91,12 +91,11 @@ export interface IPermitApi extends IDeprecatedPermitApi {
   users: IUsersApi;
 
   /**
-   * Verifies that the current api context is as expected or throws exception.
-   *
-   * @param callLevel the required permit api context
-   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required context.
+   * Ensure that the API context matches the required endpoint context.
+   * @param requiredContext The required API context level for the endpoint.
+   * @throws PermitContextError If the currently set API context level does not match the required context level.
    */
-  ensureContext(callLevel: ApiKeyLevel): Promise<void>;
+  ensureContext(requiredContext: ApiContextLevel): Promise<void>;
 }
 
 export class ApiClient extends DeprecatedApiClient implements IPermitApi {

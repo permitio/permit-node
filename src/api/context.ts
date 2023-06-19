@@ -125,8 +125,10 @@ export class ApiContext {
     this._environment = null;
   }
 
-  private saveApiKeyAccessibleScope(org: string, project?: string, environment?: string): void {
-    /* Do not call this method directly! */
+  /**
+   * Do not call this method directly!
+   */
+  public _saveApiKeyAccessibleScope(org: string, project?: string, environment?: string): void {
     this._permittedOrganization = org; // cannot be null
 
     if (project && environment) {

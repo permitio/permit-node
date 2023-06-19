@@ -5,7 +5,7 @@ import { IPermitConfig } from '../config';
 import { APIKeysApi, Configuration } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
 
-import { API_ACCESS_LEVELS, ApiKeyLevel, PermitContextError } from './context';
+import { API_ACCESS_LEVELS, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context';
 
 export class PermitApiError<T> extends Error {
   constructor(message: string, public originalError: AxiosError<T>) {
@@ -44,11 +44,21 @@ export abstract class BasePermitApi {
     this.scopeApi = new APIKeysApi(this.openapiClientConfig, BASE_PATH, this.config.axiosInstance);
   }
 
+  /**
+   * Sets the API context and permitted access level based on the API key scope.
+   */
   private async setContextFromApiKey(): Promise<void> {
     try {
+      this.logger.debug('Fetching api key scope');
       const response = await this.scopeApi.getApiKeyScope();
 
       if (response.data.organization_id !== undefined && response.data.organization_id !== null) {
+        this.config.apiContext._saveApiKeyAccessibleScope(
+          response.data.organization_id,
+          response.data.project_id,
+          response.data.environment_id,
+        );
+
         if (response.data.project_id !== undefined && response.data.project_id !== null) {
           if (response.data.environment_id !== undefined && response.data.environment_id !== null) {
             // set environment level context
@@ -91,47 +101,57 @@ export abstract class BasePermitApi {
     }
   }
 
-  public async ensureContext(callLevel: ApiKeyLevel): Promise<void> {
-    if (this.config.apiContext.level === ApiKeyLevel.WAIT_FOR_INIT) {
+  /**
+   * Ensure that the API Key has the necessary permissions to successfully call the API endpoint.
+   * Note that this check is not foolproof, and the API may still throw 401.
+   * @param requiredAccessLevel The required API Key Access level for the endpoint.
+   * @throws PermitContextError If the currently set API key access level does not match the required access level.
+   */
+  public async ensureAccessLevel(requiredAccessLevel: ApiKeyLevel): Promise<void> {
+    // should only happen once in the lifetime of the SDK
+    if (
+      this.config.apiContext.contextLevel === ApiContextLevel.WAIT_FOR_INIT ||
+      this.config.apiContext.permittedAccessLevel === ApiKeyLevel.WAIT_FOR_INIT
+    ) {
       await this.setContextFromApiKey();
     }
 
-    if (callLevel !== this.config.apiContext.level) {
-      const requiredLevel = API_ACCESS_LEVELS.indexOf(callLevel);
-      const actualLevel = API_ACCESS_LEVELS.indexOf(this.config.apiContext.level);
-      if (requiredLevel === -1 || actualLevel === -1 || requiredLevel < actualLevel) {
+    if (requiredAccessLevel !== this.config.apiContext.permittedAccessLevel) {
+      if (
+        API_ACCESS_LEVELS.indexOf(requiredAccessLevel) <
+        API_ACCESS_LEVELS.indexOf(this.config.apiContext.permittedAccessLevel)
+      ) {
         throw new PermitContextError(
-          `You're trying to use an SDK method that's requires an API Key with level: ${callLevel}, ` +
-            `however the SDK is running with an API key with level ${this.config.apiContext.level}. `,
+          `You're trying to use an SDK method that requires an API Key with access level: ${requiredAccessLevel}, ` +
+            `however the SDK is running with an API key with level ${this.config.apiContext.permittedAccessLevel}.`,
         );
       }
-      return;
+    }
+  }
+
+  /**
+   * Ensure that the API context matches the required endpoint context.
+   * @param requiredContext The required API context level for the endpoint.
+   * @throws PermitContextError If the currently set API context level does not match the required context level.
+   */
+  public async ensureContext(requiredContext: ApiContextLevel): Promise<void> {
+    // should only happen once in the lifetime of the SDK
+    if (
+      this.config.apiContext.contextLevel === ApiContextLevel.WAIT_FOR_INIT ||
+      this.config.apiContext.permittedAccessLevel === ApiKeyLevel.WAIT_FOR_INIT
+    ) {
+      await this.setContextFromApiKey();
     }
 
-    // verify context matches requested call level
     if (
-      callLevel === ApiKeyLevel.PROJECT_LEVEL_API_KEY &&
-      this.config.apiContext.project === null
+      this.config.apiContext.contextLevel < requiredContext ||
+      this.config.apiContext.contextLevel === ApiContextLevel.WAIT_FOR_INIT
     ) {
       throw new PermitContextError(
-        "You're trying to use an SDK method that's specific to a project," +
-          "but you haven't set the current project in your client's context yet," +
-          'or you are using an organization level API key.' +
-          'Please set the context to a specific' +
-          'project using `permit.set_context()` method.',
-      );
-    }
-
-    if (
-      callLevel == ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY &&
-      (this.config.apiContext.project === null || this.config.apiContext.environment === null)
-    ) {
-      throw new PermitContextError(
-        "You're trying to use an SDK method that's specific to an environment," +
-          "but you haven't set the current environment in your client's context yet," +
-          'or you are using an organization/project level API key.' +
-          'Please set the context to a specific' +
-          'environment using `permit.set_context()` method.',
+        `You're trying to use an SDK method that requires an API context of ${ApiContextLevel[requiredContext]}, ` +
+          `however the SDK is running in a less specific context level: ${
+            ApiContextLevel[this.config.apiContext.contextLevel]
+          }.`,
       );
     }
   }

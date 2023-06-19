@@ -9,7 +9,7 @@ import {
 import { BASE_PATH } from '../openapi/base';
 
 import { BasePermitApi, IPagination, PermitApiError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ApiContext, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { ApiContext, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 export { ResourceActionGroupCreate, ResourceActionGroupRead } from '../openapi';
 
@@ -118,7 +118,8 @@ export class ResourceActionGroupsApi extends BasePermitApi implements IResourceA
    */
   public async list(params: IListActionGroups): Promise<ResourceActionGroupRead[]> {
     const { resourceKey, page = 1, perPage = 100 } = params;
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.groupsApi.listResourceActionGroups({
@@ -143,7 +144,8 @@ export class ResourceActionGroupsApi extends BasePermitApi implements IResourceA
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(resourceKey: string, groupKey: string): Promise<ResourceActionGroupRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.groupsApi.getResourceActionGroup({
@@ -197,7 +199,8 @@ export class ResourceActionGroupsApi extends BasePermitApi implements IResourceA
     resourceKey: string,
     groupData: ResourceActionGroupCreate,
   ): Promise<ResourceActionGroupRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.groupsApi.createResourceActionGroup({
@@ -220,7 +223,8 @@ export class ResourceActionGroupsApi extends BasePermitApi implements IResourceA
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(resourceKey: string, groupKey: string): Promise<void> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       await this.groupsApi.deleteResourceActionGroup({
         ...this.config.apiContext.environmentContext,

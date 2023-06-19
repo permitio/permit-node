@@ -11,7 +11,7 @@ import {
 import { BASE_PATH } from '../openapi/base';
 
 import { BasePermitApi, IPagination } from './base';
-import { ApiKeyLevel } from './context';
+import { ApiContextLevel, ApiKeyLevel } from './context';
 
 export { ResourceCreate, ResourceRead, ResourceReplace, ResourceUpdate } from '../openapi';
 
@@ -135,7 +135,8 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
    */
   public async list(pagination?: IPagination): Promise<ResourceRead[]> {
     const { page = 1, perPage = 100 } = pagination ?? {};
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.resources.listResources({
@@ -158,7 +159,8 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(resourceKey: string): Promise<ResourceRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.resources.getResource({
@@ -206,7 +208,8 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async create(resourceData: ResourceCreate): Promise<ResourceRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.resources.createResource({
@@ -229,7 +232,8 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async replace(resourceKey: string, resourceData: ResourceReplace): Promise<ResourceRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.resources.replaceResource({
@@ -253,7 +257,8 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async update(resourceKey: string, resourceData: ResourceUpdate): Promise<ResourceRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.resources.updateResource({
@@ -276,7 +281,8 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(resourceKey: string): Promise<void> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       await this.resources.deleteResource({
         ...this.config.apiContext.environmentContext,

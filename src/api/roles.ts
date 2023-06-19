@@ -5,7 +5,7 @@ import { RolesApi as AutogenRolesApi, RoleCreate, RoleRead, RoleUpdate } from '.
 import { BASE_PATH } from '../openapi/base';
 
 import { BasePermitApi, IPagination } from './base';
-import { ApiKeyLevel } from './context';
+import { ApiContextLevel, ApiKeyLevel } from './context';
 
 export { RoleCreate, RoleRead, RoleUpdate } from '../openapi';
 
@@ -134,7 +134,8 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
    */
   public async list(pagination?: IPagination): Promise<RoleRead[]> {
     const { page = 1, perPage = 100 } = pagination ?? {};
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.roles.listRoles({
@@ -157,7 +158,8 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(roleKey: string): Promise<RoleRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.roles.getRole({
@@ -205,7 +207,8 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async create(roleData: RoleCreate): Promise<RoleRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.roles.createRole({
@@ -228,7 +231,8 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async update(roleKey: string, roleData: RoleUpdate): Promise<RoleRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.roles.updateRole({
@@ -251,7 +255,8 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(roleKey: string): Promise<void> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       await this.roles.deleteRole({
         ...this.config.apiContext.environmentContext,
@@ -271,7 +276,8 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async assignPermissions(roleKey: string, permissions: string[]): Promise<RoleRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.roles.assignPermissionsToRole({
@@ -296,7 +302,8 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async removePermissions(roleKey: string, permissions: string[]): Promise<RoleRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.roles.removePermissionsFromRole({

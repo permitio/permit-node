@@ -10,7 +10,7 @@ import {
 import { BASE_PATH } from '../openapi/base';
 
 import { BasePermitApi, IPagination } from './base';
-import { ApiKeyLevel } from './context';
+import { ApiContextLevel, ApiKeyLevel } from './context';
 
 export { ProjectCreate, ProjectRead, ProjectUpdate } from '../openapi';
 
@@ -119,7 +119,8 @@ export class ProjectsApi extends BasePermitApi implements IProjectsApi {
    */
   public async list(pagination?: IPagination): Promise<ProjectRead[]> {
     const { page = 1, perPage = 100 } = pagination ?? {};
-    await this.ensureContext(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ORGANIZATION);
     try {
       return (
         await this.projects.listProjects({
@@ -141,7 +142,8 @@ export class ProjectsApi extends BasePermitApi implements IProjectsApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(projectKey: string): Promise<ProjectRead> {
-    await this.ensureContext(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ORGANIZATION);
     try {
       return (
         await this.projects.getProject({
@@ -188,7 +190,8 @@ export class ProjectsApi extends BasePermitApi implements IProjectsApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async create(projectData: ProjectCreate): Promise<ProjectRead> {
-    await this.ensureContext(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ORGANIZATION);
     try {
       return (
         await this.projects.createProject({
@@ -210,7 +213,8 @@ export class ProjectsApi extends BasePermitApi implements IProjectsApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async update(projectKey: string, projectData: ProjectUpdate): Promise<ProjectRead> {
-    await this.ensureContext(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ORGANIZATION);
     try {
       return (
         await this.projects.updateProject({
@@ -232,7 +236,8 @@ export class ProjectsApi extends BasePermitApi implements IProjectsApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(projectKey: string): Promise<void> {
-    await this.ensureContext(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ORGANIZATION);
     try {
       await this.projects.deleteProject({
         projId: projectKey,

@@ -10,7 +10,7 @@ import {
 import { BASE_PATH } from '../openapi/base';
 
 import { BasePermitApi, IPagination, PermitApiError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ApiContext, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { ApiContext, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 export { ResourceActionCreate, ResourceActionRead, ResourceActionUpdate } from '../openapi';
 
@@ -133,7 +133,8 @@ export class ResourceActionsApi extends BasePermitApi implements IResourceAction
    */
   public async list(params: IListActions): Promise<ResourceActionRead[]> {
     const { resourceKey, page = 1, perPage = 100 } = params;
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.actionsApi.listResourceActions({
@@ -158,7 +159,8 @@ export class ResourceActionsApi extends BasePermitApi implements IResourceAction
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(resourceKey: string, actionKey: string): Promise<ResourceActionRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.actionsApi.getResourceAction({
@@ -213,7 +215,8 @@ export class ResourceActionsApi extends BasePermitApi implements IResourceAction
     resourceKey: string,
     actionData: ResourceActionCreate,
   ): Promise<ResourceActionRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.actionsApi.createResourceAction({
@@ -242,7 +245,8 @@ export class ResourceActionsApi extends BasePermitApi implements IResourceAction
     actionKey: string,
     actionData: ResourceActionUpdate,
   ): Promise<ResourceActionRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.actionsApi.updateResourceAction({
@@ -266,7 +270,8 @@ export class ResourceActionsApi extends BasePermitApi implements IResourceAction
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(resourceKey: string, actionKey: string): Promise<void> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       await this.actionsApi.deleteResourceAction({
         ...this.config.apiContext.environmentContext,

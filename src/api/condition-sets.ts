@@ -10,7 +10,7 @@ import {
 import { BASE_PATH } from '../openapi/base';
 
 import { BasePermitApi, IPagination, PermitApiError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ApiContext, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { ApiContext, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 export { ConditionSetCreate, ConditionSetRead, ConditionSetUpdate } from '../openapi';
 
@@ -119,7 +119,8 @@ export class ConditionSetsApi extends BasePermitApi implements IConditionSetsApi
    */
   public async list(pagination?: IPagination): Promise<ConditionSetRead[]> {
     const { page = 1, perPage = 100 } = pagination ?? {};
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.conditionSets.listConditionSets({
@@ -142,7 +143,8 @@ export class ConditionSetsApi extends BasePermitApi implements IConditionSetsApi
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(conditionSetKey: string): Promise<ConditionSetRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.conditionSets.getConditionSet({
@@ -190,7 +192,8 @@ export class ConditionSetsApi extends BasePermitApi implements IConditionSetsApi
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async create(conditionSetData: ConditionSetCreate): Promise<ConditionSetRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.conditionSets.createConditionSet({
@@ -216,7 +219,8 @@ export class ConditionSetsApi extends BasePermitApi implements IConditionSetsApi
     conditionSetKey: string,
     conditionSetData: ConditionSetUpdate,
   ): Promise<ConditionSetRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.conditionSets.updateConditionSet({
@@ -239,7 +243,8 @@ export class ConditionSetsApi extends BasePermitApi implements IConditionSetsApi
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(conditionSetKey: string): Promise<void> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       await this.conditionSets.deleteConditionSet({
         ...this.config.apiContext.environmentContext,
