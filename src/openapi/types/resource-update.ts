@@ -62,7 +62,7 @@ export interface ResourceUpdate {
    */
   roles?: object;
   /**
-   * Relations to other resources. The key is the relation name, and the value is the related resource.
+   * Relations to other resources. The key is the relation key, and the value is the related resource.
    * @type {object}
    * @memberof ResourceUpdate
    */
