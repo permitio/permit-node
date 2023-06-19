@@ -416,6 +416,7 @@ export class ResourceRolesApi extends BasePermitApi implements IRolesApi {
       return (
         await this.roleDerivations.createImplicitGrant({
           ...this.config.apiContext.environmentContext,
+          resourceId: resourceKey,
           roleId: roleKey,
           derivedRoleRuleCreate: derivationRule,
         })
@@ -445,6 +446,7 @@ export class ResourceRolesApi extends BasePermitApi implements IRolesApi {
       return (
         await this.roleDerivations.deleteImplicitGrant({
           ...this.config.apiContext.environmentContext,
+          resourceId: resourceKey,
           roleId: roleKey,
           derivedRoleRuleDelete: derivationRule,
         })
@@ -475,6 +477,7 @@ export class ResourceRolesApi extends BasePermitApi implements IRolesApi {
       return (
         await this.roleDerivations.updateImplicitGrantsConditions({
           ...this.config.apiContext.environmentContext,
+          resourceId: resourceKey,
           roleId: roleKey,
           permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings: conditions,
         })
