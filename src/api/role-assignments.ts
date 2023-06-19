@@ -40,6 +40,11 @@ export interface IListRoleAssignments extends IPagination {
    * optional tenant filter, will only return role assignments granted in that tenant.
    */
   tenant?: string;
+
+  /**
+   * optional resource instance filter, will only return (resource) role assignments granted on that resource instance.
+   */
+  resourceInstance?: string;
 }
 
 /**
@@ -130,7 +135,7 @@ export class RoleAssignmentsApi extends BasePermitApi implements IRoleAssignment
   public async list(params: IListRoleAssignments): Promise<RoleAssignmentRead[]> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
-    const { user, tenant, role, page = 1, perPage = 100 } = params;
+    const { user, tenant, role, resourceInstance, page = 1, perPage = 100 } = params;
     try {
       return (
         await this.roleAssignments.listRoleAssignments({
@@ -138,6 +143,7 @@ export class RoleAssignmentsApi extends BasePermitApi implements IRoleAssignment
           user,
           tenant,
           role,
+          resourceInstance,
           page,
           perPage,
         })
