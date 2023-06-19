@@ -4,7 +4,7 @@ import { IPermitConfig } from '../config';
 
 import { ConditionSetRulesApi, IConditionSetRulesApi } from './condition-set-rules';
 import { ConditionSetsApi, IConditionSetsApi } from './condition-sets';
-import { ApiContextLevel } from './context';
+import { ApiContextLevel, ApiKeyLevel } from './context';
 import { DeprecatedApiClient, IDeprecatedPermitApi } from './deprecated';
 import { EnvironmentsApi, IEnvironmentsApi } from './environments';
 import { IProjectsApi, ProjectsApi } from './projects';
@@ -89,6 +89,14 @@ export interface IPermitApi extends IDeprecatedPermitApi {
    * @see {@link https://api.permit.io/v2/redoc#tag/Users}
    */
   users: IUsersApi;
+
+  /**
+   * Ensure that the API Key has the necessary permissions to successfully call the API endpoint.
+   * Note that this check is not foolproof, and the API may still throw 401.
+   * @param requiredAccessLevel The required API Key Access level for the endpoint.
+   * @throws PermitContextError If the currently set API key access level does not match the required access level.
+   */
+  ensureAccessLevel(requiredAccessLevel: ApiKeyLevel): Promise<void>;
 
   /**
    * Ensure that the API context matches the required endpoint context.

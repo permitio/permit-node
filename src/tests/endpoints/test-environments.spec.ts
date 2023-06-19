@@ -61,7 +61,7 @@ test.serial('environment creation with org level api key', async (t) => {
   t.context.logger.info(`token: ${permit.config.token}`);
 
   try {
-    await permit.api.ensureContext(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
+    await permit.api.ensureAccessLevel(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
   } catch (error) {
     t.context.logger.warn('this test must run with an org level api key');
     return;
@@ -141,7 +141,7 @@ test.serial('environment creation with project level api key', async (t) => {
   const permit = permitWithProjectLevelApiKey;
 
   try {
-    await permit.api.ensureContext(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
+    await permit.api.ensureAccessLevel(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
   } catch (error) {
     t.context.logger.warning('this test must run with a project level api key');
     return;
