@@ -117,6 +117,7 @@ test.serial('environment creation with org level api key', async (t) => {
     printBreak();
 
     const environments = await permit.api.environments.list({ projectKey: projects[0]?.key });
+    t.context.logger.info(`environments: ${environments.map((e) => e.key)}`);
     t.is(environments.length, CREATED_ENVIRONMENTS.length + 2); // each project has 2 default `dev` and `prod` environments
 
     const testEnvironment = await permit.api.environments.get(
