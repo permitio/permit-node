@@ -8,9 +8,12 @@ import { ApiContextLevel, ApiKeyLevel } from './context';
 import { DeprecatedApiClient, IDeprecatedPermitApi } from './deprecated';
 import { EnvironmentsApi, IEnvironmentsApi } from './environments';
 import { IProjectsApi, ProjectsApi } from './projects';
+import { IRelationshipTuplesApi, RelationshipTuplesApi } from './relationship-tuples';
 import { IResourceActionGroupsApi, ResourceActionGroupsApi } from './resource-action-groups';
 import { IResourceActionsApi, ResourceActionsApi } from './resource-actions';
 import { IResourceAttributesApi, ResourceAttributesApi } from './resource-attributes';
+import { IResourceRelationsApi, ResourceRelationsApi } from './resource-relations';
+import { IResourceRolesApi, ResourceRolesApi } from './resource-roles';
 import { IResourcesApi, ResourcesApi } from './resources';
 import { IRoleAssignmentsApi, RoleAssignmentsApi } from './role-assignments';
 import { IRolesApi, RolesApi } from './roles';
@@ -89,6 +92,24 @@ export interface IPermitApi extends IDeprecatedPermitApi {
    * @see {@link https://api.permit.io/v2/redoc#tag/Users}
    */
   users: IUsersApi;
+
+  /**
+   * API for managing resource roles.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Resource-Roles}
+   */
+  resourceRoles: IResourceRolesApi;
+
+  /**
+   * API for managing resource relations.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Resource-Relations}
+   */
+  resourceRelations: IResourceRelationsApi;
+
+  /**
+   * API for managing relationship tuples.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Relationship-Tuples}
+   */
+  relationshipTuples: IRelationshipTuplesApi;
 
   /**
    * Ensure that the API Key has the necessary permissions to successfully call the API endpoint.
@@ -180,6 +201,24 @@ export class ApiClient extends DeprecatedApiClient implements IPermitApi {
   public readonly users: IUsersApi;
 
   /**
+   * API for managing resource roles.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Resource-Roles}
+   */
+  public readonly resourceRoles: IResourceRolesApi;
+
+  /**
+   * API for managing resource relations.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Resource-Relations}
+   */
+  public readonly resourceRelations: IResourceRelationsApi;
+
+  /**
+   * API for managing relationship tuples.
+   * @see {@link https://api.permit.io/v2/redoc#tag/Relationship-Tuples}
+   */
+  public readonly relationshipTuples: IRelationshipTuplesApi;
+
+  /**
    * Constructs a new instance of the ApiClient class with the specified configuration and logger.
    *
    * @param config - The configuration for the Permit API client.
@@ -199,5 +238,8 @@ export class ApiClient extends DeprecatedApiClient implements IPermitApi {
     this.roles = new RolesApi(config, logger);
     this.tenants = new TenantsApi(config, logger);
     this.users = new UsersApi(config, logger);
+    this.resourceRoles = new ResourceRolesApi(config, logger);
+    this.resourceRelations = new ResourceRelationsApi(config, logger);
+    this.relationshipTuples = new RelationshipTuplesApi(config, logger);
   }
 }
