@@ -6,7 +6,6 @@ import { printBreak, provideTestExecutionContext, TestContext } from '../fixture
 const test = anyTest as TestInterface<TestContext>;
 test.before(provideTestExecutionContext);
 
-let counter = 0;
 const viewerRoleKey = 'viewer';
 const commenterRoleKey = 'commenter';
 const editorRoleKey = 'editor';
@@ -89,19 +88,97 @@ const authzUser = {
 const usersToCreate = [permitUser, authzUser];
 
 const folderViewer = {
-  key: viewerRoleKey,
-  name: 'Folder Viewer',
-  permissions: ['read'],
-  granted_to: {
-    users_with_role: [
-      {
-        role: memberRoleKey,
-        on_resource: account.key,
-        linked_by_relation: 'account',
-      },
-    ],
+  resourceKey: folder.key,
+  roleData: {
+    key: viewerRoleKey,
+    name: 'Folder Viewer',
+    permissions: ['read'],
+    granted_to: {
+      users_with_role: [
+        {
+          role: memberRoleKey,
+          on_resource: account.key,
+          linked_by_relation: 'account',
+        },
+      ],
+    },
   },
 };
+
+const folderCommenter = {
+  resourceKey: folder.key,
+  roleData: {
+    key: commenterRoleKey,
+    name: 'Folder Commenter',
+    permissions: ['read'],
+  },
+};
+
+const folderEditor = {
+  resourceKey: folder.key,
+  roleData: {
+    key: editorRoleKey,
+    name: 'Folder Editor',
+    permissions: ['read', 'rename', 'delete', 'create_document'],
+    // tests creation of role derivation as part of the resource role
+    // (account admin is editor on folder)
+    granted_to: {
+      users_with_role: [
+        {
+          role: adminRoleKey,
+          on_resource: account.key,
+          linked_by_relation: 'account',
+        },
+      ],
+    },
+  },
+};
+
+const documentViewer = {
+  resourceKey: document.key,
+  roleData: {
+    key: viewerRoleKey,
+    name: 'Document Viewer',
+    permissions: ['read'],
+  },
+};
+
+const documentCommenter = {
+  resourceKey: document.key,
+  roleData: {
+    key: commenterRoleKey,
+    name: 'Document Commenter',
+    permissions: ['read', 'comment'],
+  },
+};
+
+const documentEditor = {
+  resourceKey: document.key,
+  roleData: {
+    key: editorRoleKey,
+    name: 'Document Editor',
+    permissions: ['read', 'comment', 'update', 'delete'],
+  },
+};
+
+const allResourceRolesToCreate = [
+  folderViewer,
+  folderCommenter,
+  folderEditor,
+  documentViewer,
+  documentCommenter,
+  documentEditor,
+];
+
+const permitTenant = {
+  key: 'permit',
+  name: 'Permit',
+};
+const cocacolaTenant = {
+  key: 'cocacola',
+  name: 'Coca Cola',
+};
+const tenantsToCreate = [permitTenant, cocacolaTenant];
 
 test('Permission check e2e test', async (t) => {
   const permit = t.context.permit;
@@ -133,64 +210,17 @@ test('Permission check e2e test', async (t) => {
     }
 
     // create folder roles
-    const folderViewer = await permit.api.resourceRoles.create(folder.key, {
-      key: viewerRoleKey,
-      name: 'Folder Viewer',
-      permissions: ['read'],
-      granted_to: {
-        users_with_role: [
-          {
-            role: memberRoleKey,
-            on_resource: account.key,
-            linked_by_relation: 'account',
-          },
-        ],
-      },
-    });
-    t.not(folderViewer, undefined);
-    t.not(folderViewer, null);
-    t.is(folderViewer.key, viewerRoleKey);
-    t.is(folderViewer.name, 'Folder Viewer');
-    t.deepEqual(folderViewer.permissions, ['read']);
 
-    const folderCommenter = await permit.api.resourceRoles.create(folder.key, {
-      key: commenterRoleKey,
-      name: 'Folder Commenter',
-      permissions: ['read'],
-    });
-
-    const folderEditor = await permit.api.resourceRoles.create(folder.key, {
-      key: editorRoleKey,
-      name: 'Folder Editor',
-      permissions: ['read', 'rename', 'delete', 'create_document'],
-      // tests creation of role derivation as part of the resource role
-      // (account admin is editor on folder)
-      granted_to: {
-        users_with_role: [
-          {
-            role: adminRoleKey,
-            on_resource: account.key,
-            linked_by_relation: 'account',
-          },
-        ],
-      },
-    });
-    // create document roles
-    const documentViewer = await permit.api.resourceRoles.create(document.key, {
-      key: viewerRoleKey,
-      name: 'Document Viewer',
-      permissions: ['read'],
-    });
-    const documentCommenter = await permit.api.resourceRoles.create(document.key, {
-      key: commenterRoleKey,
-      name: 'Document Commenter',
-      permissions: ['read', 'comment'],
-    });
-    const documentEditor = await permit.api.resourceRoles.create(document.key, {
-      key: editorRoleKey,
-      name: 'Document Editor',
-      permissions: ['read', 'comment', 'update', 'delete'],
-    });
+    for (const resourceRole of allResourceRolesToCreate) {
+      const createdResourceRole = await permit.api.resourceRoles.create(
+        resourceRole.resourceKey,
+        resourceRole.roleData,
+      );
+      t.not(createdResourceRole, undefined);
+      t.not(createdResourceRole, null);
+      t.is(createdResourceRole.key, resourceRole.roleData.key);
+      t.is(createdResourceRole.name, resourceRole.roleData.name);
+    }
 
     // create relation between document and folder (parent)
     const documentFolderRelation = await permit.api.resourceRelations.create(document.key, {
@@ -198,6 +228,9 @@ test('Permission check e2e test', async (t) => {
       name: 'Document Folder Relation',
       subject_resource: folder.key,
     });
+    t.not(documentFolderRelation, undefined);
+    t.not(documentFolderRelation, null);
+    t.is(documentFolderRelation.key, 'parent');
 
     // create role derivation folder -> document
     const folderDocumentRoleDerivation = [viewerRoleKey, commenterRoleKey, editorRoleKey].map(
@@ -211,14 +244,13 @@ test('Permission check e2e test', async (t) => {
     await Promise.all(folderDocumentRoleDerivation);
 
     // create permit and cocacola tenants
-    const permitTenant = await permit.api.tenants.create({
-      key: 'permit',
-      name: 'Permit',
-    });
-    const cocacolaTenant = await permit.api.tenants.create({
-      key: 'cocacola',
-      name: 'Coca Cola',
-    });
+    for (const tenant of tenantsToCreate) {
+      const createdTenant = await permit.api.tenants.create(tenant);
+      t.not(createdTenant, undefined);
+      t.not(createdTenant, null);
+      t.is(createdTenant.key, tenant.key);
+      t.is(createdTenant.name, tenant.name);
+    }
 
     const relationships = [
       // finance folder contains 2 documents
@@ -423,12 +455,18 @@ test('Permission check e2e test', async (t) => {
       },
     ];
 
-    const assertPermitCheck = async (permit: IPermitClient, assertion: any) => {
+    const assertPermitCheck = async (permit: IPermitClient, assertion: any, assignment: any) => {
       const result = await permit.check(
         assertion.user,
         assertion.action,
         assertion.resource_instance,
       );
+      if (result !== assertion.result) {
+        console.log('assertion failed');
+        console.log('assertion', assertion);
+        console.log('assignment', assignment);
+        console.log('result', result);
+      }
       t.is(result, assertion.result);
     };
 
@@ -445,12 +483,11 @@ test('Permission check e2e test', async (t) => {
       console.log('sleeping 10 seconds');
       await new Promise((resolve) => setTimeout(resolve, 10000));
       for (const assertion of testStep.assertions) {
-        await assertPermitCheck(permit, assertion);
+        await assertPermitCheck(permit, assertion, testStep.assertions);
       }
     }
 
     printBreak();
-    console.log(`counter: ${counter}`);
   } catch (error) {
     logger.error(`GOT ERROR: ${error}`);
     t.fail(`got error: ${error}`);
