@@ -12,6 +12,8 @@
  * Do not edit the class manually.
  */
 
+import { PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings } from './permit-backend-schemas-schema-derived-role-derived-role-settings';
+
 /**
  *
  * @export
@@ -36,4 +38,9 @@ export interface DerivedRoleRuleCreate {
    * @memberof DerivedRoleRuleCreate
    */
   linked_by_relation: string;
+  /**
+   * condition for the rule to be applied
+   * @type {PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings}
+   */
+  when?: PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings;
 }

@@ -11,6 +11,7 @@ const commenterRoleKey = 'commenter';
 const editorRoleKey = 'editor';
 const adminRoleKey = 'admin';
 const memberRoleKey = 'member';
+const watcherRoleKey = 'watcher';
 
 const account = {
   key: 'account',
@@ -93,15 +94,6 @@ const folderViewer = {
     key: viewerRoleKey,
     name: 'Folder Viewer',
     permissions: ['read'],
-    granted_to: {
-      users_with_role: [
-        {
-          role: memberRoleKey,
-          on_resource: account.key,
-          linked_by_relation: 'account',
-        },
-      ],
-    },
   },
 };
 
@@ -110,7 +102,19 @@ const folderCommenter = {
   roleData: {
     key: commenterRoleKey,
     name: 'Folder Commenter',
-    permissions: ['read'],
+    permissions: ['read', 'rename'],
+    granted_to: {
+      users_with_role: [
+        {
+          role: memberRoleKey,
+          on_resource: account.key,
+          linked_by_relation: 'account',
+          when: {
+            no_direct_roles_on_object: true,
+          },
+        },
+      ],
+    },
   },
 };
 
@@ -130,6 +134,9 @@ const folderEditor = {
           linked_by_relation: 'account',
         },
       ],
+      when: {
+        no_direct_roles_on_object: true,
+      },
     },
   },
 };
@@ -453,6 +460,89 @@ test('Permission check e2e test', async (t) => {
           },
         ],
       },
+      // permissions from higher level blocked by condition on role derivation
+
+      {
+        assignments: [
+          {
+            user: permitUser.key,
+            role: adminRoleKey,
+            resource_instance: `${account.key}:permitio`,
+            tenant: permitTenant.key,
+          },
+          {
+            user: permitUser.key,
+            role: viewerRoleKey,
+            resource_instance: `${folder.key}:rnd`,
+            tenant: permitTenant.key,
+          },
+        ],
+        assertions: [
+          // direct access allowed
+          {
+            user: permitUser.key,
+            action: 'read',
+            resource_instance: {
+              type: folder.key,
+              key: 'rnd',
+              tenant: permitTenant.key,
+            },
+            result: true,
+          },
+          // access given by derived role is not allowed
+          ...['rename', 'delete', 'create-document'].map((action) => ({
+            user: permitUser.key,
+            action,
+            resource_instance: {
+              type: folder.key,
+              key: 'rnd',
+              tenant: permitTenant.key,
+            },
+            result: false,
+          })),
+        ],
+      },
+      // permissions from higher level blocked by condition on role derivation rule
+      {
+        assignments: [
+          {
+            user: permitUser.key,
+            role: memberRoleKey,
+            resource_instance: `${account.key}:permitio`,
+            tenant: permitTenant.key,
+          },
+          {
+            user: permitUser.key,
+            role: viewerRoleKey,
+            resource_instance: `${folder.key}:rnd`,
+            tenant: permitTenant.key,
+          },
+        ],
+        assertions: [
+          // direct access allowed
+          {
+            user: permitUser.key,
+            action: 'read',
+            resource_instance: {
+              type: folder.key,
+              key: 'rnd',
+              tenant: permitTenant.key,
+            },
+            result: true,
+          },
+          // access given by derived role is not allowed
+          {
+            user: permitUser.key,
+            action: 'rename',
+            resource_instance: {
+              type: folder.key,
+              key: 'rnd',
+              tenant: permitTenant.key,
+            },
+            result: false,
+          },
+        ],
+      },
     ];
 
     const assertPermitCheck = async (permit: IPermitClient, assertion: any, assignment: any) => {
@@ -483,7 +573,16 @@ test('Permission check e2e test', async (t) => {
       console.log('sleeping 10 seconds');
       await new Promise((resolve) => setTimeout(resolve, 10000));
       for (const assertion of testStep.assertions) {
-        await assertPermitCheck(permit, assertion, testStep.assertions);
+        await assertPermitCheck(permit, assertion, testStep.assignments);
+      }
+      for (const assignment of testStep.assignments) {
+        try {
+          await permit.api.roleAssignments.unassign(assignment);
+        } catch (error) {
+          logger.error(
+            `failed to unassign ${assignment.user} ${assignment.role} ${assignment.resource_instance} ${assignment.tenant}`,
+          );
+        }
       }
     }
 
