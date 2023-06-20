@@ -6,6 +6,103 @@ import { printBreak, provideTestExecutionContext, TestContext } from '../fixture
 const test = anyTest as TestInterface<TestContext>;
 test.before(provideTestExecutionContext);
 
+let counter = 0;
+const viewerRoleKey = 'viewer';
+const commenterRoleKey = 'commenter';
+const editorRoleKey = 'editor';
+const adminRoleKey = 'admin';
+const memberRoleKey = 'member';
+
+const account = {
+  key: 'account',
+  name: 'Account',
+  urn: 'prn:gdrive:account',
+  description: 'google drive account',
+  actions: {
+    create: {},
+    invite_user: {},
+    delete: {},
+    view_members: {},
+    create_folder: {},
+    create_document: {},
+  },
+  roles: {
+    admin: {
+      name: 'Admin',
+      permissions: ['create', 'invite_user', 'delete', 'create_folder', 'create_document'],
+    },
+    member: {
+      name: 'Member',
+      permissions: ['view_members', 'create_folder', 'create_document'],
+    },
+  },
+};
+const folder = {
+  key: 'folder',
+  name: 'Folder',
+  urn: 'prn:gdrive:folder',
+  description: 'google drive folder',
+  actions: {
+    read: {},
+    rename: {},
+    delete: {},
+    create_document: {},
+  },
+  relations: {
+    account: account.key,
+  },
+};
+const document = {
+  key: 'document',
+  name: 'Document',
+  urn: 'prn:gdrive:document',
+  description: 'google drive document',
+  actions: {
+    read: {},
+    update: {},
+    delete: {},
+    comment: {},
+  },
+};
+
+const resourcesToCreate = [account, folder, document];
+
+const permitUser = {
+  key: 'user_permit',
+  email: 'user@permit.io',
+  first_name: 'Permit',
+  last_name: 'User',
+  attributes: {
+    age: 35,
+  },
+};
+const authzUser = {
+  key: 'user_authz',
+  email: 'member@auth0.com',
+  first_name: 'Member',
+  last_name: 'User',
+  attributes: {
+    age: 27,
+  },
+};
+
+const usersToCreate = [permitUser, authzUser];
+
+const folderViewer = {
+  key: viewerRoleKey,
+  name: 'Folder Viewer',
+  permissions: ['read'],
+  granted_to: {
+    users_with_role: [
+      {
+        role: memberRoleKey,
+        on_resource: account.key,
+        linked_by_relation: 'account',
+      },
+    ],
+  },
+};
+
 test('Permission check e2e test', async (t) => {
   const permit = t.context.permit;
   const logger = t.context.logger;
@@ -13,95 +110,55 @@ test('Permission check e2e test', async (t) => {
   try {
     logger.info('initial setup of objects');
 
-    const account = await permit.api.resources.create({
-      key: 'account',
-      name: 'Account',
-      urn: 'prn:gdrive:account',
-      description: 'google drive account',
-      actions: {
-        create: {},
-        invite_user: {},
-        delete: {},
-        view_members: {},
-        create_folder: {},
-        create_document: {},
-      },
-      roles: {
-        admin: {
-          name: 'Admin',
-          permissions: ['create', 'invite_user', 'delete', 'create_folder', 'create_document'],
-        },
-        member: {
-          name: 'Member',
-          permissions: ['view_members', 'create_folder', 'create_document'],
-        },
-      },
-    });
+    // create resources
+    for (const resource of resourcesToCreate) {
+      const createdResource = await permit.api.resources.create(resource);
+      t.not(createdResource, undefined);
+      t.not(createdResource, null);
+      t.is(createdResource.key, resource.key);
+      t.is(createdResource.name, resource.name);
+      t.is(createdResource.urn, resource.urn);
+      t.is(createdResource.description, resource.description);
+    }
 
-    const folder = await permit.api.resources.create({
-      key: 'folder',
-      name: 'Folder',
-      urn: 'prn:gdrive:folder',
-      description: 'google drive folder',
-      actions: {
-        read: {},
-        rename: {},
-        delete: {},
-        create_document: {},
-      },
-      relations: {
-        account: account.key,
-      },
-    });
-
-    const document = await permit.api.resources.create({
-      key: 'document',
-      name: 'Document',
-      urn: 'prn:gdrive:document',
-      description: 'google drive document',
-      actions: {
-        read: {},
-        update: {},
-        delete: {},
-        comment: {},
-      },
-    });
     // create admin and member users
-    const permitUser = await permit.api.users.create({
-      key: 'user_permit',
-      email: 'user@permit.io',
-      first_name: 'Permit',
-      last_name: 'User',
-      attributes: {
-        age: 35,
-      },
-    });
+    for (const user of usersToCreate) {
+      const createdUser = await permit.api.users.create(user);
+      t.not(createdUser, undefined);
+      t.not(createdUser, null);
+      t.is(createdUser.key, user.key);
+      t.is(createdUser.email, user.email);
+      t.is(createdUser.first_name, user.first_name);
+      t.is(createdUser.last_name, user.last_name);
+    }
 
-    const authzUser = await permit.api.users.create({
-      key: 'authz_user',
-      email: 'member@auth0.com',
-      first_name: 'Member',
-      last_name: 'User',
-      attributes: {
-        age: 27,
-      },
-    });
-    const viewerRoleKey = 'viewer';
-    const commenterRoleKey = 'commenter';
-    const editorRoleKey = 'editor';
-    const adminRoleKey = 'admin';
-    const memberRoleKey = 'member';
     // create folder roles
     const folderViewer = await permit.api.resourceRoles.create(folder.key, {
       key: viewerRoleKey,
       name: 'Folder Viewer',
       permissions: ['read'],
+      granted_to: {
+        users_with_role: [
+          {
+            role: memberRoleKey,
+            on_resource: account.key,
+            linked_by_relation: 'account',
+          },
+        ],
+      },
     });
+    t.not(folderViewer, undefined);
+    t.not(folderViewer, null);
+    t.is(folderViewer.key, viewerRoleKey);
+    t.is(folderViewer.name, 'Folder Viewer');
+    t.deepEqual(folderViewer.permissions, ['read']);
+
     const folderCommenter = await permit.api.resourceRoles.create(folder.key, {
       key: commenterRoleKey,
       name: 'Folder Commenter',
       permissions: ['read'],
     });
+
     const folderEditor = await permit.api.resourceRoles.create(folder.key, {
       key: editorRoleKey,
       name: 'Folder Editor',
@@ -112,7 +169,7 @@ test('Permission check e2e test', async (t) => {
         users_with_role: [
           {
             role: adminRoleKey,
-            on_resource: 'account',
+            on_resource: account.key,
             linked_by_relation: 'account',
           },
         ],
@@ -167,33 +224,33 @@ test('Permission check e2e test', async (t) => {
       // finance folder contains 2 documents
       [`${folder.key}:finance`, 'parent', `${document.key}:budget23`, permitTenant.key],
       // TODO: add missing relationships commented out below because of 409 conflict
-      // [`${folder.key}:finance`, 'parent', `${document.key}:june-expenses`, permitTenant.key],
+      [`${folder.key}:finance`, 'parent', `${document.key}:june-expenses`, permitTenant.key],
       // rnd folder contains 2 documents
       [`${folder.key}:rnd`, 'parent', `${document.key}:architecture`, permitTenant.key],
-      // [`${folder.key}:rnd`, 'parent', `${document.key}:opal`, permitTenant.key],
+      [`${folder.key}:rnd`, 'parent', `${document.key}:opal`, permitTenant.key],
       // folders belongs in permit g-drive account
       [`${account.key}:permitio`, 'account', `${folder.key}:finance`, permitTenant.key],
-      // [`${account.key}:permitio`, 'account', `${folder.key}:rnd`, permitTenant.key],
+      [`${account.key}:permitio`, 'account', `${folder.key}:rnd`, permitTenant.key],
       // another account->folder->doc belongs to another tenant
       [`${folder.key}:recipes`, 'parent', `${document.key}:secret-recipe`, cocacolaTenant.key],
       [`${account.key}:cocacola`, 'account', `${folder.key}:recipes`, cocacolaTenant.key],
     ];
 
-    const relationshipTuples = relationships.map(async (relationship) => {
+    for (const relationship of relationships) {
       const relTuple = await permit.api.relationshipTuples.create({
         subject: relationship[0],
         relation: relationship[1],
         object: relationship[2],
         tenant: relationship[3],
       });
+
       t.not(relTuple, undefined);
       t.not(relTuple, null);
       t.is(relTuple.subject, relationship[0]);
       t.is(relTuple.relation, relationship[1]);
       t.is(relTuple.object, relationship[2]);
       // t.is(relTuple.tenant_id, relationship[3]); returns id instead of key
-      return relTuple;
-    });
+    }
 
     const assignmentsAndAssertions = [
       {
@@ -250,6 +307,7 @@ test('Permission check e2e test', async (t) => {
           },
         ],
         assertions: [
+          // direct access allowed
           {
             user: permitUser.key,
             action: 'read',
@@ -260,16 +318,22 @@ test('Permission check e2e test', async (t) => {
             },
             result: true,
           },
-          {
+          // access to child resources allowed
+          ...[
+            { action: 'read', resource: 'architecture' },
+            { action: 'comment', resource: 'architecture' },
+            { action: 'read', resource: 'opal' },
+            { action: 'comment', resource: 'opal' },
+          ].map((settings) => ({
             user: permitUser.key,
-            action: 'comment',
+            action: settings.action,
             resource_instance: {
-              type: folder.key,
-              key: 'architecture',
+              type: document.key,
+              key: settings.resource,
               tenant: permitTenant.key,
             },
             result: true,
-          },
+          })),
           // higher permissions not allowed
           {
             user: permitUser.key,
@@ -314,7 +378,7 @@ test('Permission check e2e test', async (t) => {
           // direct access allowed
           {
             user: permitUser.key,
-            action: 'invite-user',
+            action: 'invite_user',
             resource_instance: {
               type: account.key,
               key: 'permitio',
@@ -377,12 +441,16 @@ test('Permission check e2e test', async (t) => {
         t.is(ra.resource_instance, assignment.resource_instance);
         t.is(ra.tenant, assignment.tenant);
       }
+      // sleep 10 second to allow for role assignments to propagate
+      console.log('sleeping 10 seconds');
+      await new Promise((resolve) => setTimeout(resolve, 10000));
       for (const assertion of testStep.assertions) {
         await assertPermitCheck(permit, assertion);
       }
     }
 
     printBreak();
+    console.log(`counter: ${counter}`);
   } catch (error) {
     logger.error(`GOT ERROR: ${error}`);
     t.fail(`got error: ${error}`);
