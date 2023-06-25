@@ -233,6 +233,7 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
      * @param {string} [user] optional user filter, will only return role assignments granted to this user.
      * @param {string} [role] optional role filter, will only return role assignments granting this role.
      * @param {string} [tenant] optional tenant filter, will only return role assignments granted in that tenant.
+     * @param {string} [resourceInstance] optional resource instance filter, will only return role assignments granted on that resource instance.
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -244,6 +245,7 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
       user?: string,
       role?: string,
       tenant?: string,
+      resourceInstance?: string,
       page?: number,
       perPage?: number,
       options: AxiosRequestConfig = {},
@@ -280,6 +282,10 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
 
       if (tenant !== undefined) {
         localVarQueryParameter['tenant'] = tenant;
+      }
+
+      if (resourceInstance !== undefined) {
+        localVarQueryParameter['resource_instance'] = resourceInstance;
       }
 
       if (page !== undefined) {
@@ -453,6 +459,7 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
      * @param {string} [user] optional user filter, will only return role assignments granted to this user.
      * @param {string} [role] optional role filter, will only return role assignments granting this role.
      * @param {string} [tenant] optional tenant filter, will only return role assignments granted in that tenant.
+     * @param {string} [resourceInstance] optional resource instance filter, will only return role assignments granted on that resource instance.
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -464,6 +471,7 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
       user?: string,
       role?: string,
       tenant?: string,
+      resourceInstance?: string,
       page?: number,
       perPage?: number,
       options?: AxiosRequestConfig,
@@ -476,6 +484,7 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
         user,
         role,
         tenant,
+        resourceInstance,
         page,
         perPage,
         options,
@@ -584,6 +593,7 @@ export const RoleAssignmentsApiFactory = function (
      * @param {string} [user] optional user filter, will only return role assignments granted to this user.
      * @param {string} [role] optional role filter, will only return role assignments granting this role.
      * @param {string} [tenant] optional tenant filter, will only return role assignments granted in that tenant.
+     * @param {string} [resourceInstance] optional resource instance filter, will only return role assignments granted on that resource instance.
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -595,12 +605,23 @@ export const RoleAssignmentsApiFactory = function (
       user?: string,
       role?: string,
       tenant?: string,
+      resourceInstance?: string,
       page?: number,
       perPage?: number,
       options?: any,
     ): AxiosPromise<Array<RoleAssignmentRead>> {
       return localVarFp
-        .listRoleAssignments(projId, envId, user, role, tenant, page, perPage, options)
+        .listRoleAssignments(
+          projId,
+          envId,
+          user,
+          role,
+          tenant,
+          resourceInstance,
+          page,
+          perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
@@ -751,6 +772,13 @@ export interface RoleAssignmentsApiListRoleAssignmentsRequest {
   readonly tenant?: string;
 
   /**
+   * optional resource instance filter, will only return role assignments granted on that resource instance.
+   * @type {string}
+   * @memberof RoleAssignmentsApiListRoleAssignments
+   */
+  readonly resourceInstance?: string;
+
+  /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
    * @memberof RoleAssignmentsApiListRoleAssignments
@@ -885,6 +913,7 @@ export class RoleAssignmentsApi extends BaseAPI {
         requestParameters.user,
         requestParameters.role,
         requestParameters.tenant,
+        requestParameters.resourceInstance,
         requestParameters.page,
         requestParameters.perPage,
         options,

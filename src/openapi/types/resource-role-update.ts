@@ -12,6 +12,10 @@
  * Do not edit the class manually.
  */
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { GrantedTo1 } from './granted-to1';
+
 /**
  *
  * @export
@@ -42,4 +46,10 @@ export interface ResourceRoleUpdate {
    * @memberof ResourceRoleUpdate
    */
   attributes?: object;
+  /**
+   *
+   * @type {GrantedTo1}
+   * @memberof ResourceRoleUpdate
+   */
+  granted_to?: GrantedTo1;
 }

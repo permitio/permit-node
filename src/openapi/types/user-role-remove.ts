@@ -29,5 +29,11 @@ export interface UserRoleRemove {
    * @type {string}
    * @memberof UserRoleRemove
    */
-  tenant: string;
+  tenant?: string;
+  /**
+   * the resource instance the role is associated with (accepts either the resource instance id or key using this format resource_type:resource_instance)
+   * @type {string}
+   * @memberof UserRoleRemove
+   */
+  resource_instance?: string;
 }

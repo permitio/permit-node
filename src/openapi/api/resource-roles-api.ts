@@ -49,70 +49,6 @@ import { ResourceRoleUpdate } from '../types';
 export const ResourceRolesApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * This endpoint is part of the role hierarchy feature.  Makes role with id `role_id` extend the role with id `parent_role_id`. In other words, `role_id` will automatically be assigned any permissions that are granted to `parent_role_id`.  We can say the `role_id` **extends** `parent_role_id` or **inherits** from `parent_role_id`.  If `role_id` is already an ancestor of `parent_role_id`, the request will fail with HTTP 400 to prevent a cycle in the role hierarchy.  Both roles must be defined on the same resource, identified by id `resource_id`.
-     * @summary Add Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    addParentResourceRole: async (
-      projId: string,
-      envId: string,
-      resourceId: string,
-      roleId: string,
-      parentRoleId: string,
-      options: AxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('addParentResourceRole', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('addParentResourceRole', 'envId', envId);
-      // verify required parameter 'resourceId' is not null or undefined
-      assertParamExists('addParentResourceRole', 'resourceId', resourceId);
-      // verify required parameter 'roleId' is not null or undefined
-      assertParamExists('addParentResourceRole', 'roleId', roleId);
-      // verify required parameter 'parentRoleId' is not null or undefined
-      assertParamExists('addParentResourceRole', 'parentRoleId', parentRoleId);
-      const localVarPath =
-        `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/parents/{parent_role_id}`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-          .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)))
-          .replace(`{${'parent_role_id'}}`, encodeURIComponent(String(parentRoleId)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication HTTPBearer required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
      * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
      * @summary Assign Permissions to Role
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -432,70 +368,6 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
       };
     },
     /**
-     * This endpoint is part of the role hierarchy feature.  Removes `parent_role_id` from the list of parent roles of role with id `role_id`. In other words, `role_id` will no longer be automatically assigned permissions that are granted to `parent_role_id`.  We can say the `role_id` **not longer extends** `parent_role_id` or **no longer inherits** from `parent_role_id`.  Both roles must be defined on the same resource, identified by id `resource_id`.
-     * @summary Remove Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    removeParentResourceRole: async (
-      projId: string,
-      envId: string,
-      resourceId: string,
-      roleId: string,
-      parentRoleId: string,
-      options: AxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('removeParentResourceRole', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('removeParentResourceRole', 'envId', envId);
-      // verify required parameter 'resourceId' is not null or undefined
-      assertParamExists('removeParentResourceRole', 'resourceId', resourceId);
-      // verify required parameter 'roleId' is not null or undefined
-      assertParamExists('removeParentResourceRole', 'roleId', roleId);
-      // verify required parameter 'parentRoleId' is not null or undefined
-      assertParamExists('removeParentResourceRole', 'parentRoleId', parentRoleId);
-      const localVarPath =
-        `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/parents/{parent_role_id}`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-          .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)))
-          .replace(`{${'parent_role_id'}}`, encodeURIComponent(String(parentRoleId)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication HTTPBearer required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
      * Remove permissions from role.  If some of the permissions specified are already unassigned, will skip them.
      * @summary Remove Permissions from Role
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -649,35 +521,6 @@ export const ResourceRolesApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ResourceRolesApiAxiosParamCreator(configuration);
   return {
     /**
-     * This endpoint is part of the role hierarchy feature.  Makes role with id `role_id` extend the role with id `parent_role_id`. In other words, `role_id` will automatically be assigned any permissions that are granted to `parent_role_id`.  We can say the `role_id` **extends** `parent_role_id` or **inherits** from `parent_role_id`.  If `role_id` is already an ancestor of `parent_role_id`, the request will fail with HTTP 400 to prevent a cycle in the role hierarchy.  Both roles must be defined on the same resource, identified by id `resource_id`.
-     * @summary Add Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async addParentResourceRole(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      roleId: string,
-      parentRoleId: string,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceRoleRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.addParentResourceRole(
-        projId,
-        envId,
-        resourceId,
-        roleId,
-        parentRoleId,
-        options,
-      );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
      * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
      * @summary Assign Permissions to Role
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -816,35 +659,6 @@ export const ResourceRolesApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     * This endpoint is part of the role hierarchy feature.  Removes `parent_role_id` from the list of parent roles of role with id `role_id`. In other words, `role_id` will no longer be automatically assigned permissions that are granted to `parent_role_id`.  We can say the `role_id` **not longer extends** `parent_role_id` or **no longer inherits** from `parent_role_id`.  Both roles must be defined on the same resource, identified by id `resource_id`.
-     * @summary Remove Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async removeParentResourceRole(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      roleId: string,
-      parentRoleId: string,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceRoleRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.removeParentResourceRole(
-        projId,
-        envId,
-        resourceId,
-        roleId,
-        parentRoleId,
-        options,
-      );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
      * Remove permissions from role.  If some of the permissions specified are already unassigned, will skip them.
      * @summary Remove Permissions from Role
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -916,29 +730,6 @@ export const ResourceRolesApiFactory = function (
 ) {
   const localVarFp = ResourceRolesApiFp(configuration);
   return {
-    /**
-     * This endpoint is part of the role hierarchy feature.  Makes role with id `role_id` extend the role with id `parent_role_id`. In other words, `role_id` will automatically be assigned any permissions that are granted to `parent_role_id`.  We can say the `role_id` **extends** `parent_role_id` or **inherits** from `parent_role_id`.  If `role_id` is already an ancestor of `parent_role_id`, the request will fail with HTTP 400 to prevent a cycle in the role hierarchy.  Both roles must be defined on the same resource, identified by id `resource_id`.
-     * @summary Add Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    addParentResourceRole(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      roleId: string,
-      parentRoleId: string,
-      options?: any,
-    ): AxiosPromise<ResourceRoleRead> {
-      return localVarFp
-        .addParentResourceRole(projId, envId, resourceId, roleId, parentRoleId, options)
-        .then((request) => request(axios, basePath));
-    },
     /**
      * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
      * @summary Assign Permissions to Role
@@ -1056,29 +847,6 @@ export const ResourceRolesApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     * This endpoint is part of the role hierarchy feature.  Removes `parent_role_id` from the list of parent roles of role with id `role_id`. In other words, `role_id` will no longer be automatically assigned permissions that are granted to `parent_role_id`.  We can say the `role_id` **not longer extends** `parent_role_id` or **no longer inherits** from `parent_role_id`.  Both roles must be defined on the same resource, identified by id `resource_id`.
-     * @summary Remove Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    removeParentResourceRole(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      roleId: string,
-      parentRoleId: string,
-      options?: any,
-    ): AxiosPromise<ResourceRoleRead> {
-      return localVarFp
-        .removeParentResourceRole(projId, envId, resourceId, roleId, parentRoleId, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
      * Remove permissions from role.  If some of the permissions specified are already unassigned, will skip them.
      * @summary Remove Permissions from Role
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -1133,48 +901,6 @@ export const ResourceRolesApiFactory = function (
     },
   };
 };
-
-/**
- * Request parameters for addParentResourceRole operation in ResourceRolesApi.
- * @export
- * @interface ResourceRolesApiAddParentResourceRoleRequest
- */
-export interface ResourceRolesApiAddParentResourceRoleRequest {
-  /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiAddParentResourceRole
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiAddParentResourceRole
-   */
-  readonly envId: string;
-
-  /**
-   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiAddParentResourceRole
-   */
-  readonly resourceId: string;
-
-  /**
-   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiAddParentResourceRole
-   */
-  readonly roleId: string;
-
-  /**
-   * Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiAddParentResourceRole
-   */
-  readonly parentRoleId: string;
-}
 
 /**
  * Request parameters for assignPermissionsToResourceRole operation in ResourceRolesApi.
@@ -1366,48 +1092,6 @@ export interface ResourceRolesApiListResourceRolesRequest {
 }
 
 /**
- * Request parameters for removeParentResourceRole operation in ResourceRolesApi.
- * @export
- * @interface ResourceRolesApiRemoveParentResourceRoleRequest
- */
-export interface ResourceRolesApiRemoveParentResourceRoleRequest {
-  /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiRemoveParentResourceRole
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiRemoveParentResourceRole
-   */
-  readonly envId: string;
-
-  /**
-   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiRemoveParentResourceRole
-   */
-  readonly resourceId: string;
-
-  /**
-   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiRemoveParentResourceRole
-   */
-  readonly roleId: string;
-
-  /**
-   * Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiRemoveParentResourceRole
-   */
-  readonly parentRoleId: string;
-}
-
-/**
  * Request parameters for removePermissionsFromResourceRole operation in ResourceRolesApi.
  * @export
  * @interface ResourceRolesApiRemovePermissionsFromResourceRoleRequest
@@ -1498,30 +1182,6 @@ export interface ResourceRolesApiUpdateResourceRoleRequest {
  * @extends {BaseAPI}
  */
 export class ResourceRolesApi extends BaseAPI {
-  /**
-   * This endpoint is part of the role hierarchy feature.  Makes role with id `role_id` extend the role with id `parent_role_id`. In other words, `role_id` will automatically be assigned any permissions that are granted to `parent_role_id`.  We can say the `role_id` **extends** `parent_role_id` or **inherits** from `parent_role_id`.  If `role_id` is already an ancestor of `parent_role_id`, the request will fail with HTTP 400 to prevent a cycle in the role hierarchy.  Both roles must be defined on the same resource, identified by id `resource_id`.
-   * @summary Add Parent Role
-   * @param {ResourceRolesApiAddParentResourceRoleRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ResourceRolesApi
-   */
-  public addParentResourceRole(
-    requestParameters: ResourceRolesApiAddParentResourceRoleRequest,
-    options?: AxiosRequestConfig,
-  ) {
-    return ResourceRolesApiFp(this.configuration)
-      .addParentResourceRole(
-        requestParameters.projId,
-        requestParameters.envId,
-        requestParameters.resourceId,
-        requestParameters.roleId,
-        requestParameters.parentRoleId,
-        options,
-      )
-      .then((request) => request(this.axios, this.basePath));
-  }
-
   /**
    * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
    * @summary Assign Permissions to Role
@@ -1634,30 +1294,6 @@ export class ResourceRolesApi extends BaseAPI {
         requestParameters.resourceId,
         requestParameters.page,
         requestParameters.perPage,
-        options,
-      )
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   * This endpoint is part of the role hierarchy feature.  Removes `parent_role_id` from the list of parent roles of role with id `role_id`. In other words, `role_id` will no longer be automatically assigned permissions that are granted to `parent_role_id`.  We can say the `role_id` **not longer extends** `parent_role_id` or **no longer inherits** from `parent_role_id`.  Both roles must be defined on the same resource, identified by id `resource_id`.
-   * @summary Remove Parent Role
-   * @param {ResourceRolesApiRemoveParentResourceRoleRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ResourceRolesApi
-   */
-  public removeParentResourceRole(
-    requestParameters: ResourceRolesApiRemoveParentResourceRoleRequest,
-    options?: AxiosRequestConfig,
-  ) {
-    return ResourceRolesApiFp(this.configuration)
-      .removeParentResourceRole(
-        requestParameters.projId,
-        requestParameters.envId,
-        requestParameters.resourceId,
-        requestParameters.roleId,
-        requestParameters.parentRoleId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));

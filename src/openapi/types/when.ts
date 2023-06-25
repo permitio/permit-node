@@ -14,24 +14,11 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { DerivedRole } from './derived-role';
+import { PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings } from './permit-backend-schemas-schema-derived-role-derived-role-settings';
 
 /**
- *
+ * @type When
+ * the settings of the derived role
  * @export
- * @interface ResourceTypeData
  */
-export interface ResourceTypeData {
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof ResourceTypeData
-   */
-  actions: Array<string>;
-  /**
-   *
-   * @type {{ [key: string]: DerivedRole; }}
-   * @memberof ResourceTypeData
-   */
-  derived_roles: { [key: string]: DerivedRole };
-}
+export type When = PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings;

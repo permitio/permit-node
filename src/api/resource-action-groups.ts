@@ -5,6 +5,7 @@ import {
   ResourceActionGroupsApi as AutogenResourceActionGroupsApi,
   ResourceActionGroupCreate,
   ResourceActionGroupRead,
+  ResourceActionGroupUpdate,
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
 
@@ -76,6 +77,21 @@ export interface IResourceActionGroupsApi {
   create(
     resourceKey: string,
     groupData: ResourceActionGroupCreate,
+  ): Promise<ResourceActionGroupRead>;
+
+  /**
+   * Updates an action group.
+   * @param resourceKey - The resource key.
+   * @param groupKey - The group key.
+   * @param groupData - The action group data.
+   * @returns A promise that resolves to a ResourceActionGroupRead object representing the updated action group.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
+  update(
+    resourceKey: string,
+    groupKey: string,
+    groupData: ResourceActionGroupUpdate,
   ): Promise<ResourceActionGroupRead>;
 
   /**
@@ -207,6 +223,36 @@ export class ResourceActionGroupsApi extends BasePermitApi implements IResourceA
           ...this.config.apiContext.environmentContext,
           resourceId: resourceKey,
           resourceActionGroupCreate: groupData,
+        })
+      ).data;
+    } catch (err) {
+      this.handleApiError(err);
+    }
+  }
+
+  /**
+   * Updates an action group.
+   * @param resourceKey - The resource key.
+   * @param groupKey - The group key.
+   * @param groupData - The action group data.
+   * @returns A promise that resolves to a ResourceActionGroupRead object representing the updated action group.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
+  public async update(
+    resourceKey: string,
+    groupKey: string,
+    groupData: ResourceActionGroupUpdate,
+  ): Promise<ResourceActionGroupRead> {
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
+    try {
+      return (
+        await this.groupsApi.updateResourceActionGroup({
+          ...this.config.apiContext.environmentContext,
+          resourceId: resourceKey,
+          actionGroupId: groupKey,
+          resourceActionGroupUpdate: groupData,
         })
       ).data;
     } catch (err) {
