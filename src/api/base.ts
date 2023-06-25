@@ -37,9 +37,15 @@ export abstract class BasePermitApi {
   private scopeApi: APIKeysApi;
 
   constructor(protected config: IPermitConfig, protected logger: Logger) {
+    const version = process.env.npm_package_version ?? 'unknown';
     this.openapiClientConfig = new Configuration({
       basePath: `${this.config.apiUrl}`,
       accessToken: this.config.token,
+      baseOptions: {
+        headers: {
+          'X-Permit-SDK-Version': `node:${version}`,
+        },
+      },
     });
     this.scopeApi = new APIKeysApi(this.openapiClientConfig, BASE_PATH, this.config.axiosInstance);
   }

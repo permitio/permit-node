@@ -5,6 +5,7 @@ import { IPermitConfig } from '../config';
 import { CheckConfig, Context, ContextStore } from '../utils/context';
 
 import { IAction, IResource, IUser, OpaDecisionResult, PolicyDecision } from './interfaces';
+import { AxiosLoggingInterceptor } from '../utils/http-logger';
 
 const RESOURCE_DELIMITER = ':';
 
@@ -66,10 +67,15 @@ export class Enforcer implements IEnforcer {
    * @param logger - The logger instance for logging.
    */
   constructor(private config: IPermitConfig, private logger: Logger) {
+    const version = process.env.npm_package_version ?? 'unknown';
     this.client = axios.create({
       baseURL: `${this.config.pdp}/`,
+      headers: {
+        'X-Permit-SDK-Version': `node:${version}`,
+      },
     });
     this.logger = logger;
+    AxiosLoggingInterceptor.setupInterceptor(this.client, this.logger);
     this.contextStore = new ContextStore();
   }
 

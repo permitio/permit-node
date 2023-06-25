@@ -2,6 +2,8 @@ import anyTest, { TestInterface } from 'ava';
 
 import { printBreak, provideTestExecutionContext, TestContext } from '../fixtures';
 
+const sleepTimeMs = 10000;
+
 const test = anyTest as TestInterface<TestContext>;
 test.before(provideTestExecutionContext);
 
@@ -139,9 +141,9 @@ test('Permission check e2e test', async (t) => {
     t.is(ra.tenant, tenant.key);
 
     logger.info(
-      'sleeping 2 seconds before permit.check() to make sure all writes propagated from cloud to PDP',
+      `sleeping ${sleepTimeMs} ms before permit.check() to make sure all writes propagated from cloud to PDP`,
     );
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, sleepTimeMs));
 
     // positive permission check (will be true because elon is a viewer, and a viewer can read a document)
     logger.info('testing positive permission check');
@@ -193,9 +195,9 @@ test('Permission check e2e test', async (t) => {
     t.is(assignedRoles[0].tenant_id, tenant.id);
 
     logger.info(
-      'sleeping 2 seconds before permit.check() to make sure all writes propagated from cloud to PDP',
+      `sleeping ${sleepTimeMs} ms before permit.check() to make sure all writes propagated from cloud to PDP`,
     );
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, sleepTimeMs));
 
     // run the same negative permission check again, this time it's true
     logger.info('testing previously negative permission check, should now be positive');
