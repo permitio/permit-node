@@ -3,6 +3,5 @@ package.json
 node_modules/*
 build/*
 nyc_output/*
-src/openapi/
 .github/*
 docs/
