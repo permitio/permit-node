@@ -15,7 +15,7 @@ import {
 import { BASE_PATH } from '../openapi/base';
 
 import { BasePermitApi, IPagination } from './base';
-import { ApiKeyLevel } from './context';
+import { ApiContextLevel, ApiKeyLevel } from './context';
 
 export {
   PaginatedResultUserRead,
@@ -217,7 +217,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    */
   public async list(pagination?: IPagination): Promise<PaginatedResultUserRead> {
     const { page = 1, perPage = 100 } = pagination ?? {};
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.users.listUsers({
@@ -240,7 +241,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(userKey: string): Promise<UserRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.users.getUser({
@@ -288,7 +290,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async create(userData: UserCreate): Promise<UserRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.users.createUser({
@@ -311,7 +314,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async update(userKey: string, userData: UserUpdate): Promise<UserRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.users.updateUser({
@@ -334,7 +338,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async sync(userData: UserCreate): Promise<ICreateOrUpdateUserResult> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this.users.replaceUser({
         ...this.config.apiContext.environmentContext,
@@ -359,7 +364,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(userKey: string): Promise<void> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       await this.users.deleteUser({
         ...this.config.apiContext.environmentContext,
@@ -379,7 +385,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async assignRole(assignment: RoleAssignmentCreate): Promise<RoleAssignmentRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.roleAssignments.assignRole({
@@ -401,7 +408,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async unassignRole(unassignment: RoleAssignmentRemove): Promise<void> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.roleAssignments.unassignRole({
@@ -429,7 +437,8 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
     page = 1,
     perPage = 100,
   }: IGetUserRoles): Promise<RoleAssignmentRead[]> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.roleAssignments.listRoleAssignments({

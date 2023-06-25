@@ -10,7 +10,7 @@ import {
 import { BASE_PATH } from '../openapi/base';
 
 import { BasePermitApi, IPagination, PermitApiError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ApiContext, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { ApiContext, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 export { ConditionSetRuleCreate, ConditionSetRuleRead, ConditionSetRuleRemove } from '../openapi';
 
@@ -91,7 +91,8 @@ export class ConditionSetRulesApi extends BasePermitApi implements IConditionSet
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async list(params: IListConditionSetRules): Promise<ConditionSetRuleRead[]> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     const { userSetKey, permissionKey, resourceSetKey, page = 1, perPage = 100 } = params;
     try {
       return (
@@ -118,7 +119,8 @@ export class ConditionSetRulesApi extends BasePermitApi implements IConditionSet
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async create(rule: ConditionSetRuleCreate): Promise<ConditionSetRuleRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.setRules.assignSetPermissions({
@@ -140,7 +142,8 @@ export class ConditionSetRulesApi extends BasePermitApi implements IConditionSet
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(rule: ConditionSetRuleRemove): Promise<void> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.setRules.unassignSetPermissions({

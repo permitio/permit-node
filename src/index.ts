@@ -132,7 +132,7 @@ export class Permit implements IPermitClient {
   constructor(config: RecursivePartial<IPermitConfig>) {
     this.config = ConfigFactory.build(config);
     this.logger = LoggerFactory.createLogger(this.config);
-    AxiosLoggingInterceptor.setupInterceptor(this.config, this.logger);
+    AxiosLoggingInterceptor.setupInterceptor(this.config.axiosInstance, this.logger);
 
     this.api = new ApiClient(this.config, this.logger);
 

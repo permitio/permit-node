@@ -12,7 +12,7 @@ import {
 import { BASE_PATH } from '../openapi/base';
 
 import { BasePermitApi, IPagination } from './base';
-import { ApiKeyLevel } from './context';
+import { ApiContextLevel, ApiKeyLevel } from './context';
 
 export {
   BulkRoleAssignmentReport,
@@ -128,7 +128,8 @@ export class RoleAssignmentsApi extends BasePermitApi implements IRoleAssignment
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async list(params: IListRoleAssignments): Promise<RoleAssignmentRead[]> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     const { user, tenant, role, page = 1, perPage = 100 } = params;
     try {
       return (
@@ -155,7 +156,8 @@ export class RoleAssignmentsApi extends BasePermitApi implements IRoleAssignment
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async assign(assignment: RoleAssignmentCreate): Promise<RoleAssignmentRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.roleAssignments.assignRole({
@@ -177,7 +179,8 @@ export class RoleAssignmentsApi extends BasePermitApi implements IRoleAssignment
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async unassign(unassignment: RoleAssignmentRemove): Promise<void> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.roleAssignments.unassignRole({
@@ -200,7 +203,8 @@ export class RoleAssignmentsApi extends BasePermitApi implements IRoleAssignment
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async bulkAssign(assignments: RoleAssignmentCreate[]): Promise<BulkRoleAssignmentReport> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.roleAssignments.bulkAssignRole({
@@ -225,7 +229,8 @@ export class RoleAssignmentsApi extends BasePermitApi implements IRoleAssignment
   public async bulkUnassign(
     unassignments: RoleAssignmentRemove[],
   ): Promise<BulkRoleUnAssignmentReport> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.roleAssignments.bulkUnassignRole({

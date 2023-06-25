@@ -10,7 +10,7 @@ import {
 import { BASE_PATH } from '../openapi/base';
 
 import { BasePermitApi, IPagination, PermitApiError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ApiContext, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { ApiContext, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 export {
   ResourceAttributeCreate,
@@ -140,7 +140,8 @@ export class ResourceAttributesApi extends BasePermitApi implements IResourceAtt
    */
   public async list(params: IListAttributes): Promise<ResourceAttributeRead[]> {
     const { resourceKey, page = 1, perPage = 100 } = params;
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.attributesApi.listResourceAttributes({
@@ -165,7 +166,8 @@ export class ResourceAttributesApi extends BasePermitApi implements IResourceAtt
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async get(resourceKey: string, attributeKey: string): Promise<ResourceAttributeRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.attributesApi.getResourceAttribute({
@@ -220,7 +222,8 @@ export class ResourceAttributesApi extends BasePermitApi implements IResourceAtt
     resourceKey: string,
     attributeData: ResourceAttributeCreate,
   ): Promise<ResourceAttributeRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.attributesApi.createResourceAttribute({
@@ -249,7 +252,8 @@ export class ResourceAttributesApi extends BasePermitApi implements IResourceAtt
     attributeKey: string,
     attributeData: ResourceAttributeUpdate,
   ): Promise<ResourceAttributeRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.attributesApi.updateResourceAttribute({
@@ -273,7 +277,8 @@ export class ResourceAttributesApi extends BasePermitApi implements IResourceAtt
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async delete(resourceKey: string, attributeKey: string): Promise<void> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       await this.attributesApi.deleteResourceAttribute({
         ...this.config.apiContext.environmentContext,

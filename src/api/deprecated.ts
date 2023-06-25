@@ -36,7 +36,7 @@ import {
 import { BASE_PATH } from '../openapi/base';
 
 import { BasePermitApi, PermitApiError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ApiContext, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { ApiContext, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 /**
  * This interface contains *read actions* that goes outside
@@ -145,7 +145,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.users.list()
    */
   public async listUsers(): Promise<UserRead[]> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
 
     try {
       const response = await this._users.listUsers({
@@ -174,7 +175,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.roles.list()
    */
   public async listRoles(): Promise<RoleRead[]> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
 
     try {
       const response = await this._roles.listRoles({
@@ -210,7 +212,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     page: number,
     perPage: number,
   ): Promise<ConditionSetRead[]> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
 
     try {
       const response = await this._conditionSets.listConditionSets({
@@ -247,7 +250,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     page: number,
     perPage: number,
   ): Promise<ConditionSetRuleRead[]> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
 
     try {
       const response = await this._conditionSetRules.listSetPermissions({
@@ -279,7 +283,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.users.get()
    */
   public async getUser(userId: string): Promise<UserRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._users.getUser({
         ...this.config.apiContext.environmentContext,
@@ -308,7 +313,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.tenants.get()
    */
   public async getTenant(tenantId: string): Promise<TenantRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._tenants.getTenant({
         ...this.config.apiContext.environmentContext,
@@ -337,7 +343,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.tenants.list()
    */
   public async listTenants(page?: number): Promise<TenantRead[]> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._tenants.listTenants({
         ...this.config.apiContext.environmentContext,
@@ -366,7 +373,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.roles.get()
    */
   public async getRole(roleId: string): Promise<RoleRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._roles.getRole({
         ...this.config.apiContext.environmentContext,
@@ -396,7 +404,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.users.getAssignedRoles()
    */
   public async getAssignedRoles(user: string, tenant?: string): Promise<RoleAssignmentRead[]> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._roleAssignments.listRoleAssignments({
         ...this.config.apiContext.environmentContext,
@@ -428,7 +437,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.resources.create()
    */
   public async createResource(resource: ResourceCreate): Promise<ResourceRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._resources.createResource({
         ...this.config.apiContext.environmentContext,
@@ -460,7 +470,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.resources.update()
    */
   public async updateResource(resourceId: string, resource: ResourceUpdate): Promise<ResourceRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._resources.updateResource({
         ...this.config.apiContext.environmentContext,
@@ -494,7 +505,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.resources.delete()
    */
   public async deleteResource(resourceId: string): Promise<AxiosResponse<void>> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._resources.deleteResource({
         ...this.config.apiContext.environmentContext,
@@ -523,7 +535,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.users.create()
    */
   public async createUser(user: UserCreate): Promise<UserRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._users.createUser({
         ...this.config.apiContext.environmentContext,
@@ -552,7 +565,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.users.sync()
    */
   public async syncUser(user: UserCreate): Promise<UserRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._users.replaceUser({
         ...this.config.apiContext.environmentContext,
@@ -583,7 +597,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.users.update()
    */
   public async updateUser(userId: string, user: UserUpdate): Promise<UserRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._users.updateUser({
         ...this.config.apiContext.environmentContext,
@@ -613,7 +628,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.users.delete()
    */
   public async deleteUser(userId: string): Promise<AxiosResponse<void>> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._users.deleteUser({
         ...this.config.apiContext.environmentContext,
@@ -642,7 +658,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.tenants.create()
    */
   public async createTenant(tenant: TenantCreate): Promise<TenantRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._tenants.createTenant({
         ...this.config.apiContext.environmentContext,
@@ -672,7 +689,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.tenants.update()
    */
   public async updateTenant(tenantId: string, tenant: TenantUpdate): Promise<TenantRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._tenants.updateTenant({
         ...this.config.apiContext.environmentContext,
@@ -704,7 +722,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.tenants.delete()
    */
   public async deleteTenant(tenantId: string): Promise<AxiosResponse<void>> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._tenants.deleteTenant({
         ...this.config.apiContext.environmentContext,
@@ -733,7 +752,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.roles.create()
    */
   public async createRole(role: RoleCreate): Promise<RoleRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._roles.createRole({
         ...this.config.apiContext.environmentContext,
@@ -763,7 +783,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.roles.update()
    */
   public async updateRole(roleId: string, role: RoleUpdate): Promise<RoleRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._roles.updateRole({
         ...this.config.apiContext.environmentContext,
@@ -795,7 +816,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.roles.delete()
    */
   public async deleteRole(roleId: string): Promise<AxiosResponse<void>> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._roles.deleteRole({
         ...this.config.apiContext.environmentContext,
@@ -824,7 +846,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.users.assignRole()
    */
   public async assignRole(assignedRole: RoleAssignmentCreate): Promise<RoleAssignmentRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._roleAssignments.assignRole({
         ...this.config.apiContext.environmentContext,
@@ -855,7 +878,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.users.unassignRole()
    */
   public async unassignRole(removedRole: RoleAssignmentRemove): Promise<AxiosResponse<void>> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._roleAssignments.unassignRole({
         ...this.config.apiContext.environmentContext,
@@ -886,7 +910,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.conditionSets.create()
    */
   public async createConditionSet(conditionSet: ConditionSetCreate): Promise<ConditionSetRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._conditionSets.createConditionSet({
         ...this.config.apiContext.environmentContext,
@@ -921,7 +946,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     conditionSetId: string,
     conditionSet: ConditionSetUpdate,
   ): Promise<ConditionSetRead> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._conditionSets.updateConditionSet({
         ...this.config.apiContext.environmentContext,
@@ -957,7 +983,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @deprecated replaced with permit.api.conditionSets.delete()
    */
   public async deleteConditionSet(conditionSetId: string): Promise<AxiosResponse<void>> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._conditionSets.deleteConditionSet({
         ...this.config.apiContext.environmentContext,
@@ -990,7 +1017,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
   public async assignConditionSetRule(
     conditionSetRule: ConditionSetRuleCreate,
   ): Promise<ConditionSetRuleRead[]> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._conditionSetRules.assignSetPermissions({
         ...this.config.apiContext.environmentContext,
@@ -1025,7 +1053,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
   public async unassignConditionSetRule(
     conditionSetRule: ConditionSetRuleRemove,
   ): Promise<AxiosResponse<void>> {
-    await this.ensureContext(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = await this._conditionSetRules.unassignSetPermissions({
         ...this.config.apiContext.environmentContext,

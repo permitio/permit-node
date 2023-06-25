@@ -1,12 +1,10 @@
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import winston from 'winston';
 
-import { IPermitConfig } from '../config';
-
 export class AxiosLoggingInterceptor {
-  static setupInterceptor(config: IPermitConfig, logger: winston.Logger): void {
+  static setupInterceptor(axiosInstance: AxiosInstance, logger: winston.Logger): void {
     // Add a request interceptor
-    config.axiosInstance.interceptors.request.use(
+    axiosInstance.interceptors.request.use(
       function (request: AxiosRequestConfig) {
         logger.debug(`Sending HTTP request: ${request?.method?.toUpperCase()} ${request?.url}`);
         return request;
@@ -18,7 +16,7 @@ export class AxiosLoggingInterceptor {
     );
 
     // Add a response interceptor
-    config.axiosInstance.interceptors.response.use(
+    axiosInstance.interceptors.response.use(
       function (response: AxiosResponse<any>) {
         logger.debug(
           `Received HTTP response: ${response?.config?.method?.toUpperCase()} ${

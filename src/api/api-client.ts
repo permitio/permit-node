@@ -4,7 +4,7 @@ import { IPermitConfig } from '../config';
 
 import { ConditionSetRulesApi, IConditionSetRulesApi } from './condition-set-rules';
 import { ConditionSetsApi, IConditionSetsApi } from './condition-sets';
-import { ApiContext, ApiKeyLevel } from './context';
+import { ApiContextLevel, ApiKeyLevel } from './context';
 import { DeprecatedApiClient, IDeprecatedPermitApi } from './deprecated';
 import { EnvironmentsApi, IEnvironmentsApi } from './environments';
 import { IProjectsApi, ProjectsApi } from './projects';
@@ -91,12 +91,19 @@ export interface IPermitApi extends IDeprecatedPermitApi {
   users: IUsersApi;
 
   /**
-   * Verifies that the current api context is as expected or throws exception.
-   *
-   * @param callLevel the required permit api context
-   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required context.
+   * Ensure that the API Key has the necessary permissions to successfully call the API endpoint.
+   * Note that this check is not foolproof, and the API may still throw 401.
+   * @param requiredAccessLevel The required API Key Access level for the endpoint.
+   * @throws PermitContextError If the currently set API key access level does not match the required access level.
    */
-  ensureContext(callLevel: ApiKeyLevel): Promise<void>;
+  ensureAccessLevel(requiredAccessLevel: ApiKeyLevel): Promise<void>;
+
+  /**
+   * Ensure that the API context matches the required endpoint context.
+   * @param requiredContext The required API context level for the endpoint.
+   * @throws PermitContextError If the currently set API context level does not match the required context level.
+   */
+  ensureContext(requiredContext: ApiContextLevel): Promise<void>;
 }
 
 export class ApiClient extends DeprecatedApiClient implements IPermitApi {
