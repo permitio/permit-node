@@ -23,7 +23,7 @@ export interface IListResourceRoles extends IPagination {
   resourceKey: string;
 }
 
-export interface IRolesApi {
+export interface IResourceRolesApi {
   /**
    * Retrieves a list of resource roles.
    *
@@ -138,12 +138,60 @@ export interface IRolesApi {
     roleKey: string,
     permissions: string[],
   ): Promise<ResourceRoleRead>;
+
+  /**
+   * Creates a new role derivation.
+   *
+   * @param resourceKey The key of the resource.
+   * @param roleKey - The key of the role.
+   * @param derivationData - An object of the derivation data.
+   * @returns A promise that resolves to a DerivedRoleRuleRead object representing the updated derived role.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
+  createRoleDerivation(
+    resourceKey: string,
+    roleKey: string,
+    derivationData: DerivedRoleRuleCreate,
+  ): Promise<DerivedRoleRuleRead>;
+
+  /**
+   * Delete a role derivation.
+   *
+   * @param resourceKey The key of the resource.
+   * @param roleKey - The key of the role.
+   * @param derivationRule - An object of the derivation role.
+   * @returns void.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
+  deleteRoleDerivation(
+    resourceKey: string,
+    roleKey: string,
+    derivationRule: DerivedRoleRuleDelete,
+  ): Promise<void>;
+
+  /**
+   * update conditions to a role derivation.
+   *
+   * @param resourceKey The key of the resource.
+   * @param roleKey - The key of the role.
+   * @param conditions - An array of conditions to be assigned to the role.
+   * @returns A promise that resolves to a PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings object representing the derived role settings.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
+  updateRoleDerivationConditions(
+    resourceKey: string,
+    roleKey: string,
+    conditions: PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
+  ): Promise<PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings>;
 }
 
 /**
  * The ResourceRolesApi class provides methods for interacting with Permit Roles.
  */
-export class ResourceRolesApi extends BasePermitApi implements IRolesApi {
+export class ResourceRolesApi extends BasePermitApi implements IResourceRolesApi {
   private resourceRoles: AutogenResourceRolesApi;
   private roleDerivations: AutogenRoleDerivationsApi;
 
