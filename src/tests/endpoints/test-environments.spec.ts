@@ -66,6 +66,7 @@ test.serial('environment creation with org level api key', async (t) => {
     t.context.logger.warn('this test must run with an org level api key');
     return;
   }
+  t.is(permit.config.apiContext.permittedAccessLevel, ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
 
   try {
     await cleanup(permit, TEST_PROJECT_KEY, t);
@@ -101,6 +102,11 @@ test.serial('environment creation with org level api key', async (t) => {
 
     printBreak();
 
+    const environmentsOriginal = await permit.api.environments.list({
+      projectKey: projects[0]?.key,
+    });
+    const originalNumOfEnvs = environmentsOriginal.length;
+
     for (const environmentData of CREATED_ENVIRONMENTS) {
       t.context.logger.info(`creating environment: ${environmentData.key}`);
       const environment: EnvironmentRead = await permit.api.environments.create(
@@ -118,7 +124,7 @@ test.serial('environment creation with org level api key', async (t) => {
 
     const environments = await permit.api.environments.list({ projectKey: projects[0]?.key });
     t.context.logger.info(`environments: ${environments.map((e) => e.key)}`);
-    t.is(environments.length, CREATED_ENVIRONMENTS.length + 2); // each project has 2 default `dev` and `prod` environments
+    t.is(environments.length, CREATED_ENVIRONMENTS.length + originalNumOfEnvs); // each project has 2 default `dev` and `prod` environments
 
     const testEnvironment = await permit.api.environments.get(
       TEST_PROJECT_KEY,
@@ -147,6 +153,7 @@ test.serial('environment creation with project level api key', async (t) => {
     t.context.logger.warning('this test must run with a project level api key');
     return;
   }
+  t.is(permit.config.apiContext.permittedAccessLevel, ApiKeyLevel.PROJECT_LEVEL_API_KEY);
 
   try {
     const project = permit.config.apiContext.project;
