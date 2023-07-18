@@ -3,9 +3,9 @@ import { Logger } from 'winston';
 
 import { IPermitConfig } from '../config';
 import { CheckConfig, Context, ContextStore } from '../utils/context';
+import { AxiosLoggingInterceptor } from '../utils/http-logger';
 
 import { IAction, IResource, IUser, OpaDecisionResult, PolicyDecision } from './interfaces';
-import { AxiosLoggingInterceptor } from '../utils/http-logger';
 
 const RESOURCE_DELIMITER = ':';
 
@@ -19,12 +19,14 @@ export class PermitError extends Error {
     this.name = 'PermitError';
   }
 }
+
 export class PermitConnectionError extends PermitError {
   constructor(message: string) {
     super(message);
     this.name = 'PermitConnectionError';
   }
 }
+
 export class PermitPDPStatusError extends PermitError {
   constructor(message: string) {
     super(message);
@@ -108,6 +110,7 @@ export class Enforcer implements IEnforcer {
       }
     });
   }
+
   private async checkWithExceptions(
     user: IUser | string,
     action: IAction,
@@ -120,7 +123,7 @@ export class Enforcer implements IEnforcer {
 
     const resourceObj = isString(resource) ? Enforcer.resourceFromString(resource) : resource;
     const normalizedResource: IResource = this.normalizeResource(resourceObj);
-
+    const tenant = resourceObj.tenant || 'default';
     const queryContext = this.contextStore.getDerivedContext(context);
     const input = {
       user: normalizedUser,
@@ -133,6 +136,7 @@ export class Enforcer implements IEnforcer {
       .post<PolicyDecision | OpaDecisionResult>('allowed', input, {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
+          'X-Tenant-ID': tenant,
         },
         timeout: checkTimeout,
       })
