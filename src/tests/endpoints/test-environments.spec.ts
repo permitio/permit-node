@@ -150,7 +150,7 @@ test.serial('environment creation with project level api key', async (t) => {
   try {
     await permit.api.ensureAccessLevel(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
   } catch (error) {
-    t.context.logger.warning('this test must run with a project level api key');
+    t.context.logger.warn('this test must run with a project level api key');
     return;
   }
   t.is(permit.config.apiContext.permittedAccessLevel, ApiKeyLevel.PROJECT_LEVEL_API_KEY);

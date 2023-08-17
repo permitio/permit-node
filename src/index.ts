@@ -1,5 +1,5 @@
 // For Default export
-import winston from 'winston';
+import pino from 'pino';
 
 import { ApiClient, IPermitApi } from './api/api-client';
 import { ElementsClient, IPermitElementsApi } from './api/elements';
@@ -84,7 +84,7 @@ export interface IPermitClient extends IEnforcer {
  * ```
  */
 export class Permit implements IPermitClient {
-  private logger: winston.Logger;
+  private logger: pino.Logger;
   private enforcer: IEnforcer;
 
   /**

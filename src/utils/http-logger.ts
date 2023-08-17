@@ -1,8 +1,8 @@
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import winston from 'winston';
+import pino from 'pino';
 
 export class AxiosLoggingInterceptor {
-  static setupInterceptor(axiosInstance: AxiosInstance, logger: winston.Logger): void {
+  static setupInterceptor(axiosInstance: AxiosInstance, logger: pino.Logger): void {
     // Add a request interceptor
     axiosInstance.interceptors.request.use(
       function (request: AxiosRequestConfig) {

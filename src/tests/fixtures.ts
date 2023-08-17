@@ -1,10 +1,10 @@
 import { ExecutionContext } from 'ava';
-import winston from 'winston';
+import pino from 'pino';
 
 import { IPermitClient, Permit, PermitApiError } from '../index';
 import { LoggerFactory } from '../logger';
 
-export type TestContext = { permit: IPermitClient; logger: winston.Logger };
+export type TestContext = { permit: IPermitClient; logger: pino.Logger };
 
 export const printBreak = () => {
   console.log('\n\n ----------- \n\n');
