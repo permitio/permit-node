@@ -88,4 +88,10 @@ export interface ResourceAttributeRead {
    * @memberof ResourceAttributeRead
    */
   updated_at: string;
+  /**
+   * Whether the attribute is built-in, and managed by the Permit system.
+   * @type {boolean}
+   * @memberof ResourceAttributeRead
+   */
+  built_in: boolean;
 }

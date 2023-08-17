@@ -17,6 +17,9 @@
 import { ConditionSetType } from './condition-set-type';
 // May contain unused imports in some cases
 // @ts-ignore
+import { ParentId } from './parent-id';
+// May contain unused imports in some cases
+// @ts-ignore
 import { ResourceId } from './resource-id';
 
 /**
@@ -67,4 +70,10 @@ export interface ConditionSetCreate {
    * @memberof ConditionSetCreate
    */
   conditions?: object;
+  /**
+   *
+   * @type {ParentId}
+   * @memberof ConditionSetCreate
+   */
+  parent_id?: ParentId;
 }

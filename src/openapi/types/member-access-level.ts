@@ -19,9 +19,9 @@
  */
 
 export const MemberAccessLevel = {
-  Read: 'read',
-  Write: 'write',
   Admin: 'admin',
+  Write: 'write',
+  Read: 'read',
 } as const;
 
 export type MemberAccessLevel = typeof MemberAccessLevel[keyof typeof MemberAccessLevel];

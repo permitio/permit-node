@@ -18,6 +18,9 @@ import { ActionBlockRead } from './action-block-read';
 // May contain unused imports in some cases
 // @ts-ignore
 import { AttributeBlockRead } from './attribute-block-read';
+// May contain unused imports in some cases
+// @ts-ignore
+import { RelationBlockRead } from './relation-block-read';
 
 /**
  *
@@ -97,4 +100,22 @@ export interface ResourceRead {
    * @memberof ResourceRead
    */
   attributes?: { [key: string]: AttributeBlockRead };
+  /**
+   * Roles defined on this resource. The key is the role name, and the value contains the role properties such as granted permissions, etc.
+   * @type {object}
+   * @memberof ResourceRead
+   */
+  roles?: object;
+  /**
+   *          A relations definition block, typically contained within a resource type definition block.         The relations represents the ways you can interact with a protected resource.
+   * @type {{ [key: string]: RelationBlockRead; }}
+   * @memberof ResourceRead
+   */
+  relations?: { [key: string]: RelationBlockRead };
+  /**
+   *
+   * @type {{ [key: string]: Array<string>; }}
+   * @memberof ResourceRead
+   */
+  action_groups?: { [key: string]: Array<string> };
 }

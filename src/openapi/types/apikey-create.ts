@@ -64,4 +64,10 @@ export interface APIKeyCreate {
    * @memberof APIKeyCreate
    */
   owner_type?: APIKeyOwnerType;
+  /**
+   *
+   * @type {string}
+   * @memberof APIKeyCreate
+   */
+  name?: string;
 }

@@ -22,6 +22,8 @@ export const ProgrammingLanguage = {
   Javascript: 'javascript',
   Python: 'python',
   Dotnet: 'dotnet',
+  Golang: 'golang',
+  Ruby: 'ruby',
   Java: 'java',
   KongGateway: 'kong_gateway',
 } as const;

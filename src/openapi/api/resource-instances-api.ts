@@ -214,6 +214,8 @@ export const ResourceInstancesApiAxiosParamCreator = function (configuration?: C
      * @summary List Resource Instances
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} [tenant] The tenant key or id to filter by
+     * @param {string} [resource] The resource key or id to filter by
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -222,6 +224,8 @@ export const ResourceInstancesApiAxiosParamCreator = function (configuration?: C
     listResourceInstances: async (
       projId: string,
       envId: string,
+      tenant?: string,
+      resource?: string,
       page?: number,
       perPage?: number,
       options: AxiosRequestConfig = {},
@@ -247,6 +251,14 @@ export const ResourceInstancesApiAxiosParamCreator = function (configuration?: C
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (tenant !== undefined) {
+        localVarQueryParameter['tenant'] = tenant;
+      }
+
+      if (resource !== undefined) {
+        localVarQueryParameter['resource'] = resource;
+      }
 
       if (page !== undefined) {
         localVarQueryParameter['page'] = page;
@@ -417,6 +429,8 @@ export const ResourceInstancesApiFp = function (configuration?: Configuration) {
      * @summary List Resource Instances
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} [tenant] The tenant key or id to filter by
+     * @param {string} [resource] The resource key or id to filter by
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -425,6 +439,8 @@ export const ResourceInstancesApiFp = function (configuration?: Configuration) {
     async listResourceInstances(
       projId: string,
       envId: string,
+      tenant?: string,
+      resource?: string,
       page?: number,
       perPage?: number,
       options?: AxiosRequestConfig,
@@ -434,6 +450,8 @@ export const ResourceInstancesApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listResourceInstances(
         projId,
         envId,
+        tenant,
+        resource,
         page,
         perPage,
         options,
@@ -542,6 +560,8 @@ export const ResourceInstancesApiFactory = function (
      * @summary List Resource Instances
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} [tenant] The tenant key or id to filter by
+     * @param {string} [resource] The resource key or id to filter by
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -550,12 +570,14 @@ export const ResourceInstancesApiFactory = function (
     listResourceInstances(
       projId: string,
       envId: string,
+      tenant?: string,
+      resource?: string,
       page?: number,
       perPage?: number,
       options?: any,
     ): AxiosPromise<Array<ResourceInstanceRead>> {
       return localVarFp
-        .listResourceInstances(projId, envId, page, perPage, options)
+        .listResourceInstances(projId, envId, tenant, resource, page, perPage, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -685,6 +707,20 @@ export interface ResourceInstancesApiListResourceInstancesRequest {
    * @memberof ResourceInstancesApiListResourceInstances
    */
   readonly envId: string;
+
+  /**
+   * The tenant key or id to filter by
+   * @type {string}
+   * @memberof ResourceInstancesApiListResourceInstances
+   */
+  readonly tenant?: string;
+
+  /**
+   * The resource key or id to filter by
+   * @type {string}
+   * @memberof ResourceInstancesApiListResourceInstances
+   */
+  readonly resource?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
@@ -825,6 +861,8 @@ export class ResourceInstancesApi extends BaseAPI {
       .listResourceInstances(
         requestParameters.projId,
         requestParameters.envId,
+        requestParameters.tenant,
+        requestParameters.resource,
         requestParameters.page,
         requestParameters.perPage,
         options,

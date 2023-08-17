@@ -12,6 +12,10 @@
  * Do not edit the class manually.
  */
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { GrantedTo } from './granted-to';
+
 /**
  *
  * @export
@@ -37,11 +41,17 @@ export interface RoleRead {
    */
   permissions?: Array<string>;
   /**
-   * list of role keys that define what roles this role extends. In other words: this role will automatically inherit all the permissions of the given roles in this list.
-   * @type {Array<string>}
+   * optional dictionary of key-value pairs that can be used to store arbitrary metadata about this role. This metadata can be used to filter role using query parameters with attr_ prefix, currently supports only \'equals\' operator
+   * @type {object}
    * @memberof RoleRead
    */
-  extends?: Array<string>;
+  attributes?: object;
+  /**
+   *
+   * @type {GrantedTo}
+   * @memberof RoleRead
+   */
+  granted_to?: GrantedTo;
   /**
    * A URL-friendly name of the role (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the role.
    * @type {string}

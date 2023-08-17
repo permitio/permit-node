@@ -23,7 +23,7 @@ import { OPADecisionLog } from './opadecision-log';
  */
 export interface PaginatedResultOPADecisionLog {
   /**
-   *
+   * List of Opa Decision Logs
    * @type {Array<OPADecisionLog>}
    * @memberof PaginatedResultOPADecisionLog
    */

@@ -12,6 +12,10 @@
  * Do not edit the class manually.
  */
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { GrantedTo1 } from './granted-to1';
+
 /**
  *
  * @export
@@ -43,9 +47,15 @@ export interface ResourceRoleCreate {
    */
   permissions?: Array<string>;
   /**
-   * list of role keys that define what roles this role extends. In other words: this role will automatically inherit all the permissions of the given roles in this list.
-   * @type {Array<string>}
+   * optional dictionary of key-value pairs that can be used to store arbitrary metadata about this role. This metadata can be used to filter role using query parameters with attr_ prefix, currently supports only \'equals\' operator
+   * @type {object}
    * @memberof ResourceRoleCreate
    */
-  extends?: Array<string>;
+  attributes?: object;
+  /**
+   *
+   * @type {GrantedTo1}
+   * @memberof ResourceRoleCreate
+   */
+  granted_to?: GrantedTo1;
 }

@@ -61,4 +61,16 @@ export interface ResourceCreate {
    * @memberof ResourceCreate
    */
   attributes?: { [key: string]: AttributeBlockEditable };
+  /**
+   * Roles defined on this resource. The key is the role name, and the value contains the role properties such as granted permissions, base roles, etc.
+   * @type {object}
+   * @memberof ResourceCreate
+   */
+  roles?: object;
+  /**
+   * Relations to other resources. The key is the relation key, and the value is the related resource.
+   * @type {object}
+   * @memberof ResourceCreate
+   */
+  relations?: object;
 }

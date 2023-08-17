@@ -12,6 +12,13 @@
  * Do not edit the class manually.
  */
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { PDPInfo } from './pdpinfo';
+// May contain unused imports in some cases
+// @ts-ignore
+import { PDPOPAInfo } from './pdpopainfo';
+
 /**
  *
  * @export
@@ -24,4 +31,34 @@ export interface PDPState {
    * @memberof PDPState
    */
   api_version: number;
+  /**
+   *
+   * @type {PDPInfo}
+   * @memberof PDPState
+   */
+  pdp?: PDPInfo;
+  /**
+   *
+   * @type {PDPOPAInfo}
+   * @memberof PDPState
+   */
+  opa?: PDPOPAInfo;
+  /**
+   *
+   * @type {string}
+   * @memberof PDPState
+   */
+  current_policy_hash?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PDPState
+   */
+  most_recent_data?: number;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PDPState
+   */
+  seen_sdks?: Array<string>;
 }

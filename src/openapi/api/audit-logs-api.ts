@@ -31,6 +31,10 @@ import {
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
+import { AuditLogSortKey } from '../types';
+// @ts-ignore
+import { DetailedAuditLog } from '../types';
+// @ts-ignore
 import { HTTPValidationError } from '../types';
 // @ts-ignore
 import { PaginatedResultAuditLog } from '../types';
@@ -40,6 +44,59 @@ import { PaginatedResultAuditLog } from '../types';
  */
 export const AuditLogsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
+    /**
+     *
+     * @summary Get detailed audit log
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} logId The unique id of the audit log
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getDetailedAuditLog: async (
+      projId: string,
+      envId: string,
+      logId: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getDetailedAuditLog', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getDetailedAuditLog', 'envId', envId);
+      // verify required parameter 'logId' is not null or undefined
+      assertParamExists('getDetailedAuditLog', 'logId', logId);
+      const localVarPath = `/v2/pdps/{proj_id}/{env_id}/audit_logs/{log_id}`
+        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
+        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
+        .replace(`{${'log_id'}}`, encodeURIComponent(String(logId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
     /**
      *
      * @summary List Audit Logs
@@ -53,6 +110,7 @@ export const AuditLogsApiAxiosParamCreator = function (configuration?: Configura
      * @param {string} [action] Filter by action
      * @param {number} [timestampFrom] Filter by timestamp from
      * @param {number} [timestampTo] Filter by timestamp to
+     * @param {AuditLogSortKey} [sortBy] Sort by column
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -69,6 +127,7 @@ export const AuditLogsApiAxiosParamCreator = function (configuration?: Configura
       action?: string,
       timestampFrom?: number,
       timestampTo?: number,
+      sortBy?: AuditLogSortKey,
       page?: number,
       perPage?: number,
       options: AxiosRequestConfig = {},
@@ -127,6 +186,10 @@ export const AuditLogsApiAxiosParamCreator = function (configuration?: Configura
         localVarQueryParameter['timestamp_to'] = timestampTo;
       }
 
+      if (sortBy !== undefined) {
+        localVarQueryParameter['sort_by'] = sortBy;
+      }
+
       if (page !== undefined) {
         localVarQueryParameter['page'] = page;
       }
@@ -160,6 +223,29 @@ export const AuditLogsApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
+     * @summary Get detailed audit log
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} logId The unique id of the audit log
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getDetailedAuditLog(
+      projId: string,
+      envId: string,
+      logId: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DetailedAuditLog>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getDetailedAuditLog(
+        projId,
+        envId,
+        logId,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary List Audit Logs
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
@@ -171,6 +257,7 @@ export const AuditLogsApiFp = function (configuration?: Configuration) {
      * @param {string} [action] Filter by action
      * @param {number} [timestampFrom] Filter by timestamp from
      * @param {number} [timestampTo] Filter by timestamp to
+     * @param {AuditLogSortKey} [sortBy] Sort by column
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -187,6 +274,7 @@ export const AuditLogsApiFp = function (configuration?: Configuration) {
       action?: string,
       timestampFrom?: number,
       timestampTo?: number,
+      sortBy?: AuditLogSortKey,
       page?: number,
       perPage?: number,
       options?: AxiosRequestConfig,
@@ -204,6 +292,7 @@ export const AuditLogsApiFp = function (configuration?: Configuration) {
         action,
         timestampFrom,
         timestampTo,
+        sortBy,
         page,
         perPage,
         options,
@@ -226,6 +315,25 @@ export const AuditLogsApiFactory = function (
   return {
     /**
      *
+     * @summary Get detailed audit log
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} logId The unique id of the audit log
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getDetailedAuditLog(
+      projId: string,
+      envId: string,
+      logId: string,
+      options?: any,
+    ): AxiosPromise<DetailedAuditLog> {
+      return localVarFp
+        .getDetailedAuditLog(projId, envId, logId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary List Audit Logs
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
@@ -237,6 +345,7 @@ export const AuditLogsApiFactory = function (
      * @param {string} [action] Filter by action
      * @param {number} [timestampFrom] Filter by timestamp from
      * @param {number} [timestampTo] Filter by timestamp to
+     * @param {AuditLogSortKey} [sortBy] Sort by column
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -253,6 +362,7 @@ export const AuditLogsApiFactory = function (
       action?: string,
       timestampFrom?: number,
       timestampTo?: number,
+      sortBy?: AuditLogSortKey,
       page?: number,
       perPage?: number,
       options?: any,
@@ -269,6 +379,7 @@ export const AuditLogsApiFactory = function (
           action,
           timestampFrom,
           timestampTo,
+          sortBy,
           page,
           perPage,
           options,
@@ -277,6 +388,34 @@ export const AuditLogsApiFactory = function (
     },
   };
 };
+
+/**
+ * Request parameters for getDetailedAuditLog operation in AuditLogsApi.
+ * @export
+ * @interface AuditLogsApiGetDetailedAuditLogRequest
+ */
+export interface AuditLogsApiGetDetailedAuditLogRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof AuditLogsApiGetDetailedAuditLog
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof AuditLogsApiGetDetailedAuditLog
+   */
+  readonly envId: string;
+
+  /**
+   * The unique id of the audit log
+   * @type {string}
+   * @memberof AuditLogsApiGetDetailedAuditLog
+   */
+  readonly logId: string;
+}
 
 /**
  * Request parameters for listAuditLogs operation in AuditLogsApi.
@@ -355,6 +494,13 @@ export interface AuditLogsApiListAuditLogsRequest {
   readonly timestampTo?: number;
 
   /**
+   * Sort by column
+   * @type {AuditLogSortKey}
+   * @memberof AuditLogsApiListAuditLogs
+   */
+  readonly sortBy?: AuditLogSortKey;
+
+  /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
    * @memberof AuditLogsApiListAuditLogs
@@ -376,6 +522,28 @@ export interface AuditLogsApiListAuditLogsRequest {
  * @extends {BaseAPI}
  */
 export class AuditLogsApi extends BaseAPI {
+  /**
+   *
+   * @summary Get detailed audit log
+   * @param {AuditLogsApiGetDetailedAuditLogRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof AuditLogsApi
+   */
+  public getDetailedAuditLog(
+    requestParameters: AuditLogsApiGetDetailedAuditLogRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return AuditLogsApiFp(this.configuration)
+      .getDetailedAuditLog(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.logId,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
   /**
    *
    * @summary List Audit Logs
@@ -400,6 +568,7 @@ export class AuditLogsApi extends BaseAPI {
         requestParameters.action,
         requestParameters.timestampFrom,
         requestParameters.timestampTo,
+        requestParameters.sortBy,
         requestParameters.page,
         requestParameters.perPage,
         options,

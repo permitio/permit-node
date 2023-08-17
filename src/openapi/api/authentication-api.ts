@@ -41,6 +41,8 @@ import { HTTPValidationError } from '../types';
 // @ts-ignore
 import { LoginResult } from '../types';
 // @ts-ignore
+import { UserFELoginRequestInput } from '../types';
+// @ts-ignore
 import { UserLoginRequestInput } from '../types';
 /**
  * AuthenticationApi - axios parameter creator
@@ -84,6 +86,58 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
         devLogin,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Elements Fe Login As
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {UserFELoginRequestInput} userFELoginRequestInput
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    elementsFeLoginAs: async (
+      envId: string,
+      userFELoginRequestInput: UserFELoginRequestInput,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('elementsFeLoginAs', 'envId', envId);
+      // verify required parameter 'userFELoginRequestInput' is not null or undefined
+      assertParamExists('elementsFeLoginAs', 'userFELoginRequestInput', userFELoginRequestInput);
+      const localVarPath = `/v2/auth/{env_id}/elements_fe_login_as`.replace(
+        `{${'env_id'}}`,
+        encodeURIComponent(String(envId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        userFELoginRequestInput,
         localVarRequestOptions,
         configuration,
       );
@@ -392,6 +446,28 @@ export const AuthenticationApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Elements Fe Login As
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {UserFELoginRequestInput} userFELoginRequestInput
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async elementsFeLoginAs(
+      envId: string,
+      userFELoginRequestInput: UserFELoginRequestInput,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<EmbeddedLoginRequestOutput>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.elementsFeLoginAs(
+        envId,
+        userFELoginRequestInput,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Elements Login As
      * @param {UserLoginRequestInput} userLoginRequestInput
      * @param {*} [options] Override http request option.
@@ -513,6 +589,23 @@ export const AuthenticationApiFactory = function (
     },
     /**
      *
+     * @summary Elements Fe Login As
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {UserFELoginRequestInput} userFELoginRequestInput
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    elementsFeLoginAs(
+      envId: string,
+      userFELoginRequestInput: UserFELoginRequestInput,
+      options?: any,
+    ): AxiosPromise<EmbeddedLoginRequestOutput> {
+      return localVarFp
+        .elementsFeLoginAs(envId, userFELoginRequestInput, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Elements Login As
      * @param {UserLoginRequestInput} userLoginRequestInput
      * @param {*} [options] Override http request option.
@@ -603,6 +696,27 @@ export interface AuthenticationApiDevLoginRequest {
 }
 
 /**
+ * Request parameters for elementsFeLoginAs operation in AuthenticationApi.
+ * @export
+ * @interface AuthenticationApiElementsFeLoginAsRequest
+ */
+export interface AuthenticationApiElementsFeLoginAsRequest {
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof AuthenticationApiElementsFeLoginAs
+   */
+  readonly envId: string;
+
+  /**
+   *
+   * @type {UserFELoginRequestInput}
+   * @memberof AuthenticationApiElementsFeLoginAs
+   */
+  readonly userFELoginRequestInput: UserFELoginRequestInput;
+}
+
+/**
  * Request parameters for elementsLoginAs operation in AuthenticationApi.
  * @export
  * @interface AuthenticationApiElementsLoginAsRequest
@@ -679,6 +793,27 @@ export class AuthenticationApi extends BaseAPI {
   ) {
     return AuthenticationApiFp(this.configuration)
       .devLogin(requestParameters.devLogin, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Elements Fe Login As
+   * @param {AuthenticationApiElementsFeLoginAsRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof AuthenticationApi
+   */
+  public elementsFeLoginAs(
+    requestParameters: AuthenticationApiElementsFeLoginAsRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return AuthenticationApiFp(this.configuration)
+      .elementsFeLoginAs(
+        requestParameters.envId,
+        requestParameters.userFELoginRequestInput,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 

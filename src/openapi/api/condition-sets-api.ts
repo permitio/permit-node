@@ -212,6 +212,204 @@ export const ConditionSetsApiAxiosParamCreator = function (configuration?: Confi
       };
     },
     /**
+     * Gets all ancestors (parent, parent of parent, and so on)
+     * @summary Get Condition Set Ancestors
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getConditionSetAncestors: async (
+      projId: string,
+      envId: string,
+      conditionSetId: string,
+      page?: number,
+      perPage?: number,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getConditionSetAncestors', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getConditionSetAncestors', 'envId', envId);
+      // verify required parameter 'conditionSetId' is not null or undefined
+      assertParamExists('getConditionSetAncestors', 'conditionSetId', conditionSetId);
+      const localVarPath =
+        `/v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}/ancestors`
+          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
+          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
+          .replace(`{${'condition_set_id'}}`, encodeURIComponent(String(conditionSetId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (perPage !== undefined) {
+        localVarQueryParameter['per_page'] = perPage;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Gets all descendants (children, children of children, and so on)
+     * @summary Get Condition Set Descendants
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getConditionSetDescendants: async (
+      projId: string,
+      envId: string,
+      conditionSetId: string,
+      page?: number,
+      perPage?: number,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getConditionSetDescendants', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getConditionSetDescendants', 'envId', envId);
+      // verify required parameter 'conditionSetId' is not null or undefined
+      assertParamExists('getConditionSetDescendants', 'conditionSetId', conditionSetId);
+      const localVarPath =
+        `/v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}/descendants`
+          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
+          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
+          .replace(`{${'condition_set_id'}}`, encodeURIComponent(String(conditionSetId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (perPage !== undefined) {
+        localVarQueryParameter['per_page'] = perPage;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get Condition Set Possible Parents
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getConditionSetPossibleParents: async (
+      projId: string,
+      envId: string,
+      conditionSetId: string,
+      page?: number,
+      perPage?: number,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getConditionSetPossibleParents', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getConditionSetPossibleParents', 'envId', envId);
+      // verify required parameter 'conditionSetId' is not null or undefined
+      assertParamExists('getConditionSetPossibleParents', 'conditionSetId', conditionSetId);
+      const localVarPath =
+        `/v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}/possible_parents`
+          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
+          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
+          .replace(`{${'condition_set_id'}}`, encodeURIComponent(String(conditionSetId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (perPage !== undefined) {
+        localVarQueryParameter['per_page'] = perPage;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Lists all condition sets matching a filter.
      * @summary List Condition Sets
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -421,6 +619,99 @@ export const ConditionSetsApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
+     * Gets all ancestors (parent, parent of parent, and so on)
+     * @summary Get Condition Set Ancestors
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getConditionSetAncestors(
+      projId: string,
+      envId: string,
+      conditionSetId: string,
+      page?: number,
+      perPage?: number,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ConditionSetRead>>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getConditionSetAncestors(
+        projId,
+        envId,
+        conditionSetId,
+        page,
+        perPage,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     * Gets all descendants (children, children of children, and so on)
+     * @summary Get Condition Set Descendants
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getConditionSetDescendants(
+      projId: string,
+      envId: string,
+      conditionSetId: string,
+      page?: number,
+      perPage?: number,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ConditionSetRead>>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getConditionSetDescendants(
+        projId,
+        envId,
+        conditionSetId,
+        page,
+        perPage,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Get Condition Set Possible Parents
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getConditionSetPossibleParents(
+      projId: string,
+      envId: string,
+      conditionSetId: string,
+      page?: number,
+      perPage?: number,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ConditionSetRead>>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getConditionSetPossibleParents(
+        projId,
+        envId,
+        conditionSetId,
+        page,
+        perPage,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
      * Lists all condition sets matching a filter.
      * @summary List Condition Sets
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
@@ -546,6 +837,75 @@ export const ConditionSetsApiFactory = function (
     ): AxiosPromise<ConditionSetRead> {
       return localVarFp
         .getConditionSet(projId, envId, conditionSetId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Gets all ancestors (parent, parent of parent, and so on)
+     * @summary Get Condition Set Ancestors
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getConditionSetAncestors(
+      projId: string,
+      envId: string,
+      conditionSetId: string,
+      page?: number,
+      perPage?: number,
+      options?: any,
+    ): AxiosPromise<Array<ConditionSetRead>> {
+      return localVarFp
+        .getConditionSetAncestors(projId, envId, conditionSetId, page, perPage, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Gets all descendants (children, children of children, and so on)
+     * @summary Get Condition Set Descendants
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getConditionSetDescendants(
+      projId: string,
+      envId: string,
+      conditionSetId: string,
+      page?: number,
+      perPage?: number,
+      options?: any,
+    ): AxiosPromise<Array<ConditionSetRead>> {
+      return localVarFp
+        .getConditionSetDescendants(projId, envId, conditionSetId, page, perPage, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get Condition Set Possible Parents
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} conditionSetId Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getConditionSetPossibleParents(
+      projId: string,
+      envId: string,
+      conditionSetId: string,
+      page?: number,
+      perPage?: number,
+      options?: any,
+    ): AxiosPromise<Array<ConditionSetRead>> {
+      return localVarFp
+        .getConditionSetPossibleParents(projId, envId, conditionSetId, page, perPage, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -677,6 +1037,132 @@ export interface ConditionSetsApiGetConditionSetRequest {
    * @memberof ConditionSetsApiGetConditionSet
    */
   readonly conditionSetId: string;
+}
+
+/**
+ * Request parameters for getConditionSetAncestors operation in ConditionSetsApi.
+ * @export
+ * @interface ConditionSetsApiGetConditionSetAncestorsRequest
+ */
+export interface ConditionSetsApiGetConditionSetAncestorsRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof ConditionSetsApiGetConditionSetAncestors
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof ConditionSetsApiGetConditionSetAncestors
+   */
+  readonly envId: string;
+
+  /**
+   * Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof ConditionSetsApiGetConditionSetAncestors
+   */
+  readonly conditionSetId: string;
+
+  /**
+   * Page number of the results to fetch, starting at 1.
+   * @type {number}
+   * @memberof ConditionSetsApiGetConditionSetAncestors
+   */
+  readonly page?: number;
+
+  /**
+   * The number of results per page (max 100).
+   * @type {number}
+   * @memberof ConditionSetsApiGetConditionSetAncestors
+   */
+  readonly perPage?: number;
+}
+
+/**
+ * Request parameters for getConditionSetDescendants operation in ConditionSetsApi.
+ * @export
+ * @interface ConditionSetsApiGetConditionSetDescendantsRequest
+ */
+export interface ConditionSetsApiGetConditionSetDescendantsRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof ConditionSetsApiGetConditionSetDescendants
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof ConditionSetsApiGetConditionSetDescendants
+   */
+  readonly envId: string;
+
+  /**
+   * Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof ConditionSetsApiGetConditionSetDescendants
+   */
+  readonly conditionSetId: string;
+
+  /**
+   * Page number of the results to fetch, starting at 1.
+   * @type {number}
+   * @memberof ConditionSetsApiGetConditionSetDescendants
+   */
+  readonly page?: number;
+
+  /**
+   * The number of results per page (max 100).
+   * @type {number}
+   * @memberof ConditionSetsApiGetConditionSetDescendants
+   */
+  readonly perPage?: number;
+}
+
+/**
+ * Request parameters for getConditionSetPossibleParents operation in ConditionSetsApi.
+ * @export
+ * @interface ConditionSetsApiGetConditionSetPossibleParentsRequest
+ */
+export interface ConditionSetsApiGetConditionSetPossibleParentsRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof ConditionSetsApiGetConditionSetPossibleParents
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof ConditionSetsApiGetConditionSetPossibleParents
+   */
+  readonly envId: string;
+
+  /**
+   * Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
+   * @type {string}
+   * @memberof ConditionSetsApiGetConditionSetPossibleParents
+   */
+  readonly conditionSetId: string;
+
+  /**
+   * Page number of the results to fetch, starting at 1.
+   * @type {number}
+   * @memberof ConditionSetsApiGetConditionSetPossibleParents
+   */
+  readonly page?: number;
+
+  /**
+   * The number of results per page (max 100).
+   * @type {number}
+   * @memberof ConditionSetsApiGetConditionSetPossibleParents
+   */
+  readonly perPage?: number;
 }
 
 /**
@@ -824,6 +1310,78 @@ export class ConditionSetsApi extends BaseAPI {
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.conditionSetId,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Gets all ancestors (parent, parent of parent, and so on)
+   * @summary Get Condition Set Ancestors
+   * @param {ConditionSetsApiGetConditionSetAncestorsRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ConditionSetsApi
+   */
+  public getConditionSetAncestors(
+    requestParameters: ConditionSetsApiGetConditionSetAncestorsRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return ConditionSetsApiFp(this.configuration)
+      .getConditionSetAncestors(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.conditionSetId,
+        requestParameters.page,
+        requestParameters.perPage,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Gets all descendants (children, children of children, and so on)
+   * @summary Get Condition Set Descendants
+   * @param {ConditionSetsApiGetConditionSetDescendantsRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ConditionSetsApi
+   */
+  public getConditionSetDescendants(
+    requestParameters: ConditionSetsApiGetConditionSetDescendantsRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return ConditionSetsApiFp(this.configuration)
+      .getConditionSetDescendants(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.conditionSetId,
+        requestParameters.page,
+        requestParameters.perPage,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get Condition Set Possible Parents
+   * @param {ConditionSetsApiGetConditionSetPossibleParentsRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ConditionSetsApi
+   */
+  public getConditionSetPossibleParents(
+    requestParameters: ConditionSetsApiGetConditionSetPossibleParentsRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return ConditionSetsApiFp(this.configuration)
+      .getConditionSetPossibleParents(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.conditionSetId,
+        requestParameters.page,
+        requestParameters.perPage,
         options,
       )
       .then((request) => request(this.axios, this.basePath));

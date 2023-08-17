@@ -39,6 +39,8 @@ import { APIKeyScopeRead } from '../types';
 // @ts-ignore
 import { HTTPValidationError } from '../types';
 // @ts-ignore
+import { MemberAccessObj } from '../types';
+// @ts-ignore
 import { PaginatedResultAPIKeyRead } from '../types';
 /**
  * APIKeysApi - axios parameter creator
@@ -269,12 +271,14 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
     /**
      * Lists all the api_keys under the active organization.
      * @summary List Api Keys
+     * @param {MemberAccessObj} [objectType]
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     listApiKeys: async (
+      objectType?: MemberAccessObj,
       page?: number,
       perPage?: number,
       options: AxiosRequestConfig = {},
@@ -295,6 +299,10 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
+      if (objectType !== undefined) {
+        localVarQueryParameter['object_type'] = objectType;
+      }
+
       if (page !== undefined) {
         localVarQueryParameter['page'] = page;
       }
@@ -302,6 +310,51 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
       if (perPage !== undefined) {
         localVarQueryParameter['per_page'] = perPage;
       }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Rotates the API key of the PDP container with id `pdp_id`.  The rotation of the API key revokes the old API key and issues a new API key to the PDP.
+     * @summary Rotate API Key
+     * @param {string} apiKeyId The unique id of the API key
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    rotateApiKey: async (
+      apiKeyId: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'apiKeyId' is not null or undefined
+      assertParamExists('rotateApiKey', 'apiKeyId', apiKeyId);
+      const localVarPath = `/v2/api-key/{api_key_id}/rotate-secret`.replace(
+        `{${'api_key_id'}}`,
+        encodeURIComponent(String(apiKeyId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -403,19 +456,40 @@ export const APIKeysApiFp = function (configuration?: Configuration) {
     /**
      * Lists all the api_keys under the active organization.
      * @summary List Api Keys
+     * @param {MemberAccessObj} [objectType]
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async listApiKeys(
+      objectType?: MemberAccessObj,
       page?: number,
       perPage?: number,
       options?: AxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResultAPIKeyRead>
     > {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.listApiKeys(page, perPage, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.listApiKeys(
+        objectType,
+        page,
+        perPage,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     * Rotates the API key of the PDP container with id `pdp_id`.  The rotation of the API key revokes the old API key and issues a new API key to the PDP.
+     * @summary Rotate API Key
+     * @param {string} apiKeyId The unique id of the API key
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async rotateApiKey(
+      apiKeyId: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIKeyRead>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.rotateApiKey(apiKeyId, options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
   };
@@ -489,19 +563,31 @@ export const APIKeysApiFactory = function (
     /**
      * Lists all the api_keys under the active organization.
      * @summary List Api Keys
+     * @param {MemberAccessObj} [objectType]
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     listApiKeys(
+      objectType?: MemberAccessObj,
       page?: number,
       perPage?: number,
       options?: any,
     ): AxiosPromise<PaginatedResultAPIKeyRead> {
       return localVarFp
-        .listApiKeys(page, perPage, options)
+        .listApiKeys(objectType, page, perPage, options)
         .then((request) => request(axios, basePath));
+    },
+    /**
+     * Rotates the API key of the PDP container with id `pdp_id`.  The rotation of the API key revokes the old API key and issues a new API key to the PDP.
+     * @summary Rotate API Key
+     * @param {string} apiKeyId The unique id of the API key
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    rotateApiKey(apiKeyId: string, options?: any): AxiosPromise<APIKeyRead> {
+      return localVarFp.rotateApiKey(apiKeyId, options).then((request) => request(axios, basePath));
     },
   };
 };
@@ -576,6 +662,13 @@ export interface APIKeysApiGetEnvironmentApiKeyRequest {
  */
 export interface APIKeysApiListApiKeysRequest {
   /**
+   *
+   * @type {MemberAccessObj}
+   * @memberof APIKeysApiListApiKeys
+   */
+  readonly objectType?: MemberAccessObj;
+
+  /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
    * @memberof APIKeysApiListApiKeys
@@ -588,6 +681,20 @@ export interface APIKeysApiListApiKeysRequest {
    * @memberof APIKeysApiListApiKeys
    */
   readonly perPage?: number;
+}
+
+/**
+ * Request parameters for rotateApiKey operation in APIKeysApi.
+ * @export
+ * @interface APIKeysApiRotateApiKeyRequest
+ */
+export interface APIKeysApiRotateApiKeyRequest {
+  /**
+   * The unique id of the API key
+   * @type {string}
+   * @memberof APIKeysApiRotateApiKey
+   */
+  readonly apiKeyId: string;
 }
 
 /**
@@ -688,7 +795,29 @@ export class APIKeysApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return APIKeysApiFp(this.configuration)
-      .listApiKeys(requestParameters.page, requestParameters.perPage, options)
+      .listApiKeys(
+        requestParameters.objectType,
+        requestParameters.page,
+        requestParameters.perPage,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Rotates the API key of the PDP container with id `pdp_id`.  The rotation of the API key revokes the old API key and issues a new API key to the PDP.
+   * @summary Rotate API Key
+   * @param {APIKeysApiRotateApiKeyRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof APIKeysApi
+   */
+  public rotateApiKey(
+    requestParameters: APIKeysApiRotateApiKeyRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return APIKeysApiFp(this.configuration)
+      .rotateApiKey(requestParameters.apiKeyId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

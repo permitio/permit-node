@@ -23,7 +23,7 @@ import { AuditLog } from './audit-log';
  */
 export interface PaginatedResultAuditLog {
   /**
-   *
+   * List of Audit Logs
    * @type {Array<AuditLog>}
    * @memberof PaginatedResultAuditLog
    */
