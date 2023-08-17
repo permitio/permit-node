@@ -68,12 +68,18 @@ export class Enforcer implements IEnforcer {
    */
   constructor(private config: IPermitConfig, private logger: Logger) {
     const version = process.env.npm_package_version ?? 'unknown';
-    this.client = axios.create({
-      baseURL: `${this.config.pdp}/`,
-      headers: {
-        'X-Permit-SDK-Version': `node:${version}`,
-      },
-    });
+    if (config.axiosInstance) {
+      this.client = config.axiosInstance;
+      this.client.defaults.baseURL = `${this.config.pdp}/`;
+      this.client.defaults.headers.common['X-Permit-SDK-Version'] = `node:${version}`;
+    } else {
+      this.client = axios.create({
+        baseURL: `${this.config.pdp}/`,
+        headers: {
+          'X-Permit-SDK-Version': `node:${version}`,
+        },
+      });
+    }
     this.logger = logger;
     AxiosLoggingInterceptor.setupInterceptor(this.client, this.logger);
     this.contextStore = new ContextStore();
