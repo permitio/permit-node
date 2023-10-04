@@ -10,6 +10,7 @@ import {
   BulkPolicyDecision,
   IAction,
   ICheckInput,
+  ICheckQuery,
   IResource,
   IUser,
   OpaDecisionResult,
@@ -63,8 +64,17 @@ export interface IEnforcer {
     config?: CheckConfig,
   ): Promise<boolean>;
 
+  /**
+   * Checks if multiple requests within the specified context.
+   *
+   * @param checks   - The check requests.
+   * @param context  - The context object representing the context in which the action is performed.
+   * @returns `true` if the user is authorized, `false` otherwise.
+   * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
+   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
+   */
   bulkCheck(
-    checks: Array<[IUser | string, IAction, IResource | string]>,
+    checks: Array<ICheckQuery>,
     context?: Context,
     config?: CheckConfig,
   ): Promise<Array<boolean>>;
@@ -96,19 +106,8 @@ export class Enforcer implements IEnforcer {
     this.contextStore = new ContextStore();
   }
 
-  /**
-   * Checks if a `user` is authorized to perform an `action` on a `resource` within the specified context.
-   *
-   * @param user     - The user object representing the user.
-   * @param action   - The action to be performed on the resource.
-   * @param resource - The resource object representing the resource.
-   * @param context  - The context object representing the context in which the action is performed.
-   * @returns `true` if the user is authorized, `false` otherwise.
-   * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
-   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
-   */
   public async bulkCheck(
-    checks: Array<[IUser | string, IAction, IResource | string]>,
+    checks: Array<ICheckQuery>,
     context: Context = {}, // context provided specifically for this query
     config: CheckConfig = {},
   ): Promise<Array<boolean>> {
@@ -151,14 +150,14 @@ export class Enforcer implements IEnforcer {
   }
 
   private async bulkCheckWithExceptions(
-    checks: Array<[IUser | string, IAction, IResource | string]>,
+    checks: Array<ICheckQuery>,
     context: Context = {}, // context provided specifically for this query
     config: CheckConfig = {},
   ): Promise<Array<boolean>> {
     const checkTimeout = config.timeout || this.config.timeout;
     const inputs: Array<ICheckInput> = [];
     checks.forEach((check) => {
-      const input = this.buildCheckInput(check[0], check[1], check[2], context);
+      const input = this.buildCheckInput(check.user, check.action, check.resource, context);
       inputs.push(input);
     });
 

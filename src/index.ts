@@ -5,7 +5,7 @@ import { ApiClient, IPermitApi } from './api/api-client';
 import { ElementsClient, IPermitElementsApi } from './api/elements';
 import { ConfigFactory, IPermitConfig } from './config';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
-import { IResource, IUser } from './enforcement/interfaces';
+import { ICheckQuery, IResource, IUser } from './enforcement/interfaces';
 import { LoggerFactory } from './logger';
 import { CheckConfig, Context } from './utils/context';
 import { AxiosLoggingInterceptor } from './utils/http-logger';
@@ -165,7 +165,7 @@ export class Permit implements IPermitClient {
     return await this.enforcer.check(user, action, resource, context, config);
   }
   public async bulkCheck(
-    checks: Array<[string | IUser, string, string | IResource]>,
+    checks: Array<ICheckQuery>,
     context?: Context | undefined,
     config?: CheckConfig | undefined,
   ): Promise<Array<boolean>> {

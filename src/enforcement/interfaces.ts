@@ -8,6 +8,13 @@ export interface ICheckInput {
   context?: Context;
 }
 
+export interface ICheckQuery {
+  user: IUser | string;
+  action: IAction | string;
+  resource: IResource | string;
+  context?: Context;
+}
+
 /**
  * Respresents a user that is attempting to do an action on a protected resource.
  * Passed as part of the input to the permit.check() function.
@@ -77,7 +84,7 @@ export interface IResource {
  */
 export interface BulkPolicyDecision {
   /**
-   * Specifies whether the action is allowed or not.
+   * Specifies whether the actions are allowed or not.
    */
   allow: Array<PolicyDecision>;
 }
@@ -96,6 +103,9 @@ export interface PolicyDecision {
  * Represents the result of a policy decision made by OPA (Open Policy Agent).
  */
 export interface BulkOpaDecisionResult {
+  /**
+   * The policy decision result.
+   */
   result: BulkPolicyDecision;
 }
 

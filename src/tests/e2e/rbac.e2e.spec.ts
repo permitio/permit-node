@@ -171,8 +171,8 @@ test('Permission check e2e test', async (t) => {
 
     logger.info('testing bulk check permissions');
     const decisions = await permit.bulkCheck([
-      [user, 'read', { type: document.key, tenant: tenant.key }],
-      [user, 'create', { type: document.key, tenant: tenant.key }],
+      { user: user, action: 'read', resource: { type: document.key, tenant: tenant.key } },
+      { user: user, action: 'create', resource: { type: document.key, tenant: tenant.key } },
     ]);
     t.true(decisions.length === 2);
     t.true(decisions[0]);
