@@ -164,4 +164,11 @@ export class Permit implements IPermitClient {
   ): Promise<boolean> {
     return await this.enforcer.check(user, action, resource, context, config);
   }
+  public async bulkCheck(
+    checks: Array<[string | IUser, string, string | IResource]>,
+    context?: Context | undefined,
+    config?: CheckConfig | undefined,
+  ): Promise<Array<boolean>> {
+    return await this.enforcer.bulkCheck(checks, context, config);
+  }
 }

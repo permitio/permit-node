@@ -1,4 +1,12 @@
+import { Context } from '../utils/context';
 import { Dict } from '../utils/dict';
+
+export interface ICheckInput {
+  user: IUser;
+  action: IAction;
+  resource: IResource;
+  context?: Context;
+}
 
 /**
  * Respresents a user that is attempting to do an action on a protected resource.
@@ -65,6 +73,16 @@ export interface IResource {
 }
 
 /**
+ * Represents the bulk decision made by a policy.
+ */
+export interface BulkPolicyDecision {
+  /**
+   * Specifies whether the action is allowed or not.
+   */
+  allow: Array<PolicyDecision>;
+}
+
+/**
  * Represents the decision made by a policy.
  */
 export interface PolicyDecision {
@@ -72,6 +90,13 @@ export interface PolicyDecision {
    * Specifies whether the action is allowed or not.
    */
   allow: boolean;
+}
+
+/**
+ * Represents the result of a policy decision made by OPA (Open Policy Agent).
+ */
+export interface BulkOpaDecisionResult {
+  result: BulkPolicyDecision;
 }
 
 /**
