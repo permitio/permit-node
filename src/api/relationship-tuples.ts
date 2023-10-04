@@ -2,10 +2,10 @@ import { Logger } from 'winston';
 
 import { IPermitConfig } from '../config';
 import {
-  RelationshipTuplesApi as AutogenRelationshipTuplesApi,
   RelationshipTupleCreate,
   RelationshipTupleDelete,
   RelationshipTupleRead,
+  RelationshipTuplesApi as AutogenRelationshipTuplesApi,
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
 
@@ -23,7 +23,11 @@ export {
  */
 export interface IListRelationshipTuples extends IPagination {
   /**
-   * optional subject filter, will only return relationship tuples with this this subject.
+   * optional tenant filter, will only return relationship tuples with this tenant.
+   */
+  tenant?: string;
+  /**
+   * optional subject filter, will only return relationship tuples with this subject.
    */
   subject?: string;
 
@@ -106,13 +110,17 @@ export class RelationshipTuplesApi extends BasePermitApi implements IRelationshi
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     // TODO: add filters: subject, relation, object
-    const { page = 1, perPage = 100 } = params;
+    const { page = 1, perPage = 100, subject, object, relation, tenant } = params;
     try {
       return (
         await this.relationshipTuples.listRelationshipTuples({
           ...this.config.apiContext.environmentContext,
           page,
           perPage,
+          tenant,
+          subject,
+          relation,
+          object,
         })
       ).data;
     } catch (err) {
