@@ -5,7 +5,7 @@ import { ApiClient, IPermitApi } from './api/api-client';
 import { ElementsClient, IPermitElementsApi } from './api/elements';
 import { ConfigFactory, IPermitConfig } from './config';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
-import { IResource, IUser } from './enforcement/interfaces';
+import { ICheckQuery, IResource, IUser } from './enforcement/interfaces';
 import { LoggerFactory } from './logger';
 import { CheckConfig, Context } from './utils/context';
 import { AxiosLoggingInterceptor } from './utils/http-logger';
@@ -163,5 +163,22 @@ export class Permit implements IPermitClient {
     config?: CheckConfig | undefined,
   ): Promise<boolean> {
     return await this.enforcer.check(user, action, resource, context, config);
+  }
+
+  /**
+   * Checks multiple requests within the specified context.
+   *
+   * @param checks   - The check requests.
+   * @param context  - The context object representing the context in which the action is performed.
+   * @returns array containing `true` if the user is authorized, `false` otherwise for each check request.
+   * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
+   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
+   */
+  public async bulkCheck(
+    checks: Array<ICheckQuery>,
+    context?: Context | undefined,
+    config?: CheckConfig | undefined,
+  ): Promise<Array<boolean>> {
+    return await this.enforcer.bulkCheck(checks, context, config);
   }
 }
