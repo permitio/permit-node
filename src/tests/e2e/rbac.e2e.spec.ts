@@ -126,9 +126,9 @@ test('Permission check e2e test', async (t) => {
 
     // assign role to user in tenant
     const ra = await permit.api.users.assignRole({
-      user: 'auth0|elon',
-      role: 'viewer',
-      tenant: 'tesla',
+      user: user.key,
+      role: viewer.key,
+      tenant: tenant.key,
     });
 
     t.is(ra.user_id, user.id);
@@ -177,6 +177,17 @@ test('Permission check e2e test', async (t) => {
     t.true(decisions.length === 2);
     t.true(decisions[0]);
     t.false(decisions[1]);
+
+    logger.info('testing get user permissions matches assigned roles permissions');
+    const userPermissions = await permit.getUserPermissions(user.key);
+    t.true(
+      `__tenant:${tenant.key}'` in userPermissions,
+      `tenant key not found in
+      user permissions:\n${JSON.stringify(userPermissions, null, 2)}`,
+    );
+    viewer.permissions?.forEach((permission) => {
+      t.true(userPermissions[tenant.key].permissions.includes(permission));
+    });
 
     logger.info('changing the user roles');
 

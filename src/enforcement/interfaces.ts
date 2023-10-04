@@ -15,6 +15,13 @@ export interface ICheckQuery {
   context?: Context;
 }
 
+export interface IGetUserPermissionsInput {
+  user: IUser | string;
+  tenants?: string[];
+  resource?: string[];
+  resource_type?: string[];
+}
+
 /**
  * Respresents a user that is attempting to do an action on a protected resource.
  * Passed as part of the input to the permit.check() function.
@@ -117,4 +124,40 @@ export interface OpaDecisionResult {
    * The policy decision result.
    */
   result: PolicyDecision;
+}
+
+interface TenantPermissions {
+  permissions: string[];
+  tenant?: {
+    key: string;
+    attributes: {
+      [id: string]: any;
+    };
+  };
+}
+
+interface ResourcePermissions {
+  permissions: string[];
+  resource?: {
+    type: string;
+    key: string;
+    attributes: {
+      [id: string]: any;
+    };
+  };
+}
+
+export interface IUserPermissions {
+  [id: string]: ResourcePermissions | TenantPermissions;
+}
+export interface GetUserPermissionsResult {
+  permissions: IUserPermissions;
+}
+
+export interface OpaGetUserPermissionsResult {
+  result: GetUserPermissionsResult;
+}
+
+export function isOpaGetUserPermissionsResult(obj: any): obj is OpaGetUserPermissionsResult {
+  return 'result' in obj;
 }
