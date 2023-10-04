@@ -5,7 +5,7 @@ import { ApiClient, IPermitApi } from './api/api-client';
 import { ElementsClient, IPermitElementsApi } from './api/elements';
 import { ConfigFactory, IPermitConfig } from './config';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
-import { ICheckQuery, IResource, IUser } from './enforcement/interfaces';
+import { ICheckQuery, IResource, IUser, IUserPermissions } from './enforcement/interfaces';
 import { LoggerFactory } from './logger';
 import { CheckConfig, Context } from './utils/context';
 import { AxiosLoggingInterceptor } from './utils/http-logger';
@@ -180,5 +180,26 @@ export class Permit implements IPermitClient {
     config?: CheckConfig | undefined,
   ): Promise<Array<boolean>> {
     return await this.enforcer.bulkCheck(checks, context, config);
+  }
+
+  /**
+   * Get all permissions for the specified user.
+   *
+   * @param user     - The user object representing the user.
+   * @param tenants  - The list of tenants to filter the permissions on ( given by roles ).
+   * @param resources - The list of resources to filter the permissions on ( given by resource roles ).
+   * @param resource_types - The list of resource types to filter the permissions on ( given by resource roles ).
+   * @returns object with key as the resource identifier and value as the resource details and permissions.
+   * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
+   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
+   */
+  public async getUserPermissions(
+    user: IUser | string,
+    tenants?: string[],
+    resources?: string[],
+    resource_types?: string[],
+    config?: CheckConfig,
+  ): Promise<IUserPermissions> {
+    return await this.enforcer.getUserPermissions(user, tenants, resources, resource_types, config);
   }
 }

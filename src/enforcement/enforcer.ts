@@ -8,12 +8,16 @@ import { AxiosLoggingInterceptor } from '../utils/http-logger';
 import {
   BulkOpaDecisionResult,
   BulkPolicyDecision,
+  GetUserPermissionsResult,
   IAction,
   ICheckInput,
   ICheckQuery,
   IResource,
+  isOpaGetUserPermissionsResult,
   IUser,
+  IUserPermissions,
   OpaDecisionResult,
+  OpaGetUserPermissionsResult,
   PolicyDecision,
 } from './interfaces';
 
@@ -78,6 +82,25 @@ export interface IEnforcer {
     context?: Context,
     config?: CheckConfig,
   ): Promise<Array<boolean>>;
+
+  /**
+   * Get all permissions for the specified user.
+   *
+   * @param user     - The user object representing the user.
+   * @param tenants  - The list of tenants to filter the permissions on ( given by roles ).
+   * @param resources - The list of resources to filter the permissions on ( given by resource roles ).
+   * @param resource_types - The list of resource types to filter the permissions on ( given by resource roles ).
+   * @returns object with key as the resource identifier and value as the resource details and permissions.
+   * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
+   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
+   */
+  getUserPermissions(
+    user: IUser | string,
+    tenants?: string[],
+    resources?: string[],
+    resource_types?: string[],
+    config?: CheckConfig,
+  ): Promise<IUserPermissions>;
 }
 
 /**
@@ -104,6 +127,85 @@ export class Enforcer implements IEnforcer {
     this.logger = logger;
     AxiosLoggingInterceptor.setupInterceptor(this.client, this.logger);
     this.contextStore = new ContextStore();
+  }
+
+  public async getUserPermissions(
+    user: IUser | string,
+    tenants?: string[],
+    resources?: string[],
+    resource_types?: string[],
+    config: CheckConfig = {},
+  ): Promise<IUserPermissions> {
+    return await this.getUserPermissionsWithExceptions(
+      user,
+      tenants,
+      resources,
+      resource_types,
+      config,
+    ).catch((err) => {
+      const shouldThrow =
+        config.throwOnError === undefined ? this.config.throwOnError : config.throwOnError;
+      if (shouldThrow) {
+        throw err;
+      } else {
+        this.logger.error(err);
+        return {};
+      }
+    });
+  }
+
+  private async getUserPermissionsWithExceptions(
+    user: IUser | string,
+    tenants?: string[],
+    resources?: string[],
+    resource_types?: string[],
+    config: CheckConfig = {},
+  ): Promise<IUserPermissions> {
+    const checkTimeout = config.timeout || this.config.timeout;
+    const input = {
+      user: isString(user) ? { key: user } : user,
+      tenants: tenants,
+      resource: resources,
+      resource_type: resource_types,
+    };
+    return await this.client
+      .post<OpaGetUserPermissionsResult | IUserPermissions>('user-permissions', input, {
+        headers: {
+          Authorization: `Bearer ${this.config.token}`,
+        },
+        timeout: checkTimeout,
+      })
+      .then((response) => {
+        if (response.status !== 200) {
+          throw new PermitPDPStatusError(`Permit.getUserPermissions() got an unexpected status code: ${response.status}, please check your SDK init and make sure the PDP sidecar is configured correctly. \n\
+            Read more about setting up the PDP at https://docs.permit.io`);
+        }
+        const permissions =
+          (isOpaGetUserPermissionsResult(response.data)
+            ? response.data.result.permissions
+            : response.data) || {};
+        this.logger.info(
+          `permit.getUserPermissions(${Enforcer.userRepr(input.user)}) = ${permissions}`,
+        );
+        return permissions;
+      })
+      .catch((error) => {
+        const errorMessage = `Error in permit.getUserPermissions(${Enforcer.userRepr(input.user)})`;
+
+        if (axios.isAxiosError(error)) {
+          const errorStatusCode: string = error.response?.status.toString() || '';
+          const errorDetails: string = error?.response?.data
+            ? JSON.stringify(error.response.data)
+            : error.message;
+          this.logger.error(`[${errorStatusCode}] ${errorMessage}, err: ${errorDetails}`);
+        } else {
+          this.logger.error(`${errorMessage}\n${error}`);
+        }
+        throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
+          and cannot connect to the PDP, please check your configuration and make sure the
+          PDP is running at ${this.config.pdp} and accepting requests. \n
+          Read more about setting up the PDP at https://docs.permit.io`);
+      });
   }
 
   public async bulkCheck(
@@ -313,6 +415,7 @@ export class Enforcer implements IEnforcer {
     return {
       check: this.check.bind(this),
       bulkCheck: this.bulkCheck.bind(this),
+      getUserPermissions: this.getUserPermissions.bind(this),
     };
   }
 }
