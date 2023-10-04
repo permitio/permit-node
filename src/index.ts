@@ -164,6 +164,16 @@ export class Permit implements IPermitClient {
   ): Promise<boolean> {
     return await this.enforcer.check(user, action, resource, context, config);
   }
+
+  /**
+   * Checks multiple requests within the specified context.
+   *
+   * @param checks   - The check requests.
+   * @param context  - The context object representing the context in which the action is performed.
+   * @returns array containing `true` if the user is authorized, `false` otherwise for each check request.
+   * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
+   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
+   */
   public async bulkCheck(
     checks: Array<ICheckQuery>,
     context?: Context | undefined,
