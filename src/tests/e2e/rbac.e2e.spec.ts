@@ -126,17 +126,15 @@ test('Permission check e2e test', async (t) => {
 
     // assign role to user in tenant
     const ra = await permit.api.users.assignRole({
-      user: 'auth0|elon',
-      role: 'viewer',
-      tenant: 'tesla',
+      user: user.key,
+      role: viewer.key,
+      tenant: tenant.key,
     });
 
     t.is(ra.user_id, user.id);
     t.is(ra.role_id, viewer.id);
     t.is(ra.tenant_id, tenant.id);
-    // TODO: fix BUG in API
-    // t.is(ra.user, user.key);
-    t.is(ra.user, user.email);
+    t.is(ra.user, user.key);
     t.is(ra.role, viewer.key);
     t.is(ra.tenant, tenant.key);
 
@@ -170,6 +168,26 @@ test('Permission check e2e test', async (t) => {
     t.false(await permit.check(user, 'create', { type: document.key, tenant: tenant.key }));
 
     printBreak();
+
+    logger.info('testing bulk check permissions');
+    const decisions = await permit.bulkCheck([
+      { user: user, action: 'read', resource: { type: document.key, tenant: tenant.key } },
+      { user: user, action: 'create', resource: { type: document.key, tenant: tenant.key } },
+    ]);
+    t.true(decisions.length === 2);
+    t.true(decisions[0]);
+    t.false(decisions[1]);
+
+    logger.info('testing get user permissions matches assigned roles permissions');
+    const userPermissions = await permit.getUserPermissions(user.key);
+    t.true(
+      `__tenant:${tenant.key}` in userPermissions,
+      `tenant key not found in
+      user permissions:\n${JSON.stringify(userPermissions, null, 2)}`,
+    );
+    viewer.permissions?.forEach((permission) => {
+      t.true(userPermissions[tenant.key].permissions.includes(permission));
+    });
 
     logger.info('changing the user roles');
 

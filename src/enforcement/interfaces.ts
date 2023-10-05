@@ -1,4 +1,26 @@
+import { Context } from '../utils/context';
 import { Dict } from '../utils/dict';
+
+export interface ICheckInput {
+  user: IUser;
+  action: IAction;
+  resource: IResource;
+  context?: Context;
+}
+
+export interface ICheckQuery {
+  user: IUser | string;
+  action: IAction | string;
+  resource: IResource | string;
+  context?: Context;
+}
+
+export interface IGetUserPermissionsInput {
+  user: IUser | string;
+  tenants?: string[];
+  resource?: string[];
+  resource_type?: string[];
+}
 
 /**
  * Respresents a user that is attempting to do an action on a protected resource.
@@ -65,6 +87,16 @@ export interface IResource {
 }
 
 /**
+ * Represents the bulk decision made by a policy.
+ */
+export interface BulkPolicyDecision {
+  /**
+   * Specifies whether the actions are allowed or not.
+   */
+  allow: Array<PolicyDecision>;
+}
+
+/**
  * Represents the decision made by a policy.
  */
 export interface PolicyDecision {
@@ -77,9 +109,55 @@ export interface PolicyDecision {
 /**
  * Represents the result of a policy decision made by OPA (Open Policy Agent).
  */
+export interface BulkOpaDecisionResult {
+  /**
+   * The policy decision result.
+   */
+  result: BulkPolicyDecision;
+}
+
+/**
+ * Represents the result of a policy decision made by OPA (Open Policy Agent).
+ */
 export interface OpaDecisionResult {
   /**
    * The policy decision result.
    */
   result: PolicyDecision;
+}
+
+interface TenantPermissions {
+  permissions: string[];
+  tenant?: {
+    key: string;
+    attributes: {
+      [id: string]: any;
+    };
+  };
+}
+
+interface ResourcePermissions {
+  permissions: string[];
+  resource?: {
+    type: string;
+    key: string;
+    attributes: {
+      [id: string]: any;
+    };
+  };
+}
+
+export interface IUserPermissions {
+  [id: string]: ResourcePermissions | TenantPermissions;
+}
+export interface GetUserPermissionsResult {
+  permissions: IUserPermissions;
+}
+
+export interface OpaGetUserPermissionsResult {
+  result: GetUserPermissionsResult;
+}
+
+export function isOpaGetUserPermissionsResult(obj: any): obj is OpaGetUserPermissionsResult {
+  return 'result' in obj;
 }
