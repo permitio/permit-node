@@ -8,7 +8,6 @@ import { AxiosLoggingInterceptor } from '../utils/http-logger';
 import {
   BulkOpaDecisionResult,
   BulkPolicyDecision,
-  GetUserPermissionsResult,
   IAction,
   ICheckInput,
   ICheckQuery,
@@ -185,7 +184,9 @@ export class Enforcer implements IEnforcer {
             ? response.data.result.permissions
             : response.data) || {};
         this.logger.info(
-          `permit.getUserPermissions(${Enforcer.userRepr(input.user)}) = ${permissions}`,
+          `permit.getUserPermissions(${Enforcer.userRepr(input.user)}) = ${JSON.stringify(
+            permissions,
+          )}`,
         );
         return permissions;
       })

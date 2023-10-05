@@ -181,7 +181,7 @@ test('Permission check e2e test', async (t) => {
     logger.info('testing get user permissions matches assigned roles permissions');
     const userPermissions = await permit.getUserPermissions(user.key);
     t.true(
-      `__tenant:${tenant.key}'` in userPermissions,
+      `__tenant:${tenant.key}` in userPermissions,
       `tenant key not found in
       user permissions:\n${JSON.stringify(userPermissions, null, 2)}`,
     );

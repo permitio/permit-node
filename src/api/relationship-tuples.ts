@@ -2,10 +2,10 @@ import { Logger } from 'winston';
 
 import { IPermitConfig } from '../config';
 import {
+  RelationshipTuplesApi as AutogenRelationshipTuplesApi,
   RelationshipTupleCreate,
   RelationshipTupleDelete,
   RelationshipTupleRead,
-  RelationshipTuplesApi as AutogenRelationshipTuplesApi,
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
 
