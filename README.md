@@ -7,6 +7,12 @@ Node.js client library for the Permit.io full-stack permissions platform.
 npm install permitio
 ```
 
+## Release
+
+1. Update the version in `package.json`
+2. Execute `yarn run build`
+3. Execute `yarn publish --access public`
+
 ## Documentation
 
 [Read the documentation at Permit.io website](https://docs.permit.io/sdk/nodejs/quickstart-nodejs#add-the-sdk-to-your-js-code)
