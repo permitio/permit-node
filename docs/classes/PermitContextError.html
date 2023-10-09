@@ -17,11 +17,10 @@
 <h1>Class PermitContextError</h1></div>
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>The <code>PermitContextError</code> class represents an error that occurs when an API method
-is called with either insufficient level of API key authorization (i.e: trying to
-modify an object without proper access) or trying to call an API method that requires
-a lower level of API key authorization in order to extract implicit context (i.e: most
-API Methods expects an Environment-level API key so the environment could be implicitly
-inferred from the API key itself).</p>
+is called with insufficient context (not knowing in what environment, project or
+organization the API call is being made).
+Some of the input for the API method is provided via the SDK context.
+If the context is missing some data required for a method - the API call will fail.</p>
 </div></section>
 <section class="tsd-panel tsd-hierarchy">
 <h4>Hierarchy</h4>
@@ -30,7 +29,7 @@ inferred from the API key itself).</p>
 <ul class="tsd-hierarchy">
 <li><span class="target">PermitContextError</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/89199c0/src/api/context.ts#L40">src/api/context.ts:40</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/0602686/src/api/context.ts#L67">src/api/context.ts:67</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -67,7 +66,7 @@ inferred from the API key itself).</p>
 <h4 class="tsd-returns-title">Returns <a href="PermitContextError.html" class="tsd-signature-type tsd-kind-class">PermitContextError</a></h4><aside class="tsd-sources">
 <p>Overrides Error.constructor</p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/89199c0/src/api/context.ts#L41">src/api/context.ts:41</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/0602686/src/api/context.ts#L68">src/api/context.ts:68</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-inherited tsd-is-external"><a id="message" class="tsd-anchor"></a>

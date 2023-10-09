@@ -29,7 +29,7 @@
 <ul class="tsd-hierarchy">
 <li><a href="../interfaces/IPermitElementsApi.html" class="tsd-signature-type tsd-kind-interface">IPermitElementsApi</a></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/89199c0/src/api/elements.ts#L58">src/api/elements.ts:58</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/0602686/src/api/elements.ts#L58">src/api/elements.ts:58</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -41,7 +41,9 @@
 </div></section>
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Methods</h3>
-<div class="tsd-index-list"><a href="ElementsClient.html#loginAs" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF4DB8" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-2048-path"></rect><path d="M9.162 16V7.24H10.578L11.514 10.072C11.602 10.328 11.674 10.584 11.73 10.84C11.794 11.088 11.842 11.28 11.874 11.416C11.906 11.28 11.954 11.088 12.018 10.84C12.082 10.584 12.154 10.324 12.234 10.06L13.122 7.24H14.538V16H13.482V12.82C13.482 12.468 13.49 12.068 13.506 11.62C13.53 11.172 13.558 10.716 13.59 10.252C13.622 9.78 13.654 9.332 13.686 8.908C13.726 8.476 13.762 8.1 13.794 7.78L12.366 12.16H11.334L9.894 7.78C9.934 8.092 9.97 8.456 10.002 8.872C10.042 9.28 10.078 9.716 10.11 10.18C10.142 10.636 10.166 11.092 10.182 11.548C10.206 12.004 10.218 12.428 10.218 12.82V16H9.162Z" fill="var(--color-text)" id="icon-2048-text"></path></svg><span>login<wbr/>As</span></a>
+<div class="tsd-index-list"><a href="ElementsClient.html#ensureAccessLevel" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF4DB8" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-2048-path"></rect><path d="M9.162 16V7.24H10.578L11.514 10.072C11.602 10.328 11.674 10.584 11.73 10.84C11.794 11.088 11.842 11.28 11.874 11.416C11.906 11.28 11.954 11.088 12.018 10.84C12.082 10.584 12.154 10.324 12.234 10.06L13.122 7.24H14.538V16H13.482V12.82C13.482 12.468 13.49 12.068 13.506 11.62C13.53 11.172 13.558 10.716 13.59 10.252C13.622 9.78 13.654 9.332 13.686 8.908C13.726 8.476 13.762 8.1 13.794 7.78L12.366 12.16H11.334L9.894 7.78C9.934 8.092 9.97 8.456 10.002 8.872C10.042 9.28 10.078 9.716 10.11 10.18C10.142 10.636 10.166 11.092 10.182 11.548C10.206 12.004 10.218 12.428 10.218 12.82V16H9.162Z" fill="var(--color-text)" id="icon-2048-text"></path></svg><span>ensure<wbr/>Access<wbr/>Level</span></a>
+<a href="ElementsClient.html#ensureContext" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>ensure<wbr/>Context</span></a>
+<a href="ElementsClient.html#loginAs" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>login<wbr/>As</span></a>
 </div></section></div></details></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Constructors</h2>
@@ -66,9 +68,50 @@
 <h4 class="tsd-returns-title">Returns <a href="ElementsClient.html" class="tsd-signature-type tsd-kind-class">ElementsClient</a></h4><aside class="tsd-sources">
 <p>Overrides BasePermitApi.constructor</p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/89199c0/src/api/elements.ts#L66">src/api/elements.ts:66</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/0602686/src/api/elements.ts#L66">src/api/elements.ts:66</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
+<section class="tsd-panel tsd-member tsd-is-inherited"><a id="ensureAccessLevel" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>ensure<wbr/>Access<wbr/>Level</span><a href="#ensureAccessLevel" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-inherited">
+<li class="tsd-signature tsd-anchor-link" id="ensureAccessLevel.ensureAccessLevel-1"><span class="tsd-kind-call-signature">ensure<wbr/>Access<wbr/>Level</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">requiredAccessLevel</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#ensureAccessLevel.ensureAccessLevel-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Ensure that the API Key has the necessary permissions to successfully call the API endpoint.
+Note that this check is not foolproof, and the API may still throw 401.</p>
+
+<h3>Throws</h3><p>PermitContextError If the currently set API key access level does not match the required access level.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">requiredAccessLevel</span>: <a href="../enums/ApiKeyLevel.html" class="tsd-signature-type tsd-kind-enum">ApiKeyLevel</a></h5>
+<div class="tsd-comment tsd-typography"><p>The required API Key Access level for the endpoint.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<p>Inherited from BasePermitApi.ensureAccessLevel</p>
+<ul>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/0602686/src/api/base.ts#L116">src/api/base.ts:116</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-inherited"><a id="ensureContext" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>ensure<wbr/>Context</span><a href="#ensureContext" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-inherited">
+<li class="tsd-signature tsd-anchor-link" id="ensureContext.ensureContext-1"><span class="tsd-kind-call-signature">ensure<wbr/>Context</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">requiredContext</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#ensureContext.ensureContext-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Ensure that the API context matches the required endpoint context.</p>
+
+<h3>Throws</h3><p>PermitContextError If the currently set API context level does not match the required context level.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">requiredContext</span>: <span class="tsd-signature-type ">ApiContextLevel</span></h5>
+<div class="tsd-comment tsd-typography"><p>The required API context level for the endpoint.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<p>Inherited from BasePermitApi.ensureContext</p>
+<ul>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/0602686/src/api/base.ts#L143">src/api/base.ts:143</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="loginAs" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>login<wbr/>As</span><a href="#loginAs" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -91,7 +134,7 @@
 <aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitElementsApi.html">IPermitElementsApi</a>.<a href="../interfaces/IPermitElementsApi.html#loginAs">loginAs</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/89199c0/src/api/elements.ts#L82">src/api/elements.ts:82</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/0602686/src/api/elements.ts#L82">src/api/elements.ts:82</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -110,6 +153,8 @@
 <div class="tsd-accordion-details">
 <ul>
 <li><a href="#constructor" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-512-path"></use><use href="#icon-512-text"></use></svg><span>constructor</span></a></li>
+<li><a href="#ensureAccessLevel" class="tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>ensure<wbr/>Access<wbr/>Level</span></a></li>
+<li><a href="#ensureContext" class="tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>ensure<wbr/>Context</span></a></li>
 <li><a href="#loginAs" class=""><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>login<wbr/>As</span></a></li></ul></div></details></div>
 <div class="site-menu">
 <nav class="tsd-navigation"><a href="../modules.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-namespace)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-4-path"></rect><path d="M9.33 16V7.24H10.77L13.446 14.74C13.43 14.54 13.41 14.296 13.386 14.008C13.37 13.712 13.354 13.404 13.338 13.084C13.33 12.756 13.326 12.448 13.326 12.16V7.24H14.37V16H12.93L10.266 8.5C10.282 8.692 10.298 8.936 10.314 9.232C10.33 9.52 10.342 9.828 10.35 10.156C10.366 10.476 10.374 10.784 10.374 11.08V16H9.33Z" fill="var(--color-text)" id="icon-4-text"></path></svg><span>permitio</span></a>
