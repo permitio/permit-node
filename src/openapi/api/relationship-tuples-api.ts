@@ -177,6 +177,10 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
+     * @param {string} [tenant] The tenant key or id to filter by
+     * @param {string} [subject] The subject to filter by, accepts either the resource instance id or resource_type:resource_instance
+     * @param {string} [relation] The relation id or key to filter by
+     * @param {string} [object] The object to filter by, accepts either the resource instance id or resource_type:resource_instance
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -185,6 +189,10 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
       envId: string,
       page?: number,
       perPage?: number,
+      tenant?: string,
+      subject?: string,
+      relation?: string,
+      object?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -215,6 +223,22 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
 
       if (perPage !== undefined) {
         localVarQueryParameter['per_page'] = perPage;
+      }
+
+      if (tenant !== undefined) {
+        localVarQueryParameter['tenant'] = tenant;
+      }
+
+      if (subject !== undefined) {
+        localVarQueryParameter['subject'] = subject;
+      }
+
+      if (relation !== undefined) {
+        localVarQueryParameter['relation'] = relation;
+      }
+
+      if (object !== undefined) {
+        localVarQueryParameter['object'] = object;
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -293,6 +317,10 @@ export const RelationshipTuplesApiFp = function (configuration?: Configuration) 
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
+     * @param {string} [tenant] The tenant key or id to filter by
+     * @param {string} [subject] The subject to filter by, accepts either the resource instance id or resource_type:resource_instance
+     * @param {string} [relation] The relation id or key to filter by
+     * @param {string} [object] The object to filter by, accepts either the resource instance id or resource_type:resource_instance
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -301,6 +329,10 @@ export const RelationshipTuplesApiFp = function (configuration?: Configuration) 
       envId: string,
       page?: number,
       perPage?: number,
+      tenant?: string,
+      subject?: string,
+      relation?: string,
+      object?: string,
       options?: AxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<RelationshipTupleRead>>
@@ -310,6 +342,10 @@ export const RelationshipTuplesApiFp = function (configuration?: Configuration) 
         envId,
         page,
         perPage,
+        tenant,
+        subject,
+        relation,
+        object,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -373,6 +409,10 @@ export const RelationshipTuplesApiFactory = function (
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
+     * @param {string} [tenant] The tenant key or id to filter by
+     * @param {string} [subject] The subject to filter by, accepts either the resource instance id or resource_type:resource_instance
+     * @param {string} [relation] The relation id or key to filter by
+     * @param {string} [object] The object to filter by, accepts either the resource instance id or resource_type:resource_instance
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -381,10 +421,24 @@ export const RelationshipTuplesApiFactory = function (
       envId: string,
       page?: number,
       perPage?: number,
+      tenant?: string,
+      subject?: string,
+      relation?: string,
+      object?: string,
       options?: any,
     ): AxiosPromise<Array<RelationshipTupleRead>> {
       return localVarFp
-        .listRelationshipTuples(projId, envId, page, perPage, options)
+        .listRelationshipTuples(
+          projId,
+          envId,
+          page,
+          perPage,
+          tenant,
+          subject,
+          relation,
+          object,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
@@ -479,6 +533,34 @@ export interface RelationshipTuplesApiListRelationshipTuplesRequest {
    * @memberof RelationshipTuplesApiListRelationshipTuples
    */
   readonly perPage?: number;
+
+  /**
+   * The tenant key or id to filter by
+   * @type {string}
+   * @memberof RelationshipTuplesApiListRelationshipTuples
+   */
+  readonly tenant?: string;
+
+  /**
+   * The subject to filter by, accepts either the resource instance id or resource_type:resource_instance
+   * @type {string}
+   * @memberof RelationshipTuplesApiListRelationshipTuples
+   */
+  readonly subject?: string;
+
+  /**
+   * The relation id or key to filter by
+   * @type {string}
+   * @memberof RelationshipTuplesApiListRelationshipTuples
+   */
+  readonly relation?: string;
+
+  /**
+   * The object to filter by, accepts either the resource instance id or resource_type:resource_instance
+   * @type {string}
+   * @memberof RelationshipTuplesApiListRelationshipTuples
+   */
+  readonly object?: string;
 }
 
 /**
@@ -550,6 +632,10 @@ export class RelationshipTuplesApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.page,
         requestParameters.perPage,
+        requestParameters.tenant,
+        requestParameters.subject,
+        requestParameters.relation,
+        requestParameters.object,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
