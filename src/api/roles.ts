@@ -1,4 +1,4 @@
-import { Logger } from 'winston';
+import { Logger } from 'pino';
 
 import { IPermitConfig } from '../config';
 import { RolesApi as AutogenRolesApi, RoleCreate, RoleRead, RoleUpdate } from '../openapi';
