@@ -47,7 +47,7 @@
     "lodash": "^4.17.21",
     "path-to-regexp": "^6.2.1",
     "pino": "8.11.0",
-    "pino-pretty": "10.2.0",
+    "pino-pretty": "10.3.0",
     "require-in-the-middle": "^5.1.0"
   },
   "devDependencies": {
