@@ -33,6 +33,10 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 // @ts-ignore
 import { HTTPValidationError } from '../types';
 // @ts-ignore
+import { BulkRelationshipTuplesReport } from '../types';
+// @ts-ignore
+import { BulkUnRelationshipTuplesReport } from '../types';
+// @ts-ignore
 import { RelationshipTupleCreate } from '../types';
 // @ts-ignore
 import { RelationshipTupleDelete } from '../types';

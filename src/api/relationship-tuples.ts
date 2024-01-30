@@ -3,6 +3,8 @@ import { Logger } from 'pino';
 import { IPermitConfig } from '../config';
 import {
   RelationshipTuplesApi as AutogenRelationshipTuplesApi,
+  BulkRelationshipTuplesReport,
+  BulkUnRelationshipTuplesReport,
   RelationshipTupleCreate,
   RelationshipTupleDelete,
   RelationshipTupleRead,
@@ -12,7 +14,11 @@ import { BASE_PATH } from '../openapi/base';
 import { BasePermitApi, IPagination } from './base';
 import { ApiContextLevel, ApiKeyLevel } from './context';
 
+
 export {
+  BulkRoleAssignmentReport,
+  BulkRelationshipTuplesReport,
+  BulkUnRelationshipTuplesReport,
   RelationshipTupleCreate,
   RelationshipTupleDelete,
   RelationshipTupleRead,
@@ -76,7 +82,30 @@ export interface IRelationshipTuplesApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   delete(tuple: RelationshipTupleDelete): Promise<void>;
+
+  /**
+   * Creates multiple relationship tuples at once using the provided tuple data.
+   * Each tuple object is of type RelationshipTupleCreate and is essentially a tuple of (subject, relation, object, tenant).
+   *
+   * @param tuples - The relationship tuples to create.
+   * @returns A promise that resolves with the bulk assignment report.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
+  bulkRelationshipTuples(tuples: RelationshipTupleCreate[]): Promise<BulkRelationshipTuplesReport>;
+
+  /**
+   * Deletes multiple relationship tuples at once using the provided tuple data.
+   * Each tuple object is of type RelationshipTupleDelete and is essentially a tuple of (subject, relation, object).
+   *
+   * @param tuples - he relationship tuples to delete.
+   * @returns A promise that resolves with the bulk un relationship tuples report.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
+  bulkUnRelationshipTuples(tuples: RelationshipTupleDelete[]): Promise<BulkUnRelationshipTuplesReport>;
 }
+
 
 /**
  * The RelationshipTuplesApi class provides methods for interacting with Role createments.
@@ -168,6 +197,56 @@ export class RelationshipTuplesApi extends BasePermitApi implements IRelationshi
         await this.relationshipTuples.deleteRelationshipTuple({
           ...this.config.apiContext.environmentContext,
           relationshipTupleDelete: tuple,
+        })
+      ).data;
+    } catch (err) {
+      this.handleApiError(err);
+    }
+  }
+
+  /**
+   * Assigns multiple roles in bulk using the provided role assignments data.
+   * Each role assignment is a tuple of (user, role, tenant).
+   *
+   * @param tuples - The role assignments to be performed in bulk.
+   * @returns A promise that resolves with the bulk assignment report.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
+  public async bulkRelationshipTuples(tuples: RelationshipTupleCreate[]): Promise<BulkRelationshipTuplesReport> {
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
+    try {
+      return (
+        await this.relationshipTuples.bulkRelationshipTuples({
+          ...this.config.apiContext.environmentContext,
+          relationshipTupleCreate: tuples,
+        })
+      ).data;
+    } catch (err) {
+      this.handleApiError(err);
+    }
+  }
+
+  /**
+   * Removes multiple role assignments in bulk using the provided unassignment data.
+   * Each role to unassign is a tuple of (user, role, tenant).
+   *
+   * @param tuples - The role unassignments to be performed in bulk.
+   * @returns A promise that resolves with the bulk unassignment report.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
+  public async bulkUnRelationshipTuples(
+    tuples: RelationshipTupleDelete[],
+  ): Promise<BulkUnRelationshipTuplesReport> {
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
+    try {
+      return (
+        await this.relationshipTuples.bulkUnRelationshipTuples({
+          ...this.config.apiContext.environmentContext,
+          relationshipTupleDelete: tuples,
         })
       ).data;
     } catch (err) {
