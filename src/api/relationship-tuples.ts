@@ -193,7 +193,7 @@ export class RelationshipTuplesApi extends BasePermitApi implements IRelationshi
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
-        await this.relationshipTuples.deleteRelationshipTuple({
+        await this.relationshipTuples.bulkDeleteRelationshipTuple({
           ...this.config.apiContext.environmentContext,
           relationshipTupleDelete: tuple,
         })
@@ -204,20 +204,21 @@ export class RelationshipTuplesApi extends BasePermitApi implements IRelationshi
   }
 
   /**
-   * Assigns multiple roles in bulk using the provided role assignments data.
-   * Each role assignment is a tuple of (user, role, tenant).
+   * Creates a new relationship tuple, that states that a relationship (of type: relation)
+   * exists between two resource instances: the subject and the object.
    *
-   * @param tuples - The role assignments to be performed in bulk.
-   * @returns A promise that resolves with the bulk assignment report.
+   * @returns A promise that resolves to the created relationship tuple.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   * @param tuples
    */
-  public async bulkRelationshipTuples(tuples: RelationshipTupleCreate[]): Promise<BulkRelationshipTuplesReport> {
+  public async bulkRelationshipTuples(
+    tuples: RelationshipTupleCreate[]): Promise<BulkRelationshipTuplesReport> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
-        await this.relationshipTuples.bulkRelationshipTuples({
+        await this.relationshipTuples.bulkCreateRelationshipTuple({
           ...this.config.apiContext.environmentContext,
           relationshipTupleCreate: tuples,
         })
@@ -228,11 +229,11 @@ export class RelationshipTuplesApi extends BasePermitApi implements IRelationshi
   }
 
   /**
-   * Removes multiple role assignments in bulk using the provided unassignment data.
-   * Each role to unassign is a tuple of (user, role, tenant).
+   * Deletes multiple relationship tuples at once using the provided tuple data.
+   * Each tuple object is of type RelationshipTupleDelete and is essentially a tuple of (subject, relation, object).
    *
-   * @param tuples - The role unassignments to be performed in bulk.
-   * @returns A promise that resolves with the bulk unassignment report.
+   * @param tuples - he relationship tuples to delete.
+   * @returns A promise that resolves with the bulk un relationship tuples report.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
