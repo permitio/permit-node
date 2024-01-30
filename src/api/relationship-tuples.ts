@@ -16,7 +16,6 @@ import { ApiContextLevel, ApiKeyLevel } from './context';
 
 
 export {
-  BulkRoleAssignmentReport,
   BulkRelationshipTuplesReport,
   BulkUnRelationshipTuplesReport,
   RelationshipTupleCreate,
