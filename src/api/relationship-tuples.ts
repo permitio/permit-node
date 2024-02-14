@@ -3,10 +3,10 @@ import { Logger } from 'pino';
 import { IPermitConfig } from '../config';
 import {
   RelationshipTuplesApi as AutogenRelationshipTuplesApi,
-  BulkRelationshipTuplesReport,
-  BulkUnRelationshipTuplesReport,
   RelationshipTupleCreate,
+  RelationshipTupleCreateBulkOperation,
   RelationshipTupleDelete,
+  RelationshipTupleDeleteBulkOperation,
   RelationshipTupleRead,
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
@@ -14,10 +14,9 @@ import { BASE_PATH } from '../openapi/base';
 import { BasePermitApi, IPagination } from './base';
 import { ApiContextLevel, ApiKeyLevel } from './context';
 
-
 export {
-  BulkRelationshipTuplesReport,
-  BulkUnRelationshipTuplesReport,
+  RelationshipTupleDeleteBulkOperation,
+  RelationshipTupleCreateBulkOperation,
   RelationshipTupleCreate,
   RelationshipTupleDelete,
   RelationshipTupleRead,
@@ -91,7 +90,9 @@ export interface IRelationshipTuplesApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkRelationshipTuples(tuples: RelationshipTupleCreate[]): Promise<BulkRelationshipTuplesReport>;
+  bulkRelationshipTuples(
+    tuples: RelationshipTupleCreate[],
+  ): Promise<RelationshipTupleCreateBulkOperation>;
 
   /**
    * Deletes multiple relationship tuples at once using the provided tuple data.
@@ -102,9 +103,10 @@ export interface IRelationshipTuplesApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkUnRelationshipTuples(tuples: RelationshipTupleDelete[]): Promise<BulkUnRelationshipTuplesReport>;
+  bulkUnRelationshipTuples(
+    tuples: RelationshipTupleDelete[],
+  ): Promise<RelationshipTupleDeleteBulkOperation>;
 }
-
 
 /**
  * The RelationshipTuplesApi class provides methods for interacting with Role createments.
@@ -193,7 +195,7 @@ export class RelationshipTuplesApi extends BasePermitApi implements IRelationshi
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
-        await this.relationshipTuples.bulkDeleteRelationshipTuple({
+        await this.relationshipTuples.bulkDeleteRelationshipTuples({
           ...this.config.apiContext.environmentContext,
           relationshipTupleDelete: tuple,
         })
@@ -213,12 +215,13 @@ export class RelationshipTuplesApi extends BasePermitApi implements IRelationshi
    * @param tuples
    */
   public async bulkRelationshipTuples(
-    tuples: RelationshipTupleCreate[]): Promise<BulkRelationshipTuplesReport> {
+    tuples: RelationshipTupleCreate[],
+  ): Promise<RelationshipTupleCreateBulkOperation> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
-        await this.relationshipTuples.bulkCreateRelationshipTuple({
+        await this.relationshipTuples.bulkCreateRelationshipTuples({
           ...this.config.apiContext.environmentContext,
           relationshipTupleCreate: tuples,
         })
@@ -239,12 +242,12 @@ export class RelationshipTuplesApi extends BasePermitApi implements IRelationshi
    */
   public async bulkUnRelationshipTuples(
     tuples: RelationshipTupleDelete[],
-  ): Promise<BulkUnRelationshipTuplesReport> {
+  ): Promise<RelationshipTupleDeleteBulkOperation> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
-        await this.relationshipTuples.bulkUnRelationshipTuples({
+        await this.relationshipTuples.bulkDeleteRelationshipTuples({
           ...this.config.apiContext.environmentContext,
           relationshipTupleDelete: tuples,
         })
