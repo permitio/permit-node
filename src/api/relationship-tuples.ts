@@ -195,7 +195,7 @@ export class RelationshipTuplesApi extends BasePermitApi implements IRelationshi
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
-        await this.relationshipTuples.bulkDeleteRelationshipTuples({
+        await this.relationshipTuples.deleteRelationshipTuple({
           ...this.config.apiContext.environmentContext,
           relationshipTupleDelete: tuple,
         })
@@ -223,13 +223,16 @@ export class RelationshipTuplesApi extends BasePermitApi implements IRelationshi
       return (
         await this.relationshipTuples.bulkCreateRelationshipTuples({
           ...this.config.apiContext.environmentContext,
-          relationshipTupleCreate: tuples,
+          relationshipTupleCreateBulkOperation: {
+            operations: tuples
+          } ,
         })
       ).data;
     } catch (err) {
       this.handleApiError(err);
     }
   }
+
 
   /**
    * Deletes multiple relationship tuples at once using the provided tuple data.
@@ -241,7 +244,7 @@ export class RelationshipTuplesApi extends BasePermitApi implements IRelationshi
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async bulkUnRelationshipTuples(
-    tuples: RelationshipTupleDelete[],
+    tuples: RelationshipTupleDelete[]
   ): Promise<RelationshipTupleDeleteBulkOperation> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
@@ -249,7 +252,9 @@ export class RelationshipTuplesApi extends BasePermitApi implements IRelationshi
       return (
         await this.relationshipTuples.bulkDeleteRelationshipTuples({
           ...this.config.apiContext.environmentContext,
-          relationshipTupleDelete: tuples,
+          relationshipTupleDeleteBulkOperation: {
+            idents: tuples
+          },
         })
       ).data;
     } catch (err) {
