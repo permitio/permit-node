@@ -6,6 +6,7 @@ import { CheckConfig, Context, ContextStore } from '../utils/context';
 import { AxiosLoggingInterceptor } from '../utils/http-logger';
 
 import {
+  AllTenantsResponse,
   BulkOpaDecisionResult,
   BulkPolicyDecision,
   IAction,
@@ -17,8 +18,9 @@ import {
   IUserPermissions,
   OpaDecisionResult,
   OpaGetUserPermissionsResult,
-  PolicyDecision,
+  PolicyDecision, TenantDetails,
 } from './interfaces';
+
 
 const RESOURCE_DELIMITER = ':';
 
@@ -60,11 +62,11 @@ export interface IEnforcer {
    * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
    */
   check(
-    user: IUser | string,
-    action: IAction,
-    resource: IResource | string,
-    context?: Context,
-    config?: CheckConfig,
+      user: IUser | string,
+      action: IAction,
+      resource: IResource | string,
+      context?: Context,
+      config?: CheckConfig,
   ): Promise<boolean>;
 
   /**
@@ -77,9 +79,9 @@ export interface IEnforcer {
    * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
    */
   bulkCheck(
-    checks: Array<ICheckQuery>,
-    context?: Context,
-    config?: CheckConfig,
+      checks: Array<ICheckQuery>,
+      context?: Context,
+      config?: CheckConfig,
   ): Promise<Array<boolean>>;
 
   /**
@@ -94,11 +96,11 @@ export interface IEnforcer {
    * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
    */
   getUserPermissions(
-    user: IUser | string,
-    tenants?: string[],
-    resources?: string[],
-    resource_types?: string[],
-    config?: CheckConfig,
+      user: IUser | string,
+      tenants?: string[],
+      resources?: string[],
+      resource_types?: string[],
+      config?: CheckConfig,
   ): Promise<IUserPermissions>;
 }
 
@@ -135,21 +137,21 @@ export class Enforcer implements IEnforcer {
   }
 
   public async getUserPermissions(
-    user: IUser | string,
-    tenants?: string[],
-    resources?: string[],
-    resource_types?: string[],
-    config: CheckConfig = {},
+      user: IUser | string,
+      tenants?: string[],
+      resources?: string[],
+      resource_types?: string[],
+      config: CheckConfig = {},
   ): Promise<IUserPermissions> {
     return await this.getUserPermissionsWithExceptions(
-      user,
-      tenants,
-      resources,
-      resource_types,
-      config,
+        user,
+        tenants,
+        resources,
+        resource_types,
+        config,
     ).catch((err) => {
       const shouldThrow =
-        config.throwOnError === undefined ? this.config.throwOnError : config.throwOnError;
+          config.throwOnError === undefined ? this.config.throwOnError : config.throwOnError;
       if (shouldThrow) {
         throw err;
       } else {
@@ -160,11 +162,11 @@ export class Enforcer implements IEnforcer {
   }
 
   private async getUserPermissionsWithExceptions(
-    user: IUser | string,
-    tenants?: string[],
-    resources?: string[],
-    resource_types?: string[],
-    config: CheckConfig = {},
+      user: IUser | string,
+      tenants?: string[],
+      resources?: string[],
+      resource_types?: string[],
+      config: CheckConfig = {},
   ): Promise<IUserPermissions> {
     const checkTimeout = config.timeout || this.config.timeout;
     const input = {
@@ -174,55 +176,55 @@ export class Enforcer implements IEnforcer {
       resource_type: resource_types,
     };
     return await this.client
-      .post<OpaGetUserPermissionsResult | IUserPermissions>('user-permissions', input, {
-        headers: {
-          Authorization: `Bearer ${this.config.token}`,
-        },
-        timeout: checkTimeout,
-      })
-      .then((response) => {
-        if (response.status !== 200) {
-          throw new PermitPDPStatusError(`Permit.getUserPermissions() got an unexpected status code: ${response.status}, please check your SDK init and make sure the PDP sidecar is configured correctly. \n\
+        .post<OpaGetUserPermissionsResult | IUserPermissions>('user-permissions', input, {
+          headers: {
+            Authorization: `Bearer ${this.config.token}`,
+          },
+          timeout: checkTimeout,
+        })
+        .then((response) => {
+          if (response.status !== 200) {
+            throw new PermitPDPStatusError(`Permit.getUserPermissions() got an unexpected status code: ${response.status}, please check your SDK init and make sure the PDP sidecar is configured correctly. \n\
             Read more about setting up the PDP at https://docs.permit.io`);
-        }
-        const permissions =
-          (isOpaGetUserPermissionsResult(response.data)
-            ? response.data.result.permissions
-            : response.data) || {};
-        this.logger.info(
-          `permit.getUserPermissions(${Enforcer.userRepr(input.user)}) = ${JSON.stringify(
-            permissions,
-          )}`,
-        );
-        return permissions;
-      })
-      .catch((error) => {
-        const errorMessage = `Error in permit.getUserPermissions(${Enforcer.userRepr(input.user)})`;
+          }
+          const permissions =
+              (isOpaGetUserPermissionsResult(response.data)
+                  ? response.data.result.permissions
+                  : response.data) || {};
+          this.logger.info(
+              `permit.getUserPermissions(${Enforcer.userRepr(input.user)}) = ${JSON.stringify(
+                  permissions,
+              )}`,
+          );
+          return permissions;
+        })
+        .catch((error) => {
+          const errorMessage = `Error in permit.getUserPermissions(${Enforcer.userRepr(input.user)})`;
 
-        if (axios.isAxiosError(error)) {
-          const errorStatusCode: string = error.response?.status.toString() || '';
-          const errorDetails: string = error?.response?.data
-            ? JSON.stringify(error.response.data)
-            : error.message;
-          this.logger.error(`[${errorStatusCode}] ${errorMessage}, err: ${errorDetails}`);
-        } else {
-          this.logger.error(`${errorMessage}\n${error}`);
-        }
-        throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
+          if (axios.isAxiosError(error)) {
+            const errorStatusCode: string = error.response?.status.toString() || '';
+            const errorDetails: string = error?.response?.data
+                ? JSON.stringify(error.response.data)
+                : error.message;
+            this.logger.error(`[${errorStatusCode}] ${errorMessage}, err: ${errorDetails}`);
+          } else {
+            this.logger.error(`${errorMessage}\n${error}`);
+          }
+          throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
           and cannot connect to the PDP, please check your configuration and make sure the
           PDP is running at ${this.config.pdp} and accepting requests. \n
           Read more about setting up the PDP at https://docs.permit.io`);
-      });
+        });
   }
 
   public async bulkCheck(
-    checks: Array<ICheckQuery>,
-    context: Context = {}, // context provided specifically for this query
-    config: CheckConfig = {},
+      checks: Array<ICheckQuery>,
+      context: Context = {}, // context provided specifically for this query
+      config: CheckConfig = {},
   ): Promise<Array<boolean>> {
     return await this.bulkCheckWithExceptions(checks, context, config).catch((err) => {
       const shouldThrow =
-        config.throwOnError === undefined ? this.config.throwOnError : config.throwOnError;
+          config.throwOnError === undefined ? this.config.throwOnError : config.throwOnError;
       if (shouldThrow) {
         throw err;
       } else {
@@ -233,10 +235,10 @@ export class Enforcer implements IEnforcer {
   }
 
   private buildCheckInput(
-    user: IUser | string,
-    action: IAction,
-    resource: IResource | string,
-    context: Context = {}, // context provided specifically for this query
+      user: IUser | string,
+      action: IAction,
+      resource: IResource | string,
+      context: Context = {}, // context provided specifically for this query
   ): ICheckInput {
     const normalizedUser: IUser = isString(user) ? { key: user } : user;
 
@@ -254,14 +256,14 @@ export class Enforcer implements IEnforcer {
 
   private checkInputRepr(checkInput: ICheckInput): string {
     return `${Enforcer.userRepr(checkInput.user)}, ${checkInput.action}, ${Enforcer.resourceRepr(
-      checkInput.resource,
+        checkInput.resource,
     )}`;
   }
 
   private async bulkCheckWithExceptions(
-    checks: Array<ICheckQuery>,
-    context: Context = {}, // context provided specifically for this query
-    config: CheckConfig = {},
+      checks: Array<ICheckQuery>,
+      context: Context = {}, // context provided specifically for this query
+      config: CheckConfig = {},
   ): Promise<Array<boolean>> {
     const checkTimeout = config.timeout || this.config.timeout;
     const inputs: Array<ICheckInput> = [];
@@ -271,56 +273,66 @@ export class Enforcer implements IEnforcer {
     });
 
     return await this.client
-      .post<BulkPolicyDecision | BulkOpaDecisionResult>('allowed/bulk', inputs, {
-        headers: {
-          Authorization: `Bearer ${this.config.token}`,
-        },
-        timeout: checkTimeout,
-      })
-      .then((response) => {
-        if (response.status !== 200) {
-          throw new PermitPDPStatusError(`Permit.bulkCheck() got an unexpected status code: ${response.status}, please check your SDK init and make sure the PDP sidecar is configured correctly. \n\
+        .post<BulkPolicyDecision | BulkOpaDecisionResult>('allowed/bulk', inputs, {
+          headers: {
+            Authorization: `Bearer ${this.config.token}`,
+          },
+          timeout: checkTimeout,
+        })
+        .then((response) => {
+          if (response.status !== 200) {
+            throw new PermitPDPStatusError(`Permit.bulkCheck() got an unexpected status code: ${response.status}, please check your SDK init and make sure the PDP sidecar is configured correctly. \n\
             Read more about setting up the PDP at https://docs.permit.io`);
-        }
-        const decisions = (
-          ('allow' in response.data ? response.data.allow : response.data.result.allow) || []
-        ).map((decision) => decision.allow || false);
-        this.logger.info(
-          `permit.bulkCheck(${inputs.map((input) => this.checkInputRepr(input))}) = ${decisions}`,
-        );
-        return decisions;
-      })
-      .catch((error) => {
-        const errorMessage = `Error in permit.bulkCheck(${inputs.map((input) =>
-          this.checkInputRepr(input),
-        )})`;
+          }
+          const decisions = (
+              ('allow' in response.data ? response.data.allow : response.data.result.allow) || []
+          ).map((decision) => decision.allow || false);
+          this.logger.info(
+              `permit.bulkCheck(${inputs.map((input) => this.checkInputRepr(input))}) = ${decisions}`,
+          );
+          return decisions;
+        })
+        .catch((error) => {
+          const errorMessage = `Error in permit.bulkCheck(${inputs.map((input) =>
+              this.checkInputRepr(input),
+          )})`;
 
-        if (axios.isAxiosError(error)) {
-          const errorStatusCode: string = error.response?.status.toString() || '';
-          const errorDetails: string = error?.response?.data
-            ? JSON.stringify(error.response.data)
-            : error.message;
-          this.logger.error(`[${errorStatusCode}] ${errorMessage}, err: ${errorDetails}`);
-        } else {
-          this.logger.error(`${errorMessage}\n${error}`);
-        }
-        throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
+          if (axios.isAxiosError(error)) {
+            const errorStatusCode: string = error.response?.status.toString() || '';
+            const errorDetails: string = error?.response?.data
+                ? JSON.stringify(error.response.data)
+                : error.message;
+            this.logger.error(`[${errorStatusCode}] ${errorMessage}, err: ${errorDetails}`);
+          } else {
+            this.logger.error(`${errorMessage}\n${error}`);
+          }
+          throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
           and cannot connect to the PDP, please check your configuration and make sure the
           PDP is running at ${this.config.pdp} and accepting requests. \n
           Read more about setting up the PDP at https://docs.permit.io`);
-      });
+        });
+  }
+
+  public async getAllTenants(): Promise<TenantDetails[]> {
+    try {
+      const response = await this.client.get<AllTenantsResponse>('/allowed/all-tenants');
+      return response.data.allowedTenants.map(item => item.tenant);
+    } catch (error) {
+      this.logger.error('Error fetching all tenants:', error);
+      throw error;
+    }
   }
 
   public async check(
-    user: IUser | string,
-    action: IAction,
-    resource: IResource | string,
-    context: Context = {}, // context provided specifically for this query
-    config: CheckConfig = {},
+      user: IUser | string,
+      action: IAction,
+      resource: IResource | string,
+      context: Context = {}, // context provided specifically for this query
+      config: CheckConfig = {},
   ): Promise<boolean> {
     return await this.checkWithExceptions(user, action, resource, context, config).catch((err) => {
       const shouldThrow =
-        config.throwOnError === undefined ? this.config.throwOnError : config.throwOnError;
+          config.throwOnError === undefined ? this.config.throwOnError : config.throwOnError;
       if (shouldThrow) {
         throw err;
       } else {
@@ -331,48 +343,48 @@ export class Enforcer implements IEnforcer {
   }
 
   private async checkWithExceptions(
-    user: IUser | string,
-    action: IAction,
-    resource: IResource | string,
-    context: Context = {}, // context provided specifically for this query
-    config: CheckConfig = {},
+      user: IUser | string,
+      action: IAction,
+      resource: IResource | string,
+      context: Context = {}, // context provided specifically for this query
+      config: CheckConfig = {},
   ): Promise<boolean> {
     const input = this.buildCheckInput(user, action, resource, context);
     const checkTimeout = config.timeout || this.config.timeout;
 
     return await this.client
-      .post<PolicyDecision | OpaDecisionResult>('allowed', input, {
-        headers: {
-          Authorization: `Bearer ${this.config.token}`,
-        },
-        timeout: checkTimeout,
-      })
-      .then((response) => {
-        if (response.status !== 200) {
-          throw new PermitPDPStatusError(`Permit.check() got an unexpected status code: ${response.status}, please check your SDK init and make sure the PDP sidecar is configured correctly. \n\
+        .post<PolicyDecision | OpaDecisionResult>('allowed', input, {
+          headers: {
+            Authorization: `Bearer ${this.config.token}`,
+          },
+          timeout: checkTimeout,
+        })
+        .then((response) => {
+          if (response.status !== 200) {
+            throw new PermitPDPStatusError(`Permit.check() got an unexpected status code: ${response.status}, please check your SDK init and make sure the PDP sidecar is configured correctly. \n\
             Read more about setting up the PDP at https://docs.permit.io`);
-        }
-        const decision =
-          ('allow' in response.data ? response.data.allow : response.data.result.allow) || false;
-        this.logger.info(`permit.check(${this.checkInputRepr(input)}) = ${decision}`);
-        return decision;
-      })
-      .catch((error) => {
-        const errorMessage = `Error in permit.check(${this.checkInputRepr(input)})`;
+          }
+          const decision =
+              ('allow' in response.data ? response.data.allow : response.data.result.allow) || false;
+          this.logger.info(`permit.check(${this.checkInputRepr(input)}) = ${decision}`);
+          return decision;
+        })
+        .catch((error) => {
+          const errorMessage = `Error in permit.check(${this.checkInputRepr(input)})`;
 
-        if (axios.isAxiosError(error)) {
-          const errorStatusCode: string = error.response?.status.toString() || '';
-          const errorDetails: string = error?.response?.data
-            ? JSON.stringify(error.response.data)
-            : error.message;
-          this.logger.error(`[${errorStatusCode}] ${errorMessage}, err: ${errorDetails}`);
-        } else {
-          this.logger.error(`${errorMessage}\n${error}`);
-        }
-        throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
+          if (axios.isAxiosError(error)) {
+            const errorStatusCode: string = error.response?.status.toString() || '';
+            const errorDetails: string = error?.response?.data
+                ? JSON.stringify(error.response.data)
+                : error.message;
+            this.logger.error(`[${errorStatusCode}] ${errorMessage}, err: ${errorDetails}`);
+          } else {
+            this.logger.error(`${errorMessage}\n${error}`);
+          }
+          throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
           and cannot connect to the PDP, please check your configuration and make sure the PDP is running at ${this.config.pdp} and accepting requests. \n
           Read more about setting up the PDP at https://docs.permit.io`);
-      });
+        });
   }
 
   // TODO: remove this eventually, once we decide on finalized structure of AuthzQuery
@@ -426,3 +438,4 @@ export class Enforcer implements IEnforcer {
     };
   }
 }
+
