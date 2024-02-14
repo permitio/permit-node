@@ -126,6 +126,21 @@ export interface OpaDecisionResult {
   result: PolicyDecision;
 }
 
+export interface TenantDetails {
+  key: string;
+  attributes: {
+    [id: string]: any;
+  };
+}
+
+export interface AllTenantsCheckResponse {
+  tenant: TenantDetails;
+}
+
+export interface AllTenantsResponse {
+  allowedTenants: AllTenantsCheckResponse[];
+}
+
 interface TenantPermissions {
   permissions: string[];
   tenant?: {
@@ -161,3 +176,4 @@ export interface OpaGetUserPermissionsResult {
 export function isOpaGetUserPermissionsResult(obj: any): obj is OpaGetUserPermissionsResult {
   return 'result' in obj;
 }
+
