@@ -169,9 +169,9 @@ export class Enforcer implements IEnforcer {
     const checkTimeout = config.timeout || this.config.timeout;
     const input = {
       user: isString(user) ? { key: user } : user,
-      tenants: tenants,
-      resource: resources,
-      resource_type: resource_types,
+      tenants,
+      resources,
+      resource_types,
     };
     return await this.client
       .post<OpaGetUserPermissionsResult | IUserPermissions>('user-permissions', input, {
