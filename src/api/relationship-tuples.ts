@@ -4,19 +4,17 @@ import { IPermitConfig } from '../config';
 import {
   RelationshipTuplesApi as AutogenRelationshipTuplesApi,
   RelationshipTupleCreate,
-  RelationshipTupleCreateBulkOperation,
   RelationshipTupleDelete,
-  RelationshipTupleDeleteBulkOperation,
   RelationshipTupleRead,
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
+import { RelationshipTupleCreateBulkOperation } from '../openapi/types/relationship-tuple-create-bulk-operation';
+import { RelationshipTupleDeleteBulkOperation } from '../openapi/types/relationship-tuple-delete-bulk-operation';
 
 import { BasePermitApi, IPagination } from './base';
 import { ApiContextLevel, ApiKeyLevel } from './context';
 
 export {
-  RelationshipTupleDeleteBulkOperation,
-  RelationshipTupleCreateBulkOperation,
   RelationshipTupleCreate,
   RelationshipTupleDelete,
   RelationshipTupleRead,
@@ -224,15 +222,14 @@ export class RelationshipTuplesApi extends BasePermitApi implements IRelationshi
         await this.relationshipTuples.bulkCreateRelationshipTuples({
           ...this.config.apiContext.environmentContext,
           relationshipTupleCreateBulkOperation: {
-            operations: tuples
-          } ,
+            operations: tuples,
+          },
         })
       ).data;
     } catch (err) {
       this.handleApiError(err);
     }
   }
-
 
   /**
    * Deletes multiple relationship tuples at once using the provided tuple data.
@@ -244,7 +241,7 @@ export class RelationshipTuplesApi extends BasePermitApi implements IRelationshi
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async bulkUnRelationshipTuples(
-    tuples: RelationshipTupleDelete[]
+    tuples: RelationshipTupleDelete[],
   ): Promise<RelationshipTupleDeleteBulkOperation> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
@@ -253,7 +250,7 @@ export class RelationshipTuplesApi extends BasePermitApi implements IRelationshi
         await this.relationshipTuples.bulkDeleteRelationshipTuples({
           ...this.config.apiContext.environmentContext,
           relationshipTupleDeleteBulkOperation: {
-            idents: tuples
+            idents: tuples,
           },
         })
       ).data;
