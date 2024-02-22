@@ -1,11 +1,17 @@
 // For Default export
 import pino from 'pino';
 
-import { ApiClient, IPermitApi } from './api/api-client';
-import { ElementsClient, IPermitElementsApi } from './api/elements';
+import { ApiClient, IPermitApi } from './api';
+import { ElementsClient, IPermitElementsApi } from './api';
 import { ConfigFactory, IPermitConfig } from './config';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
-import { ICheckQuery, IResource, IUser, IUserPermissions } from './enforcement/interfaces';
+import {
+  ICheckQuery,
+  IResource,
+  IUser,
+  IUserPermissions,
+  TenantDetails,
+} from './enforcement/interfaces';
 import { LoggerFactory } from './logger';
 import { CheckConfig, Context } from './utils/context';
 import { AxiosLoggingInterceptor } from './utils/http-logger';
@@ -180,6 +186,29 @@ export class Permit implements IPermitClient {
     config?: CheckConfig | undefined,
   ): Promise<Array<boolean>> {
     return await this.enforcer.bulkCheck(checks, context, config);
+  }
+
+  /**
+   * Get all tenants available in the system.
+   * @returns An array of TenantDetails representing all tenants.
+   */
+  /**
+   * Get all tenants available in the system.
+   * @returns An array of TenantDetails representing all tenants.
+   */
+  public async getAllTenants(
+    user: IUser | string,
+    action: string,
+    resource: IResource | string,
+    context?: Context | undefined,
+    sdk?: string | undefined,
+  ): Promise<TenantDetails[]> {
+    try {
+      return await this.enforcer.getAllTenants(user, action, resource, context, sdk);
+    } catch (error) {
+      this.logger.error('Error fetching all tenants:', error);
+      throw error;
+    }
   }
 
   /**
