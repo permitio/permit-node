@@ -4,12 +4,12 @@ import { IPermitConfig } from '../config';
 import {
   RelationshipTuplesApi as AutogenRelationshipTuplesApi,
   RelationshipTupleCreate,
+  RelationshipTupleCreateBulkOperation,
   RelationshipTupleDelete,
+  RelationshipTupleDeleteBulkOperation,
   RelationshipTupleRead,
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
-import { RelationshipTupleCreateBulkOperation } from '../openapi/types/relationship-tuple-create-bulk-operation';
-import { RelationshipTupleDeleteBulkOperation } from '../openapi/types/relationship-tuple-delete-bulk-operation';
 
 import { BasePermitApi, IPagination } from './base';
 import { ApiContextLevel, ApiKeyLevel } from './context';
@@ -18,6 +18,8 @@ export {
   RelationshipTupleCreate,
   RelationshipTupleDelete,
   RelationshipTupleRead,
+  RelationshipTupleCreateBulkOperation,
+  RelationshipTupleDeleteBulkOperation,
 } from '../openapi';
 
 /**

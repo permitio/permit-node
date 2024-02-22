@@ -899,18 +899,17 @@ export class RelationshipTuplesApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof RelationshipTuplesApi
    */
-  public bulkCreateRelationshipTuples(
+  public async bulkCreateRelationshipTuples(
     requestParameters: RelationshipTuplesApiBulkCreateRelationshipTuplesRequest,
     options?: AxiosRequestConfig,
   ) {
-    return RelationshipTuplesApiFp(this.configuration)
-      .bulkCreateRelationshipTuples(
-        requestParameters.projId,
-        requestParameters.envId,
-        requestParameters.relationshipTupleCreateBulkOperation,
-        options,
-      )
-      .then((request) => request(this.axios, this.basePath));
+    let request = await RelationshipTuplesApiFp(this.configuration).bulkCreateRelationshipTuples(
+      requestParameters.projId,
+      requestParameters.envId,
+      requestParameters.relationshipTupleCreateBulkOperation,
+      options,
+    );
+    return request(this.axios, this.basePath);
   }
 
   /**
@@ -921,18 +920,17 @@ export class RelationshipTuplesApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof RelationshipTuplesApi
    */
-  public bulkDeleteRelationshipTuples(
+  public async bulkDeleteRelationshipTuples(
     requestParameters: RelationshipTuplesApiBulkDeleteRelationshipTuplesRequest,
     options?: AxiosRequestConfig,
   ) {
-    return RelationshipTuplesApiFp(this.configuration)
-      .bulkDeleteRelationshipTuples(
-        requestParameters.projId,
-        requestParameters.envId,
-        requestParameters.relationshipTupleDeleteBulkOperation,
-        options,
-      )
-      .then((request) => request(this.axios, this.basePath));
+    let request = await RelationshipTuplesApiFp(this.configuration).bulkDeleteRelationshipTuples(
+      requestParameters.projId,
+      requestParameters.envId,
+      requestParameters.relationshipTupleDeleteBulkOperation,
+      options,
+    );
+    return request(this.axios, this.basePath);
   }
 
   /**
