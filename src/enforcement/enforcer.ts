@@ -333,7 +333,7 @@ export class Enforcer implements IEnforcer {
     sdk = 'node', // default to "node" if not provided
   ): Promise<TenantDetails[]> {
     try {
-      const response = await this.client.get<AllTenantsResponse>('/allowed/all-tenants', {
+      const response = await this.client.post<AllTenantsResponse>('/allowed/all-tenants', {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
           'X-Permit-Sdk-Language': sdk,
