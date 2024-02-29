@@ -6,6 +6,7 @@ import { CheckConfig, Context, ContextStore } from '../utils/context';
 import { AxiosLoggingInterceptor } from '../utils/http-logger';
 
 import {
+  AllTenantsResponse,
   BulkOpaDecisionResult,
   BulkPolicyDecision,
   IAction,
@@ -18,6 +19,7 @@ import {
   OpaDecisionResult,
   OpaGetUserPermissionsResult,
   PolicyDecision,
+  TenantDetails,
 } from './interfaces';
 
 const RESOURCE_DELIMITER = ':';
@@ -100,6 +102,18 @@ export interface IEnforcer {
     resource_types?: string[],
     config?: CheckConfig,
   ): Promise<IUserPermissions>;
+
+  /**
+   * Get all tenants available in the system.
+   * @returns An array of TenantDetails representing all tenants.
+   */
+  checkAllTenants(
+    user: IUser | string,
+    action: string,
+    resource: IResource | string,
+    context: Context | undefined,
+    sdk: string | undefined,
+  ): Promise<TenantDetails[]>;
 }
 
 /**
@@ -311,6 +325,33 @@ export class Enforcer implements IEnforcer {
       });
   }
 
+  public async checkAllTenants(
+    user: IUser | string,
+    action: string,
+    resource: IResource | string,
+    context: Context = {}, // default to empty context if not provided
+    sdk = 'node', // default to "node" if not provided
+  ): Promise<TenantDetails[]> {
+    try {
+      const response = await this.client.post<AllTenantsResponse>('/allowed/all-tenants', {
+        headers: {
+          Authorization: `Bearer ${this.config.token}`,
+          'X-Permit-Sdk-Language': sdk,
+        },
+        params: {
+          user,
+          action,
+          resource,
+          context,
+        },
+      });
+      return response.data.allowedTenants.map((item) => item.tenant);
+    } catch (error) {
+      this.logger.error('Error fetching all tenants:', error);
+      throw error;
+    }
+  }
+
   public async check(
     user: IUser | string,
     action: IAction,
@@ -423,6 +464,7 @@ export class Enforcer implements IEnforcer {
       check: this.check.bind(this),
       bulkCheck: this.bulkCheck.bind(this),
       getUserPermissions: this.getUserPermissions.bind(this),
+      checkAllTenants: this.checkAllTenants.bind(this),
     };
   }
 }
