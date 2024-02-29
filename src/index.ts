@@ -1,8 +1,8 @@
 // For Default export
 import pino from 'pino';
 
-import { ApiClient, IPermitApi } from './api';
-import { ElementsClient, IPermitElementsApi } from './api';
+import { ApiClient, IPermitApi } from './api/api-client';
+import { ElementsClient, IPermitElementsApi } from './api/elements';
 import { ConfigFactory, IPermitConfig } from './config';
 import { Enforcer, IEnforcer } from './enforcement/enforcer';
 import {
@@ -196,7 +196,7 @@ export class Permit implements IPermitClient {
    * Get all tenants available in the system.
    * @returns An array of TenantDetails representing all tenants.
    */
-  public async getAllTenants(
+  public async checkAllTenants(
     user: IUser | string,
     action: string,
     resource: IResource | string,
@@ -204,7 +204,7 @@ export class Permit implements IPermitClient {
     sdk?: string | undefined,
   ): Promise<TenantDetails[]> {
     try {
-      return await this.enforcer.getAllTenants(user, action, resource, context, sdk);
+      return await this.enforcer.checkAllTenants(user, action, resource, context, sdk);
     } catch (error) {
       this.logger.error('Error fetching all tenants:', error);
       throw error;

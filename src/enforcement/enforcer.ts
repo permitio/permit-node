@@ -107,7 +107,7 @@ export interface IEnforcer {
    * Get all tenants available in the system.
    * @returns An array of TenantDetails representing all tenants.
    */
-  getAllTenants(
+  checkAllTenants(
     user: IUser | string,
     action: string,
     resource: IResource | string,
@@ -325,7 +325,7 @@ export class Enforcer implements IEnforcer {
       });
   }
 
-  public async getAllTenants(
+  public async checkAllTenants(
     user: IUser | string,
     action: string,
     resource: IResource | string,
@@ -464,7 +464,7 @@ export class Enforcer implements IEnforcer {
       check: this.check.bind(this),
       bulkCheck: this.bulkCheck.bind(this),
       getUserPermissions: this.getUserPermissions.bind(this),
-      getAllTenants: this.getAllTenants.bind(this),
+      checkAllTenants: this.checkAllTenants.bind(this),
     };
   }
 }
