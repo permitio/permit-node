@@ -28,6 +28,8 @@ export * from './authn-me-read';
 export * from './authn-me-user-read';
 export * from './bulk-role-assignment-report';
 export * from './bulk-role-un-assignment-report';
+export * from './relationship-tuple-create-bulk-operation';
+export * from './relationship-tuple-delete-bulk-operation';
 export * from './callbacks-inner';
 export * from './condition-set-create';
 export * from './condition-set-data';
