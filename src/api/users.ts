@@ -184,21 +184,21 @@ export interface IUsersApi {
    * Creates users in bulk.
    *
    * @param users The array of users to create.
-   * @returns A promise that resolves to the bulk creation result.
+   * @returns A promise that resolves with the bulk create users report .
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkCreate(users: UserCreate[]): Promise<UserRead[]>;
+  bulkCreate(users: UserCreate[]): Promise<BulkCreateUserResult>;
 
   /**
    * Deletes users in bulk.
    *
    * @param userKeys The array of user keys to delete.
-   * @returns A promise that resolves to the bulk deletion result.
+   * @returns A promise that resolves with the bulk delete users report .
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkDelete(userKeys: string[]): Promise<void>;
+  bulkDelete(userKeys: string[]): Promise<BulkDeleteUserResult>;
 
   /**
    * Replaces users in bulk.
@@ -206,11 +206,11 @@ export interface IUsersApi {
    * If a user exists, it will be replaced. Otherwise, it will be created.
    *
    * @param users The array of users to replace.
-   * @returns A promise that resolves to the bulk replacement result.
+   * @returns A promise that resolves with the bulk replacement users report .
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkReplace(users: UserCreate[]): Promise<UserRead[]>;
+  bulkReplace(users: UserCreate[]): Promise<BulkReplaceUserResult>;
 }
 
 /**
@@ -462,11 +462,17 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async bulkCreate(users: UserCreate[]): Promise<UserRead[]> {
+  public async bulkCreate(users: UserCreate[]): Promise<BulkCreateUserResult> {
+    // Ensure access level and context
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
+      // Make the API call to bulk create users
       const response = await this.users.bulkCreateUsers({ users });
+      // Return the data from the API response
       return response.data;
     } catch (err) {
+      // Handle any errors that occur during the API call
       this.handleApiError(err);
     }
   }
@@ -479,10 +485,17 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async bulkDelete(userKeys: string[]): Promise<void> {
+  public async bulkDelete(userKeys: string[]): Promise<BulkDeleteUserResult> {
+    // Ensure access level and context
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
-      await this.users.bulkDeleteUsers({ userKeys });
+      // Make the API call to bulk delete users
+      const response = await this.users.bulkDeleteUsers({ userKeys });
+      // Return the data from the API response
+      return response.data;
     } catch (err) {
+      // Handle any errors that occur during the API call
       this.handleApiError(err);
     }
   }
@@ -497,11 +510,17 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async bulkReplace(users: UserCreate[]): Promise<UserRead[]> {
+  public async bulkReplace(users: UserCreate[]): Promise<BulkReplaceUserResult> {
+    // Ensure access level and context
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
+      // Make the API call to bulk replace users
       const response = await this.users.bulkReplaceUsers({ users });
+      // Return the data from the API response
       return response.data;
     } catch (err) {
+      // Handle any errors that occur during the API call
       this.handleApiError(err);
     }
   }
