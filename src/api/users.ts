@@ -4,6 +4,7 @@ import { IPermitConfig } from '../config';
 import {
   RoleAssignmentsApi as AutogenRoleAssignmentsApi,
   UsersApi as AutogenUsersApi,
+  BulkOperationsApi,
   PaginatedResultUserRead,
   RoleAssignmentCreate,
   RoleAssignmentRead,
@@ -222,6 +223,7 @@ export interface IUsersApi {
 export class UsersApi extends BasePermitApi implements IUsersApi {
   private users: AutogenUsersApi;
   private roleAssignments: AutogenRoleAssignmentsApi;
+  private bulkOperationsApi: BulkOperationsApi;
 
   /**
    * Creates an instance of the UsersApi.
@@ -236,6 +238,11 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
       this.config.axiosInstance,
     );
     this.roleAssignments = new AutogenRoleAssignmentsApi(
+      this.openapiClientConfig,
+      BASE_PATH,
+      this.config.axiosInstance,
+    );
+    this.bulkOperationsApi = new BulkOperationsApi(
       this.openapiClientConfig,
       BASE_PATH,
       this.config.axiosInstance,
@@ -471,10 +478,10 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
-        await this.users.bulkCreateUsers({
+        await this.bulkOperationsApi.bulkCreateUsers({
           ...this.config.apiContext.environmentContext,
-          usersCreateBulkOperation: {
-            users: users,
+          userCreateBulkOperations: {
+            operations: users,
           },
         })
       ).data;
@@ -498,10 +505,10 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
-        await this.users.bulkDeleteUsers({
+        await this.bulkOperationsApi.bulkDeleteUsers({
           ...this.config.apiContext.environmentContext,
           usersDeleteBulkOperation: {
-            users: userKeys,
+            operations: userKeys,
           },
         })
       ).data;
@@ -527,10 +534,10 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
-        await this.users.bulkReplaceUsers({
+        await this.bulkOperationsApi.bulkReplaceUsers({
           ...this.config.apiContext.environmentContext,
           usersReplaceBulkOperation: {
-            users: users,
+            operations: users,
           },
         })
       ).data;
