@@ -176,4 +176,3 @@ export interface OpaGetUserPermissionsResult {
 export function isOpaGetUserPermissionsResult(obj: any): obj is OpaGetUserPermissionsResult {
   return 'result' in obj;
 }
-
