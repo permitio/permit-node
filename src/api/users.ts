@@ -9,7 +9,10 @@ import {
   RoleAssignmentRead,
   RoleAssignmentRemove,
   UserCreate,
+  UserCreateBulkOperation,
+  UserDeleteBulkOperation,
   UserRead,
+  UsersReplaceBulkOperation,
   UserUpdate,
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
@@ -188,7 +191,7 @@ export interface IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkUserCreate(users: UserCreate[]): Promise<BulkCreateUserResult>;
+  bulkUserCreate(users: UserCreate[]): Promise<UserCreateBulkOperation>;
 
   /**
    * Deletes users in bulk.
@@ -198,7 +201,7 @@ export interface IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkUserDelete(userKeys: string[]): Promise<BulkDeleteUserResult>;
+  bulkUserDelete(userKeys: string[]): Promise<UserDeleteBulkOperation>;
 
   /**
    * Replaces users in bulk.
@@ -210,7 +213,7 @@ export interface IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkUserReplace(users: UserCreate[]): Promise<BulkReplaceUserResult>;
+  bulkUserReplace(users: UserCreate[]): Promise<UsersReplaceBulkOperation>;
 }
 
 /**
