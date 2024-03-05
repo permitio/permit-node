@@ -12,7 +12,7 @@ import {
   UserCreateBulkOperation,
   UserDeleteBulkOperation,
   UserRead,
-  UsersReplaceBulkOperation,
+  UserReplaceBulkOperation,
   UserUpdate,
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
@@ -213,7 +213,7 @@ export interface IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkUserReplace(users: UserCreate[]): Promise<UsersReplaceBulkOperation>;
+  bulkUserReplace(users: UserCreate[]): Promise<UserReplaceBulkOperation>;
 }
 
 /**
@@ -465,7 +465,7 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async bulkUserCreate(users: UserCreate[]): Promise<BulkCreateUserResult> {
+  public async bulkUserCreate(users: UserCreate[]): Promise<UserCreateBulkOperation> {
     // Ensure access level and context
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
@@ -492,7 +492,7 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async bulkUserDelete(userKeys: string[]): Promise<BulkDeleteUserResult> {
+  public async bulkUserDelete(userKeys: string[]): Promise<UserDeleteBulkOperation> {
     // Ensure access level and context
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
@@ -521,7 +521,7 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async bulkUserReplace(users: UserCreate[]): Promise<BulkReplaceUserResult> {
+  public async bulkUserReplace(users: UserCreate[]): Promise<UserReplaceBulkOperation> {
     // Ensure access level and context
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
