@@ -4,19 +4,19 @@ import { IPermitConfig } from '../config';
 import {
   RoleAssignmentsApi as AutogenRoleAssignmentsApi,
   UsersApi as AutogenUsersApi,
-  BulkOperationsApi,
   PaginatedResultUserRead,
   RoleAssignmentCreate,
   RoleAssignmentRead,
   RoleAssignmentRemove,
   UserCreate,
-  UserCreateBulkOperation,
-  UserDeleteBulkOperation,
   UserRead,
-  UserReplaceBulkOperation,
   UserUpdate,
 } from '../openapi';
+import { BulkOperationsApi } from '../openapi/api/bulk-operations-api';
 import { BASE_PATH } from '../openapi/base';
+import { UserCreateBulkOperation } from '../openapi/types/user-create-bulk-operation';
+import { UserDeleteBulkOperation } from '../openapi/types/user-delete-bulk-operation';
+import { UserReplaceBulkOperation } from '../openapi/types/user-replace-bulk-operation';
 
 import { BasePermitApi, IPagination } from './base';
 import { ApiContextLevel, ApiKeyLevel } from './context';
@@ -507,7 +507,7 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
       return (
         await this.bulkOperationsApi.bulkDeleteUsers({
           ...this.config.apiContext.environmentContext,
-          usersDeleteBulkOperation: {
+          userDeleteBulkOperation: {
             operations: userKeys,
           },
         })
@@ -536,7 +536,7 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
       return (
         await this.bulkOperationsApi.bulkReplaceUsers({
           ...this.config.apiContext.environmentContext,
-          usersReplaceBulkOperation: {
+          userReplaceBulkOperation: {
             operations: users,
           },
         })

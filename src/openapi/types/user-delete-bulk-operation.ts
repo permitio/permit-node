@@ -18,8 +18,6 @@
  * @interface UserDeleteBulkOperation
  */
 export interface UserDeleteBulkOperation {
-  [key: string]: any;
-
   /**
    *
    * @type {any}

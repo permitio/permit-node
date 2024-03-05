@@ -18,8 +18,6 @@
  * @interface UserReplaceBulkOperation
  */
 export interface UserReplaceBulkOperation {
-  [key: string]: any;
-
   /**
    *
    * @type {any}

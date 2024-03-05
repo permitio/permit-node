@@ -18,8 +18,6 @@
  * @interface UserCreateBulkOperation
  */
 export interface UserCreateBulkOperation {
-  [key: string]: any;
-
   /**
    *
    * @type {any}
