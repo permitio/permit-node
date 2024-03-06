@@ -57,7 +57,7 @@ export const BulkOperationsApiAxiosParamCreator = function (configuration?: Conf
      * @summary Bulk Create Tenants
      * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {{ [key: string]: any; }} requestBody
+     * @param {any} requestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -116,14 +116,14 @@ export const BulkOperationsApiAxiosParamCreator = function (configuration?: Conf
      * @summary Bulk Create Users
      * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {{ [key: string]: any; }} requestBody
+     * @param userCreateBulkOperation
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     bulkCreateUsers: async (
       projId: any,
       envId: any,
-      requestBody: { [key: string]: any },
+      userCreateBulkOperation: UserCreateBulkOperation,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -131,7 +131,7 @@ export const BulkOperationsApiAxiosParamCreator = function (configuration?: Conf
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('bulkCreateUsers', 'envId', envId);
       // verify required parameter 'requestBody' is not null or undefined
-      assertParamExists('bulkCreateUsers', 'requestBody', requestBody);
+      assertParamExists('bulkCreateUsers', 'requestBody', userCreateBulkOperation);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/bulk/users`
         .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
         .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
@@ -160,7 +160,7 @@ export const BulkOperationsApiAxiosParamCreator = function (configuration?: Conf
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        requestBody,
+        userCreateBulkOperation,
         localVarRequestOptions,
         configuration,
       );
@@ -238,7 +238,7 @@ export const BulkOperationsApiAxiosParamCreator = function (configuration?: Conf
      * @summary Bulk Delete Tenants
      * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {{ [key: string]: any; }} requestBody
+     * @param {any} requestBody
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -297,14 +297,14 @@ export const BulkOperationsApiAxiosParamCreator = function (configuration?: Conf
      * @summary Bulk Delete Users
      * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {{ [key: string]: any; }} requestBody
+     * @param userDeleteBulkOperation
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     bulkDeleteUsers: async (
       projId: any,
       envId: any,
-      requestBody: { [key: string]: any },
+      userDeleteBulkOperation: UserDeleteBulkOperation,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -312,7 +312,7 @@ export const BulkOperationsApiAxiosParamCreator = function (configuration?: Conf
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('bulkDeleteUsers', 'envId', envId);
       // verify required parameter 'requestBody' is not null or undefined
-      assertParamExists('bulkDeleteUsers', 'requestBody', requestBody);
+      assertParamExists('bulkDeleteUsers', 'requestBody', userDeleteBulkOperation);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/bulk/users`
         .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
         .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
@@ -341,7 +341,7 @@ export const BulkOperationsApiAxiosParamCreator = function (configuration?: Conf
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        requestBody,
+        userDeleteBulkOperation,
         localVarRequestOptions,
         configuration,
       );
@@ -419,14 +419,14 @@ export const BulkOperationsApiAxiosParamCreator = function (configuration?: Conf
      * @summary Bulk Replace Users
      * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {{ [key: string]: any; }} requestBody
+     * @param userReplaceBulkOperation
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     bulkReplaceUsers: async (
       projId: any,
       envId: any,
-      requestBody: { [key: string]: any },
+      userReplaceBulkOperation: UserReplaceBulkOperation,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -434,7 +434,7 @@ export const BulkOperationsApiAxiosParamCreator = function (configuration?: Conf
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('bulkReplaceUsers', 'envId', envId);
       // verify required parameter 'requestBody' is not null or undefined
-      assertParamExists('bulkReplaceUsers', 'requestBody', requestBody);
+      assertParamExists('bulkReplaceUsers', 'requestBody', userReplaceBulkOperation);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/bulk/users`
         .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
         .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
@@ -463,7 +463,7 @@ export const BulkOperationsApiAxiosParamCreator = function (configuration?: Conf
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        requestBody,
+        userReplaceBulkOperation,
         localVarRequestOptions,
         configuration,
       );
@@ -511,20 +511,25 @@ export const BulkOperationsApiFp = function (configuration?: Configuration) {
      * @summary Bulk Create Users
      * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {{ [key: string]: any; }} requestBody
+     * @param userCreateBulkOperation
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async bulkCreateUsers(
       projId: any,
       envId: any,
-      requestBody: { [key: string]: any },
+      userCreateBulkOperation: UserCreateBulkOperation,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<{ [key: string]: any }>> {
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<BulkOperationsApiBulkCreateUsersRequest>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.bulkCreateUsers(
         projId,
         envId,
-        requestBody,
+        userCreateBulkOperation,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -580,20 +585,25 @@ export const BulkOperationsApiFp = function (configuration?: Configuration) {
      * @summary Bulk Delete Users
      * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {{ [key: string]: any; }} requestBody
+     * @param userDeleteBulkOperation
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async bulkDeleteUsers(
       projId: any,
       envId: any,
-      requestBody: { [key: string]: any },
+      userDeleteBulkOperation: UserDeleteBulkOperation,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<{ [key: string]: any }>> {
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<BulkOperationsApiBulkDeleteUsersRequest>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.bulkDeleteUsers(
         projId,
         envId,
-        requestBody,
+        userDeleteBulkOperation,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -626,20 +636,25 @@ export const BulkOperationsApiFp = function (configuration?: Configuration) {
      * @summary Bulk Replace Users
      * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {{ [key: string]: any; }} requestBody
+     * @param userReplaceBulkOperation
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async bulkReplaceUsers(
       projId: any,
       envId: any,
-      requestBody: { [key: string]: any },
+      userReplaceBulkOperation: UserReplaceBulkOperation,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<{ [key: string]: any }>> {
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<BulkOperationsApiBulkReplaceUsersRequest>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.bulkReplaceUsers(
         projId,
         envId,
-        requestBody,
+        userReplaceBulkOperation,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -682,18 +697,18 @@ export const BulkOperationsApiFactory = function (
      * @summary Bulk Create Users
      * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {{ [key: string]: any; }} requestBody
+     * @param userCreateBulkOperation
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     bulkCreateUsers(
       projId: any,
       envId: any,
-      requestBody: { [key: string]: any },
+      userCreateBulkOperation: UserCreateBulkOperation,
       options?: any,
-    ): AxiosPromise<{ [key: string]: any }> {
+    ): AxiosPromise<BulkOperationsApiBulkCreateUsersRequest> {
       return localVarFp
-        .bulkCreateUsers(projId, envId, requestBody, options)
+        .bulkCreateUsers(projId, envId, userCreateBulkOperation, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -739,18 +754,18 @@ export const BulkOperationsApiFactory = function (
      * @summary Bulk Delete Users
      * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {{ [key: string]: any; }} requestBody
+     * @param userDeleteBulkOperation
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     bulkDeleteUsers(
       projId: any,
       envId: any,
-      requestBody: { [key: string]: any },
+      userDeleteBulkOperation: UserDeleteBulkOperation,
       options?: any,
-    ): AxiosPromise<{ [key: string]: any }> {
+    ): AxiosPromise<BulkOperationsApiBulkDeleteUsersRequest> {
       return localVarFp
-        .bulkDeleteUsers(projId, envId, requestBody, options)
+        .bulkDeleteUsers(projId, envId, userDeleteBulkOperation, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -777,18 +792,18 @@ export const BulkOperationsApiFactory = function (
      * @summary Bulk Replace Users
      * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {{ [key: string]: any; }} requestBody
+     * @param userReplaceBulkOperation
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     bulkReplaceUsers(
       projId: any,
       envId: any,
-      requestBody: { [key: string]: any },
+      userReplaceBulkOperation: UserReplaceBulkOperation,
       options?: any,
-    ): AxiosPromise<{ [key: string]: any }> {
+    ): AxiosPromise<BulkOperationsApiBulkReplaceUsersRequest> {
       return localVarFp
-        .bulkReplaceUsers(projId, envId, requestBody, options)
+        .bulkReplaceUsers(projId, envId, userReplaceBulkOperation, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -844,7 +859,7 @@ export interface BulkOperationsApiBulkCreateUsersRequest {
 
   /**
    *
-   * @type {any}
+   * @type {UserCreateBulkOperation}
    * @memberof BulkOperationsApiBulkCreateUsers
    */
   readonly userCreateBulkOperations: UserCreateBulkOperation;
@@ -928,7 +943,7 @@ export interface BulkOperationsApiBulkDeleteUsersRequest {
 
   /**
    *
-   * @type {any}
+   * @type {UserDeleteBulkOperation}
    * @memberof BulkOperationsApiBulkDeleteUsers
    */
   readonly userDeleteBulkOperation: UserDeleteBulkOperation;
@@ -984,7 +999,7 @@ export interface BulkOperationsApiBulkReplaceUsersRequest {
 
   /**
    *
-   * @type {any}
+   * @type {UserReplaceBulkOperation}
    * @memberof BulkOperationsApiBulkReplaceUsers
    */
   readonly userReplaceBulkOperation: UserReplaceBulkOperation;
@@ -1000,7 +1015,7 @@ export class BulkOperationsApi extends BaseAPI {
   /**
    *
    * @summary Bulk Create Tenants
-   * @param {BulkOperationsApiBulkCreateTenantsRequest} requestParameters Request parameters.
+   * @param {BulkOpertionsApiBulkCreateTenantsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof BulkOperationsApi
