@@ -1045,7 +1045,7 @@ export class BulkOperationsApi extends BaseAPI {
   public bulkCreateUsers(
     requestParameters: BulkOperationsApiBulkCreateUsersRequest,
     options?: AxiosRequestConfig,
-  ) {
+  ): AxiosPromise<any> {
     return BulkOperationsApiFp(this.configuration)
       .bulkCreateUsers(
         requestParameters.projId,
@@ -1108,18 +1108,17 @@ export class BulkOperationsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof BulkOperationsApi
    */
-  public bulkDeleteUsers(
+  public async bulkDeleteUsers(
     requestParameters: BulkOperationsApiBulkDeleteUsersRequest,
     options?: AxiosRequestConfig,
-  ) {
-    return BulkOperationsApiFp(this.configuration)
-      .bulkDeleteUsers(
-        requestParameters.projId,
-        requestParameters.envId,
-        requestParameters.userDeleteBulkOperation,
-        options,
-      )
-      .then((request) => request(this.axios, this.basePath));
+  ): Promise<AxiosPromise<any>> {
+    let request = await BulkOperationsApiFp(this.configuration).bulkDeleteUsers(
+      requestParameters.projId,
+      requestParameters.envId,
+      requestParameters.userDeleteBulkOperation,
+      options,
+    );
+    return request(this.axios, this.basePath);
   }
 
   /**
@@ -1155,7 +1154,7 @@ export class BulkOperationsApi extends BaseAPI {
   public bulkReplaceUsers(
     requestParameters: BulkOperationsApiBulkReplaceUsersRequest,
     options?: AxiosRequestConfig,
-  ) {
+  ): AxiosPromise<any> {
     return BulkOperationsApiFp(this.configuration)
       .bulkReplaceUsers(
         requestParameters.projId,
