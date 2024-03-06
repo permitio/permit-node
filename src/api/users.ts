@@ -508,7 +508,7 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
         await this.bulkOperationsApi.bulkDeleteUsers({
           ...this.config.apiContext.environmentContext,
           userDeleteBulkOperation: {
-            operations: userKeys,
+            idents: userKeys,
           },
         })
       ).data;
