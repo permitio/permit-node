@@ -12,7 +12,11 @@ import {
   UserRead,
   UserUpdate,
 } from '../openapi';
+import { BulkOperationsApi } from '../openapi/api/bulk-operations-api';
 import { BASE_PATH } from '../openapi/base';
+import { UserCreateBulkOperation } from '../openapi/types/user-create-bulk-operation';
+import { UserDeleteBulkOperation } from '../openapi/types/user-delete-bulk-operation';
+import { UserReplaceBulkOperation } from '../openapi/types/user-replace-bulk-operation';
 
 import { BasePermitApi, IPagination } from './base';
 import { ApiContextLevel, ApiKeyLevel } from './context';
@@ -179,6 +183,38 @@ export interface IUsersApi {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   getAssignedRoles({ user, tenant, page, perPage }: IGetUserRoles): Promise<RoleAssignmentRead[]>;
+
+  /**
+   * Creates users in bulk.
+   *
+   * @param users The array of users to create.
+   * @returns A promise that resolves with the bulk create users report .
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
+  bulkUserCreate(users: UserCreate[]): Promise<UserCreateBulkOperation>;
+
+  /**
+   * Deletes users in bulk.
+   *
+   * @param userKeys The array of user keys to delete.
+   * @returns A promise that resolves with the bulk delete users report .
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
+  bulkUserDelete(userKeys: string[]): Promise<UserDeleteBulkOperation>;
+
+  /**
+   * Replaces users in bulk.
+   *
+   * If a user exists, it will be replaced. Otherwise, it will be created.
+   *
+   * @param users The array of users to replace.
+   * @returns A promise that resolves with the bulk replacement users report .
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
+  bulkUserReplace(users: UserCreate[]): Promise<UserReplaceBulkOperation>;
 }
 
 /**
@@ -187,6 +223,7 @@ export interface IUsersApi {
 export class UsersApi extends BasePermitApi implements IUsersApi {
   private users: AutogenUsersApi;
   private roleAssignments: AutogenRoleAssignmentsApi;
+  private bulkOperationsApi: BulkOperationsApi;
 
   /**
    * Creates an instance of the UsersApi.
@@ -201,6 +238,11 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
       this.config.axiosInstance,
     );
     this.roleAssignments = new AutogenRoleAssignmentsApi(
+      this.openapiClientConfig,
+      BASE_PATH,
+      this.config.axiosInstance,
+    );
+    this.bulkOperationsApi = new BulkOperationsApi(
       this.openapiClientConfig,
       BASE_PATH,
       this.config.axiosInstance,
@@ -418,6 +460,89 @@ export class UsersApi extends BasePermitApi implements IUsersApi {
         })
       ).data;
     } catch (err) {
+      this.handleApiError(err);
+    }
+  }
+
+  /**
+   * Creates users in bulk.
+   *
+   * @param users The array of users to create.
+   * @returns A promise that resolves to the bulk creation result.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
+  public async bulkUserCreate(users: UserCreate[]): Promise<UserCreateBulkOperation> {
+    // Ensure access level and context
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
+    try {
+      return (
+        await this.bulkOperationsApi.bulkCreateUsers({
+          ...this.config.apiContext.environmentContext,
+          userCreateBulkOperations: {
+            operations: users,
+          },
+        })
+      ).data;
+    } catch (err) {
+      // Handle any errors that occur during the API call
+      this.handleApiError(err);
+    }
+  }
+
+  /**
+   * Deletes users in bulk.
+   *
+   * @param userKeys The array of user keys to delete.
+   * @returns A promise that resolves to the bulk deletion result.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
+  public async bulkUserDelete(userKeys: string[]): Promise<UserDeleteBulkOperation> {
+    // Ensure access level and context
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
+    try {
+      return (
+        await this.bulkOperationsApi.bulkDeleteUsers({
+          ...this.config.apiContext.environmentContext,
+          userDeleteBulkOperation: {
+            idents: userKeys,
+          },
+        })
+      ).data;
+    } catch (err) {
+      // Handle any errors that occur during the API call
+      this.handleApiError(err);
+    }
+  }
+
+  /**
+   * Replaces users in bulk.
+   *
+   * If a user exists, it will be replaced. Otherwise, it will be created.
+   *
+   * @param users The array of users to replace.
+   * @returns A promise that resolves to the bulk replacement result.
+   * @throws {@link PermitApiError} If the API returns an error HTTP status code.
+   * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
+   */
+  public async bulkUserReplace(users: UserCreate[]): Promise<UserReplaceBulkOperation> {
+    // Ensure access level and context
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
+    try {
+      return (
+        await this.bulkOperationsApi.bulkReplaceUsers({
+          ...this.config.apiContext.environmentContext,
+          userReplaceBulkOperation: {
+            operations: users,
+          },
+        })
+      ).data;
+    } catch (err) {
+      // Handle any errors that occur during the API call
       this.handleApiError(err);
     }
   }
