@@ -2,9 +2,9 @@ import anyTest, { TestInterface } from 'ava';
 
 import { provideTestExecutionContext, TestContext } from './fixtures';
 
-const test = anyTest as TestInterface<TestContext>;
-test.before(provideTestExecutionContext);
-test('Bulk relationship tuples test', async (t) => {
+const test_relationship_tuples = anyTest as TestInterface<TestContext>;
+test_relationship_tuples.before(provideTestExecutionContext);
+test_relationship_tuples('Bulk relationship tuples test', async (t) => {
   const permit = t.context.permit;
   const logger = t.context.logger;
 
@@ -24,22 +24,16 @@ test('Bulk relationship tuples test', async (t) => {
       },
     ];
     logger.info('Tuples: ' + JSON.stringify(tuples));
-    const result = await permit.api.relationshipTuples.bulkRelationshipTuples(tuples);
-    // const array_test: any[] = result.operations;
-    // const resultLength = array_test.length
-    // t.is(resultLength, 2);
-    // t.deepEqual(array_test[0], tuples[0]);
-    // t.deepEqual(array_test[1], tuples[1]);
-    // logger.info('Bulk relationship tuples test passed');
+    await permit.api.relationshipTuples.bulkRelationshipTuples(tuples);
   } catch (error) {
     logger.error(`Got error: ${error}`);
     t.fail(`Got error: ${error}`);
   }
 });
 
-const test2 = anyTest as TestInterface<TestContext>;
-test2.before(provideTestExecutionContext);
-test2('Bulk users test', async (t) => {
+const test_bulk_add_users = anyTest as TestInterface<TestContext>;
+test_bulk_add_users.before(provideTestExecutionContext);
+test_bulk_add_users('Bulk users test', async (t) => {
   const permit = t.context.permit;
   const logger = t.context.logger;
 
@@ -60,9 +54,9 @@ test2('Bulk users test', async (t) => {
   }
 });
 
-const test4 = anyTest as TestInterface<TestContext>;
-test4.before(provideTestExecutionContext);
-test4('Bulk users replace test', async (t) => {
+const test_bulk_replace_users = anyTest as TestInterface<TestContext>;
+test_bulk_replace_users.before(provideTestExecutionContext);
+test_bulk_replace_users('Bulk users replace test', async (t) => {
   const permit = t.context.permit;
   const logger = t.context.logger;
 
@@ -85,9 +79,9 @@ test4('Bulk users replace test', async (t) => {
   }
 });
 
-const test3 = anyTest as TestInterface<TestContext>;
-test3.before(provideTestExecutionContext);
-test3('Bulk users delete test', async (t) => {
+const test_bulk_delete_users = anyTest as TestInterface<TestContext>;
+test_bulk_delete_users.before(provideTestExecutionContext);
+test_bulk_delete_users('Bulk users delete test', async (t) => {
   const permit = t.context.permit;
   const logger = t.context.logger;
 
