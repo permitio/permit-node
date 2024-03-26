@@ -1,0 +1,57 @@
+name: Release permit Node SDK
+
+on: push
+  # push:
+  #   tags:
+  #     - 'v*'
+
+jobs:
+  publish_node_sdk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Verify ~/.npmrc exists
+        run: cat ~/.npmrc
+          
+      - name: Install dependencies
+        run: |
+          yarn run build
+          yarn docs ; git add docs/ ; git commit -m "update tsdoc"
+
+      - name: Update package.json with new version
+        run: |
+          #sed -i "s/\"version\": \".*\"/\"version\": \"${{ github.event.release.tag_name }}\"/" package.json
+          sed -i "s/\"version\": \".*\"/\"version\": \"1.1.121212\"/" package.json
+          echo package.json
+      
+      # - name: Publish package to NPM
+      #   run: yarn publish --access public
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # - name: Commit package.json changes
+      #   run: |
+      #     git config --local user.email "eli@permit.io"
+      #     git config --local user.name "elimoshkovich"
+      #     git add package.json
+      #     git commit -m "update package.json version to ${{ github.event.release.tag_name }}"
+
+      # - name: Push changes to GitHub
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.TOKEN_GITHUB }}
+
+
+
+
+
+
+      
