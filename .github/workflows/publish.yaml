@@ -17,9 +17,6 @@ jobs:
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
-
-      - name: Verify ~/.npmrc exists
-        run: cat ~/.npmrc
           
       - name: Install dependencies
         run: |
