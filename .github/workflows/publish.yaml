@@ -35,7 +35,7 @@ jobs:
         run: |
           #sed -i "s/\"version\": \".*\"/\"version\": \"${{ github.event.release.tag_name }}\"/" package.json
           sed -i "s/\"version\": \".*\"/\"version\": \"1.1.121212\"/" package.json
-          echo package.json
+          cat package.json
       
       # - name: Publish package to NPM
       #   run: yarn publish --access public
