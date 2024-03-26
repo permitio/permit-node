@@ -20,6 +20,8 @@ jobs:
           
       - name: Install dependencies
         run: |
+          rm -rf node_modules
+          yarn install
           yarn run build
           yarn docs ; git add docs/ ; git commit -m "update tsdoc"
 
