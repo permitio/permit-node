@@ -18,7 +18,12 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
           token: ${{ secrets.NPM_TOKEN }}
-          
+      
+      - name: Set git user
+        run: |
+          git config --global user.email "eli@permit.io"
+          git config --global user.name "elimoshkovich"
+
       - name: Install dependencies
         run: |
           rm -rf node_modules
