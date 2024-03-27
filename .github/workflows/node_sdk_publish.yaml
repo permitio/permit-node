@@ -37,7 +37,7 @@ jobs:
         env:
           PDP_API_KEY: ${{ secrets.PDP_API_KEY }}
           PERMIT_API_KEY: ${{ secrets.PDP_API_KEY }}
-        run: docker run -p 7766:7000 --env PDP_API_KEY=${{ secrets.PDP_API_KEY }} --env PDP_DEBUG=true permitio/pdp-v2:latest
+        run: docker run -d -p 7766:7000 --env PDP_API_KEY=${{ secrets.PDP_API_KEY }} --env PDP_DEBUG=true permitio/pdp-v2:latest
 
       - name: Run tests
         env:
