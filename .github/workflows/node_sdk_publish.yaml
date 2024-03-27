@@ -31,6 +31,8 @@ jobs:
           yarn docs ; git add docs/ ; git commit -m "update tsdoc"
 
       - name: Run tests
+        env:
+          PDP_API_KEY: ${{ secrets.PDP_API_KEY }}
         run: yarn test
           
       # - name: Bump version at package.json
