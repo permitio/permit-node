@@ -1,9 +1,8 @@
 name: Release permit Node SDK
 
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types: [published]
 
 jobs:
   publish_node_sdk:
