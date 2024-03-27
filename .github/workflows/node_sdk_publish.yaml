@@ -1,8 +1,8 @@
 name: Release permit Node SDK
 
-on:
-  release:
-    types: [published]
+on: push
+  # release:
+  #   types: [published]
 
 jobs:
   publish_node_sdk:
@@ -30,25 +30,28 @@ jobs:
           yarn run build
           yarn docs ; git add docs/ ; git commit -m "update tsdoc"
 
-      - name: Bump version at package.json
-        run: |
-          sed -i "s/\"version\": \".*\"/\"version\": \"${{ github.event.release.tag_name }}\"/" package.json
-          cat package.json
+      - name: Run tests
+        run: yarn test
+          
+      # - name: Bump version at package.json
+      #   run: |
+      #     sed -i "s/\"version\": \".*\"/\"version\": \"${{ github.event.release.tag_name }}\"/" package.json
+      #     cat package.json
       
-      - name: Publish package to NPM
-        run: yarn publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: Publish package to NPM
+      #   run: yarn publish --access public
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Commit package.json changes
-        run: |
-          git config --local user.email "eli@permit.io"
-          git config --local user.name "elimoshkovich"
-          git add package.json
-          git commit -m "bump package.json version to ${{ github.event.release.tag_name }}"
+      # - name: Commit package.json changes
+      #   run: |
+      #     git config --local user.email "eli@permit.io"
+      #     git config --local user.name "elimoshkovich"
+      #     git add package.json
+      #     git commit -m "bump package.json version to ${{ github.event.release.tag_name }}"
 
-      - name: Push changes to GitHub
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.TOKEN_GITHUB }}
-          branch: main
+      # - name: Push changes to GitHub
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.TOKEN_GITHUB }}
+      #     branch: main
