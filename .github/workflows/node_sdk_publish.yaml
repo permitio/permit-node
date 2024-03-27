@@ -30,9 +30,19 @@ jobs:
           yarn run build
           yarn docs ; git add docs/ ; git commit -m "update tsdoc"
 
+      - name: Install Docker
+        uses: docker-practice/actions-setup-docker@master
+
+      - name: local PDP runnning
+        env:
+          PDP_API_KEY: ${{ secrets.PDP_API_KEY }}
+          PERMIT_API_KEY: ${{ secrets.PDP_API_KEY }}
+        run: docker run -p 7766:7000 --env PDP_API_KEY=${{ secrets.PDP_API_KEY }} --env PDP_DEBUG=true permitio/pdp-v2:latest
+
       - name: Run tests
         env:
           PDP_API_KEY: ${{ secrets.PDP_API_KEY }}
+          PERMIT_API_KEY: ${{ secrets.PDP_API_KEY }}
         run: yarn test
           
       # - name: Bump version at package.json
