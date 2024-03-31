@@ -50,7 +50,7 @@ jobs:
           # Extract the new env id
           echo "ENV_ID=$(echo "$response" | jq -r '.id')" >> $GITHUB_ENV
 
-          echo "New env ID: ${{ env.ENV_ID }}"
+          echo "New env ID: $ENV_ID"
       
       - name: Fetch API_KEY of ${{ env.ENV_NAME }}
         run: |
@@ -61,7 +61,7 @@ jobs:
           # Extract the secret from the response which is the API_KEY of the new env
           echo "ENV_API_KEY=$(echo "$response" | jq -r '.secret')" >> $GITHUB_ENV
 
-          echo "New env api key: ${{ env.ENV_API_KEY }}"
+          echo "New env api key: $ENV_API_KEY"
 
       - name: local PDP runnning
         env:
@@ -76,7 +76,6 @@ jobs:
           API_TIER: 'prod'
         run: yarn test
 
-      
       - name: Delete env ${{ env.ENV_NAME }}
         if: always()
         run: |
