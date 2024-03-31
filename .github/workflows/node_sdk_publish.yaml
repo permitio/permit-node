@@ -1,0 +1,108 @@
+name: Release permit Node SDK
+
+on:
+  release:
+    types: [published]
+env: 
+  PROJECT_ID: 7f55831d77c642739bc17733ab0af138 #github actions project id (under 'Permit.io Tests' workspace)
+  ENV_NAME: node-sdk-ci
+
+jobs:
+  publish_node_sdk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          token: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Set git user
+        run: |
+          git config --global user.email "eli@permit.io"
+          git config --global user.name "elimoshkovich"
+
+      - name: Install dependencies
+        run: |
+          rm -rf node_modules
+          yarn install
+          yarn run build
+          yarn docs ; git add docs/ ; git commit -m "update tsdoc"
+
+      - name: Install Docker
+        uses: docker-practice/actions-setup-docker@master
+
+      - name: Creation env ${{ env.ENV_NAME }} under 'Permit.io Tests' workspace
+        run: |
+          response=$(curl -X POST \
+            https://api.permit.io/v2/projects/${{ env.PROJECT_ID }}/envs \
+            -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}' \
+            -H 'Content-Type: application/json' \
+            -d '{
+            "key": "${{ env.ENV_NAME }}",
+            "name": "${{ env.ENV_NAME }}"
+          }')
+
+          # Extract the new env id
+          echo "ENV_ID=$(echo "$response" | jq -r '.id')" >> $GITHUB_ENV
+
+          echo "New env ID: $ENV_ID"
+      
+      - name: Fetch API_KEY of ${{ env.ENV_NAME }}
+        run: |
+          response=$(curl -X GET \
+            https://api.permit.io/v2/api-key/${{ env.PROJECT_ID }}/${{ env.ENV_ID }} \
+            -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}')
+
+          # Extract the secret from the response which is the API_KEY of the new env
+          echo "ENV_API_KEY=$(echo "$response" | jq -r '.secret')" >> $GITHUB_ENV
+
+          echo "New env api key: $ENV_API_KEY"
+
+      - name: local PDP runnning
+        env:
+          PDP_API_KEY: ${{ env.ENV_API_KEY }}
+          PERMIT_API_KEY: ${{ env.ENV_API_KEY }}
+          PDP_DEBUG: true
+        run: docker run -d -p 7766:7000 permitio/pdp-v2:latest
+
+      - name: Run tests
+        env:
+          PDP_API_KEY: ${{ env.ENV_API_KEY }}
+          PERMIT_API_KEY: ${{ env.ENV_API_KEY }}
+          API_TIER: 'prod'
+        run: yarn test
+
+      - name: Delete env ${{ env.ENV_NAME }}
+        if: always()
+        run: |
+          curl -X DELETE \
+            https://api.permit.io/v2/projects/${{ env.PROJECT_ID }}/envs/${{ env.ENV_ID }} \
+            -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}'
+          
+      - name: Bump version at package.json
+        run: |
+          sed -i "s/\"version\": \".*\"/\"version\": \"${{ github.event.release.tag_name }}\"/" package.json
+          cat package.json
+      
+      - name: Publish package to NPM
+        run: yarn publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Commit package.json changes
+        run: |
+          git config --local user.email "eli@permit.io"
+          git config --local user.name "elimoshkovich"
+          git add package.json
+          git commit -m "bump package.json version to ${{ github.event.release.tag_name }}"
+
+      - name: Push changes to GitHub
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN_GITHUB }}
+          branch: main
