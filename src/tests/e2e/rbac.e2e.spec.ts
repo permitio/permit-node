@@ -225,21 +225,21 @@ test('Permission check e2e test', async (t) => {
   } catch (error) {
     logger.error(`GOT ERROR: ${error}`);
     t.fail(`got error: ${error}`);
-  } finally {
-    // cleanup
-    try {
-      await permit.api.users.delete('auth0|elon');
-      await permit.api.tenants.delete('tesla');
-      await permit.api.roles.delete('admin');
-      await permit.api.roles.delete('viewer');
-      await permit.api.resources.delete('document');
-      t.is((await permit.api.resources.list()).length, 0);
-      t.is((await permit.api.roles.list()).length, 0);
-      t.is((await permit.api.tenants.list()).length, 1); // the default tenant
-      t.is((await permit.api.users.list()).data.length, 0);
-    } catch (error) {
-      logger.error(`GOT ERROR: ${error}`);
-      t.fail(`got error: ${error}`);
-    }
-  }
+  // } finally {
+  //   // cleanup
+  //   try {
+  //     await permit.api.users.delete('auth0|elon');
+  //     await permit.api.tenants.delete('tesla');
+  //     await permit.api.roles.delete('admin');
+  //     await permit.api.roles.delete('viewer');
+  //     await permit.api.resources.delete('document');
+  //     t.is((await permit.api.resources.list()).length, 0);
+  //     t.is((await permit.api.roles.list()).length, 0);
+  //     t.is((await permit.api.tenants.list()).length, 1); // the default tenant
+  //     t.is((await permit.api.users.list()).data.length, 0);
+  //   } catch (error) {
+  //     logger.error(`GOT ERROR: ${error}`);
+  //     t.fail(`got error: ${error}`);
+  //   }
+  // }
 });

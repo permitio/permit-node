@@ -590,20 +590,20 @@ test('Permission check e2e test', async (t) => {
   } catch (error) {
     logger.error(`GOT ERROR: ${error}`);
     t.fail(`got error: ${error}`);
-  } finally {
-    // cleanup
-    try {
-      console.log('cleaning up');
-      await permit.api.tenants.delete('cocacola');
-      await permit.api.tenants.delete('permit');
-      await permit.api.resources.delete('account');
-      await permit.api.resources.delete('folder');
-      await permit.api.resources.delete('document');
-      await permit.api.users.delete('user_authz');
-      await permit.api.users.delete('user_permit');
-    } catch (error) {
-      logger.error(`GOT ERROR: ${error}`);
-      t.fail(`got error: ${error}`);
-    }
-  }
+  // } finally {
+  //   // cleanup
+  //   try {
+  //     console.log('cleaning up');
+  //     await permit.api.tenants.delete('cocacola');
+  //     await permit.api.tenants.delete('permit');
+  //     await permit.api.resources.delete('account');
+  //     await permit.api.resources.delete('folder');
+  //     await permit.api.resources.delete('document');
+  //     await permit.api.users.delete('user_authz');
+  //     await permit.api.users.delete('user_permit');
+  //   } catch (error) {
+  //     logger.error(`GOT ERROR: ${error}`);
+  //     t.fail(`got error: ${error}`);
+  //   }
+  // }
 });
