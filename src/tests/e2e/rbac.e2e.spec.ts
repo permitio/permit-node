@@ -14,7 +14,7 @@ test('Permission check e2e test', async (t) => {
   try {
     logger.info('initial setup of objects');
     const document = await permit.api.resources.create({
-      key: 'document_test_rbac',
+      key: 'document',
       name: 'Document',
       urn: 'prn:gdrive:document',
       description: 'google drive document',
@@ -35,7 +35,7 @@ test('Permission check e2e test', async (t) => {
     // verify create output
     t.not(document, null);
     t.not(document.id, null);
-    t.is(document.key, 'document_test_rbac');
+    t.is(document.key, 'document');
     t.is(document.name, 'Document');
     t.is(document.description, 'google drive document');
     t.is(document.urn, 'prn:gdrive:document');
@@ -56,14 +56,14 @@ test('Permission check e2e test', async (t) => {
 
     // create admin role
     const admin = await permit.api.roles.create({
-      key: 'admin_test_rbac',
+      key: 'admin',
       name: 'Admin',
       description: 'an admin role',
       permissions: ['document:create', 'document:read'],
     });
 
     t.not(admin, null);
-    t.is(admin.key, 'admin_test_rbac');
+    t.is(admin.key, 'admin');
     t.is(admin.name, 'Admin');
     t.is(admin.description, 'an admin role');
     t.not(admin.permissions, undefined);
@@ -72,13 +72,13 @@ test('Permission check e2e test', async (t) => {
 
     // create viewer role
     const viewer = await permit.api.roles.create({
-      key: 'viewer_test_rbac',
+      key: 'viewer',
       name: 'Viewer',
       description: 'an viewer role',
     });
 
     t.not(viewer, null);
-    t.is(viewer.key, 'viewer_test_rbac');
+    t.is(viewer.key, 'viewer');
     t.is(viewer.name, 'Viewer');
     t.is(viewer.description, 'an viewer role');
     t.not(viewer.permissions, undefined);
@@ -94,12 +94,12 @@ test('Permission check e2e test', async (t) => {
 
     // create a tenant
     const tenant = await permit.api.tenants.create({
-      key: 'tesla_test_rbac',
+      key: 'tesla',
       name: 'Tesla Inc',
       description: 'The car company',
     });
 
-    t.is(tenant.key, 'tesla_test_rbac');
+    t.is(tenant.key, 'tesla');
     t.is(tenant.name, 'Tesla Inc');
     t.is(tenant.description, 'The car company');
     t.is(tenant.attributes, null);
@@ -152,7 +152,7 @@ test('Permission check e2e test', async (t) => {
         'auth0|elon',
         'read',
         // a 'document' belonging to 'tesla' (ownership based on tenant)
-        { type: 'document_test_rbac', tenant: 'tesla_test_rbac', attributes: resourceAttributes },
+        { type: 'document', tenant: 'tesla', attributes: resourceAttributes },
       ),
     );
 
@@ -229,10 +229,10 @@ test('Permission check e2e test', async (t) => {
     // cleanup
     try {
       await permit.api.users.delete('auth0|elon');
-      await permit.api.tenants.delete('tesla_test_rbac');
-      await permit.api.roles.delete('admin_test_rbac');
-      await permit.api.roles.delete('viewer_test_rbac');
-      await permit.api.resources.delete('document_test_rbac');
+      await permit.api.tenants.delete('tesla');
+      await permit.api.roles.delete('admin');
+      await permit.api.roles.delete('viewer');
+      await permit.api.resources.delete('document');
       t.is((await permit.api.resources.list()).length, 0);
       t.is((await permit.api.roles.list()).length, 0);
       t.is((await permit.api.tenants.list()).length, 1); // the default tenant
