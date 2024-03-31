@@ -17,7 +17,7 @@
     "fix:lint": "eslint src --ext .ts --fix",
     "test": "run-s test:*",
     "test:integration": "run-s build && ava --verbose src/**/endpoints/**",
-    "test:e2e": "run-s build && ava --verbose src/**/e2e/**",
+    // "test:e2e": "run-s build && ava --verbose src/**/e2e/**",
     "test:e2e:rbac": "run-s build && ava --verbose src/**/e2e/rbac.e2e.spec.ts",
     "test:e2e:rebac": "run-s build && ava --verbose src/**/e2e/rebac.e2e.spec.ts",
     "check-cli": "run-s test diff-integration-tests check-integration-tests",
