@@ -3,7 +3,7 @@ name: Release permit Node SDK
 on: push
   # release:
   #   types: [published]
-envs: 
+env: 
   PROJECT_ID: 7f55831d77c642739bc17733ab0af138 #github actions project id (under 'Permit.io Tests' workspace)
   ENV_NAME: node-sdk-ci
 
@@ -78,6 +78,7 @@ jobs:
 
       
       - name: Delete env ${{ env.ENV_NAME }}
+        if: always()
         run: |
           curl -X DELETE \
             https://api.permit.io/v2/projects/${{ env.PROJECT_ID }}/envs/${{ env.ENV_ID }} \
