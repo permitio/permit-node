@@ -1,8 +1,8 @@
 name: Release permit Node SDK
 
-on: push
-  # release:
-  #   types: [published]
+on:
+  release:
+    types: [published]
 env: 
   PROJECT_ID: 7f55831d77c642739bc17733ab0af138 #github actions project id (under 'Permit.io Tests' workspace)
   ENV_NAME: node-sdk-ci
@@ -84,25 +84,25 @@ jobs:
             https://api.permit.io/v2/projects/${{ env.PROJECT_ID }}/envs/${{ env.ENV_ID }} \
             -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}'
           
-      # - name: Bump version at package.json
-      #   run: |
-      #     sed -i "s/\"version\": \".*\"/\"version\": \"${{ github.event.release.tag_name }}\"/" package.json
-      #     cat package.json
+      - name: Bump version at package.json
+        run: |
+          sed -i "s/\"version\": \".*\"/\"version\": \"${{ github.event.release.tag_name }}\"/" package.json
+          cat package.json
       
-      # - name: Publish package to NPM
-      #   run: yarn publish --access public
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish package to NPM
+        run: yarn publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      # - name: Commit package.json changes
-      #   run: |
-      #     git config --local user.email "eli@permit.io"
-      #     git config --local user.name "elimoshkovich"
-      #     git add package.json
-      #     git commit -m "bump package.json version to ${{ github.event.release.tag_name }}"
+      - name: Commit package.json changes
+        run: |
+          git config --local user.email "eli@permit.io"
+          git config --local user.name "elimoshkovich"
+          git add package.json
+          git commit -m "bump package.json version to ${{ github.event.release.tag_name }}"
 
-      # - name: Push changes to GitHub
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.TOKEN_GITHUB }}
-      #     branch: main
+      - name: Push changes to GitHub
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN_GITHUB }}
+          branch: main
