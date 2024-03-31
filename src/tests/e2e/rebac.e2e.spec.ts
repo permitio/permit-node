@@ -6,15 +6,15 @@ import { printBreak, provideTestExecutionContext, TestContext } from '../fixture
 const test = anyTest as TestInterface<TestContext>;
 test.before(provideTestExecutionContext);
 
-const viewerRoleKey = 'viewer';
-const commenterRoleKey = 'commenter';
-const editorRoleKey = 'editor';
-const adminRoleKey = 'admin';
-const memberRoleKey = 'member';
-const watcherRoleKey = 'watcher';
+const viewerRoleKey = 'viewer_test';
+const commenterRoleKey = 'commenter_test';
+const editorRoleKey = 'editor_test';
+const adminRoleKey = 'admin_test';
+const memberRoleKey = 'member_test';
+const watcherRoleKey = 'watcher_test';
 
 const account = {
-  key: 'account',
+  key: 'account_test',
   name: 'Account',
   urn: 'prn:gdrive:account',
   description: 'google drive account',
@@ -38,7 +38,7 @@ const account = {
   },
 };
 const folder = {
-  key: 'folder',
+  key: 'folder_test',
   name: 'Folder',
   urn: 'prn:gdrive:folder',
   description: 'google drive folder',
@@ -53,7 +53,7 @@ const folder = {
   },
 };
 const document = {
-  key: 'document',
+  key: 'document_test',
   name: 'Document',
   urn: 'prn:gdrive:document',
   description: 'google drive document',
@@ -68,7 +68,7 @@ const document = {
 const resourcesToCreate = [account, folder, document];
 
 const permitUser = {
-  key: 'user_permit',
+  key: 'user_permit_test',
   email: 'user@permit.io',
   first_name: 'Permit',
   last_name: 'User',
@@ -77,7 +77,7 @@ const permitUser = {
   },
 };
 const authzUser = {
-  key: 'user_authz',
+  key: 'user_authz_test',
   email: 'member@auth0.com',
   first_name: 'Member',
   last_name: 'User',
@@ -178,11 +178,11 @@ const allResourceRolesToCreate = [
 ];
 
 const permitTenant = {
-  key: 'permit',
+  key: 'permit_test',
   name: 'Permit',
 };
 const cocacolaTenant = {
-  key: 'cocacola',
+  key: 'cocacola_test',
   name: 'Coca Cola',
 };
 const tenantsToCreate = [permitTenant, cocacolaTenant];
@@ -590,20 +590,20 @@ test('Permission check e2e test', async (t) => {
   } catch (error) {
     logger.error(`GOT ERROR: ${error}`);
     t.fail(`got error: ${error}`);
-  // } finally {
-  //   // cleanup
-  //   try {
-  //     console.log('cleaning up');
-  //     await permit.api.tenants.delete('cocacola');
-  //     await permit.api.tenants.delete('permit');
-  //     await permit.api.resources.delete('account');
-  //     await permit.api.resources.delete('folder');
-  //     await permit.api.resources.delete('document');
-  //     await permit.api.users.delete('user_authz');
-  //     await permit.api.users.delete('user_permit');
-  //   } catch (error) {
-  //     logger.error(`GOT ERROR: ${error}`);
-  //     t.fail(`got error: ${error}`);
-  //   }
-  // }
+  } finally {
+    // cleanup
+    try {
+      console.log('cleaning up');
+      await permit.api.tenants.delete('cocacola_test');
+      await permit.api.tenants.delete('permit_test');
+      await permit.api.resources.delete('account_test');
+      await permit.api.resources.delete('folder_test');
+      await permit.api.resources.delete('document_test');
+      await permit.api.users.delete('user_authz_test');
+      await permit.api.users.delete('user_permit_test');
+    } catch (error) {
+      logger.error(`GOT ERROR: ${error}`);
+      t.fail(`got error: ${error}`);
+    }
+  }
 });
