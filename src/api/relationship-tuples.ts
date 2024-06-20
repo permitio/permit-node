@@ -11,7 +11,7 @@ import {
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
 
-import { BasePermitApi, IPagination } from './base';
+import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base';
 import { ApiContextLevel, ApiKeyLevel } from './context';
 
 export {
@@ -49,7 +49,7 @@ export interface IListRelationshipTuples extends IPagination {
 /**
  * API client for managing role createments.
  */
-export interface IRelationshipTuplesApi {
+export interface IRelationshipTuplesApi extends IWaitForSync {
   /**
    * Retrieves a list of role createments based on the specified filters.
    *
@@ -111,7 +111,7 @@ export interface IRelationshipTuplesApi {
 /**
  * The RelationshipTuplesApi class provides methods for interacting with Role createments.
  */
-export class RelationshipTuplesApi extends BasePermitApi implements IRelationshipTuplesApi {
+export class RelationshipTuplesApi extends BaseFactsPermitAPI implements IRelationshipTuplesApi {
   private relationshipTuples: AutogenRelationshipTuplesApi;
 
   /**

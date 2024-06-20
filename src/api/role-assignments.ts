@@ -11,7 +11,7 @@ import {
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
 
-import { BasePermitApi, IPagination } from './base';
+import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base';
 import { ApiContextLevel, ApiKeyLevel } from './context';
 
 export {
@@ -50,7 +50,7 @@ export interface IListRoleAssignments extends IPagination {
 /**
  * API client for managing role assignments.
  */
-export interface IRoleAssignmentsApi {
+export interface IRoleAssignmentsApi extends IWaitForSync {
   /**
    * Retrieves a list of role assignments based on the specified filters.
    *
@@ -107,7 +107,7 @@ export interface IRoleAssignmentsApi {
 /**
  * The RoleAssignmentsApi class provides methods for interacting with Role Assignments.
  */
-export class RoleAssignmentsApi extends BasePermitApi implements IRoleAssignmentsApi {
+export class RoleAssignmentsApi extends BaseFactsPermitAPI implements IRoleAssignmentsApi {
   private roleAssignments: AutogenRoleAssignmentsApi;
 
   /**
