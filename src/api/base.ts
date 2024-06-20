@@ -210,7 +210,7 @@ export abstract class BaseFactsPermitAPI extends BasePermitApi implements IWaitF
 
   public waitForSync(timeout: number | null): this {
     if (this.config.proxyFactsViaPdp) {
-      let clone = this.clone();
+      const clone = this.clone();
       clone.openapiClientConfig.baseOptions.headers['X-Wait-Timeout'] =
         timeout === null ? '' : timeout.toString();
       return clone;
