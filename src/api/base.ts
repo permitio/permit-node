@@ -215,6 +215,9 @@ export abstract class BaseFactsPermitAPI extends BasePermitApi implements IWaitF
         timeout === null ? '' : timeout.toString();
       return clone;
     } else {
+      this.logger.warn(
+        "Attempted to wait for sync, but 'proxyFactsViaPdp' is not enabled. Ignoring.",
+      );
       return this;
     }
   }
