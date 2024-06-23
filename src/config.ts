@@ -85,6 +85,15 @@ export interface IPermitConfig {
    * @see https://axios-http.com/docs/req_config
    */
   axiosInstance: AxiosInstance;
+  /**
+   * Create facts via the PDP API instead of using the default Permit REST API.
+   */
+  proxyFactsViaPdp: boolean;
+  /**
+   * The amount of time in seconds to wait for facts to be available
+   * in the PDP cache before returning the response.
+   */
+  factsSyncTimeout: number | null;
 }
 
 /**
@@ -115,6 +124,8 @@ export class ConfigFactory {
       throwOnError: true,
       apiContext: new ApiContext(),
       axiosInstance: globalAxios.create(),
+      proxyFactsViaPdp: false,
+      factsSyncTimeout: null,
     };
   }
 

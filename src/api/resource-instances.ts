@@ -9,7 +9,7 @@ import {
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
 
-import { BasePermitApi, IPagination } from './base';
+import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base';
 import { ApiContextLevel, ApiKeyLevel } from './context';
 
 export { ResourceInstanceCreate, ResourceInstanceRead, ResourceInstanceUpdate } from '../openapi';
@@ -18,7 +18,7 @@ export interface IListResourceInstanceUsers extends IPagination {
   instanceKey: string;
 }
 
-export interface IResourceInstancesApi {
+export interface IResourceInstancesApi extends IWaitForSync {
   /**
    * Retrieves a list of resource instances.
    *
@@ -96,7 +96,7 @@ export interface IResourceInstancesApi {
 /**
  * The ResourceInstancesApi class provides methods for interacting with Permit ResourceInstances.
  */
-export class ResourceInstancesApi extends BasePermitApi implements IResourceInstancesApi {
+export class ResourceInstancesApi extends BaseFactsPermitAPI implements IResourceInstancesApi {
   private instances: AutogenResourceInstancesApi;
 
   /**

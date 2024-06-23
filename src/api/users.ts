@@ -18,7 +18,7 @@ import { UserCreateBulkOperation } from '../openapi/types/user-create-bulk-opera
 import { UserDeleteBulkOperation } from '../openapi/types/user-delete-bulk-operation';
 import { UserReplaceBulkOperation } from '../openapi/types/user-replace-bulk-operation';
 
-import { BasePermitApi, IPagination } from './base';
+import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base';
 import { ApiContextLevel, ApiKeyLevel } from './context';
 
 export {
@@ -69,7 +69,7 @@ export interface IGetUserRoles {
   readonly perPage?: number;
 }
 
-export interface IUsersApi {
+export interface IUsersApi extends IWaitForSync {
   /**
    * Retrieves a list of users.
    *
@@ -220,7 +220,7 @@ export interface IUsersApi {
 /**
  * The UsersApi class provides methods for interacting with Permit Users.
  */
-export class UsersApi extends BasePermitApi implements IUsersApi {
+export class UsersApi extends BaseFactsPermitAPI {
   private users: AutogenUsersApi;
   private roleAssignments: AutogenRoleAssignmentsApi;
   private bulkOperationsApi: BulkOperationsApi;

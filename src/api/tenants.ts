@@ -10,7 +10,7 @@ import {
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
 
-import { BasePermitApi, IPagination } from './base';
+import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base';
 import { ApiContextLevel, ApiKeyLevel } from './context';
 
 export { PaginatedResultUserRead, TenantCreate, TenantRead, TenantUpdate } from '../openapi';
@@ -19,7 +19,7 @@ export interface IListTenantUsers extends IPagination {
   tenantKey: string;
 }
 
-export interface ITenantsApi {
+export interface ITenantsApi extends IWaitForSync {
   /**
    * Retrieves a list of tenants.
    *
@@ -118,7 +118,7 @@ export interface ITenantsApi {
 /**
  * The TenantsApi class provides methods for interacting with Permit Tenants.
  */
-export class TenantsApi extends BasePermitApi implements ITenantsApi {
+export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
   private tenants: AutogenTenantsApi;
 
   /**

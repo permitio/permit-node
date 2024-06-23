@@ -176,3 +176,49 @@ export abstract class BasePermitApi {
     }
   }
 }
+
+export interface IWaitForSync {
+  /**
+   * Wait for the facts to be synchronized with the PDP. Available only when `proxyFactsViaPdp` is set to `true`.
+   * @param timeout - The maximum number of seconds to wait for the synchronization to complete.
+   * Set to null to wait indefinitely.
+   */
+  waitForSync(timeout: number | null): this;
+}
+
+export abstract class BaseFactsPermitAPI extends BasePermitApi implements IWaitForSync {
+  constructor(protected config: IPermitConfig, protected logger: Logger) {
+    super(config, logger);
+    if (config.proxyFactsViaPdp) {
+      this.openapiClientConfig = new Configuration({
+        basePath: `${this.config.pdp}`,
+        accessToken: this.config.token,
+        baseOptions: {
+          headers: {
+            ...this.openapiClientConfig.baseOptions.headers,
+            'X-Wait-Timeout':
+              this.config.factsSyncTimeout === null ? '' : this.config.factsSyncTimeout.toString(),
+          },
+        },
+      });
+    }
+  }
+
+  protected clone(): this {
+    return new (this.constructor as any)(this.config, this.logger);
+  }
+
+  public waitForSync(timeout: number | null): this {
+    if (this.config.proxyFactsViaPdp) {
+      const clone = this.clone();
+      clone.openapiClientConfig.baseOptions.headers['X-Wait-Timeout'] =
+        timeout === null ? '' : timeout.toString();
+      return clone;
+    } else {
+      this.logger.warn(
+        "Attempted to wait for sync, but 'proxyFactsViaPdp' is not enabled. Ignoring.",
+      );
+      return this;
+    }
+  }
+}
