@@ -11,7 +11,7 @@ interface TestContext {
 
 const test = anyTest as TestInterface<TestContext>;
 
-test.before((t) => {
+test.before(async (t) => {
   if (process.env.CLOUD_PDP === 'true') {
     t.fail('This test is not supported with cloud PDP');
   }
@@ -38,18 +38,11 @@ test.before((t) => {
   });
 
   t.context.logger = LoggerFactory.createLogger(t.context.permit.config);
+
+  await setupSchema(t.context.permit);
 });
 
-const sleep = async (seconds: number) => await new Promise((r) => setTimeout(r, seconds * 1000));
-
-const makeRandomId = (prefix: string) => {
-  const num = Math.floor(Math.random() * 1_000_000);
-  return `${prefix}-${num}`;
-};
-
-test('Check local facts proxy to PDP', async (t) => {
-  const permit = t.context.permit;
-
+const setupSchema = async (permit: Permit) => {
   await permit.api.roles.create({ key: 'admin', name: 'admin' }).catch(() => null);
 
   await permit.api.resources
@@ -72,13 +65,25 @@ test('Check local facts proxy to PDP', async (t) => {
   await permit.api.resourceRoles.assignPermissions('repo', 'editor', ['update']).catch(() => null);
 
   await sleep(10); // wait for schema to sync
+};
 
+const sleep = async (seconds: number) => await new Promise((r) => setTimeout(r, seconds * 1000));
+
+const makeRandomId = (prefix: string) => {
+  const num = Math.floor(Math.random() * 1_000_000);
+  return `${prefix}-${num}`;
+};
+
+test('Check assign role', async (t) => {
+  const permit = t.context.permit;
   const adminUserId = makeRandomId('user');
   await permit.api.users.create({ key: adminUserId });
   await permit.api.users.assignRole({ user: adminUserId, role: 'admin', tenant: 'default' });
-  await sleep(1); // TODO remove
   t.true(await permit.check(adminUserId, 'create', 'repo'));
+});
 
+test('Check assign resource instance role', async (t) => {
+  const permit = t.context.permit;
   const editorUserId = makeRandomId('user');
   await permit.api.users.create({ key: editorUserId });
 
@@ -96,7 +101,6 @@ test('Check local facts proxy to PDP', async (t) => {
     role: 'editor',
     resource_instance: `repo:${resourceInstanceId}`,
   });
-  await sleep(1); // TODO remove
   t.true(
     await permit.check(editorUserId, 'update', {
       key: resourceInstanceId,
