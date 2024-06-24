@@ -109,3 +109,16 @@ test('Check assign resource instance role', async (t) => {
     }),
   );
 });
+
+test('Check skip wait', async (t) => {
+  const permit = t.context.permit;
+  const userId = makeRandomId('user');
+  await permit.api.users.create({ key: userId });
+  // explicitly skip wait for role assignment to sync
+  await permit.api.users.waitForSync(0).assignRole({
+    user: userId,
+    role: 'admin',
+    tenant: 'default',
+  });
+  t.false(await permit.check(userId, 'create', 'repo'));
+});
