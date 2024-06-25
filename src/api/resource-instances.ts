@@ -18,16 +18,21 @@ export interface IListResourceInstanceUsers extends IPagination {
   instanceKey: string;
 }
 
+export interface IListResourceInstanceParams extends IPagination {
+  tenant?: string;
+  resource?: string;
+}
+
 export interface IResourceInstancesApi extends IWaitForSync {
   /**
    * Retrieves a list of resource instances.
    *
-   * @param pagination The pagination options, @see {@link IPagination}
+   * @param params Filtering and pagination options, @see {@link IListResourceInstanceParams}
    * @returns A promise that resolves to an array of resource instances.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  list(pagination?: IPagination): Promise<ResourceInstanceRead[]>;
+  list(params?: IListResourceInstanceParams): Promise<ResourceInstanceRead[]>;
 
   /**
    * Retrieves a instance by its key.
@@ -116,21 +121,19 @@ export class ResourceInstancesApi extends BaseFactsPermitAPI implements IResourc
   /**
    * Retrieves a list of resource instances.
    *
-   * @param pagination The pagination options, @see {@link IPagination}
+   * @param params Filtering and pagination options, @see {@link IListResourceInstanceParams}
    * @returns A promise that resolves to an array of resource instances.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async list(pagination?: IPagination): Promise<ResourceInstanceRead[]> {
-    const { page = 1, perPage = 100 } = pagination ?? {};
+  public async list(params?: IListResourceInstanceParams): Promise<ResourceInstanceRead[]> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.instances.listResourceInstances({
+          ...params,
           ...this.config.apiContext.environmentContext,
-          page,
-          perPage,
         })
       ).data;
     } catch (err) {
