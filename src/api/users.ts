@@ -69,16 +69,21 @@ export interface IGetUserRoles {
   readonly perPage?: number;
 }
 
+export interface IUsersListParams extends IPagination {
+  search?: string;
+  role?: string;
+}
+
 export interface IUsersApi extends IWaitForSync {
   /**
    * Retrieves a list of users.
    *
-   * @param pagination The pagination options, @see {@link IPagination}
+   * @param params Filtering and pagination options, @see {@link IUsersListParams}
    * @returns A promise that resolves to a PaginatedResultUserRead object containing the list of users.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  list(pagination?: IPagination): Promise<PaginatedResultUserRead>;
+  list(params?: IUsersListParams): Promise<PaginatedResultUserRead>;
 
   /**
    * Retrieves a user by its key.
@@ -252,21 +257,19 @@ export class UsersApi extends BaseFactsPermitAPI {
   /**
    * Retrieves a list of users.
    *
-   * @param pagination The pagination options, @see {@link IPagination}
+   * @param params Filtering and pagination options, @see {@link IUsersListParams}
    * @returns A promise that resolves to a PaginatedResultUserRead object containing the list of users.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async list(pagination?: IPagination): Promise<PaginatedResultUserRead> {
-    const { page = 1, perPage = 100 } = pagination ?? {};
+  public async list(params?: IUsersListParams): Promise<PaginatedResultUserRead> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.users.listUsers({
+          ...params,
           ...this.config.apiContext.environmentContext,
-          page,
-          perPage,
         })
       ).data;
     } catch (err) {

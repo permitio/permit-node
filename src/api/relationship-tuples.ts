@@ -44,6 +44,14 @@ export interface IListRelationshipTuples extends IPagination {
    * optional object filter, will only return relationship tuples with this object.
    */
   object?: string;
+  /**
+   * The object type to filter by, accepts resource type id or key
+   */
+  objectType?: string;
+  /**
+   * The subject type to filter by, accepts resource type id or key
+   */
+  subjectType?: string;
 }
 
 /**
@@ -139,18 +147,11 @@ export class RelationshipTuplesApi extends BaseFactsPermitAPI implements IRelati
   public async list(params: IListRelationshipTuples): Promise<RelationshipTupleRead[]> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
-    // TODO: add filters: subject, relation, object
-    const { page = 1, perPage = 100, subject, object, relation, tenant } = params;
     try {
       return (
         await this.relationshipTuples.listRelationshipTuples({
+          ...params,
           ...this.config.apiContext.environmentContext,
-          page,
-          perPage,
-          tenant,
-          subject,
-          relation,
-          object,
         })
       ).data;
     } catch (err) {

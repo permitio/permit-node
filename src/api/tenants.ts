@@ -17,18 +17,24 @@ export { PaginatedResultUserRead, TenantCreate, TenantRead, TenantUpdate } from 
 
 export interface IListTenantUsers extends IPagination {
   tenantKey: string;
+  search?: string;
+  role?: string;
+}
+
+export interface IListTenantsParams extends IPagination {
+  search?: string;
 }
 
 export interface ITenantsApi extends IWaitForSync {
   /**
    * Retrieves a list of tenants.
    *
-   * @param pagination The pagination options, @see {@link IPagination}
+   * @param params Filtering and pagination options, @see {@link IListTenantsParams}
    * @returns A promise that resolves to an array of tenants.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  list(pagination?: IPagination): Promise<TenantRead[]>;
+  list(params?: IListTenantsParams): Promise<TenantRead[]>;
 
   /**
    * Retrieves a list of users for a given tenant.
@@ -138,21 +144,19 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
   /**
    * Retrieves a list of tenants.
    *
-   * @param pagination The pagination options, @see {@link IPagination}
+   * @param params Filtering and pagination options, @see {@link IListTenantsParams}
    * @returns A promise that resolves to an array of tenants.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async list(pagination?: IPagination): Promise<TenantRead[]> {
-    const { page = 1, perPage = 100 } = pagination ?? {};
+  public async list(params?: IListTenantsParams): Promise<TenantRead[]> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.tenants.listTenants({
+          ...params,
           ...this.config.apiContext.environmentContext,
-          page,
-          perPage,
         })
       ).data;
     } catch (err) {
@@ -163,6 +167,7 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
   /**
    * Retrieves a list of users for a given tenant.
    *
+   * @param tenantKey - The key of the tenant for which to list users.
    * @param params - pagination and filtering params.
    * @returns A promise that resolves to a PaginatedResultUserRead object containing the list of tenant users.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
@@ -170,18 +175,16 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
    */
   public async listTenantUsers({
     tenantKey,
-    page = 1,
-    perPage = 100,
+    ...params
   }: IListTenantUsers): Promise<PaginatedResultUserRead> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.tenants.listTenantUsers({
+          ...params,
           ...this.config.apiContext.environmentContext,
           tenantId: tenantKey,
-          page,
-          perPage,
         })
       ).data;
     } catch (err) {
