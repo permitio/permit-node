@@ -1,11 +1,12 @@
-import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import pino from 'pino';
 
 export class AxiosLoggingInterceptor {
   static setupInterceptor(axiosInstance: AxiosInstance, logger: pino.Logger): void {
     // Add a request interceptor
     axiosInstance.interceptors.request.use(
-      function (request: AxiosRequestConfig) {
+      function (request: InternalAxiosRequestConfig) {
+        request.headers = request.headers || {}; // Ensure headers are not undefined
         logger.debug(`Sending HTTP request: ${request?.method?.toUpperCase()} ${request?.url}`);
         return request;
       },
