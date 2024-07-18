@@ -32,7 +32,7 @@
     "cov:check": "nyc report && nyc check-coverage --lines 100 --functions 100 --branches 100",
     "docs": "typedoc",
     "docs:watch": "typedoc --watch",
-    "version": "standard-version",
+    "version": "2.5.2",
     "reset-hard": "git clean -dfx && git reset --hard && yarn",
     "prepare": "npm run build && husky install",
     "prepare-release": "run-s reset-hard test cov:check doc:html version doc:publish",
