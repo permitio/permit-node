@@ -22,15 +22,11 @@
 <section class="tsd-panel tsd-hierarchy">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
-<li><span class="tsd-signature-type ">BasePermitApi</span>
+<li><span class="tsd-signature-type ">BaseFactsPermitAPI</span>
 <ul class="tsd-hierarchy">
-<li><span class="target">UsersApi</span></li></ul></li></ul></section>
-<section class="tsd-panel">
-<h4>Implements</h4>
-<ul class="tsd-hierarchy">
-<li><a href="../interfaces/IUsersApi.html" class="tsd-signature-type tsd-kind-interface">IUsersApi</a></li></ul></section><aside class="tsd-sources">
+<li><span class="target">UsersApi</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/users.ts#L223">src/api/users.ts:223</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/users.ts#L228">src/api/users.ts:228</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -58,6 +54,7 @@
 <a href="UsersApi.html#sync" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>sync</span></a>
 <a href="UsersApi.html#unassignRole" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>unassign<wbr/>Role</span></a>
 <a href="UsersApi.html#update" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>update</span></a>
+<a href="UsersApi.html#waitForSync" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>wait<wbr/>For<wbr/>Sync</span></a>
 </div></section></div></details></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Constructors</h2>
@@ -83,9 +80,9 @@
 <div class="tsd-comment tsd-typography"></div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="UsersApi.html" class="tsd-signature-type tsd-kind-class">UsersApi</a></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
-<p>Overrides BasePermitApi.constructor</p>
+<p>Overrides BaseFactsPermitAPI.constructor</p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/users.ts#L233">src/api/users.ts:233</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/users.ts#L238">src/api/users.ts:238</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member"><a id="assignRole" class="tsd-anchor"></a>
@@ -110,9 +107,8 @@
 
 <h4>Throws</h4><p><a href="PermitContextError.html" class="tsd-kind-class">PermitContextError</a> If the configured <a href="ApiContext.html" class="tsd-kind-class">ApiContext</a> does not match the required endpoint context.</p>
 </div><aside class="tsd-sources">
-<p>Implementation of <a href="../interfaces/IUsersApi.html">IUsersApi</a>.<a href="../interfaces/IUsersApi.html#assignRole">assignRole</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/users.ts#L429">src/api/users.ts:429</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/users.ts#L432">src/api/users.ts:432</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="bulkUserCreate" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>bulk<wbr/>User<wbr/>Create</span><a href="#bulkUserCreate" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -135,9 +131,8 @@
 
 <h4>Throws</h4><p><a href="PermitContextError.html" class="tsd-kind-class">PermitContextError</a> If the configured <a href="ApiContext.html" class="tsd-kind-class">ApiContext</a> does not match the required endpoint context.</p>
 </div><aside class="tsd-sources">
-<p>Implementation of <a href="../interfaces/IUsersApi.html">IUsersApi</a>.<a href="../interfaces/IUsersApi.html#bulkUserCreate">bulkUserCreate</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/users.ts#L475">src/api/users.ts:475</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/users.ts#L478">src/api/users.ts:478</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="bulkUserDelete" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>bulk<wbr/>User<wbr/>Delete</span><a href="#bulkUserDelete" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -160,9 +155,8 @@
 
 <h4>Throws</h4><p><a href="PermitContextError.html" class="tsd-kind-class">PermitContextError</a> If the configured <a href="ApiContext.html" class="tsd-kind-class">ApiContext</a> does not match the required endpoint context.</p>
 </div><aside class="tsd-sources">
-<p>Implementation of <a href="../interfaces/IUsersApi.html">IUsersApi</a>.<a href="../interfaces/IUsersApi.html#bulkUserDelete">bulkUserDelete</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/users.ts#L502">src/api/users.ts:502</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/users.ts#L505">src/api/users.ts:505</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="bulkUserReplace" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>bulk<wbr/>User<wbr/>Replace</span><a href="#bulkUserReplace" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -186,9 +180,8 @@
 
 <h4>Throws</h4><p><a href="PermitContextError.html" class="tsd-kind-class">PermitContextError</a> If the configured <a href="ApiContext.html" class="tsd-kind-class">ApiContext</a> does not match the required endpoint context.</p>
 </div><aside class="tsd-sources">
-<p>Implementation of <a href="../interfaces/IUsersApi.html">IUsersApi</a>.<a href="../interfaces/IUsersApi.html#bulkUserReplace">bulkUserReplace</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/users.ts#L531">src/api/users.ts:531</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/users.ts#L534">src/api/users.ts:534</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="create" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>create</span><a href="#create" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -211,9 +204,8 @@
 
 <h4>Throws</h4><p><a href="PermitContextError.html" class="tsd-kind-class">PermitContextError</a> If the configured <a href="ApiContext.html" class="tsd-kind-class">ApiContext</a> does not match the required endpoint context.</p>
 </div><aside class="tsd-sources">
-<p>Implementation of <a href="../interfaces/IUsersApi.html">IUsersApi</a>.<a href="../interfaces/IUsersApi.html#create">create</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/users.ts#L334">src/api/users.ts:334</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/users.ts#L337">src/api/users.ts:337</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="delete" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>delete</span><a href="#delete" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -236,9 +228,8 @@
 
 <h4>Throws</h4><p><a href="PermitContextError.html" class="tsd-kind-class">PermitContextError</a> If the configured <a href="ApiContext.html" class="tsd-kind-class">ApiContext</a> does not match the required endpoint context.</p>
 </div><aside class="tsd-sources">
-<p>Implementation of <a href="../interfaces/IUsersApi.html">IUsersApi</a>.<a href="../interfaces/IUsersApi.html#delete">delete</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/users.ts#L408">src/api/users.ts:408</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/users.ts#L411">src/api/users.ts:411</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="ensureAccessLevel" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>ensure<wbr/>Access<wbr/>Level</span><a href="#ensureAccessLevel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -259,9 +250,9 @@ Note that this check is not foolproof, and the API may still throw 401.</p>
 <div class="tsd-comment tsd-typography">
 <h4>Throws</h4><p>PermitContextError If the currently set API key access level does not match the required access level.</p>
 </div><aside class="tsd-sources">
-<p>Inherited from BasePermitApi.ensureAccessLevel</p>
+<p>Inherited from BaseFactsPermitAPI.ensureAccessLevel</p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/base.ts#L116">src/api/base.ts:116</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/base.ts#L116">src/api/base.ts:116</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="ensureContext" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>ensure<wbr/>Context</span><a href="#ensureContext" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -281,9 +272,9 @@ Note that this check is not foolproof, and the API may still throw 401.</p>
 <div class="tsd-comment tsd-typography">
 <h4>Throws</h4><p>PermitContextError If the currently set API context level does not match the required context level.</p>
 </div><aside class="tsd-sources">
-<p>Inherited from BasePermitApi.ensureContext</p>
+<p>Inherited from BaseFactsPermitAPI.ensureContext</p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/base.ts#L143">src/api/base.ts:143</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/base.ts#L143">src/api/base.ts:143</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="get" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get</span><a href="#get" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -306,9 +297,8 @@ Note that this check is not foolproof, and the API may still throw 401.</p>
 
 <h4>Throws</h4><p><a href="PermitContextError.html" class="tsd-kind-class">PermitContextError</a> If the configured <a href="ApiContext.html" class="tsd-kind-class">ApiContext</a> does not match the required endpoint context.</p>
 </div><aside class="tsd-sources">
-<p>Implementation of <a href="../interfaces/IUsersApi.html">IUsersApi</a>.<a href="../interfaces/IUsersApi.html#get">get</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/users.ts#L285">src/api/users.ts:285</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/users.ts#L288">src/api/users.ts:288</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getAssignedRoles" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Assigned<wbr/>Roles</span><a href="#getAssignedRoles" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -332,9 +322,8 @@ or across all tenants (if the tenant filter in not provided).</p>
 
 <h4>Throws</h4><p><a href="PermitContextError.html" class="tsd-kind-class">PermitContextError</a> If the configured <a href="ApiContext.html" class="tsd-kind-class">ApiContext</a> does not match the required endpoint context.</p>
 </div><aside class="tsd-sources">
-<p>Implementation of <a href="../interfaces/IUsersApi.html">IUsersApi</a>.<a href="../interfaces/IUsersApi.html#getAssignedRoles">getAssignedRoles</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/users.ts#L559">src/api/users.ts:559</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/users.ts#L562">src/api/users.ts:562</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getById" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>By<wbr/>Id</span><a href="#getById" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -358,9 +347,8 @@ Alias for the <a href="UsersApi.html#get" class="tsd-kind-method">get</a> method
 
 <h4>Throws</h4><p><a href="PermitContextError.html" class="tsd-kind-class">PermitContextError</a> If the configured <a href="ApiContext.html" class="tsd-kind-class">ApiContext</a> does not match the required endpoint context.</p>
 </div><aside class="tsd-sources">
-<p>Implementation of <a href="../interfaces/IUsersApi.html">IUsersApi</a>.<a href="../interfaces/IUsersApi.html#getById">getById</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/users.ts#L322">src/api/users.ts:322</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/users.ts#L325">src/api/users.ts:325</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getByKey" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>By<wbr/>Key</span><a href="#getByKey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -384,13 +372,12 @@ Alias for the <a href="UsersApi.html#get" class="tsd-kind-method">get</a> method
 
 <h4>Throws</h4><p><a href="PermitContextError.html" class="tsd-kind-class">PermitContextError</a> If the configured <a href="ApiContext.html" class="tsd-kind-class">ApiContext</a> does not match the required endpoint context.</p>
 </div><aside class="tsd-sources">
-<p>Implementation of <a href="../interfaces/IUsersApi.html">IUsersApi</a>.<a href="../interfaces/IUsersApi.html#getByKey">getByKey</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/users.ts#L309">src/api/users.ts:309</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/users.ts#L312">src/api/users.ts:312</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="list" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>list</span><a href="#list" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="list.list-1"><span class="tsd-kind-call-signature">list</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">pagination</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/PaginatedResultUserRead.html" class="tsd-signature-type tsd-kind-interface">PaginatedResultUserRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#list.list-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="list.list-1"><span class="tsd-kind-call-signature">list</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">params</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/PaginatedResultUserRead.html" class="tsd-signature-type tsd-kind-interface">PaginatedResultUserRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#list.list-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Retrieves a list of users.</p>
 </div>
@@ -398,22 +385,21 @@ Alias for the <a href="UsersApi.html#get" class="tsd-kind-method">get</a> method
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">pagination</span>: <a href="../interfaces/IPagination.html" class="tsd-signature-type tsd-kind-interface">IPagination</a></h5>
-<div class="tsd-comment tsd-typography"><p>The pagination options,</p>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">params</span>: <a href="../interfaces/IUsersListParams.html" class="tsd-signature-type tsd-kind-interface">IUsersListParams</a></h5>
+<div class="tsd-comment tsd-typography"><p>Filtering and pagination options,</p>
 </div>
 <div class="tsd-comment tsd-typography"></div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/PaginatedResultUserRead.html" class="tsd-signature-type tsd-kind-interface">PaginatedResultUserRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to a PaginatedResultUserRead object containing the list of users.</p>
 
 <div class="tsd-comment tsd-typography">
-<h4>See</h4><p><a href="../interfaces/IPagination.html" class="tsd-kind-interface">IPagination</a></p>
+<h4>See</h4><p><a href="../interfaces/IUsersListParams.html" class="tsd-kind-interface">IUsersListParams</a></p>
 
 <h4>Throws</h4><p><a href="PermitApiError.html" class="tsd-kind-class">PermitApiError</a> If the API returns an error HTTP status code.</p>
 
 <h4>Throws</h4><p><a href="PermitContextError.html" class="tsd-kind-class">PermitContextError</a> If the configured <a href="ApiContext.html" class="tsd-kind-class">ApiContext</a> does not match the required endpoint context.</p>
 </div><aside class="tsd-sources">
-<p>Implementation of <a href="../interfaces/IUsersApi.html">IUsersApi</a>.<a href="../interfaces/IUsersApi.html#list">list</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/users.ts#L260">src/api/users.ts:260</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/users.ts#L265">src/api/users.ts:265</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="sync" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>sync</span><a href="#sync" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -436,9 +422,8 @@ Alias for the <a href="UsersApi.html#get" class="tsd-kind-method">get</a> method
 
 <h4>Throws</h4><p><a href="PermitContextError.html" class="tsd-kind-class">PermitContextError</a> If the configured <a href="ApiContext.html" class="tsd-kind-class">ApiContext</a> does not match the required endpoint context.</p>
 </div><aside class="tsd-sources">
-<p>Implementation of <a href="../interfaces/IUsersApi.html">IUsersApi</a>.<a href="../interfaces/IUsersApi.html#sync">sync</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/users.ts#L382">src/api/users.ts:382</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/users.ts#L385">src/api/users.ts:385</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="unassignRole" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>unassign<wbr/>Role</span><a href="#unassignRole" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -461,9 +446,8 @@ Alias for the <a href="UsersApi.html#get" class="tsd-kind-method">get</a> method
 
 <h4>Throws</h4><p><a href="PermitContextError.html" class="tsd-kind-class">PermitContextError</a> If the configured <a href="ApiContext.html" class="tsd-kind-class">ApiContext</a> does not match the required endpoint context.</p>
 </div><aside class="tsd-sources">
-<p>Implementation of <a href="../interfaces/IUsersApi.html">IUsersApi</a>.<a href="../interfaces/IUsersApi.html#unassignRole">unassignRole</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/users.ts#L452">src/api/users.ts:452</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/users.ts#L455">src/api/users.ts:455</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="update" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>update</span><a href="#update" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -491,9 +475,22 @@ Alias for the <a href="UsersApi.html#get" class="tsd-kind-method">get</a> method
 
 <h4>Throws</h4><p><a href="PermitContextError.html" class="tsd-kind-class">PermitContextError</a> If the configured <a href="ApiContext.html" class="tsd-kind-class">ApiContext</a> does not match the required endpoint context.</p>
 </div><aside class="tsd-sources">
-<p>Implementation of <a href="../interfaces/IUsersApi.html">IUsersApi</a>.<a href="../interfaces/IUsersApi.html#update">update</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/permitio/permit-node/blob/35478e3/src/api/users.ts#L358">src/api/users.ts:358</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/users.ts#L361">src/api/users.ts:361</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-inherited"><a id="waitForSync" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>wait<wbr/>For<wbr/>Sync</span><a href="#waitForSync" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-inherited">
+<li class="tsd-signature tsd-anchor-link" id="waitForSync.waitForSync-1"><span class="tsd-kind-call-signature">wait<wbr/>For<wbr/>Sync</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">timeout</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="UsersApi.html" class="tsd-signature-type tsd-kind-class">UsersApi</a><a href="#waitForSync.waitForSync-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">timeout</span>: <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="UsersApi.html" class="tsd-signature-type tsd-kind-class">UsersApi</a></h4><aside class="tsd-sources">
+<p>Inherited from BaseFactsPermitAPI.waitForSync</p>
+<ul>
+<li>Defined in <a href="https://github.com/permitio/permit-node/blob/ca96be6/src/api/base.ts#L211">src/api/base.ts:211</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -527,7 +524,8 @@ Alias for the <a href="UsersApi.html#get" class="tsd-kind-method">get</a> method
 <li><a href="#list" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>list</span></a></li>
 <li><a href="#sync" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>sync</span></a></li>
 <li><a href="#unassignRole" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>unassign<wbr/>Role</span></a></li>
-<li><a href="#update" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>update</span></a></li></ul></div></details></div>
+<li><a href="#update" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>update</span></a></li>
+<li><a href="#waitForSync" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>wait<wbr/>For<wbr/>Sync</span></a></li></ul></div></details></div>
 <div class="site-menu">
 <nav class="tsd-navigation"><a href="../modules.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-4"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-namespace)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.33 16V7.24H10.77L13.446 14.74C13.43 14.54 13.41 14.296 13.386 14.008C13.37 13.712 13.354 13.404 13.338 13.084C13.33 12.756 13.326 12.448 13.326 12.16V7.24H14.37V16H12.93L10.266 8.5C10.282 8.692 10.298 8.936 10.314 9.232C10.33 9.52 10.342 9.828 10.35 10.156C10.366 10.476 10.374 10.784 10.374 11.08V16H9.33Z" fill="var(--color-text)"></path></g></svg><span>permitio</span></a>
 <ul class="tsd-small-nested-navigation">
@@ -600,6 +598,7 @@ Alias for the <a href="UsersApi.html#get" class="tsd-kind-method">get</a> method
 <li><a href="../interfaces/IListResourceUsers.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IList<wbr/>Resource<wbr/>Users</span></a></li>
 <li><a href="../interfaces/IListRoleAssignments.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IList<wbr/>Role<wbr/>Assignments</span></a></li>
 <li><a href="../interfaces/IListTenantUsers.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IList<wbr/>Tenant<wbr/>Users</span></a></li>
+<li><a href="../interfaces/IListTenantsParams.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IList<wbr/>Tenants<wbr/>Params</span></a></li>
 <li><a href="../interfaces/IPagination.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IPagination</span></a></li>
 <li><a href="../interfaces/IPermitApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IPermit<wbr/>Api</span></a></li>
 <li><a href="../interfaces/IPermitClient.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IPermit<wbr/>Client</span></a></li>
@@ -616,6 +615,7 @@ Alias for the <a href="UsersApi.html#get" class="tsd-kind-method">get</a> method
 <li><a href="../interfaces/ITenantsApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>ITenants<wbr/>Api</span></a></li>
 <li><a href="../interfaces/IUser.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IUser</span></a></li>
 <li><a href="../interfaces/IUsersApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IUsers<wbr/>Api</span></a></li>
+<li><a href="../interfaces/IUsersListParams.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IUsers<wbr/>List<wbr/>Params</span></a></li>
 <li><a href="../interfaces/OrgMemberRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Org<wbr/>Member<wbr/>Read</span></a></li>
 <li><a href="../interfaces/PaginatedResultUserRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Paginated<wbr/>Result<wbr/>User<wbr/>Read</span></a></li>
 <li><a href="../interfaces/ParentId.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Parent<wbr/>Id</span></a></li>
