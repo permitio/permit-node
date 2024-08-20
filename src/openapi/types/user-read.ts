@@ -92,4 +92,16 @@ export interface UserRead {
    * @memberof UserRead
    */
   attributes?: object;
+  /**
+   * The date the user was created.
+   * @type {string}
+   * @memberof UserRead
+   */
+  created_at: string;
+  /**
+   * The date the user was last updated.
+   * @type {string}
+   * @memberof UserRead
+   */
+  updated_at: string;
 }
