@@ -261,12 +261,14 @@ export class ApiContext {
    */
   public get environmentContext(): { projId: string; envId: string } {
     if (
-      this._level !== ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY ||
+      this._contextLevel !== ApiContextLevel.ENVIRONMENT ||
       this._project === null ||
       this._environment === null
     ) {
       throw new PermitContextError(
-        `You cannot get environment context, current api context is: ${this._level.toString()}`,
+        `You cannot get environment context, current api context is: ${
+          ApiContextLevel[this._contextLevel]
+        }`,
       );
     }
     return {
