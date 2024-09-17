@@ -165,9 +165,11 @@ export abstract class BasePermitApi {
   protected handleApiError(err: unknown): never {
     if (axios.isAxiosError(err)) {
       // this is an http response with an error status code
-      const message = `Got error status code: ${err.response?.status}`;
+      const message = `Got error status code: ${err.response?.status}, err: ${JSON.stringify(
+        err?.response?.data,
+      )}`;
       // log this to the SDK logger
-      this.logger.error(`${message}, err: ${JSON.stringify(err?.response?.data)}`);
+      this.logger.error(message);
       // and throw a permit error exception
       throw new PermitApiError(message, err);
     } else {
