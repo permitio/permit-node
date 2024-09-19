@@ -12,6 +12,15 @@ export class PermitApiError<T> extends Error {
     super(message);
   }
 
+  public get formattedAxiosError(): any {
+    return {
+      code: this.originalError.code,
+      message: this.message,
+      error: this.originalError.response?.data,
+      status: this.originalError.status,
+    };
+  }
+
   public get request(): any {
     return this.originalError.request;
   }
@@ -165,13 +174,14 @@ export abstract class BasePermitApi {
   protected handleApiError(err: unknown): never {
     if (axios.isAxiosError(err)) {
       // this is an http response with an error status code
-      const message = `Got error status code: ${err.response?.status}, err: ${JSON.stringify(
+      const logMessage = `Got error status code: ${err.response?.status}, err: ${JSON.stringify(
         err?.response?.data,
       )}`;
+      const apiMessage = err.response?.data.message;
       // log this to the SDK logger
-      this.logger.error(message);
+      this.logger.error(logMessage);
       // and throw a permit error exception
-      throw new PermitApiError(message, err);
+      throw new PermitApiError(apiMessage, err);
     } else {
       // unexpected error, just throw
       throw err;
