@@ -1,5 +1,6 @@
 .idea/*
 .nyc_output
+.env
 build
 node_modules
 test
@@ -13,3 +14,4 @@ src/openapi/.gitignore
 src/openapi/.npmignore
 src/openapi/.openapi-generator-ignore
 src/openapi/git_push.sh
+

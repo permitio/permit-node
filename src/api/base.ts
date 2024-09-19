@@ -7,9 +7,24 @@ import { BASE_PATH } from '../openapi/base';
 
 import { API_ACCESS_LEVELS, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context';
 
+interface FormattedAxiosError {
+  code: string | undefined;
+  message: string;
+  error: any;
+  status: number | undefined;
+}
 export class PermitApiError<T> extends Error {
   constructor(message: string, public originalError: AxiosError<T>) {
     super(message);
+  }
+
+  public get formattedAxiosError(): FormattedAxiosError {
+    return {
+      code: this.originalError.code,
+      message: this.message,
+      error: this.originalError.response?.data,
+      status: this.originalError.status,
+    };
   }
 
   public get request(): any {
@@ -165,11 +180,14 @@ export abstract class BasePermitApi {
   protected handleApiError(err: unknown): never {
     if (axios.isAxiosError(err)) {
       // this is an http response with an error status code
-      const message = `Got error status code: ${err.response?.status}`;
+      const logMessage = `Got error status code: ${err.response?.status}, err: ${JSON.stringify(
+        err?.response?.data,
+      )}`;
+      const apiMessage = err.response?.data.message;
       // log this to the SDK logger
-      this.logger.error(`${message}, err: ${JSON.stringify(err?.response?.data)}`);
+      this.logger.error(logMessage);
       // and throw a permit error exception
-      throw new PermitApiError(message, err);
+      throw new PermitApiError(apiMessage, err);
     } else {
       // unexpected error, just throw
       throw err;
