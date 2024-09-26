@@ -48,4 +48,10 @@ export interface UserCreate {
    * @memberof UserCreate
    */
   attributes?: object;
+  /**
+   * List of roles to assign to the user in the environment.
+   * @type {any}
+   * @memberof UserCreate
+   */
+  role_assignments?: any;
 }

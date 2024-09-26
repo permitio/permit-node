@@ -49,6 +49,12 @@ export interface ElementsUserCreate {
    */
   attributes?: object;
   /**
+   * List of roles to assign to the user in the environment.
+   * @type {any}
+   * @memberof ElementsUserCreate
+   */
+  role_assignments?: any;
+  /**
    *
    * @type {string}
    * @memberof ElementsUserCreate
