@@ -3,6 +3,7 @@ import { Logger } from 'pino';
 import { IPermitConfig } from '../config';
 import {
   ResourcesApi as AutogenResourcesApi,
+  PaginatedResultResourceRead,
   ResourceCreate,
   ResourceRead,
   ResourceReplace,
@@ -10,25 +11,24 @@ import {
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
 
-import { BasePermitApi, IPagination } from './base';
+import { BasePermitApi, IPaginationExtended, ReturnPaginationType } from './base';
 import { ApiContextLevel, ApiKeyLevel } from './context';
 
 export { ResourceCreate, ResourceRead, ResourceReplace, ResourceUpdate } from '../openapi';
-
-export interface IListResourceUsers extends IPagination {
-  resourceKey: string;
-}
 
 export interface IResourcesApi {
   /**
    * Retrieves a list of resources.
    *
-   * @param pagination The pagination options, @see {@link IPagination}
+   * @param pagination The pagination options, @see {@link IPaginationExtended}
    * @returns A promise that resolves to an array of resources.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  list(pagination?: IPagination): Promise<ResourceRead[]>;
+  list(): Promise<ResourceRead[]>;
+  list<T extends IPaginationExtended>(
+    pagination?: T,
+  ): Promise<ReturnPaginationType<T, PaginatedResultResourceRead, ResourceRead[]>>;
 
   /**
    * Retrieves a resource by its key.
@@ -128,13 +128,19 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
   /**
    * Retrieves a list of resources.
    *
-   * @param pagination The pagination options, @see {@link IPagination}
+   * @param pagination The pagination options, @see {@link IBasePaginationExtended}
    * @returns A promise that resolves to an array of resources.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async list(pagination?: IPagination): Promise<ResourceRead[]> {
-    const { page = 1, perPage = 100 } = pagination ?? {};
+  public async list(): Promise<ResourceRead[]>;
+  public async list<T extends IPaginationExtended>(
+    pagination?: T,
+  ): Promise<ReturnPaginationType<T, PaginatedResultResourceRead, ResourceRead[]>>;
+  public async list(
+    pagination?: IPaginationExtended,
+  ): Promise<ResourceRead[] | PaginatedResultResourceRead> {
+    const { page = 1, perPage = 100, includeTotalCount } = pagination ?? {};
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -143,6 +149,7 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
           ...this.config.apiContext.environmentContext,
           page,
           perPage,
+          includeTotalCount,
         })
       ).data;
     } catch (err) {

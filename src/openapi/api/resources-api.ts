@@ -31,7 +31,7 @@ import {
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
-import { HTTPValidationError } from '../types';
+import { HTTPValidationError, PaginatedResultResourceRead } from '../types';
 // @ts-ignore
 import { ResourceCreate } from '../types';
 // @ts-ignore
@@ -219,6 +219,7 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
      * @param {boolean} [includeBuiltIn] Whether to include or exclude built-in resources, default is False
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
+     * @param {includeTotalCount} [includeTotalCount] Include the total count of resources in the response, default is False
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -228,6 +229,7 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
       includeBuiltIn?: boolean,
       page?: number,
       perPage?: number,
+      includeTotalCount?: boolean,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -262,6 +264,10 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
 
       if (perPage !== undefined) {
         localVarQueryParameter['per_page'] = perPage;
+      }
+
+      if (includeTotalCount !== undefined) {
+        localVarQueryParameter['include_total_count'] = includeTotalCount;
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -492,6 +498,7 @@ export const ResourcesApiFp = function (configuration?: Configuration) {
      * @param {boolean} [includeBuiltIn] Whether to include or exclude built-in resources, default is False
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
+     * @param {includeTotalCount} [includeTotalCount] Include the total count of resources in the response, default is False
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -501,14 +508,21 @@ export const ResourcesApiFp = function (configuration?: Configuration) {
       includeBuiltIn?: boolean,
       page?: number,
       perPage?: number,
+      includeTotalCount?: boolean,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ResourceRead>>> {
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<Array<ResourceRead> | PaginatedResultResourceRead>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listResources(
         projId,
         envId,
         includeBuiltIn,
         page,
         perPage,
+        includeTotalCount,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -644,6 +658,7 @@ export const ResourcesApiFactory = function (
      * @param {boolean} [includeBuiltIn] Whether to include or exclude built-in resources, default is False
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
+     * @param {includeTotalCount} [includeTotalCount] Include the total count of resources in the response, default is False
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -653,10 +668,11 @@ export const ResourcesApiFactory = function (
       includeBuiltIn?: boolean,
       page?: number,
       perPage?: number,
+      includeTotalCount?: boolean,
       options?: any,
-    ): AxiosPromise<Array<ResourceRead>> {
+    ): AxiosPromise<Array<ResourceRead> | PaginatedResultResourceRead> {
       return localVarFp
-        .listResources(projId, envId, includeBuiltIn, page, perPage, options)
+        .listResources(projId, envId, includeBuiltIn, page, perPage, includeTotalCount, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -828,6 +844,14 @@ export interface ResourcesApiListResourcesRequest {
    * @memberof ResourcesApiListResources
    */
   readonly perPage?: number;
+
+  /**
+   * Include total count in response
+   * @type {boolean}
+   * @memberof RolesApiListRoles
+   * @default false
+   */
+  readonly includeTotalCount?: boolean;
 }
 
 /**
@@ -992,6 +1016,7 @@ export class ResourcesApi extends BaseAPI {
         requestParameters.includeBuiltIn,
         requestParameters.page,
         requestParameters.perPage,
+        requestParameters.includeTotalCount,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
