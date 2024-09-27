@@ -1,10 +1,16 @@
 import { Logger } from 'pino';
 
 import { IPermitConfig } from '../config';
-import { RolesApi as AutogenRolesApi, RoleCreate, RoleRead, RoleUpdate } from '../openapi';
+import {
+  RolesApi as AutogenRolesApi,
+  PaginatedResultRoleRead,
+  RoleCreate,
+  RoleRead,
+  RoleUpdate,
+} from '../openapi';
 import { BASE_PATH } from '../openapi/base';
 
-import { BasePermitApi, IPagination } from './base';
+import { BasePermitApi, IPaginationExtended, ReturnPaginationType } from './base';
 import { ApiContextLevel, ApiKeyLevel } from './context';
 
 export { RoleCreate, RoleRead, RoleUpdate } from '../openapi';
@@ -13,12 +19,15 @@ export interface IRolesApi {
   /**
    * Retrieves a list of roles.
    *
-   * @param pagination The pagination options, @see {@link IPagination}
+   * @param pagination The pagination options, @see {@link IPaginationExtended}
    * @returns A promise that resolves to an array of roles.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  list(pagination?: IPagination): Promise<RoleRead[]>;
+  list(): Promise<RoleRead[]>;
+  list<T extends IPaginationExtended>(
+    pagination?: T,
+  ): Promise<ReturnPaginationType<T, PaginatedResultRoleRead, RoleRead[]>>;
 
   /**
    * Retrieves a role by its key.
@@ -127,13 +136,19 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
   /**
    * Retrieves a list of roles.
    *
-   * @param pagination The pagination options, @see {@link IPagination}
+   * @param pagination The pagination options, @see {@link IPaginationExtended}
    * @returns A promise that resolves to an array of roles.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async list(pagination?: IPagination): Promise<RoleRead[]> {
-    const { page = 1, perPage = 100 } = pagination ?? {};
+  public async list(): Promise<RoleRead[]>;
+  public async list<T extends IPaginationExtended>(
+    pagination?: T,
+  ): Promise<ReturnPaginationType<T, PaginatedResultRoleRead, RoleRead[]>>;
+  public async list(
+    pagination?: IPaginationExtended,
+  ): Promise<PaginatedResultRoleRead | RoleRead[]> {
+    const { page = 1, perPage = 100, includeTotalCount } = pagination ?? {};
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -142,6 +157,7 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
           ...this.config.apiContext.environmentContext,
           page,
           perPage,
+          includeTotalCount,
         })
       ).data;
     } catch (err) {

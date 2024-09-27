@@ -47,6 +47,30 @@ export interface IPagination {
   perPage?: number;
 }
 
+interface IBasePaginationExtended {
+  /**
+   * the page number to fetch (default: 1)
+   */
+  page?: number;
+  /**
+   * how many items to fetch per page (default: 100)
+   */
+  perPage?: number;
+  /**
+   * the total number of items
+   */
+  includeTotalCount?: boolean;
+}
+
+type IPaginationForceIncludeTotal = IBasePaginationExtended & { includeTotalCount: true };
+export type IPaginationExtended = IBasePaginationExtended | IPaginationForceIncludeTotal;
+
+export type ReturnPaginationType<
+  T extends IPaginationExtended,
+  Y,
+  Z,
+> = T extends IPaginationForceIncludeTotal ? Y : Z;
+
 export abstract class BasePermitApi {
   protected openapiClientConfig: Configuration;
   private scopeApi: APIKeysApi;

@@ -31,7 +31,7 @@ import {
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
-import { AddRolePermissions } from '../types';
+import { AddRolePermissions, PaginatedResultRoleRead } from '../types';
 // @ts-ignore
 import { HTTPValidationError } from '../types';
 // @ts-ignore
@@ -342,6 +342,7 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
+     * @param {boolean} [includeTotalCount] Include total count in response (default to false)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -350,6 +351,7 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       envId: string,
       page?: number,
       perPage?: number,
+      includeTotalCount?: boolean,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
@@ -366,9 +368,13 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
         baseOptions = configuration.baseOptions;
       }
 
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
+      const localVarRequestOptions: Record<string, unknown> = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter: Record<string, unknown> = {};
+      const localVarQueryParameter: Record<string, unknown> = {};
 
       // authentication HTTPBearer required
       // http bearer authentication required
@@ -380,6 +386,10 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
 
       if (perPage !== undefined) {
         localVarQueryParameter['per_page'] = perPage;
+      }
+
+      if (includeTotalCount !== undefined) {
+        localVarQueryParameter['include_total_count'] = includeTotalCount;
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -723,6 +733,7 @@ export const RolesApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
+     * @param {boolean} [includeTotalCount] Include total count in response (default to false)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -731,13 +742,20 @@ export const RolesApiFp = function (configuration?: Configuration) {
       envId: string,
       page?: number,
       perPage?: number,
+      includeTotalCount?: boolean,
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<RoleRead>>> {
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<Array<RoleRead> | PaginatedResultRoleRead>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listRoles(
         projId,
         envId,
         page,
         perPage,
+        includeTotalCount,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -939,7 +957,7 @@ export const RolesApiFactory = function (
       page?: number,
       perPage?: number,
       options?: any,
-    ): AxiosPromise<Array<RoleRead>> {
+    ): AxiosPromise<Array<RoleRead> | PaginatedResultRoleRead> {
       return localVarFp
         .listRoles(projId, envId, page, perPage, options)
         .then((request) => request(axios, basePath));
@@ -1197,6 +1215,14 @@ export interface RolesApiListRolesRequest {
    * @memberof RolesApiListRoles
    */
   readonly perPage?: number;
+
+  /**
+   * Include total count in response
+   * @type {boolean}
+   * @memberof RolesApiListRoles
+   * @default false
+   */
+  readonly includeTotalCount?: boolean;
 }
 
 /**
@@ -1424,6 +1450,7 @@ export class RolesApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.page,
         requestParameters.perPage,
+        requestParameters.includeTotalCount,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
