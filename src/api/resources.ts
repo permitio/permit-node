@@ -128,7 +128,7 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
   /**
    * Retrieves a list of resources.
    *
-   * @param pagination The pagination options, @see {@link IBasePaginationExtended}
+   * @param pagination The pagination options, @see {@link IPaginationExtended}
    * @returns A promise that resolves to an array of resources.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.

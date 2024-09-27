@@ -179,9 +179,9 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
 
     try {
-      const response = await this._roles.listRoles({
+      const response = (await this._roles.listRoles({
         ...this.config.apiContext.environmentContext,
-      });
+      })) as AxiosResponse<RoleRead[]>;
 
       this.logger.debug(`[${response.status}] permit.api.listRoles()`);
       return response.data;
