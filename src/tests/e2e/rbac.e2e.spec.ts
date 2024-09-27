@@ -47,12 +47,20 @@ test('Permission check e2e test', async (t) => {
 
     // verify list output
     const resources = await permit.api.resources.list();
+    t.true(Array.isArray(resources));
     t.is(resources.length, 1);
     t.is(resources[0].id, document.id);
     t.is(resources[0].key, document.key);
     t.is(resources[0].name, document.name);
     t.is(resources[0].description, document.description);
     t.is(resources[0].urn, document.urn);
+
+    const resourcesWithTotalCount = await permit.api.resources.list({ includeTotalCount: true });
+    t.not(resourcesWithTotalCount, null);
+    t.not(resourcesWithTotalCount.data, null);
+    t.is(resourcesWithTotalCount.data.length, 1);
+    t.is(resourcesWithTotalCount.total_count, 1);
+    t.is(resourcesWithTotalCount.page_count, 1);
 
     // create admin role
     const admin = await permit.api.roles.create({
@@ -83,6 +91,10 @@ test('Permission check e2e test', async (t) => {
     t.is(viewer.description, 'an viewer role');
     t.not(viewer.permissions, undefined);
     t.is(viewer.permissions?.length, 0);
+
+    const roles = await permit.api.roles.list();
+    t.true(Array.isArray(roles));
+    t.is(roles.length, 2);
 
     // assign permissions to roles
     const assignedViewer = await permit.api.roles.assignPermissions('viewer', ['document:read']);
@@ -234,7 +246,12 @@ test('Permission check e2e test', async (t) => {
       await permit.api.roles.delete('viewer');
       await permit.api.resources.delete('document');
       t.is((await permit.api.resources.list()).length, 0);
-      t.is((await permit.api.roles.list()).length, 0);
+
+      const roles = await permit.api.roles.list();
+
+      t.true(Array.isArray(roles));
+      t.is(roles.length, 0);
+
       t.is((await permit.api.tenants.list()).length, 1); // the default tenant
       t.is((await permit.api.users.list()).data.length, 0);
     } catch (error) {
