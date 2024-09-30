@@ -13,7 +13,7 @@ import { BASE_PATH } from '../openapi/base';
 import { BasePermitApi, IPaginationExtended, ReturnPaginationType } from './base';
 import { ApiContextLevel, ApiKeyLevel } from './context';
 
-export { RoleCreate, RoleRead, RoleUpdate } from '../openapi';
+export { RoleCreate, RoleRead, RoleUpdate, PaginatedResultRoleRead } from '../openapi';
 
 export interface IRolesApi {
   /**

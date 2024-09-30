@@ -14,7 +14,13 @@ import { BASE_PATH } from '../openapi/base';
 import { BasePermitApi, IPaginationExtended, ReturnPaginationType } from './base';
 import { ApiContextLevel, ApiKeyLevel } from './context';
 
-export { ResourceCreate, ResourceRead, ResourceReplace, ResourceUpdate } from '../openapi';
+export {
+  ResourceCreate,
+  ResourceRead,
+  ResourceReplace,
+  ResourceUpdate,
+  PaginatedResultResourceRead,
+} from '../openapi';
 
 export interface IResourcesApi {
   /**
