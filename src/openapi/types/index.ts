@@ -145,6 +145,8 @@ export * from './paginated-result-elements-config-read';
 export * from './paginated-result-opadecision-log';
 export * from './paginated-result-resource-read';
 export * from './paginated-result-role-read';
+export * from './paginated-result-role-assignment-detailed-read';
+export * from './paginated-result-role-assignment-read';
 export * from './paginated-result-tenant-read';
 export * from './paginated-result-user-read';
 export * from './parent-id';

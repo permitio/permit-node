@@ -42,6 +42,10 @@ import { RoleAssignmentCreate } from '../types';
 import { RoleAssignmentRead } from '../types';
 // @ts-ignore
 import { RoleAssignmentRemove } from '../types';
+// @ts-ignore
+import { PaginatedResultRoleAssignmentRead } from '../types';
+// @ts-ignore
+import { PaginatedResultRoleAssignmentDetailedRead } from '../types';
 /**
  * RoleAssignmentsApi - axios parameter creator
  * @export
@@ -226,14 +230,17 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
       };
     },
     /**
-     * Lists the role assignments defined within an environment.  - If the `user` filter is present, will only return the role assignments of that user. - If the `tenant` filter is present, will only return the role assignments in that tenant. - If the `role` filter is present, will only return role assignments that are granting that role.
+     * Lists the role assignments defined within an environment.  - If the `user` filter is present, will only return the role assignments of that user (supports multiple). - If the `tenant` filter is present, will only return the role assignments in that tenant (supports multiple). - If the `role` filter is present, will only return role assignments that are granting that role (supports multiple). - If the `resource` filter is present, will only return role assignments for resource instances of that resource type. - If the `resource_instance` filter is present, will only return role assignments for that resource instance.  Providing both `tenant` and `resource_instance` filters will only return role assignments if the resource instance is in that tenant. If multiple tenants are received, the last tenant will be compared with the resource instance.
      * @summary List Role Assignments
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [user] optional user filter, will only return role assignments granted to this user.
-     * @param {string} [role] optional role filter, will only return role assignments granting this role.
-     * @param {string} [tenant] optional tenant filter, will only return role assignments granted in that tenant.
+     * @param {string} [user] optional user(s) filter, will only return role assignments granted to this user(s).
+     * @param {string} [role] optional role(s) filter, will only return role assignments granting this role(s).
+     * @param {string} [tenant] optional tenant(s) filter, will only return role assignments granted in that tenant(s).
+     * @param {string} [resource] optional resource **type** filter, will only return role assignments granted on that resource type.
      * @param {string} [resourceInstance] optional resource instance filter, will only return role assignments granted on that resource instance.
+     * @param {boolean} [detailed] Whether to return full details about the user, tenant and role
+     * @param {boolean} [includeTotalCount] If true, returns the list of role assignments and the total count.
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -245,7 +252,10 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
       user?: string,
       role?: string,
       tenant?: string,
+      resource?: string,
       resourceInstance?: string,
+      detailed?: boolean,
+      includeTotalCount?: boolean,
       page?: number,
       perPage?: number,
       options: AxiosRequestConfig = {},
@@ -284,8 +294,20 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
         localVarQueryParameter['tenant'] = tenant;
       }
 
+      if (resource !== undefined) {
+        localVarQueryParameter['resource'] = resource;
+      }
+
       if (resourceInstance !== undefined) {
         localVarQueryParameter['resource_instance'] = resourceInstance;
+      }
+
+      if (detailed !== undefined) {
+        localVarQueryParameter['detailed'] = detailed;
+      }
+
+      if (includeTotalCount !== undefined) {
+        localVarQueryParameter['include_total_count'] = includeTotalCount;
       }
 
       if (page !== undefined) {
@@ -452,14 +474,17 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     * Lists the role assignments defined within an environment.  - If the `user` filter is present, will only return the role assignments of that user. - If the `tenant` filter is present, will only return the role assignments in that tenant. - If the `role` filter is present, will only return role assignments that are granting that role.
+     * Lists the role assignments defined within an environment.  - If the `user` filter is present, will only return the role assignments of that user (supports multiple). - If the `tenant` filter is present, will only return the role assignments in that tenant (supports multiple). - If the `role` filter is present, will only return role assignments that are granting that role (supports multiple). - If the `resource` filter is present, will only return role assignments for resource instances of that resource type. - If the `resource_instance` filter is present, will only return role assignments for that resource instance.  Providing both `tenant` and `resource_instance` filters will only return role assignments if the resource instance is in that tenant. If multiple tenants are received, the last tenant will be compared with the resource instance.
      * @summary List Role Assignments
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [user] optional user filter, will only return role assignments granted to this user.
-     * @param {string} [role] optional role filter, will only return role assignments granting this role.
-     * @param {string} [tenant] optional tenant filter, will only return role assignments granted in that tenant.
+     * @param {string} [user] optional user(s) filter, will only return role assignments granted to this user(s).
+     * @param {string} [role] optional role(s) filter, will only return role assignments granting this role(s).
+     * @param {string} [tenant] optional tenant(s) filter, will only return role assignments granted in that tenant(s).
+     * @param {string} [resource] optional resource **type** filter, will only return role assignments granted on that resource type.
      * @param {string} [resourceInstance] optional resource instance filter, will only return role assignments granted on that resource instance.
+     * @param {boolean} [detailed] Whether to return full details about the user, tenant and role
+     * @param {boolean} [includeTotalCount] If true, returns the list of role assignments and the total count.
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -471,12 +496,22 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
       user?: string,
       role?: string,
       tenant?: string,
+      resource?: string,
       resourceInstance?: string,
+      detailed?: boolean,
+      includeTotalCount?: boolean,
       page?: number,
       perPage?: number,
       options?: AxiosRequestConfig,
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<RoleAssignmentRead>>
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<
+        | Array<RoleAssignmentRead>
+        | PaginatedResultRoleAssignmentRead
+        | PaginatedResultRoleAssignmentDetailedRead
+      >
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listRoleAssignments(
         projId,
@@ -484,7 +519,10 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
         user,
         role,
         tenant,
+        resource,
         resourceInstance,
+        detailed,
+        includeTotalCount,
         page,
         perPage,
         options,
@@ -586,14 +624,17 @@ export const RoleAssignmentsApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     * Lists the role assignments defined within an environment.  - If the `user` filter is present, will only return the role assignments of that user. - If the `tenant` filter is present, will only return the role assignments in that tenant. - If the `role` filter is present, will only return role assignments that are granting that role.
+     * Lists the role assignments defined within an environment.  - If the `user` filter is present, will only return the role assignments of that user (supports multiple). - If the `tenant` filter is present, will only return the role assignments in that tenant (supports multiple). - If the `role` filter is present, will only return role assignments that are granting that role (supports multiple). - If the `resource` filter is present, will only return role assignments for resource instances of that resource type. - If the `resource_instance` filter is present, will only return role assignments for that resource instance.  Providing both `tenant` and `resource_instance` filters will only return role assignments if the resource instance is in that tenant. If multiple tenants are received, the last tenant will be compared with the resource instance.
      * @summary List Role Assignments
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [user] optional user filter, will only return role assignments granted to this user.
-     * @param {string} [role] optional role filter, will only return role assignments granting this role.
-     * @param {string} [tenant] optional tenant filter, will only return role assignments granted in that tenant.
+     * @param {string} [user] optional user(s) filter, will only return role assignments granted to this user(s).
+     * @param {string} [role] optional role(s) filter, will only return role assignments granting this role(s).
+     * @param {string} [tenant] optional tenant(s) filter, will only return role assignments granted in that tenant(s).
+     * @param {string} [resource] optional resource **type** filter, will only return role assignments granted on that resource type.
      * @param {string} [resourceInstance] optional resource instance filter, will only return role assignments granted on that resource instance.
+     * @param {boolean} [detailed] Whether to return full details about the user, tenant and role
+     * @param {boolean} [includeTotalCount] If true, returns the list of role assignments and the total count.
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
@@ -605,11 +646,18 @@ export const RoleAssignmentsApiFactory = function (
       user?: string,
       role?: string,
       tenant?: string,
+      resource?: string,
       resourceInstance?: string,
+      detailed?: boolean,
+      includeTotalCount?: boolean,
       page?: number,
       perPage?: number,
       options?: any,
-    ): AxiosPromise<Array<RoleAssignmentRead>> {
+    ): AxiosPromise<
+      | Array<RoleAssignmentRead>
+      | PaginatedResultRoleAssignmentRead
+      | PaginatedResultRoleAssignmentDetailedRead
+    > {
       return localVarFp
         .listRoleAssignments(
           projId,
@@ -617,7 +665,10 @@ export const RoleAssignmentsApiFactory = function (
           user,
           role,
           tenant,
+          resource,
           resourceInstance,
+          detailed,
+          includeTotalCount,
           page,
           perPage,
           options,
@@ -751,25 +802,32 @@ export interface RoleAssignmentsApiListRoleAssignmentsRequest {
   readonly envId: string;
 
   /**
-   * optional user filter, will only return role assignments granted to this user.
+   * optional user(s) filter, will only return role assignments granted to this user(s).
    * @type {string}
    * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly user?: string;
 
   /**
-   * optional role filter, will only return role assignments granting this role.
+   * optional role(s) filter, will only return role assignments granting this role(s).
    * @type {string}
    * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly role?: string;
 
   /**
-   * optional tenant filter, will only return role assignments granted in that tenant.
+   * optional tenant(s) filter, will only return role assignments granted in that tenant(s).
    * @type {string}
    * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly tenant?: string;
+
+  /**
+   * optional resource **type** filter, will only return role assignments granted on that resource type.
+   * @type {string}
+   * @memberof RoleAssignmentsApiListRoleAssignments
+   */
+  readonly resource?: string;
 
   /**
    * optional resource instance filter, will only return role assignments granted on that resource instance.
@@ -777,6 +835,20 @@ export interface RoleAssignmentsApiListRoleAssignmentsRequest {
    * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly resourceInstance?: string;
+
+  /**
+   * Whether to return full details about the user, tenant and role
+   * @type {boolean}
+   * @memberof RoleAssignmentsApiListRoleAssignments
+   */
+  readonly detailed?: boolean;
+
+  /**
+   * If true, returns the list of role assignments and the total count.
+   * @type {boolean}
+   * @memberof RoleAssignmentsApiListRoleAssignments
+   */
+  readonly includeTotalCount?: boolean;
 
   /**
    * Page number of the results to fetch, starting at 1.
@@ -895,7 +967,7 @@ export class RoleAssignmentsApi extends BaseAPI {
   }
 
   /**
-   * Lists the role assignments defined within an environment.  - If the `user` filter is present, will only return the role assignments of that user. - If the `tenant` filter is present, will only return the role assignments in that tenant. - If the `role` filter is present, will only return role assignments that are granting that role.
+   * Lists the role assignments defined within an environment.  - If the `user` filter is present, will only return the role assignments of that user (supports multiple). - If the `tenant` filter is present, will only return the role assignments in that tenant (supports multiple). - If the `role` filter is present, will only return role assignments that are granting that role (supports multiple). - If the `resource` filter is present, will only return role assignments for resource instances of that resource type. - If the `resource_instance` filter is present, will only return role assignments for that resource instance.  Providing both `tenant` and `resource_instance` filters will only return role assignments if the resource instance is in that tenant. If multiple tenants are received, the last tenant will be compared with the resource instance.
    * @summary List Role Assignments
    * @param {RoleAssignmentsApiListRoleAssignmentsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
@@ -913,7 +985,10 @@ export class RoleAssignmentsApi extends BaseAPI {
         requestParameters.user,
         requestParameters.role,
         requestParameters.tenant,
+        requestParameters.resource,
         requestParameters.resourceInstance,
+        requestParameters.detailed,
+        requestParameters.includeTotalCount,
         requestParameters.page,
         requestParameters.perPage,
         options,

@@ -43,23 +43,11 @@ export interface RoleAssignmentRead {
    */
   tenant?: string;
   /**
-   * the resource type the role is associated with
-   * @type {string}
-   * @memberof RoleAssignmentRead
-   */
-  resource?: string;
-  /**
    * the resource instance the role is associated with
    * @type {string}
    * @memberof RoleAssignmentRead
    */
   resource_instance?: string;
-  /**
-   * Unique id of the resource type
-   * @type {string}
-   * @memberof RoleAssignmentRead
-   */
-  resource_id?: string;
   /**
    * Unique id of the resource instance
    * @type {string}
