@@ -24,6 +24,7 @@ export {
   PaginatedResultRoleAssignmentRead,
   RoleAssignmentCreate,
   RoleAssignmentRead,
+  RoleAssignmentDetailedRead,
   RoleAssignmentRemove,
 } from '../openapi';
 
