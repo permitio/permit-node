@@ -41,6 +41,8 @@ import { RoleAssignmentCreate } from '../types';
 // @ts-ignore
 import { RoleAssignmentRead } from '../types';
 // @ts-ignore
+import { RoleAssignmentDetailedRead } from '../types';
+// @ts-ignore
 import { RoleAssignmentRemove } from '../types';
 // @ts-ignore
 import { PaginatedResultRoleAssignmentRead } from '../types';
@@ -509,6 +511,7 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
         basePath?: string,
       ) => AxiosPromise<
         | Array<RoleAssignmentRead>
+        | Array<RoleAssignmentDetailedRead>
         | PaginatedResultRoleAssignmentRead
         | PaginatedResultRoleAssignmentDetailedRead
       >
@@ -655,6 +658,7 @@ export const RoleAssignmentsApiFactory = function (
       options?: any,
     ): AxiosPromise<
       | Array<RoleAssignmentRead>
+      | Array<RoleAssignmentDetailedRead>
       | PaginatedResultRoleAssignmentRead
       | PaginatedResultRoleAssignmentDetailedRead
     > {

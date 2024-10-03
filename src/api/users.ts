@@ -4,8 +4,11 @@ import { IPermitConfig } from '../config';
 import {
   RoleAssignmentsApi as AutogenRoleAssignmentsApi,
   UsersApi as AutogenUsersApi,
+  PaginatedResultRoleAssignmentDetailedRead,
+  PaginatedResultRoleAssignmentRead,
   PaginatedResultUserRead,
   RoleAssignmentCreate,
+  RoleAssignmentDetailedRead,
   RoleAssignmentRead,
   RoleAssignmentRemove,
   UserCreate,
@@ -43,7 +46,7 @@ export interface ICreateOrUpdateUserResult {
   created: boolean;
 }
 
-export interface IGetUserRoles {
+export interface IBaseGetUserRoles {
   /**
    * id or key of the user
    * @type {string}
@@ -57,17 +60,48 @@ export interface IGetUserRoles {
   readonly tenant?: string;
 
   /**
+   * Whether to return full details about the user, tenant and role
+   * @type {boolean}
+   * @default false
+   */
+  readonly detailed?: boolean;
+
+  /**
+   * If true, returns the list of role assignments and the total count.
+   * @type {boolean}
+   * @default false
+   */
+  readonly includeTotalCount?: boolean;
+
+  /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
+   * @default 1
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
+   * @default 100
    */
   readonly perPage?: number;
 }
+
+type IGetUserRolesWithTotalCount = IBaseGetUserRoles & { includeTotalCount: true };
+type IGetUserRolesWithDetails = IBaseGetUserRoles & { detailed: true };
+
+type IGetUserRoles = IBaseGetUserRoles | IGetUserRolesWithTotalCount | IGetUserRolesWithDetails;
+
+type ReturnIGetUserRolesType<T extends IGetUserRoles> = T extends IGetUserRolesWithTotalCount
+  ? // with total count
+    T extends IGetUserRolesWithDetails
+    ? PaginatedResultRoleAssignmentDetailedRead
+    : PaginatedResultRoleAssignmentRead
+  : // without total count
+  T extends IGetUserRolesWithDetails
+  ? RoleAssignmentDetailedRead[]
+  : RoleAssignmentRead[];
 
 export interface IUsersListParams extends IPagination {
   search?: string;
@@ -187,7 +221,7 @@ export interface IUsersApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  getAssignedRoles({ user, tenant, page, perPage }: IGetUserRoles): Promise<RoleAssignmentRead[]>;
+  getAssignedRoles<T extends IGetUserRoles>(params: T): Promise<ReturnIGetUserRolesType<T>>;
 
   /**
    * Creates users in bulk.
@@ -564,7 +598,14 @@ export class UsersApi extends BaseFactsPermitAPI {
     tenant,
     page = 1,
     perPage = 100,
-  }: IGetUserRoles): Promise<RoleAssignmentRead[]> {
+    detailed = false,
+    includeTotalCount = false,
+  }: IGetUserRoles): Promise<
+    | RoleAssignmentRead[]
+    | RoleAssignmentDetailedRead[]
+    | PaginatedResultRoleAssignmentRead
+    | PaginatedResultRoleAssignmentDetailedRead
+  > {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -575,6 +616,8 @@ export class UsersApi extends BaseFactsPermitAPI {
           tenant,
           page,
           perPage,
+          detailed,
+          includeTotalCount,
         })
       ).data;
     } catch (err) {
