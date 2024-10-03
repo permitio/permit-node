@@ -7,18 +7,18 @@ import { BASE_PATH } from '../openapi/base';
 
 import { API_ACCESS_LEVELS, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context';
 
-interface FormattedAxiosError {
-  code: string | undefined;
+interface FormattedAxiosError<T> {
+  code?: string;
   message: string;
-  error: any;
-  status: number | undefined;
+  error?: T;
+  status?: number;
 }
 export class PermitApiError<T> extends Error {
   constructor(message: string, public originalError: AxiosError<T>) {
     super(message);
   }
 
-  public get formattedAxiosError(): FormattedAxiosError {
+  public get formattedAxiosError(): FormattedAxiosError<T> {
     return {
       code: this.originalError.code,
       message: this.message,
