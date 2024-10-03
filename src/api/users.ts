@@ -259,7 +259,7 @@ export interface IUsersApi extends IWaitForSync {
 /**
  * The UsersApi class provides methods for interacting with Permit Users.
  */
-export class UsersApi extends BaseFactsPermitAPI {
+export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
   private users: AutogenUsersApi;
   private roleAssignments: AutogenRoleAssignmentsApi;
   private bulkOperationsApi: BulkOperationsApi;
