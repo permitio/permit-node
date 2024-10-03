@@ -415,7 +415,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
       this.logger.debug(
         `[${response.status}] permit.api.getAssignedRoles(${user}, ${tenant ?? 'all tenants'})`,
       );
-      return response.data;
+      return response.data as RoleAssignmentRead[];
     } catch (err) {
       if (axios.isAxiosError(err)) {
         this.logger.error(

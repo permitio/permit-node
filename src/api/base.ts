@@ -47,7 +47,7 @@ export interface IPagination {
   perPage?: number;
 }
 
-interface IBasePaginationExtended {
+export interface IBasePaginationExtended {
   /**
    * the page number to fetch (default: 1)
    */
