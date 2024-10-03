@@ -593,6 +593,9 @@ export class UsersApi extends BaseFactsPermitAPI {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
+  public async getAssignedRoles<T extends IGetUserRoles>(
+    params: T,
+  ): Promise<ReturnIGetUserRolesType<T>>;
   public async getAssignedRoles({
     user,
     tenant,
