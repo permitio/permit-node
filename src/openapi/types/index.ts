@@ -216,7 +216,12 @@ export * from './response-get-data-for-tenant-v2-internal-opal-data-org-id-proj-
 export * from './response-get-data-for-user-v2-internal-opal-data-org-id-proj-id-env-id-users-user-id-get';
 export * from './role-assignment-create';
 export * from './role-assignment-read';
+export * from './role-assignment-detailed-read';
 export * from './role-assignment-remove';
+export * from './role-assignment-resource-instance';
+export * from './role-assignment-role';
+export * from './role-assignment-tenant';
+export * from './role-assignment-user';
 export * from './role-create';
 export * from './role-data';
 export * from './role-read';
