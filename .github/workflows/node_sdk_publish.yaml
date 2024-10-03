@@ -93,16 +93,3 @@ jobs:
         run: yarn publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Commit package.json changes
-        run: |
-          git config --local user.email "eli@permit.io"
-          git config --local user.name "elimoshkovich"
-          git add package.json
-          git commit -m "bump package.json version to ${{ github.event.release.tag_name }}"
-
-      - name: Push changes to GitHub
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.TOKEN_GITHUB }}
-          branch: main
