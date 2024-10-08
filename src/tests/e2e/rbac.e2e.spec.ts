@@ -1,4 +1,5 @@
 import anyTest, { TestInterface } from 'ava';
+import { UserCreate, UserRead } from '../../openapi';
 
 import { printBreak, provideTestExecutionContext, TestContext } from '../fixtures';
 
@@ -150,6 +151,26 @@ test('Permission check e2e test', async (t) => {
     t.is(ra.role, viewer.key);
     t.is(ra.tenant, tenant.key);
 
+    // create a user
+    const newUser: UserRead = await permit.api.users.create({
+      key: 'auth0|james',
+      email: 'james@undos.com',
+      first_name: 'James',
+      last_name: 'Undos',
+      attributes: {
+        age: 50,
+        favoriteColor: 'red',
+      },
+      role_assignments: [
+        {
+          role: viewer.key,
+          tenant: tenant.key,
+        },
+      ],
+    });
+
+    t.is(newUser.roles![0].role, viewer.key);
+
     logger.info(
       `sleeping ${sleepTimeMs} ms before permit.check() to make sure all writes propagated from cloud to PDP`,
     );
@@ -241,6 +262,7 @@ test('Permission check e2e test', async (t) => {
     // cleanup
     try {
       await permit.api.users.delete('auth0|elon');
+      await permit.api.users.delete('auth0|james');
       await permit.api.tenants.delete('tesla');
       await permit.api.roles.delete('admin');
       await permit.api.roles.delete('viewer');

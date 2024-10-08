@@ -12,6 +12,8 @@
  * Do not edit the class manually.
  */
 
+import { UserRoleCreate } from './user-role-create';
+
 /**
  *
  * @export
@@ -48,4 +50,10 @@ export interface UserCreate {
    * @memberof UserCreate
    */
   attributes?: object;
+  /**
+   * List of roles to assign to the user in the environment.
+   * @type {UserRoleCreate[]}
+   * @memberof UserCreate
+   */
+  role_assignments?: UserRoleCreate[];
 }
