@@ -12,6 +12,8 @@
  * Do not edit the class manually.
  */
 
+import { UserRoleCreate } from './user-role-create';
+
 /**
  *
  * @export
@@ -53,7 +55,7 @@ export interface ElementsUserCreate {
    * @type {any}
    * @memberof ElementsUserCreate
    */
-  role_assignments?: any;
+  role_assignments?: UserRoleCreate[];
   /**
    *
    * @type {string}
