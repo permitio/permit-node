@@ -2,16 +2,29 @@
   "name": "permitio",
   "version": "2.5.2",
   "description": "Node.js client library for the Permit.io full-stack permissions platform",
+  "type": "commonjs",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
-  "module": "build/module/index.js",
-  "repository": "https://github.com/permitio/permit-node",
+  "module": "build/module/index.mjs",
+  "exports": {
+    ".": {
+      "types": "./build/module/index.d.ts",
+      "import": "./build/module/index.mjs",
+      "require": "./build/main/index.js"
+    },
+    "./build/main/*": "./build/main/*",
+    "./build/module/*": "./build/module/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/permitio/permit-node.git"
+  },
   "license": "MIT",
   "keywords": [],
   "scripts": {
     "build": "run-p build:*",
     "build:main": "tsc -p tsconfig.json",
-    "build:module": "tsc -p tsconfig.module.json",
+    "build:module": "tsc -p tsconfig.module.json && yarn rename:esm",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier --config .prettierrc \"src/**/*.{ts,css,less,scss,js}\" --write",
     "fix:lint": "eslint src --ext .ts --fix",
@@ -33,6 +46,7 @@
     "docs": "typedoc",
     "docs:watch": "typedoc --watch",
     "version": "2.5.2",
+    "rename:esm": "/bin/zsh ./scripts/rename-mjs.sh",
     "reset-hard": "git clean -dfx && git reset --hard && yarn",
     "prepare": "npm run build && husky install",
     "prepare-release": "run-s reset-hard test cov:check doc:html version doc:publish",
@@ -119,5 +133,6 @@
     "exclude": [
       "**/*.spec.js"
     ]
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
