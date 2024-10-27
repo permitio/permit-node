@@ -46,7 +46,7 @@
     "docs": "typedoc",
     "docs:watch": "typedoc --watch",
     "version": "2.5.2",
-    "rename:esm": "/bin/zsh ./scripts/rename-mjs.sh",
+    "rename:esm": "/bin/bash ./scripts/rename-mjs.sh",
     "reset-hard": "git clean -dfx && git reset --hard && yarn",
     "prepare": "npm run build && husky install",
     "prepare-release": "run-s reset-hard test cov:check doc:html version doc:publish",
