@@ -3,9 +3,9 @@
   "compilerOptions": {
     "target": "esnext",
     "outDir": "build/module",
-    "module": "esnext"
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "tsBuildInfoFile": "build/esm.tsbuildinfo"
   },
-  "exclude": [
-    "node_modules/**"
-  ]
+  "exclude": ["node_modules/**"]
 }
