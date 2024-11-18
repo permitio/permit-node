@@ -94,6 +94,18 @@ export interface IPermitConfig {
    * in the PDP cache before returning the response.
    */
   factsSyncTimeout: number | null;
+  /**
+   * Configures the Policy Decision Point (PDP) address.
+   */
+  opa?: string;
+  /**
+   * an optional custom axios instance for opa, to control the behavior of the HTTP client
+   * used to connect to the Permit REST API.
+   *
+   * @see https://axios-http.com/docs/instance
+   * @see https://axios-http.com/docs/req_config
+   */
+  opaAxiosInstance?: AxiosInstance;
 }
 
 /**

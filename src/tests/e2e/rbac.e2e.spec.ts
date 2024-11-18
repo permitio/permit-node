@@ -191,8 +191,49 @@ test('Permission check e2e test', async (t) => {
 
     printBreak();
 
+    // use opa directly
+    t.true(
+      await permit.check(
+        'auth0|elon',
+        'read',
+        // a 'document' belonging to 'tesla' (ownership based on tenant)
+        { type: 'document', tenant: 'tesla', attributes: resourceAttributes },
+        {},
+        { useOpa: true },
+      ),
+    );
+
+    printBreak();
+
+    t.false(
+      await permit.check(
+        'auth0|elon',
+        'control the usa',
+        // a 'document' belonging to 'tesla' (ownership based on tenant)
+        { type: 'document', tenant: 'tesla', attributes: resourceAttributes },
+        {},
+        { useOpa: true },
+      ),
+    );
+
+    printBreak();
+
     logger.info('testing positive permission check with complete user object');
     t.true(await permit.check(user, 'read', { type: document.key, tenant: tenant.key }));
+
+    printBreak();
+
+    // use opa directly
+    logger.info('testing positive permission check with complete user object');
+    t.true(
+      await permit.check(
+        user,
+        'read',
+        { type: document.key, tenant: tenant.key },
+        {},
+        { useOpa: true },
+      ),
+    );
 
     printBreak();
 
@@ -253,6 +294,7 @@ test('Permission check e2e test', async (t) => {
     // run the same negative permission check again, this time it's true
     logger.info('testing previously negative permission check, should now be positive');
     t.true(await permit.check(user, 'create', { type: document.key, tenant: tenant.key }));
+    //t.true(await permit.check(user, 'create', { type: document.key, tenant: tenant.key }, {}, { useOpa: true}));
 
     printBreak();
   } catch (error) {

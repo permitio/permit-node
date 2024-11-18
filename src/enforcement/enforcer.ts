@@ -11,6 +11,7 @@ import {
   BulkPolicyDecision,
   IAction,
   ICheckInput,
+  ICheckOpaInput,
   ICheckQuery,
   IResource,
   isOpaGetUserPermissionsResult,
@@ -123,6 +124,7 @@ export interface IEnforcer {
 export class Enforcer implements IEnforcer {
   public contextStore: ContextStore; // cross-query context (global context)
   private client: AxiosInstance;
+  private opaClient: AxiosInstance;
 
   /**
    * Creates an instance of the Enforcer class.
@@ -130,6 +132,7 @@ export class Enforcer implements IEnforcer {
    * @param logger - The logger instance for logging.
    */
   constructor(private config: IPermitConfig, private logger: Logger) {
+    const opaBaseUrl = `${this.config.opa || 'http://localhost:8181'}/v1/data/permit/`;
     const version = process.env.npm_package_version ?? 'unknown';
     if (config.axiosInstance) {
       this.client = config.axiosInstance;
@@ -138,6 +141,18 @@ export class Enforcer implements IEnforcer {
     } else {
       this.client = axios.create({
         baseURL: `${this.config.pdp}/`,
+        headers: {
+          'X-Permit-SDK-Version': `node:${version}`,
+        },
+      });
+    }
+    if (config.opaAxiosInstance) {
+      this.opaClient = config.opaAxiosInstance;
+      this.opaClient.defaults.baseURL = opaBaseUrl;
+      this.opaClient.defaults.headers.common['X-Permit-SDK-Version'] = `node:${version}`;
+    } else {
+      this.opaClient = axios.create({
+        baseURL: opaBaseUrl,
         headers: {
           'X-Permit-SDK-Version': `node:${version}`,
         },
@@ -258,6 +273,7 @@ export class Enforcer implements IEnforcer {
     const normalizedResource: IResource = this.normalizeResource(resourceObj);
 
     const queryContext = this.contextStore.getDerivedContext(context);
+
     return {
       user: normalizedUser,
       action: action,
@@ -371,6 +387,7 @@ export class Enforcer implements IEnforcer {
     });
   }
 
+  //check
   private async checkWithExceptions(
     user: IUser | string,
     action: IAction,
@@ -378,11 +395,18 @@ export class Enforcer implements IEnforcer {
     context: Context = {}, // context provided specifically for this query
     config: CheckConfig = {},
   ): Promise<boolean> {
-    const input = this.buildCheckInput(user, action, resource, context);
+    let input: ICheckOpaInput | ICheckInput = this.buildCheckInput(user, action, resource, context);
+    const client = config?.useOpa ? this.opaClient : this.client;
+    const path = config?.useOpa ? 'root' : 'allowed';
+
+    if (config?.useOpa) {
+      input = { input: input };
+    }
+    // /root
     const checkTimeout = config.timeout || this.config.timeout;
 
-    return await this.client
-      .post<PolicyDecision | OpaDecisionResult>('allowed', input, {
+    return await client
+      .post<PolicyDecision | OpaDecisionResult>(path, input, {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
         },
@@ -395,11 +419,15 @@ export class Enforcer implements IEnforcer {
         }
         const decision =
           ('allow' in response.data ? response.data.allow : response.data.result.allow) || false;
-        this.logger.info(`permit.check(${this.checkInputRepr(input)}) = ${decision}`);
+        this.logger.info(
+          `permit.check(${this.checkInputRepr((input as any).input || input)}) = ${decision}`,
+        );
         return decision;
       })
       .catch((error) => {
-        const errorMessage = `Error in permit.check(${this.checkInputRepr(input)})`;
+        const errorMessage = `Error in permit.check(${this.checkInputRepr(
+          (input as any).input || input,
+        )})`;
 
         if (axios.isAxiosError(error)) {
           const errorStatusCode: string = error.response?.status.toString() || '';

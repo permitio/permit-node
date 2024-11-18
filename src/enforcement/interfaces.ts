@@ -8,6 +8,10 @@ export interface ICheckInput {
   context?: Context;
 }
 
+export interface ICheckOpaInput {
+  input: ICheckInput;
+}
+
 export interface ICheckQuery {
   user: IUser | string;
   action: IAction | string;
