@@ -294,7 +294,16 @@ test('Permission check e2e test', async (t) => {
     // run the same negative permission check again, this time it's true
     logger.info('testing previously negative permission check, should now be positive');
     t.true(await permit.check(user, 'create', { type: document.key, tenant: tenant.key }));
-    //t.true(await permit.check(user, 'create', { type: document.key, tenant: tenant.key }, {}, { useOpa: true}));
+    //use opa directly
+    t.true(
+      await permit.check(
+        user,
+        'create',
+        { type: document.key, tenant: tenant.key },
+        {},
+        { useOpa: true },
+      ),
+    );
 
     printBreak();
   } catch (error) {

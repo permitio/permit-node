@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import { Logger } from 'pino';
-
+import URL from 'url-parse';
 import { IPermitConfig } from '../config';
 import { CheckConfig, Context, ContextStore } from '../utils/context';
 import { AxiosLoggingInterceptor } from '../utils/http-logger';
@@ -132,7 +132,9 @@ export class Enforcer implements IEnforcer {
    * @param logger - The logger instance for logging.
    */
   constructor(private config: IPermitConfig, private logger: Logger) {
-    const opaBaseUrl = `${this.config.opa || 'http://localhost:8181'}/v1/data/permit/`;
+    const opaBaseUrl = new URL(this.config.pdp);
+    opaBaseUrl.set('port', '8181');
+    opaBaseUrl.set('pathname', `${opaBaseUrl.pathname}v1/data/permit/`);
     const version = process.env.npm_package_version ?? 'unknown';
     if (config.axiosInstance) {
       this.client = config.axiosInstance;
@@ -148,11 +150,11 @@ export class Enforcer implements IEnforcer {
     }
     if (config.opaAxiosInstance) {
       this.opaClient = config.opaAxiosInstance;
-      this.opaClient.defaults.baseURL = opaBaseUrl;
+      this.opaClient.defaults.baseURL = opaBaseUrl.toString();
       this.opaClient.defaults.headers.common['X-Permit-SDK-Version'] = `node:${version}`;
     } else {
       this.opaClient = axios.create({
-        baseURL: opaBaseUrl,
+        baseURL: opaBaseUrl.toString(),
         headers: {
           'X-Permit-SDK-Version': `node:${version}`,
         },
@@ -419,6 +421,7 @@ export class Enforcer implements IEnforcer {
         }
         const decision =
           ('allow' in response.data ? response.data.allow : response.data.result.allow) || false;
+
         this.logger.info(
           `permit.check(${this.checkInputRepr((input as any).input || input)}) = ${decision}`,
         );
