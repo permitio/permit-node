@@ -3,6 +3,7 @@ export interface Context {
 }
 
 export interface CheckConfig {
+  useOpa?: boolean;
   timeout?: number;
   throwOnError?: boolean;
 }
