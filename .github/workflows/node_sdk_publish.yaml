@@ -90,6 +90,14 @@ jobs:
           cat package.json
       
       - name: Publish package to NPM
-        run: yarn publish --access public
+        run: |
+          if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
+            echo "Publishing as a release candidate (rc)..."
+            yarn publish --access public --tag rc
+          else
+            echo "Publishing as the latest release..."
+            yarn publish --access public
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
