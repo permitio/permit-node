@@ -226,6 +226,11 @@ export interface IWaitForSync {
    * Set to null to wait indefinitely.
    */
   waitForSync(timeout: number | null): this;
+  /**
+   * Ignore the bulk cache and fetch facts directly from the PDP. Available only when `proxyFactsViaPdp` is set to `true`.
+   * @param ignoreCache - Set to `true` to ignore the bulk cache and fetch facts directly from the PDP.
+   */
+  ignoreBulkCache(ignoreCache: boolean): this;
 }
 
 export abstract class BaseFactsPermitAPI extends BasePermitApi implements IWaitForSync {
@@ -262,5 +267,13 @@ export abstract class BaseFactsPermitAPI extends BasePermitApi implements IWaitF
       );
       return this;
     }
+  }
+
+  public ignoreBulkCache(ignoreCache: boolean): this {
+    const clone = this.clone();
+    clone.openapiClientConfig.baseOptions.headers['X-Ignore-Bulk-Cache'] = ignoreCache
+      ? 'true'
+      : 'false';
+    return clone;
   }
 }
