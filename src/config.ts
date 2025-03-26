@@ -4,6 +4,8 @@ import _ from 'lodash';
 import { ApiContext } from './api/context';
 import { RecursivePartial } from './utils/types';
 
+export type FactsSyncTimeoutPolicy = 'ignore' | 'fail';
+
 interface ILoggerConfig {
   /**
    * Sets the log level configured for the Permit SDK Logger.
@@ -95,6 +97,12 @@ export interface IPermitConfig {
    */
   factsSyncTimeout: number | null;
   /**
+   * Controls what happens when the facts synchronization timeout is reached during proxy requests to the PDP.
+   * - 'ignore': Respond immediately when data update did not apply within the timeout period
+   * - 'fail': Respond with 424 status code when data update did not apply within the timeout period
+   */
+  factsSyncTimeoutPolicy: FactsSyncTimeoutPolicy | null;
+  /**
    * an optional custom axios instance for opa, to control the behavior of the HTTP client
    * used to connect to the Permit REST API.
    *
@@ -134,6 +142,7 @@ export class ConfigFactory {
       axiosInstance: globalAxios.create(),
       proxyFactsViaPdp: false,
       factsSyncTimeout: null,
+      factsSyncTimeoutPolicy: null,
     };
   }
 
