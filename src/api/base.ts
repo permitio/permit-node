@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { IPermitConfig, FactsSyncTimeoutPolicy } from '../config';
 import { APIKeysApi, Configuration } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
 
@@ -224,8 +224,11 @@ export interface IWaitForSync {
    * Wait for the facts to be synchronized with the PDP. Available only when `proxyFactsViaPdp` is set to `true`.
    * @param timeout - The maximum number of seconds to wait for the synchronization to complete.
    * Set to null to wait indefinitely.
+   * @param policy - Controls what happens when the timeout is reached during synchronization.
+   * - 'ignore': Respond immediately when data update did not apply within the timeout period
+   * - 'fail': Respond with 424 status code when data update did not apply within the timeout period
    */
-  waitForSync(timeout: number | null): this;
+  waitForSync(timeout: number | null, policy?: FactsSyncTimeoutPolicy): this;
   /**
    * Ignore the bulk cache and fetch facts directly from the PDP. Available only when `proxyFactsViaPdp` is set to `true`.
    * @param ignoreCache - Set to `true` to ignore the bulk cache and fetch facts directly from the PDP.
@@ -243,8 +246,12 @@ export abstract class BaseFactsPermitAPI extends BasePermitApi implements IWaitF
         baseOptions: {
           headers: {
             ...this.openapiClientConfig.baseOptions.headers,
-            'X-Wait-Timeout':
-              this.config.factsSyncTimeout === null ? '' : this.config.factsSyncTimeout.toString(),
+            ...(this.config.factsSyncTimeout !== null && {
+              'X-Wait-Timeout': this.config.factsSyncTimeout.toString(),
+            }),
+            ...(this.config.factsSyncTimeoutPolicy && {
+              'X-Timeout-Policy': this.config.factsSyncTimeoutPolicy,
+            }),
           },
         },
       });
@@ -255,11 +262,19 @@ export abstract class BaseFactsPermitAPI extends BasePermitApi implements IWaitF
     return new (this.constructor as any)(this.config, this.logger);
   }
 
-  public waitForSync(timeout: number | null): this {
+  public waitForSync(timeout: number | null, policy?: FactsSyncTimeoutPolicy): this {
     if (this.config.proxyFactsViaPdp) {
       const clone = this.clone();
       clone.openapiClientConfig.baseOptions.headers['X-Wait-Timeout'] =
         timeout === null ? '' : timeout.toString();
+
+      if (policy) {
+        clone.openapiClientConfig.baseOptions.headers['X-Timeout-Policy'] = policy;
+      } else if (this.config.factsSyncTimeoutPolicy) {
+        clone.openapiClientConfig.baseOptions.headers['X-Timeout-Policy'] =
+          this.config.factsSyncTimeoutPolicy;
+      }
+
       return clone;
     } else {
       this.logger.warn(
