@@ -281,12 +281,4 @@ export abstract class BaseFactsPermitAPI extends BasePermitApi implements IWaitF
       return this;
     }
   }
-
-  public ignoreBulkCache(ignoreCache: boolean): this {
-    const clone = this.clone();
-    clone.openapiClientConfig.baseOptions.headers['X-Ignore-Bulk-Cache'] = ignoreCache
-      ? 'true'
-      : 'false';
-    return clone;
-  }
 }
