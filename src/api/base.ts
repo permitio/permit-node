@@ -268,11 +268,9 @@ export abstract class BaseFactsPermitAPI extends BasePermitApi implements IWaitF
       clone.openapiClientConfig.baseOptions.headers['X-Wait-Timeout'] =
         timeout === null ? '' : timeout.toString();
 
-      if (policy) {
-        clone.openapiClientConfig.baseOptions.headers['X-Timeout-Policy'] = policy;
-      } else if (this.config.factsSyncTimeoutPolicy) {
-        clone.openapiClientConfig.baseOptions.headers['X-Timeout-Policy'] =
-          this.config.factsSyncTimeoutPolicy;
+      const timeoutPolicy = policy || this.config.factsSyncTimeoutPolicy;
+      if (timeoutPolicy) {
+        clone.openapiClientConfig.baseOptions.headers['X-Timeout-Policy'] = timeoutPolicy;
       }
 
       return clone;
