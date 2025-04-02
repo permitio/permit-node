@@ -229,11 +229,6 @@ export interface IWaitForSync {
    * - 'fail': Respond with 424 status code when data update did not apply within the timeout period
    */
   waitForSync(timeout: number | null, policy?: FactsSyncTimeoutPolicy): this;
-  /**
-   * Ignore the bulk cache and fetch facts directly from the PDP. Available only when `proxyFactsViaPdp` is set to `true`.
-   * @param ignoreCache - Set to `true` to ignore the bulk cache and fetch facts directly from the PDP.
-   */
-  ignoreBulkCache(ignoreCache: boolean): this;
 }
 
 export abstract class BaseFactsPermitAPI extends BasePermitApi implements IWaitForSync {
