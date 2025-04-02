@@ -1,6 +1,6 @@
 name: Release permit Node SDK
 
-on: push
+on:
   release:
     types: [published]
 env: 
