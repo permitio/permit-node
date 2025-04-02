@@ -1,8 +1,8 @@
 name: Release permit Node SDK
 
 on: push
-  release:
-    types: [published]
+  # release:
+  #   types: [published]
 env: 
   PROJECT_ID: 7f55831d77c642739bc17733ab0af138 #github actions project id (under 'Permit.io Tests' workspace)
   ENV_NAME: node-sdk-ci
