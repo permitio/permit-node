@@ -33,9 +33,6 @@ jobs:
           yarn run build
           yarn docs ; git add docs/ ; git commit -m "update tsdoc"
 
-      - name: Install Docker
-        uses: docker-practice/actions-setup-docker@master
-
       - name: Creation env ${{ env.ENV_NAME }} under 'Permit.io Tests' workspace
         run: |
           response=$(curl -X POST \
