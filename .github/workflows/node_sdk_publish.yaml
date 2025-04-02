@@ -1,11 +1,11 @@
 name: Release permit Node SDK
 
-on:
-  release:
-    types: [published]
-env: 
-  PROJECT_ID: 7f55831d77c642739bc17733ab0af138 #github actions project id (under 'Permit.io Tests' workspace)
-  ENV_NAME: node-sdk-ci
+on: push
+#   release:
+#     types: [published]
+# env: 
+#   PROJECT_ID: 7f55831d77c642739bc17733ab0af138 #github actions project id (under 'Permit.io Tests' workspace)
+#   ENV_NAME: node-sdk-ci
 
 jobs:
   publish_node_sdk:
@@ -34,70 +34,70 @@ jobs:
           yarn docs ; git add docs/ ; git commit -m "update tsdoc"
 
       - name: Install Docker
-        uses: docker-practice/actions-setup-docker@master
+        uses: docker-practice/actions-setup-docker@v1
 
-      - name: Creation env ${{ env.ENV_NAME }} under 'Permit.io Tests' workspace
-        run: |
-          response=$(curl -X POST \
-            https://api.permit.io/v2/projects/${{ env.PROJECT_ID }}/envs \
-            -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}' \
-            -H 'Content-Type: application/json' \
-            -d '{
-            "key": "${{ env.ENV_NAME }}",
-            "name": "${{ env.ENV_NAME }}"
-          }')
+      # - name: Creation env ${{ env.ENV_NAME }} under 'Permit.io Tests' workspace
+      #   run: |
+      #     response=$(curl -X POST \
+      #       https://api.permit.io/v2/projects/${{ env.PROJECT_ID }}/envs \
+      #       -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}' \
+      #       -H 'Content-Type: application/json' \
+      #       -d '{
+      #       "key": "${{ env.ENV_NAME }}",
+      #       "name": "${{ env.ENV_NAME }}"
+      #     }')
 
-          # Extract the new env id
-          echo "ENV_ID=$(echo "$response" | jq -r '.id')" >> $GITHUB_ENV
+      #     # Extract the new env id
+      #     echo "ENV_ID=$(echo "$response" | jq -r '.id')" >> $GITHUB_ENV
 
-          echo "New env ID: $ENV_ID"
+      #     echo "New env ID: $ENV_ID"
       
-      - name: Fetch API_KEY of ${{ env.ENV_NAME }}
-        run: |
-          response=$(curl -X GET \
-            https://api.permit.io/v2/api-key/${{ env.PROJECT_ID }}/${{ env.ENV_ID }} \
-            -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}')
+      # - name: Fetch API_KEY of ${{ env.ENV_NAME }}
+      #   run: |
+      #     response=$(curl -X GET \
+      #       https://api.permit.io/v2/api-key/${{ env.PROJECT_ID }}/${{ env.ENV_ID }} \
+      #       -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}')
 
-          # Extract the secret from the response which is the API_KEY of the new env
-          echo "ENV_API_KEY=$(echo "$response" | jq -r '.secret')" >> $GITHUB_ENV
+      #     # Extract the secret from the response which is the API_KEY of the new env
+      #     echo "ENV_API_KEY=$(echo "$response" | jq -r '.secret')" >> $GITHUB_ENV
 
-          echo "New env api key: $ENV_API_KEY"
+      #     echo "New env api key: $ENV_API_KEY"
 
-      - name: local PDP runnning
-        env:
-          PDP_API_KEY: ${{ env.ENV_API_KEY }}
-          PERMIT_API_KEY: ${{ env.ENV_API_KEY }}
-          PDP_DEBUG: true
-        run: docker run -d -p 7766:7000 permitio/pdp-v2:latest
+      # - name: local PDP runnning
+      #   env:
+      #     PDP_API_KEY: ${{ env.ENV_API_KEY }}
+      #     PERMIT_API_KEY: ${{ env.ENV_API_KEY }}
+      #     PDP_DEBUG: true
+      #   run: docker run -d -p 7766:7000 permitio/pdp-v2:latest
 
-      - name: Run tests
-        env:
-          PDP_API_KEY: ${{ env.ENV_API_KEY }}
-          PERMIT_API_KEY: ${{ env.ENV_API_KEY }}
-          API_TIER: 'prod'
-        run: yarn test
+      # - name: Run tests
+      #   env:
+      #     PDP_API_KEY: ${{ env.ENV_API_KEY }}
+      #     PERMIT_API_KEY: ${{ env.ENV_API_KEY }}
+      #     API_TIER: 'prod'
+      #   run: yarn test
 
-      - name: Delete env ${{ env.ENV_NAME }}
-        if: always()
-        run: |
-          curl -X DELETE \
-            https://api.permit.io/v2/projects/${{ env.PROJECT_ID }}/envs/${{ env.ENV_ID }} \
-            -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}'
+      # - name: Delete env ${{ env.ENV_NAME }}
+      #   if: always()
+      #   run: |
+      #     curl -X DELETE \
+      #       https://api.permit.io/v2/projects/${{ env.PROJECT_ID }}/envs/${{ env.ENV_ID }} \
+      #       -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}'
           
-      - name: Bump version at package.json
-        run: |
-          sed -i "s/\"version\": \".*\"/\"version\": \"${{ github.event.release.tag_name }}\"/" package.json
-          cat package.json
+      # - name: Bump version at package.json
+      #   run: |
+      #     sed -i "s/\"version\": \".*\"/\"version\": \"${{ github.event.release.tag_name }}\"/" package.json
+      #     cat package.json
       
-      - name: Publish package to NPM
-        run: |
-          if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
-            echo "Publishing as a release candidate (rc)..."
-            yarn publish --access public --tag rc
-          else
-            echo "Publishing as the latest release..."
-            yarn publish --access public
-          fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: Publish package to NPM
+      #   run: |
+      #     if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
+      #       echo "Publishing as a release candidate (rc)..."
+      #       yarn publish --access public --tag rc
+      #     else
+      #       echo "Publishing as the latest release..."
+      #       yarn publish --access public
+      #     fi
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
