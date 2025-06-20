@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { Labels } from './labels';
+import { Labels } from './labels.js';
 
 /**
  *

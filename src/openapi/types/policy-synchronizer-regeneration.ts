@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { Payload } from './payload';
+import { Payload } from './payload.js';
 
 /**
  *

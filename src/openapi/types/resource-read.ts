@@ -14,13 +14,13 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ActionBlockRead } from './action-block-read';
+import { ActionBlockRead } from './action-block-read.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { AttributeBlockRead } from './attribute-block-read';
+import { AttributeBlockRead } from './attribute-block-read.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { RelationBlockRead } from './relation-block-read';
+import { RelationBlockRead } from './relation-block-read.js';
 
 /**
  *

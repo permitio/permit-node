@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { PdpConfigObj } from './pdp-config-obj';
+import { PdpConfigObj } from './pdp-config-obj.js';
 
 /**
  *

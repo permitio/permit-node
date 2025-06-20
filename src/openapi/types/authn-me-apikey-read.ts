@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { APIKeyOwnerType } from './apikey-owner-type';
+import { APIKeyOwnerType } from './apikey-owner-type.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { MemberAccessObj } from './member-access-obj';
+import { MemberAccessObj } from './member-access-obj.js';
 
 /**
  *
@@ -74,4 +74,4 @@ export const AuthnMeAPIKeyReadActorTypeEnum = {
 } as const;
 
 export type AuthnMeAPIKeyReadActorTypeEnum =
-  typeof AuthnMeAPIKeyReadActorTypeEnum[keyof typeof AuthnMeAPIKeyReadActorTypeEnum];
+  (typeof AuthnMeAPIKeyReadActorTypeEnum)[keyof typeof AuthnMeAPIKeyReadActorTypeEnum];

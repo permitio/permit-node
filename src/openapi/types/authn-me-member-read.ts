@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OnboardingStep } from './onboarding-step';
+import { OnboardingStep } from './onboarding-step.js';
 
 /**
  *
@@ -83,4 +83,4 @@ export const AuthnMeMemberReadActorTypeEnum = {
 } as const;
 
 export type AuthnMeMemberReadActorTypeEnum =
-  typeof AuthnMeMemberReadActorTypeEnum[keyof typeof AuthnMeMemberReadActorTypeEnum];
+  (typeof AuthnMeMemberReadActorTypeEnum)[keyof typeof AuthnMeMemberReadActorTypeEnum];

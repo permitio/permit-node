@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ConditionSetRead } from './condition-set-read';
+import { ConditionSetRead } from './condition-set-read.js';
 
 /**
  *

@@ -1,6 +1,7 @@
 import { Logger } from 'pino';
 
 import { IPermitConfig } from '../config';
+import { BASE_PATH } from '../openapi/base.js';
 import {
   ResourcesApi as AutogenResourcesApi,
   PaginatedResultResourceRead,
@@ -8,11 +9,10 @@ import {
   ResourceRead,
   ResourceReplace,
   ResourceUpdate,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+} from '../openapi/index.js';
 
-import { BasePermitApi, IPaginationExtended, ReturnPaginationType } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BasePermitApi, IPaginationExtended, ReturnPaginationType } from './base.js';
+import { ApiContextLevel, ApiKeyLevel } from './context.js';
 
 export {
   ResourceCreate,
@@ -20,7 +20,7 @@ export {
   ResourceReplace,
   ResourceUpdate,
   PaginatedResultResourceRead,
-} from '../openapi';
+} from '../openapi/index.js';
 
 export interface IResourcesApi {
   /**

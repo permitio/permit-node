@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { Engine } from './engine';
+import { Engine } from './engine.js';
 
 /**
  * dummy engine class in case we couldn\'t parse the log but we didn\'t want to drop it

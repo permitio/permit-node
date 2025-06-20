@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { UserRoleCreate } from './user-role-create';
+import { UserRoleCreate } from './user-role-create.js';
 
 /**
  *

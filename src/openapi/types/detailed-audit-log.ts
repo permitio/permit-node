@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { AuditLogObjects } from './audit-log-objects';
+import { AuditLogObjects } from './audit-log-objects.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { RawData } from './raw-data';
+import { RawData } from './raw-data.js';
 
 /**
  *

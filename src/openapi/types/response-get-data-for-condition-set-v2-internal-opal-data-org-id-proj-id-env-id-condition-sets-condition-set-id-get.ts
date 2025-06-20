@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ConditionSetData } from './condition-set-data';
+import { ConditionSetData } from './condition-set-data.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ConditionSetType } from './condition-set-type';
+import { ConditionSetType } from './condition-set-type.js';
 
 /**
  *

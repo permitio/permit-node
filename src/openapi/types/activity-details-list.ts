@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ActivityDetailsObjectData } from './activity-details-object-data';
+import { ActivityDetailsObjectData } from './activity-details-object-data.js';
 
 /**
  *
@@ -47,4 +47,4 @@ export const ActivityDetailsListKindEnum = {
 } as const;
 
 export type ActivityDetailsListKindEnum =
-  typeof ActivityDetailsListKindEnum[keyof typeof ActivityDetailsListKindEnum];
+  (typeof ActivityDetailsListKindEnum)[keyof typeof ActivityDetailsListKindEnum];

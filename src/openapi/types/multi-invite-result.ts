@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { FailedInvite } from './failed-invite';
+import { FailedInvite } from './failed-invite.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { InviteRead } from './invite-read';
+import { InviteRead } from './invite-read.js';
 
 /**
  *

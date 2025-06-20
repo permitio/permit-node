@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { PDPInfo } from './pdpinfo';
+import { PDPInfo } from './pdpinfo.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { PDPOPAInfo } from './pdpopainfo';
+import { PDPOPAInfo } from './pdpopainfo.js';
 
 /**
  *

@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { JwksObj } from './jwks-obj';
+import { JwksObj } from './jwks-obj.js';
 
 /**
  * @type Jwks

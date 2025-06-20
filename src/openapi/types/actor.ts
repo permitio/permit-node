@@ -14,19 +14,19 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { APIKeyOwnerType } from './apikey-owner-type';
+import { APIKeyOwnerType } from './apikey-owner-type.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { AuthnMeAPIKeyRead } from './authn-me-apikey-read';
+import { AuthnMeAPIKeyRead } from './authn-me-apikey-read.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { AuthnMeMemberRead } from './authn-me-member-read';
+import { AuthnMeMemberRead } from './authn-me-member-read.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { AuthnMeUserRead } from './authn-me-user-read';
+import { AuthnMeUserRead } from './authn-me-user-read.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { MemberAccessObj } from './member-access-obj';
+import { MemberAccessObj } from './member-access-obj.js';
 
 /**
  * @type Actor

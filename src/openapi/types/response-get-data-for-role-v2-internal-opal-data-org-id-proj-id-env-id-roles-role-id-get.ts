@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { RoleData } from './role-data';
+import { RoleData } from './role-data.js';
 
 /**
  *

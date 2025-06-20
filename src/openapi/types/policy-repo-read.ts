@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { PolicyRepoStatus } from './policy-repo-status';
+import { PolicyRepoStatus } from './policy-repo-status.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { SSHAuthData } from './sshauth-data';
+import { SSHAuthData } from './sshauth-data.js';
 
 /**
  *

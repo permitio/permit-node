@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ResourceTypeData } from './resource-type-data';
+import { ResourceTypeData } from './resource-type-data.js';
 
 /**
  *

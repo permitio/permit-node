@@ -14,19 +14,19 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ConditionSetData } from './condition-set-data';
+import { ConditionSetData } from './condition-set-data.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ResourceTypeData } from './resource-type-data';
+import { ResourceTypeData } from './resource-type-data.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { RoleData } from './role-data';
+import { RoleData } from './role-data.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { TenantData } from './tenant-data';
+import { TenantData } from './tenant-data.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { UserData } from './user-data';
+import { UserData } from './user-data.js';
 
 /**
  *

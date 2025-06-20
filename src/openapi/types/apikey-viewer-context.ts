@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { APIKeyInfo } from './apikey-info';
+import { APIKeyInfo } from './apikey-info.js';
 
 /**
  *
@@ -41,4 +41,4 @@ export const APIKeyViewerContextTypeEnum = {
 } as const;
 
 export type APIKeyViewerContextTypeEnum =
-  typeof APIKeyViewerContextTypeEnum[keyof typeof APIKeyViewerContextTypeEnum];
+  (typeof APIKeyViewerContextTypeEnum)[keyof typeof APIKeyViewerContextTypeEnum];

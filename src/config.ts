@@ -1,8 +1,8 @@
 import globalAxios, { AxiosInstance } from 'axios';
 import _ from 'lodash';
 
-import { ApiContext } from './api/context';
-import { RecursivePartial } from './utils/types';
+import { ApiContext } from './api/context.js';
+import { RecursivePartial } from './utils/types.js';
 
 export type FactsSyncTimeoutPolicy = 'ignore' | 'fail';
 

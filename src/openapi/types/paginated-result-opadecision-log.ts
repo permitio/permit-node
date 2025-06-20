@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OPADecisionLog } from './opadecision-log';
+import { OPADecisionLog } from './opadecision-log.js';
 
 /**
  *

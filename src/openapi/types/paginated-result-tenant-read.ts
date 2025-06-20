@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { TenantRead } from './tenant-read';
+import { TenantRead } from './tenant-read.js';
 
 /**
  *

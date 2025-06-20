@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ElementsPermissionLevel } from './elements-permission-level';
+import { ElementsPermissionLevel } from './elements-permission-level.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { GrantedTo } from './granted-to';
+import { GrantedTo } from './granted-to.js';
 
 /**
  *

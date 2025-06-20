@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { DataSourceEntry } from './data-source-entry';
+import { DataSourceEntry } from './data-source-entry.js';
 
 /**
  * @type Entry

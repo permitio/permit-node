@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OpalCommonSchemasDataDataSourceConfig } from './opal-common-schemas-data-data-source-config';
+import { OpalCommonSchemasDataDataSourceConfig } from './opal-common-schemas-data-data-source-config.js';
 
 /**
  *

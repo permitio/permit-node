@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { PDPState } from './pdpstate';
+import { PDPState } from './pdpstate.js';
 
 /**
  *

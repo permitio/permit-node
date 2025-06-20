@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { APIKeyRead } from './apikey-read';
+import { APIKeyRead } from './apikey-read.js';
 
 /**
  *

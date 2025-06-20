@@ -1,19 +1,19 @@
 import { Logger } from 'pino';
 
 import { IPermitConfig } from '../config';
+import { BASE_PATH } from '../openapi/base.js';
 import {
   RolesApi as AutogenRolesApi,
   PaginatedResultRoleRead,
   RoleCreate,
   RoleRead,
   RoleUpdate,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+} from '../openapi/index.js';
 
-import { BasePermitApi, IPaginationExtended, ReturnPaginationType } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BasePermitApi, IPaginationExtended, ReturnPaginationType } from './base.js';
+import { ApiContextLevel, ApiKeyLevel } from './context.js';
 
-export { RoleCreate, RoleRead, RoleUpdate, PaginatedResultRoleRead } from '../openapi';
+export { RoleCreate, RoleRead, RoleUpdate, PaginatedResultRoleRead } from '../openapi/index.js';
 
 export interface IRolesApi {
   /**

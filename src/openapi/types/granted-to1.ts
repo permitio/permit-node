@@ -14,13 +14,13 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { DerivedRoleBlockEdit } from './derived-role-block-edit';
+import { DerivedRoleBlockEdit } from './derived-role-block-edit.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { DerivedRoleRuleCreate } from './derived-role-rule-create';
+import { DerivedRoleRuleCreate } from './derived-role-rule-create.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { When } from './when';
+import { When } from './when.js';
 
 /**
  * @type GrantedTo1

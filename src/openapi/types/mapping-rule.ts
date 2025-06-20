@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { Methods } from './methods';
+import { Methods } from './methods.js';
 
 /**
  *

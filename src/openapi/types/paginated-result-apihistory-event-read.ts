@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { APIHistoryEventRead } from './apihistory-event-read';
+import { APIHistoryEventRead } from './apihistory-event-read.js';
 
 /**
  *

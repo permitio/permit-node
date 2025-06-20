@@ -14,16 +14,16 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ElementsType } from './elements-type';
+import { ElementsType } from './elements-type.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { PermissionLevelRoleRead } from './permission-level-role-read';
+import { PermissionLevelRoleRead } from './permission-level-role-read.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { Settings } from './settings';
+import { Settings } from './settings.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { WebhookRead } from './webhook-read';
+import { WebhookRead } from './webhook-read.js';
 
 /**
  *

@@ -14,13 +14,13 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { RoleAssignmentResourceInstance } from './role-assignment-resource-instance';
+import { RoleAssignmentResourceInstance } from './role-assignment-resource-instance.js';
 // @ts-ignore
-import { RoleAssignmentRole } from './role-assignment-role';
+import { RoleAssignmentRole } from './role-assignment-role.js';
 // @ts-ignore
-import { RoleAssignmentTenant } from './role-assignment-tenant';
+import { RoleAssignmentTenant } from './role-assignment-tenant.js';
 // @ts-ignore
-import { RoleAssignmentUser } from './role-assignment-user';
+import { RoleAssignmentUser } from './role-assignment-user.js';
 
 /**
  *

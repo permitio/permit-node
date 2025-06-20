@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { EnvironmentCreate } from './environment-create';
+import { EnvironmentCreate } from './environment-create.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { Jwks } from './jwks';
+import { Jwks } from './jwks.js';
 
 /**
  * @type New

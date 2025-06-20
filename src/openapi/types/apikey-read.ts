@@ -14,22 +14,22 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { APIKeyOwnerType } from './apikey-owner-type';
+import { APIKeyOwnerType } from './apikey-owner-type.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { EnvironmentRead } from './environment-read';
+import { EnvironmentRead } from './environment-read.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { MemberAccessLevel } from './member-access-level';
+import { MemberAccessLevel } from './member-access-level.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { MemberAccessObj } from './member-access-obj';
+import { MemberAccessObj } from './member-access-obj.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { OrgMemberRead } from './org-member-read';
+import { OrgMemberRead } from './org-member-read.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ProjectRead } from './project-read';
+import { ProjectRead } from './project-read.js';
 
 /**
  *

@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ProjectObj } from './project-obj';
+import { ProjectObj } from './project-obj.js';
 
 /**
  *

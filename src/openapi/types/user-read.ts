@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { UserInTenant } from './user-in-tenant';
+import { UserInTenant } from './user-in-tenant.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { UserRole } from './user-role';
+import { UserRole } from './user-role.js';
 
 /**
  *

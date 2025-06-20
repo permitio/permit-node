@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { LocationInner } from './location-inner';
+import { LocationInner } from './location-inner.js';
 
 /**
  *

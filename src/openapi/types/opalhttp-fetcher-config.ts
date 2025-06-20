@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { HttpMethods } from './http-methods';
+import { HttpMethods } from './http-methods.js';
 
 /**
  * Config for HttpFetchProvider\'s Adding HTTP headers.

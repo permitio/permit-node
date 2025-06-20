@@ -14,13 +14,13 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { AuthMechanism } from './auth-mechanism';
+import { AuthMechanism } from './auth-mechanism.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { MappingRule } from './mapping-rule';
+import { MappingRule } from './mapping-rule.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { Secret } from './secret';
+import { Secret } from './secret.js';
 
 /**
  *

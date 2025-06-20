@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { EnvironmentCopyTarget } from './environment-copy-target';
+import { EnvironmentCopyTarget } from './environment-copy-target.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { New } from './new';
+import { New } from './new.js';
 
 /**
  * @type TargetEnv

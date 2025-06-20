@@ -1,19 +1,24 @@
 import { Logger } from 'pino';
 
 import { IPermitConfig } from '../config';
+import { BASE_PATH } from '../openapi/base.js';
 import {
   TenantsApi as AutogenTenantsApi,
   PaginatedResultUserRead,
   TenantCreate,
   TenantRead,
   TenantUpdate,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+} from '../openapi/index.js';
 
-import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base.js';
+import { ApiContextLevel, ApiKeyLevel } from './context.js';
 
-export { PaginatedResultUserRead, TenantCreate, TenantRead, TenantUpdate } from '../openapi';
+export {
+  PaginatedResultUserRead,
+  TenantCreate,
+  TenantRead,
+  TenantUpdate,
+} from '../openapi/index.js';
 
 export interface IListTenantUsers extends IPagination {
   tenantKey: string;

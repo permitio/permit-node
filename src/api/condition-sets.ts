@@ -1,18 +1,18 @@
 import { Logger } from 'pino';
 
 import { IPermitConfig } from '../config';
+import { BASE_PATH } from '../openapi/base.js';
 import {
   ConditionSetsApi as AutogenConditionSetsApi,
   ConditionSetCreate,
   ConditionSetRead,
   ConditionSetUpdate,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+} from '../openapi/index.js';
 
-import { BasePermitApi, IPagination, PermitApiError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ApiContext, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { BasePermitApi, IPagination, PermitApiError } from './base.js'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { ApiContext, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context.js'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
-export { ConditionSetCreate, ConditionSetRead, ConditionSetUpdate } from '../openapi';
+export { ConditionSetCreate, ConditionSetRead, ConditionSetUpdate } from '../openapi/index.js';
 
 export interface IConditionSetsApi {
   /**

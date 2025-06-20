@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { RoleAssignmentDetailedRead } from './role-assignment-detailed-read';
+import { RoleAssignmentDetailedRead } from './role-assignment-detailed-read.js';
 
 /**
  *

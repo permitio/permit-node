@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { EnvironmentCopyScopeFilters } from './environment-copy-scope-filters';
+import { EnvironmentCopyScopeFilters } from './environment-copy-scope-filters.js';
 
 /**
  * @type Resources

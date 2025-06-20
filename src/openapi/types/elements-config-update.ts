@@ -14,13 +14,13 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ElementsType } from './elements-type';
+import { ElementsType } from './elements-type.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { Settings } from './settings';
+import { Settings } from './settings.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { WebhookUpdate } from './webhook-update';
+import { WebhookUpdate } from './webhook-update.js';
 
 /**
  *

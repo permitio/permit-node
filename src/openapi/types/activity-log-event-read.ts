@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ActivityDetails } from './activity-details';
+import { ActivityDetails } from './activity-details.js';
 
 /**
  *

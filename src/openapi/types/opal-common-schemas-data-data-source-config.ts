@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { DataSourceEntryWithPollingInterval } from './data-source-entry-with-polling-interval';
+import { DataSourceEntryWithPollingInterval } from './data-source-entry-with-polling-interval.js';
 
 /**
  * Static list of Data Source Entries returned to client.  Answers this question for the client: from where should i get the full picture of data i need? (as opposed to incremental data updates)

@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { Logger } from 'pino';
 
 import { IPermitConfig } from '../config';
+import { BASE_PATH } from '../openapi/base.js';
 import {
   ConditionSetCreate,
   ConditionSetRead,
@@ -32,11 +33,10 @@ import {
   UserRead,
   UsersApi,
   UserUpdate,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+} from '../openapi/index.js';
 
-import { BasePermitApi, PermitApiError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ApiContext, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { BasePermitApi, PermitApiError } from './base.js'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { ApiContext, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context.js'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 /**
  * This interface contains *read actions* that goes outside

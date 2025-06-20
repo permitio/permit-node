@@ -14,16 +14,16 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ConditionSetType } from './condition-set-type';
+import { ConditionSetType } from './condition-set-type.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ParentId } from './parent-id';
+import { ParentId } from './parent-id.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ResourceId } from './resource-id';
+import { ResourceId } from './resource-id.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ResourceRead } from './resource-read';
+import { ResourceRead } from './resource-read.js';
 
 /**
  *

@@ -14,13 +14,13 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { APIKeyOwnerType } from './apikey-owner-type';
+import { APIKeyOwnerType } from './apikey-owner-type.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { MemberAccessLevel } from './member-access-level';
+import { MemberAccessLevel } from './member-access-level.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { MemberAccessObj } from './member-access-obj';
+import { MemberAccessObj } from './member-access-obj.js';
 
 /**
  *

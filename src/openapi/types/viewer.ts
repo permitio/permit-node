@@ -14,16 +14,16 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { APIKeyInfo } from './apikey-info';
+import { APIKeyInfo } from './apikey-info.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { APIKeyViewerContext } from './apikey-viewer-context';
+import { APIKeyViewerContext } from './apikey-viewer-context.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { MemberInfo } from './member-info';
+import { MemberInfo } from './member-info.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { MemberViewerContext } from './member-viewer-context';
+import { MemberViewerContext } from './member-viewer-context.js';
 
 /**
  * @type Viewer

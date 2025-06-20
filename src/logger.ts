@@ -2,7 +2,7 @@ import util from 'util';
 
 import pino from 'pino';
 
-import { IPermitConfig } from './config';
+import { IPermitConfig } from './config.js';
 
 export function prettyConsoleLog(label: string, data: any) {
   console.log(label, util.inspect(data, false, 12, true));

@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OrganizationObj } from './organization-obj';
+import { OrganizationObj } from './organization-obj.js';
 
 /**
  *

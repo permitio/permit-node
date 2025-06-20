@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { Scope } from './scope';
+import { Scope } from './scope.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { TargetEnv } from './target-env';
+import { TargetEnv } from './target-env.js';
 
 /**
  *
@@ -51,4 +51,4 @@ export const EnvironmentCopyConflictStrategyEnum = {
 } as const;
 
 export type EnvironmentCopyConflictStrategyEnum =
-  typeof EnvironmentCopyConflictStrategyEnum[keyof typeof EnvironmentCopyConflictStrategyEnum];
+  (typeof EnvironmentCopyConflictStrategyEnum)[keyof typeof EnvironmentCopyConflictStrategyEnum];

@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { DerivedRole } from './derived-role';
+import { DerivedRole } from './derived-role.js';
 
 /**
  *

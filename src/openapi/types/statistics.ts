@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OrgMemberReadWithGrants } from './org-member-read-with-grants';
+import { OrgMemberReadWithGrants } from './org-member-read-with-grants.js';
 
 /**
  *

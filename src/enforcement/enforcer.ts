@@ -1,9 +1,10 @@
 import axios, { AxiosInstance } from 'axios';
 import { Logger } from 'pino';
 import URL from 'url-parse';
+
 import { IPermitConfig } from '../config';
-import { CheckConfig, Context, ContextStore } from '../utils/context';
-import { AxiosLoggingInterceptor } from '../utils/http-logger';
+import { CheckConfig, Context, ContextStore } from '../utils/context.js';
+import { AxiosLoggingInterceptor } from '../utils/http-logger.js';
 
 import {
   AllTenantsResponse,
@@ -21,7 +22,7 @@ import {
   OpaGetUserPermissionsResult,
   PolicyDecision,
   TenantDetails,
-} from './interfaces';
+} from './interfaces.js';
 
 const RESOURCE_DELIMITER = ':';
 

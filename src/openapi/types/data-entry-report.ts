@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { Entry } from './entry';
+import { Entry } from './entry.js';
 
 /**
  * A report of the processing of a single DataSourceEntry.

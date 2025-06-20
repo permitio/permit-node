@@ -1,6 +1,6 @@
 import anyTest, { TestInterface } from 'ava';
 
-import { provideTestExecutionContext, TestContext } from './fixtures';
+import { provideTestExecutionContext, TestContext } from './fixtures.js';
 
 const test_relationship_tuples = anyTest as TestInterface<TestContext>;
 test_relationship_tuples.before(provideTestExecutionContext);

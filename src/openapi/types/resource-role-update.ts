@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { GrantedTo1 } from './granted-to1';
+import { GrantedTo1 } from './granted-to1.js';
 
 /**
  *

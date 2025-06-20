@@ -14,16 +14,16 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { EnvironmentRegeneration } from './environment-regeneration';
+import { EnvironmentRegeneration } from './environment-regeneration.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { FullRegeneration } from './full-regeneration';
+import { FullRegeneration } from './full-regeneration.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { OrganizationRegeneration } from './organization-regeneration';
+import { OrganizationRegeneration } from './organization-regeneration.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ProjectRegeneration } from './project-regeneration';
+import { ProjectRegeneration } from './project-regeneration.js';
 
 /**
  * @type Payload

@@ -1,6 +1,7 @@
 import { Logger } from 'pino';
 
 import { IPermitConfig } from '../config';
+import { BASE_PATH } from '../openapi/base.js';
 import {
   ResourceRolesApi as AutogenResourceRolesApi,
   ImplicitGrantsApi as AutogenRoleDerivationsApi,
@@ -11,13 +12,12 @@ import {
   ResourceRoleCreate,
   ResourceRoleRead,
   ResourceRoleUpdate,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+} from '../openapi/index.js';
 
-import { BasePermitApi, IPagination } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BasePermitApi, IPagination } from './base.js';
+import { ApiContextLevel, ApiKeyLevel } from './context.js';
 
-export { ResourceRoleCreate, ResourceRoleRead, ResourceRoleUpdate } from '../openapi';
+export { ResourceRoleCreate, ResourceRoleRead, ResourceRoleUpdate } from '../openapi/index.js';
 
 export interface IListResourceRoles extends IPagination {
   resourceKey: string;

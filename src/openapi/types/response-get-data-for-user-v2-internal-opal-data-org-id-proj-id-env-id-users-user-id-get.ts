@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { UserData } from './user-data';
+import { UserData } from './user-data.js';
 
 /**
  *

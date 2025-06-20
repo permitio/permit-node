@@ -1,18 +1,18 @@
 import { Logger } from 'pino';
 
 import { IPermitConfig } from '../config';
+import { BASE_PATH } from '../openapi/base.js';
 import {
   ProjectsApi as AutogenProjectsApi,
   ProjectCreate,
   ProjectRead,
   ProjectUpdate,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+} from '../openapi/index.js';
 
-import { BasePermitApi, IPagination } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BasePermitApi, IPagination } from './base.js';
+import { ApiContextLevel, ApiKeyLevel } from './context.js';
 
-export { ProjectCreate, ProjectRead, ProjectUpdate } from '../openapi';
+export { ProjectCreate, ProjectRead, ProjectUpdate } from '../openapi/index.js';
 
 export interface IProjectsApi {
   /**

@@ -2,24 +2,24 @@ import { Logger } from 'pino';
 
 import { IPermitConfig } from '../config';
 
-import { ConditionSetRulesApi, IConditionSetRulesApi } from './condition-set-rules';
-import { ConditionSetsApi, IConditionSetsApi } from './condition-sets';
-import { ApiContextLevel, ApiKeyLevel } from './context';
-import { DeprecatedApiClient, IDeprecatedPermitApi } from './deprecated';
-import { EnvironmentsApi, IEnvironmentsApi } from './environments';
-import { IProjectsApi, ProjectsApi } from './projects';
-import { IRelationshipTuplesApi, RelationshipTuplesApi } from './relationship-tuples';
-import { IResourceActionGroupsApi, ResourceActionGroupsApi } from './resource-action-groups';
-import { IResourceActionsApi, ResourceActionsApi } from './resource-actions';
-import { IResourceAttributesApi, ResourceAttributesApi } from './resource-attributes';
-import { IResourceInstancesApi, ResourceInstancesApi } from './resource-instances';
-import { IResourceRelationsApi, ResourceRelationsApi } from './resource-relations';
-import { IResourceRolesApi, ResourceRolesApi } from './resource-roles';
-import { IResourcesApi, ResourcesApi } from './resources';
-import { IRoleAssignmentsApi, RoleAssignmentsApi } from './role-assignments';
-import { IRolesApi, RolesApi } from './roles';
-import { ITenantsApi, TenantsApi } from './tenants';
-import { IUsersApi, UsersApi } from './users';
+import { ConditionSetRulesApi, IConditionSetRulesApi } from './condition-set-rules.js';
+import { ConditionSetsApi, IConditionSetsApi } from './condition-sets.js';
+import { ApiContextLevel, ApiKeyLevel } from './context.js';
+import { DeprecatedApiClient, IDeprecatedPermitApi } from './deprecated.js';
+import { EnvironmentsApi, IEnvironmentsApi } from './environments.js';
+import { IProjectsApi, ProjectsApi } from './projects.js';
+import { IRelationshipTuplesApi, RelationshipTuplesApi } from './relationship-tuples.js';
+import { IResourceActionGroupsApi, ResourceActionGroupsApi } from './resource-action-groups.js';
+import { IResourceActionsApi, ResourceActionsApi } from './resource-actions.js';
+import { IResourceAttributesApi, ResourceAttributesApi } from './resource-attributes.js';
+import { IResourceInstancesApi, ResourceInstancesApi } from './resource-instances.js';
+import { IResourceRelationsApi, ResourceRelationsApi } from './resource-relations.js';
+import { IResourceRolesApi, ResourceRolesApi } from './resource-roles.js';
+import { IResourcesApi, ResourcesApi } from './resources.js';
+import { IRoleAssignmentsApi, RoleAssignmentsApi } from './role-assignments.js';
+import { IRolesApi, RolesApi } from './roles.js';
+import { ITenantsApi, TenantsApi } from './tenants.js';
+import { IUsersApi, UsersApi } from './users.js';
 
 export interface IPermitApi extends IDeprecatedPermitApi {
   /**

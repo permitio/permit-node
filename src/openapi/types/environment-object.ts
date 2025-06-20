@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { EnvironmentObj } from './environment-obj';
+import { EnvironmentObj } from './environment-obj.js';
 
 /**
  *

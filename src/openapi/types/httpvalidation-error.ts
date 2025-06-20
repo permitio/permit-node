@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ValidationError } from './validation-error';
+import { ValidationError } from './validation-error.js';
 
 /**
  *

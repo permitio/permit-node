@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { DerivedRoleRule } from './derived-role-rule';
+import { DerivedRoleRule } from './derived-role-rule.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { PermitBackendSchemasSchemaOpalDataDerivedRoleSettings } from './permit-backend-schemas-schema-opal-data-derived-role-settings';
+import { PermitBackendSchemasSchemaOpalDataDerivedRoleSettings } from './permit-backend-schemas-schema-opal-data-derived-role-settings.js';
 
 /**
  *

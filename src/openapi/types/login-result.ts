@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { InviteAttemptResult } from './invite-attempt-result';
+import { InviteAttemptResult } from './invite-attempt-result.js';
 
 /**
  *

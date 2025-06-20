@@ -1,10 +1,10 @@
 import { Logger } from 'pino';
 
 import { IPermitConfig } from '../config';
-import { AuthenticationApi, EmbeddedLoginRequestOutput } from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+import { BASE_PATH } from '../openapi/base.js';
+import { AuthenticationApi, EmbeddedLoginRequestOutput } from '../openapi/index.js';
 
-import { BasePermitApi } from './base';
+import { BasePermitApi } from './base.js';
 
 /**
  * Represents the response returned by the `loginAs` method of the `ElementsClient` class, with additional content.

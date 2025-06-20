@@ -1,6 +1,7 @@
 import { Logger } from 'pino';
 
 import { IPermitConfig } from '../config';
+import { BASE_PATH } from '../openapi/base.js';
 import {
   RoleAssignmentsApi as AutogenRoleAssignmentsApi,
   BulkRoleAssignmentReport,
@@ -11,11 +12,10 @@ import {
   RoleAssignmentDetailedRead,
   RoleAssignmentRead,
   RoleAssignmentRemove,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+} from '../openapi/index.js';
 
-import { BaseFactsPermitAPI, IBasePaginationExtended, IWaitForSync } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BaseFactsPermitAPI, IBasePaginationExtended, IWaitForSync } from './base.js';
+import { ApiContextLevel, ApiKeyLevel } from './context.js';
 
 export {
   BulkRoleAssignmentReport,
@@ -26,7 +26,7 @@ export {
   RoleAssignmentRead,
   RoleAssignmentDetailedRead,
   RoleAssignmentRemove,
-} from '../openapi';
+} from '../openapi/index.js';
 
 /**
  * Represents the parameters for listing role assignments.

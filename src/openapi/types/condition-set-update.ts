@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ParentId } from './parent-id';
+import { ParentId } from './parent-id.js';
 
 /**
  *

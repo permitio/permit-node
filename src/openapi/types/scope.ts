@@ -14,19 +14,19 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { EnvironmentCopyScope } from './environment-copy-scope';
+import { EnvironmentCopyScope } from './environment-copy-scope.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ResourceSets } from './resource-sets';
+import { ResourceSets } from './resource-sets.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { Resources } from './resources';
+import { Resources } from './resources.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { Roles } from './roles';
+import { Roles } from './roles.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { UserSets } from './user-sets';
+import { UserSets } from './user-sets.js';
 
 /**
  * @type Scope

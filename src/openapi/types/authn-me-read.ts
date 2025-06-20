@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { Actor } from './actor';
+import { Actor } from './actor.js';
 
 /**
  *

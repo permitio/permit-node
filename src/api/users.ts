@@ -1,6 +1,8 @@
 import { Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { IPermitConfig } from '../config.js';
+import { BulkOperationsApi } from '../openapi/api/bulk-operations-api.js';
+import { BASE_PATH } from '../openapi/base.js';
 import {
   RoleAssignmentsApi as AutogenRoleAssignmentsApi,
   UsersApi as AutogenUsersApi,
@@ -14,15 +16,13 @@ import {
   UserCreate,
   UserRead,
   UserUpdate,
-} from '../openapi';
-import { BulkOperationsApi } from '../openapi/api/bulk-operations-api';
-import { BASE_PATH } from '../openapi/base';
-import { UserCreateBulkOperation } from '../openapi/types/user-create-bulk-operation';
-import { UserDeleteBulkOperation } from '../openapi/types/user-delete-bulk-operation';
-import { UserReplaceBulkOperation } from '../openapi/types/user-replace-bulk-operation';
+} from '../openapi/index.js';
+import { UserCreateBulkOperation } from '../openapi/types/user-create-bulk-operation.js';
+import { UserDeleteBulkOperation } from '../openapi/types/user-delete-bulk-operation.js';
+import { UserReplaceBulkOperation } from '../openapi/types/user-replace-bulk-operation.js';
 
-import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base.js';
+import { ApiContextLevel, ApiKeyLevel } from './context.js';
 
 export {
   PaginatedResultUserRead,
@@ -32,7 +32,7 @@ export {
   UserCreate,
   UserRead,
   UserUpdate,
-} from '../openapi';
+} from '../openapi/index.js';
 
 export interface ICreateOrUpdateUserResult {
   /**

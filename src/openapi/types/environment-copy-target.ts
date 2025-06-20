@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { New } from './new';
+import { New } from './new.js';
 
 /**
  *

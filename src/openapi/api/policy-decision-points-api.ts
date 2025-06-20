@@ -27,9 +27,9 @@ import {
   serializeDataIfNeeded,
   toPathString,
   createRequestFunction,
-} from '../common';
+} from '../common.js';
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
+import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base.js';
 // @ts-ignore
 import { DataUpdateReport } from '../types';
 // @ts-ignore

@@ -1,30 +1,34 @@
 // For Default export
 import pino from 'pino';
 
-import { ApiClient, IPermitApi } from './api/api-client';
-import { ElementsClient, IPermitElementsApi } from './api/elements';
-import { ConfigFactory, IPermitConfig } from './config';
-import { Enforcer, IEnforcer } from './enforcement/enforcer';
+import { ApiClient, IPermitApi } from './api/api-client.js';
+import { ElementsClient, IPermitElementsApi } from './api/elements.js';
+import { ConfigFactory, IPermitConfig } from './config.js';
+import { Enforcer, IEnforcer } from './enforcement/enforcer.js';
 import {
   ICheckQuery,
   IResource,
   IUser,
   IUserPermissions,
   TenantDetails,
-} from './enforcement/interfaces';
-import { LoggerFactory } from './logger';
-import { CheckConfig, Context } from './utils/context';
-import { AxiosLoggingInterceptor } from './utils/http-logger';
-import { RecursivePartial } from './utils/types';
+} from './enforcement/interfaces.js';
+import { LoggerFactory } from './logger.js';
+import { CheckConfig, Context } from './utils/context.js';
+import { AxiosLoggingInterceptor } from './utils/http-logger.js';
+import { RecursivePartial } from './utils/types.js';
 
 // exported interfaces
-export * from './api';
-export { IPermitConfig } from './config';
-export { IUser, IAction, IResource } from './enforcement/interfaces';
-export { PermitConnectionError, PermitError, PermitPDPStatusError } from './enforcement/enforcer';
-export { Context, ContextTransform } from './utils/context';
-export { ApiContext, PermitContextError, ApiKeyLevel } from './api/context';
-export { PermitApiError } from './api/base';
+export * from './api/index.js';
+export { IPermitConfig } from './config.js';
+export { IUser, IAction, IResource } from './enforcement/interfaces.js';
+export {
+  PermitConnectionError,
+  PermitError,
+  PermitPDPStatusError,
+} from './enforcement/enforcer.js';
+export { Context, ContextTransform } from './utils/context.js';
+export { ApiContext, PermitContextError, ApiKeyLevel } from './api/context.js';
+export { PermitApiError } from './api/base.js';
 
 export interface IPermitClient extends IEnforcer {
   /**

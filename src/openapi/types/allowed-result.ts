@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { Allow } from './allow';
+import { Allow } from './allow.js';
 
 /**
  *
@@ -45,4 +45,4 @@ export const AllowedResultQueryTypeEnum = {
 } as const;
 
 export type AllowedResultQueryTypeEnum =
-  typeof AllowedResultQueryTypeEnum[keyof typeof AllowedResultQueryTypeEnum];
+  (typeof AllowedResultQueryTypeEnum)[keyof typeof AllowedResultQueryTypeEnum];

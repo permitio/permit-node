@@ -14,28 +14,28 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ActionObj } from './action-obj';
+import { ActionObj } from './action-obj.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { EnvironmentObject } from './environment-object';
+import { EnvironmentObject } from './environment-object.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { OrganizationObject } from './organization-object';
+import { OrganizationObject } from './organization-object.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { PdpConfigObject } from './pdp-config-object';
+import { PdpConfigObject } from './pdp-config-object.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ProjectObject } from './project-object';
+import { ProjectObject } from './project-object.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ResourceTypeObj } from './resource-type-obj';
+import { ResourceTypeObj } from './resource-type-obj.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { TenantObj } from './tenant-obj';
+import { TenantObj } from './tenant-obj.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { UserObj } from './user-obj';
+import { UserObj } from './user-obj.js';
 
 /**
  *

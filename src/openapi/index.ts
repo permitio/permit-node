@@ -12,6 +12,6 @@
  * Do not edit the class manually.
  */
 
-export * from './api';
-export * from './configuration';
-export * from './types';
+export * from './api.js';
+export * from './configuration.js';
+export * from './types/index.js';

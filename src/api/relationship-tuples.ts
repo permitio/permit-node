@@ -1,6 +1,7 @@
 import { Logger } from 'pino';
 
 import { IPermitConfig } from '../config';
+import { BASE_PATH } from '../openapi/base.js';
 import {
   RelationshipTuplesApi as AutogenRelationshipTuplesApi,
   RelationshipTupleCreate,
@@ -8,11 +9,10 @@ import {
   RelationshipTupleDelete,
   RelationshipTupleDeleteBulkOperation,
   RelationshipTupleRead,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+} from '../openapi/index.js';
 
-import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base.js';
+import { ApiContextLevel, ApiKeyLevel } from './context.js';
 
 export {
   RelationshipTupleCreate,
@@ -20,7 +20,7 @@ export {
   RelationshipTupleRead,
   RelationshipTupleCreateBulkOperation,
   RelationshipTupleDeleteBulkOperation,
-} from '../openapi';
+} from '../openapi/index.js';
 
 /**
  * Represents the parameters for listing role createments.

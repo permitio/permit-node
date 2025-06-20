@@ -1,6 +1,6 @@
 import anyTest, { TestInterface } from 'ava';
-import { UserCreate, UserRead } from '../../openapi';
 
+import { UserCreate, UserRead } from '../../openapi/index.js';
 import { printBreak, provideTestExecutionContext, TestContext } from '../fixtures';
 
 const sleepTimeMs = 10000;

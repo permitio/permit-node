@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { PermissionLevelRoleRead } from './permission-level-role-read';
+import { PermissionLevelRoleRead } from './permission-level-role-read.js';
 
 /**
  *

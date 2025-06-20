@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { OPADecisionLog } from './opadecision-log';
+import { OPADecisionLog } from './opadecision-log.js';
 
 /**
  *

@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { PdpValues } from './pdp-values';
+import { PdpValues } from './pdp-values.js';
 
 /**
  * @type Pdp

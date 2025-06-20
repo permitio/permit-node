@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OPALabels } from './opalabels';
+import { OPALabels } from './opalabels.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { OPAMetrics } from './opametrics';
+import { OPAMetrics } from './opametrics.js';
 
 /**
  *
@@ -80,4 +80,4 @@ export const OPAEngineDecisionLogEngineEnum = {
 } as const;
 
 export type OPAEngineDecisionLogEngineEnum =
-  typeof OPAEngineDecisionLogEngineEnum[keyof typeof OPAEngineDecisionLogEngineEnum];
+  (typeof OPAEngineDecisionLogEngineEnum)[keyof typeof OPAEngineDecisionLogEngineEnum];

@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { CallbacksInner } from './callbacks-inner';
+import { CallbacksInner } from './callbacks-inner.js';
 
 /**
  *

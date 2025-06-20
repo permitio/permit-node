@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { MemberInfo } from './member-info';
+import { MemberInfo } from './member-info.js';
 
 /**
  *
@@ -53,4 +53,4 @@ export const MemberViewerContextTypeEnum = {
 } as const;
 
 export type MemberViewerContextTypeEnum =
-  typeof MemberViewerContextTypeEnum[keyof typeof MemberViewerContextTypeEnum];
+  (typeof MemberViewerContextTypeEnum)[keyof typeof MemberViewerContextTypeEnum];

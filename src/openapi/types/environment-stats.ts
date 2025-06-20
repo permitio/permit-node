@@ -14,13 +14,13 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { Jwks } from './jwks';
+import { Jwks } from './jwks.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { PDPConfigRead } from './pdpconfig-read';
+import { PDPConfigRead } from './pdpconfig-read.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { Statistics } from './statistics';
+import { Statistics } from './statistics.js';
 
 /**
  *

@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ProgrammingLanguage } from './programming-language';
+import { ProgrammingLanguage } from './programming-language.js';
 
 /**
  *

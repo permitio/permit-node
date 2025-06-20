@@ -14,13 +14,13 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { IdentityRead } from './identity-read';
+import { IdentityRead } from './identity-read.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { InviteRead } from './invite-read';
+import { InviteRead } from './invite-read.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { OnboardingStep } from './onboarding-step';
+import { OnboardingStep } from './onboarding-step.js';
 
 /**
  *

@@ -13,7 +13,7 @@
  */
 
 import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
+import { Configuration } from '../configuration.js';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import {
@@ -27,25 +27,25 @@ import {
   serializeDataIfNeeded,
   toPathString,
   createRequestFunction,
-} from '../common';
+} from '../common.js';
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
+import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base.js';
 // @ts-ignore
-import { HTTPValidationError } from '../types';
+import { HTTPValidationError } from '../types/index.js';
 // @ts-ignore
-import { ResourceInstanceCreateBulkOperation } from '../types';
+import { ResourceInstanceCreateBulkOperation } from '../types/index.js';
 // @ts-ignore
-import { ResourceInstanceDeleteBulkOperation } from '../types';
+import { ResourceInstanceDeleteBulkOperation } from '../types/index.js';
 // @ts-ignore
-import { TenantCreateBulkOperation } from '../types';
+import { TenantCreateBulkOperation } from '../types/index.js';
 // @ts-ignore
-import { TenantDeleteBulkOperation } from '../types';
+import { TenantDeleteBulkOperation } from '../types/index.js';
 // @ts-ignore
-import { UserCreateBulkOperation } from '../types';
+import { UserCreateBulkOperation } from '../types/index.js';
 // @ts-ignore
-import { UserDeleteBulkOperation } from '../types';
+import { UserDeleteBulkOperation } from '../types/index.js';
 // @ts-ignore
-import { UserReplaceBulkOperation } from '../types';
+import { UserReplaceBulkOperation } from '../types/index.js';
 /**
  * BulkOperationsApi - axios parameter creator
  * @export

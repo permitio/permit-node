@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { AttributeType } from './attribute-type';
+import { AttributeType } from './attribute-type.js';
 
 /**
  *

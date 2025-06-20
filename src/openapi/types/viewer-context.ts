@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { Viewer } from './viewer';
+import { Viewer } from './viewer.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ViewerGrant } from './viewer-grant';
+import { ViewerGrant } from './viewer-grant.js';
 
 /**
  * A Viewer Context object represents the currently logged in actor.  - It can be a human user of permit.io - It can be a machine (using an api key) that directly interacts with the api - It can be an (embedded) human user of one of our customers, using an embedded UI interface.  A VC object should contain *all* the data required by the internal authz layer to verify whether an api request is allowed to run.  This model allows us to avoid expensive SQL queries for internal AuthZ logic.

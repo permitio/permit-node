@@ -1,19 +1,19 @@
-export { IPagination } from './base';
-export * from './condition-set-rules';
-export * from './condition-sets';
-export * from './deprecated';
-export * from './environments';
-export * from './projects';
-export * from './resource-action-groups';
-export * from './resource-actions';
-export * from './resource-attributes';
-export * from './resources';
-export * from './role-assignments';
-export * from './roles';
-export * from './tenants';
-export * from './users';
-export * from './api-client';
-export * from './elements';
+export { IPagination } from './base.js';
+export * from './condition-set-rules.js';
+export * from './condition-sets.js';
+export * from './deprecated.js';
+export * from './environments.js';
+export * from './projects.js';
+export * from './resource-action-groups.js';
+export * from './resource-actions.js';
+export * from './resource-attributes.js';
+export * from './resources.js';
+export * from './role-assignments.js';
+export * from './roles.js';
+export * from './tenants.js';
+export * from './users.js';
+export * from './api-client.js';
+export * from './elements.js';
 
 // referenced by other exports
 export {
@@ -36,4 +36,4 @@ export {
   AttributeBlockEditable,
   ActionBlockRead,
   AttributeBlockRead,
-} from '../openapi/types';
+} from '../openapi/types/index.js';

@@ -1,18 +1,22 @@
 import { Logger } from 'pino';
 
 import { IPermitConfig } from '../config';
+import { BASE_PATH } from '../openapi/base.js';
 import {
   ResourceInstancesApi as AutogenResourceInstancesApi,
   ResourceInstanceCreate,
   ResourceInstanceRead,
   ResourceInstanceUpdate,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+} from '../openapi/index.js';
 
-import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base.js';
+import { ApiContextLevel, ApiKeyLevel } from './context.js';
 
-export { ResourceInstanceCreate, ResourceInstanceRead, ResourceInstanceUpdate } from '../openapi';
+export {
+  ResourceInstanceCreate,
+  ResourceInstanceRead,
+  ResourceInstanceUpdate,
+} from '../openapi/index.js';
 
 export interface IListResourceInstanceUsers extends IPagination {
   instanceKey: string;

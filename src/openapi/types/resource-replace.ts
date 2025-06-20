@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ActionBlockEditable } from './action-block-editable';
+import { ActionBlockEditable } from './action-block-editable.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { AttributeBlockEditable } from './attribute-block-editable';
+import { AttributeBlockEditable } from './attribute-block-editable.js';
 
 /**
  *

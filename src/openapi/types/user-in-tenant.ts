@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { UserStatus } from './user-status';
+import { UserStatus } from './user-status.js';
 
 /**
  *

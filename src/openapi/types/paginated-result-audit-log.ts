@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { AuditLog } from './audit-log';
+import { AuditLog } from './audit-log.js';
 
 /**
  *

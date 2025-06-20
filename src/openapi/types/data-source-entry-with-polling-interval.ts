@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { Data } from './data';
+import { Data } from './data.js';
 
 /**
  * Data source configuration - where client\'s should retrieve data from and how they should store it

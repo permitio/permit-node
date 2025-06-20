@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { InviteStatus } from './invite-status';
+import { InviteStatus } from './invite-status.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { MemberAccessLevel } from './member-access-level';
+import { MemberAccessLevel } from './member-access-level.js';
 
 /**
  *

@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ResourceRead } from './resource-read';
+import { ResourceRead } from './resource-read.js';
 
 /**
  *

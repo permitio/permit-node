@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OPALHttpFetcherConfig } from './opalhttp-fetcher-config';
+import { OPALHttpFetcherConfig } from './opalhttp-fetcher-config.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { OPALUpdateCallback } from './opalupdate-callback';
+import { OPALUpdateCallback } from './opalupdate-callback.js';
 
 /**
  *

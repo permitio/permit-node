@@ -14,13 +14,13 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ActivityDetailsList } from './activity-details-list';
+import { ActivityDetailsList } from './activity-details-list.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ActivityDetailsObject } from './activity-details-object';
+import { ActivityDetailsObject } from './activity-details-object.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ActivityDetailsObjectData } from './activity-details-object-data';
+import { ActivityDetailsObjectData } from './activity-details-object-data.js';
 
 /**
  * @type ActivityDetails

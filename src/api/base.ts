@@ -1,11 +1,11 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Logger } from 'pino';
 
-import { IPermitConfig, FactsSyncTimeoutPolicy } from '../config';
-import { APIKeysApi, Configuration } from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+import { FactsSyncTimeoutPolicy, IPermitConfig } from '../config';
+import { BASE_PATH } from '../openapi/base.js';
+import { APIKeysApi, Configuration } from '../openapi/index.js';
 
-import { API_ACCESS_LEVELS, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context';
+import { API_ACCESS_LEVELS, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context.js';
 
 interface FormattedAxiosError<T> {
   code?: string;

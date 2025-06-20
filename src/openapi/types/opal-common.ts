@@ -14,7 +14,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OPALCommon } from './opalcommon';
+import { OPALCommon } from './opalcommon.js';
 
 /**
  * @type OpalCommon

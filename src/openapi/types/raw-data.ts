@@ -14,22 +14,22 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { AVPEngineDecisionLog } from './avpengine-decision-log';
+import { AVPEngineDecisionLog } from './avpengine-decision-log.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { DummyEngineModel } from './dummy-engine-model';
+import { DummyEngineModel } from './dummy-engine-model.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { Engine } from './engine';
+import { Engine } from './engine.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { OPAEngineDecisionLog } from './opaengine-decision-log';
+import { OPAEngineDecisionLog } from './opaengine-decision-log.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { OPALabels } from './opalabels';
+import { OPALabels } from './opalabels.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { OPAMetrics } from './opametrics';
+import { OPAMetrics } from './opametrics.js';
 
 /**
  *

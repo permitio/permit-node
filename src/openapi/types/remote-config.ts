@@ -14,16 +14,16 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OPALClient } from './opalclient';
+import { OPALClient } from './opalclient.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { OpalCommon } from './opal-common';
+import { OpalCommon } from './opal-common.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { PDPContext } from './pdpcontext';
+import { PDPContext } from './pdpcontext.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { Pdp } from './pdp';
+import { Pdp } from './pdp.js';
 
 /**
  *

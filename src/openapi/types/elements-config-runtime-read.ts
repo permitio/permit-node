@@ -14,10 +14,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ElementsConfigRead } from './elements-config-read';
+import { ElementsConfigRead } from './elements-config-read.js';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ElementsPermissionLevel } from './elements-permission-level';
+import { ElementsPermissionLevel } from './elements-permission-level.js';
 
 /**
  *
