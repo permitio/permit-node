@@ -1,5 +1,5 @@
 const test = require('ava')
-const Permit = require('../../../build/main')
+const Permit = require('permitio')
 
 test('require Permit properly on CommonJS', (t) => {
   t.truthy(Permit)
