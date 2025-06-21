@@ -3,17 +3,15 @@
   "version": "2.7.1-rc.0",
   "description": "Node.js client library for the Permit.io full-stack permissions platform",
   "type": "commonjs",
-  "main": "build/main/index.js",
-  "typings": "build/main/index.d.ts",
-  "module": "build/module/index.mjs",
+  "main": "build/index.js",
+  "typings": "build/index.d.ts",
+  "module": "build/index.mjs",
   "exports": {
     ".": {
-      "types": "./build/module/index.d.ts",
-      "import": "./build/module/index.mjs",
-      "require": "./build/main/index.js"
-    },
-    "./build/main/*": "./build/main/*",
-    "./build/module/*": "./build/module/*"
+      "types": "./build/index.d.ts",
+      "import": "./build/index.mjs",
+      "require": "./build/index.js"
+    }
   },
   "repository": {
     "type": "git",
@@ -22,17 +20,18 @@
   "license": "MIT",
   "keywords": [],
   "scripts": {
-    "build": "run-p build:*",
-    "build:main": "tsc -p tsconfig.json",
-    "build:module": "tsc -p tsconfig.module.json && yarn rename:esm",
+    "build": "run-s build:js build:types",
+    "build:js": "tsup",
+    "build:types": "tsc --emitDeclarationOnly --outDir build",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier --config .prettierrc \"src/**/*.{ts,css,less,scss,js}\" --write",
     "fix:lint": "eslint src --ext .ts --fix",
     "test": "run-s test:*",
-    "test:integration": "run-s build && ava --verbose src/**/endpoints/**",
-    "test:e2e:rbac": "run-s build && ava --verbose src/**/e2e/rbac.e2e.spec.ts",
-    "test:e2e:rebac": "run-s build && ava --verbose src/**/e2e/rebac.e2e.spec.ts",
-    "test:e2e:local_facts": "run-s build && ava --verbose src/**/e2e/local_facts.e2e.spec.ts",
+    "test:integration": "run-s build && ava --verbose build/tests/endpoints/**/*.spec.js",
+    "test:module-imports": "run-s build && ava --verbose build/tests/module-imports/**/*.spec.js",
+    "test:e2e:rbac": "run-s build && ava --verbose build/tests/e2e/rbac.e2e.spec.js",
+    "test:e2e:rebac": "run-s build && ava --verbose build/tests/e2e/rebac.e2e.spec.js",
+    "test:e2e:local_facts": "run-s build && ava --verbose build/tests/e2e/local_facts.e2e.spec.js",
     "check-cli": "run-s test diff-integration-tests check-integration-tests",
     "check-integration-tests": "run-s check-integration-test:*",
     "diff-integration-tests": "mkdir -p diff && rm -rf diff/test && cp -r test diff/test && rm -rf diff/test/test-*/.git && cd diff && git init --quiet && git add -A && git commit --quiet --no-verify --allow-empty -m 'WIP' && echo '\\n\\nCommitted most recent integration test output in the \"diff\" directory. Review the changes with \"cd diff && git diff HEAD\" or your preferred git diff viewer.'",
@@ -46,7 +45,6 @@
     "docs": "typedoc",
     "docs:watch": "typedoc --watch",
     "version": "2.5.2",
-    "rename:esm": "/bin/bash ./scripts/rename-mjs.sh",
     "reset-hard": "git clean -dfx && git reset --hard && yarn",
     "prepare": "npm run build && husky install",
     "prepare-release": "run-s reset-hard test cov:check doc:html version doc:publish",
@@ -94,12 +92,12 @@
     "prettier": "^2.5.1",
     "standard-version": "^9.0.0",
     "ts-node": "^9.0.0",
+    "tsup": "^8.5.0",
     "typedoc": "^0.24.7",
     "typescript": "^4.6.4"
   },
   "files": [
-    "build/main",
-    "build/module",
+    "build",
     "!**/*.spec.*",
     "!**/*.json",
     "CHANGELOG.md",
@@ -110,13 +108,7 @@
     "failFast": true,
     "failWithoutAssertions": false,
     "timeout": "60s",
-    "typescript": {
-      "rewritePaths": {
-        "src/": "build/main/"
-      }
-    },
     "files": [
-      "!build/module/**",
       "!src/tests/fixtures.ts"
     ]
   },
