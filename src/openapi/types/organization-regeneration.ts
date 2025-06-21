@@ -37,4 +37,4 @@ export const OrganizationRegenerationScopeEnum = {
 } as const;
 
 export type OrganizationRegenerationScopeEnum =
-  typeof OrganizationRegenerationScopeEnum[keyof typeof OrganizationRegenerationScopeEnum];
+  (typeof OrganizationRegenerationScopeEnum)[keyof typeof OrganizationRegenerationScopeEnum];

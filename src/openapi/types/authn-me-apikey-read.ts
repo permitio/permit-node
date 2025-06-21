@@ -74,4 +74,4 @@ export const AuthnMeAPIKeyReadActorTypeEnum = {
 } as const;
 
 export type AuthnMeAPIKeyReadActorTypeEnum =
-  typeof AuthnMeAPIKeyReadActorTypeEnum[keyof typeof AuthnMeAPIKeyReadActorTypeEnum];
+  (typeof AuthnMeAPIKeyReadActorTypeEnum)[keyof typeof AuthnMeAPIKeyReadActorTypeEnum];

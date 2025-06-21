@@ -23,4 +23,4 @@ export const ConditionSetType = {
   Resourceset: 'resourceset',
 } as const;
 
-export type ConditionSetType = typeof ConditionSetType[keyof typeof ConditionSetType];
+export type ConditionSetType = (typeof ConditionSetType)[keyof typeof ConditionSetType];

@@ -49,4 +49,4 @@ export const EnvironmentRegenerationScopeEnum = {
 } as const;
 
 export type EnvironmentRegenerationScopeEnum =
-  typeof EnvironmentRegenerationScopeEnum[keyof typeof EnvironmentRegenerationScopeEnum];
+  (typeof EnvironmentRegenerationScopeEnum)[keyof typeof EnvironmentRegenerationScopeEnum];

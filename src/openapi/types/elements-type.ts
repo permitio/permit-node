@@ -24,4 +24,4 @@ export const ElementsType = {
   ApprovalFlow: 'approval_flow',
 } as const;
 
-export type ElementsType = typeof ElementsType[keyof typeof ElementsType];
+export type ElementsType = (typeof ElementsType)[keyof typeof ElementsType];

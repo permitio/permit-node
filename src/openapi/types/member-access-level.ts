@@ -24,4 +24,4 @@ export const MemberAccessLevel = {
   Read: 'read',
 } as const;
 
-export type MemberAccessLevel = typeof MemberAccessLevel[keyof typeof MemberAccessLevel];
+export type MemberAccessLevel = (typeof MemberAccessLevel)[keyof typeof MemberAccessLevel];

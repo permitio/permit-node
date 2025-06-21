@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Logger } from 'pino';
 
-import { IPermitConfig, FactsSyncTimeoutPolicy } from '../config';
+import { FactsSyncTimeoutPolicy, IPermitConfig } from '../config';
 import { APIKeysApi, Configuration } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
 

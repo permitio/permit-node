@@ -47,4 +47,4 @@ export const ActivityDetailsListKindEnum = {
 } as const;
 
 export type ActivityDetailsListKindEnum =
-  typeof ActivityDetailsListKindEnum[keyof typeof ActivityDetailsListKindEnum];
+  (typeof ActivityDetailsListKindEnum)[keyof typeof ActivityDetailsListKindEnum];

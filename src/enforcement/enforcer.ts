@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import { Logger } from 'pino';
 import URL from 'url-parse';
+
 import { IPermitConfig } from '../config';
 import { CheckConfig, Context, ContextStore } from '../utils/context';
 import { AxiosLoggingInterceptor } from '../utils/http-logger';

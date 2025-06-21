@@ -31,4 +31,4 @@ export const FullRegenerationScopeEnum = {
 } as const;
 
 export type FullRegenerationScopeEnum =
-  typeof FullRegenerationScopeEnum[keyof typeof FullRegenerationScopeEnum];
+  (typeof FullRegenerationScopeEnum)[keyof typeof FullRegenerationScopeEnum];

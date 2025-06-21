@@ -24,4 +24,4 @@ export const AuthMechanism = {
   Headers: 'Headers',
 } as const;
 
-export type AuthMechanism = typeof AuthMechanism[keyof typeof AuthMechanism];
+export type AuthMechanism = (typeof AuthMechanism)[keyof typeof AuthMechanism];

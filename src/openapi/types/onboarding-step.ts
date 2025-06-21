@@ -29,4 +29,4 @@ export const OnboardingStep = {
   Done: 'done',
 } as const;
 
-export type OnboardingStep = typeof OnboardingStep[keyof typeof OnboardingStep];
+export type OnboardingStep = (typeof OnboardingStep)[keyof typeof OnboardingStep];

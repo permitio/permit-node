@@ -24,4 +24,4 @@ export const MemberAccessObj = {
   Env: 'env',
 } as const;
 
-export type MemberAccessObj = typeof MemberAccessObj[keyof typeof MemberAccessObj];
+export type MemberAccessObj = (typeof MemberAccessObj)[keyof typeof MemberAccessObj];

@@ -28,4 +28,4 @@ export const ElementsPermissionLevel = {
 } as const;
 
 export type ElementsPermissionLevel =
-  typeof ElementsPermissionLevel[keyof typeof ElementsPermissionLevel];
+  (typeof ElementsPermissionLevel)[keyof typeof ElementsPermissionLevel];

@@ -23,4 +23,4 @@ export const Engine = {
   Avp: 'AVP',
 } as const;
 
-export type Engine = typeof Engine[keyof typeof Engine];
+export type Engine = (typeof Engine)[keyof typeof Engine];

@@ -41,4 +41,4 @@ export const APIKeyViewerContextTypeEnum = {
 } as const;
 
 export type APIKeyViewerContextTypeEnum =
-  typeof APIKeyViewerContextTypeEnum[keyof typeof APIKeyViewerContextTypeEnum];
+  (typeof APIKeyViewerContextTypeEnum)[keyof typeof APIKeyViewerContextTypeEnum];
