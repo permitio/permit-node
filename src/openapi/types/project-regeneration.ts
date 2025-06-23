@@ -43,4 +43,4 @@ export const ProjectRegenerationScopeEnum = {
 } as const;
 
 export type ProjectRegenerationScopeEnum =
-  typeof ProjectRegenerationScopeEnum[keyof typeof ProjectRegenerationScopeEnum];
+  (typeof ProjectRegenerationScopeEnum)[keyof typeof ProjectRegenerationScopeEnum];

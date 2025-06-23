@@ -27,4 +27,4 @@ export const AttributeType = {
   Json: 'json',
 } as const;
 
-export type AttributeType = typeof AttributeType[keyof typeof AttributeType];
+export type AttributeType = (typeof AttributeType)[keyof typeof AttributeType];

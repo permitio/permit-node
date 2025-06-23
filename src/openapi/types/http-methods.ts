@@ -27,4 +27,4 @@ export const HttpMethods = {
   Delete: 'delete',
 } as const;
 
-export type HttpMethods = typeof HttpMethods[keyof typeof HttpMethods];
+export type HttpMethods = (typeof HttpMethods)[keyof typeof HttpMethods];

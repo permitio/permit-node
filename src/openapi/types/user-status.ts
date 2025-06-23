@@ -23,4 +23,4 @@ export const UserStatus = {
   Pending: 'pending',
 } as const;
 
-export type UserStatus = typeof UserStatus[keyof typeof UserStatus];
+export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus];

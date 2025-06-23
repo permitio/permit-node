@@ -61,4 +61,4 @@ export const AVPEngineDecisionLogEngineEnum = {
 } as const;
 
 export type AVPEngineDecisionLogEngineEnum =
-  typeof AVPEngineDecisionLogEngineEnum[keyof typeof AVPEngineDecisionLogEngineEnum];
+  (typeof AVPEngineDecisionLogEngineEnum)[keyof typeof AVPEngineDecisionLogEngineEnum];

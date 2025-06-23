@@ -28,4 +28,4 @@ export const ProgrammingLanguage = {
   KongGateway: 'kong_gateway',
 } as const;
 
-export type ProgrammingLanguage = typeof ProgrammingLanguage[keyof typeof ProgrammingLanguage];
+export type ProgrammingLanguage = (typeof ProgrammingLanguage)[keyof typeof ProgrammingLanguage];

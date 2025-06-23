@@ -109,16 +109,16 @@ export const AuthnMeUserReadActorTypeEnum = {
 } as const;
 
 export type AuthnMeUserReadActorTypeEnum =
-  typeof AuthnMeUserReadActorTypeEnum[keyof typeof AuthnMeUserReadActorTypeEnum];
+  (typeof AuthnMeUserReadActorTypeEnum)[keyof typeof AuthnMeUserReadActorTypeEnum];
 export const AuthnMeUserReadIsOnboardingEnum = {
   False: false,
 } as const;
 
 export type AuthnMeUserReadIsOnboardingEnum =
-  typeof AuthnMeUserReadIsOnboardingEnum[keyof typeof AuthnMeUserReadIsOnboardingEnum];
+  (typeof AuthnMeUserReadIsOnboardingEnum)[keyof typeof AuthnMeUserReadIsOnboardingEnum];
 export const AuthnMeUserReadOnboardingStepEnum = {
   Done: 'done',
 } as const;
 
 export type AuthnMeUserReadOnboardingStepEnum =
-  typeof AuthnMeUserReadOnboardingStepEnum[keyof typeof AuthnMeUserReadOnboardingStepEnum];
+  (typeof AuthnMeUserReadOnboardingStepEnum)[keyof typeof AuthnMeUserReadOnboardingStepEnum];

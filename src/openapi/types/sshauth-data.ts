@@ -49,4 +49,4 @@ export const SSHAuthDataAuthTypeEnum = {
 } as const;
 
 export type SSHAuthDataAuthTypeEnum =
-  typeof SSHAuthDataAuthTypeEnum[keyof typeof SSHAuthDataAuthTypeEnum];
+  (typeof SSHAuthDataAuthTypeEnum)[keyof typeof SSHAuthDataAuthTypeEnum];

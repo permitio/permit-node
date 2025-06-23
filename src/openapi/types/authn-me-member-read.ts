@@ -83,4 +83,4 @@ export const AuthnMeMemberReadActorTypeEnum = {
 } as const;
 
 export type AuthnMeMemberReadActorTypeEnum =
-  typeof AuthnMeMemberReadActorTypeEnum[keyof typeof AuthnMeMemberReadActorTypeEnum];
+  (typeof AuthnMeMemberReadActorTypeEnum)[keyof typeof AuthnMeMemberReadActorTypeEnum];

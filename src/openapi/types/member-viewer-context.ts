@@ -53,4 +53,4 @@ export const MemberViewerContextTypeEnum = {
 } as const;
 
 export type MemberViewerContextTypeEnum =
-  typeof MemberViewerContextTypeEnum[keyof typeof MemberViewerContextTypeEnum];
+  (typeof MemberViewerContextTypeEnum)[keyof typeof MemberViewerContextTypeEnum];

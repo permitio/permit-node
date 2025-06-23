@@ -80,4 +80,4 @@ export const OPAEngineDecisionLogEngineEnum = {
 } as const;
 
 export type OPAEngineDecisionLogEngineEnum =
-  typeof OPAEngineDecisionLogEngineEnum[keyof typeof OPAEngineDecisionLogEngineEnum];
+  (typeof OPAEngineDecisionLogEngineEnum)[keyof typeof OPAEngineDecisionLogEngineEnum];

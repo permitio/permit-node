@@ -49,4 +49,4 @@ export const ActivityDetailsObjectKindEnum = {
 } as const;
 
 export type ActivityDetailsObjectKindEnum =
-  typeof ActivityDetailsObjectKindEnum[keyof typeof ActivityDetailsObjectKindEnum];
+  (typeof ActivityDetailsObjectKindEnum)[keyof typeof ActivityDetailsObjectKindEnum];

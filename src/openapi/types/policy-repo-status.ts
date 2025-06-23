@@ -24,4 +24,4 @@ export const PolicyRepoStatus = {
   Valid: 'valid',
 } as const;
 
-export type PolicyRepoStatus = typeof PolicyRepoStatus[keyof typeof PolicyRepoStatus];
+export type PolicyRepoStatus = (typeof PolicyRepoStatus)[keyof typeof PolicyRepoStatus];

@@ -51,4 +51,4 @@ export const EnvironmentCopyConflictStrategyEnum = {
 } as const;
 
 export type EnvironmentCopyConflictStrategyEnum =
-  typeof EnvironmentCopyConflictStrategyEnum[keyof typeof EnvironmentCopyConflictStrategyEnum];
+  (typeof EnvironmentCopyConflictStrategyEnum)[keyof typeof EnvironmentCopyConflictStrategyEnum];

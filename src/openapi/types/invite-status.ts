@@ -25,4 +25,4 @@ export const InviteStatus = {
   Canceled: 'canceled',
 } as const;
 
-export type InviteStatus = typeof InviteStatus[keyof typeof InviteStatus];
+export type InviteStatus = (typeof InviteStatus)[keyof typeof InviteStatus];

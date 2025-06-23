@@ -28,4 +28,4 @@ export const Methods = {
   Options: 'options',
 } as const;
 
-export type Methods = typeof Methods[keyof typeof Methods];
+export type Methods = (typeof Methods)[keyof typeof Methods];

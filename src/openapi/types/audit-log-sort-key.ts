@@ -23,4 +23,4 @@ export const AuditLogSortKey = {
   Timestamp: 'timestamp',
 } as const;
 
-export type AuditLogSortKey = typeof AuditLogSortKey[keyof typeof AuditLogSortKey];
+export type AuditLogSortKey = (typeof AuditLogSortKey)[keyof typeof AuditLogSortKey];

@@ -24,4 +24,4 @@ export const APIKeyOwnerType = {
   Elements: 'elements',
 } as const;
 
-export type APIKeyOwnerType = typeof APIKeyOwnerType[keyof typeof APIKeyOwnerType];
+export type APIKeyOwnerType = (typeof APIKeyOwnerType)[keyof typeof APIKeyOwnerType];

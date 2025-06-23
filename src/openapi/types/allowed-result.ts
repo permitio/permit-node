@@ -45,4 +45,4 @@ export const AllowedResultQueryTypeEnum = {
 } as const;
 
 export type AllowedResultQueryTypeEnum =
-  typeof AllowedResultQueryTypeEnum[keyof typeof AllowedResultQueryTypeEnum];
+  (typeof AllowedResultQueryTypeEnum)[keyof typeof AllowedResultQueryTypeEnum];
