@@ -2,14 +2,14 @@ import test from 'ava';
 import { AxiosError, AxiosHeaders } from 'axios';
 
 import {
+  calculateRetryDelay,
   DEFAULT_RETRY_CONFIG,
   defaultRetryCondition,
-  calculateRetryDelay,
+  IRetryConfig,
+  NON_RETRYABLE_STATUS_CODES,
   parseRetryAfter,
   resolveRetryConfig,
   RETRYABLE_STATUS_CODES,
-  NON_RETRYABLE_STATUS_CODES,
-  IRetryConfig,
 } from '../../utils/retry';
 
 // Helper to create mock AxiosError
