@@ -2,6 +2,7 @@ import globalAxios, { AxiosInstance } from 'axios';
 import _ from 'lodash';
 
 import { ApiContext } from './api/context';
+import { IRetryConfig } from './utils/retry';
 import { RecursivePartial } from './utils/types';
 
 export type FactsSyncTimeoutPolicy = 'ignore' | 'fail';
@@ -110,6 +111,24 @@ export interface IPermitConfig {
    * @see https://axios-http.com/docs/req_config
    */
   opaAxiosInstance?: AxiosInstance;
+
+  /**
+   * Configuration for automatic retry of failed requests.
+   * Set to false to disable retries entirely.
+   * Defaults to enabled with sensible defaults (3 retries, exponential backoff).
+   *
+   * @see {@link IRetryConfig}
+   */
+  retry?: IRetryConfig | false;
+
+  /**
+   * Optional separate retry configuration for PDP (enforcement) calls.
+   * If not provided, uses the main `retry` configuration.
+   * Set to false to disable retries for PDP calls only.
+   *
+   * @see {@link IRetryConfig}
+   */
+  pdpRetry?: IRetryConfig | false;
 }
 
 /**

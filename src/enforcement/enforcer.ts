@@ -5,6 +5,8 @@ import URL from 'url-parse';
 import { IPermitConfig } from '../config';
 import { CheckConfig, Context, ContextStore } from '../utils/context';
 import { AxiosLoggingInterceptor } from '../utils/http-logger';
+import { resolveRetryConfig } from '../utils/retry';
+import { AxiosRetryInterceptor } from '../utils/retry-interceptor';
 
 import {
   AllTenantsResponse,
@@ -163,6 +165,20 @@ export class Enforcer implements IEnforcer {
     }
     this.logger = logger;
     AxiosLoggingInterceptor.setupInterceptor(this.client, this.logger);
+
+    // Setup retry interceptors for PDP clients
+    // Use pdpRetry config if provided, otherwise fall back to main retry config
+    const pdpRetryConfig = resolveRetryConfig(config.pdpRetry ?? config.retry);
+    if (pdpRetryConfig.enabled) {
+      // For PDP calls, enable POST retry since check operations are idempotent
+      const pdpRetryWithPost = {
+        ...pdpRetryConfig,
+        retryMethods: [...pdpRetryConfig.retryMethods, 'POST'],
+      };
+      AxiosRetryInterceptor.setupInterceptor(this.client, pdpRetryWithPost, this.logger, 'PDP');
+      AxiosRetryInterceptor.setupInterceptor(this.opaClient, pdpRetryWithPost, this.logger, 'OPA');
+    }
+
     this.contextStore = new ContextStore();
   }
 

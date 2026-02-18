@@ -15,6 +15,8 @@ import {
 import { LoggerFactory } from './logger';
 import { CheckConfig, Context } from './utils/context';
 import { AxiosLoggingInterceptor } from './utils/http-logger';
+import { resolveRetryConfig } from './utils/retry';
+import { AxiosRetryInterceptor } from './utils/retry-interceptor';
 import { RecursivePartial } from './utils/types';
 
 // exported interfaces
@@ -25,6 +27,12 @@ export { PermitConnectionError, PermitError, PermitPDPStatusError } from './enfo
 export { Context, ContextTransform } from './utils/context';
 export { ApiContext, PermitContextError, ApiKeyLevel } from './api/context';
 export { PermitApiError } from './api/base';
+export {
+  IRetryConfig,
+  RetryConditionFn,
+  RETRYABLE_STATUS_CODES,
+  NON_RETRYABLE_STATUS_CODES,
+} from './utils/retry';
 
 export interface IPermitClient extends IEnforcer {
   /**
@@ -139,6 +147,17 @@ export class Permit implements IPermitClient {
     this.config = ConfigFactory.build(config);
     this.logger = LoggerFactory.createLogger(this.config);
     AxiosLoggingInterceptor.setupInterceptor(this.config.axiosInstance, this.logger);
+
+    // Setup retry interceptor for REST API calls
+    const resolvedRetryConfig = resolveRetryConfig(this.config.retry);
+    if (resolvedRetryConfig.enabled) {
+      AxiosRetryInterceptor.setupInterceptor(
+        this.config.axiosInstance,
+        resolvedRetryConfig,
+        this.logger,
+        'API',
+      );
+    }
 
     this.api = new ApiClient(this.config, this.logger);
 
