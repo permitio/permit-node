@@ -101,9 +101,8 @@
   },
   "files": [
     "build",
-    "!**/*.spec.*",
-    "!**/*.json",
-    "CHANGELOG.md",
+    "!build/tests",
+    "!build/**/*.spec.*",
     "LICENSE",
     "README.md"
   ],
