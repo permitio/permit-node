@@ -147,6 +147,7 @@ export interface AllTenantsResponse {
 
 interface TenantPermissions {
   permissions: string[];
+  roles?: string[];
   tenant?: {
     key: string;
     attributes: {
@@ -157,6 +158,7 @@ interface TenantPermissions {
 
 interface ResourcePermissions {
   permissions: string[];
+  roles?: string[];
   resource?: {
     type: string;
     key: string;
