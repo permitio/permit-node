@@ -6,9 +6,16 @@ import { AxiosError } from 'axios';
 export const RETRYABLE_STATUS_CODES = [408, 429, 500, 502, 503, 504];
 
 /**
- * Default HTTP methods that are safe to retry
+ * Default HTTP methods that are safe to retry.
+ * Frozen so the shared DEFAULT_RETRY_CONFIG array cannot be mutated by consumers.
  */
-const DEFAULT_RETRY_METHODS = ['GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE'];
+const DEFAULT_RETRY_METHODS: readonly string[] = Object.freeze([
+  'GET',
+  'HEAD',
+  'OPTIONS',
+  'PUT',
+  'DELETE',
+]);
 
 /**
  * Function type for custom retry condition evaluation
@@ -27,7 +34,8 @@ export interface IRetryConfig {
   enabled?: boolean;
 
   /**
-   * Maximum number of retry attempts. Defaults to 3.
+   * Maximum number of retries after the initial request. Defaults to 3
+   * (i.e. up to 4 total attempts).
    */
   maxRetries?: number;
 
@@ -105,7 +113,10 @@ export const DEFAULT_RETRY_CONFIG: IResolvedRetryConfig = Object.freeze({
   maxDelay: 30000,
   retryCondition: defaultRetryCondition,
   respectRetryAfter: true,
-  retryMethods: DEFAULT_RETRY_METHODS,
+  // Cast keeps the public IResolvedRetryConfig.retryMethods type as string[];
+  // the array is frozen at runtime and resolveRetryConfig always clones it
+  // before returning, so callers receive a mutable copy.
+  retryMethods: DEFAULT_RETRY_METHODS as string[],
 });
 
 /**

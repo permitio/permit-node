@@ -143,12 +143,19 @@ export class Permit implements IPermitClient {
     this.logger = LoggerFactory.createLogger(this.config);
     AxiosLoggingInterceptor.setupInterceptor(this.config.axiosInstance, this.logger);
 
-    // Setup retry interceptor for REST API calls
+    // Setup retry interceptor for REST API calls.
+    // Strip POST from the REST retryMethods regardless of user config: REST
+    // writes are non-idempotent and must never be repeated. (This is symmetric
+    // with the enforcer, which ADDS POST for the idempotent PDP/OPA check calls.)
     const resolvedRetryConfig = resolveRetryConfig(this.config.retry);
     if (resolvedRetryConfig.enabled) {
+      const restRetryConfig = {
+        ...resolvedRetryConfig,
+        retryMethods: resolvedRetryConfig.retryMethods.filter((m) => m !== 'POST'),
+      };
       AxiosRetryInterceptor.setupInterceptor(
         this.config.axiosInstance,
-        resolvedRetryConfig,
+        restRetryConfig,
         this.logger,
         'API',
       );

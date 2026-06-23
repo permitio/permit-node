@@ -129,7 +129,7 @@ test('parseRetryAfter returns null for non digits-only delta-seconds', (t) => {
   t.is(parseRetryAfter('5abc'), null);
 });
 
-test('parseRetryAfter parses HTTP-date format', (t) => {
+test.serial('parseRetryAfter parses HTTP-date format', (t) => {
   const realNow = Date.now;
   try {
     const fixedNow = Date.UTC(2015, 9, 21, 7, 28, 0); // "Wed, 21 Oct 2015 07:28:00 GMT"
@@ -143,7 +143,7 @@ test('parseRetryAfter parses HTTP-date format', (t) => {
   }
 });
 
-test('parseRetryAfter returns 0 for past HTTP-date', (t) => {
+test.serial('parseRetryAfter returns 0 for past HTTP-date', (t) => {
   const realNow = Date.now;
   try {
     const fixedNow = Date.UTC(2015, 9, 21, 7, 28, 0);
@@ -249,6 +249,10 @@ test('resolveRetryConfig returns a copy that does not mutate the default', (t) =
   resolved.retryMethods.push('PATCH');
 
   t.deepEqual(DEFAULT_RETRY_CONFIG.retryMethods, ['GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE']);
+});
+
+test('DEFAULT_RETRY_CONFIG.retryMethods is frozen', (t) => {
+  t.true(Object.isFrozen(DEFAULT_RETRY_CONFIG.retryMethods));
 });
 
 test('resolveRetryConfig returns disabled config when false', (t) => {

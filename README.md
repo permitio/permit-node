@@ -24,9 +24,11 @@ they are **off** unless you pass a `retry` config (or `retry: { enabled: true }`
 
 When enabled, the defaults are:
 
-- **3 retry attempts** with exponential backoff
+- **3 retries** (up to 4 total attempts) with exponential backoff
 - Retries on network errors and status codes: `408`, `429`, `500`, `502`, `503`, `504`
 - Respects `Retry-After` headers for rate limiting (429)
+
+`maxRetries` is the number of retries _after_ the initial request, so the default of `3` means up to 4 total requests.
 
 > **Behavioral note**
 >

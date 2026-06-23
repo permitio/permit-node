@@ -54,7 +54,7 @@ export class AxiosRetryInterceptor {
         const url = error.config?.url ?? 'unknown';
         logger.warn(
           `[${clientName}] Request failed (${status}), ` +
-            `retrying (attempt ${retryCount}/${config.maxRetries}): ${method} ${url}`,
+            `retry ${retryCount}/${config.maxRetries}: ${method} ${url}`,
         );
       },
     });

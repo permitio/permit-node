@@ -127,6 +127,17 @@ test('disabled retry (retry: false) installs no retry', async (t) => {
   t.is(rest.count(), 1);
 });
 
+test('REST instance never retries POST even when the user opts POST in', async (t) => {
+  // POST is stripped from the REST retryMethods regardless of user config, so
+  // non-idempotent REST writes are never repeated.
+  const permit = await newPermit({ retry: { ...tiny, retryMethods: ['GET', 'POST'] } });
+  const rest = installRejectingAdapter(permit.config.axiosInstance);
+
+  await t.throwsAsync(() => permit.config.axiosInstance.request({ method: 'POST', url: '/x' }));
+
+  t.is(rest.count(), 1);
+});
+
 test.serial('maps axios-retry retryCount to our 0-based attempt number', async (t) => {
   // axios-retry passes a 1-based retryCount; the interceptor must subtract one
   // so the first retry uses attempt 0. With jitter removed, attempt 0 -> 30ms
