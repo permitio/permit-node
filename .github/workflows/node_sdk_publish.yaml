@@ -83,9 +83,14 @@ jobs:
           
       - name: Bump version at package.json
         run: |
-          sed -i "s/\"version\": \".*\"/\"version\": \"${{ github.event.release.tag_name }}\"/" package.json
-          cat package.json
-      
+          # Bump only the top-level "version" field. npm is JSON-aware (unlike the
+          # previous greedy sed, which also rewrote scripts.version); no git
+          # tag/commit is created, re-runs on the same version are tolerated, and
+          # the "version" lifecycle script (standard-version) is skipped.
+          npm version "${{ github.event.release.tag_name }}" --no-git-tag-version --allow-same-version --ignore-scripts
+          # Fail fast if the bump ever corrupts the scripts.version lifecycle hook again (the original #89 bug).
+          node -e "if (require('./package.json').scripts.version !== 'standard-version') { console.error('scripts.version was corrupted by the version bump'); process.exit(1); }"
+
       - name: Publish package to NPM
         run: |
           if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
