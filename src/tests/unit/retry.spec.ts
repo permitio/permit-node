@@ -255,6 +255,10 @@ test('DEFAULT_RETRY_CONFIG.retryMethods is frozen', (t) => {
   t.true(Object.isFrozen(DEFAULT_RETRY_CONFIG.retryMethods));
 });
 
+test('RETRYABLE_STATUS_CODES is frozen', (t) => {
+  t.true(Object.isFrozen(RETRYABLE_STATUS_CODES));
+});
+
 test('resolveRetryConfig returns disabled config when false', (t) => {
   const resolved = resolveRetryConfig(false);
 

@@ -1,9 +1,12 @@
 import { AxiosError } from 'axios';
 
 /**
- * HTTP status codes that should trigger a retry
+ * HTTP status codes that should trigger a retry.
+ * Frozen so consumers cannot mutate the SDK-wide retry behavior.
  */
-export const RETRYABLE_STATUS_CODES = [408, 429, 500, 502, 503, 504];
+export const RETRYABLE_STATUS_CODES: readonly number[] = Object.freeze([
+  408, 429, 500, 502, 503, 504,
+]);
 
 /**
  * Default HTTP methods that are safe to retry.

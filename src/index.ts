@@ -148,11 +148,13 @@ export class Permit implements IPermitClient {
     // writes are non-idempotent and must never be repeated. (This is symmetric
     // with the enforcer, which ADDS POST for the idempotent PDP/OPA check calls.)
     const resolvedRetryConfig = resolveRetryConfig(this.config.retry);
-    if (resolvedRetryConfig.enabled) {
-      const restRetryConfig = {
-        ...resolvedRetryConfig,
-        retryMethods: resolvedRetryConfig.retryMethods.filter((m) => m !== 'POST'),
-      };
+    const restRetryConfig = {
+      ...resolvedRetryConfig,
+      retryMethods: resolvedRetryConfig.retryMethods.filter((m) => m !== 'POST'),
+    };
+    // Skip the install when no methods remain (e.g. retryMethods: ['POST']),
+    // which would otherwise add an interceptor that can never retry.
+    if (resolvedRetryConfig.enabled && restRetryConfig.retryMethods.length > 0) {
       AxiosRetryInterceptor.setupInterceptor(
         this.config.axiosInstance,
         restRetryConfig,
