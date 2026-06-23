@@ -32,6 +32,7 @@ When enabled, the defaults are:
 >
 > - Retries are opt-in — providing a `retry` config object turns them on; omitting it (or passing `retry: false`) leaves them off.
 > - When enabled, PDP/OPA calls additionally retry `POST` because check operations are idempotent. The REST API does **not** retry `POST`, so non-idempotent writes are never repeated.
+> - A custom `axiosInstance` applies to the REST API only; PDP and OPA calls use dedicated internal axios instances.
 
 ### Customizing Retry Behavior
 

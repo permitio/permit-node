@@ -3,8 +3,12 @@ import { Logger } from 'pino';
 
 import { calculateRetryDelay, IResolvedRetryConfig } from './retry';
 
-// Symbol to track retry state on request config (avoids polluting the config object)
-const RETRY_COUNT_KEY = Symbol('permitRetryCount');
+// String key used to track the retry count on the request config. A string
+// (rather than a Symbol) is required: axios's mergeConfig — run on every
+// axiosInstance.request() during a retry — only carries string-keyed
+// properties, so a Symbol key would be dropped and the counter would reset to
+// 0 each retry, causing an infinite retry loop.
+const RETRY_COUNT_KEY = '__permitRetryCount';
 
 /**
  * Extended request config with retry tracking

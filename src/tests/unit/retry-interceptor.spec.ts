@@ -1,9 +1,16 @@
 import test from 'ava';
-import { AxiosError, AxiosHeaders, AxiosInstance } from 'axios';
+import { AxiosError, AxiosHeaders, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { Logger } from 'pino';
 
 import { DEFAULT_RETRY_CONFIG, IResolvedRetryConfig } from '../../utils/retry';
 import { AxiosRetryInterceptor } from '../../utils/retry-interceptor';
+
+// Reaches the private REST (config.axiosInstance) and PDP (enforcer.client)
+// instances for the isolation regression tests below.
+interface PermitInternals {
+  config: { axiosInstance: AxiosInstance };
+  enforcer: { client: AxiosInstance };
+}
 
 // Minimal pino-like logger stub
 const warnings: string[] = [];
@@ -169,4 +176,72 @@ test('honors a Retry-After header and still retries', async (t) => {
 
   t.deepEqual(result, { ok: true });
   t.is(fake.requestCount, 1);
+});
+
+// ============================================
+// Isolation regression tests (CRITICAL + HIGH fixes)
+// ============================================
+
+// Installs a custom adapter that counts invocations and always rejects with a
+// synthetic 503 carrying the live request config, so the retry interceptor can
+// re-enter the chain via axiosInstance.request(...).
+function installRejectingAdapter(instance: AxiosInstance): { count: () => number } {
+  let calls = 0;
+  instance.defaults.adapter = (config: InternalAxiosRequestConfig): Promise<never> => {
+    calls += 1;
+    const error = new Error('synthetic failure') as AxiosError;
+    error.isAxiosError = true;
+    error.config = config;
+    error.toJSON = () => ({});
+    error.response = {
+      status: 503,
+      statusText: 'Service Unavailable',
+      headers: {},
+      config,
+      data: {},
+    };
+    return Promise.reject(error);
+  };
+  return { count: () => calls };
+}
+
+test('REST and PDP use separate axios instances', async (t) => {
+  const { Permit } = await import('../../index');
+
+  const permit = new Permit({
+    token: 'test',
+    retry: { maxRetries: 1 },
+    pdpRetry: { maxRetries: 1 },
+  });
+
+  const restInstance = (permit as unknown as PermitInternals).config.axiosInstance;
+  const pdpInstance = (permit as unknown as PermitInternals).enforcer.client;
+
+  t.not(restInstance, pdpInstance);
+});
+
+test('REST instance does not retry POST while PDP instance does', async (t) => {
+  const { Permit } = await import('../../index');
+
+  // Tiny delays keep the retry near-instant and deterministic.
+  const tiny = { maxRetries: 1, retryDelay: 1, maxDelay: 5, backoffMultiplier: 1 };
+  const permit = new Permit({
+    token: 'test',
+    retry: tiny,
+    pdpRetry: tiny,
+  });
+
+  const restInstance = (permit as unknown as PermitInternals).config.axiosInstance;
+  const pdpInstance = (permit as unknown as PermitInternals).enforcer.client;
+
+  const rest = installRejectingAdapter(restInstance);
+  const pdp = installRejectingAdapter(pdpInstance);
+
+  await t.throwsAsync(() => restInstance.request({ method: 'POST', url: '/x' }));
+  await t.throwsAsync(() => pdpInstance.request({ method: 'POST', url: '/x' }));
+
+  // REST never retries POST -> exactly one adapter call.
+  t.is(rest.count(), 1);
+  // PDP retries POST (maxRetries: 1) -> initial call + one retry = two.
+  t.is(pdp.count(), 2);
 });

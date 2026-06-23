@@ -84,6 +84,10 @@ export interface IPermitConfig {
    * an optional custom axios instance, to control the behavior of the HTTP client
    * used to connect to the Permit REST API.
    *
+   * This instance applies to the REST API only. PDP and OPA calls use dedicated
+   * internal axios instances, so their retry policy can differ and non-idempotent
+   * POST writes on the shared REST client are never retried.
+   *
    * @see https://axios-http.com/docs/instance
    * @see https://axios-http.com/docs/req_config
    */
@@ -104,8 +108,9 @@ export interface IPermitConfig {
    */
   factsSyncTimeoutPolicy: FactsSyncTimeoutPolicy | null;
   /**
-   * an optional custom axios instance for opa, to control the behavior of the HTTP client
-   * used to connect to the Permit REST API.
+   * an optional custom axios instance for OPA, to control the behavior of the HTTP
+   * client used to connect to OPA. This applies to OPA calls only and is separate
+   * from `axiosInstance` (REST API) and the dedicated internal PDP instance.
    *
    * @see https://axios-http.com/docs/instance
    * @see https://axios-http.com/docs/req_config
@@ -114,8 +119,9 @@ export interface IPermitConfig {
 
   /**
    * Configuration for automatic retry of failed requests.
-   * Set to false to disable retries entirely.
-   * Defaults to enabled with sensible defaults (3 retries, exponential backoff).
+   * Retries are opt-in: when omitted or set to false, retries are disabled.
+   * Providing a config object enables them (3 retries with exponential backoff
+   * by default).
    *
    * @see {@link IRetryConfig}
    */
