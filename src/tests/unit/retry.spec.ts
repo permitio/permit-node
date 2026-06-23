@@ -130,23 +130,35 @@ test('parseRetryAfter returns null for invalid values', (t) => {
   t.is(parseRetryAfter('abc123'), null);
 });
 
-test('parseRetryAfter parses HTTP-date format', (t) => {
-  // Use a future date
-  const futureDate = new Date(Date.now() + 10000);
-  const httpDate = futureDate.toUTCString();
-  const result = parseRetryAfter(httpDate);
+test('parseRetryAfter returns null for non digits-only delta-seconds', (t) => {
+  t.is(parseRetryAfter('5abc'), null);
+});
 
-  t.truthy(result);
-  // Should be approximately 10 seconds (10000ms), with some tolerance
-  t.true(result! > 9000 && result! < 11000);
+test('parseRetryAfter parses HTTP-date format', (t) => {
+  const realNow = Date.now;
+  try {
+    const fixedNow = Date.UTC(2015, 9, 21, 7, 28, 0); // "Wed, 21 Oct 2015 07:28:00 GMT"
+    Date.now = () => fixedNow;
+
+    // 10 seconds in the future relative to the stubbed clock
+    const httpDate = new Date(fixedNow + 10000).toUTCString();
+    t.is(parseRetryAfter(httpDate), 10000);
+  } finally {
+    Date.now = realNow;
+  }
 });
 
 test('parseRetryAfter returns 0 for past HTTP-date', (t) => {
-  const pastDate = new Date(Date.now() - 10000);
-  const httpDate = pastDate.toUTCString();
-  const result = parseRetryAfter(httpDate);
+  const realNow = Date.now;
+  try {
+    const fixedNow = Date.UTC(2015, 9, 21, 7, 28, 0);
+    Date.now = () => fixedNow;
 
-  t.is(result, 0);
+    const httpDate = new Date(fixedNow - 10000).toUTCString();
+    t.is(parseRetryAfter(httpDate), 0);
+  } finally {
+    Date.now = realNow;
+  }
 });
 
 // ============================================
@@ -216,13 +228,32 @@ test('calculateRetryDelay ignores Retry-After when disabled', (t) => {
 test('resolveRetryConfig returns defaults when config is undefined', (t) => {
   const resolved = resolveRetryConfig(undefined);
 
-  t.true(resolved.enabled);
+  t.false(resolved.enabled);
   t.is(resolved.maxRetries, 3);
   t.is(resolved.retryDelay, 1000);
   t.is(resolved.backoffMultiplier, 2);
   t.is(resolved.maxDelay, 30000);
   t.true(resolved.respectRetryAfter);
   t.deepEqual(resolved.retryMethods, ['GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE']);
+});
+
+test('resolveRetryConfig opts in when a config object is provided', (t) => {
+  const resolved = resolveRetryConfig({ maxRetries: 5 });
+
+  t.true(resolved.enabled);
+});
+
+test('resolveRetryConfig normalizes retry methods to uppercase', (t) => {
+  const resolved = resolveRetryConfig({ retryMethods: ['get', 'post'] });
+
+  t.deepEqual(resolved.retryMethods, ['GET', 'POST']);
+});
+
+test('resolveRetryConfig returns a copy that does not mutate the default', (t) => {
+  const resolved = resolveRetryConfig(undefined);
+  resolved.retryMethods.push('PATCH');
+
+  t.deepEqual(DEFAULT_RETRY_CONFIG.retryMethods, ['GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE']);
 });
 
 test('resolveRetryConfig returns disabled config when false', (t) => {
@@ -286,7 +317,7 @@ test('resolveRetryConfig allows disabling via enabled: false', (t) => {
 // ============================================
 
 test('DEFAULT_RETRY_CONFIG has expected default values', (t) => {
-  t.true(DEFAULT_RETRY_CONFIG.enabled);
+  t.false(DEFAULT_RETRY_CONFIG.enabled);
   t.is(DEFAULT_RETRY_CONFIG.maxRetries, 3);
   t.is(DEFAULT_RETRY_CONFIG.retryDelay, 1000);
   t.is(DEFAULT_RETRY_CONFIG.backoffMultiplier, 2);
@@ -311,7 +342,7 @@ test('retry types are exported from SDK', async (t) => {
 test('Permit accepts retry configuration', async (t) => {
   const { Permit } = await import('../../index');
 
-  // With retry enabled (default)
+  // With retry off (opt-in default)
   const permit1 = new Permit({ token: 'test' });
   t.truthy(permit1);
 

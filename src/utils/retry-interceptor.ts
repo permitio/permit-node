@@ -3,8 +3,8 @@ import { Logger } from 'pino';
 
 import { calculateRetryDelay, IResolvedRetryConfig } from './retry';
 
-// Symbols to track retry state on request config (avoids polluting the config object)
-const RETRY_COUNT_KEY = '__permitRetryCount';
+// Symbol to track retry state on request config (avoids polluting the config object)
+const RETRY_COUNT_KEY = Symbol('permitRetryCount');
 
 /**
  * Extended request config with retry tracking

@@ -25,7 +25,9 @@ export type RetryConditionFn = (error: AxiosError) => boolean;
  */
 export interface IRetryConfig {
   /**
-   * Whether retry is enabled. Defaults to true.
+   * Whether retry is enabled. Retries are opt-in: they are off unless a retry
+   * config object is supplied (which opts you in) or `enabled: true` is set
+   * explicitly. The default config is disabled.
    */
   enabled?: boolean;
 
@@ -97,10 +99,11 @@ export function defaultRetryCondition(error: AxiosError): boolean {
 }
 
 /**
- * Default retry configuration values
+ * Default retry configuration values.
+ * Retries are opt-in, so the default config is disabled.
  */
-export const DEFAULT_RETRY_CONFIG: IResolvedRetryConfig = {
-  enabled: true,
+export const DEFAULT_RETRY_CONFIG: IResolvedRetryConfig = Object.freeze({
+  enabled: false,
   maxRetries: 3,
   retryDelay: 1000,
   backoffMultiplier: 2,
@@ -108,7 +111,7 @@ export const DEFAULT_RETRY_CONFIG: IResolvedRetryConfig = {
   retryCondition: defaultRetryCondition,
   respectRetryAfter: true,
   retryMethods: DEFAULT_RETRY_METHODS,
-};
+});
 
 /**
  * Parse Retry-After header value
@@ -118,10 +121,11 @@ export const DEFAULT_RETRY_CONFIG: IResolvedRetryConfig = {
  * @returns The delay in milliseconds, or null if parsing fails
  */
 export function parseRetryAfter(value: string): number | null {
-  // Try parsing as seconds (integer)
-  const seconds = parseInt(value, 10);
-  if (!isNaN(seconds)) {
-    return seconds * 1000;
+  // Try parsing as delta-seconds. Per the Retry-After spec this must be
+  // digits only, so reject values like "5abc" that parseInt would accept.
+  const trimmed = value.trim();
+  if (/^\d+$/.test(trimmed)) {
+    return Number(trimmed) * 1000;
   }
 
   // Try parsing as HTTP-date (e.g., "Wed, 21 Oct 2015 07:28:00 GMT")
@@ -173,28 +177,29 @@ export function calculateRetryDelay(
 export function resolveRetryConfig(
   userConfig: IRetryConfig | false | undefined,
 ): IResolvedRetryConfig {
-  // If explicitly disabled, return disabled config
-  if (userConfig === false) {
+  // No retry config (undefined) or explicit `false` => retries are off.
+  // Return a fresh object with a cloned retryMethods array so callers can
+  // never mutate DEFAULT_RETRY_CONFIG or its array.
+  if (!userConfig) {
     return {
       ...DEFAULT_RETRY_CONFIG,
       enabled: false,
+      retryMethods: [...DEFAULT_RETRY_CONFIG.retryMethods],
     };
   }
 
-  // If undefined or empty, use defaults
-  if (!userConfig) {
-    return DEFAULT_RETRY_CONFIG;
-  }
-
-  // Merge user config with defaults
+  // Providing a retry config object opts you in, unless `enabled: false` is set.
+  const retryMethods = userConfig.retryMethods ?? DEFAULT_RETRY_CONFIG.retryMethods;
   return {
-    enabled: userConfig.enabled ?? DEFAULT_RETRY_CONFIG.enabled,
+    enabled: userConfig.enabled ?? true,
     maxRetries: userConfig.maxRetries ?? DEFAULT_RETRY_CONFIG.maxRetries,
     retryDelay: userConfig.retryDelay ?? DEFAULT_RETRY_CONFIG.retryDelay,
     backoffMultiplier: userConfig.backoffMultiplier ?? DEFAULT_RETRY_CONFIG.backoffMultiplier,
     maxDelay: userConfig.maxDelay ?? DEFAULT_RETRY_CONFIG.maxDelay,
     retryCondition: userConfig.retryCondition ?? DEFAULT_RETRY_CONFIG.retryCondition,
     respectRetryAfter: userConfig.respectRetryAfter ?? DEFAULT_RETRY_CONFIG.respectRetryAfter,
-    retryMethods: userConfig.retryMethods ?? DEFAULT_RETRY_CONFIG.retryMethods,
+    // Normalize to uppercase so lowercase user methods match the interceptor,
+    // which uppercases the request method.
+    retryMethods: retryMethods.map((m) => m.toUpperCase()),
   };
 }

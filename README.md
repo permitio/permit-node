@@ -19,22 +19,30 @@ npm install permitio
 
 ## Retry Configuration
 
-The SDK includes built-in retry support for transient failures. By default, retries are **enabled** with the following settings:
+The SDK includes built-in retry support for transient failures. Retries are **opt-in**:
+they are **off** unless you pass a `retry` config (or `retry: { enabled: true }`).
+
+When enabled, the defaults are:
 
 - **3 retry attempts** with exponential backoff
 - Retries on network errors and status codes: `408`, `429`, `500`, `502`, `503`, `504`
 - Respects `Retry-After` headers for rate limiting (429)
+
+> **Behavioral note**
+>
+> - Retries are opt-in — providing a `retry` config object turns them on; omitting it (or passing `retry: false`) leaves them off.
+> - When enabled, PDP/OPA calls additionally retry `POST` because check operations are idempotent. The REST API does **not** retry `POST`, so non-idempotent writes are never repeated.
 
 ### Customizing Retry Behavior
 
 ```typescript
 import { Permit } from 'permitio';
 
-// Use defaults (retry enabled)
-const permit = new Permit({ token: 'your-api-key' });
+// Retries are off by default (opt-in)
+const permitDefault = new Permit({ token: 'your-api-key' });
 
-// Custom retry configuration
-const permit = new Permit({
+// Enable with custom retry configuration
+const permitCustom = new Permit({
   token: 'your-api-key',
   retry: {
     maxRetries: 5,
@@ -44,14 +52,14 @@ const permit = new Permit({
   },
 });
 
-// Disable retry entirely
-const permit = new Permit({
+// Explicitly disable retry
+const permitNoRetry = new Permit({
   token: 'your-api-key',
   retry: false,
 });
 
 // Different config for PDP vs REST API
-const permit = new Permit({
+const permitPdp = new Permit({
   token: 'your-api-key',
   retry: { maxRetries: 3 },
   pdpRetry: { maxRetries: 5 },
