@@ -27,12 +27,7 @@ export { PermitConnectionError, PermitError, PermitPDPStatusError } from './enfo
 export { Context, ContextTransform } from './utils/context';
 export { ApiContext, PermitContextError, ApiKeyLevel } from './api/context';
 export { PermitApiError } from './api/base';
-export {
-  IRetryConfig,
-  RetryConditionFn,
-  RETRYABLE_STATUS_CODES,
-  NON_RETRYABLE_STATUS_CODES,
-} from './utils/retry';
+export { IRetryConfig, RetryConditionFn, RETRYABLE_STATUS_CODES } from './utils/retry';
 
 export interface IPermitClient extends IEnforcer {
   /**

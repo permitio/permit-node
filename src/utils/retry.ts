@@ -6,14 +6,9 @@ import { AxiosError } from 'axios';
 export const RETRYABLE_STATUS_CODES = [408, 429, 500, 502, 503, 504];
 
 /**
- * HTTP status codes that should NOT trigger a retry
- */
-export const NON_RETRYABLE_STATUS_CODES = [400, 401, 403, 404, 422];
-
-/**
  * Default HTTP methods that are safe to retry
  */
-export const DEFAULT_RETRY_METHODS = ['GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE'];
+const DEFAULT_RETRY_METHODS = ['GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE'];
 
 /**
  * Function type for custom retry condition evaluation

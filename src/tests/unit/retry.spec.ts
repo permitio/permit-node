@@ -6,7 +6,6 @@ import {
   DEFAULT_RETRY_CONFIG,
   defaultRetryCondition,
   IRetryConfig,
-  NON_RETRYABLE_STATUS_CODES,
   parseRetryAfter,
   resolveRetryConfig,
   RETRYABLE_STATUS_CODES,
@@ -38,10 +37,6 @@ function createAxiosError(status?: number): AxiosError {
 
 test('RETRYABLE_STATUS_CODES contains expected status codes', (t) => {
   t.deepEqual(RETRYABLE_STATUS_CODES, [408, 429, 500, 502, 503, 504]);
-});
-
-test('NON_RETRYABLE_STATUS_CODES contains expected status codes', (t) => {
-  t.deepEqual(NON_RETRYABLE_STATUS_CODES, [400, 401, 403, 404, 422]);
 });
 
 // ============================================
@@ -335,7 +330,6 @@ test('retry types are exported from SDK', async (t) => {
   const sdk = await import('../../index');
 
   t.truthy(sdk.RETRYABLE_STATUS_CODES);
-  t.truthy(sdk.NON_RETRYABLE_STATUS_CODES);
   t.deepEqual(sdk.RETRYABLE_STATUS_CODES, [408, 429, 500, 502, 503, 504]);
 });
 
