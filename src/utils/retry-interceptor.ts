@@ -1,28 +1,16 @@
-import { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import { AxiosError, AxiosInstance } from 'axios';
+import axiosRetry from 'axios-retry';
 import { Logger } from 'pino';
 
 import { calculateRetryDelay, IResolvedRetryConfig } from './retry';
 
-// String key used to track the retry count on the request config. A string
-// (rather than a Symbol) is required: axios's mergeConfig — run on every
-// axiosInstance.request() during a retry — only carries string-keyed
-// properties, so a Symbol key would be dropped and the counter would reset to
-// 0 each retry, causing an infinite retry loop.
-const RETRY_COUNT_KEY = '__permitRetryCount';
-
 /**
- * Extended request config with retry tracking
- */
-interface RetryableRequestConfig extends InternalAxiosRequestConfig {
-  [RETRY_COUNT_KEY]?: number;
-}
-
-/**
- * Axios interceptor that implements retry logic with exponential backoff
+ * Installs retry behavior on an axios instance using the axios-retry library,
+ * driven by our resolved retry configuration (delay/condition policy).
  */
 export class AxiosRetryInterceptor {
   /**
-   * Setup retry interceptor on an axios instance
+   * Setup retry on an axios instance.
    *
    * @param axiosInstance - The axios instance to add retry capability to
    * @param config - Resolved retry configuration
@@ -39,57 +27,36 @@ export class AxiosRetryInterceptor {
       return;
     }
 
-    axiosInstance.interceptors.response.use(
-      // Success handler - pass through unchanged
-      (response) => response,
+    axiosRetry(axiosInstance, {
+      retries: config.maxRetries,
+      shouldResetTimeout: true,
 
-      // Error handler - implement retry logic
-      async (error: AxiosError) => {
-        const originalRequest = error.config as RetryableRequestConfig | undefined;
-
-        // If no request config, cannot retry
-        if (!originalRequest) {
-          return Promise.reject(error);
+      // Preserve our policy: per-instance method filtering (REST excludes POST,
+      // PDP includes it) plus our error condition (network + retryable status).
+      retryCondition: (error: AxiosError): boolean => {
+        const method = (error.config?.method ?? 'GET').toUpperCase();
+        if (!config.retryMethods.includes(method)) {
+          return false;
         }
-
-        // Initialize or get current retry count
-        const currentRetryCount = originalRequest[RETRY_COUNT_KEY] ?? 0;
-
-        // Check if we should retry this request
-        const method = (originalRequest.method ?? 'GET').toUpperCase();
-        const shouldRetryMethod = config.retryMethods.includes(method);
-        const shouldRetryError = config.retryCondition(error);
-        const hasRetriesLeft = currentRetryCount < config.maxRetries;
-
-        // If any condition fails, reject with original error
-        if (!shouldRetryMethod || !shouldRetryError || !hasRetriesLeft) {
-          return Promise.reject(error);
-        }
-
-        // Increment retry count for next attempt
-        originalRequest[RETRY_COUNT_KEY] = currentRetryCount + 1;
-
-        // Calculate delay before retry
-        const retryAfterHeader = error.response?.headers?.['retry-after'] as string | undefined;
-        const delay = calculateRetryDelay(currentRetryCount, config, retryAfterHeader);
-
-        // Log retry attempt
-        const statusInfo = error.response?.status ?? 'network error';
-        const url = originalRequest.url ?? 'unknown';
-        logger.warn(
-          `[${clientName}] Request failed (${statusInfo}), ` +
-            `retrying in ${Math.round(delay)}ms (attempt ${currentRetryCount + 1}/${
-              config.maxRetries
-            }): ` +
-            `${method} ${url}`,
-        );
-
-        // Wait for the calculated delay
-        await new Promise((resolve) => setTimeout(resolve, delay));
-
-        // Retry the request
-        return axiosInstance.request(originalRequest);
+        return config.retryCondition(error);
       },
-    );
+
+      // axios-retry's retryCount is 1-based (1 on the first retry); our
+      // calculateRetryDelay expects a 0-based attempt number, so subtract one.
+      retryDelay: (retryCount: number, error: AxiosError): number => {
+        const retryAfterHeader = error.response?.headers?.['retry-after'] as string | undefined;
+        return calculateRetryDelay(retryCount - 1, config, retryAfterHeader);
+      },
+
+      onRetry: (retryCount: number, error: AxiosError): void => {
+        const status = error.response?.status ?? 'network error';
+        const method = (error.config?.method ?? 'GET').toUpperCase();
+        const url = error.config?.url ?? 'unknown';
+        logger.warn(
+          `[${clientName}] Request failed (${status}), ` +
+            `retrying (attempt ${retryCount}/${config.maxRetries}): ${method} ${url}`,
+        );
+      },
+    });
   }
 }

@@ -1,191 +1,20 @@
 import test from 'ava';
-import { AxiosError, AxiosHeaders, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
-import { Logger } from 'pino';
-
-import { DEFAULT_RETRY_CONFIG, IResolvedRetryConfig } from '../../utils/retry';
-import { AxiosRetryInterceptor } from '../../utils/retry-interceptor';
+import { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 
 // Reaches the private REST (config.axiosInstance) and PDP (enforcer.client)
-// instances for the isolation regression tests below.
+// instances for the behavior tests below.
 interface PermitInternals {
   config: { axiosInstance: AxiosInstance };
   enforcer: { client: AxiosInstance };
 }
 
-// Minimal pino-like logger stub
-const warnings: string[] = [];
-const loggerStub = {
-  warn: (msg: string): void => {
-    warnings.push(msg);
-  },
-} as unknown as Logger;
-
-// Fast, deterministic retry config built on top of the defaults.
-function fastConfig(overrides: Partial<IResolvedRetryConfig> = {}): IResolvedRetryConfig {
-  return {
-    ...DEFAULT_RETRY_CONFIG,
-    enabled: true,
-    retryDelay: 1,
-    maxDelay: 5,
-    backoffMultiplier: 1,
-    retryMethods: ['GET'],
-    ...overrides,
-  };
-}
-
-// Fake axios that captures the interceptor's rejection handler and models the
-// real interceptor chain: a failed retry re-enters the rejection handler with
-// the same (retry-count-carrying) request config, exactly like axios does.
-class FakeAxios {
-  public requestCount = 0;
-  public rejectionHandler!: (error: AxiosError) => Promise<unknown>;
-
-  // When set, request() fails by feeding the error back through the rejection
-  // handler so retry-count limiting is genuinely exercised. Otherwise it
-  // resolves, simulating a successful retry.
-  private failError: AxiosError | undefined;
-
-  public interceptors = {
-    response: {
-      use: (_onFulfilled: unknown, onRejected: (error: AxiosError) => Promise<unknown>): void => {
-        this.rejectionHandler = onRejected;
-      },
-    },
-  };
-
-  public request = (requestConfig: unknown): Promise<unknown> => {
-    this.requestCount += 1;
-    if (this.failError) {
-      // Re-drive the chain with the (mutated) config the interceptor passed in.
-      this.failError.config = requestConfig as AxiosError['config'];
-      return this.rejectionHandler(this.failError);
-    }
-    return Promise.resolve({ ok: true });
-  };
-
-  alwaysFail(error: AxiosError): void {
-    this.failError = error;
-  }
-
-  asInstance(): AxiosInstance {
-    return this as unknown as AxiosInstance;
-  }
-}
-
-function createError(method: string, status?: number, retryAfter?: string): AxiosError {
-  const error = new Error('Request failed') as AxiosError;
-  error.isAxiosError = true;
-  error.config = { method, url: '/test', headers: new AxiosHeaders() };
-  error.toJSON = () => ({});
-
-  if (status !== undefined) {
-    const headers: Record<string, string> = {};
-    if (retryAfter !== undefined) {
-      headers['retry-after'] = retryAfter;
-    }
-    error.response = {
-      status,
-      statusText: 'Error',
-      headers,
-      config: { headers: new AxiosHeaders() },
-      data: {},
-    };
-  }
-
-  return error;
-}
-
-function setup(config: IResolvedRetryConfig): FakeAxios {
-  const fake = new FakeAxios();
-  AxiosRetryInterceptor.setupInterceptor(fake.asInstance(), config, loggerStub, 'TEST');
-  return fake;
-}
-
-test('setupInterceptor does not register a handler when disabled', (t) => {
-  const fake = new FakeAxios();
-  AxiosRetryInterceptor.setupInterceptor(
-    fake.asInstance(),
-    fastConfig({ enabled: false }),
-    loggerStub,
-    'TEST',
-  );
-
-  t.is(fake.rejectionHandler, undefined);
-});
-
-test('retries a retryable GET until maxRetries then rejects with the original error', async (t) => {
-  const fake = setup(fastConfig({ maxRetries: 2 }));
-  const originalError = createError('GET', 503);
-  fake.alwaysFail(originalError);
-
-  const rejected = await t.throwsAsync(() => fake.rejectionHandler(originalError));
-
-  t.is(rejected, originalError);
-  // maxRetries=2 -> exactly two retry requests are issued before giving up.
-  t.is(fake.requestCount, 2);
-});
-
-test('retries a retryable GET and resolves on success', async (t) => {
-  const fake = setup(fastConfig({ maxRetries: 3 }));
-
-  const result = await fake.rejectionHandler(createError('GET', 503));
-
-  t.deepEqual(result, { ok: true });
-  t.is(fake.requestCount, 1);
-});
-
-test('does not retry a method outside retryMethods', async (t) => {
-  const fake = setup(fastConfig({ retryMethods: ['GET'] }));
-  const error = createError('POST', 503);
-
-  const rejected = await t.throwsAsync(() => fake.rejectionHandler(error));
-
-  t.is(rejected, error);
-  t.is(fake.requestCount, 0);
-});
-
-test('does not retry a non-retryable status code', async (t) => {
-  const fake = setup(fastConfig());
-  const error = createError('GET', 400);
-
-  const rejected = await t.throwsAsync(() => fake.rejectionHandler(error));
-
-  t.is(rejected, error);
-  t.is(fake.requestCount, 0);
-});
-
-test('rejects without retry when request config is missing', async (t) => {
-  const fake = setup(fastConfig());
-  const error = createError('GET', 503);
-  // Simulate axios giving us no config to retry with.
-  (error as { config?: unknown }).config = undefined;
-
-  const rejected = await t.throwsAsync(() => fake.rejectionHandler(error));
-
-  t.is(rejected, error);
-  t.is(fake.requestCount, 0);
-});
-
-test('honors a Retry-After header and still retries', async (t) => {
-  // "0" seconds keeps the delay immediate and the test deterministic; the
-  // delay-value math for Retry-After is covered in retry.spec.
-  const fake = setup(fastConfig({ respectRetryAfter: true, maxDelay: 50 }));
-  const error = createError('GET', 429, '0');
-
-  const result = await fake.rejectionHandler(error);
-
-  t.deepEqual(result, { ok: true });
-  t.is(fake.requestCount, 1);
-});
-
-// ============================================
-// Isolation regression tests (CRITICAL + HIGH fixes)
-// ============================================
+// Tiny delays keep every retry near-instant and deterministic (no real waits).
+const tiny = { maxRetries: 2, retryDelay: 1, maxDelay: 5, backoffMultiplier: 1 };
 
 // Installs a custom adapter that counts invocations and always rejects with a
-// synthetic 503 carrying the live request config, so the retry interceptor can
-// re-enter the chain via axiosInstance.request(...).
-function installRejectingAdapter(instance: AxiosInstance): { count: () => number } {
+// synthetic AxiosError carrying the live request config, so axios-retry can
+// re-dispatch the request and we can observe how many times it ran.
+function installRejectingAdapter(instance: AxiosInstance, status = 503): { count: () => number } {
   let calls = 0;
   instance.defaults.adapter = (config: InternalAxiosRequestConfig): Promise<never> => {
     calls += 1;
@@ -194,8 +23,8 @@ function installRejectingAdapter(instance: AxiosInstance): { count: () => number
     error.config = config;
     error.toJSON = () => ({});
     error.response = {
-      status: 503,
-      statusText: 'Service Unavailable',
+      status,
+      statusText: 'Error',
       headers: {},
       config,
       data: {},
@@ -205,43 +34,97 @@ function installRejectingAdapter(instance: AxiosInstance): { count: () => number
   return { count: () => calls };
 }
 
-test('REST and PDP use separate axios instances', async (t) => {
+async function newPermit(overrides: Record<string, unknown>): Promise<PermitInternals> {
   const { Permit } = await import('../../index');
+  return new Permit({ token: 'test', ...overrides }) as unknown as PermitInternals;
+}
 
-  const permit = new Permit({
-    token: 'test',
-    retry: { maxRetries: 1 },
-    pdpRetry: { maxRetries: 1 },
-  });
+test('REST and PDP use separate axios instances', async (t) => {
+  const permit = await newPermit({ retry: { maxRetries: 1 }, pdpRetry: { maxRetries: 1 } });
 
-  const restInstance = (permit as unknown as PermitInternals).config.axiosInstance;
-  const pdpInstance = (permit as unknown as PermitInternals).enforcer.client;
-
-  t.not(restInstance, pdpInstance);
+  t.not(permit.config.axiosInstance, permit.enforcer.client);
 });
 
 test('REST instance does not retry POST while PDP instance does', async (t) => {
-  const { Permit } = await import('../../index');
+  const permit = await newPermit({ retry: tiny, pdpRetry: tiny });
 
-  // Tiny delays keep the retry near-instant and deterministic.
-  const tiny = { maxRetries: 1, retryDelay: 1, maxDelay: 5, backoffMultiplier: 1 };
-  const permit = new Permit({
-    token: 'test',
-    retry: tiny,
-    pdpRetry: tiny,
-  });
+  const rest = installRejectingAdapter(permit.config.axiosInstance);
+  const pdp = installRejectingAdapter(permit.enforcer.client);
 
-  const restInstance = (permit as unknown as PermitInternals).config.axiosInstance;
-  const pdpInstance = (permit as unknown as PermitInternals).enforcer.client;
-
-  const rest = installRejectingAdapter(restInstance);
-  const pdp = installRejectingAdapter(pdpInstance);
-
-  await t.throwsAsync(() => restInstance.request({ method: 'POST', url: '/x' }));
-  await t.throwsAsync(() => pdpInstance.request({ method: 'POST', url: '/x' }));
+  await t.throwsAsync(() => permit.config.axiosInstance.request({ method: 'POST', url: '/x' }));
+  await t.throwsAsync(() => permit.enforcer.client.request({ method: 'POST', url: '/x' }));
 
   // REST never retries POST -> exactly one adapter call.
   t.is(rest.count(), 1);
-  // PDP retries POST (maxRetries: 1) -> initial call + one retry = two.
-  t.is(pdp.count(), 2);
+  // PDP retries POST (maxRetries: 2) -> initial call + two retries = three.
+  t.is(pdp.count(), 3);
+});
+
+test('a retryable GET retries up to maxRetries then rejects', async (t) => {
+  const permit = await newPermit({ retry: tiny });
+  const rest = installRejectingAdapter(permit.config.axiosInstance);
+
+  await t.throwsAsync(() => permit.config.axiosInstance.request({ method: 'GET', url: '/x' }));
+
+  // maxRetries: 2 -> initial call + two retries = three total.
+  t.is(rest.count(), 3);
+});
+
+test('a non-retryable status (400) is not retried', async (t) => {
+  const permit = await newPermit({ retry: tiny });
+  const rest = installRejectingAdapter(permit.config.axiosInstance, 400);
+
+  await t.throwsAsync(() => permit.config.axiosInstance.request({ method: 'GET', url: '/x' }));
+
+  t.is(rest.count(), 1);
+});
+
+test('a disallowed method on the REST instance is not retried', async (t) => {
+  const permit = await newPermit({ retry: tiny });
+  const rest = installRejectingAdapter(permit.config.axiosInstance);
+
+  // PUT is in DEFAULT_RETRY_METHODS but POST is not, so POST must not retry.
+  await t.throwsAsync(() => permit.config.axiosInstance.request({ method: 'POST', url: '/x' }));
+
+  t.is(rest.count(), 1);
+});
+
+test('disabled retry (retry: false) installs no retry', async (t) => {
+  const permit = await newPermit({ retry: false });
+  const rest = installRejectingAdapter(permit.config.axiosInstance);
+
+  await t.throwsAsync(() => permit.config.axiosInstance.request({ method: 'GET', url: '/x' }));
+
+  t.is(rest.count(), 1);
+});
+
+test.serial('maps axios-retry retryCount to our 0-based attempt number', async (t) => {
+  // axios-retry passes a 1-based retryCount; the interceptor must subtract one
+  // so the first retry uses attempt 0. With jitter removed, attempt 0 -> 30ms
+  // and attempt 1 (the off-by-one bug) -> 90ms. We capture the delay axios-retry
+  // schedules via setTimeout instead of measuring wall-clock time, so the check
+  // is deterministic and concurrency-safe.
+  const realRandom = Math.random;
+  const realSetTimeout = global.setTimeout;
+  const scheduledDelays: number[] = [];
+  Math.random = () => 0; // strip jitter
+  // Capture the delay, then fire immediately so the retry still proceeds.
+  global.setTimeout = ((fn: () => void, delay?: number): ReturnType<typeof setTimeout> => {
+    scheduledDelays.push(delay ?? 0);
+    return realSetTimeout(fn, 0);
+  }) as typeof setTimeout;
+  try {
+    const permit = await newPermit({
+      retry: { maxRetries: 1, retryDelay: 30, backoffMultiplier: 3, maxDelay: 10000 },
+    });
+    installRejectingAdapter(permit.config.axiosInstance);
+
+    await t.throwsAsync(() => permit.config.axiosInstance.request({ method: 'GET', url: '/x' }));
+
+    t.true(scheduledDelays.includes(30), `expected a 30ms delay, got ${scheduledDelays.join(',')}`);
+    t.false(scheduledDelays.includes(90), 'attempt-1 (off-by-one) delay must not be used');
+  } finally {
+    Math.random = realRandom;
+    global.setTimeout = realSetTimeout;
+  }
 });
