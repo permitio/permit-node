@@ -30,6 +30,7 @@
     "fix:prettier": "prettier --config .prettierrc \"src/**/*.{ts,css,less,scss,js}\" --write",
     "fix:lint": "eslint src --ext .ts --fix",
     "test": "run-s test:*",
+    "test:unit": "run-s build && ava --verbose 'build/tests/unit/**/*.spec.js'",
     "test:integration": "run-s build && ava --verbose build/tests/endpoints/**/*.spec.js",
     "test:module-imports": "run-s build && ava --verbose build/tests/module-imports/**/*.spec.js",
     "test:e2e:rbac": "run-s build && ava --verbose build/tests/e2e/rbac.e2e.spec.js",
@@ -59,6 +60,7 @@
   "dependencies": {
     "@bitauth/libauth": "^1.17.1",
     "axios": "^1.7.4",
+    "axios-retry": "^4.5.0",
     "lodash": "^4.17.21",
     "path-to-regexp": "^6.2.1",
     "pino": "8.11.0",
