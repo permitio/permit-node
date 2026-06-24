@@ -99,14 +99,7 @@ jobs:
           cat package.json
 
       - name: Publish package to NPM
-        run: |
-          if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
-            echo "Publishing as a release candidate (rc)..."
-            npm publish --access public --tag rc
-          else
-            echo "Publishing as the latest release..."
-            npm publish --access public
-          fi
+        run: npm publish
         # No NPM_TOKEN needed — authenticated via npm Trusted Publishing (OIDC),
         # which requires the job's `id-token: write` permission above plus a
         # Trusted Publisher configured on npmjs.com:
