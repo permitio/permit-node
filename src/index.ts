@@ -15,6 +15,8 @@ import {
 import { LoggerFactory } from './logger';
 import { CheckConfig, Context } from './utils/context';
 import { AxiosLoggingInterceptor } from './utils/http-logger';
+import { resolveRetryConfig } from './utils/retry';
+import { AxiosRetryInterceptor } from './utils/retry-interceptor';
 import { RecursivePartial } from './utils/types';
 
 // exported interfaces
@@ -25,6 +27,7 @@ export { PermitConnectionError, PermitError, PermitPDPStatusError } from './enfo
 export { Context, ContextTransform } from './utils/context';
 export { ApiContext, PermitContextError, ApiKeyLevel } from './api/context';
 export { PermitApiError } from './api/base';
+export { IRetryConfig, RetryConditionFn, RETRYABLE_STATUS_CODES } from './utils/retry';
 
 export interface IPermitClient extends IEnforcer {
   /**
@@ -139,6 +142,26 @@ export class Permit implements IPermitClient {
     this.config = ConfigFactory.build(config);
     this.logger = LoggerFactory.createLogger(this.config);
     AxiosLoggingInterceptor.setupInterceptor(this.config.axiosInstance, this.logger);
+
+    // Setup retry interceptor for REST API calls.
+    // Strip POST from the REST retryMethods regardless of user config: REST
+    // writes are non-idempotent and must never be repeated. (This is symmetric
+    // with the enforcer, which ADDS POST for the idempotent PDP/OPA check calls.)
+    const resolvedRetryConfig = resolveRetryConfig(this.config.retry);
+    const restRetryConfig = {
+      ...resolvedRetryConfig,
+      retryMethods: resolvedRetryConfig.retryMethods.filter((m) => m !== 'POST'),
+    };
+    // Skip the install when no methods remain (e.g. retryMethods: ['POST']),
+    // which would otherwise add an interceptor that can never retry.
+    if (resolvedRetryConfig.enabled && restRetryConfig.retryMethods.length > 0) {
+      AxiosRetryInterceptor.setupInterceptor(
+        this.config.axiosInstance,
+        restRetryConfig,
+        this.logger,
+        'API',
+      );
+    }
 
     this.api = new ApiClient(this.config, this.logger);
 
