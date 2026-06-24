@@ -61,10 +61,12 @@ jobs:
             https://api.permit.io/v2/api-key/${{ env.PROJECT_ID }}/${{ env.ENV_ID }} \
             -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}')
 
-          # Extract the secret from the response which is the API_KEY of the new env
-          echo "ENV_API_KEY=$(echo "$response" | jq -r '.secret')" >> $GITHUB_ENV
-
-          echo "New env api key: $ENV_API_KEY"
+          # Extract the api key secret and register it for masking BEFORE writing
+          # it to the environment, so it is redacted everywhere in the logs
+          # (including the env-group dumps of every later step). Do not echo it.
+          ENV_API_KEY=$(echo "$response" | jq -r '.secret')
+          echo "::add-mask::$ENV_API_KEY"
+          echo "ENV_API_KEY=$ENV_API_KEY" >> "$GITHUB_ENV"
 
       - name: local PDP runnning
         env:
