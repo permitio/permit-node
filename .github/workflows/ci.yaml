@@ -142,6 +142,28 @@ jobs:
           API_TIER: prod
         run: yarn test:ci:full
 
+      # Dump PDP diagnostics whenever the backend path fails. The SDK reports
+      # PDP connection errors with no HTTP response, so the PDP side is otherwise
+      # invisible; this captures container state and logs to tell a transient
+      # restart/readiness blip apart from a crashed/exited container.
+      - name: Dump PDP diagnostics on failure
+        if: ${{ failure() && env.RUN_BACKEND == 'true' }}
+        run: |
+          echo "::group::docker ps -a"
+          docker ps -a --filter name=pdp || true
+          echo "::endgroup::"
+          echo "::group::PDP container state"
+          docker inspect -f \
+            'status={{.State.Status}} restartCount={{.RestartCount}} exitCode={{.State.ExitCode}} oomKilled={{.State.OOMKilled}} startedAt={{.State.StartedAt}} finishedAt={{.State.FinishedAt}}' \
+            pdp || true
+          echo "::endgroup::"
+          echo "::group::docker logs pdp"
+          docker logs pdp || true
+          echo "::endgroup::"
+          echo "::group::curl -sv http://localhost:7766/healthy"
+          curl -sv http://localhost:7766/healthy || true
+          echo "::endgroup::"
+
       # ---------- No-backend path (forks / secret-less) ----------
       - name: Run no-backend test suite
         if: env.RUN_BACKEND != 'true'
