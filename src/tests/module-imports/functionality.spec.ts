@@ -1,60 +1,63 @@
-import test from 'ava';
+import * as path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
-test('ES Module functionality test', async (t) => {
-  const { Permit } = await import('../../index');
+// Exercise the BUILT bundles (build/index.mjs and build/index.js) end-to-end to
+// guard against packaging regressions in either module format.
+const builtCjsPath = path.resolve(__dirname, '../../../build/index.js');
+const builtMjsUrl = pathToFileURL(path.resolve(__dirname, '../../../build/index.mjs')).href;
 
-  // Test creating a Permit instance with ES module import
+it('ES Module functionality test (built bundle)', async () => {
+  const { Permit } = await import(builtMjsUrl);
+
   const permit = new Permit({
     token: 'test-token',
     pdp: 'http://localhost:7766',
   });
 
-  t.truthy(permit);
-  t.is(typeof permit.check, 'function');
-  t.is(typeof permit.api, 'object');
-  t.is(typeof permit.elements, 'object');
-  t.is(typeof permit.config, 'object');
+  expect(permit).toBeTruthy();
+  expect(typeof permit.check).toBe('function');
+  expect(typeof permit.api).toBe('object');
+  expect(typeof permit.elements).toBe('object');
+  expect(typeof permit.config).toBe('object');
 
   // Test that the config was set correctly
-  t.is(permit.config.token, 'test-token');
-  t.is(permit.config.pdp, 'http://localhost:7766');
+  expect(permit.config.token).toBe('test-token');
+  expect(permit.config.pdp).toBe('http://localhost:7766');
 });
 
-test('CommonJS functionality test', async (t) => {
+it('CommonJS functionality test (built bundle)', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { Permit } = require('../../index');
+  const { Permit } = require(builtCjsPath);
 
-  // Test creating a Permit instance with CommonJS require
   const permit = new Permit({
     token: 'test-token',
     pdp: 'http://localhost:7766',
   });
 
-  t.truthy(permit);
-  t.is(typeof permit.check, 'function');
-  t.is(typeof permit.api, 'object');
-  t.is(typeof permit.elements, 'object');
-  t.is(typeof permit.config, 'object');
+  expect(permit).toBeTruthy();
+  expect(typeof permit.check).toBe('function');
+  expect(typeof permit.api).toBe('object');
+  expect(typeof permit.elements).toBe('object');
+  expect(typeof permit.config).toBe('object');
 
   // Test that the config was set correctly
-  t.is(permit.config.token, 'test-token');
-  t.is(permit.config.pdp, 'http://localhost:7766');
+  expect(permit.config.token).toBe('test-token');
+  expect(permit.config.pdp).toBe('http://localhost:7766');
 });
 
-test('Dynamic import functionality test', async (t) => {
-  // Test dynamic import (ES modules)
-  const { Permit } = await import('../../index');
+it('Built bundle exposes nested API modules', async () => {
+  const { Permit } = await import(builtMjsUrl);
 
   const permit = new Permit({
     token: 'test-token',
     pdp: 'http://localhost:7766',
   });
 
-  t.truthy(permit);
-  t.is(typeof permit.check, 'function');
+  expect(permit).toBeTruthy();
+  expect(typeof permit.check).toBe('function');
 
   // Test that we can access nested modules
-  t.is(typeof permit.api.users, 'object');
-  t.is(typeof permit.api.resources, 'object');
-  t.is(typeof permit.api.roles, 'object');
+  expect(typeof permit.api.users).toBe('object');
+  expect(typeof permit.api.resources).toBe('object');
+  expect(typeof permit.api.roles).toBe('object');
 });

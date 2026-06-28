@@ -29,31 +29,24 @@
     "fix": "run-s fix:*",
     "fix:prettier": "prettier --config .prettierrc \"src/**/*.{ts,css,less,scss,js}\" --write",
     "fix:lint": "eslint src --ext .ts --fix",
-    "test": "run-s test:*",
-    "test:unit": "run-s build && ava --verbose 'build/tests/unit/**/*.spec.js'",
-    "test:integration": "run-s build && ava --verbose build/tests/endpoints/**/*.spec.js",
-    "test:module-imports": "run-s build && ava --verbose build/tests/module-imports/**/*.spec.js",
-    "test:e2e:rbac": "run-s build && ava --verbose build/tests/e2e/rbac.e2e.spec.js",
-    "test:e2e:rebac": "run-s build && ava --verbose build/tests/e2e/rebac.e2e.spec.js",
-    "test:e2e:local_facts": "run-s build && ava --verbose build/tests/e2e/local_facts.e2e.spec.js",
-    "test:ci:unit": "run-s test:unit test:module-imports",
-    "test:ci:full": "run-s test test:e2e:rbac test:e2e:rebac test:e2e:local_facts",
+    "test": "run-s build && vitest run --project unit --project module-imports && vitest run --project integration && vitest run --project e2e",
+    "test:unit": "vitest run --project unit",
+    "test:module-imports": "run-s build && vitest run --project module-imports",
+    "test:integration": "vitest run --project integration",
+    "test:e2e": "vitest run --project e2e",
+    "test:ci:unit": "run-s build && vitest run --project unit --project module-imports",
+    "test:ci:full": "run-s build && vitest run --project unit --project module-imports && vitest run --project integration && vitest run --project e2e",
     "check-cli": "run-s test diff-integration-tests check-integration-tests",
     "check-integration-tests": "run-s check-integration-test:*",
     "diff-integration-tests": "mkdir -p diff && rm -rf diff/test && cp -r test diff/test && rm -rf diff/test/test-*/.git && cd diff && git init --quiet && git add -A && git commit --quiet --no-verify --allow-empty -m 'WIP' && echo '\\n\\nCommitted most recent integration test output in the \"diff\" directory. Review the changes with \"cd diff && git diff HEAD\" or your preferred git diff viewer.'",
-    "watch:build": "tsc -p tsconfig.json -w",
-    "watch:test": "nyc --silent ava --watch --verbose",
-    "cov": "run-s build test:unit cov:html cov:lcov && open-cli coverage/index.html",
-    "cov:html": "nyc report --reporter=html",
-    "cov:lcov": "nyc report --reporter=lcov",
-    "cov:send": "run-s cov:lcov && codecov",
-    "cov:check": "nyc report && nyc check-coverage --lines 100 --functions 100 --branches 100",
+    "watch": "vitest --project unit",
+    "coverage": "vitest run --project unit --coverage",
     "docs": "typedoc",
     "docs:watch": "typedoc --watch",
     "version": "2.5.2",
     "reset-hard": "git clean -dfx && git reset --hard && yarn",
     "prepare": "npm run build && husky install",
-    "prepare-release": "run-s reset-hard test cov:check doc:html version doc:publish",
+    "prepare-release": "run-s reset-hard test doc:html version doc:publish",
     "generate-openapi-client": "openapi-generator-cli generate -i https://api.permit.io/v2/openapi.json -g typescript-axios -o src/openapi/ --additional-properties=useSingleRequestParameter=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=types --skip-validate-spec && yarn fix:prettier"
   },
   "engines": {
@@ -71,18 +64,15 @@
     "url-parse": "^1.5.10"
   },
   "devDependencies": {
-    "@ava/typescript": "^1.1.1",
     "@babel/traverse": "^7.24.8",
-    "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@openapitools/openapi-generator-cli": "^2.5.2",
     "@types/express": "^4.17.9",
     "@types/lodash": "^4.14.166",
-    "@types/node": "^14.14.14",
+    "@types/node": "^20.14.0",
     "@types/url-parse": "^1.4.11",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",
-    "ava": "^3.12.1",
-    "codecov": "^3.5.0",
+    "@vitest/coverage-v8": "^4.1.0",
     "cspell": "^4.1.0",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^7.8.0",
@@ -94,14 +84,12 @@
     "husky": "^7.0.0",
     "lint-staged": "^12.1.2",
     "npm-run-all": "^4.1.5",
-    "nyc": "^15.1.0",
-    "open-cli": "^8.0.0",
     "prettier": "^2.5.1",
     "standard-version": "^9.0.0",
-    "ts-node": "^9.0.0",
     "tsup": "^8.5.0",
     "typedoc": "^0.24.7",
-    "typescript": "^4.6.4"
+    "typescript": "^4.6.4",
+    "vitest": "^4.1.0"
   },
   "files": [
     "build/**/*.d.ts",
@@ -112,14 +100,6 @@
     "LICENSE",
     "README.md"
   ],
-  "ava": {
-    "failFast": true,
-    "failWithoutAssertions": false,
-    "timeout": "60s",
-    "files": [
-      "!src/tests/fixtures.ts"
-    ]
-  },
   "lint-staged": {
     "*.{ts,css,less,scss,js,html}": [
       "prettier --config .prettierrc --write"
@@ -129,12 +109,6 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
-  },
-  "nyc": {
-    "extends": "@istanbuljs/nyc-config-typescript",
-    "exclude": [
-      "**/*.spec.js"
-    ]
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

@@ -1,17 +1,21 @@
-import anyTest, { TestInterface } from 'ava';
+import pino from 'pino';
 
 import { IPermitClient } from '../..';
-import { printBreak, provideTestExecutionContext, TestContext } from '../fixtures';
+import { createTestClient, printBreak } from '../fixtures';
+import { waitFor } from '../helpers/wait-for';
 
-const test = anyTest as TestInterface<TestContext>;
-test.before(provideTestExecutionContext);
+let permit: IPermitClient;
+let logger: pino.Logger;
+
+beforeAll(() => {
+  ({ permit, logger } = createTestClient());
+});
 
 const viewerRoleKey = 'viewer';
 const commenterRoleKey = 'commenter';
 const editorRoleKey = 'editor';
 const adminRoleKey = 'admin';
 const memberRoleKey = 'member';
-const watcherRoleKey = 'watcher';
 
 const account = {
   key: 'account',
@@ -187,33 +191,30 @@ const cocacolaTenant = {
 };
 const tenantsToCreate = [permitTenant, cocacolaTenant];
 
-test('Permission check e2e test', async (t) => {
-  const permit = t.context.permit;
-  const logger = t.context.logger;
-
+it('Permission check e2e test', async () => {
   try {
     logger.info('initial setup of objects');
 
     // create resources
     for (const resource of resourcesToCreate) {
       const createdResource = await permit.api.resources.create(resource);
-      t.not(createdResource, undefined);
-      t.not(createdResource, null);
-      t.is(createdResource.key, resource.key);
-      t.is(createdResource.name, resource.name);
-      t.is(createdResource.urn, resource.urn);
-      t.is(createdResource.description, resource.description);
+      expect(createdResource).not.toBe(undefined);
+      expect(createdResource).not.toBe(null);
+      expect(createdResource.key).toBe(resource.key);
+      expect(createdResource.name).toBe(resource.name);
+      expect(createdResource.urn).toBe(resource.urn);
+      expect(createdResource.description).toBe(resource.description);
     }
 
     // create admin and member users
     for (const user of usersToCreate) {
       const createdUser = await permit.api.users.create(user);
-      t.not(createdUser, undefined);
-      t.not(createdUser, null);
-      t.is(createdUser.key, user.key);
-      t.is(createdUser.email, user.email);
-      t.is(createdUser.first_name, user.first_name);
-      t.is(createdUser.last_name, user.last_name);
+      expect(createdUser).not.toBe(undefined);
+      expect(createdUser).not.toBe(null);
+      expect(createdUser.key).toBe(user.key);
+      expect(createdUser.email).toBe(user.email);
+      expect(createdUser.first_name).toBe(user.first_name);
+      expect(createdUser.last_name).toBe(user.last_name);
     }
 
     // create folder roles
@@ -223,10 +224,10 @@ test('Permission check e2e test', async (t) => {
         resourceRole.resourceKey,
         resourceRole.roleData,
       );
-      t.not(createdResourceRole, undefined);
-      t.not(createdResourceRole, null);
-      t.is(createdResourceRole.key, resourceRole.roleData.key);
-      t.is(createdResourceRole.name, resourceRole.roleData.name);
+      expect(createdResourceRole).not.toBe(undefined);
+      expect(createdResourceRole).not.toBe(null);
+      expect(createdResourceRole.key).toBe(resourceRole.roleData.key);
+      expect(createdResourceRole.name).toBe(resourceRole.roleData.name);
     }
 
     // create relation between document and folder (parent)
@@ -235,9 +236,9 @@ test('Permission check e2e test', async (t) => {
       name: 'Document Folder Relation',
       subject_resource: folder.key,
     });
-    t.not(documentFolderRelation, undefined);
-    t.not(documentFolderRelation, null);
-    t.is(documentFolderRelation.key, 'parent');
+    expect(documentFolderRelation).not.toBe(undefined);
+    expect(documentFolderRelation).not.toBe(null);
+    expect(documentFolderRelation.key).toBe('parent');
 
     // create role derivation folder -> document
     const folderDocumentRoleDerivation = [viewerRoleKey, commenterRoleKey, editorRoleKey].map(
@@ -253,10 +254,10 @@ test('Permission check e2e test', async (t) => {
     // create permit and cocacola tenants
     for (const tenant of tenantsToCreate) {
       const createdTenant = await permit.api.tenants.create(tenant);
-      t.not(createdTenant, undefined);
-      t.not(createdTenant, null);
-      t.is(createdTenant.key, tenant.key);
-      t.is(createdTenant.name, tenant.name);
+      expect(createdTenant).not.toBe(undefined);
+      expect(createdTenant).not.toBe(null);
+      expect(createdTenant.key).toBe(tenant.key);
+      expect(createdTenant.name).toBe(tenant.name);
     }
 
     const relationships = [
@@ -283,12 +284,12 @@ test('Permission check e2e test', async (t) => {
         tenant: relationship[3],
       });
 
-      t.not(relTuple, undefined);
-      t.not(relTuple, null);
-      t.is(relTuple.subject, relationship[0]);
-      t.is(relTuple.relation, relationship[1]);
-      t.is(relTuple.object, relationship[2]);
-      // t.is(relTuple.tenant_id, relationship[3]); returns id instead of key
+      expect(relTuple).not.toBe(undefined);
+      expect(relTuple).not.toBe(null);
+      expect(relTuple.subject).toBe(relationship[0]);
+      expect(relTuple.relation).toBe(relationship[1]);
+      expect(relTuple.object).toBe(relationship[2]);
+      // expect(relTuple.tenant_id).toBe(relationship[3]); returns id instead of key
     }
 
     const assignmentsAndAssertions = [
@@ -545,8 +546,8 @@ test('Permission check e2e test', async (t) => {
       },
     ];
 
-    const assertPermitCheck = async (permit: IPermitClient, assertion: any, assignment: any) => {
-      const result = await permit.check(
+    const assertPermitCheck = async (client: IPermitClient, assertion: any, assignment: any) => {
+      const result = await client.check(
         assertion.user,
         assertion.action,
         assertion.resource_instance,
@@ -557,21 +558,31 @@ test('Permission check e2e test', async (t) => {
         console.log('assignment', assignment);
         console.log('result', result);
       }
-      t.is(result, assertion.result);
+      expect(result).toBe(assertion.result);
     };
 
     for (const testStep of assignmentsAndAssertions) {
       // role assignments
       for (const assignment of testStep.assignments) {
         const ra = await permit.api.roleAssignments.assign(assignment);
-        t.is(ra.user, assignment.user);
-        t.is(ra.role, assignment.role);
-        t.is(ra.resource_instance, assignment.resource_instance);
-        t.is(ra.tenant, assignment.tenant);
+        expect(ra.user).toBe(assignment.user);
+        expect(ra.role).toBe(assignment.role);
+        expect(ra.resource_instance).toBe(assignment.resource_instance);
+        expect(ra.tenant).toBe(assignment.tenant);
       }
-      // sleep 10 second to allow for role assignments to propagate
-      console.log('sleeping 10 seconds');
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+      // Gate until every assertion in the step matches its expected result
+      // (positives become true AND negatives become false), replacing a fixed
+      // sleep. Polling all assertions also covers steps whose assertions are all
+      // negative, which a positives-only gate would skip without waiting.
+      await waitFor(
+        async () => {
+          const results = await Promise.all(
+            testStep.assertions.map((a) => permit.check(a.user, a.action, a.resource_instance)),
+          );
+          return results.every((res, i) => res === testStep.assertions[i].result);
+        },
+        { timeoutMs: 60_000, intervalMs: 1_000, message: 'rebac step did not converge' },
+      );
       for (const assertion of testStep.assertions) {
         await assertPermitCheck(permit, assertion, testStep.assignments);
       }
@@ -587,23 +598,19 @@ test('Permission check e2e test', async (t) => {
     }
 
     printBreak();
-  } catch (error) {
-    logger.error(`GOT ERROR: ${error}`);
-    t.fail(`got error: ${error}`);
   } finally {
-    // cleanup
-    try {
-      console.log('cleaning up');
-      await permit.api.tenants.delete('cocacola');
-      await permit.api.tenants.delete('permit');
-      await permit.api.resources.delete('account');
-      await permit.api.resources.delete('folder');
-      await permit.api.resources.delete('document');
-      await permit.api.users.delete('user_authz');
-      await permit.api.users.delete('user_permit');
-    } catch (error) {
-      logger.error(`GOT ERROR: ${error}`);
-      t.fail(`got error: ${error}`);
-    }
+    // Leave the shared env empty for the next spec. Deleting a resource cascades
+    // to its roles, relations, resource instances and relationship tuples;
+    // deleting users/tenants removes their role assignments. Each delete is
+    // tolerant so a missing entity (e.g. the body threw before creating it)
+    // neither throws nor masks the original failure.
+    console.log('cleaning up');
+    await permit.api.tenants.delete('cocacola').catch(() => undefined);
+    await permit.api.tenants.delete('permit').catch(() => undefined);
+    await permit.api.resources.delete('account').catch(() => undefined);
+    await permit.api.resources.delete('folder').catch(() => undefined);
+    await permit.api.resources.delete('document').catch(() => undefined);
+    await permit.api.users.delete('user_authz').catch(() => undefined);
+    await permit.api.users.delete('user_permit').catch(() => undefined);
   }
 });

@@ -1,38 +1,33 @@
-import test from 'ava';
+import * as path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
-import { ApiClient } from '../../api/api-client';
-import { ElementsClient } from '../../api/elements';
-import { Enforcer } from '../../enforcement/enforcer';
-import type { IResource, IUser } from '../../enforcement/interfaces';
-import { Permit } from '../../index';
+// Validate the BUILT ES Module artifact (build/index.mjs) the package actually
+// ships, not the TypeScript source. This is a packaging-regression guard.
+const builtMjsUrl = pathToFileURL(path.resolve(__dirname, '../../../build/index.mjs')).href;
 
-test('ES Module import works correctly', async (t) => {
-  t.is(typeof Permit, 'function');
-  t.is(Permit.name, 'Permit');
+it('ES Module import of the built bundle exposes Permit', async () => {
+  const built = await import(builtMjsUrl);
 
-  // Test creating a Permit instance
-  const permit = new Permit({
+  expect(typeof built.Permit).toBe('function');
+  expect(built.Permit.name).toBe('Permit');
+
+  const permit = new built.Permit({
     token: 'test-token',
     pdp: 'http://localhost:7766',
   });
 
-  t.truthy(permit);
-  t.is(typeof permit.check, 'function');
-  t.is(typeof permit.api, 'object');
-  t.is(typeof permit.elements, 'object');
-  t.is(typeof permit.config, 'object');
+  expect(permit).toBeTruthy();
+  expect(typeof permit.check).toBe('function');
+  expect(typeof permit.api).toBe('object');
+  expect(typeof permit.elements).toBe('object');
+  expect(typeof permit.config).toBe('object');
 });
 
-test('ES Module imports individual modules', async (t) => {
-  t.is(typeof Enforcer, 'function');
-  t.is(Enforcer.name, '_Enforcer');
-  // IUser and IResource are types, so we can't test them at runtime
-  t.pass('Type imports work correctly');
-});
+it('ES Module import of the built bundle exposes the public API classes', async () => {
+  const built = await import(builtMjsUrl);
 
-test('ES Module imports API modules', async (t) => {
-  t.is(typeof ApiClient, 'function');
-  t.is(ApiClient.name, 'ApiClient');
-  t.is(typeof ElementsClient, 'function');
-  t.is(ElementsClient.name, 'ElementsClient');
+  expect(typeof built.ApiClient).toBe('function');
+  expect(built.ApiClient.name).toBe('ApiClient');
+  expect(typeof built.ElementsClient).toBe('function');
+  expect(built.ElementsClient.name).toBe('ElementsClient');
 });
