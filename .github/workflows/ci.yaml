@@ -6,35 +6,155 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  PDP_API_KEY: test
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
-  test-and-lint:
+  lint-and-build:
     runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        node-version: [18, 20]
-    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'yarn'
-    
-    - name: Install dependencies
-      run: yarn install --frozen-lockfile
-    
-    - name: Run linting
-      run: yarn lint
-    
-    - name: Build project
-      run: yarn build
-    
-    - name: Run all tests
-      run: yarn test
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Run linting
+        run: yarn lint
+      - name: Build project
+        run: yarn build
+
+  test:
+    needs: lint-and-build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20, 22]
+    env:
+      # Backend suite runs only for same-repo events AND when the provisioning
+      # secret is available. Fork PRs and secret-less runs (e.g. Dependabot)
+      # fall back to the no-backend suite.
+      RUN_BACKEND: ${{ (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) && secrets.PROJECT_API_KEY != '' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # Fail fast if a same-repo run lacks the backend secret, so the full
+      # suite can't be silently downgraded to unit-only and still report green.
+      # Forks (different head repo) intentionally skip this and fall back below.
+      - name: Require backend secret on same-repo runs
+        if: ${{ (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) && env.RUN_BACKEND != 'true' }}
+        run: |
+          echo "::error::PROJECT_API_KEY is not set for a same-repo run; integration/e2e would be silently skipped. Failing instead of reporting a misleading green." >&2
+          exit 1
+
+      # ---------- Backend path (same-repo only) ----------
+      - name: Provision temp Permit env
+        id: provision
+        if: env.RUN_BACKEND == 'true'
+        env:
+          PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
+          PROJECT_ID: 7f55831d77c642739bc17733ab0af138
+          ENV_KEY: node-sdk-ci-${{ github.run_id }}-${{ github.run_attempt }}-n${{ matrix.node-version }}
+        run: |
+          response=$(curl -sS -X POST \
+            "https://api.permit.io/v2/projects/${PROJECT_ID}/envs" \
+            -H "Authorization: Bearer ${PROJECT_API_KEY}" \
+            -H 'Content-Type: application/json' \
+            -d "{\"key\":\"${ENV_KEY}\",\"name\":\"${ENV_KEY}\"}")
+          env_id=$(printf '%s' "$response" | jq -r '.id // empty')
+          if [ -z "$env_id" ]; then
+            echo "Failed to create env (key=${ENV_KEY})." >&2
+            exit 1
+          fi
+          echo "env_id=${env_id}" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch env API key
+        id: fetch_key
+        if: env.RUN_BACKEND == 'true'
+        env:
+          PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
+          PROJECT_ID: 7f55831d77c642739bc17733ab0af138
+          ENV_ID: ${{ steps.provision.outputs.env_id }}
+        run: |
+          response=$(curl -sS -X GET \
+            "https://api.permit.io/v2/api-key/${PROJECT_ID}/${ENV_ID}" \
+            -H "Authorization: Bearer ${PROJECT_API_KEY}")
+          env_api_key=$(printf '%s' "$response" | jq -r '.secret // empty')
+          if [ -z "$env_api_key" ]; then
+            echo "Failed to fetch env API key." >&2
+            exit 1
+          fi
+          # Mask BEFORE writing to the env file so it is redacted everywhere.
+          echo "::add-mask::${env_api_key}"
+          echo "ENV_API_KEY=${env_api_key}" >> "$GITHUB_ENV"
+
+      - name: Start local PDP
+        if: env.RUN_BACKEND == 'true'
+        env:
+          ENV_API_KEY: ${{ env.ENV_API_KEY }}
+        run: |
+          docker run -d --name pdp -p 7766:7000 \
+            -e PDP_API_KEY="$ENV_API_KEY" \
+            -e PERMIT_API_KEY="$ENV_API_KEY" \
+            permitio/pdp-v2:latest
+
+      - name: Wait for PDP to be ready
+        if: env.RUN_BACKEND == 'true'
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:7766/healthy >/dev/null; then
+              echo "PDP ready after ${i} attempt(s)"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "PDP did not become healthy in time; dumping logs:" >&2
+          docker logs pdp || true
+          exit 1
+
+      - name: Run full test suite (backend)
+        if: env.RUN_BACKEND == 'true'
+        env:
+          PDP_API_KEY: ${{ env.ENV_API_KEY }}
+          PERMIT_API_KEY: ${{ env.ENV_API_KEY }}
+          API_TIER: prod
+        run: yarn test:ci:full
+
+      # ---------- No-backend path (forks / secret-less) ----------
+      - name: Run no-backend test suite
+        if: env.RUN_BACKEND != 'true'
+        run: yarn test:ci:unit
+
+      # ---------- Cleanup (always, even on failure/cancel) ----------
+      - name: Delete temp Permit env
+        if: ${{ always() && steps.provision.outputs.env_id != '' }}
+        env:
+          PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
+          PROJECT_ID: 7f55831d77c642739bc17733ab0af138
+          ENV_ID: ${{ steps.provision.outputs.env_id }}
+        run: |
+          curl -sS -X DELETE \
+            "https://api.permit.io/v2/projects/${PROJECT_ID}/envs/${ENV_ID}" \
+            -H "Authorization: Bearer ${PROJECT_API_KEY}" || true
