@@ -362,18 +362,24 @@ export class Enforcer implements IEnforcer {
     context: Context = {}, // default to empty context if not provided
     sdk = 'node', // default to "node" if not provided
   ): Promise<TenantDetails[]> {
+    // checkAllTenants evaluates the request across ALL tenants, so the resource
+    // must NOT be pinned to a tenant. We normalize the string forms of user and
+    // resource to match check()'s input contract, but intentionally skip
+    // normalizeResource() because it injects config.multiTenancy.defaultTenant.
+    const input: ICheckInput = {
+      user: isString(user) ? { key: user } : user,
+      action,
+      resource: isString(resource) ? Enforcer.resourceFromString(resource) : resource,
+      context,
+    };
+
     try {
-      const response = await this.client.post<AllTenantsResponse>('/allowed/all-tenants', {
+      const response = await this.client.post<AllTenantsResponse>('allowed/all-tenants', input, {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
           'X-Permit-Sdk-Language': sdk,
         },
-        params: {
-          user,
-          action,
-          resource,
-          context,
-        },
+        timeout: this.config.timeout,
       });
       return response.data.allowedTenants.map((item) => item.tenant);
     } catch (error) {
