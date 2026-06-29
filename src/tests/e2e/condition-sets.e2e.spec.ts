@@ -135,7 +135,11 @@ it('ABAC condition-set permission check e2e test', async () => {
   };
 
   // Wait for the writes above to propagate from the control plane to the PDP.
-  await waitForCheck(() => permit.check(MATCHING_USER_KEY, ACTION, confidentialResource), true);
+  // Condition sets compile to new policy (rego), which takes longer to take
+  // effect than plain role/fact propagation, so allow a wider budget.
+  await waitForCheck(() => permit.check(MATCHING_USER_KEY, ACTION, confidentialResource), true, {
+    timeoutMs: 180_000,
+  });
 
   logger.info('positive ABAC check: matching user reads a confidential document');
   expect(await permit.check(MATCHING_USER_KEY, ACTION, confidentialResource)).toBe(true);
