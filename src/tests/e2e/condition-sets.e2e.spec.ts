@@ -15,6 +15,10 @@ const USERSET_KEY = `cs_e2e_userset_${rand}`;
 const RESOURCESET_KEY = `cs_e2e_resourceset_${rand}`;
 const MATCHING_USER_KEY = `cs_e2e_user_match_${rand}`;
 const OTHER_USER_KEY = `cs_e2e_user_other_${rand}`;
+// Built-in 'user' resource key in Permit. A userset condition that references
+// user.<attr> requires the attribute to exist on this resource first.
+const USER_RESOURCE_KEY = '__user';
+const USER_ATTR = `cs_e2e_clearance_${rand}`;
 const ACTION = 'read';
 const PERMISSION = `${RESOURCE_KEY}:${ACTION}`;
 const TENANT = 'default';
@@ -33,6 +37,9 @@ afterAll(async () => {
     .catch(() => undefined);
   await permit.api.conditionSets.delete(USERSET_KEY).catch(() => undefined);
   await permit.api.conditionSets.delete(RESOURCESET_KEY).catch(() => undefined);
+  // Remove the attribute from the built-in user resource after the userset that
+  // referenced it is gone. The built-in '__user' resource itself is never deleted.
+  await permit.api.resourceAttributes.delete(USER_RESOURCE_KEY, USER_ATTR).catch(() => undefined);
   await permit.api.users.delete(MATCHING_USER_KEY).catch(() => undefined);
   await permit.api.users.delete(OTHER_USER_KEY).catch(() => undefined);
   await permit.api.resources.delete(RESOURCE_KEY).catch(() => undefined);
@@ -65,13 +72,20 @@ it('ABAC condition-set permission check e2e test', async () => {
   expect(resource.key).toBe(RESOURCE_KEY);
   expect((resource.actions ?? {})[ACTION]).not.toBe(undefined);
 
+  logger.info('registering the user attribute referenced by the userset condition');
+  const userAttribute = await permit.api.resourceAttributes.create(USER_RESOURCE_KEY, {
+    key: USER_ATTR,
+    type: 'string',
+  });
+  expect(userAttribute.key).toBe(USER_ATTR);
+
   logger.info('creating the userset condition set (matches a user attribute)');
   const userSet = await permit.api.conditionSets.create({
     key: USERSET_KEY,
     name: USERSET_KEY,
     type: 'userset',
     conditions: {
-      allOf: [{ 'user.clearance': { equals: 'top_secret' } }],
+      allOf: [{ [`user.${USER_ATTR}`]: { equals: 'top_secret' } }],
     },
   });
   expect(userSet.key).toBe(USERSET_KEY);
@@ -103,14 +117,14 @@ it('ABAC condition-set permission check e2e test', async () => {
   logger.info('syncing a user that matches the userset, and one that does not');
   const { user: matchingUser } = await permit.api.users.sync({
     key: MATCHING_USER_KEY,
-    attributes: { clearance: 'top_secret' },
+    attributes: { [USER_ATTR]: 'top_secret' },
   });
   expect(matchingUser.key).toBe(MATCHING_USER_KEY);
-  expect((matchingUser.attributes as Record<string, unknown>)['clearance']).toBe('top_secret');
+  expect((matchingUser.attributes as Record<string, unknown>)[USER_ATTR]).toBe('top_secret');
 
   const { user: otherUser } = await permit.api.users.sync({
     key: OTHER_USER_KEY,
-    attributes: { clearance: 'public' },
+    attributes: { [USER_ATTR]: 'public' },
   });
   expect(otherUser.key).toBe(OTHER_USER_KEY);
 
