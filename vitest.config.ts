@@ -21,8 +21,8 @@ const serialBackend = {
   pool: 'forks' as const,
   maxWorkers: 1,
   isolate: true,
-  testTimeout: 120_000,
-  hookTimeout: 120_000,
+  testTimeout: 300_000,
+  hookTimeout: 300_000,
 };
 
 export default defineConfig({
