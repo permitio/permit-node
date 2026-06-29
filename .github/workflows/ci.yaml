@@ -124,7 +124,7 @@ jobs:
         if: env.RUN_BACKEND == 'true'
         run: |
           for i in $(seq 1 60); do
-            if curl -sf http://localhost:7766/healthy >/dev/null; then
+            if curl -sf http://127.0.0.1:7766/healthy >/dev/null; then
               echo "PDP ready after ${i} attempt(s)"
               exit 0
             fi
@@ -140,6 +140,10 @@ jobs:
           PDP_API_KEY: ${{ env.ENV_API_KEY }}
           PERMIT_API_KEY: ${{ env.ENV_API_KEY }}
           API_TIER: prod
+          # Force IPv4: Node resolves `localhost` to ::1 first, but the runner's
+          # Docker IPv6 publish refuses connections, so PDP checks would hit
+          # ECONNREFUSED. 127.0.0.1 pins the working IPv4 path.
+          PDP_URL: http://127.0.0.1:7766
         run: yarn test:ci:full
 
       # Dump PDP diagnostics whenever the backend path fails. The SDK reports
