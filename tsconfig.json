@@ -9,6 +9,7 @@
     "inlineSourceMap": true,
     "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
     "resolveJsonModule": true /* Include modules imported with .json extension. */,
+    "skipLibCheck": true /* Skip type checking of declaration files (required: Vitest 4 ships .d.ts using newer lib/Vite types incompatible with this project's es2017 target). */,
     "strict": true /* Enable all strict type-checking options. */,
     /* Strict Type-Checking Options */
     // "noImplicitAny": true /* Raise error on expressions and declarations with an implied 'any' type. */,
@@ -35,7 +36,8 @@
       "DOM"
     ],
     "types": [
-      "node"
+      "node",
+      "vitest/globals"
     ],
     "typeRoots": [
       "node_modules/@types",

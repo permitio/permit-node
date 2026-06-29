@@ -1,42 +1,36 @@
-import test from 'ava';
+import * as path from 'node:path';
 
-test('CommonJS require() import works correctly', async (t) => {
-  // This test will be compiled to JS and can use require() at runtime
+// Validate the BUILT CommonJS artifact (build/index.js) the package actually
+// ships, not the TypeScript source. This is a packaging-regression guard.
+// __dirname is provided by Vitest at runtime and by @types/node under the
+// project's commonjs module setting, avoiding import.meta (unsupported here).
+const builtCjsPath = path.resolve(__dirname, '../../../build/index.js');
+
+it('CommonJS require() of the built bundle exposes Permit', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { Permit } = require('../../index');
+  const built = require(builtCjsPath);
 
-  t.is(typeof Permit, 'function');
-  t.is(Permit.name, 'Permit');
+  expect(typeof built.Permit).toBe('function');
+  expect(built.Permit.name).toBe('Permit');
 
-  // Test creating a Permit instance
-  const permit = new Permit({
+  const permit = new built.Permit({
     token: 'test-token',
     pdp: 'http://localhost:7766',
   });
 
-  t.truthy(permit);
-  t.is(typeof permit.check, 'function');
-  t.is(typeof permit.api, 'object');
-  t.is(typeof permit.elements, 'object');
-  t.is(typeof permit.config, 'object');
+  expect(permit).toBeTruthy();
+  expect(typeof permit.check).toBe('function');
+  expect(typeof permit.api).toBe('object');
+  expect(typeof permit.elements).toBe('object');
+  expect(typeof permit.config).toBe('object');
 });
 
-test('CommonJS require() imports individual modules', async (t) => {
+it('CommonJS require() of the built bundle exposes the public API classes', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { Enforcer } = require('../../enforcement/enforcer');
+  const built = require(builtCjsPath);
 
-  t.is(typeof Enforcer, 'function');
-  t.is(Enforcer.name, '_Enforcer');
-});
-
-test('CommonJS require() imports API modules', async (t) => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { ApiClient } = require('../../api/api-client');
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { ElementsClient } = require('../../api/elements');
-
-  t.is(typeof ApiClient, 'function');
-  t.is(ApiClient.name, 'ApiClient');
-  t.is(typeof ElementsClient, 'function');
-  t.is(ElementsClient.name, 'ElementsClient');
+  expect(typeof built.ApiClient).toBe('function');
+  expect(built.ApiClient.name).toBe('ApiClient');
+  expect(typeof built.ElementsClient).toBe('function');
+  expect(built.ElementsClient.name).toBe('ElementsClient');
 });
