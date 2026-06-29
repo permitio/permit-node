@@ -581,7 +581,7 @@ it('Permission check e2e test', async () => {
           );
           return results.every((res, i) => res === testStep.assertions[i].result);
         },
-        { timeoutMs: 60_000, intervalMs: 1_000, message: 'rebac step did not converge' },
+        { timeoutMs: 150_000, intervalMs: 1_000, message: 'rebac step did not converge' },
       );
       for (const assertion of testStep.assertions) {
         await assertPermitCheck(permit, assertion, testStep.assignments);

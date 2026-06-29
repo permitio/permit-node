@@ -5,6 +5,11 @@ import { UserRead } from '../../openapi';
 import { createTestClient, printBreak } from '../fixtures';
 import { waitForCheck } from '../helpers/wait-for';
 
+// Direct-OPA (`useOpa`) checks require a reachable standalone OPA (port 8181),
+// which the dockerized PDP in CI does not expose. Opt in by setting
+// PERMIT_RUN_OPA_E2E=true when running against an OPA-exposed setup.
+const RUN_OPA_E2E = process.env.PERMIT_RUN_OPA_E2E === 'true';
+
 let permit: IPermitClient;
 let logger: pino.Logger;
 
@@ -199,51 +204,55 @@ it('Permission check e2e test', async () => {
 
     printBreak();
 
-    // use opa directly
-    expect(
-      await permit.check(
-        'auth0|elon',
-        'read',
-        // a 'document' belonging to 'tesla' (ownership based on tenant)
-        { type: 'document', tenant: 'tesla', attributes: resourceAttributes },
-        {},
-        { useOpa: true },
-      ),
-    ).toBe(true);
+    if (RUN_OPA_E2E) {
+      // use opa directly
+      expect(
+        await permit.check(
+          'auth0|elon',
+          'read',
+          // a 'document' belonging to 'tesla' (ownership based on tenant)
+          { type: 'document', tenant: 'tesla', attributes: resourceAttributes },
+          {},
+          { useOpa: true },
+        ),
+      ).toBe(true);
 
-    printBreak();
+      printBreak();
 
-    expect(
-      await permit.check(
-        'auth0|elon',
-        'control the usa',
-        // a 'document' belonging to 'tesla' (ownership based on tenant)
-        { type: 'document', tenant: 'tesla', attributes: resourceAttributes },
-        {},
-        { useOpa: true },
-      ),
-    ).toBe(false);
+      expect(
+        await permit.check(
+          'auth0|elon',
+          'control the usa',
+          // a 'document' belonging to 'tesla' (ownership based on tenant)
+          { type: 'document', tenant: 'tesla', attributes: resourceAttributes },
+          {},
+          { useOpa: true },
+        ),
+      ).toBe(false);
 
-    printBreak();
+      printBreak();
+    }
 
     logger.info('testing positive permission check with complete user object');
     expect(await permit.check(user, 'read', { type: document.key, tenant: tenant.key })).toBe(true);
 
     printBreak();
 
-    // use opa directly
-    logger.info('testing positive permission check with complete user object');
-    expect(
-      await permit.check(
-        user,
-        'read',
-        { type: document.key, tenant: tenant.key },
-        {},
-        { useOpa: true },
-      ),
-    ).toBe(true);
+    if (RUN_OPA_E2E) {
+      // use opa directly
+      logger.info('testing positive permission check with complete user object');
+      expect(
+        await permit.check(
+          user,
+          'read',
+          { type: document.key, tenant: tenant.key },
+          {},
+          { useOpa: true },
+        ),
+      ).toBe(true);
 
-    printBreak();
+      printBreak();
+    }
 
     // negative permission check (will be false because a viewer cannot create a document)
     logger.info('testing negative permission check');
@@ -303,18 +312,20 @@ it('Permission check e2e test', async () => {
     expect(await permit.check(user, 'create', { type: document.key, tenant: tenant.key })).toBe(
       true,
     );
-    //use opa directly
-    expect(
-      await permit.check(
-        user,
-        'create',
-        { type: document.key, tenant: tenant.key },
-        {},
-        { useOpa: true },
-      ),
-    ).toBe(true);
+    if (RUN_OPA_E2E) {
+      //use opa directly
+      expect(
+        await permit.check(
+          user,
+          'create',
+          { type: document.key, tenant: tenant.key },
+          {},
+          { useOpa: true },
+        ),
+      ).toBe(true);
 
-    printBreak();
+      printBreak();
+    }
   } finally {
     // Leave the shared env empty for the next spec. Each delete is tolerant so a
     // missing entity (e.g. the body threw before creating it) neither throws nor
