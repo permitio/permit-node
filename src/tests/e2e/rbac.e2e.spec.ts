@@ -3,7 +3,7 @@ import pino from 'pino';
 import { IPermitClient } from '../../index';
 import { UserRead } from '../../openapi';
 import { createTestClient, printBreak } from '../fixtures';
-import { waitForCheck } from '../helpers/wait-for';
+import { waitFor, waitForCheck } from '../helpers/wait-for';
 
 // Direct-OPA (`useOpa`) checks require a reachable standalone OPA (port 8181),
 // which the dockerized PDP in CI does not expose. Opt in by setting
@@ -234,7 +234,13 @@ it('Permission check e2e test', async () => {
     }
 
     logger.info('testing positive permission check with complete user object');
-    expect(await permit.check(user, 'read', { type: document.key, tenant: tenant.key })).toBe(true);
+    // Gate on the complete-user object's read propagating before the multi-result
+    // reads below (bulkCheck / getUserPermissions), which query separate PDP
+    // endpoints that can lag behind a single check.
+    await waitForCheck(
+      () => permit.check(user, 'read', { type: document.key, tenant: tenant.key }),
+      true,
+    );
 
     printBreak();
 
@@ -263,15 +269,27 @@ it('Permission check e2e test', async () => {
     printBreak();
 
     logger.info('testing bulk check permissions');
-    const decisions = await permit.bulkCheck([
+    const bulkQueries = [
       { user: user, action: 'read', resource: { type: document.key, tenant: tenant.key } },
       { user: user, action: 'create', resource: { type: document.key, tenant: tenant.key } },
-    ]);
+    ];
+    await waitFor(
+      async () => {
+        const d = await permit.bulkCheck(bulkQueries);
+        return d.length === 2 && d[0] === true && d[1] === false;
+      },
+      { timeoutMs: 60_000, intervalMs: 1_000, message: 'bulkCheck did not converge' },
+    );
+    const decisions = await permit.bulkCheck(bulkQueries);
     expect(decisions.length === 2).toBe(true);
     expect(decisions[0]).toBe(true);
     expect(decisions[1]).toBe(false);
 
     logger.info('testing get user permissions matches assigned roles permissions');
+    await waitFor(
+      async () => `__tenant:${tenant.key}` in (await permit.getUserPermissions(user.key)),
+      { timeoutMs: 60_000, intervalMs: 1_000, message: 'getUserPermissions did not converge' },
+    );
     const userPermissions = await permit.getUserPermissions(user.key);
     expect(`__tenant:${tenant.key}` in userPermissions).toBe(true);
     viewer.permissions?.forEach((permission) => {
