@@ -38,3 +38,28 @@ jobs:
     
     - name: Run all tests
       run: yarn test
+
+  codegen-guard:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'yarn'
+
+    - name: Setup Java (required by openapi-generator-cli)
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: '11'
+
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile
+
+    - name: Codegen type-shape guard (regenerate from pinned fixture; fail on all-any)
+      run: node scripts/check-codegen.mjs
