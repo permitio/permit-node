@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 import pino from 'pino';
 import { TestContext } from 'vitest';
 
@@ -24,7 +26,8 @@ beforeAll(() => {
 
 // The org-level test reuses one project across runs, creating it when it is missing. The
 // environments are unique to this run, so runs sharing the project never see each other's.
-const RUN_ID = `${process.pid}-${Date.now()}`;
+// CI's Node legs start together on separate runners, where pid and start time can match.
+const RUN_ID = `${process.pid}-${Date.now()}-${randomUUID().slice(0, 8)}`;
 const TEST_PROJECT: ProjectCreate = { key: 'test-node-proj', name: 'New Node Project' };
 const CREATED_ENVIRONMENTS: EnvironmentCreate[] = [
   { key: `node-env-${RUN_ID}`, name: `Node Env ${RUN_ID}` },
