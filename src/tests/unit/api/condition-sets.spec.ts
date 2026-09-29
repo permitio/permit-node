@@ -24,7 +24,7 @@ describe('ConditionSetsApi (unit)', () => {
       await permit.api.conditionSets.list();
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       // page/per_page are serialized into the URL query string (values are strings).
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
     });
@@ -35,6 +35,7 @@ describe('ConditionSetsApi (unit)', () => {
       await permit.api.conditionSets.list({ page: 3, perPage: 25 });
 
       expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '3', per_page: '25' });
     });
   });
@@ -46,7 +47,7 @@ describe('ConditionSetsApi (unit)', () => {
       await permit.api.conditionSets.get('us-employees');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/us-employees`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/us-employees`);
     });
 
     it('getByKey is an alias for get', async () => {
@@ -55,7 +56,7 @@ describe('ConditionSetsApi (unit)', () => {
       await permit.api.conditionSets.getByKey('us-employees');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/us-employees`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/us-employees`);
     });
 
     it('getById is an alias for get', async () => {
@@ -64,7 +65,7 @@ describe('ConditionSetsApi (unit)', () => {
       await permit.api.conditionSets.getById('set-1');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/set-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/set-1`);
     });
   });
 
@@ -81,7 +82,7 @@ describe('ConditionSetsApi (unit)', () => {
       await permit.api.conditionSets.create(payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
 
@@ -98,7 +99,7 @@ describe('ConditionSetsApi (unit)', () => {
       await permit.api.conditionSets.create(payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -114,7 +115,7 @@ describe('ConditionSetsApi (unit)', () => {
       await permit.api.conditionSets.update('us-employees', body);
 
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${COLLECTION}/us-employees`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/us-employees`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -126,7 +127,7 @@ describe('ConditionSetsApi (unit)', () => {
       await permit.api.conditionSets.delete('us-employees');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/us-employees`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/us-employees`);
     });
   });
 

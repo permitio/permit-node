@@ -31,7 +31,7 @@ describe('ResourceRolesApi (unit)', () => {
       await permit.api.resourceRoles.list({ resourceKey: RESOURCE });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
     });
 
@@ -41,7 +41,7 @@ describe('ResourceRolesApi (unit)', () => {
       await permit.api.resourceRoles.list({ resourceKey: RESOURCE, page: 2, perPage: 10 });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '2', per_page: '10' });
     });
   });
@@ -53,7 +53,7 @@ describe('ResourceRolesApi (unit)', () => {
       await permit.api.resourceRoles.get(RESOURCE, 'editor');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/editor`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/editor`);
     });
 
     it('getByKey is an alias for get', async () => {
@@ -62,7 +62,7 @@ describe('ResourceRolesApi (unit)', () => {
       await permit.api.resourceRoles.getByKey(RESOURCE, 'editor');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/editor`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/editor`);
     });
 
     it('getById is an alias for get', async () => {
@@ -71,7 +71,7 @@ describe('ResourceRolesApi (unit)', () => {
       await permit.api.resourceRoles.getById(RESOURCE, 'role-1');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/role-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/role-1`);
     });
   });
 
@@ -88,7 +88,7 @@ describe('ResourceRolesApi (unit)', () => {
       await permit.api.resourceRoles.create(RESOURCE, payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -101,7 +101,7 @@ describe('ResourceRolesApi (unit)', () => {
       await permit.api.resourceRoles.update(RESOURCE, 'editor', body);
 
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${COLLECTION}/editor`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/editor`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -113,7 +113,7 @@ describe('ResourceRolesApi (unit)', () => {
       await permit.api.resourceRoles.delete(RESOURCE, 'editor');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/editor`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/editor`);
     });
   });
 
@@ -125,7 +125,7 @@ describe('ResourceRolesApi (unit)', () => {
       await permit.api.resourceRoles.assignPermissions(RESOURCE, 'editor', permissions);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(`${COLLECTION}/editor/permissions`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/editor/permissions`);
       expect(rest.last?.data).toEqual({ permissions });
     });
   });
@@ -138,7 +138,7 @@ describe('ResourceRolesApi (unit)', () => {
       await permit.api.resourceRoles.removePermissions(RESOURCE, 'editor', permissions);
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/editor/permissions`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/editor/permissions`);
       expect(rest.last?.data).toEqual({ permissions });
     });
   });
@@ -162,7 +162,7 @@ describe('ResourceRolesApi (unit)', () => {
         await permit.api.resourceRoles.createRoleDerivation(RESOURCE, 'editor', rule);
 
         expect(rest.last?.method).toBe('POST');
-        expect(rest.last?.url).toContain(DERIVATION);
+        expect(rest.last?.path).toBe(DERIVATION);
         expect(rest.last?.data).toEqual(rule);
       });
 
@@ -202,7 +202,7 @@ describe('ResourceRolesApi (unit)', () => {
         await permit.api.resourceRoles.deleteRoleDerivation(RESOURCE, 'editor', rule);
 
         expect(rest.last?.method).toBe('DELETE');
-        expect(rest.last?.url).toContain(DERIVATION);
+        expect(rest.last?.path).toBe(DERIVATION);
         expect(rest.last?.data).toEqual(rule);
       });
 
@@ -233,7 +233,7 @@ describe('ResourceRolesApi (unit)', () => {
         );
 
         expect(rest.last?.method).toBe('PUT');
-        expect(rest.last?.url).toContain(`${DERIVATION}/conditions`);
+        expect(rest.last?.path).toBe(`${DERIVATION}/conditions`);
         expect(rest.last?.data).toEqual(conditions);
       });
 

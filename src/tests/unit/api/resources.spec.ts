@@ -24,7 +24,7 @@ describe('ResourcesApi (unit)', () => {
       await permit.api.resources.list();
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       // page/per_page are serialized into the URL query string (values are strings).
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
       // includeTotalCount is omitted when not requested.
@@ -37,6 +37,7 @@ describe('ResourcesApi (unit)', () => {
       await permit.api.resources.list({ page: 2, perPage: 5, includeTotalCount: true });
 
       expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({
         page: '2',
         per_page: '5',
@@ -52,7 +53,7 @@ describe('ResourcesApi (unit)', () => {
       await permit.api.resources.get('doc');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/doc`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/doc`);
     });
 
     it('getByKey is an alias for get', async () => {
@@ -61,7 +62,7 @@ describe('ResourcesApi (unit)', () => {
       await permit.api.resources.getByKey('doc');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/doc`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/doc`);
     });
 
     it('getById is an alias for get', async () => {
@@ -70,7 +71,15 @@ describe('ResourcesApi (unit)', () => {
       await permit.api.resources.getById('res-1');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/res-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/res-1`);
+    });
+
+    it('percent-encodes a key that is not URL-safe', async () => {
+      rest.resolveWith({ key: 'folder/doc #1' });
+
+      await permit.api.resources.get('folder/doc #1');
+
+      expect(rest.last?.path).toBe(`${COLLECTION}/folder%2Fdoc%20%231`);
     });
   });
 
@@ -87,7 +96,7 @@ describe('ResourcesApi (unit)', () => {
       await permit.api.resources.create(payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -100,7 +109,7 @@ describe('ResourcesApi (unit)', () => {
       await permit.api.resources.update('doc', body);
 
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${COLLECTION}/doc`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/doc`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -113,7 +122,7 @@ describe('ResourcesApi (unit)', () => {
       await permit.api.resources.replace('doc', body);
 
       expect(rest.last?.method).toBe('PUT');
-      expect(rest.last?.url).toContain(`${COLLECTION}/doc`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/doc`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -125,7 +134,7 @@ describe('ResourcesApi (unit)', () => {
       await permit.api.resources.delete('doc');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/doc`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/doc`);
     });
   });
 

@@ -28,7 +28,7 @@ describe('EnvironmentsApi (unit)', () => {
       await permit.api.environments.list({ projectKey: PROJECT });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
     });
 
@@ -38,6 +38,7 @@ describe('EnvironmentsApi (unit)', () => {
       await permit.api.environments.list({ projectKey: PROJECT, page: 2, perPage: 10 });
 
       expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '2', per_page: '10' });
     });
   });
@@ -49,7 +50,7 @@ describe('EnvironmentsApi (unit)', () => {
       await permit.api.environments.get(PROJECT, ENV);
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(RESOURCE);
+      expect(rest.last?.path).toBe(RESOURCE);
     });
 
     it('getByKey is an alias for get', async () => {
@@ -58,7 +59,7 @@ describe('EnvironmentsApi (unit)', () => {
       await permit.api.environments.getByKey(PROJECT, ENV);
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(RESOURCE);
+      expect(rest.last?.path).toBe(RESOURCE);
     });
 
     it('getById is an alias for get', async () => {
@@ -67,7 +68,7 @@ describe('EnvironmentsApi (unit)', () => {
       await permit.api.environments.getById(PROJECT, ENV);
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(RESOURCE);
+      expect(rest.last?.path).toBe(RESOURCE);
     });
   });
 
@@ -78,7 +79,7 @@ describe('EnvironmentsApi (unit)', () => {
       await permit.api.environments.getStats(PROJECT, ENV);
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${RESOURCE}/stats`);
+      expect(rest.last?.path).toBe(`${RESOURCE}/stats`);
     });
   });
 
@@ -89,7 +90,7 @@ describe('EnvironmentsApi (unit)', () => {
       await permit.api.environments.getApiKey(PROJECT, ENV);
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`/v2/api-key/${PROJECT}/${ENV}`);
+      expect(rest.last?.path).toBe(`/v2/api-key/${PROJECT}/${ENV}`);
     });
   });
 
@@ -105,7 +106,7 @@ describe('EnvironmentsApi (unit)', () => {
       await permit.api.environments.create(PROJECT, payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -118,7 +119,7 @@ describe('EnvironmentsApi (unit)', () => {
       await permit.api.environments.update(PROJECT, ENV, body);
 
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(RESOURCE);
+      expect(rest.last?.path).toBe(RESOURCE);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -134,7 +135,7 @@ describe('EnvironmentsApi (unit)', () => {
       await permit.api.environments.copy(PROJECT, ENV, copyParams);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(`${RESOURCE}/copy`);
+      expect(rest.last?.path).toBe(`${RESOURCE}/copy`);
       expect(rest.last?.data).toEqual(copyParams);
     });
   });
@@ -146,7 +147,7 @@ describe('EnvironmentsApi (unit)', () => {
       await permit.api.environments.delete(PROJECT, ENV);
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(RESOURCE);
+      expect(rest.last?.path).toBe(RESOURCE);
     });
   });
 

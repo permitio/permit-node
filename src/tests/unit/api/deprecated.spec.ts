@@ -34,7 +34,7 @@ describe('DeprecatedApiClient (unit)', () => {
       const users = await permit.api.listUsers();
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${FACTS}/users`);
+      expect(rest.last?.path).toBe(`${FACTS}/users`);
       // listUsers returns response.data.data (the inner array), not the envelope.
       expect(users).toEqual([{ key: 'u1' }]);
     });
@@ -45,7 +45,7 @@ describe('DeprecatedApiClient (unit)', () => {
       const user = await permit.api.getUser('u1');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${FACTS}/users/u1`);
+      expect(rest.last?.path).toBe(`${FACTS}/users/u1`);
       expect(user).toEqual({ key: 'u1' });
     });
 
@@ -55,7 +55,7 @@ describe('DeprecatedApiClient (unit)', () => {
       await permit.api.listConditionSets(ConditionSetType.Userset, 2, 10);
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${SCHEMA}/condition_sets`);
+      expect(rest.last?.path).toBe(`${SCHEMA}/condition_sets`);
       expect(rest.last?.params).toMatchObject({ type: 'userset', page: '2', per_page: '10' });
     });
   });
@@ -68,7 +68,7 @@ describe('DeprecatedApiClient (unit)', () => {
       await permit.api.createUser(payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(`${FACTS}/users`);
+      expect(rest.last?.path).toBe(`${FACTS}/users`);
       expect(rest.last?.data).toEqual(payload);
     });
 
@@ -83,7 +83,7 @@ describe('DeprecatedApiClient (unit)', () => {
       await permit.api.createResource(payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(`${SCHEMA}/resources`);
+      expect(rest.last?.path).toBe(`${SCHEMA}/resources`);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -96,7 +96,7 @@ describe('DeprecatedApiClient (unit)', () => {
       await permit.api.updateTenant('t1', body);
 
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${FACTS}/tenants/t1`);
+      expect(rest.last?.path).toBe(`${FACTS}/tenants/t1`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -109,7 +109,7 @@ describe('DeprecatedApiClient (unit)', () => {
       await permit.api.assignRole(body);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(`${FACTS}/role_assignments`);
+      expect(rest.last?.path).toBe(`${FACTS}/role_assignments`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -121,7 +121,7 @@ describe('DeprecatedApiClient (unit)', () => {
       const response = await permit.api.deleteUser('u1');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${FACTS}/users/u1`);
+      expect(rest.last?.path).toBe(`${FACTS}/users/u1`);
       // delete-style wrappers return the whole AxiosResponse, not the unwrapped body.
       expect(response.status).toBe(204);
       expect(response.data).toEqual({});

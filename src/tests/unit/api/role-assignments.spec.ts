@@ -1,7 +1,7 @@
 import { PermitApiError } from '../../../api/base';
 import { RoleAssignmentCreate, RoleAssignmentRemove } from '../../../api/role-assignments';
 import { Permit } from '../../../index';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import { createMockPermit, MOCK_PDP_ORIGIN, MockTransport } from '../../helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // role-assignments URL is scoped under `/v2/facts/{proj}/{env}/role_assignments`.
@@ -35,7 +35,7 @@ describe('RoleAssignmentsApi (unit)', () => {
       await permit.api.roleAssignments.list({});
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       // page/per_page are always sent (SDK defaults 1/100) and serialized as strings.
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
       // Optional flags are omitted unless requested.
@@ -54,6 +54,7 @@ describe('RoleAssignmentsApi (unit)', () => {
       });
 
       expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({
         user: 'user-1',
         role: 'admin',
@@ -67,6 +68,7 @@ describe('RoleAssignmentsApi (unit)', () => {
 
       await permit.api.roleAssignments.list({ page: 2, perPage: 5, includeTotalCount: true });
 
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({
         page: '2',
         per_page: '5',
@@ -79,6 +81,7 @@ describe('RoleAssignmentsApi (unit)', () => {
 
       await permit.api.roleAssignments.list({ detailed: true });
 
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ detailed: 'true' });
     });
   });
@@ -96,8 +99,7 @@ describe('RoleAssignmentsApi (unit)', () => {
       await permit.api.roleAssignments.assign(payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
-      expect(rest.last?.url).not.toContain('/bulk');
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -115,8 +117,7 @@ describe('RoleAssignmentsApi (unit)', () => {
       await permit.api.roleAssignments.unassign(payload);
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(COLLECTION);
-      expect(rest.last?.url).not.toContain('/bulk');
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -133,7 +134,7 @@ describe('RoleAssignmentsApi (unit)', () => {
       await permit.api.roleAssignments.bulkAssign(payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(BULK);
+      expect(rest.last?.path).toBe(BULK);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -150,7 +151,7 @@ describe('RoleAssignmentsApi (unit)', () => {
       await permit.api.roleAssignments.bulkUnassign(payload);
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(BULK);
+      expect(rest.last?.path).toBe(BULK);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -171,8 +172,8 @@ describe('RoleAssignmentsApi (unit)', () => {
       await synced.assign({ user: 'user-1', role: 'admin', tenant: 'acme' });
 
       expect(proxied.rest.last?.method).toBe('POST');
-      expect(proxied.rest.last?.url).toContain('http://localhost:7766');
-      expect(proxied.rest.last?.url).toContain(COLLECTION);
+      expect(proxied.rest.last?.origin).toBe(MOCK_PDP_ORIGIN);
+      expect(proxied.rest.last?.path).toBe(COLLECTION);
     });
 
     it('is a no-op without proxyFactsViaPdp (returns self, no wait header)', () => {

@@ -25,7 +25,7 @@ describe('ResourceRelationsApi (unit)', () => {
       await permit.api.resourceRelations.list({ resourceKey: RESOURCE });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       // The SDK defaults page/perPage, so they are always serialized as strings.
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
     });
@@ -36,6 +36,7 @@ describe('ResourceRelationsApi (unit)', () => {
       await permit.api.resourceRelations.list({ resourceKey: RESOURCE, page: 3, perPage: 25 });
 
       expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '3', per_page: '25' });
     });
   });
@@ -47,7 +48,7 @@ describe('ResourceRelationsApi (unit)', () => {
       await permit.api.resourceRelations.get(RESOURCE, 'parent');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/parent`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/parent`);
     });
 
     it('getByKey is an alias for get', async () => {
@@ -56,7 +57,7 @@ describe('ResourceRelationsApi (unit)', () => {
       await permit.api.resourceRelations.getByKey(RESOURCE, 'parent');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/parent`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/parent`);
     });
 
     it('getById is an alias for get', async () => {
@@ -65,7 +66,7 @@ describe('ResourceRelationsApi (unit)', () => {
       await permit.api.resourceRelations.getById(RESOURCE, 'rel-1');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/rel-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/rel-1`);
     });
   });
 
@@ -82,7 +83,7 @@ describe('ResourceRelationsApi (unit)', () => {
       await permit.api.resourceRelations.create(RESOURCE, payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -94,7 +95,7 @@ describe('ResourceRelationsApi (unit)', () => {
       await permit.api.resourceRelations.delete(RESOURCE, 'parent');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/parent`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/parent`);
     });
   });
 

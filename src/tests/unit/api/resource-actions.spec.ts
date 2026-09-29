@@ -25,7 +25,7 @@ describe('ResourceActionsApi (unit)', () => {
       await permit.api.resourceActions.list({ resourceKey: RESOURCE });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
     });
 
@@ -35,7 +35,7 @@ describe('ResourceActionsApi (unit)', () => {
       await permit.api.resourceActions.list({ resourceKey: RESOURCE, page: 3, perPage: 7 });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '3', per_page: '7' });
     });
   });
@@ -47,7 +47,7 @@ describe('ResourceActionsApi (unit)', () => {
       await permit.api.resourceActions.get(RESOURCE, 'read');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/read`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/read`);
     });
 
     it('getByKey is an alias for get', async () => {
@@ -56,7 +56,7 @@ describe('ResourceActionsApi (unit)', () => {
       await permit.api.resourceActions.getByKey(RESOURCE, 'read');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/read`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/read`);
     });
 
     it('getById is an alias for get', async () => {
@@ -65,7 +65,7 @@ describe('ResourceActionsApi (unit)', () => {
       await permit.api.resourceActions.getById(RESOURCE, 'action-1');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/action-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/action-1`);
     });
   });
 
@@ -78,7 +78,7 @@ describe('ResourceActionsApi (unit)', () => {
       await permit.api.resourceActions.create(RESOURCE, payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -91,7 +91,7 @@ describe('ResourceActionsApi (unit)', () => {
       await permit.api.resourceActions.update(RESOURCE, 'read', body);
 
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${COLLECTION}/read`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/read`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -103,7 +103,7 @@ describe('ResourceActionsApi (unit)', () => {
       await permit.api.resourceActions.delete(RESOURCE, 'read');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/read`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/read`);
     });
   });
 

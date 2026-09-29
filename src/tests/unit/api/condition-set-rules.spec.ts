@@ -28,7 +28,7 @@ describe('ConditionSetRulesApi (unit)', () => {
       });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       // userSetKey/permissionKey/resourceSetKey map to snake_case wire params.
       expect(rest.last?.params).toMatchObject({
         user_set: 'us-employees',
@@ -50,6 +50,7 @@ describe('ConditionSetRulesApi (unit)', () => {
         perPage: 10,
       });
 
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '2', per_page: '10' });
     });
   });
@@ -68,7 +69,7 @@ describe('ConditionSetRulesApi (unit)', () => {
       await permit.api.conditionSetRules.create(rule);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(rule);
     });
   });
@@ -86,7 +87,7 @@ describe('ConditionSetRulesApi (unit)', () => {
       await permit.api.conditionSetRules.delete(rule);
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(rule);
     });
   });

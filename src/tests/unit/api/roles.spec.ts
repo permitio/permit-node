@@ -24,7 +24,7 @@ describe('RolesApi (unit)', () => {
       await permit.api.roles.list();
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
       expect(rest.last?.params).not.toHaveProperty('include_total_count');
     });
@@ -35,6 +35,7 @@ describe('RolesApi (unit)', () => {
       await permit.api.roles.list({ page: 3, perPage: 25, includeTotalCount: true });
 
       expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({
         page: '3',
         per_page: '25',
@@ -50,7 +51,7 @@ describe('RolesApi (unit)', () => {
       await permit.api.roles.get('admin');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/admin`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/admin`);
     });
 
     it('getByKey is an alias for get', async () => {
@@ -59,7 +60,7 @@ describe('RolesApi (unit)', () => {
       await permit.api.roles.getByKey('admin');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/admin`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/admin`);
     });
 
     it('getById is an alias for get', async () => {
@@ -68,7 +69,7 @@ describe('RolesApi (unit)', () => {
       await permit.api.roles.getById('role-1');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/role-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/role-1`);
     });
   });
 
@@ -85,7 +86,7 @@ describe('RolesApi (unit)', () => {
       await permit.api.roles.create(payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -98,7 +99,7 @@ describe('RolesApi (unit)', () => {
       await permit.api.roles.update('admin', body);
 
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${COLLECTION}/admin`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/admin`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -110,7 +111,7 @@ describe('RolesApi (unit)', () => {
       await permit.api.roles.delete('admin');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/admin`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/admin`);
     });
   });
 
@@ -122,7 +123,7 @@ describe('RolesApi (unit)', () => {
       await permit.api.roles.assignPermissions('admin', permissions);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(`${COLLECTION}/admin/permissions`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/admin/permissions`);
       expect(rest.last?.data).toEqual({ permissions });
     });
   });
@@ -135,7 +136,7 @@ describe('RolesApi (unit)', () => {
       await permit.api.roles.removePermissions('admin', permissions);
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/admin/permissions`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/admin/permissions`);
       expect(rest.last?.data).toEqual({ permissions });
     });
   });

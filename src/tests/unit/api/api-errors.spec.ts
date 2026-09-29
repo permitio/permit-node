@@ -85,6 +85,12 @@ function pinoLine(error: unknown): string {
   return lines.join('');
 }
 
+/** The pathname of an absolute request URL kept on an error. */
+function pathOf(url: string | undefined): string {
+  assert(url, 'Expected the error to keep the request URL');
+  return new URL(url).pathname;
+}
+
 function assertNoSecrets(error: unknown): void {
   const renderings = {
     inspect: inspect(error),
@@ -121,7 +127,7 @@ describe('REST API errors (unit)', () => {
       });
       const config = error.originalError.config;
       expect(config?.method).toBe('get');
-      expect(String(config?.url).endsWith(USER_PATH)).toBe(true);
+      expect(pathOf(config?.url)).toBe(USER_PATH);
       expect(config?.headers.Authorization).toBe('[REDACTED]');
       expect(config?.headers['X-Custom-Secret']).toBe('[REDACTED]');
       expect(String(config?.headers['X-Permit-SDK-Version'])).toMatch(/^node:/);
@@ -134,7 +140,7 @@ describe('REST API errors (unit)', () => {
       expect(logged.message).toBe(body.message);
       expect(logged.originalError.status).toBe(status);
       expect(logged.originalError.config.method).toBe('get');
-      expect(String(logged.originalError.config.url).endsWith(USER_PATH)).toBe(true);
+      expect(pathOf(logged.originalError.config.url)).toBe(USER_PATH);
       const serialized = JSON.parse(JSON.stringify(error)) as SerializedApiError;
       expect(serialized.originalError.status).toBe(status);
       expect(serialized.originalError.config.method).toBe('get');
@@ -150,7 +156,7 @@ describe('REST API errors (unit)', () => {
       expect(error.response?.status).toBe(status);
       expect(error.response?.data).toStrictEqual(body);
       expect(error.config?.method).toBe('get');
-      expect(String(error.config?.url).endsWith(USER_PATH)).toBe(true);
+      expect(pathOf(error.config?.url)).toBe(USER_PATH);
     });
   }
 
@@ -162,6 +168,6 @@ describe('REST API errors (unit)', () => {
     assertNoSecrets(error);
     expect(error.response).toBeUndefined();
     expect(error.originalError.config?.method).toBe('get');
-    expect(String(error.originalError.config?.url).endsWith(USER_PATH)).toBe(true);
+    expect(pathOf(error.originalError.config?.url)).toBe(USER_PATH);
   });
 });

@@ -6,7 +6,7 @@ import {
   UserUpdate,
 } from '../../../api/users';
 import { Permit } from '../../../index';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import { createMockPermit, MOCK_PDP_ORIGIN, MockTransport } from '../../helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // users URL is scoped under `/v2/facts/{proj}/{env}/users`.
@@ -31,7 +31,7 @@ describe('UsersApi (unit)', () => {
       await permit.api.users.list();
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(USERS);
+      expect(rest.last?.path).toBe(USERS);
       // Unlike resources.list, users.list does not inject default page/per_page.
       expect(rest.last?.params).not.toHaveProperty('page');
       expect(rest.last?.params).not.toHaveProperty('per_page');
@@ -43,7 +43,7 @@ describe('UsersApi (unit)', () => {
       await permit.api.users.list({ search: 'bob', role: 'admin', page: 2, perPage: 5 });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(USERS);
+      expect(rest.last?.path).toBe(USERS);
       expect(rest.last?.params).toMatchObject({
         search: 'bob',
         role: 'admin',
@@ -60,7 +60,7 @@ describe('UsersApi (unit)', () => {
       await permit.api.users.get('bob');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${USERS}/bob`);
+      expect(rest.last?.path).toBe(`${USERS}/bob`);
     });
 
     it('getByKey is an alias for get', async () => {
@@ -69,7 +69,7 @@ describe('UsersApi (unit)', () => {
       await permit.api.users.getByKey('bob');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${USERS}/bob`);
+      expect(rest.last?.path).toBe(`${USERS}/bob`);
     });
 
     it('getById is an alias for get', async () => {
@@ -78,7 +78,15 @@ describe('UsersApi (unit)', () => {
       await permit.api.users.getById('user-1');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${USERS}/user-1`);
+      expect(rest.last?.path).toBe(`${USERS}/user-1`);
+    });
+
+    it('percent-encodes an identity-provider user key in the path', async () => {
+      rest.resolveWith({ key: 'auth0|bob' });
+
+      await permit.api.users.get('auth0|bob');
+
+      expect(rest.last?.path).toBe(`${USERS}/auth0%7Cbob`);
     });
   });
 
@@ -95,7 +103,7 @@ describe('UsersApi (unit)', () => {
       await permit.api.users.create(payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(USERS);
+      expect(rest.last?.path).toBe(USERS);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -108,7 +116,7 @@ describe('UsersApi (unit)', () => {
       await permit.api.users.update('bob', body);
 
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${USERS}/bob`);
+      expect(rest.last?.path).toBe(`${USERS}/bob`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -122,7 +130,7 @@ describe('UsersApi (unit)', () => {
       await permit.api.users.sync(payload);
 
       expect(rest.last?.method).toBe('PUT');
-      expect(rest.last?.url).toContain(`${USERS}/bob`);
+      expect(rest.last?.path).toBe(`${USERS}/bob`);
       expect(rest.last?.data).toEqual(payload);
     });
 
@@ -152,7 +160,7 @@ describe('UsersApi (unit)', () => {
       await permit.api.users.delete('bob');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${USERS}/bob`);
+      expect(rest.last?.path).toBe(`${USERS}/bob`);
     });
   });
 
@@ -164,7 +172,7 @@ describe('UsersApi (unit)', () => {
       await permit.api.users.assignRole(assignment);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(ROLE_ASSIGNMENTS);
+      expect(rest.last?.path).toBe(ROLE_ASSIGNMENTS);
       expect(rest.last?.data).toEqual(assignment);
     });
 
@@ -175,7 +183,7 @@ describe('UsersApi (unit)', () => {
       await permit.api.users.unassignRole(removal);
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(ROLE_ASSIGNMENTS);
+      expect(rest.last?.path).toBe(ROLE_ASSIGNMENTS);
       expect(rest.last?.data).toEqual(removal);
     });
   });
@@ -187,7 +195,7 @@ describe('UsersApi (unit)', () => {
       await permit.api.users.getAssignedRoles({ user: 'bob' });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(ROLE_ASSIGNMENTS);
+      expect(rest.last?.path).toBe(ROLE_ASSIGNMENTS);
       expect(rest.last?.params).toMatchObject({
         user: 'bob',
         detailed: 'false',
@@ -203,6 +211,7 @@ describe('UsersApi (unit)', () => {
 
       await permit.api.users.getAssignedRoles({ user: 'bob', tenant: 'acme' });
 
+      expect(rest.last?.path).toBe(ROLE_ASSIGNMENTS);
       expect(rest.last?.params).toMatchObject({ user: 'bob', tenant: 'acme' });
     });
 
@@ -211,6 +220,7 @@ describe('UsersApi (unit)', () => {
 
       await permit.api.users.getAssignedRoles({ user: 'bob', detailed: true });
 
+      expect(rest.last?.path).toBe(ROLE_ASSIGNMENTS);
       expect(rest.last?.params).toMatchObject({ user: 'bob', detailed: 'true' });
     });
 
@@ -224,6 +234,7 @@ describe('UsersApi (unit)', () => {
         perPage: 20,
       });
 
+      expect(rest.last?.path).toBe(ROLE_ASSIGNMENTS);
       expect(rest.last?.params).toMatchObject({
         user: 'bob',
         include_total_count: 'true',
@@ -245,7 +256,7 @@ describe('UsersApi (unit)', () => {
       await permit.api.users.bulkUserCreate(users);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(BULK_USERS);
+      expect(rest.last?.path).toBe(BULK_USERS);
       expect(rest.last?.data).toEqual({ operations: users });
     });
 
@@ -255,7 +266,7 @@ describe('UsersApi (unit)', () => {
       await permit.api.users.bulkUserReplace(users);
 
       expect(rest.last?.method).toBe('PUT');
-      expect(rest.last?.url).toContain(BULK_USERS);
+      expect(rest.last?.path).toBe(BULK_USERS);
       expect(rest.last?.data).toEqual({ operations: users });
     });
 
@@ -265,7 +276,7 @@ describe('UsersApi (unit)', () => {
       await permit.api.users.bulkUserDelete(['bob', 'alice']);
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(BULK_USERS);
+      expect(rest.last?.path).toBe(BULK_USERS);
       expect(rest.last?.data).toEqual({ idents: ['bob', 'alice'] });
     });
   });
@@ -287,8 +298,8 @@ describe('UsersApi (unit)', () => {
       await synced.list();
 
       expect(proxied.rest.last?.method).toBe('GET');
-      expect(proxied.rest.last?.url).toContain('http://localhost:7766');
-      expect(proxied.rest.last?.url).toContain(USERS);
+      expect(proxied.rest.last?.origin).toBe(MOCK_PDP_ORIGIN);
+      expect(proxied.rest.last?.path).toBe(USERS);
     });
   });
 
@@ -299,8 +310,8 @@ describe('UsersApi (unit)', () => {
 
       await proxied.permit.api.users.get('bob');
 
-      expect(proxied.rest.last?.url).toContain('http://localhost:7766');
-      expect(proxied.rest.last?.url).toContain(`${USERS}/bob`);
+      expect(proxied.rest.last?.origin).toBe(MOCK_PDP_ORIGIN);
+      expect(proxied.rest.last?.path).toBe(`${USERS}/bob`);
     });
   });
 

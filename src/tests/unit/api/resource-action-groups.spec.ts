@@ -27,7 +27,7 @@ describe('ResourceActionGroupsApi (unit)', () => {
       await permit.api.actionGroups.list({ resourceKey: RESOURCE });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
     });
 
@@ -37,7 +37,7 @@ describe('ResourceActionGroupsApi (unit)', () => {
       await permit.api.actionGroups.list({ resourceKey: RESOURCE, page: 2, perPage: 10 });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '2', per_page: '10' });
     });
   });
@@ -49,7 +49,7 @@ describe('ResourceActionGroupsApi (unit)', () => {
       await permit.api.actionGroups.get(RESOURCE, 'editing');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/editing`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/editing`);
     });
 
     it('getByKey is an alias for get', async () => {
@@ -58,7 +58,7 @@ describe('ResourceActionGroupsApi (unit)', () => {
       await permit.api.actionGroups.getByKey(RESOURCE, 'editing');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/editing`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/editing`);
     });
 
     it('getById is an alias for get', async () => {
@@ -67,7 +67,7 @@ describe('ResourceActionGroupsApi (unit)', () => {
       await permit.api.actionGroups.getById(RESOURCE, 'group-1');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/group-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/group-1`);
     });
   });
 
@@ -84,7 +84,7 @@ describe('ResourceActionGroupsApi (unit)', () => {
       await permit.api.actionGroups.create(RESOURCE, payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -97,7 +97,7 @@ describe('ResourceActionGroupsApi (unit)', () => {
       await permit.api.actionGroups.update(RESOURCE, 'editing', body);
 
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${COLLECTION}/editing`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/editing`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -109,7 +109,7 @@ describe('ResourceActionGroupsApi (unit)', () => {
       await permit.api.actionGroups.delete(RESOURCE, 'editing');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/editing`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/editing`);
     });
   });
 

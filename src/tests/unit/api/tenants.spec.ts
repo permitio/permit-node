@@ -1,7 +1,12 @@
 import { PermitApiError } from '../../../api/base';
 import { TenantCreate, TenantUpdate } from '../../../api/tenants';
 import { Permit } from '../../../index';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import {
+  createMockPermit,
+  MOCK_API_ORIGIN,
+  MOCK_PDP_ORIGIN,
+  MockTransport,
+} from '../../helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // tenants URL is scoped under `/v2/facts/{proj}/{env}/tenants`. Tenants is a
@@ -25,7 +30,7 @@ describe('TenantsApi (unit)', () => {
       await permit.api.tenants.list();
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       // Unlike resources, tenants.list() forwards only the params it is given,
       // so page/per_page are absent when the caller omits them.
       expect(rest.last?.params).not.toHaveProperty('page');
@@ -38,7 +43,7 @@ describe('TenantsApi (unit)', () => {
       await permit.api.tenants.list({ page: 2, perPage: 5, search: 'acme' });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({
         page: '2',
         per_page: '5',
@@ -54,7 +59,7 @@ describe('TenantsApi (unit)', () => {
       await permit.api.tenants.listTenantUsers({ tenantKey: 't1' });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/t1/users`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/t1/users`);
       expect(rest.last?.params).not.toHaveProperty('page');
     });
 
@@ -70,7 +75,7 @@ describe('TenantsApi (unit)', () => {
       });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/t1/users`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/t1/users`);
       expect(rest.last?.params).toMatchObject({
         page: '3',
         per_page: '10',
@@ -87,7 +92,7 @@ describe('TenantsApi (unit)', () => {
       await permit.api.tenants.get('t1');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/t1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/t1`);
     });
 
     it('getByKey is an alias for get', async () => {
@@ -96,7 +101,7 @@ describe('TenantsApi (unit)', () => {
       await permit.api.tenants.getByKey('t1');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/t1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/t1`);
     });
 
     it('getById is an alias for get', async () => {
@@ -105,7 +110,7 @@ describe('TenantsApi (unit)', () => {
       await permit.api.tenants.getById('tenant-id');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/tenant-id`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/tenant-id`);
     });
   });
 
@@ -122,7 +127,7 @@ describe('TenantsApi (unit)', () => {
       await permit.api.tenants.create(payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -135,7 +140,7 @@ describe('TenantsApi (unit)', () => {
       await permit.api.tenants.update('t1', body);
 
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${COLLECTION}/t1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/t1`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -147,7 +152,7 @@ describe('TenantsApi (unit)', () => {
       await permit.api.tenants.delete('t1');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/t1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/t1`);
     });
   });
 
@@ -158,7 +163,7 @@ describe('TenantsApi (unit)', () => {
       await permit.api.tenants.deleteTenantUser('t1', 'u1');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/t1/users/u1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/t1/users/u1`);
     });
   });
 
@@ -170,7 +175,8 @@ describe('TenantsApi (unit)', () => {
 
       rest.resolveWith([]);
       await tenants.list();
-      expect(rest.last?.url).toContain('http://localhost:8000');
+      expect(rest.last?.origin).toBe(MOCK_API_ORIGIN);
+      expect(rest.last?.path).toBe(COLLECTION);
     });
 
     it('returns a distinct clone that dispatches to the PDP host when proxy is on', async () => {
@@ -182,7 +188,8 @@ describe('TenantsApi (unit)', () => {
 
       proxied.rest.resolveWith([]);
       await synced.list();
-      expect(proxied.rest.last?.url).toContain('http://localhost:7766/v2/facts');
+      expect(proxied.rest.last?.origin).toBe(MOCK_PDP_ORIGIN);
+      expect(proxied.rest.last?.path).toBe(COLLECTION);
     });
   });
 
@@ -194,7 +201,8 @@ describe('TenantsApi (unit)', () => {
       await proxied.permit.api.tenants.list();
 
       expect(proxied.rest.last?.method).toBe('GET');
-      expect(proxied.rest.last?.url).toContain('http://localhost:7766/v2/facts/proj/env/tenants');
+      expect(proxied.rest.last?.origin).toBe(MOCK_PDP_ORIGIN);
+      expect(proxied.rest.last?.path).toBe(COLLECTION);
     });
   });
 

@@ -24,7 +24,7 @@ describe('ProjectsApi (unit)', () => {
       await permit.api.projects.list();
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
     });
 
@@ -34,6 +34,7 @@ describe('ProjectsApi (unit)', () => {
       await permit.api.projects.list({ page: 3, perPage: 25 });
 
       expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '3', per_page: '25' });
     });
   });
@@ -45,7 +46,7 @@ describe('ProjectsApi (unit)', () => {
       await permit.api.projects.get('proj-a');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/proj-a`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/proj-a`);
     });
 
     it('getByKey is an alias for get', async () => {
@@ -54,7 +55,7 @@ describe('ProjectsApi (unit)', () => {
       await permit.api.projects.getByKey('proj-a');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/proj-a`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/proj-a`);
     });
 
     it('getById is an alias for get', async () => {
@@ -63,7 +64,7 @@ describe('ProjectsApi (unit)', () => {
       await permit.api.projects.getById('proj-1');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/proj-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/proj-1`);
     });
   });
 
@@ -79,7 +80,7 @@ describe('ProjectsApi (unit)', () => {
       await permit.api.projects.create(payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -92,7 +93,7 @@ describe('ProjectsApi (unit)', () => {
       await permit.api.projects.update('proj-a', body);
 
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${COLLECTION}/proj-a`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/proj-a`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -104,7 +105,7 @@ describe('ProjectsApi (unit)', () => {
       await permit.api.projects.delete('proj-a');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/proj-a`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/proj-a`);
     });
   });
 

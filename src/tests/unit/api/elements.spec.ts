@@ -20,8 +20,10 @@ describe('ElementsClient (unit)', () => {
 
       await permit.elements.loginAs({ userId: 'user-1', tenantId: 'tenant-1' });
 
+      expect(rest.requests).toHaveLength(1);
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(LOGIN_PATH);
+      // The exact path has no environment scope segment.
+      expect(rest.last?.path).toBe(LOGIN_PATH);
       // { userId, tenantId } is mapped onto the wire shape { user_id, tenant_id }.
       expect(rest.last?.data).toEqual({ user_id: 'user-1', tenant_id: 'tenant-1' });
     });
@@ -36,16 +38,6 @@ describe('ElementsClient (unit)', () => {
       expect(result.redirect_url).toBe('https://app.permit.io/embed');
       // ...and `content.url` mirrors the redirect_url so callers can embed it.
       expect(result.content).toEqual({ url: 'https://app.permit.io/embed' });
-    });
-
-    it('dispatches without seeding any environment scope into the path', async () => {
-      rest.resolveWith({ redirect_url: 'https://app.permit.io/embed' });
-
-      await permit.elements.loginAs({ userId: 'user-1', tenantId: 'tenant-1' });
-
-      expect(rest.requests).toHaveLength(1);
-      expect(rest.last?.url).not.toContain('/v2/schema/');
-      expect(rest.last?.url).not.toContain('/v2/facts/');
     });
 
     it('maps a 403 forbidden response to PermitApiError', async () => {

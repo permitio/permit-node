@@ -26,7 +26,7 @@ describe('ResourceAttributesApi (unit)', () => {
       await permit.api.resourceAttributes.list({ resourceKey: RESOURCE });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
     });
 
@@ -36,7 +36,7 @@ describe('ResourceAttributesApi (unit)', () => {
       await permit.api.resourceAttributes.list({ resourceKey: RESOURCE, page: 4, perPage: 25 });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '4', per_page: '25' });
     });
   });
@@ -48,7 +48,7 @@ describe('ResourceAttributesApi (unit)', () => {
       await permit.api.resourceAttributes.get(RESOURCE, 'owner');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/owner`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/owner`);
     });
 
     it('getByKey is an alias for get', async () => {
@@ -57,7 +57,7 @@ describe('ResourceAttributesApi (unit)', () => {
       await permit.api.resourceAttributes.getByKey(RESOURCE, 'owner');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/owner`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/owner`);
     });
 
     it('getById is an alias for get', async () => {
@@ -66,7 +66,7 @@ describe('ResourceAttributesApi (unit)', () => {
       await permit.api.resourceAttributes.getById(RESOURCE, 'attr-1');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/attr-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/attr-1`);
     });
   });
 
@@ -79,7 +79,7 @@ describe('ResourceAttributesApi (unit)', () => {
       await permit.api.resourceAttributes.create(RESOURCE, payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -92,7 +92,7 @@ describe('ResourceAttributesApi (unit)', () => {
       await permit.api.resourceAttributes.update(RESOURCE, 'owner', body);
 
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${COLLECTION}/owner`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/owner`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -104,7 +104,7 @@ describe('ResourceAttributesApi (unit)', () => {
       await permit.api.resourceAttributes.delete(RESOURCE, 'owner');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/owner`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/owner`);
     });
   });
 

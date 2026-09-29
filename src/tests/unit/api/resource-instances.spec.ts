@@ -1,7 +1,12 @@
 import { PermitApiError } from '../../../api/base';
 import { ResourceInstanceCreate, ResourceInstanceUpdate } from '../../../api/resource-instances';
 import { Permit } from '../../../index';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import {
+  createMockPermit,
+  MOCK_API_ORIGIN,
+  MOCK_PDP_ORIGIN,
+  MockTransport,
+} from '../../helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // resource-instance URL is scoped under `/v2/facts/{proj}/{env}/resource_instances`.
@@ -25,7 +30,7 @@ describe('ResourceInstancesApi (unit)', () => {
       await permit.api.resourceInstances.list();
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       // list() forwards only the params it is given, so page/per_page and the
       // tenant/resource filters are absent when the caller omits them.
       expect(rest.last?.params).not.toHaveProperty('page');
@@ -44,7 +49,7 @@ describe('ResourceInstancesApi (unit)', () => {
       });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({
         tenant: 't1',
         resource: 'document',
@@ -61,7 +66,7 @@ describe('ResourceInstancesApi (unit)', () => {
       await permit.api.resourceInstances.get('inst-1');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/inst-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/inst-1`);
     });
 
     it('getByKey is an alias for get', async () => {
@@ -70,7 +75,7 @@ describe('ResourceInstancesApi (unit)', () => {
       await permit.api.resourceInstances.getByKey('inst-1');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/inst-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/inst-1`);
     });
 
     it('getById is an alias for get', async () => {
@@ -79,7 +84,7 @@ describe('ResourceInstancesApi (unit)', () => {
       await permit.api.resourceInstances.getById('instance-id');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/instance-id`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/instance-id`);
     });
   });
 
@@ -97,7 +102,7 @@ describe('ResourceInstancesApi (unit)', () => {
       await permit.api.resourceInstances.create(payload);
 
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -110,7 +115,7 @@ describe('ResourceInstancesApi (unit)', () => {
       await permit.api.resourceInstances.update('inst-1', body);
 
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${COLLECTION}/inst-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/inst-1`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -122,7 +127,7 @@ describe('ResourceInstancesApi (unit)', () => {
       await permit.api.resourceInstances.delete('inst-1');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/inst-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/inst-1`);
     });
   });
 
@@ -134,7 +139,8 @@ describe('ResourceInstancesApi (unit)', () => {
 
       rest.resolveWith([]);
       await instances.list();
-      expect(rest.last?.url).toContain('http://localhost:8000');
+      expect(rest.last?.origin).toBe(MOCK_API_ORIGIN);
+      expect(rest.last?.path).toBe(COLLECTION);
     });
 
     it('returns a distinct clone that dispatches to the PDP host when proxy is on', async () => {
@@ -146,7 +152,8 @@ describe('ResourceInstancesApi (unit)', () => {
 
       proxied.rest.resolveWith([]);
       await synced.list();
-      expect(proxied.rest.last?.url).toContain('http://localhost:7766/v2/facts');
+      expect(proxied.rest.last?.origin).toBe(MOCK_PDP_ORIGIN);
+      expect(proxied.rest.last?.path).toBe(COLLECTION);
     });
   });
 
@@ -158,9 +165,8 @@ describe('ResourceInstancesApi (unit)', () => {
       await proxied.permit.api.resourceInstances.list();
 
       expect(proxied.rest.last?.method).toBe('GET');
-      expect(proxied.rest.last?.url).toContain(
-        'http://localhost:7766/v2/facts/proj/env/resource_instances',
-      );
+      expect(proxied.rest.last?.origin).toBe(MOCK_PDP_ORIGIN);
+      expect(proxied.rest.last?.path).toBe(COLLECTION);
     });
   });
 
