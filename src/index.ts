@@ -182,7 +182,7 @@ export class Permit implements IPermitClient {
    * @param context  - The context object representing the context in which the action is performed.
    * @returns `true` if the user is authorized, `false` otherwise.
    * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
-   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
+   * @throws {@link PermitPDPStatusError} if the PDP returned an unexpected status code or response body.
    */
   public async check(
     user: string | IUser,
@@ -201,7 +201,7 @@ export class Permit implements IPermitClient {
    * @param context  - The context object representing the context in which the action is performed.
    * @returns array containing `true` if the user is authorized, `false` otherwise for each check request.
    * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
-   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
+   * @throws {@link PermitPDPStatusError} if the PDP returned an unexpected status code or response body.
    */
   public async bulkCheck(
     checks: Array<ICheckQuery>,
@@ -215,10 +215,6 @@ export class Permit implements IPermitClient {
    * Get all tenants available in the system.
    * @returns An array of TenantDetails representing all tenants.
    */
-  /**
-   * Get all tenants available in the system.
-   * @returns An array of TenantDetails representing all tenants.
-   */
   public async checkAllTenants(
     user: IUser | string,
     action: string,
@@ -226,12 +222,7 @@ export class Permit implements IPermitClient {
     context?: Context | undefined,
     sdk?: string | undefined,
   ): Promise<TenantDetails[]> {
-    try {
-      return await this.enforcer.checkAllTenants(user, action, resource, context, sdk);
-    } catch (error) {
-      this.logger.error('Error fetching all tenants:', error);
-      throw error;
-    }
+    return await this.enforcer.checkAllTenants(user, action, resource, context, sdk);
   }
 
   /**
@@ -243,7 +234,7 @@ export class Permit implements IPermitClient {
    * @param resource_types - The list of resource types to filter the permissions on ( given by resource roles ).
    * @returns object with key as the resource identifier and value as the resource details and permissions.
    * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
-   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
+   * @throws {@link PermitPDPStatusError} if the PDP returned an unexpected status code or response body.
    */
   public async getUserPermissions(
     user: IUser | string,

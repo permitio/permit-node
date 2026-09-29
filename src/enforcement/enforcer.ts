@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Logger } from 'pino';
 import URL from 'url-parse';
 
@@ -46,8 +46,19 @@ export class PermitConnectionError extends PermitError {
   }
 }
 
-export class PermitPDPStatusError extends PermitError {
-  constructor(message: string) {
+export class PermitPDPStatusError extends PermitConnectionError {
+  /**
+   * Creates an error for an unexpected HTTP status code or response body from the PDP.
+   *
+   * @param message - Description of the failed operation.
+   * @param statusCode - HTTP status code, supplied for errors raised by the SDK.
+   * @param responseBody - Raw response body returned by the PDP.
+   */
+  constructor(
+    message: string,
+    public readonly statusCode?: number,
+    public readonly responseBody?: unknown,
+  ) {
     super(message);
     this.name = 'PermitPDPStatusError';
   }
@@ -63,7 +74,7 @@ export interface IEnforcer {
    * @param context  - The context object representing the context in which the action is performed.
    * @returns `true` if the user is authorized, `false` otherwise.
    * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
-   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
+   * @throws {@link PermitPDPStatusError} if the PDP returned an unexpected status code or response body.
    */
   check(
     user: IUser | string,
@@ -80,7 +91,7 @@ export interface IEnforcer {
    * @param context  - The context object representing the context in which the action is performed.
    * @returns array containing `true` if the user is authorized, `false` otherwise for each check request.
    * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
-   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
+   * @throws {@link PermitPDPStatusError} if the PDP returned an unexpected status code or response body.
    */
   bulkCheck(
     checks: Array<ICheckQuery>,
@@ -97,7 +108,7 @@ export interface IEnforcer {
    * @param resource_types - The list of resource types to filter the permissions on ( given by resource roles ).
    * @returns object with key as the resource identifier and value as the resource details and permissions.
    * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
-   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
+   * @throws {@link PermitPDPStatusError} if the PDP returned an unexpected status code or response body.
    */
   getUserPermissions(
     user: IUser | string,
@@ -225,13 +236,13 @@ export class Enforcer implements IEnforcer {
       })
       .then((response) => {
         if (response.status !== 200) {
-          throw new PermitPDPStatusError(`Permit.getUserPermissions() got an unexpected status code: ${response.status}, please check your SDK init and make sure the PDP sidecar is configured correctly. \n\
-            Read more about setting up the PDP at https://docs.permit.io`);
+          throw this.pdpStatusError('getUserPermissions', response.status, response.data);
         }
-        const permissions =
-          (isOpaGetUserPermissionsResult(response.data)
-            ? response.data.result.permissions
-            : response.data) || {};
+        const permissions = this.parsePdpResponse(
+          'getUserPermissions',
+          response,
+          (data) => (isOpaGetUserPermissionsResult(data) ? data.result.permissions : data) || {},
+        );
         this.logger.info(
           `permit.getUserPermissions(${Enforcer.userRepr(input.user)}) = ${JSON.stringify(
             permissions,
@@ -239,22 +250,9 @@ export class Enforcer implements IEnforcer {
         );
         return permissions;
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         const errorMessage = `Error in permit.getUserPermissions(${Enforcer.userRepr(input.user)})`;
-
-        if (axios.isAxiosError(error)) {
-          const errorStatusCode: string = error.response?.status.toString() || '';
-          const errorDetails: string = error?.response?.data
-            ? JSON.stringify(error.response.data)
-            : error.message;
-          this.logger.error(`[${errorStatusCode}] ${errorMessage}, err: ${errorDetails}`);
-        } else {
-          this.logger.error(`${errorMessage}\n${error}`);
-        }
-        throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
-          and cannot connect to the PDP, please check your configuration and make sure the
-          PDP is running at ${this.config.pdp} and accepting requests. \n
-          Read more about setting up the PDP at https://docs.permit.io`);
+        return this.handlePDPError(error, 'getUserPermissions', errorMessage);
       });
   }
 
@@ -270,7 +268,7 @@ export class Enforcer implements IEnforcer {
         throw err;
       } else {
         this.logger.error(err);
-        return [];
+        return checks.map(() => false);
       }
     });
   }
@@ -326,35 +324,23 @@ export class Enforcer implements IEnforcer {
       })
       .then((response) => {
         if (response.status !== 200) {
-          throw new PermitPDPStatusError(`Permit.bulkCheck() got an unexpected status code: ${response.status}, please check your SDK init and make sure the PDP sidecar is configured correctly. \n\
-            Read more about setting up the PDP at https://docs.permit.io`);
+          throw this.pdpStatusError('bulkCheck', response.status, response.data);
         }
-        const decisions = (
-          ('allow' in response.data ? response.data.allow : response.data.result.allow) || []
-        ).map((decision) => decision.allow || false);
+        const decisions = this.parsePdpResponse('bulkCheck', response, (data) =>
+          (('allow' in data ? data.allow : data.result.allow) || []).map(
+            (decision) => decision.allow || false,
+          ),
+        );
         this.logger.info(
           `permit.bulkCheck(${inputs.map((input) => this.checkInputRepr(input))}) = ${decisions}`,
         );
         return decisions;
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         const errorMessage = `Error in permit.bulkCheck(${inputs.map((input) =>
           this.checkInputRepr(input),
         )})`;
-
-        if (axios.isAxiosError(error)) {
-          const errorStatusCode: string = error.response?.status.toString() || '';
-          const errorDetails: string = error?.response?.data
-            ? JSON.stringify(error.response.data)
-            : error.message;
-          this.logger.error(`[${errorStatusCode}] ${errorMessage}, err: ${errorDetails}`);
-        } else {
-          this.logger.error(`${errorMessage}\n${error}`);
-        }
-        throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
-          and cannot connect to the PDP, please check your configuration and make sure the
-          PDP is running at ${this.config.pdp} and accepting requests. \n
-          Read more about setting up the PDP at https://docs.permit.io`);
+        return this.handlePDPError(error, 'bulkCheck', errorMessage);
       });
   }
 
@@ -364,6 +350,25 @@ export class Enforcer implements IEnforcer {
     resource: IResource | string,
     context: Context = {}, // default to empty context if not provided
     sdk = 'node', // default to "node" if not provided
+  ): Promise<TenantDetails[]> {
+    return await this.checkAllTenantsWithExceptions(user, action, resource, context, sdk).catch(
+      (err) => {
+        if (this.config.throwOnError) {
+          throw err;
+        } else {
+          this.logger.error(err);
+          return [];
+        }
+      },
+    );
+  }
+
+  private async checkAllTenantsWithExceptions(
+    user: IUser | string,
+    action: string,
+    resource: IResource | string,
+    context: Context,
+    sdk: string,
   ): Promise<TenantDetails[]> {
     // checkAllTenants evaluates the request across ALL tenants, so the resource
     // must NOT be pinned to a tenant. We normalize the string forms of user and
@@ -376,19 +381,26 @@ export class Enforcer implements IEnforcer {
       context: this.contextStore.getDerivedContext(context),
     };
 
-    try {
-      const response = await this.client.post<AllTenantsResponse>('allowed/all-tenants', input, {
+    return await this.client
+      .post<AllTenantsResponse>('allowed/all-tenants', input, {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
           'X-Permit-Sdk-Language': sdk,
         },
         timeout: this.config.timeout,
+      })
+      .then((response) => {
+        if (response.status !== 200) {
+          throw this.pdpStatusError('checkAllTenants', response.status, response.data);
+        }
+        return this.parsePdpResponse('checkAllTenants', response, (data) =>
+          data.allowed_tenants.map((item) => item.tenant),
+        );
+      })
+      .catch((error: unknown) => {
+        const errorMessage = `Error in permit.checkAllTenants(${this.checkInputRepr(input)})`;
+        return this.handlePDPError(error, 'checkAllTenants', errorMessage);
       });
-      return response.data.allowed_tenants.map((item) => item.tenant);
-    } catch (error) {
-      this.logger.error('Error fetching all tenants:', error);
-      throw error;
-    }
   }
 
   public async check(
@@ -418,14 +430,11 @@ export class Enforcer implements IEnforcer {
     context: Context = {}, // context provided specifically for this query
     config: CheckConfig = {},
   ): Promise<boolean> {
-    let input: ICheckOpaInput | ICheckInput = this.buildCheckInput(user, action, resource, context);
+    const checkInput = this.buildCheckInput(user, action, resource, context);
+    const input: ICheckOpaInput | ICheckInput = config.useOpa ? { input: checkInput } : checkInput;
     const client = config?.useOpa ? this.opaClient : this.client;
     const path = config?.useOpa ? 'root' : 'allowed';
 
-    if (config?.useOpa) {
-      input = { input: input };
-    }
-    // /root
     const checkTimeout = config.timeout || this.config.timeout;
 
     return await client
@@ -437,35 +446,78 @@ export class Enforcer implements IEnforcer {
       })
       .then((response) => {
         if (response.status !== 200) {
-          throw new PermitPDPStatusError(`Permit.check() got an unexpected status code: ${response.status}, please check your SDK init and make sure the PDP sidecar is configured correctly. \n\
-            Read more about setting up the PDP at https://docs.permit.io`);
+          throw this.pdpStatusError('check', response.status, response.data);
         }
-        const decision =
-          ('allow' in response.data ? response.data.allow : response.data.result.allow) || false;
-
-        this.logger.info(
-          `permit.check(${this.checkInputRepr((input as any).input || input)}) = ${decision}`,
+        const decision = this.parsePdpResponse(
+          'check',
+          response,
+          (data) => ('allow' in data ? data.allow : data.result.allow) || false,
         );
+
+        this.logger.info(`permit.check(${this.checkInputRepr(checkInput)}) = ${decision}`);
         return decision;
       })
-      .catch((error) => {
-        const errorMessage = `Error in permit.check(${this.checkInputRepr(
-          (input as any).input || input,
-        )})`;
-
-        if (axios.isAxiosError(error)) {
-          const errorStatusCode: string = error.response?.status.toString() || '';
-          const errorDetails: string = error?.response?.data
-            ? JSON.stringify(error.response.data)
-            : error.message;
-          this.logger.error(`[${errorStatusCode}] ${errorMessage}, err: ${errorDetails}`);
-        } else {
-          this.logger.error(`${errorMessage}\n${error}`);
-        }
-        throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
-          and cannot connect to the PDP, please check your configuration and make sure the PDP is running at ${this.config.pdp} and accepting requests. \n
-          Read more about setting up the PDP at https://docs.permit.io`);
+      .catch((error: unknown) => {
+        const errorMessage = `Error in permit.check(${this.checkInputRepr(checkInput)})`;
+        return this.handlePDPError(error, 'check', errorMessage);
       });
+  }
+
+  private pdpStatusError(
+    method: string,
+    statusCode: number,
+    responseBody: unknown,
+  ): PermitPDPStatusError {
+    return new PermitPDPStatusError(
+      `Permit.${method}() got an unexpected status code: ${statusCode}, ` +
+        'please check your SDK init and make sure the PDP sidecar is configured correctly. ' +
+        'Read more about setting up the PDP at https://docs.permit.io',
+      statusCode,
+      responseBody,
+    );
+  }
+
+  /**
+   * Reads the body of a successful PDP response. The PDP was reachable, so a body without the
+   * expected shape is reported as a {@link PermitPDPStatusError}, not as a connection failure.
+   */
+  private parsePdpResponse<T, R>(
+    method: string,
+    response: AxiosResponse<T>,
+    parse: (data: T) => R,
+  ): R {
+    try {
+      return parse(response.data);
+    } catch {
+      throw new PermitPDPStatusError(
+        `Permit.${method}() got an unexpected response body from the PDP ` +
+          `(status ${response.status}), please check that the SDK's pdp URL points to a Permit ` +
+          'PDP. Read more about setting up the PDP at https://docs.permit.io',
+        response.status,
+        response.data,
+      );
+    }
+  }
+
+  private handlePDPError(error: unknown, method: string, errorMessage: string): never {
+    if (error instanceof PermitPDPStatusError) {
+      this.logger.error(`${errorMessage}\n${error}`);
+      throw error;
+    }
+
+    if (axios.isAxiosError<unknown>(error) && error.response) {
+      const { status, data } = error.response;
+      this.logger.error(`[${status}] ${errorMessage}, err: ${JSON.stringify(data)}`);
+      throw this.pdpStatusError(method, status, data);
+    }
+
+    const message = error instanceof Error ? error.message : String(error);
+    this.logger.error(`${errorMessage}\n${message}`);
+    throw new PermitConnectionError(
+      `Permit SDK got error: ${message} and cannot connect to the PDP. ` +
+        `Please check your configuration and make sure the PDP is running at ${this.config.pdp} ` +
+        'and accepting requests. Read more about setting up the PDP at https://docs.permit.io',
+    );
   }
 
   // TODO: remove this eventually, once we decide on finalized structure of AuthzQuery
