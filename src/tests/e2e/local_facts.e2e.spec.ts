@@ -1,11 +1,24 @@
-import { IPermitClient } from '../../index';
-import { createTestClient } from '../fixtures';
+import { IPermitClient, IResource } from '../../index';
+import { cleanUp, createTestClient } from '../fixtures';
 import { waitForCheck } from '../helpers/wait-for';
 
 let permit: IPermitClient;
 
-// Keys this spec creates at runtime, tracked so afterAll can purge exactly what
-// was created and leave the shared env empty for the next spec.
+// Keys unique to this run, so entities left by another spec or an earlier run can't change the
+// results.
+const RUN_ID = `${process.pid}_${Date.now()}`;
+const unique = (key: string) => `local_facts_${key}_${RUN_ID}`;
+const ADMIN = unique('admin');
+const REPO = unique('repo');
+const EDITOR = 'editor';
+const TENANT = 'default';
+
+// With proxyFactsViaPdp, a write sent with waitForSync(FACT_SYNC_TIMEOUT_S, 'fail') returns
+// only after the PDP has applied it, and fails with 424 if that takes longer. A check made right
+// after the write must therefore see it; these tests assert exactly that, without polling.
+const FACT_SYNC_TIMEOUT_S = 30;
+
+// Keys this spec creates at runtime, tracked so afterAll can delete exactly what was created.
 const createdUserKeys: string[] = [];
 const createdTenantKeys: string[] = [];
 
@@ -15,103 +28,107 @@ beforeAll(async () => {
   }
   ({ permit } = createTestClient({ proxyFactsViaPdp: true }));
   await setupSchema(permit);
+  await waitForSchema(permit);
 });
 
 afterAll(async () => {
   if (!permit) return; // beforeAll never initialized the client (e.g. missing key)
-  // Purge runtime-created users and tenants, then the schema setupSchema built.
-  // Deleting the resource cascades to its resource-role and resource instances.
-  // Every delete is tolerant so a missing entity (created in a test that never
-  // ran, or that failed early) does not throw.
+  // Deleting the resource removes its resource role and instances.
+  const steps: Record<string, () => Promise<unknown>> = {};
   for (const key of createdUserKeys) {
-    await permit.api.users.delete(key).catch(() => undefined);
+    steps[`user ${key}`] = () => permit.api.users.delete(key);
   }
   for (const key of createdTenantKeys) {
-    await permit.api.tenants.delete(key).catch(() => undefined);
+    steps[`tenant ${key}`] = () => permit.api.tenants.delete(key);
   }
-  await permit.api.resourceRoles.delete('repo', 'editor').catch(() => undefined);
-  await permit.api.resources.delete('repo').catch(() => undefined);
-  await permit.api.roles.delete('admin').catch(() => undefined);
+  steps[`resource ${REPO}`] = () => permit.api.resources.delete(REPO);
+  steps[`role ${ADMIN}`] = () => permit.api.roles.delete(ADMIN);
+  await cleanUp(steps);
 });
 
 const setupSchema = async (client: IPermitClient) => {
-  await client.api.roles.create({ key: 'admin', name: 'admin' }).catch(() => null);
-
-  await client.api.resources
-    .create({
-      key: 'repo',
-      name: 'Repository',
-      actions: { create: {}, read: {}, update: {}, delete: {} },
-    })
-    .catch(() => null);
-
-  await client.api.roles
-    .assignPermissions('admin', ['repo:create', 'repo:read', 'repo:update', 'repo:delete'])
-    .catch(() => null);
-  await client.api.resourceRoles
-    .create('repo', {
-      key: 'editor',
-      name: 'editor',
-    })
-    .catch(() => null);
-  await client.api.resourceRoles.assignPermissions('repo', 'editor', ['update']).catch(() => null);
+  await client.api.roles.create({ key: ADMIN, name: 'admin' });
+  await client.api.resources.create({
+    key: REPO,
+    name: 'Repository',
+    actions: { create: {}, read: {}, update: {}, delete: {} },
+  });
+  await client.api.roles.assignPermissions(ADMIN, [
+    `${REPO}:create`,
+    `${REPO}:read`,
+    `${REPO}:update`,
+    `${REPO}:delete`,
+  ]);
+  await client.api.resourceRoles.create(REPO, { key: EDITOR, name: 'editor' });
+  await client.api.resourceRoles.assignPermissions(REPO, EDITOR, ['update']);
 };
 
-const makeRandomId = (prefix: string) => {
-  const num = Math.floor(Math.random() * 1_000_000);
-  return `${prefix}-${num}`;
-};
+/** Creates a user through the PDP, returning once the PDP has applied it. */
+async function createUser(client: IPermitClient, key: string): Promise<void> {
+  createdUserKeys.push(key);
+  await client.api.users.waitForSync(FACT_SYNC_TIMEOUT_S, 'fail').create({ key });
+}
+
+/** Creates a tenant and a repo instance in it through the PDP, returning once both apply. */
+async function createRepoInstance(client: IPermitClient, name: string): Promise<IResource> {
+  const tenant = unique(`${name}_tenant`);
+  const key = unique(`${name}_repo`);
+  createdTenantKeys.push(tenant);
+  await client.api.tenants
+    .waitForSync(FACT_SYNC_TIMEOUT_S, 'fail')
+    .create({ key: tenant, name: 'My Tenant' });
+  await client.api.resourceInstances
+    .waitForSync(FACT_SYNC_TIMEOUT_S, 'fail')
+    .create({ key, resource: REPO, tenant });
+  return { type: REPO, key, tenant };
+}
+
+/**
+ * The schema reaches the PDP on its own schedule, unlike the facts the tests write. Wait for it
+ * once, through one user per role, so each test can check right after its own writes.
+ */
+async function waitForSchema(client: IPermitClient): Promise<void> {
+  const admin = unique('schema_admin');
+  await createUser(client, admin);
+  await client.api.users
+    .waitForSync(FACT_SYNC_TIMEOUT_S, 'fail')
+    .assignRole({ user: admin, role: ADMIN, tenant: TENANT });
+  await waitForCheck(() => client.check(admin, 'create', REPO), true, {
+    message: `the ${ADMIN} role did not reach the PDP`,
+  });
+
+  const editor = unique('schema_editor');
+  await createUser(client, editor);
+  const repo = await createRepoInstance(client, 'schema');
+  await client.api.users
+    .waitForSync(FACT_SYNC_TIMEOUT_S, 'fail')
+    .assignRole({ user: editor, role: EDITOR, resource_instance: `${REPO}:${repo.key}` });
+  await waitForCheck(() => client.check(editor, 'update', repo), true, {
+    message: `the ${REPO} ${EDITOR} role did not reach the PDP`,
+  });
+}
 
 it('Check assign role', async () => {
-  const adminUserId = makeRandomId('user');
-  createdUserKeys.push(adminUserId);
-  await permit.api.users.create({ key: adminUserId });
-  await permit.api.users.assignRole({ user: adminUserId, role: 'admin', tenant: 'default' });
-  await waitForCheck(() => permit.check(adminUserId, 'create', 'repo'), true);
-  expect(await permit.check(adminUserId, 'create', 'repo')).toBe(true);
+  const adminUserId = unique('user');
+  await createUser(permit, adminUserId);
+
+  await permit.api.users
+    .waitForSync(FACT_SYNC_TIMEOUT_S, 'fail')
+    .assignRole({ user: adminUserId, role: ADMIN, tenant: TENANT });
+
+  expect(await permit.check(adminUserId, 'create', REPO)).toBe(true);
 });
 
 it('Check assign resource instance role', async () => {
-  const editorUserId = makeRandomId('user');
-  createdUserKeys.push(editorUserId);
-  await permit.api.users.create({ key: editorUserId });
+  const editorUserId = unique('editor_user');
+  await createUser(permit, editorUserId);
+  const repo = await createRepoInstance(permit, 'test');
 
-  const tenantId = makeRandomId('tenant');
-  createdTenantKeys.push(tenantId);
-  await permit.api.tenants.create({ key: tenantId, name: 'My Tenant' });
-
-  const resourceInstanceId = makeRandomId('repo');
-  await permit.api.resourceInstances.create({
-    key: resourceInstanceId,
-    resource: 'repo',
-    tenant: tenantId,
-  });
-  await permit.api.users.assignRole({
+  await permit.api.users.waitForSync(FACT_SYNC_TIMEOUT_S, 'fail').assignRole({
     user: editorUserId,
-    role: 'editor',
-    resource_instance: `repo:${resourceInstanceId}`,
+    role: EDITOR,
+    resource_instance: `${REPO}:${repo.key}`,
   });
-  const resource = { key: resourceInstanceId, type: 'repo', tenant: tenantId };
-  await waitForCheck(() => permit.check(editorUserId, 'update', resource), true);
-  expect(await permit.check(editorUserId, 'update', resource)).toBe(true);
-});
 
-// Skipped: this assertion is inherently racy. It assigns a role with
-// waitForSync(0) (explicitly NOT waiting for the fact to propagate) and then
-// immediately expects check() === false. Whether the role has propagated yet is
-// a timing race, so it cannot be made deterministic with event-based waiting.
-// The waitForSync(0) contract (that it sets X-Wait-Timeout: 0 on a cloned
-// client and is a no-op without proxyFactsViaPdp) is covered deterministically
-// by src/tests/unit/wait-for-sync.spec.ts.
-it.skip('Check skip wait', async () => {
-  const userId = makeRandomId('user');
-  createdUserKeys.push(userId);
-  await permit.api.users.create({ key: userId });
-  // explicitly skip wait for role assignment to sync
-  await permit.api.users.waitForSync(0).assignRole({
-    user: userId,
-    role: 'admin',
-    tenant: 'default',
-  });
-  expect(await permit.check(userId, 'create', 'repo')).toBe(false);
+  expect(await permit.check(editorUserId, 'update', repo)).toBe(true);
 });
