@@ -69,6 +69,57 @@ const permitPdp = new Permit({
 });
 ```
 
+## Logging and errors
+
+`log.level` controls the SDK's log level (default: `warn`). Set it to `debug` to include HTTP
+request and response diagnostics, or `silent` to disable SDK logs. `PERMIT_LOG_LEVEL` supplies
+the default when `log.level` is omitted.
+
+Logs are JSON lines by default. Set `log.json: false` for pretty text. When `log.json` is
+omitted, `PERMIT_LOG_JSON` supplies the default: `false` selects pretty text, while `true`, an
+unset variable, or any other value keeps JSON lines. The variable ignores letter case and
+surrounding whitespace. An explicit `log.json` setting always overrides the environment variable.
+Pretty output uses an in-process stream without worker threads. SDK initialization logs do not
+include the API key or serialized configuration.
+
+```typescript
+import { Permit } from 'permitio';
+
+const permit = new Permit({
+  token: process.env.PERMIT_API_KEY,
+  log: { level: 'debug', json: false },
+});
+```
+
+With the default `throwOnError: true`, a PDP response with an unexpected status code, or a `200`
+response with a body the SDK cannot read, throws `PermitPDPStatusError`, a subclass of
+`PermitConnectionError`. It carries the HTTP `statusCode` and `responseBody`, the raw body the
+PDP returned (parsed JSON, or text when the body is not JSON). Transport failures, such as
+refused connections or timeouts, throw `PermitConnectionError`. Match errors with `instanceof`,
+not their `name` or message, and check the more specific status error first:
+
+```typescript
+import { PermitConnectionError, PermitPDPStatusError } from 'permitio';
+
+try {
+  await permit.check('user-1', 'read', 'document:one');
+} catch (error) {
+  if (error instanceof PermitPDPStatusError) {
+    console.error('PDP HTTP status:', error.statusCode);
+  } else if (error instanceof PermitConnectionError) {
+    console.error('PDP connection failed');
+  } else {
+    throw error;
+  }
+}
+```
+
+These rules apply to `check`, `bulkCheck`, `getUserPermissions`, and `checkAllTenants`.
+With `throwOnError: false`, failures, including an invalid resource string, return `false` for
+`check`, one `false` per input for `bulkCheck`, `{}` for `getUserPermissions`, and `[]` for
+`checkAllTenants`. The first three methods also accept per-call error-policy overrides;
+`checkAllTenants` uses the SDK setting.
+
 ## Documentation
 
 [Read the documentation at Permit.io website](https://docs.permit.io/sdk/nodejs/quickstart-nodejs#add-the-sdk-to-your-js-code)
