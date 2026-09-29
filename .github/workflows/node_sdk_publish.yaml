@@ -3,9 +3,6 @@ name: Release permit Node SDK
 on:
   release:
     types: [published]
-env: 
-  PROJECT_ID: 7f55831d77c642739bc17733ab0af138 #github actions project id (under 'Permit.io Tests' workspace)
-  ENV_NAME: node-sdk-ci
 
 jobs:
   publish_node_sdk:
@@ -42,56 +39,11 @@ jobs:
           yarn run build
           yarn docs ; git add docs/ ; git commit -m "update tsdoc"
 
-      - name: Creation env ${{ env.ENV_NAME }} under 'Permit.io Tests' workspace
-        run: |
-          response=$(curl -X POST \
-            https://api.permit.io/v2/projects/${{ env.PROJECT_ID }}/envs \
-            -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}' \
-            -H 'Content-Type: application/json' \
-            -d '{
-            "key": "${{ env.ENV_NAME }}",
-            "name": "${{ env.ENV_NAME }}"
-          }')
-
-          # Extract the new env id
-          echo "ENV_ID=$(echo "$response" | jq -r '.id')" >> "$GITHUB_ENV"
-
-          echo "New env ID: $ENV_ID"
-      
-      - name: Fetch API_KEY of ${{ env.ENV_NAME }}
-        run: |
-          response=$(curl -X GET \
-            https://api.permit.io/v2/api-key/${{ env.PROJECT_ID }}/${{ env.ENV_ID }} \
-            -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}')
-
-          # Extract the api key secret and register it for masking BEFORE writing
-          # it to the environment, so it is redacted everywhere in the logs
-          # (including the env-group dumps of every later step). Do not echo it.
-          ENV_API_KEY=$(echo "$response" | jq -r '.secret')
-          echo "::add-mask::$ENV_API_KEY"
-          echo "ENV_API_KEY=$ENV_API_KEY" >> "$GITHUB_ENV"
-
-      - name: local PDP runnning
-        env:
-          PDP_API_KEY: ${{ env.ENV_API_KEY }}
-          PERMIT_API_KEY: ${{ env.ENV_API_KEY }}
-          PDP_DEBUG: true
-        run: docker run -d -p 7766:7000 permitio/pdp-v2:latest
-
+      # Unit and module-import tests only. The integration and e2e suites need a
+      # provisioned environment and PDP, and run in the CI workflow's backend job.
       - name: Run tests
-        env:
-          PDP_API_KEY: ${{ env.ENV_API_KEY }}
-          PERMIT_API_KEY: ${{ env.ENV_API_KEY }}
-          API_TIER: 'prod'
         run: yarn test
 
-      - name: Delete env ${{ env.ENV_NAME }}
-        if: always()
-        run: |
-          curl -X DELETE \
-            https://api.permit.io/v2/projects/${{ env.PROJECT_ID }}/envs/${{ env.ENV_ID }} \
-            -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}'
-          
       - name: Bump version at package.json
         run: |
           # Use the release tag as the version, stripping any leading 'v'
