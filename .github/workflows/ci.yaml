@@ -59,6 +59,8 @@ jobs:
       fail-fast: false
       matrix:
         node-version: [22, 24]
+    env:
+      ENV_KEY: node-sdk-ci-${{ github.run_id }}-${{ github.run_attempt }}-n${{ matrix.node-version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -89,16 +91,21 @@ jobs:
         timeout-minutes: 2
         env:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
-          ENV_KEY: node-sdk-ci-${{ github.run_id }}-${{ github.run_attempt }}-n${{ matrix.node-version }}
         run: |
-          response=$(curl -sS --max-time 30 -X POST \
+          response=$(curl -sS --max-time 30 -w '\n%{http_code}' -X POST \
             "https://api.permit.io/v2/projects/${PROJECT_ID}/envs" \
             -H "Authorization: Bearer ${PROJECT_API_KEY}" \
             -H 'Content-Type: application/json' \
             -d "{\"key\":\"${ENV_KEY}\",\"name\":\"${ENV_KEY}\"}")
-          env_id=$(printf '%s' "$response" | jq -r '.id // empty')
-          if [ -z "$env_id" ]; then
-            echo "Failed to create env (key=${ENV_KEY})." >&2
+          status=${response##*$'\n'}
+          body=${response%$'\n'*}
+          if [[ "$status" != 2* ]]; then
+            echo "::error::Creating env ${ENV_KEY} failed with HTTP ${status}: ${body}" >&2
+            exit 1
+          fi
+          env_id=$(jq -r '.id // empty' <<<"$body")
+          if [[ -z "$env_id" ]]; then
+            echo "::error::Creating env ${ENV_KEY} returned HTTP ${status} without an id: ${body}" >&2
             exit 1
           fi
           echo "env_id=${env_id}" >> "$GITHUB_OUTPUT"
@@ -110,12 +117,19 @@ jobs:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
           ENV_ID: ${{ steps.provision.outputs.env_id }}
         run: |
-          response=$(curl -sS --max-time 30 --retry 3 -X GET \
+          response=$(curl -sS --max-time 30 --retry 3 -w '\n%{http_code}' \
             "https://api.permit.io/v2/api-key/${PROJECT_ID}/${ENV_ID}" \
             -H "Authorization: Bearer ${PROJECT_API_KEY}")
-          env_api_key=$(printf '%s' "$response" | jq -r '.secret // empty')
-          if [ -z "$env_api_key" ]; then
-            echo "Failed to fetch env API key." >&2
+          status=${response##*$'\n'}
+          body=${response%$'\n'*}
+          # A successful body holds the key, so it is printed only on HTTP errors.
+          if [[ "$status" != 2* ]]; then
+            echo "::error::Fetching the API key of env ${ENV_KEY} failed with HTTP ${status}: ${body}" >&2
+            exit 1
+          fi
+          env_api_key=$(jq -r '.secret // empty' <<<"$body")
+          if [[ -z "$env_api_key" ]]; then
+            echo "::error::The API key response for env ${ENV_KEY} (HTTP ${status}) has no secret field." >&2
             exit 1
           fi
           # Mask BEFORE writing to the env file so it is redacted everywhere.
