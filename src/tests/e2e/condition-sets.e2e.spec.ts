@@ -1,14 +1,14 @@
 import pino from 'pino';
 
 import { IPermitClient } from '../../index';
-import { createTestClient } from '../fixtures';
+import { cleanUp, createTestClient, expectNotFound } from '../fixtures';
 import { waitForCheck } from '../helpers/wait-for';
 
 let permit: IPermitClient;
 let logger: pino.Logger;
 
 // Unique per-run suffix so concurrent/repeated runs never collide on the shared
-// environment, and so the tolerant afterAll only ever touches what this spec made.
+// environment, and so the afterAll cleanup only ever touches what this spec made.
 const rand = Math.random().toString(36).slice(2, 8);
 const RESOURCE_KEY = `cs_e2e_doc_${rand}`;
 const USERSET_KEY = `cs_e2e_userset_${rand}`;
@@ -22,38 +22,55 @@ const USER_ATTR = `cs_e2e_clearance_${rand}`;
 const ACTION = 'read';
 const PERMISSION = `${RESOURCE_KEY}:${ACTION}`;
 const TENANT = 'default';
+const RULE = { user_set: USERSET_KEY, permission: PERMISSION, resource_set: RESOURCESET_KEY };
+
+const documentInTenant = { type: RESOURCE_KEY, tenant: TENANT };
 
 beforeAll(() => {
   ({ permit, logger } = createTestClient());
 });
 
+/** Rejects while a rule linking the two sets still grants the permission. */
+async function expectRuleGone(): Promise<void> {
+  const rules = await permit.api.conditionSetRules.list({
+    userSetKey: USERSET_KEY,
+    permissionKey: PERMISSION,
+    resourceSetKey: RESOURCESET_KEY,
+  });
+  expect(rules).toEqual([]);
+}
+
 afterAll(async () => {
-  // Tolerant teardown in dependency order (rule -> condition sets -> users ->
-  // resource). Each delete swallows its own error so a partial run (the body
-  // threw before creating an entity) neither throws nor masks the original
-  // failure. The deletes cascade, then the assertions confirm nothing leaked.
-  await permit.api.conditionSetRules
-    .delete({ user_set: USERSET_KEY, permission: PERMISSION, resource_set: RESOURCESET_KEY })
-    .catch(() => undefined);
-  await permit.api.conditionSets.delete(USERSET_KEY).catch(() => undefined);
-  await permit.api.conditionSets.delete(RESOURCESET_KEY).catch(() => undefined);
-  // Remove the attribute from the built-in user resource after the userset that
-  // referenced it is gone. The built-in '__user' resource itself is never deleted.
-  await permit.api.resourceAttributes.delete(USER_RESOURCE_KEY, USER_ATTR).catch(() => undefined);
-  await permit.api.users.delete(MATCHING_USER_KEY).catch(() => undefined);
-  await permit.api.users.delete(OTHER_USER_KEY).catch(() => undefined);
-  await permit.api.resources.delete(RESOURCE_KEY).catch(() => undefined);
+  if (!permit) return; // beforeAll never initialized the client (e.g. missing key)
+  // Teardown in dependency order (rule -> condition sets -> user attribute -> users ->
+  // resource). Every step runs even if an earlier one failed; a 404 means the entity was never
+  // created. The rule is checked while its sets still exist, then each entity by its key.
+  await cleanUp({
+    [`condition set rule ${USERSET_KEY} -> ${RESOURCESET_KEY}`]: () =>
+      permit.api.conditionSetRules.delete(RULE),
+    [`check that the rule is gone`]: expectRuleGone,
+    [`condition set ${USERSET_KEY}`]: () => permit.api.conditionSets.delete(USERSET_KEY),
+    [`condition set ${RESOURCESET_KEY}`]: () => permit.api.conditionSets.delete(RESOURCESET_KEY),
+    // The built-in '__user' resource itself is never deleted, only the attribute added to it.
+    [`attribute ${USER_ATTR} of ${USER_RESOURCE_KEY}`]: () =>
+      permit.api.resourceAttributes.delete(USER_RESOURCE_KEY, USER_ATTR),
+    [`user ${MATCHING_USER_KEY}`]: () => permit.api.users.delete(MATCHING_USER_KEY),
+    [`user ${OTHER_USER_KEY}`]: () => permit.api.users.delete(OTHER_USER_KEY),
+    [`resource ${RESOURCE_KEY}`]: () => permit.api.resources.delete(RESOURCE_KEY),
+  });
 
-  const sets = await permit.api.conditionSets.list();
-  expect(sets.some((set) => set.key === USERSET_KEY)).toBe(false);
-  expect(sets.some((set) => set.key === RESOURCESET_KEY)).toBe(false);
-
-  const resources = await permit.api.resources.list();
-  expect(resources.some((resource) => resource.key === RESOURCE_KEY)).toBe(false);
-
-  const users = (await permit.api.users.list()).data;
-  expect(users.some((user) => user.key === MATCHING_USER_KEY)).toBe(false);
-  expect(users.some((user) => user.key === OTHER_USER_KEY)).toBe(false);
+  await expectNotFound(permit.api.conditionSets.get(USERSET_KEY), `condition set ${USERSET_KEY}`);
+  await expectNotFound(
+    permit.api.conditionSets.get(RESOURCESET_KEY),
+    `condition set ${RESOURCESET_KEY}`,
+  );
+  await expectNotFound(
+    permit.api.resourceAttributes.get(USER_RESOURCE_KEY, USER_ATTR),
+    `attribute ${USER_ATTR} of ${USER_RESOURCE_KEY}`,
+  );
+  await expectNotFound(permit.api.users.get(MATCHING_USER_KEY), `user ${MATCHING_USER_KEY}`);
+  await expectNotFound(permit.api.users.get(OTHER_USER_KEY), `user ${OTHER_USER_KEY}`);
+  await expectNotFound(permit.api.resources.get(RESOURCE_KEY), `resource ${RESOURCE_KEY}`);
 });
 
 it('ABAC condition-set permission check e2e test', async () => {
@@ -105,11 +122,7 @@ it('ABAC condition-set permission check e2e test', async () => {
   expect(resourceSet.type).toBe('resourceset');
 
   logger.info('linking the sets with a condition-set rule that grants the action');
-  const rule = await permit.api.conditionSetRules.create({
-    user_set: USERSET_KEY,
-    permission: PERMISSION,
-    resource_set: RESOURCESET_KEY,
-  });
+  const rule = await permit.api.conditionSetRules.create(RULE);
   expect(rule.user_set).toBe(USERSET_KEY);
   expect(rule.resource_set).toBe(RESOURCESET_KEY);
   expect(rule.permission).toBe(PERMISSION);
@@ -120,7 +133,7 @@ it('ABAC condition-set permission check e2e test', async () => {
     attributes: { [USER_ATTR]: 'top_secret' },
   });
   expect(matchingUser.key).toBe(MATCHING_USER_KEY);
-  expect((matchingUser.attributes as Record<string, unknown>)[USER_ATTR]).toBe('top_secret');
+  expect(matchingUser.attributes).toHaveProperty([USER_ATTR], 'top_secret');
 
   const { user: otherUser } = await permit.api.users.sync({
     key: OTHER_USER_KEY,
@@ -128,22 +141,23 @@ it('ABAC condition-set permission check e2e test', async () => {
   });
   expect(otherUser.key).toBe(OTHER_USER_KEY);
 
-  const confidentialResource = {
-    type: RESOURCE_KEY,
-    tenant: TENANT,
-    attributes: { confidential: true },
-  };
+  const confidentialResource = { ...documentInTenant, attributes: { confidential: true } };
 
-  // Wait for the writes above to propagate from the control plane to the PDP.
-  // Condition sets compile to new policy (rego), which takes longer to take
-  // effect than plain role/fact propagation, so allow a wider budget.
+  // Positive ABAC check: the matching user reads a confidential document. It is polled until
+  // the writes above have propagated from the control plane to the PDP. Condition sets compile
+  // to new policy (rego), which takes longer to take effect than plain role/fact propagation,
+  // so allow a wider budget.
+  logger.info('positive ABAC check: matching user reads a confidential document');
   await waitForCheck(() => permit.check(MATCHING_USER_KEY, ACTION, confidentialResource), true, {
     timeoutMs: 180_000,
   });
 
-  logger.info('positive ABAC check: matching user reads a confidential document');
-  expect(await permit.check(MATCHING_USER_KEY, ACTION, confidentialResource)).toBe(true);
-
+  // The policy is in place now, so each half of the rule can be checked on its own.
   logger.info('negative ABAC check: non-matching user is denied');
   expect(await permit.check(OTHER_USER_KEY, ACTION, confidentialResource)).toBe(false);
+
+  logger.info('negative ABAC check: matching user is denied a document that is not confidential');
+  const publicResource = { ...documentInTenant, attributes: { confidential: false } };
+  expect(await permit.check(MATCHING_USER_KEY, ACTION, publicResource)).toBe(false);
+  expect(await permit.check(MATCHING_USER_KEY, ACTION, documentInTenant)).toBe(false);
 });
