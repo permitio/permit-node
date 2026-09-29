@@ -58,25 +58,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Keep in sync with NODE_VERSIONS in the cleanup job.
         node-version: [22, 24]
     env:
+      # Known before the env is created, so the cleanup job can delete it by
+      # key even when this job is cancelled while creating it.
       ENV_KEY: node-sdk-ci-${{ github.run_id }}-${{ github.run_attempt }}-n${{ matrix.node-version }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-
-      - name: Install dependencies
-        timeout-minutes: 5
-        run: yarn install --frozen-lockfile
-
       # Fail instead of reporting green on the no-backend suite alone.
       - name: Require backend secret on same-repo runs
         if: env.BACKEND_REQUIRED == 'true' && env.RUN_BACKEND != 'true'
@@ -85,6 +73,8 @@ jobs:
           exit 1
 
       # ---------- Backend path ----------
+      # PROJECT_API_KEY is used only in the next two steps. They run before
+      # checkout, so no repository or dependency code runs while it is in use.
       - name: Provision temp Permit env
         id: provision
         if: env.RUN_BACKEND == 'true'
@@ -140,10 +130,28 @@ jobs:
         if: env.RUN_BACKEND == 'true'
         timeout-minutes: 5
         run: |
-          docker run -d --name pdp -p 7766:7000 \
-            -e PDP_API_KEY="$ENV_API_KEY" \
-            -e PERMIT_API_KEY="$ENV_API_KEY" \
+          PDP_API_KEY="$ENV_API_KEY" PERMIT_API_KEY="$ENV_API_KEY" docker run -d --name pdp \
+            -p 7766:7000 \
+            -e PDP_API_KEY -e PERMIT_API_KEY \
             permitio/pdp-v2:latest
+
+      # ---------- Both paths ----------
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+
+      # --ignore-scripts: this job holds the env API key, so dependency install
+      # scripts and the prepare script do not run. The test scripts build.
+      - name: Install dependencies
+        timeout-minutes: 5
+        run: yarn install --frozen-lockfile --ignore-scripts
 
       - name: Wait for PDP to be ready
         if: env.RUN_BACKEND == 'true'
@@ -195,14 +203,34 @@ jobs:
         timeout-minutes: 10
         run: yarn test
 
-      # ---------- Cleanup (always, even on failure/cancel) ----------
-      - name: Delete temp Permit env
-        if: ${{ always() && steps.provision.outputs.env_id != '' }}
-        timeout-minutes: 2
+  # Runs after every test leg, including failed and cancelled ones, with no
+  # checkout, so the project API key never shares a job with repository code.
+  cleanup:
+    name: Delete temp Permit envs
+    needs: test
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      # Keep in sync with the test job's node-version matrix.
+      NODE_VERSIONS: 22 24
+    steps:
+      # A 404 means the env was never created or is already gone. Any other
+      # failure is reported as a warning, since the env then needs manual removal.
+      - name: Delete temp Permit envs
+        if: env.RUN_BACKEND == 'true'
         env:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
-          ENV_ID: ${{ steps.provision.outputs.env_id }}
+          ENV_KEY_PREFIX: node-sdk-ci-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
-          curl -sS --max-time 30 --retry 3 -X DELETE \
-            "https://api.permit.io/v2/projects/${PROJECT_ID}/envs/${ENV_ID}" \
-            -H "Authorization: Bearer ${PROJECT_API_KEY}" || true
+          for node_version in $NODE_VERSIONS; do
+            env_key="${ENV_KEY_PREFIX}-n${node_version}"
+            status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 --retry 3 -X DELETE \
+              "https://api.permit.io/v2/projects/${PROJECT_ID}/envs/${env_key}" \
+              -H "Authorization: Bearer ${PROJECT_API_KEY}") || status=000
+            case "$status" in
+              2??) echo "Deleted temp env ${env_key}." ;;
+              404) echo "Temp env ${env_key} does not exist; nothing to delete." ;;
+              *) echo "::warning::Temp env ${env_key} was not deleted (HTTP ${status}); delete it from project ${PROJECT_ID} manually." ;;
+            esac
+          done
