@@ -8,8 +8,10 @@ import { Permit, PermitError } from '../../index';
 // The OPA client base URL is derived from the configured PDP URL by forcing the
 // OPA port (8181) and appending the OPA data path. This was previously built
 // with the `url-parse` package and is now built with the native WHATWG `URL`
-// (#106). These assertions lock the produced string so the refactor is proven
-// behaviour-equivalent and any regression in the construction logic fails here.
+// (#106). For absolute http(s) PDP URLs in canonical form the result matches what
+// url-parse produced, and these assertions lock that string. WHATWG parsing also
+// normalizes input that url-parse kept verbatim (dot segments, percent-encoding,
+// IDN hosts); the dot-segment test below pins that intended difference.
 
 test('buildOpaBaseUrl: default PDP', (t) => {
   t.is(buildOpaBaseUrl('http://localhost:7766'), 'http://localhost:8181/v1/data/permit/');
@@ -39,6 +41,14 @@ test('buildOpaBaseUrl: a path-prefixed PDP preserves the pre-existing concatenat
   t.is(
     buildOpaBaseUrl('http://localhost:7766/prefix/'),
     'http://localhost:8181/prefix/v1/data/permit/',
+  );
+});
+
+test('buildOpaBaseUrl: dot segments in the PDP path are resolved before the data path', (t) => {
+  // url-parse kept them verbatim and produced `/a/..v1/data/permit/`.
+  t.is(
+    buildOpaBaseUrl('https://pdp.example.com/a/..'),
+    'https://pdp.example.com:8181/v1/data/permit/',
   );
 });
 
