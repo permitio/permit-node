@@ -1,8 +1,6 @@
 import anyTest, { TestInterface } from 'ava';
 
-import { printBreak, provideTestExecutionContext, TestContext } from '../fixtures';
-
-const sleepTimeMs = 10000;
+import { provideTestExecutionContext, TestContext } from '../fixtures';
 
 const test = anyTest as TestInterface<TestContext>;
 test.before(provideTestExecutionContext);

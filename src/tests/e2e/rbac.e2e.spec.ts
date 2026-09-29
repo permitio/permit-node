@@ -1,6 +1,6 @@
 import anyTest, { TestInterface } from 'ava';
 
-import { UserCreate, UserRead } from '../../openapi';
+import { UserRead } from '../../openapi';
 import { printBreak, provideTestExecutionContext, TestContext } from '../fixtures';
 
 const sleepTimeMs = 10000;
@@ -169,7 +169,7 @@ test('Permission check e2e test', async (t) => {
       ],
     });
 
-    t.is(newUser.roles![0].role, viewer.key);
+    t.is((newUser.roles as NonNullable<UserRead['roles']>)[0].role, viewer.key);
 
     logger.info(
       `sleeping ${sleepTimeMs} ms before permit.check() to make sure all writes propagated from cloud to PDP`,

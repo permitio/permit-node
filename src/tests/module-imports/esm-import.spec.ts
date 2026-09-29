@@ -3,7 +3,6 @@ import test from 'ava';
 import { ApiClient } from '../../api/api-client';
 import { ElementsClient } from '../../api/elements';
 import { Enforcer } from '../../enforcement/enforcer';
-import type { IResource, IUser } from '../../enforcement/interfaces';
 import { Permit } from '../../index';
 
 test('ES Module import works correctly', async (t) => {

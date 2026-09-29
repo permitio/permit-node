@@ -11,7 +11,6 @@ const commenterRoleKey = 'commenter';
 const editorRoleKey = 'editor';
 const adminRoleKey = 'admin';
 const memberRoleKey = 'member';
-const watcherRoleKey = 'watcher';
 
 const account = {
   key: 'account',
