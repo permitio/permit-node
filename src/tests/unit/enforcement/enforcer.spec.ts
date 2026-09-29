@@ -74,7 +74,7 @@ describe('Enforcer (unit)', () => {
       expect(pdp.last?.data).not.toHaveProperty('resource.key');
     });
 
-    it('throws `invalid resource string` for >2 colon-separated parts and never dispatches', async () => {
+    it('throws `invalid resource string` for >2 colon parts and never dispatches', async () => {
       pdp.resolveWith({ allow: true });
 
       const error = await permit.check('alice', 'read', 'a:b:c').catch((err) => err);
@@ -86,7 +86,7 @@ describe('Enforcer (unit)', () => {
   });
 
   describe('check - default tenant injection', () => {
-    it('injects the default tenant when the resource has none and useDefaultTenantIfEmpty is on', async () => {
+    it('injects the default tenant if none is set and useDefaultTenantIfEmpty is on', async () => {
       pdp.resolveWith({ allow: true });
 
       await permit.check('alice', 'read', { type: 'doc' });
@@ -239,7 +239,7 @@ describe('Enforcer (unit)', () => {
   });
 
   describe('getUserPermissions', () => {
-    it('POSTs the {user,tenants,resources,resource_types} input to `user-permissions`', async () => {
+    it('POSTs {user,tenants,resources,resource_types} to `user-permissions`', async () => {
       pdp.resolveWith({ 'doc:1': { permissions: ['read'] } });
 
       const permissions = await permit.getUserPermissions('bob', ['t1', 't2'], ['doc:1'], ['doc']);

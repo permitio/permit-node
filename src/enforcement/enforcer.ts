@@ -74,7 +74,7 @@ export interface IEnforcer {
    * @param context  - The context object representing the context in which the action is performed.
    * @returns `true` if the user is authorized, `false` otherwise.
    * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
-   * @throws {@link PermitPDPStatusError} if the PDP returned an unexpected status code or response body.
+   * @throws {@link PermitPDPStatusError} if the PDP's status code or response body is unexpected.
    */
   check(
     user: IUser | string,
@@ -91,7 +91,7 @@ export interface IEnforcer {
    * @param context  - The context object representing the context in which the action is performed.
    * @returns array containing `true` if the user is authorized, `false` otherwise for each check request.
    * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
-   * @throws {@link PermitPDPStatusError} if the PDP returned an unexpected status code or response body.
+   * @throws {@link PermitPDPStatusError} if the PDP's status code or response body is unexpected.
    */
   bulkCheck(
     checks: Array<ICheckQuery>,
@@ -108,7 +108,7 @@ export interface IEnforcer {
    * @param resource_types - The list of resource types to filter the permissions on ( given by resource roles ).
    * @returns object with key as the resource identifier and value as the resource details and permissions.
    * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
-   * @throws {@link PermitPDPStatusError} if the PDP returned an unexpected status code or response body.
+   * @throws {@link PermitPDPStatusError} if the PDP's status code or response body is unexpected.
    */
   getUserPermissions(
     user: IUser | string,

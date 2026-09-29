@@ -139,7 +139,7 @@ describe('DeprecatedApiClient (unit)', () => {
   });
 
   describe('error propagation', () => {
-    it('re-throws the raw AxiosError (deprecated wrappers do not map to PermitApiError)', async () => {
+    it('re-throws the raw AxiosError instead of mapping it to PermitApiError', async () => {
       rest.rejectWith(404, { message: 'not found' });
 
       const error = await permit.api.getUser('missing').catch((err) => err);

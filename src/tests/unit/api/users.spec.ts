@@ -202,7 +202,7 @@ describe('UsersApi (unit)', () => {
   });
 
   describe('getAssignedRoles', () => {
-    it('GETs role_assignments with default detailed/includeTotalCount/pagination flags', async () => {
+    it('GETs role_assignments with default detailed/total-count/pagination flags', async () => {
       const assignments = [{ user: 'bob', role: 'admin', tenant: 'acme', id: 'ra-1' }];
       rest.resolveWith(assignments);
 
@@ -316,7 +316,7 @@ describe('UsersApi (unit)', () => {
       expect(synced).toBe(permit.api.users);
     });
 
-    it('returns a clone that dispatches through the PDP host when proxyFactsViaPdp is on', async () => {
+    it('returns a clone that dispatches to the PDP host when proxyFactsViaPdp is on', async () => {
       const proxied = createMockPermit({ proxyFactsViaPdp: true });
 
       const synced = proxied.permit.api.users.waitForSync(10);
@@ -332,7 +332,7 @@ describe('UsersApi (unit)', () => {
   });
 
   describe('proxyFactsViaPdp', () => {
-    it('routes facts requests through the PDP base path while still using the rest transport', async () => {
+    it('routes facts requests to the PDP base path, still on the rest transport', async () => {
       const proxied = createMockPermit({ proxyFactsViaPdp: true });
       const user = { key: 'bob', id: 'user-1' };
       proxied.rest.resolveWith(user);
