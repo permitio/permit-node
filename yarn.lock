@@ -5939,7 +5939,7 @@ validate-npm-package-license@^3.0.1:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
 
-"vite@^6.0.0 || ^7.0.0 || ^8.0.0":
+vite@8.1.0, "vite@^6.0.0 || ^7.0.0 || ^8.0.0":
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/vite/-/vite-8.1.0.tgz#0734dc1a48faeb2bd5f5b16b66dcbfae484fec55"
   integrity sha512-BuJcQK/56NQTWDGn4ABea3q4SSBdNPWwNZKTkkUpcMPnLoquSYH8llRtSUIgoL1KSCpHt5eghLShn50mH36y7Q==
