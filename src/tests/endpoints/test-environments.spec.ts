@@ -1,4 +1,5 @@
 import pino from 'pino';
+import { TestContext } from 'vitest';
 
 import {
   ApiKeyLevel,
@@ -7,6 +8,7 @@ import {
   Permit,
   PermitApiError,
   PermitConnectionError,
+  PermitContextError,
   ProjectCreate,
   ProjectRead,
 } from '../../index';
@@ -60,16 +62,31 @@ async function cleanup(client: Permit, projectKey: string) {
   printBreak();
 }
 
-it('environment creation with org level api key', async () => {
-  const client = permitWithOrgLevelApiKey;
-  logger.info(`token: ${client.config.token}`);
-
+/**
+ * Skips the current test when the client's API key is scoped below `level`. A failure to read
+ * the key's scope, such as a network or authentication error, still fails the test.
+ */
+async function skipUnlessKeyLevel(
+  ctx: TestContext,
+  client: Permit,
+  level: ApiKeyLevel,
+  keyVariable: string,
+): Promise<void> {
   try {
-    await client.api.ensureAccessLevel(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
+    await client.api.ensureAccessLevel(level);
   } catch (error) {
-    logger.warn('this test must run with an org level api key');
-    return;
+    const scopeKnown = client.config.apiContext.permittedAccessLevel !== ApiKeyLevel.WAIT_FOR_INIT;
+    if (error instanceof PermitContextError && scopeKnown) {
+      ctx.skip(`requires ${level} in ${keyVariable}`);
+    }
+    throw error;
   }
+}
+
+it('environment creation with org level api key', async (ctx) => {
+  const client = permitWithOrgLevelApiKey;
+
+  await skipUnlessKeyLevel(ctx, client, ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY, 'ORG_PDP_API_KEY');
   expect(client.config.apiContext.permittedAccessLevel).toBe(
     ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY,
   );
@@ -147,15 +164,10 @@ it('environment creation with org level api key', async () => {
   }
 });
 
-it('environment creation with project level api key', async () => {
+it('environment creation with project level api key', async (ctx) => {
   const client = permitWithProjectLevelApiKey;
 
-  try {
-    await client.api.ensureAccessLevel(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
-  } catch (error) {
-    logger.warn('this test must run with a project level api key');
-    return;
-  }
+  await skipUnlessKeyLevel(ctx, client, ApiKeyLevel.PROJECT_LEVEL_API_KEY, 'PROJECT_PDP_API_KEY');
   expect(client.config.apiContext.permittedAccessLevel).toBe(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
 
   try {
