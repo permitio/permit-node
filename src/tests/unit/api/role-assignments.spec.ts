@@ -1,7 +1,12 @@
 import { PermitApiError } from '../../../api/base';
 import { RoleAssignmentCreate, RoleAssignmentRemove } from '../../../api/role-assignments';
 import { Permit } from '../../../index';
-import { createMockPermit, MOCK_PDP_ORIGIN, MockTransport } from '../../helpers/mock-api';
+import {
+  createMockPermit,
+  MOCK_API_ORIGIN,
+  MOCK_PDP_ORIGIN,
+  MockTransport,
+} from '../../helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // role-assignments URL is scoped under `/v2/facts/{proj}/{env}/role_assignments`.
@@ -9,16 +14,6 @@ const PROJ = 'proj';
 const ENV = 'env';
 const COLLECTION = `/v2/facts/${PROJ}/${ENV}/role_assignments`;
 const BULK = `${COLLECTION}/bulk`;
-
-// waitForSync reads the X-Wait-Timeout header off a cloned client's openapi
-// config (see wait-for-sync.spec.ts); this shape exposes that protected member.
-interface ApiWithConfig {
-  openapiClientConfig: { basePath?: string; baseOptions: { headers: Record<string, string> } };
-}
-
-function headersOf(api: unknown): Record<string, string> {
-  return (api as unknown as ApiWithConfig).openapiClientConfig.baseOptions.headers;
-}
 
 describe('RoleAssignmentsApi (unit)', () => {
   let permit: Permit;
@@ -175,31 +170,36 @@ describe('RoleAssignmentsApi (unit)', () => {
     });
   });
 
+  // wait-for-sync.spec.ts covers the header values through the users API; these check that
+  // the role-assignments API sends them too.
   describe('waitForSync', () => {
-    it('clones the client with X-Wait-Timeout and routes facts through the PDP host', async () => {
-      const proxied = createMockPermit({ proxyFactsViaPdp: true });
-      const synced = proxied.permit.api.roleAssignments.waitForSync(10);
+    const assignment = { user: 'user-1', role: 'admin', tenant: 'acme' };
 
-      // A distinct clone carries the wait header; the original is untouched.
-      expect(synced).not.toBe(proxied.permit.api.roleAssignments);
-      expect(headersOf(synced)['X-Wait-Timeout']).toBe('10');
-      expect(headersOf(proxied.permit.api.roleAssignments)['X-Wait-Timeout']).toBeUndefined();
+    it('sends X-Wait-Timeout to the PDP host from the returned client only', async () => {
+      const proxied = createMockPermit({ proxyFactsViaPdp: true });
+
+      await proxied.permit.api.roleAssignments.waitForSync(10).assign(assignment);
 
       // The proxied facts client still dispatches on the REST transport, but the
       // absolute URL now targets the PDP host rather than the control-plane API.
-      proxied.rest.resolveWith({ id: 'ra-1' });
-      await synced.assign({ user: 'user-1', role: 'admin', tenant: 'acme' });
-
       expect(proxied.rest.last?.method).toBe('POST');
       expect(proxied.rest.last?.origin).toBe(MOCK_PDP_ORIGIN);
       expect(proxied.rest.last?.path).toBe(COLLECTION);
+      expect(proxied.rest.last?.headers.get('X-Wait-Timeout')).toBe('10');
+
+      await proxied.permit.api.roleAssignments.assign(assignment);
+
+      expect(proxied.rest.last?.origin).toBe(MOCK_PDP_ORIGIN);
+      expect(proxied.rest.last?.headers.has('X-Wait-Timeout')).toBe(false);
     });
 
-    it('is a no-op without proxyFactsViaPdp (returns self, no wait header)', () => {
+    it('is a no-op without proxyFactsViaPdp (returns self, no wait header)', async () => {
       const synced = permit.api.roleAssignments.waitForSync(0);
+      await synced.assign(assignment);
 
       expect(synced).toBe(permit.api.roleAssignments);
-      expect(headersOf(synced)['X-Wait-Timeout']).toBeUndefined();
+      expect(rest.last?.origin).toBe(MOCK_API_ORIGIN);
+      expect(rest.last?.headers.has('X-Wait-Timeout')).toBe(false);
     });
   });
 

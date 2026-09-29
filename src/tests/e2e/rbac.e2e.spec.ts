@@ -27,6 +27,9 @@ const documentInTenant = { type: DOCUMENT, tenant: TENANT };
 
 let permit: IPermitClient;
 let logger: pino.Logger;
+// The user object users.sync() returned for elon, email and attributes included. The main test
+// sets it and the useOpa test checks with it.
+let syncedElon: UserRead | undefined;
 
 beforeAll(() => {
   ({ permit, logger } = createTestClient());
@@ -176,6 +179,7 @@ it('Permission check e2e test', async () => {
   expect(user.first_name).toBe('Elon');
   expect(user.last_name).toBe('Musk');
   expect(user.attributes).toEqual({ age: 50, favoriteColor: 'red' });
+  syncedElon = user;
 
   // assign role to user in tenant
   const ra = await permit.api.users.assignRole({
@@ -290,14 +294,17 @@ it('Permission check e2e test', async () => {
 });
 
 // Uses the state the test above leaves behind: elon holds the admin role and james the viewer
-// role in the tenant.
+// role in the tenant, and syncedElon holds elon's synced user object.
 it.skipIf(!RUN_OPA_E2E)('useOpa checks go to OPA directly (PERMIT_RUN_OPA_E2E=true)', async () => {
+  if (!syncedElon) {
+    throw new Error('the permission check test did not sync elon, so this test cannot run');
+  }
   const useOpa = { useOpa: true };
   const secretDocument = { ...documentInTenant, attributes: { secret: true } };
   await waitForCheck(() => permit.check(JAMES, 'read', secretDocument), true);
 
   expect(await permit.check(JAMES, 'read', secretDocument, {}, useOpa)).toBe(true);
   expect(await permit.check(JAMES, 'create', secretDocument, {}, useOpa)).toBe(false);
-  expect(await permit.check({ key: ELON }, 'create', documentInTenant, {}, useOpa)).toBe(true);
+  expect(await permit.check(syncedElon, 'create', documentInTenant, {}, useOpa)).toBe(true);
   expect(await permit.check(ELON, 'control the usa', secretDocument, {}, useOpa)).toBe(false);
 });

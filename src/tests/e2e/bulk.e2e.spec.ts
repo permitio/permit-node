@@ -2,6 +2,7 @@ import pino from 'pino';
 
 import { IPermitClient } from '../../index';
 import { cleanUp, createTestClient } from '../fixtures';
+import { waitFor } from '../helpers/wait-for';
 
 let permit: IPermitClient;
 let logger: pino.Logger;
@@ -13,8 +14,10 @@ const unique = (key: string) => `bulk_${key}_${RUN_ID}`;
 
 const BULK_USER_1 = unique('user_maya_test_1');
 const BULK_USER_2 = unique('user_maya_test_2');
-const DELETED_USER_1 = unique('user_maya_1');
-const DELETED_USER_2 = unique('user_maya_2');
+// The delete test's users share a prefix, so searching for it lists exactly those users.
+const DELETED_PREFIX = unique('user_maya_deleted');
+const DELETED_USER_1 = `${DELETED_PREFIX}_1`;
+const DELETED_USER_2 = `${DELETED_PREFIX}_2`;
 // Every user key this spec creates, so afterAll can delete whichever ones remain.
 const CREATED_USER_KEYS = [BULK_USER_1, BULK_USER_2, DELETED_USER_1, DELETED_USER_2];
 
@@ -88,10 +91,23 @@ it('Bulk users replace test', async () => {
 });
 
 it('Bulk users delete test', async () => {
+  const listDeletedUsers = () => permit.api.users.list({ search: DELETED_PREFIX });
   const users = [{ key: DELETED_USER_1 }, { key: DELETED_USER_2 }];
   logger.info('users: ' + JSON.stringify(users));
   await permit.api.users.bulkUserCreate(users);
+  // Bulk create is eventually consistent; wait until both users are listable, so the delete
+  // below acts on users that exist.
+  await waitFor(listDeletedUsers, (list) => list.total_count === 2, {
+    timeoutMs: 60_000,
+    message: 'bulk-created users not yet listable',
+    describe: (list) => `total_count=${list.total_count}`,
+  });
   const users_key = [DELETED_USER_1, DELETED_USER_2];
   logger.info('users: ' + JSON.stringify(users_key));
   await permit.api.users.bulkUserDelete(users_key);
+  await waitFor(listDeletedUsers, (list) => list.total_count === 0, {
+    timeoutMs: 60_000,
+    message: 'bulk-deleted users still listed',
+    describe: (list) => `total_count=${list.total_count}`,
+  });
 });
