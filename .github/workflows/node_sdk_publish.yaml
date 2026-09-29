@@ -90,17 +90,47 @@ jobs:
             -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}'
           
       - name: Bump version at package.json
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          # Use the release tag as the version, stripping any leading 'v'
-          # (e.g. 'v2.7.6' -> '2.7.6') so it is valid semver for npm.
-          VERSION=${{ github.event.release.tag_name }}
-          VERSION=${VERSION#v}
-          sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" package.json
-          cat package.json
+          # Pass the release tag through an environment variable to prevent shell
+          # injection. Validate it is a literal semantic version (not a keyword like
+          # "minor" or "patch" that npm version would accept). Bump only the
+          # top-level "version" field. npm is JSON-aware (unlike greedy sed, which
+          # also rewrites scripts.version); no git tag/commit is created, re-runs on
+          # the same version are tolerated, and the "version" lifecycle script
+          # (standard-version) is skipped.
+          node -e "
+            const semver = require('semver');
+            const tag = process.env.RELEASE_TAG;
+            if (!semver.valid(tag)) {
+              console.error('Release tag', JSON.stringify(tag), 'is not a valid semantic version');
+              process.exit(1);
+            }
+          "
+          npm version "$RELEASE_TAG" --no-git-tag-version --allow-same-version --ignore-scripts
+          # Assert: package.json version matches the normalized release tag
+          node -e "
+            const semver = require('semver');
+            const tag = process.env.RELEASE_TAG;
+            // npm strips both the optional 'v' prefix and semver build metadata.
+            const normalized = semver.valid(tag);
+            const pkg = require('./package.json');
+            if (pkg.version !== normalized) {
+              console.error('Version mismatch: expected', normalized, 'got', pkg.version);
+              process.exit(1);
+            }
+            if (pkg.scripts.version !== 'standard-version') {
+              console.error('scripts.version was corrupted by the version bump');
+              process.exit(1);
+            }
+          "
 
       - name: Publish package to NPM
+        env:
+          IS_PRERELEASE: ${{ github.event.release.prerelease }}
         run: |
-          if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
+          if [[ "$IS_PRERELEASE" == "true" ]]; then
             echo "Publishing as a release candidate (rc)..."
             npm publish --access public --tag rc
           else
@@ -113,4 +143,3 @@ jobs:
         #   permitio/permit-node -> Settings -> Trusted Publishers
         #   (workflow: node_sdk_publish.yaml, environment: production)
         # Provenance attestations are generated automatically.
-
