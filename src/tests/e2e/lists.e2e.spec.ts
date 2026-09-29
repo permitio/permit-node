@@ -1,5 +1,5 @@
 import { IPermitClient } from '../../index';
-import { createTestClient } from '../fixtures';
+import { cleanUp, createTestClient } from '../fixtures';
 import { waitFor } from '../helpers/wait-for';
 
 let permit: IPermitClient;
@@ -16,14 +16,20 @@ beforeAll(async () => {
   // Bulk create is eventually consistent; gate until all 10 users are listable
   // so the exact-count assertions below don't race the write propagating.
   await waitFor(
-    async () => (await permit.api.users.list({ search: PREFIX, perPage: 100 })).total_count === 10,
-    { timeoutMs: 60_000, intervalMs: 1_000, message: 'created users not yet listable' },
+    () => permit.api.users.list({ search: PREFIX, perPage: 100 }),
+    (users) => users.total_count === 10,
+    {
+      timeoutMs: 60_000,
+      intervalMs: 1_000,
+      message: 'created users not yet listable',
+      describe: (users) => `total_count=${users.total_count}`,
+    },
   );
 });
 
 afterAll(async () => {
   if (!permit) return; // beforeAll never initialized the client (e.g. missing key)
-  await permit.api.users.bulkUserDelete(USER_KEYS).catch(() => null);
+  await cleanUp({ [`users ${PREFIX}-user-*`]: () => permit.api.users.bulkUserDelete(USER_KEYS) });
 });
 
 it('List users scoped by prefix returns exactly the created users', async () => {

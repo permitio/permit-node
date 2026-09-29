@@ -1,60 +1,69 @@
 import pino from 'pino';
 
 import { IPermitClient } from '../../index';
-import { createTestClient } from '../fixtures';
+import { cleanUp, createTestClient } from '../fixtures';
 
 let permit: IPermitClient;
 let logger: pino.Logger;
 
-// Every user key this spec creates, so afterAll can purge them from the shared
-// environment and not pollute sibling suites.
-const CREATED_USER_KEYS = ['user_maya_test_1', 'user_maya_test_2', 'user_maya_1', 'user_maya_2'];
+// Keys unique to this run, so entities left by another spec or an earlier run can't collide
+// with the ones created here.
+const RUN_ID = `${process.pid}_${Date.now()}`;
+const unique = (key: string) => `bulk_${key}_${RUN_ID}`;
+
+const BULK_USER_1 = unique('user_maya_test_1');
+const BULK_USER_2 = unique('user_maya_test_2');
+const DELETED_USER_1 = unique('user_maya_1');
+const DELETED_USER_2 = unique('user_maya_2');
+// Every user key this spec creates, so afterAll can delete whichever ones remain.
+const CREATED_USER_KEYS = [BULK_USER_1, BULK_USER_2, DELETED_USER_1, DELETED_USER_2];
 
 // Resources/relation backing the relationship-tuple test. Created here so the
 // test is self-contained in a shared backend (rebac uses its own schema).
-const FOLDERS_RESOURCE = 'folders';
-const DOCS_RESOURCE = 'docs';
+const FOLDERS_RESOURCE = unique('folders');
+const DOCS_RESOURCE = unique('docs');
 
 beforeAll(async () => {
   ({ permit, logger } = createTestClient());
 
-  await permit.api.resources
-    .create({ key: FOLDERS_RESOURCE, name: 'Folders', actions: { read: {} } })
-    .catch(() => null);
-  await permit.api.resources
-    .create({ key: DOCS_RESOURCE, name: 'Docs', actions: { read: {} } })
-    .catch(() => null);
+  await permit.api.resources.create({
+    key: FOLDERS_RESOURCE,
+    name: 'Folders',
+    actions: { read: {} },
+  });
+  await permit.api.resources.create({ key: DOCS_RESOURCE, name: 'Docs', actions: { read: {} } });
   // docs:<x> --parent--> folders:<y>; subject of the relation is a folder.
-  await permit.api.resourceRelations
-    .create(DOCS_RESOURCE, {
-      key: 'parent',
-      name: 'Parent',
-      subject_resource: FOLDERS_RESOURCE,
-    })
-    .catch(() => null);
+  await permit.api.resourceRelations.create(DOCS_RESOURCE, {
+    key: 'parent',
+    name: 'Parent',
+    subject_resource: FOLDERS_RESOURCE,
+  });
 });
 
 afterAll(async () => {
   if (!permit) return; // beforeAll never initialized the client (e.g. missing key)
-  // Purge every user this spec created.
-  await permit.api.users.bulkUserDelete(CREATED_USER_KEYS).catch(() => null);
-  // Deleting the resources cascades to their instances and relationship tuples.
-  await permit.api.resources.delete(DOCS_RESOURCE).catch(() => null);
-  await permit.api.resources.delete(FOLDERS_RESOURCE).catch(() => null);
+  // Deleting the resources removes their instances and relationship tuples.
+  const steps: Record<string, () => Promise<unknown>> = {};
+  for (const key of CREATED_USER_KEYS) {
+    steps[`user ${key}`] = () => permit.api.users.delete(key);
+  }
+  steps[`resource ${DOCS_RESOURCE}`] = () => permit.api.resources.delete(DOCS_RESOURCE);
+  steps[`resource ${FOLDERS_RESOURCE}`] = () => permit.api.resources.delete(FOLDERS_RESOURCE);
+  await cleanUp(steps);
 });
 
 it('Bulk relationship tuples test', async () => {
   const tuples = [
     {
-      subject: 'folders:pdf',
+      subject: `${FOLDERS_RESOURCE}:pdf`,
       relation: 'parent',
-      object: 'docs:tasks',
+      object: `${DOCS_RESOURCE}:tasks`,
       tenant: 'default',
     },
     {
-      subject: 'folders:png',
+      subject: `${FOLDERS_RESOURCE}:png`,
       relation: 'parent',
-      object: 'docs:files',
+      object: `${DOCS_RESOURCE}:files`,
       tenant: 'default',
     },
   ];
@@ -64,25 +73,25 @@ it('Bulk relationship tuples test', async () => {
 });
 
 it('Bulk users test', async () => {
-  const users = [{ key: 'user_maya_test_1' }, { key: 'user_maya_test_2' }];
+  const users = [{ key: BULK_USER_1 }, { key: BULK_USER_2 }];
   logger.info('users: ' + JSON.stringify(users));
   await permit.api.users.bulkUserCreate(users);
 });
 
 it('Bulk users replace test', async () => {
   const users = [
-    { key: 'user_maya_test_1', first_name: '1' },
-    { key: 'user_maya_test_2', first_name: '2' },
+    { key: BULK_USER_1, first_name: '1' },
+    { key: BULK_USER_2, first_name: '2' },
   ];
   logger.info('users: ' + JSON.stringify(users));
   await permit.api.users.bulkUserReplace(users);
 });
 
 it('Bulk users delete test', async () => {
-  const users = [{ key: 'user_maya_1' }, { key: 'user_maya_2' }];
+  const users = [{ key: DELETED_USER_1 }, { key: DELETED_USER_2 }];
   logger.info('users: ' + JSON.stringify(users));
   await permit.api.users.bulkUserCreate(users);
-  const users_key = ['user_maya_1', 'user_maya_2'];
+  const users_key = [DELETED_USER_1, DELETED_USER_2];
   logger.info('users: ' + JSON.stringify(users_key));
   await permit.api.users.bulkUserDelete(users_key);
 });

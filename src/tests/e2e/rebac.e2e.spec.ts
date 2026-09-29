@@ -1,15 +1,21 @@
 import pino from 'pino';
 
-import { IPermitClient } from '../..';
-import { createTestClient, printBreak } from '../fixtures';
+import { IPermitClient, IResource } from '../..';
+import { RoleAssignmentCreate } from '../../openapi';
+import { cleanUp, createTestClient, expectNotFound } from '../fixtures';
 import { waitFor } from '../helpers/wait-for';
 
 let permit: IPermitClient;
 let logger: pino.Logger;
 
-beforeAll(() => {
-  ({ permit, logger } = createTestClient());
-});
+// Keys unique to this run, so entities left by another spec or an earlier run can't change the
+// results.
+const RUN_ID = `${process.pid}_${Date.now()}`;
+const unique = (key: string) => `rebac_${key}_${RUN_ID}`;
+
+// The heavy ReBAC graph can take minutes to propagate to the PDP on a cold environment. Each step
+// is its own test, so this budget plus one attempt stays inside the 300s test timeout.
+const STEP_TIMEOUT_MS = 150_000;
 
 const viewerRoleKey = 'viewer';
 const commenterRoleKey = 'commenter';
@@ -18,9 +24,9 @@ const adminRoleKey = 'admin';
 const memberRoleKey = 'member';
 
 const account = {
-  key: 'account',
+  key: unique('account'),
   name: 'Account',
-  urn: 'prn:gdrive:account',
+  urn: `prn:gdrive:${unique('account')}`,
   description: 'google drive account',
   actions: {
     create: {},
@@ -42,9 +48,9 @@ const account = {
   },
 };
 const folder = {
-  key: 'folder',
+  key: unique('folder'),
   name: 'Folder',
-  urn: 'prn:gdrive:folder',
+  urn: `prn:gdrive:${unique('folder')}`,
   description: 'google drive folder',
   actions: {
     read: {},
@@ -57,9 +63,9 @@ const folder = {
   },
 };
 const document = {
-  key: 'document',
+  key: unique('document'),
   name: 'Document',
-  urn: 'prn:gdrive:document',
+  urn: `prn:gdrive:${unique('document')}`,
   description: 'google drive document',
   actions: {
     read: {},
@@ -72,7 +78,7 @@ const document = {
 const resourcesToCreate = [account, folder, document];
 
 const permitUser = {
-  key: 'user_permit',
+  key: unique('user_permit'),
   email: 'user@permit.io',
   first_name: 'Permit',
   last_name: 'User',
@@ -81,7 +87,7 @@ const permitUser = {
   },
 };
 const authzUser = {
-  key: 'user_authz',
+  key: unique('user_authz'),
   email: 'member@auth0.com',
   first_name: 'Member',
   last_name: 'User',
@@ -182,435 +188,425 @@ const allResourceRolesToCreate = [
 ];
 
 const permitTenant = {
-  key: 'permit',
+  key: unique('permit'),
   name: 'Permit',
 };
 const cocacolaTenant = {
-  key: 'cocacola',
+  key: unique('cocacola'),
   name: 'Coca Cola',
 };
 const tenantsToCreate = [permitTenant, cocacolaTenant];
 
-it('Permission check e2e test', async () => {
-  try {
-    logger.info('initial setup of objects');
+const relationships = [
+  // finance folder contains 2 documents
+  [`${folder.key}:finance`, 'parent', `${document.key}:budget23`, permitTenant.key],
+  [`${folder.key}:finance`, 'parent', `${document.key}:june-expenses`, permitTenant.key],
+  // rnd folder contains 2 documents
+  [`${folder.key}:rnd`, 'parent', `${document.key}:architecture`, permitTenant.key],
+  [`${folder.key}:rnd`, 'parent', `${document.key}:opal`, permitTenant.key],
+  // folders belongs in permit g-drive account
+  [`${account.key}:permitio`, 'account', `${folder.key}:finance`, permitTenant.key],
+  [`${account.key}:permitio`, 'account', `${folder.key}:rnd`, permitTenant.key],
+  // another account->folder->doc belongs to another tenant
+  [`${folder.key}:recipes`, 'parent', `${document.key}:secret-recipe`, cocacolaTenant.key],
+  [`${account.key}:cocacola`, 'account', `${folder.key}:recipes`, cocacolaTenant.key],
+];
 
-    // create resources
-    for (const resource of resourcesToCreate) {
-      const createdResource = await permit.api.resources.create(resource);
-      expect(createdResource).not.toBe(undefined);
-      expect(createdResource).not.toBe(null);
-      expect(createdResource.key).toBe(resource.key);
-      expect(createdResource.name).toBe(resource.name);
-      expect(createdResource.urn).toBe(resource.urn);
-      expect(createdResource.description).toBe(resource.description);
-    }
+interface CheckAssertion {
+  user: string;
+  action: string;
+  resource_instance: IResource;
+  result: boolean;
+}
 
-    // create admin and member users
-    for (const user of usersToCreate) {
-      const createdUser = await permit.api.users.create(user);
-      expect(createdUser).not.toBe(undefined);
-      expect(createdUser).not.toBe(null);
-      expect(createdUser.key).toBe(user.key);
-      expect(createdUser.email).toBe(user.email);
-      expect(createdUser.first_name).toBe(user.first_name);
-      expect(createdUser.last_name).toBe(user.last_name);
-    }
+interface TestStep {
+  name: string;
+  assignments: RoleAssignmentCreate[];
+  assertions: CheckAssertion[];
+}
 
-    // create folder roles
-
-    for (const resourceRole of allResourceRolesToCreate) {
-      const createdResourceRole = await permit.api.resourceRoles.create(
-        resourceRole.resourceKey,
-        resourceRole.roleData,
-      );
-      expect(createdResourceRole).not.toBe(undefined);
-      expect(createdResourceRole).not.toBe(null);
-      expect(createdResourceRole.key).toBe(resourceRole.roleData.key);
-      expect(createdResourceRole.name).toBe(resourceRole.roleData.name);
-    }
-
-    // create relation between document and folder (parent)
-    const documentFolderRelation = await permit.api.resourceRelations.create(document.key, {
-      key: 'parent',
-      name: 'Document Folder Relation',
-      subject_resource: folder.key,
-    });
-    expect(documentFolderRelation).not.toBe(undefined);
-    expect(documentFolderRelation).not.toBe(null);
-    expect(documentFolderRelation.key).toBe('parent');
-
-    // create role derivation folder -> document
-    const folderDocumentRoleDerivation = [viewerRoleKey, commenterRoleKey, editorRoleKey].map(
-      (role) =>
-        permit.api.resourceRoles.createRoleDerivation(document.key, role, {
-          role: role,
-          on_resource: folder.key,
-          linked_by_relation: 'parent',
-        }),
-    );
-    await Promise.all(folderDocumentRoleDerivation);
-
-    // create permit and cocacola tenants
-    for (const tenant of tenantsToCreate) {
-      const createdTenant = await permit.api.tenants.create(tenant);
-      expect(createdTenant).not.toBe(undefined);
-      expect(createdTenant).not.toBe(null);
-      expect(createdTenant.key).toBe(tenant.key);
-      expect(createdTenant.name).toBe(tenant.name);
-    }
-
-    const relationships = [
-      // finance folder contains 2 documents
-      [`${folder.key}:finance`, 'parent', `${document.key}:budget23`, permitTenant.key],
-      // TODO: add missing relationships commented out below because of 409 conflict
-      [`${folder.key}:finance`, 'parent', `${document.key}:june-expenses`, permitTenant.key],
-      // rnd folder contains 2 documents
-      [`${folder.key}:rnd`, 'parent', `${document.key}:architecture`, permitTenant.key],
-      [`${folder.key}:rnd`, 'parent', `${document.key}:opal`, permitTenant.key],
-      // folders belongs in permit g-drive account
-      [`${account.key}:permitio`, 'account', `${folder.key}:finance`, permitTenant.key],
-      [`${account.key}:permitio`, 'account', `${folder.key}:rnd`, permitTenant.key],
-      // another account->folder->doc belongs to another tenant
-      [`${folder.key}:recipes`, 'parent', `${document.key}:secret-recipe`, cocacolaTenant.key],
-      [`${account.key}:cocacola`, 'account', `${folder.key}:recipes`, cocacolaTenant.key],
-    ];
-
-    for (const relationship of relationships) {
-      const relTuple = await permit.api.relationshipTuples.create({
-        subject: relationship[0],
-        relation: relationship[1],
-        object: relationship[2],
-        tenant: relationship[3],
-      });
-
-      expect(relTuple).not.toBe(undefined);
-      expect(relTuple).not.toBe(null);
-      expect(relTuple.subject).toBe(relationship[0]);
-      expect(relTuple.relation).toBe(relationship[1]);
-      expect(relTuple.object).toBe(relationship[2]);
-      // expect(relTuple.tenant_id).toBe(relationship[3]); returns id instead of key
-    }
-
-    const assignmentsAndAssertions = [
+const assignmentsAndAssertions: TestStep[] = [
+  {
+    name: 'direct access: a document viewer can read it but not comment',
+    assignments: [
       {
-        // direct access
-        assignments: [
-          {
-            user: permitUser.key,
-            role: viewerRoleKey,
-            resource_instance: `${document.key}:architecture`,
-            tenant: permitTenant.key,
-          },
-        ],
-        assertions: [
-          {
-            user: permitUser.key,
-            action: 'read',
-            resource_instance: {
-              type: document.key,
-              key: 'architecture',
-              tenant: permitTenant.key,
-            },
-            result: true,
-          },
-          {
-            user: permitUser.key,
-            action: 'comment',
-            resource_instance: {
-              type: document.key,
-              key: 'architecture',
-              tenant: permitTenant.key,
-            },
-            result: false,
-          },
-          {
-            user: permitUser.key,
-            action: 'comment',
-            resource_instance: {
-              type: document.key,
-              key: 'opal',
-              tenant: permitTenant.key,
-            },
-            result: false,
-          },
-        ],
+        user: permitUser.key,
+        role: viewerRoleKey,
+        resource_instance: `${document.key}:architecture`,
+        tenant: permitTenant.key,
       },
-      // access from higher level
+    ],
+    assertions: [
       {
-        assignments: [
-          {
-            user: permitUser.key,
-            role: commenterRoleKey,
-            resource_instance: `${folder.key}:rnd`,
-            tenant: permitTenant.key,
-          },
-        ],
-        assertions: [
-          // direct access allowed
-          {
-            user: permitUser.key,
-            action: 'read',
-            resource_instance: {
-              type: folder.key,
-              key: 'rnd',
-              tenant: permitTenant.key,
-            },
-            result: true,
-          },
-          // access to child resources allowed
-          ...[
-            { action: 'read', resource: 'architecture' },
-            { action: 'comment', resource: 'architecture' },
-            { action: 'read', resource: 'opal' },
-            { action: 'comment', resource: 'opal' },
-          ].map((settings) => ({
-            user: permitUser.key,
-            action: settings.action,
-            resource_instance: {
-              type: document.key,
-              key: settings.resource,
-              tenant: permitTenant.key,
-            },
-            result: true,
-          })),
-          // higher permissions not allowed
-          {
-            user: permitUser.key,
-            action: 'update',
-            resource_instance: {
-              type: document.key,
-              key: 'architecture',
-              tenant: permitTenant.key,
-            },
-            result: false,
-          },
-          // access to other resources not allowed
-          {
-            user: permitUser.key,
-            action: 'read',
-            resource_instance: {
-              type: folder.key,
-              key: 'budget23',
-              tenant: permitTenant.key,
-            },
-            result: false,
-          },
-        ],
-      },
-      // access from highest level (account)
-      {
-        assignments: [
-          {
-            user: permitUser.key,
-            role: adminRoleKey,
-            resource_instance: `${account.key}:permitio`,
-            tenant: permitTenant.key,
-          },
-          {
-            user: authzUser.key,
-            role: memberRoleKey,
-            resource_instance: `${account.key}:cocacola`,
-            tenant: cocacolaTenant.key,
-          },
-        ],
-        assertions: [
-          // direct access allowed
-          {
-            user: permitUser.key,
-            action: 'invite_user',
-            resource_instance: {
-              type: account.key,
-              key: 'permitio',
-              tenant: permitTenant.key,
-            },
-            result: true,
-          },
-          // access to child resources allowed
-          ...['read', 'comment', 'update', 'delete'].map((action) => ({
-            user: permitUser.key,
-            action,
-            resource_instance: {
-              type: document.key,
-              key: 'architecture',
-              tenant: permitTenant.key,
-            },
-            result: true,
-          })),
-          // access to other tenants not allowed
-          {
-            user: permitUser.key,
-            action: 'read',
-            resource_instance: {
-              type: document.key,
-              key: 'secret-recipe',
-              tenant: cocacolaTenant.key,
-            },
-            result: false,
-          },
-          // but access is allowed to user with lower permissions in the right tenant
-          {
-            user: authzUser.key,
-            action: 'read',
-            resource_instance: {
-              type: document.key,
-              key: 'secret-recipe',
-              tenant: cocacolaTenant.key,
-            },
-            result: true,
-          },
-        ],
-      },
-      // permissions from higher level blocked by condition on role derivation
-
-      {
-        assignments: [
-          {
-            user: permitUser.key,
-            role: adminRoleKey,
-            resource_instance: `${account.key}:permitio`,
-            tenant: permitTenant.key,
-          },
-          {
-            user: permitUser.key,
-            role: viewerRoleKey,
-            resource_instance: `${folder.key}:rnd`,
-            tenant: permitTenant.key,
-          },
-        ],
-        assertions: [
-          // direct access allowed
-          {
-            user: permitUser.key,
-            action: 'read',
-            resource_instance: {
-              type: folder.key,
-              key: 'rnd',
-              tenant: permitTenant.key,
-            },
-            result: true,
-          },
-          // access given by derived role is not allowed
-          ...['rename', 'delete', 'create-document'].map((action) => ({
-            user: permitUser.key,
-            action,
-            resource_instance: {
-              type: folder.key,
-              key: 'rnd',
-              tenant: permitTenant.key,
-            },
-            result: false,
-          })),
-        ],
-      },
-      // permissions from higher level blocked by condition on role derivation rule
-      {
-        assignments: [
-          {
-            user: permitUser.key,
-            role: memberRoleKey,
-            resource_instance: `${account.key}:permitio`,
-            tenant: permitTenant.key,
-          },
-          {
-            user: permitUser.key,
-            role: viewerRoleKey,
-            resource_instance: `${folder.key}:rnd`,
-            tenant: permitTenant.key,
-          },
-        ],
-        assertions: [
-          // direct access allowed
-          {
-            user: permitUser.key,
-            action: 'read',
-            resource_instance: {
-              type: folder.key,
-              key: 'rnd',
-              tenant: permitTenant.key,
-            },
-            result: true,
-          },
-          // access given by derived role is not allowed
-          {
-            user: permitUser.key,
-            action: 'rename',
-            resource_instance: {
-              type: folder.key,
-              key: 'rnd',
-              tenant: permitTenant.key,
-            },
-            result: false,
-          },
-        ],
-      },
-    ];
-
-    const assertPermitCheck = async (client: IPermitClient, assertion: any, assignment: any) => {
-      const result = await client.check(
-        assertion.user,
-        assertion.action,
-        assertion.resource_instance,
-      );
-      if (result !== assertion.result) {
-        console.log('assertion failed');
-        console.log('assertion', assertion);
-        console.log('assignment', assignment);
-        console.log('result', result);
-      }
-      expect(result).toBe(assertion.result);
-    };
-
-    for (const testStep of assignmentsAndAssertions) {
-      // role assignments
-      for (const assignment of testStep.assignments) {
-        const ra = await permit.api.roleAssignments.assign(assignment);
-        expect(ra.user).toBe(assignment.user);
-        expect(ra.role).toBe(assignment.role);
-        expect(ra.resource_instance).toBe(assignment.resource_instance);
-        expect(ra.tenant).toBe(assignment.tenant);
-      }
-      // Gate until every assertion in the step matches its expected result
-      // (positives become true AND negatives become false), replacing a fixed
-      // sleep. Polling all assertions also covers steps whose assertions are all
-      // negative, which a positives-only gate would skip without waiting.
-      await waitFor(
-        async () => {
-          const results = await Promise.all(
-            testStep.assertions.map((a) => permit.check(a.user, a.action, a.resource_instance)),
-          );
-          return results.every((res, i) => res === testStep.assertions[i].result);
+        user: permitUser.key,
+        action: 'read',
+        resource_instance: {
+          type: document.key,
+          key: 'architecture',
+          tenant: permitTenant.key,
         },
-        { timeoutMs: 150_000, intervalMs: 1_000, message: 'rebac step did not converge' },
-      );
-      for (const assertion of testStep.assertions) {
-        await assertPermitCheck(permit, assertion, testStep.assignments);
-      }
-      for (const assignment of testStep.assignments) {
-        try {
-          await permit.api.roleAssignments.unassign(assignment);
-        } catch (error) {
-          logger.error(
-            `failed to unassign ${assignment.user} ${assignment.role} ${assignment.resource_instance} ${assignment.tenant}`,
-          );
-        }
-      }
-    }
+        result: true,
+      },
+      {
+        user: permitUser.key,
+        action: 'comment',
+        resource_instance: {
+          type: document.key,
+          key: 'architecture',
+          tenant: permitTenant.key,
+        },
+        result: false,
+      },
+      {
+        user: permitUser.key,
+        action: 'comment',
+        resource_instance: {
+          type: document.key,
+          key: 'opal',
+          tenant: permitTenant.key,
+        },
+        result: false,
+      },
+    ],
+  },
+  {
+    name: 'access from a higher level: a folder commenter reaches the folder documents',
+    assignments: [
+      {
+        user: permitUser.key,
+        role: commenterRoleKey,
+        resource_instance: `${folder.key}:rnd`,
+        tenant: permitTenant.key,
+      },
+    ],
+    assertions: [
+      // direct access allowed
+      {
+        user: permitUser.key,
+        action: 'read',
+        resource_instance: {
+          type: folder.key,
+          key: 'rnd',
+          tenant: permitTenant.key,
+        },
+        result: true,
+      },
+      // access to child resources allowed
+      ...[
+        { action: 'read', resource: 'architecture' },
+        { action: 'comment', resource: 'architecture' },
+        { action: 'read', resource: 'opal' },
+        { action: 'comment', resource: 'opal' },
+      ].map((settings) => ({
+        user: permitUser.key,
+        action: settings.action,
+        resource_instance: {
+          type: document.key,
+          key: settings.resource,
+          tenant: permitTenant.key,
+        },
+        result: true,
+      })),
+      // higher permissions not allowed
+      {
+        user: permitUser.key,
+        action: 'update',
+        resource_instance: {
+          type: document.key,
+          key: 'architecture',
+          tenant: permitTenant.key,
+        },
+        result: false,
+      },
+      // access to other resources not allowed: budget23 is a document in the finance folder
+      {
+        user: permitUser.key,
+        action: 'read',
+        resource_instance: {
+          type: document.key,
+          key: 'budget23',
+          tenant: permitTenant.key,
+        },
+        result: false,
+      },
+    ],
+  },
+  {
+    name: 'access from the highest level: an account admin reaches documents in its tenant only',
+    assignments: [
+      {
+        user: permitUser.key,
+        role: adminRoleKey,
+        resource_instance: `${account.key}:permitio`,
+        tenant: permitTenant.key,
+      },
+      {
+        user: authzUser.key,
+        role: memberRoleKey,
+        resource_instance: `${account.key}:cocacola`,
+        tenant: cocacolaTenant.key,
+      },
+    ],
+    assertions: [
+      // direct access allowed
+      {
+        user: permitUser.key,
+        action: 'invite_user',
+        resource_instance: {
+          type: account.key,
+          key: 'permitio',
+          tenant: permitTenant.key,
+        },
+        result: true,
+      },
+      // access to child resources allowed
+      ...['read', 'comment', 'update', 'delete'].map((action) => ({
+        user: permitUser.key,
+        action,
+        resource_instance: {
+          type: document.key,
+          key: 'architecture',
+          tenant: permitTenant.key,
+        },
+        result: true,
+      })),
+      // access to other tenants not allowed
+      {
+        user: permitUser.key,
+        action: 'read',
+        resource_instance: {
+          type: document.key,
+          key: 'secret-recipe',
+          tenant: cocacolaTenant.key,
+        },
+        result: false,
+      },
+      // but access is allowed to user with lower permissions in the right tenant
+      {
+        user: authzUser.key,
+        action: 'read',
+        resource_instance: {
+          type: document.key,
+          key: 'secret-recipe',
+          tenant: cocacolaTenant.key,
+        },
+        result: true,
+      },
+    ],
+  },
+  {
+    name: 'a direct folder role blocks the editor role derived from account admin',
+    assignments: [
+      {
+        user: permitUser.key,
+        role: adminRoleKey,
+        resource_instance: `${account.key}:permitio`,
+        tenant: permitTenant.key,
+      },
+      {
+        user: permitUser.key,
+        role: viewerRoleKey,
+        resource_instance: `${folder.key}:rnd`,
+        tenant: permitTenant.key,
+      },
+    ],
+    assertions: [
+      // direct access allowed
+      {
+        user: permitUser.key,
+        action: 'read',
+        resource_instance: {
+          type: folder.key,
+          key: 'rnd',
+          tenant: permitTenant.key,
+        },
+        result: true,
+      },
+      // access given by derived role is not allowed
+      ...['rename', 'delete', 'create_document'].map((action) => ({
+        user: permitUser.key,
+        action,
+        resource_instance: {
+          type: folder.key,
+          key: 'rnd',
+          tenant: permitTenant.key,
+        },
+        result: false,
+      })),
+    ],
+  },
+  {
+    name: 'a direct folder role blocks the commenter role derived from account member',
+    assignments: [
+      {
+        user: permitUser.key,
+        role: memberRoleKey,
+        resource_instance: `${account.key}:permitio`,
+        tenant: permitTenant.key,
+      },
+      {
+        user: permitUser.key,
+        role: viewerRoleKey,
+        resource_instance: `${folder.key}:rnd`,
+        tenant: permitTenant.key,
+      },
+    ],
+    assertions: [
+      // direct access allowed
+      {
+        user: permitUser.key,
+        action: 'read',
+        resource_instance: {
+          type: folder.key,
+          key: 'rnd',
+          tenant: permitTenant.key,
+        },
+        result: true,
+      },
+      // access given by derived role is not allowed
+      {
+        user: permitUser.key,
+        action: 'rename',
+        resource_instance: {
+          type: folder.key,
+          key: 'rnd',
+          tenant: permitTenant.key,
+        },
+        result: false,
+      },
+    ],
+  },
+];
 
-    printBreak();
-  } finally {
-    // Leave the shared env empty for the next spec. Deleting a resource cascades
-    // to its roles, relations, resource instances and relationship tuples;
-    // deleting users/tenants removes their role assignments. Each delete is
-    // tolerant so a missing entity (e.g. the body threw before creating it)
-    // neither throws nor masks the original failure.
-    console.log('cleaning up');
-    await permit.api.tenants.delete('cocacola').catch(() => undefined);
-    await permit.api.tenants.delete('permit').catch(() => undefined);
-    await permit.api.resources.delete('account').catch(() => undefined);
-    await permit.api.resources.delete('folder').catch(() => undefined);
-    await permit.api.resources.delete('document').catch(() => undefined);
-    await permit.api.users.delete('user_authz').catch(() => undefined);
-    await permit.api.users.delete('user_permit').catch(() => undefined);
+/** Lists the assertions whose check returned the other result. */
+function describeMismatches(assertions: CheckAssertion[], results: boolean[]): string {
+  return assertions
+    .filter((assertion, index) => results[index] !== assertion.result)
+    .map(({ user, action, resource_instance: { type, key, tenant }, result }) => {
+      return `${user} ${action} ${type}:${key} in ${tenant} returned ${!result}`;
+    })
+    .join('; ');
+}
+
+beforeAll(async () => {
+  ({ permit, logger } = createTestClient());
+  logger.info('initial setup of objects');
+
+  // create resources
+  for (const resource of resourcesToCreate) {
+    const createdResource = await permit.api.resources.create(resource);
+    expect(createdResource.key).toBe(resource.key);
+    expect(createdResource.name).toBe(resource.name);
+    expect(createdResource.urn).toBe(resource.urn);
+    expect(createdResource.description).toBe(resource.description);
+  }
+
+  // create admin and member users
+  for (const user of usersToCreate) {
+    const createdUser = await permit.api.users.create(user);
+    expect(createdUser.key).toBe(user.key);
+    expect(createdUser.email).toBe(user.email);
+    expect(createdUser.first_name).toBe(user.first_name);
+    expect(createdUser.last_name).toBe(user.last_name);
+  }
+
+  // create folder and document roles
+  for (const resourceRole of allResourceRolesToCreate) {
+    const createdResourceRole = await permit.api.resourceRoles.create(
+      resourceRole.resourceKey,
+      resourceRole.roleData,
+    );
+    expect(createdResourceRole.key).toBe(resourceRole.roleData.key);
+    expect(createdResourceRole.name).toBe(resourceRole.roleData.name);
+  }
+
+  // create relation between document and folder (parent)
+  const documentFolderRelation = await permit.api.resourceRelations.create(document.key, {
+    key: 'parent',
+    name: 'Document Folder Relation',
+    subject_resource: folder.key,
+  });
+  expect(documentFolderRelation.key).toBe('parent');
+
+  // create role derivation folder -> document
+  await Promise.all(
+    [viewerRoleKey, commenterRoleKey, editorRoleKey].map((role) =>
+      permit.api.resourceRoles.createRoleDerivation(document.key, role, {
+        role: role,
+        on_resource: folder.key,
+        linked_by_relation: 'parent',
+      }),
+    ),
+  );
+
+  // create permit and cocacola tenants
+  for (const tenant of tenantsToCreate) {
+    const createdTenant = await permit.api.tenants.create(tenant);
+    expect(createdTenant.key).toBe(tenant.key);
+    expect(createdTenant.name).toBe(tenant.name);
+  }
+
+  for (const [subject, relation, object, tenant] of relationships) {
+    const relTuple = await permit.api.relationshipTuples.create({
+      subject,
+      relation,
+      object,
+      tenant,
+    });
+    expect(relTuple.subject).toBe(subject);
+    expect(relTuple.relation).toBe(relation);
+    expect(relTuple.object).toBe(object);
   }
 });
+
+afterAll(async () => {
+  if (!permit) return; // beforeAll never initialized the client (e.g. missing key)
+  // Deleting users and tenants removes their role assignments, and deleting a resource removes
+  // its roles, relations, instances and relationship tuples. Resources go in reverse order of
+  // their references: document points at folder, folder at account.
+  await cleanUp({
+    [`user ${permitUser.key}`]: () => permit.api.users.delete(permitUser.key),
+    [`user ${authzUser.key}`]: () => permit.api.users.delete(authzUser.key),
+    [`tenant ${permitTenant.key}`]: () => permit.api.tenants.delete(permitTenant.key),
+    [`tenant ${cocacolaTenant.key}`]: () => permit.api.tenants.delete(cocacolaTenant.key),
+    [`resource ${document.key}`]: () => permit.api.resources.delete(document.key),
+    [`resource ${folder.key}`]: () => permit.api.resources.delete(folder.key),
+    [`resource ${account.key}`]: () => permit.api.resources.delete(account.key),
+  });
+  for (const user of usersToCreate) {
+    await expectNotFound(permit.api.users.get(user.key), `user ${user.key}`);
+  }
+  for (const tenant of tenantsToCreate) {
+    await expectNotFound(permit.api.tenants.get(tenant.key), `tenant ${tenant.key}`);
+  }
+  for (const resource of resourcesToCreate) {
+    await expectNotFound(permit.api.resources.get(resource.key), `resource ${resource.key}`);
+  }
+});
+
+// The steps run in order: each one removes its role assignments before the next begins.
+for (const { name, assignments, assertions } of assignmentsAndAssertions) {
+  it(name, async () => {
+    for (const assignment of assignments) {
+      const ra = await permit.api.roleAssignments.assign(assignment);
+      expect(ra.user).toBe(assignment.user);
+      expect(ra.role).toBe(assignment.role);
+      expect(ra.resource_instance).toBe(assignment.resource_instance);
+      expect(ra.tenant).toBe(assignment.tenant);
+    }
+    // Poll until every check returns its expected result, the negatives included, so the step
+    // also waits for the previous step's unassignments to reach the PDP.
+    await waitFor(
+      () => Promise.all(assertions.map((a) => permit.check(a.user, a.action, a.resource_instance))),
+      (results) => results.every((allowed, index) => allowed === assertions[index].result),
+      {
+        timeoutMs: STEP_TIMEOUT_MS,
+        message: 'some checks kept returning the wrong result',
+        describe: (results) => describeMismatches(assertions, results),
+      },
+    );
+    for (const assignment of assignments) {
+      await permit.api.roleAssignments.unassign(assignment);
+    }
+  });
+}

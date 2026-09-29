@@ -1,64 +1,49 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig, TestProjectInlineConfiguration, TestUserConfig } from 'vitest/config';
 
-// Backend suites (integration + e2e) mutate shared Permit backend state, so they
-// run one file at a time (replicating AVA's separate sequential processes).
-//
-// IMPORTANT: `fileParallelism: false` / `maxWorkers: 1` only serialize files
-// WITHIN a single project. They do NOT make the `integration` and `e2e`
-// projects mutually exclusive. Cross-project isolation relies on each suite
-// running in its OWN `vitest run` invocation. A bare `vitest run` (all projects)
-// or `vitest run --project integration --project e2e` would schedule both
-// backend suites together and let them interleave on the shared environment,
-// corrupting state. Run them only via the supported entry points, which invoke
-// each project separately: `yarn test:integration`, `yarn test:e2e`, or
-// `yarn test:ci:full` (which chains the separate invocations).
-const serialBackend = {
-  // Vitest 4 removed `poolOptions`; `singleFork` is replaced by the top-level
-  // `fileParallelism: false` (which pins this project to a single worker), so
-  // these backend files run one at a time in one forked process.
-  fileParallelism: false,
-  sequence: { concurrent: false },
-  pool: 'forks' as const,
-  maxWorkers: 1,
+// Explicit types give these objects excess-property checks: TypeScript 4.9 cannot resolve the
+// Vite types behind defineConfig, so its argument is not checked on its own.
+type ProjectOptions = NonNullable<TestProjectInlineConfiguration['test']>;
+
+// The integration and e2e suites share one Permit environment. A project with `isolate: true`,
+// `maxWorkers: 1` and the default `sequence.groupOrder` has its files placed in Vitest's single
+// sequential group, which runs one file at a time, so the backend files never overlap, even when
+// both projects run in the same `vitest run`. `bail: 1` stops the run at the first failure, so
+// later files don't wait out their propagation budgets against an environment left in an
+// unknown state. afterAll hooks still run after a bail or a test timeout.
+const serialBackend: ProjectOptions = {
+  globals: true,
+  pool: 'forks',
   isolate: true,
+  maxWorkers: 1,
+  fileParallelism: false,
+  bail: 1,
   testTimeout: 300_000,
   hookTimeout: 300_000,
 };
 
-export default defineConfig({
-  test: {
-    globals: true,
-    include: ['src/tests/**/*.spec.ts'],
-    projects: [
-      { test: { name: 'unit', globals: true, include: ['src/tests/unit/**/*.spec.ts'] } },
-      {
-        test: {
-          name: 'module-imports',
-          globals: true,
-          include: ['src/tests/module-imports/**/*.spec.ts'],
-        },
-      },
-      {
-        test: {
-          name: 'integration',
-          globals: true,
-          include: ['src/tests/endpoints/**/*.spec.ts'],
-          ...serialBackend,
-        },
-      },
-      {
-        test: {
-          name: 'e2e',
-          globals: true,
-          include: ['src/tests/e2e/**/*.spec.ts'],
-          ...serialBackend,
-        },
-      },
-    ],
-    coverage: {
-      provider: 'v8',
-      include: ['src/utils/retry.ts', 'src/utils/retry-interceptor.ts'],
-      reporter: ['text', 'html', 'lcov'],
+const projects: TestProjectInlineConfiguration[] = [
+  { test: { name: 'unit', globals: true, include: ['src/tests/unit/**/*.spec.ts'] } },
+  {
+    test: {
+      name: 'module-imports',
+      globals: true,
+      include: ['src/tests/module-imports/**/*.spec.ts'],
     },
   },
-});
+  {
+    test: { name: 'integration', include: ['src/tests/endpoints/**/*.spec.ts'], ...serialBackend },
+  },
+  { test: { name: 'e2e', include: ['src/tests/e2e/**/*.spec.ts'], ...serialBackend } },
+];
+
+// Inline projects don't inherit root test options, so only run-wide settings belong here.
+const test: TestUserConfig = {
+  projects,
+  coverage: {
+    provider: 'v8',
+    include: ['src/utils/retry.ts', 'src/utils/retry-interceptor.ts'],
+    reporter: ['text', 'html', 'lcov'],
+  },
+};
+
+export default defineConfig({ test });
