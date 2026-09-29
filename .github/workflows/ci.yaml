@@ -15,7 +15,13 @@ concurrency:
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash --noprofile --norc -euo pipefail {0}
+
 env:
+  # github actions project id (under 'Permit.io Tests' workspace)
+  PROJECT_ID: 7f55831d77c642739bc17733ab0af138
   # The backend suite runs when the environment-provisioning secret is
   # available. Fork PRs and Dependabot PRs get no Actions secrets, so they run
   # the no-backend suite.
@@ -79,7 +85,6 @@ jobs:
         if: env.RUN_BACKEND == 'true'
         env:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
-          PROJECT_ID: 7f55831d77c642739bc17733ab0af138
           ENV_KEY: node-sdk-ci-${{ github.run_id }}-${{ github.run_attempt }}-n${{ matrix.node-version }}
         run: |
           response=$(curl -sS -X POST \
@@ -95,11 +100,9 @@ jobs:
           echo "env_id=${env_id}" >> "$GITHUB_OUTPUT"
 
       - name: Fetch env API key
-        id: fetch_key
         if: env.RUN_BACKEND == 'true'
         env:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
-          PROJECT_ID: 7f55831d77c642739bc17733ab0af138
           ENV_ID: ${{ steps.provision.outputs.env_id }}
         run: |
           response=$(curl -sS -X GET \
@@ -116,8 +119,6 @@ jobs:
 
       - name: Start local PDP
         if: env.RUN_BACKEND == 'true'
-        env:
-          ENV_API_KEY: ${{ env.ENV_API_KEY }}
         run: |
           docker run -d --name pdp -p 7766:7000 \
             -e PDP_API_KEY="$ENV_API_KEY" \
@@ -182,7 +183,6 @@ jobs:
         if: ${{ always() && steps.provision.outputs.env_id != '' }}
         env:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
-          PROJECT_ID: 7f55831d77c642739bc17733ab0af138
           ENV_ID: ${{ steps.provision.outputs.env_id }}
         run: |
           curl -sS -X DELETE \
