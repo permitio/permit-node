@@ -161,6 +161,12 @@ for (const [label, source] of [
   });
 }
 
+test('names the pinned generator when type shapes regress', (t) => {
+  const types = { ...cleanTypes, 'project-obj.ts': "export interface ProjectObj { 'id': any; }" };
+  const dir = setup(t, { types });
+  fails(t, dir, /FAILED \(generator 7\.25\.0\)/);
+});
+
 for (const file of ['role-create.ts', 'resource-role-create.ts']) {
   test(`rejects degraded inheritance in ${file}`, (t) => {
     const types = { ...cleanTypes, [file]: cleanTypes[file].replace('Array<string>', 'any') };

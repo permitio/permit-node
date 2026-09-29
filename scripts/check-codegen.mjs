@@ -204,6 +204,7 @@ function assertTypes(typesDir, files) {
 }
 
 let out;
+let generator = '';
 try {
   if (!existsSync(join(ROOT, FIXTURE))) {
     throw new Error(`Fixture spec not found: ${FIXTURE}; restore the committed fixture.`);
@@ -218,6 +219,7 @@ try {
   if (typeof pin !== 'string' || !/^\d+\.\d+\.\d+$/.test(pin)) {
     throw new Error('openapitools.json must pin an explicit stable generator version.');
   }
+  generator = ` (generator ${pin})`;
   const { args, modelDir } = generateOptions();
   // Relative paths survive the wrapper's shell join even when ROOT or TMPDIR has spaces.
   out = mkdtempSync(join(ROOT, 'node_modules/.codegen-'));
@@ -241,7 +243,7 @@ try {
       `${Object.keys(EXPECTED).length} property shapes verified`,
   );
 } catch (err) {
-  console.error(`codegen guard FAILED:\n${err.message}`);
+  console.error(`codegen guard FAILED${generator}:\n${err.message}`);
   process.exitCode = 1;
 } finally {
   if (out) rmSync(out, { recursive: true, force: true });
