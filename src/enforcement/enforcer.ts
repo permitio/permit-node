@@ -370,7 +370,7 @@ export class Enforcer implements IEnforcer {
       user: isString(user) ? { key: user } : user,
       action,
       resource: isString(resource) ? Enforcer.resourceFromString(resource) : resource,
-      context,
+      context: this.contextStore.getDerivedContext(context),
     };
 
     try {
@@ -381,7 +381,7 @@ export class Enforcer implements IEnforcer {
         },
         timeout: this.config.timeout,
       });
-      return response.data.allowedTenants.map((item) => item.tenant);
+      return response.data.allowed_tenants.map((item) => item.tenant);
     } catch (error) {
       this.logger.error('Error fetching all tenants:', error);
       throw error;
