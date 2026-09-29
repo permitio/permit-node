@@ -1,15 +1,32 @@
-import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import pino from 'pino';
 
 import { AxiosLoggingInterceptor } from '../../../utils/http-logger';
-import { fakeLogger, synthAxiosError } from '../../helpers/mock-api';
+import { synthAxiosError } from '../../helpers/mock-api';
 
-type RequestHandler = {
-  fulfilled: (config: InternalAxiosRequestConfig) => InternalAxiosRequestConfig;
-  rejected: (error: unknown) => Promise<never>;
-};
+type RequestUse = AxiosInstance['interceptors']['request']['use'];
+type RequestHandlers = Parameters<RequestUse>;
 
-function requestHandler(instance: ReturnType<typeof axios.create>): RequestHandler {
-  return (instance.interceptors.request as any).handlers[0];
+/** A real pino logger that writes nothing, with its debug method spied on. */
+function spiedLogger() {
+  const logger = pino({ level: 'silent' });
+  return { logger, debug: vi.spyOn(logger, 'debug') };
+}
+
+/**
+ * Installs the logging interceptor and returns the request handlers it registered, so a test can
+ * call them with input that a real request flow never produces.
+ */
+function installAndCaptureRequestHandlers(
+  instance: AxiosInstance,
+  logger: pino.Logger,
+): RequestHandlers {
+  const use = vi.spyOn(instance.interceptors.request, 'use');
+  AxiosLoggingInterceptor.setupInterceptor(instance, logger);
+  expect(use).toHaveBeenCalledTimes(1);
+  const handlers = use.mock.calls[0];
+  assert(handlers, 'Expected the logging interceptor to register request handlers');
+  return handlers;
 }
 
 describe('AxiosLoggingInterceptor (unit)', () => {
@@ -24,40 +41,40 @@ describe('AxiosLoggingInterceptor (unit)', () => {
       headers: {},
       config,
     });
-    const logger = fakeLogger();
-    AxiosLoggingInterceptor.setupInterceptor(instance, logger as any);
+    const { logger, debug } = spiedLogger();
+    AxiosLoggingInterceptor.setupInterceptor(instance, logger);
 
     await instance.get('http://example.test/foo');
 
-    expect(logger.debug).toHaveBeenCalledWith('Sending HTTP request: GET http://example.test/foo');
-    expect(logger.debug).toHaveBeenCalledWith(
+    expect(debug).toHaveBeenCalledWith('Sending HTTP request: GET http://example.test/foo');
+    expect(debug).toHaveBeenCalledWith(
       'Received HTTP response: GET http://example.test/foo, status: 200',
     );
   });
 
-  it('initializes request.headers when the outgoing config has none', () => {
-    const instance = axios.create();
-    const logger = fakeLogger();
-    AxiosLoggingInterceptor.setupInterceptor(instance, logger as any);
+  it('initializes request.headers when the outgoing config has none', async () => {
+    const { logger, debug } = spiedLogger();
+    const [fulfilled] = installAndCaptureRequestHandlers(axios.create(), logger);
+    assert(fulfilled, 'Expected a request fulfilled handler');
 
     const config = { method: 'get', url: '/x' } as unknown as InternalAxiosRequestConfig;
-    const result = requestHandler(instance).fulfilled(config);
+    const result = await fulfilled(config);
 
     expect(result.headers).toEqual({});
-    expect(logger.debug).toHaveBeenCalledWith('Sending HTTP request: GET /x');
+    expect(debug).toHaveBeenCalledWith('Sending HTTP request: GET /x');
   });
 
   // The request-interceptor's `rejected` handler only fires when an earlier
   // interceptor in the chain rejects. With a single interceptor installed there
   // is no real request flow that reaches it, so we invoke it directly.
   it('propagates request errors through the rejection handler', async () => {
-    const instance = axios.create();
-    const logger = fakeLogger();
-    AxiosLoggingInterceptor.setupInterceptor(instance, logger as any);
+    const { logger } = spiedLogger();
+    const [, rejected] = installAndCaptureRequestHandlers(axios.create(), logger);
+    assert(rejected, 'Expected a request rejected handler');
 
     const boom = new Error('request boom');
 
-    await expect(requestHandler(instance).rejected(boom)).rejects.toBe(boom);
+    await expect(rejected(boom)).rejects.toBe(boom);
   });
 
   it('propagates response errors through the rejection handler on a failed request', async () => {
@@ -66,15 +83,13 @@ describe('AxiosLoggingInterceptor (unit)', () => {
     instance.defaults.adapter = async () => {
       throw error;
     };
-    const logger = fakeLogger();
-    AxiosLoggingInterceptor.setupInterceptor(instance, logger as any);
+    const { logger, debug } = spiedLogger();
+    AxiosLoggingInterceptor.setupInterceptor(instance, logger);
 
     await expect(instance.get('http://example.test/foo')).rejects.toBe(error);
     // The request interceptor still logged the outgoing request before the adapter rejected.
-    expect(logger.debug).toHaveBeenCalledWith('Sending HTTP request: GET http://example.test/foo');
+    expect(debug).toHaveBeenCalledWith('Sending HTTP request: GET http://example.test/foo');
     // The response-error branch only re-rejects; it does not emit a response log.
-    expect(logger.debug).not.toHaveBeenCalledWith(
-      expect.stringContaining('Received HTTP response'),
-    );
+    expect(debug).not.toHaveBeenCalledWith(expect.stringContaining('Received HTTP response'));
   });
 });

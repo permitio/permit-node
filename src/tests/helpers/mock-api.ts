@@ -8,23 +8,29 @@ import { Permit } from '../../index';
  * The generated openapi client bakes query parameters into the URL string and
  * pre-serializes the request body to a JSON string. To keep assertions
  * ergonomic, the capturing adapter normalizes both:
- * - `params` is parsed from the URL query string (so the values are strings,
+ * - `origin` and `path` come from the URL axios dispatches to (`baseURL` joined
+ *   with `url`), so a spec can compare the exact pathname.
+ * - `params` is parsed from that URL's query string (so the values are strings,
  *   e.g. `page: '1'`, never the numbers the caller passed).
  * - `data` is parsed back from the JSON string into an object.
  */
 export interface CapturedRequest {
   /** Upper-cased HTTP method, e.g. `'GET'` / `'POST'` (axios lower-cases it internally). */
-  method?: string;
+  method: string | undefined;
   /** The request URL. For REST this is absolute; for PDP/OPA it is relative to `baseURL`. */
-  url?: string;
+  url: string | undefined;
   /** The axios `baseURL` (set for the PDP/OPA instances, undefined for REST). */
-  baseURL?: string;
-  /** Query parameters parsed from the URL (values are strings) merged with any `config.params`. */
-  params?: any;
+  baseURL: string | undefined;
+  /** Scheme, host and port of the dispatched URL, e.g. `http://localhost:8000`. */
+  origin: string;
+  /** Percent-encoded pathname of the dispatched URL, without the query string. */
+  path: string;
+  /** Query parameters parsed from the dispatched URL (values are strings). */
+  params: Record<string, string>;
   /** Request body, parsed from JSON back into an object when possible. */
-  data?: any;
-  /** The finalized request headers (an `AxiosHeaders` instance). */
-  headers?: any;
+  data: unknown;
+  /** The finalized request headers. */
+  headers: InternalAxiosRequestConfig['headers'];
 }
 
 /**
@@ -54,7 +60,7 @@ export interface MockPermitOptions {
    * Route facts modules (users, tenants, role-assignments, ...) through the PDP
    * base URL instead of the REST API. The facts modules still dispatch on the
    * REST axios instance, so the `rest` transport captures them either way; only
-   * the captured `url`/`baseURL` changes.
+   * the captured `url`/`origin` changes.
    */
   proxyFactsViaPdp?: boolean;
   /** Organization key seeded into the SDK context. Defaults to `'org'`. */
@@ -80,6 +86,12 @@ export interface MockPermit {
   /** Captures OPA calls (`permit.check(..., { useOpa: true })`). */
   opa: MockTransport;
 }
+
+/** The REST API origin the mocked SDK is configured with. */
+export const MOCK_API_ORIGIN = 'http://localhost:8000';
+
+/** The PDP origin the mocked SDK is configured with. */
+export const MOCK_PDP_ORIGIN = 'http://localhost:7766';
 
 interface QueuedResponse {
   kind: 'resolve' | 'reject';
@@ -140,8 +152,8 @@ class MockTransportImpl implements MockTransport {
     this.queue.length = 0;
   }
 
-  public capture(config: InternalAxiosRequestConfig): void {
-    this.requests.push(toCaptured(config));
+  public capture(request: CapturedRequest): void {
+    this.requests.push(request);
   }
 
   public next(): QueuedResponse | undefined {
@@ -161,28 +173,20 @@ function parseBody(data: unknown): unknown {
   }
 }
 
-function extractParams(config: InternalAxiosRequestConfig): Record<string, any> {
-  const params: Record<string, any> = {};
-  try {
-    const url = new URL(config.url ?? '', config.baseURL || 'http://mock.local');
-    url.searchParams.forEach((value, key) => {
-      params[key] = value;
-    });
-  } catch {
-    // URL not parseable; fall through to whatever config.params holds.
-  }
-  if (config.params && typeof config.params === 'object') {
-    Object.assign(params, config.params);
-  }
-  return params;
-}
-
-function toCaptured(config: InternalAxiosRequestConfig): CapturedRequest {
+function toCaptured(instance: AxiosInstance, config: InternalAxiosRequestConfig): CapturedRequest {
+  // getUri joins baseURL and url the same way the real adapter does.
+  const dispatched = new URL(instance.getUri(config));
+  const params: Record<string, string> = {};
+  dispatched.searchParams.forEach((value, key) => {
+    params[key] = value;
+  });
   return {
     method: config.method?.toUpperCase(),
     url: config.url,
     baseURL: config.baseURL,
-    params: extractParams(config),
+    origin: dispatched.origin,
+    path: dispatched.pathname,
+    params,
     data: parseBody(config.data),
     headers: config.headers,
   };
@@ -197,7 +201,7 @@ function installAdapter(instance: AxiosInstance): MockTransport {
   instance.defaults.adapter = async (
     config: InternalAxiosRequestConfig,
   ): Promise<AxiosResponse> => {
-    transport.capture(config);
+    transport.capture(toCaptured(instance, config));
     const queued = transport.next();
     if (queued && queued.kind === 'reject') {
       throw synthAxiosError(queued.status, queued.data, config);
@@ -246,12 +250,14 @@ function seedContext(
  * rest.resolveWith([{ key: 'doc' }]);          // queue the next response
  * await permit.api.resources.list();
  * expect(rest.last?.method).toBe('GET');       // assert the dispatched request
- * expect(rest.last?.url).toContain('/resources');
+ * expect(rest.last?.path).toBe('/v2/schema/proj/env/resources');
  * ```
  *
  * Notes for spec authors:
  * - Responses are FIFO. Queue one `resolveWith`/`rejectWith` per request the SDK
  *   will make; an unqueued request resolves with `200 {}`.
+ * - `path` is the exact pathname, so assert it with `toBe`. `origin` shows
+ *   whether a facts request went to the REST API or to the PDP.
  * - `params` values are strings (parsed from the URL query), e.g. `page: '1'`.
  * - `data` is the parsed request body, so assert with `toEqual(payload)`.
  * - `rejectWith(status)` produces a `PermitApiError` whose `.response.status`
@@ -274,8 +280,8 @@ export function createMockPermit(opts: MockPermitOptions = {}): MockPermit {
 
   const permit = new Permit({
     token,
-    pdp: 'http://localhost:7766',
-    apiUrl: 'http://localhost:8000',
+    pdp: MOCK_PDP_ORIGIN,
+    apiUrl: MOCK_API_ORIGIN,
     proxyFactsViaPdp,
   });
 
@@ -292,29 +298,4 @@ export function createMockPermit(opts: MockPermitOptions = {}): MockPermit {
   seedContext(permit, contextLevel, org, project, environment);
 
   return { permit, rest, pdp, opa };
-}
-
-/** A pino-shaped logger whose methods are `vi.fn()` mocks, for util/logger specs. */
-export interface FakeLogger {
-  debug: ReturnType<typeof vi.fn>;
-  info: ReturnType<typeof vi.fn>;
-  warn: ReturnType<typeof vi.fn>;
-  error: ReturnType<typeof vi.fn>;
-  child: () => FakeLogger;
-}
-
-/**
- * Returns a minimal pino-compatible logger backed by `vi.fn()` spies.
- *
- * `child()` returns a fresh {@link FakeLogger} so nested loggers are also
- * inspectable. Relies on the global `vi` provided by Vitest (`globals: true`).
- */
-export function fakeLogger(): FakeLogger {
-  return {
-    debug: vi.fn(),
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn(),
-    child: () => fakeLogger(),
-  };
 }
