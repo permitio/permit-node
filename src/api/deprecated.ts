@@ -35,7 +35,7 @@ import {
 } from '../openapi';
 import { BASE_PATH } from '../openapi/base';
 
-import { BasePermitApi, PermitApiError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { BasePermitApi, PermitApiError, redactAxiosError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { ApiContext, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 /**
@@ -163,7 +163,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -193,7 +193,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -233,7 +233,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -270,7 +270,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -300,7 +300,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -330,7 +330,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -360,7 +360,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -390,7 +390,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -424,7 +424,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           }), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -456,7 +456,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -492,7 +492,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -522,7 +522,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           }] permit.api.deleteResource(${resourceId}), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -552,7 +552,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -583,7 +583,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -615,7 +615,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -645,7 +645,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -675,7 +675,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -709,7 +709,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -739,7 +739,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -769,7 +769,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -803,7 +803,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -833,7 +833,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -865,7 +865,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -897,7 +897,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -929,7 +929,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -970,7 +970,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -1002,7 +1002,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -1038,7 +1038,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
@@ -1074,7 +1074,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
           )}), err: ${JSON.stringify(err?.response?.data)}`,
         );
       }
-      throw err;
+      throw redactAxiosError(err);
     }
   }
 
