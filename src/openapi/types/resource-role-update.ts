@@ -47,6 +47,12 @@ export interface ResourceRoleUpdate {
    */
   attributes?: object;
   /**
+   * list of role keys that define what roles this role extends. In other words: this role will automatically inherit all the permissions of the given roles in this list.
+   * @type {Array<string>}
+   * @memberof ResourceRoleUpdate
+   */
+  extends?: Array<string>;
+  /**
    *
    * @type {GrantedTo1}
    * @memberof ResourceRoleUpdate

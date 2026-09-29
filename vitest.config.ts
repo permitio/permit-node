@@ -22,6 +22,7 @@ const serialBackend: ProjectOptions = {
 };
 
 const projects: TestProjectInlineConfiguration[] = [
+  { test: { name: 'codegen', include: ['scripts/check-codegen.spec.mjs'] } },
   { test: { name: 'unit', globals: true, include: ['src/tests/unit/**/*.spec.ts'] } },
   {
     test: {
