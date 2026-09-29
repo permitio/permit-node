@@ -1,8 +1,8 @@
 import test from 'ava';
 import axios from 'axios';
 
-import { buildOpaBaseUrl } from '../enforcement/enforcer';
-import { Permit } from '../index';
+import { buildOpaBaseUrl } from '../../enforcement/enforcer';
+import { Permit } from '../../index';
 
 // The OPA client base URL is derived from the configured PDP URL by forcing the
 // OPA port (8181) and appending the OPA data path. This was previously built
