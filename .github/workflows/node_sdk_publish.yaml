@@ -103,11 +103,8 @@ jobs:
           node -e "
             const semver = require('semver');
             const tag = process.env.RELEASE_TAG;
-            // Normalize: strip leading 'v' (e.g. 'v2.7.6' -> '2.7.6')
-            const normalized = tag.replace(/^v/, '');
-            // Validate: must be a valid semantic version
-            if (!semver.valid(normalized)) {
-              console.error('Release tag ' + JSON.stringify(tag) + ' is not a valid semantic version');
+            if (!semver.valid(tag)) {
+              console.error('Release tag', JSON.stringify(tag), 'is not a valid semantic version');
               process.exit(1);
             }
           "
@@ -116,10 +113,11 @@ jobs:
           node -e "
             const semver = require('semver');
             const tag = process.env.RELEASE_TAG;
-            const normalized = tag.replace(/^v/, '');
+            // npm strips both the optional 'v' prefix and semver build metadata.
+            const normalized = semver.valid(tag);
             const pkg = require('./package.json');
             if (pkg.version !== normalized) {
-              console.error('Version mismatch: expected ' + JSON.stringify(normalized) + ', got ' + JSON.stringify(pkg.version));
+              console.error('Version mismatch: expected', normalized, 'got', pkg.version);
               process.exit(1);
             }
             if (pkg.scripts.version !== 'standard-version') {
@@ -145,4 +143,3 @@ jobs:
         #   permitio/permit-node -> Settings -> Trusted Publishers
         #   (workflow: node_sdk_publish.yaml, environment: production)
         # Provenance attestations are generated automatically.
-
