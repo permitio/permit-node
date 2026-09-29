@@ -4,6 +4,13 @@ on:
   release:
     types: [published]
 
+permissions: {}
+
+# One run per release tag at a time, and a publish is never cancelled part-way.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
 defaults:
   run:
     shell: bash --noprofile --norc -euo pipefail {0}
@@ -75,8 +82,10 @@ jobs:
 
       - name: Publish package to NPM
         timeout-minutes: 5
+        env:
+          PRERELEASE: ${{ github.event.release.prerelease }}
         run: |
-          if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
+          if [[ "$PRERELEASE" == "true" ]]; then
             echo "Publishing as a release candidate (rc)..."
             npm publish --access public --tag rc
           else
