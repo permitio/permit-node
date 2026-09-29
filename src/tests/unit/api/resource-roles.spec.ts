@@ -26,12 +26,14 @@ describe('ResourceRolesApi (unit)', () => {
 
   describe('list', () => {
     it('GETs the resource-scoped collection with default pagination', async () => {
-      rest.resolveWith([]);
+      const response = [{ key: 'editor', id: 'role-1' }];
+      rest.resolveWith(response);
 
-      await permit.api.resourceRoles.list({ resourceKey: RESOURCE });
+      const result = await permit.api.resourceRoles.list({ resourceKey: RESOURCE });
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
     });
 
@@ -41,37 +43,43 @@ describe('ResourceRolesApi (unit)', () => {
       await permit.api.resourceRoles.list({ resourceKey: RESOURCE, page: 2, perPage: 10 });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '2', per_page: '10' });
     });
   });
 
   describe('get / getByKey / getById', () => {
     it('GETs a single resource role with both keys in the path', async () => {
-      rest.resolveWith({ key: 'editor' });
+      const response = { key: 'editor' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceRoles.get(RESOURCE, 'editor');
+      const result = await permit.api.resourceRoles.get(RESOURCE, 'editor');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/editor`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/editor`);
     });
 
     it('getByKey is an alias for get', async () => {
-      rest.resolveWith({ key: 'editor' });
+      const response = { key: 'editor' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceRoles.getByKey(RESOURCE, 'editor');
+      const result = await permit.api.resourceRoles.getByKey(RESOURCE, 'editor');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/editor`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/editor`);
     });
 
     it('getById is an alias for get', async () => {
-      rest.resolveWith({ key: 'role-1' });
+      const response = { key: 'role-1' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceRoles.getById(RESOURCE, 'role-1');
+      const result = await permit.api.resourceRoles.getById(RESOURCE, 'role-1');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/role-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/role-1`);
     });
   });
 
@@ -83,12 +91,14 @@ describe('ResourceRolesApi (unit)', () => {
     };
 
     it('POSTs the role body to the resource-scoped collection', async () => {
-      rest.resolveWith({ ...payload, id: 'role-1' });
+      const response = { ...payload, id: 'role-1' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceRoles.create(RESOURCE, payload);
+      const result = await permit.api.resourceRoles.create(RESOURCE, payload);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -96,12 +106,14 @@ describe('ResourceRolesApi (unit)', () => {
   describe('update', () => {
     it('PATCHes the role body to the keyed path', async () => {
       const body: ResourceRoleUpdate = { name: 'Renamed' };
-      rest.resolveWith({ key: 'editor', name: 'Renamed' });
+      const response = { key: 'editor', name: 'Renamed' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceRoles.update(RESOURCE, 'editor', body);
+      const result = await permit.api.resourceRoles.update(RESOURCE, 'editor', body);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${COLLECTION}/editor`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/editor`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -113,19 +125,25 @@ describe('ResourceRolesApi (unit)', () => {
       await permit.api.resourceRoles.delete(RESOURCE, 'editor');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/editor`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/editor`);
     });
   });
 
   describe('assignPermissions', () => {
     it('POSTs the permissions body to the role permissions path', async () => {
       const permissions = ['doc:read', 'doc:write'];
-      rest.resolveWith({ key: 'editor' });
+      const response = { key: 'editor' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceRoles.assignPermissions(RESOURCE, 'editor', permissions);
+      const result = await permit.api.resourceRoles.assignPermissions(
+        RESOURCE,
+        'editor',
+        permissions,
+      );
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(`${COLLECTION}/editor/permissions`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/editor/permissions`);
       expect(rest.last?.data).toEqual({ permissions });
     });
   });
@@ -133,12 +151,18 @@ describe('ResourceRolesApi (unit)', () => {
   describe('removePermissions', () => {
     it('DELETEs the permissions body from the role permissions path', async () => {
       const permissions = ['doc:write'];
-      rest.resolveWith({ key: 'editor' });
+      const response = { key: 'editor' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceRoles.removePermissions(RESOURCE, 'editor', permissions);
+      const result = await permit.api.resourceRoles.removePermissions(
+        RESOURCE,
+        'editor',
+        permissions,
+      );
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/editor/permissions`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/editor/permissions`);
       expect(rest.last?.data).toEqual({ permissions });
     });
   });
@@ -157,12 +181,18 @@ describe('ResourceRolesApi (unit)', () => {
       };
 
       it('POSTs the derivation rule to the role implicit-grants path', async () => {
-        rest.resolveWith({ ...rule });
+        const response = { ...rule, role_id: 'role-2', resource_id: 'res-2' };
+        rest.resolveWith(response);
 
-        await permit.api.resourceRoles.createRoleDerivation(RESOURCE, 'editor', rule);
+        const result = await permit.api.resourceRoles.createRoleDerivation(
+          RESOURCE,
+          'editor',
+          rule,
+        );
 
+        expect(result).toEqual(response);
         expect(rest.last?.method).toBe('POST');
-        expect(rest.last?.url).toContain(DERIVATION);
+        expect(rest.last?.path).toBe(DERIVATION);
         expect(rest.last?.data).toEqual(rule);
       });
 
@@ -202,7 +232,7 @@ describe('ResourceRolesApi (unit)', () => {
         await permit.api.resourceRoles.deleteRoleDerivation(RESOURCE, 'editor', rule);
 
         expect(rest.last?.method).toBe('DELETE');
-        expect(rest.last?.url).toContain(DERIVATION);
+        expect(rest.last?.path).toBe(DERIVATION);
         expect(rest.last?.data).toEqual(rule);
       });
 
@@ -224,16 +254,18 @@ describe('ResourceRolesApi (unit)', () => {
       };
 
       it('PUTs the conditions to the implicit-grants conditions path', async () => {
-        rest.resolveWith({ ...conditions });
+        const response = { no_direct_roles_on_object: false };
+        rest.resolveWith(response);
 
-        await permit.api.resourceRoles.updateRoleDerivationConditions(
+        const result = await permit.api.resourceRoles.updateRoleDerivationConditions(
           RESOURCE,
           'editor',
           conditions,
         );
 
+        expect(result).toEqual(response);
         expect(rest.last?.method).toBe('PUT');
-        expect(rest.last?.url).toContain(`${DERIVATION}/conditions`);
+        expect(rest.last?.path).toBe(`${DERIVATION}/conditions`);
         expect(rest.last?.data).toEqual(conditions);
       });
 

@@ -20,12 +20,14 @@ describe('ResourceRelationsApi (unit)', () => {
 
   describe('list', () => {
     it('GETs the resource-scoped relations collection with default pagination', async () => {
-      rest.resolveWith([]);
+      const response = [{ key: 'item-1', id: 'item-id-1' }];
+      rest.resolveWith(response);
 
-      await permit.api.resourceRelations.list({ resourceKey: RESOURCE });
+      const result = await permit.api.resourceRelations.list({ resourceKey: RESOURCE });
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       // The SDK defaults page/perPage, so they are always serialized as strings.
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
     });
@@ -36,36 +38,43 @@ describe('ResourceRelationsApi (unit)', () => {
       await permit.api.resourceRelations.list({ resourceKey: RESOURCE, page: 3, perPage: 25 });
 
       expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '3', per_page: '25' });
     });
   });
 
   describe('get / getByKey / getById', () => {
     it('GETs a single relation with resource and relation keys in the path', async () => {
-      rest.resolveWith({ key: 'parent' });
+      const response = { key: 'parent' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceRelations.get(RESOURCE, 'parent');
+      const result = await permit.api.resourceRelations.get(RESOURCE, 'parent');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/parent`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/parent`);
     });
 
     it('getByKey is an alias for get', async () => {
-      rest.resolveWith({ key: 'parent' });
+      const response = { key: 'parent' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceRelations.getByKey(RESOURCE, 'parent');
+      const result = await permit.api.resourceRelations.getByKey(RESOURCE, 'parent');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/parent`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/parent`);
     });
 
     it('getById is an alias for get', async () => {
-      rest.resolveWith({ key: 'rel-1' });
+      const response = { key: 'rel-1' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceRelations.getById(RESOURCE, 'rel-1');
+      const result = await permit.api.resourceRelations.getById(RESOURCE, 'rel-1');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/rel-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/rel-1`);
     });
   });
 
@@ -77,12 +86,14 @@ describe('ResourceRelationsApi (unit)', () => {
     };
 
     it('POSTs the relation body with the resource key in the path', async () => {
-      rest.resolveWith({ ...payload, id: 'rel-1' });
+      const response = { ...payload, id: 'rel-1' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceRelations.create(RESOURCE, payload);
+      const result = await permit.api.resourceRelations.create(RESOURCE, payload);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -94,7 +105,7 @@ describe('ResourceRelationsApi (unit)', () => {
       await permit.api.resourceRelations.delete(RESOURCE, 'parent');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/parent`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/parent`);
     });
   });
 

@@ -19,12 +19,14 @@ describe('ResourcesApi (unit)', () => {
 
   describe('list', () => {
     it('GETs the env-scoped collection with default pagination', async () => {
-      rest.resolveWith([]);
+      const resources = [{ key: 'doc', id: 'res-1' }];
+      rest.resolveWith(resources);
 
-      await permit.api.resources.list();
+      const result = await permit.api.resources.list();
 
+      expect(result).toEqual(resources);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       // page/per_page are serialized into the URL query string (values are strings).
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
       // includeTotalCount is omitted when not requested.
@@ -32,11 +34,19 @@ describe('ResourcesApi (unit)', () => {
     });
 
     it('forwards page, perPage and includeTotalCount as wire params', async () => {
-      rest.resolveWith({ data: [], total_count: 0, page_count: 0 });
+      const page = { data: [{ key: 'doc', id: 'res-1' }], total_count: 1, page_count: 1 };
+      rest.resolveWith(page);
 
-      await permit.api.resources.list({ page: 2, perPage: 5, includeTotalCount: true });
+      const result = await permit.api.resources.list({
+        page: 2,
+        perPage: 5,
+        includeTotalCount: true,
+      });
 
+      // With includeTotalCount the paginated envelope is returned as is.
+      expect(result).toEqual(page);
       expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({
         page: '2',
         per_page: '5',
@@ -47,30 +57,44 @@ describe('ResourcesApi (unit)', () => {
 
   describe('get / getByKey / getById', () => {
     it('GETs a single resource with the key in the path', async () => {
-      rest.resolveWith({ key: 'doc' });
+      const resource = { key: 'doc', id: 'res-1' };
+      rest.resolveWith(resource);
 
-      await permit.api.resources.get('doc');
+      const result = await permit.api.resources.get('doc');
 
+      expect(result).toEqual(resource);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/doc`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/doc`);
     });
 
     it('getByKey is an alias for get', async () => {
-      rest.resolveWith({ key: 'doc' });
+      const resource = { key: 'doc', id: 'res-1' };
+      rest.resolveWith(resource);
 
-      await permit.api.resources.getByKey('doc');
+      const result = await permit.api.resources.getByKey('doc');
 
+      expect(result).toEqual(resource);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/doc`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/doc`);
     });
 
     it('getById is an alias for get', async () => {
-      rest.resolveWith({ key: 'res-1' });
+      const resource = { key: 'doc', id: 'res-1' };
+      rest.resolveWith(resource);
 
-      await permit.api.resources.getById('res-1');
+      const result = await permit.api.resources.getById('res-1');
 
+      expect(result).toEqual(resource);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/res-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/res-1`);
+    });
+
+    it('percent-encodes a key that is not URL-safe', async () => {
+      rest.resolveWith({ key: 'folder/doc #1' });
+
+      await permit.api.resources.get('folder/doc #1');
+
+      expect(rest.last?.path).toBe(`${COLLECTION}/folder%2Fdoc%20%231`);
     });
   });
 
@@ -82,12 +106,14 @@ describe('ResourcesApi (unit)', () => {
     };
 
     it('POSTs the resource body to the collection', async () => {
-      rest.resolveWith({ ...payload, id: 'res-1' });
+      const created = { ...payload, id: 'res-1' };
+      rest.resolveWith(created);
 
-      await permit.api.resources.create(payload);
+      const result = await permit.api.resources.create(payload);
 
+      expect(result).toEqual(created);
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -95,12 +121,14 @@ describe('ResourcesApi (unit)', () => {
   describe('update', () => {
     it('PATCHes the resource body to the keyed path', async () => {
       const body: ResourceUpdate = { name: 'Renamed' };
-      rest.resolveWith({ key: 'doc', name: 'Renamed' });
+      const updated = { key: 'doc', name: 'Renamed' };
+      rest.resolveWith(updated);
 
-      await permit.api.resources.update('doc', body);
+      const result = await permit.api.resources.update('doc', body);
 
+      expect(result).toEqual(updated);
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${COLLECTION}/doc`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/doc`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -108,12 +136,14 @@ describe('ResourcesApi (unit)', () => {
   describe('replace', () => {
     it('PUTs the resource body to the keyed path', async () => {
       const body: ResourceReplace = { name: 'Replaced', actions: { read: {} } };
-      rest.resolveWith({ key: 'doc' });
+      const replaced = { key: 'doc', name: 'Replaced' };
+      rest.resolveWith(replaced);
 
-      await permit.api.resources.replace('doc', body);
+      const result = await permit.api.resources.replace('doc', body);
 
+      expect(result).toEqual(replaced);
       expect(rest.last?.method).toBe('PUT');
-      expect(rest.last?.url).toContain(`${COLLECTION}/doc`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/doc`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -125,7 +155,7 @@ describe('ResourcesApi (unit)', () => {
       await permit.api.resources.delete('doc');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/doc`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/doc`);
     });
   });
 

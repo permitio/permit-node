@@ -1,7 +1,7 @@
 import { PermitApiError } from '../../../api/base';
 import { RelationshipTupleCreate, RelationshipTupleDelete } from '../../../api/relationship-tuples';
 import { Permit } from '../../../index';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import { createMockPermit, MOCK_PDP_ORIGIN, MockTransport } from '../../helpers/mock-api';
 
 // Facts modules dispatch on the REST transport; the env-scoped default context
 // places every tuple URL under `/v2/facts/{proj}/{env}/relationship_tuples`.
@@ -20,12 +20,14 @@ describe('RelationshipTuplesApi (unit)', () => {
 
   describe('list', () => {
     it('GETs the env-scoped collection with no params when none are given', async () => {
-      rest.resolveWith([]);
+      const tuples = [{ subject: 'user:alice', relation: 'parent', object: 'folder:root' }];
+      rest.resolveWith(tuples);
 
-      await permit.api.relationshipTuples.list({});
+      const result = await permit.api.relationshipTuples.list({});
 
+      expect(result).toEqual(tuples);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       // The SDK does not default pagination here, so omitted filters are absent.
       expect(rest.last?.params).not.toHaveProperty('page');
       expect(rest.last?.params).not.toHaveProperty('tenant');
@@ -46,7 +48,7 @@ describe('RelationshipTuplesApi (unit)', () => {
       });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({
         tenant: 'default',
         subject: 'user:alice',
@@ -69,13 +71,14 @@ describe('RelationshipTuplesApi (unit)', () => {
     };
 
     it('POSTs the tuple body to the facts collection', async () => {
-      rest.resolveWith({ ...tuple, id: 'tuple-1' });
+      const created = { ...tuple, id: 'tuple-1' };
+      rest.resolveWith(created);
 
-      await permit.api.relationshipTuples.create(tuple);
+      const result = await permit.api.relationshipTuples.create(tuple);
 
+      expect(result).toEqual(created);
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
-      expect(rest.last?.url).not.toContain('/bulk');
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(tuple);
     });
   });
@@ -93,8 +96,7 @@ describe('RelationshipTuplesApi (unit)', () => {
       await permit.api.relationshipTuples.delete(tuple);
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(COLLECTION);
-      expect(rest.last?.url).not.toContain('/bulk');
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(tuple);
     });
   });
@@ -105,12 +107,14 @@ describe('RelationshipTuplesApi (unit)', () => {
         { subject: 'user:alice', relation: 'parent', object: 'folder:root', tenant: 'default' },
         { subject: 'user:bob', relation: 'member', object: 'folder:root', tenant: 'default' },
       ];
-      rest.resolveWith({});
+      const operation = { operations: tuples, status: 'completed' };
+      rest.resolveWith(operation);
 
-      await permit.api.relationshipTuples.bulkRelationshipTuples(tuples);
+      const result = await permit.api.relationshipTuples.bulkRelationshipTuples(tuples);
 
+      expect(result).toEqual(operation);
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(BULK);
+      expect(rest.last?.path).toBe(BULK);
       expect(rest.last?.data).toEqual({ operations: tuples });
     });
   });
@@ -121,12 +125,14 @@ describe('RelationshipTuplesApi (unit)', () => {
         { subject: 'user:alice', relation: 'parent', object: 'folder:root' },
         { subject: 'user:bob', relation: 'member', object: 'folder:root' },
       ];
-      rest.resolveWith({});
+      const operation = { idents: tuples, status: 'completed' };
+      rest.resolveWith(operation);
 
-      await permit.api.relationshipTuples.bulkUnRelationshipTuples(tuples);
+      const result = await permit.api.relationshipTuples.bulkUnRelationshipTuples(tuples);
 
+      expect(result).toEqual(operation);
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(BULK);
+      expect(rest.last?.path).toBe(BULK);
       expect(rest.last?.data).toEqual({ idents: tuples });
     });
   });
@@ -150,7 +156,8 @@ describe('RelationshipTuplesApi (unit)', () => {
 
       expect(proxied.rest.last?.method).toBe('POST');
       // proxyFactsViaPdp routes facts requests at the PDP host.
-      expect(proxied.rest.last?.url).toContain('http://localhost:7766');
+      expect(proxied.rest.last?.origin).toBe(MOCK_PDP_ORIGIN);
+      expect(proxied.rest.last?.path).toBe(COLLECTION);
       expect(proxied.rest.last?.headers?.['X-Wait-Timeout']).toBe('30');
     });
   });

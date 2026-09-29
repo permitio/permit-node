@@ -2,7 +2,7 @@ import { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 
 import { ICheckQuery } from '../../../enforcement/interfaces';
 import { Permit } from '../../../index';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import { createMockPermit, MOCK_PDP_ORIGIN, MockTransport } from '../../helpers/mock-api';
 
 // The enforcer talks to two dedicated axios instances: the PDP client (captured
 // by `pdp`) and the OPA client (captured by `opa`, used only when a check is
@@ -34,7 +34,8 @@ describe('Enforcer (unit)', () => {
 
       expect(allowed).toBe(true);
       expect(pdp.last?.method).toBe('POST');
-      expect(pdp.last?.url).toBe('allowed');
+      expect(pdp.last?.origin).toBe(MOCK_PDP_ORIGIN);
+      expect(pdp.last?.path).toBe('/allowed');
       expect(pdp.last?.data).toEqual({
         user: { key: 'alice', email: 'alice@x.com' },
         action: 'read',
@@ -48,7 +49,7 @@ describe('Enforcer (unit)', () => {
 
       await permit.check('alice', 'read', { type: 'doc', tenant: 't1' });
 
-      expect(pdp.last?.data?.user).toEqual({ key: 'alice' });
+      expect(pdp.last?.data).toHaveProperty('user', { key: 'alice' });
     });
 
     it('parses a `type:key` resource string into { type, key }', async () => {
@@ -56,7 +57,11 @@ describe('Enforcer (unit)', () => {
 
       await permit.check('alice', 'read', 'doc:123');
 
-      expect(pdp.last?.data?.resource).toEqual({ type: 'doc', key: '123', tenant: 'default' });
+      expect(pdp.last?.data).toHaveProperty('resource', {
+        type: 'doc',
+        key: '123',
+        tenant: 'default',
+      });
     });
 
     it('parses a bare `type` resource string into { type } with no key', async () => {
@@ -65,8 +70,8 @@ describe('Enforcer (unit)', () => {
       await permit.check('alice', 'read', 'doc');
 
       // `key` is `undefined`, so JSON serialization drops it from the body.
-      expect(pdp.last?.data?.resource).toEqual({ type: 'doc', tenant: 'default' });
-      expect(pdp.last?.data?.resource).not.toHaveProperty('key');
+      expect(pdp.last?.data).toHaveProperty('resource', { type: 'doc', tenant: 'default' });
+      expect(pdp.last?.data).not.toHaveProperty('resource.key');
     });
 
     it('throws `invalid resource string` for >2 colon-separated parts and never dispatches', async () => {
@@ -86,7 +91,7 @@ describe('Enforcer (unit)', () => {
 
       await permit.check('alice', 'read', { type: 'doc' });
 
-      expect(pdp.last?.data?.resource).toEqual({ type: 'doc', tenant: 'default' });
+      expect(pdp.last?.data).toHaveProperty('resource', { type: 'doc', tenant: 'default' });
     });
 
     it('keeps the resource tenant untouched when one is already set', async () => {
@@ -94,7 +99,7 @@ describe('Enforcer (unit)', () => {
 
       await permit.check('alice', 'read', { type: 'doc', tenant: 'acme' });
 
-      expect(pdp.last?.data?.resource?.tenant).toBe('acme');
+      expect(pdp.last?.data).toHaveProperty('resource.tenant', 'acme');
     });
 
     it('does not inject a tenant when useDefaultTenantIfEmpty is off', async () => {
@@ -103,7 +108,7 @@ describe('Enforcer (unit)', () => {
 
       await permit.check('alice', 'read', { type: 'doc' });
 
-      expect(pdp.last?.data?.resource).toEqual({ type: 'doc' });
+      expect(pdp.last?.data).toHaveProperty('resource', { type: 'doc' });
     });
   });
 
@@ -121,9 +126,8 @@ describe('Enforcer (unit)', () => {
 
       expect(allowed).toBe(true);
       expect(opa.last?.method).toBe('POST');
-      expect(opa.last?.url).toBe('root');
-      expect(opa.last?.baseURL).toContain('8181');
-      expect(opa.last?.baseURL).toContain('v1/data/permit');
+      expect(opa.last?.origin).toBe('http://localhost:8181');
+      expect(opa.last?.path).toBe('/v1/data/permit/root');
       expect(opa.last?.data).toEqual({
         input: {
           user: { key: 'alice' },
@@ -180,7 +184,7 @@ describe('Enforcer (unit)', () => {
 
       expect(decisions).toEqual([true, false]);
       expect(pdp.last?.method).toBe('POST');
-      expect(pdp.last?.url).toBe('allowed/bulk');
+      expect(pdp.last?.path).toBe('/allowed/bulk');
       expect(pdp.last?.data).toEqual([
         {
           user: { key: 'u1' },
@@ -242,7 +246,7 @@ describe('Enforcer (unit)', () => {
 
       expect(permissions).toEqual({ 'doc:1': { permissions: ['read'] } });
       expect(pdp.last?.method).toBe('POST');
-      expect(pdp.last?.url).toBe('user-permissions');
+      expect(pdp.last?.path).toBe('/user-permissions');
       expect(pdp.last?.data).toEqual({
         user: { key: 'bob' },
         tenants: ['t1', 't2'],

@@ -20,12 +20,14 @@ describe('ResourceActionsApi (unit)', () => {
 
   describe('list', () => {
     it('GETs the resource-scoped actions collection with default pagination', async () => {
-      rest.resolveWith([]);
+      const response = [{ key: 'item-1', id: 'item-id-1' }];
+      rest.resolveWith(response);
 
-      await permit.api.resourceActions.list({ resourceKey: RESOURCE });
+      const result = await permit.api.resourceActions.list({ resourceKey: RESOURCE });
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
     });
 
@@ -35,37 +37,43 @@ describe('ResourceActionsApi (unit)', () => {
       await permit.api.resourceActions.list({ resourceKey: RESOURCE, page: 3, perPage: 7 });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '3', per_page: '7' });
     });
   });
 
   describe('get / getByKey / getById', () => {
     it('GETs a single action with the resource key and action key in the path', async () => {
-      rest.resolveWith({ key: 'read' });
+      const response = { key: 'read' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceActions.get(RESOURCE, 'read');
+      const result = await permit.api.resourceActions.get(RESOURCE, 'read');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/read`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/read`);
     });
 
     it('getByKey is an alias for get', async () => {
-      rest.resolveWith({ key: 'read' });
+      const response = { key: 'read' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceActions.getByKey(RESOURCE, 'read');
+      const result = await permit.api.resourceActions.getByKey(RESOURCE, 'read');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/read`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/read`);
     });
 
     it('getById is an alias for get', async () => {
-      rest.resolveWith({ key: 'action-1' });
+      const response = { key: 'action-1' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceActions.getById(RESOURCE, 'action-1');
+      const result = await permit.api.resourceActions.getById(RESOURCE, 'action-1');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/action-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/action-1`);
     });
   });
 
@@ -73,12 +81,14 @@ describe('ResourceActionsApi (unit)', () => {
     const payload: ResourceActionCreate = { key: 'read', name: 'Read' };
 
     it('POSTs the action body to the resource-scoped collection', async () => {
-      rest.resolveWith({ ...payload, id: 'action-1' });
+      const response = { ...payload, id: 'action-1' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceActions.create(RESOURCE, payload);
+      const result = await permit.api.resourceActions.create(RESOURCE, payload);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -86,12 +96,14 @@ describe('ResourceActionsApi (unit)', () => {
   describe('update', () => {
     it('PATCHes the action body to the keyed path', async () => {
       const body: ResourceActionUpdate = { name: 'Read renamed' };
-      rest.resolveWith({ key: 'read', name: 'Read renamed' });
+      const response = { key: 'read', name: 'Read renamed' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceActions.update(RESOURCE, 'read', body);
+      const result = await permit.api.resourceActions.update(RESOURCE, 'read', body);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${COLLECTION}/read`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/read`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -103,7 +115,7 @@ describe('ResourceActionsApi (unit)', () => {
       await permit.api.resourceActions.delete(RESOURCE, 'read');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/read`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/read`);
     });
   });
 

@@ -176,8 +176,9 @@ it('maps axios-retry retryCount to our 0-based attempt number', async () => {
       permit.config.axiosInstance.request({ method: 'GET', url: '/x' }),
     ).rejects.toThrow();
 
-    expect(scheduledDelays.includes(30)).toBe(true);
-    expect(scheduledDelays.includes(90)).toBe(false);
+    expect(scheduledDelays).toContain(30);
+    // 90ms is the attempt-1 delay, which the off-by-one bug would schedule.
+    expect(scheduledDelays).not.toContain(90);
   } finally {
     restore();
     randomSpy.mockRestore();
@@ -235,7 +236,7 @@ it('Retry-After header drives the retry delay end-to-end', async () => {
 
     // 429 is retryable and GET is allowed, so it retried once.
     expect(calls).toBe(2);
-    expect(scheduledDelays.includes(2000)).toBe(true);
+    expect(scheduledDelays).toContain(2000);
   } finally {
     restore();
   }

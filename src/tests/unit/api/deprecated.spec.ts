@@ -34,7 +34,7 @@ describe('DeprecatedApiClient (unit)', () => {
       const users = await permit.api.listUsers();
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${FACTS}/users`);
+      expect(rest.last?.path).toBe(`${FACTS}/users`);
       // listUsers returns response.data.data (the inner array), not the envelope.
       expect(users).toEqual([{ key: 'u1' }]);
     });
@@ -45,17 +45,19 @@ describe('DeprecatedApiClient (unit)', () => {
       const user = await permit.api.getUser('u1');
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${FACTS}/users/u1`);
+      expect(rest.last?.path).toBe(`${FACTS}/users/u1`);
       expect(user).toEqual({ key: 'u1' });
     });
 
     it('listConditionSets GETs condition_sets with type/page/per_page as wire params', async () => {
-      rest.resolveWith([{ key: 'cs1' }]);
+      const sets = [{ key: 'cs1' }];
+      rest.resolveWith(sets);
 
-      await permit.api.listConditionSets(ConditionSetType.Userset, 2, 10);
+      const result = await permit.api.listConditionSets(ConditionSetType.Userset, 2, 10);
 
+      expect(result).toEqual(sets);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${SCHEMA}/condition_sets`);
+      expect(rest.last?.path).toBe(`${SCHEMA}/condition_sets`);
       expect(rest.last?.params).toMatchObject({ type: 'userset', page: '2', per_page: '10' });
     });
   });
@@ -63,12 +65,14 @@ describe('DeprecatedApiClient (unit)', () => {
   describe('create', () => {
     it('createUser POSTs the user body to the users collection', async () => {
       const payload: UserCreate = { key: 'u1', email: 'u1@example.com' };
-      rest.resolveWith({ ...payload, id: 'user-id-1' });
+      const created = { ...payload, id: 'user-id-1' };
+      rest.resolveWith(created);
 
-      await permit.api.createUser(payload);
+      const result = await permit.api.createUser(payload);
 
+      expect(result).toEqual(created);
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(`${FACTS}/users`);
+      expect(rest.last?.path).toBe(`${FACTS}/users`);
       expect(rest.last?.data).toEqual(payload);
     });
 
@@ -78,12 +82,14 @@ describe('DeprecatedApiClient (unit)', () => {
         name: 'Document',
         actions: { read: {} },
       };
-      rest.resolveWith({ ...payload, id: 'res-1' });
+      const created = { ...payload, id: 'res-1' };
+      rest.resolveWith(created);
 
-      await permit.api.createResource(payload);
+      const result = await permit.api.createResource(payload);
 
+      expect(result).toEqual(created);
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(`${SCHEMA}/resources`);
+      expect(rest.last?.path).toBe(`${SCHEMA}/resources`);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -91,12 +97,14 @@ describe('DeprecatedApiClient (unit)', () => {
   describe('update', () => {
     it('updateTenant PATCHes the tenant body to the keyed path', async () => {
       const body: TenantUpdate = { name: 'Renamed Tenant' };
-      rest.resolveWith({ key: 't1', name: 'Renamed Tenant' });
+      const updated = { key: 't1', name: 'Renamed Tenant' };
+      rest.resolveWith(updated);
 
-      await permit.api.updateTenant('t1', body);
+      const result = await permit.api.updateTenant('t1', body);
 
+      expect(result).toEqual(updated);
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${FACTS}/tenants/t1`);
+      expect(rest.last?.path).toBe(`${FACTS}/tenants/t1`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -104,12 +112,14 @@ describe('DeprecatedApiClient (unit)', () => {
   describe('assign', () => {
     it('assignRole POSTs the assignment body to the role_assignments collection', async () => {
       const body: RoleAssignmentCreate = { role: 'admin', tenant: 't1', user: 'u1' };
-      rest.resolveWith({ ...body, id: 'ra-1' });
+      const assigned = { ...body, id: 'ra-1' };
+      rest.resolveWith(assigned);
 
-      await permit.api.assignRole(body);
+      const result = await permit.api.assignRole(body);
 
+      expect(result).toEqual(assigned);
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(`${FACTS}/role_assignments`);
+      expect(rest.last?.path).toBe(`${FACTS}/role_assignments`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -121,7 +131,7 @@ describe('DeprecatedApiClient (unit)', () => {
       const response = await permit.api.deleteUser('u1');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${FACTS}/users/u1`);
+      expect(rest.last?.path).toBe(`${FACTS}/users/u1`);
       // delete-style wrappers return the whole AxiosResponse, not the unwrapped body.
       expect(response.status).toBe(204);
       expect(response.data).toEqual({});

@@ -19,12 +19,14 @@ describe('ConditionSetsApi (unit)', () => {
 
   describe('list', () => {
     it('GETs the env-scoped collection with default pagination', async () => {
-      rest.resolveWith([]);
+      const sets = [{ key: 'us-employees', id: 'set-1' }];
+      rest.resolveWith(sets);
 
-      await permit.api.conditionSets.list();
+      const result = await permit.api.conditionSets.list();
 
+      expect(result).toEqual(sets);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       // page/per_page are serialized into the URL query string (values are strings).
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
     });
@@ -35,36 +37,42 @@ describe('ConditionSetsApi (unit)', () => {
       await permit.api.conditionSets.list({ page: 3, perPage: 25 });
 
       expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '3', per_page: '25' });
     });
   });
 
   describe('get / getByKey / getById', () => {
+    const set = { key: 'us-employees', id: 'set-1' };
+
     it('GETs a single condition set with the key in the path', async () => {
-      rest.resolveWith({ key: 'us-employees' });
+      rest.resolveWith(set);
 
-      await permit.api.conditionSets.get('us-employees');
+      const result = await permit.api.conditionSets.get('us-employees');
 
+      expect(result).toEqual(set);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/us-employees`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/us-employees`);
     });
 
     it('getByKey is an alias for get', async () => {
-      rest.resolveWith({ key: 'us-employees' });
+      rest.resolveWith(set);
 
-      await permit.api.conditionSets.getByKey('us-employees');
+      const result = await permit.api.conditionSets.getByKey('us-employees');
 
+      expect(result).toEqual(set);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/us-employees`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/us-employees`);
     });
 
     it('getById is an alias for get', async () => {
-      rest.resolveWith({ key: 'set-1' });
+      rest.resolveWith(set);
 
-      await permit.api.conditionSets.getById('set-1');
+      const result = await permit.api.conditionSets.getById('set-1');
 
+      expect(result).toEqual(set);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/set-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/set-1`);
     });
   });
 
@@ -76,12 +84,14 @@ describe('ConditionSetsApi (unit)', () => {
         type: 'userset',
         conditions: { allOf: [{ 'user.location': { equals: 'US' } }] },
       };
-      rest.resolveWith({ ...payload, id: 'set-1' });
+      const created = { ...payload, id: 'set-1' };
+      rest.resolveWith(created);
 
-      await permit.api.conditionSets.create(payload);
+      const result = await permit.api.conditionSets.create(payload);
 
+      expect(result).toEqual(created);
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
 
@@ -93,12 +103,14 @@ describe('ConditionSetsApi (unit)', () => {
         resource_id: 'document',
         conditions: { allOf: [{ 'resource.classification': { equals: 'secret' } }] },
       };
-      rest.resolveWith({ ...payload, id: 'set-2' });
+      const created = { ...payload, id: 'set-2' };
+      rest.resolveWith(created);
 
-      await permit.api.conditionSets.create(payload);
+      const result = await permit.api.conditionSets.create(payload);
 
+      expect(result).toEqual(created);
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -109,12 +121,14 @@ describe('ConditionSetsApi (unit)', () => {
         name: 'Renamed set',
         conditions: { allOf: [{ 'user.location': { equals: 'EU' } }] },
       };
-      rest.resolveWith({ key: 'us-employees', name: 'Renamed set' });
+      const updated = { key: 'us-employees', name: 'Renamed set' };
+      rest.resolveWith(updated);
 
-      await permit.api.conditionSets.update('us-employees', body);
+      const result = await permit.api.conditionSets.update('us-employees', body);
 
+      expect(result).toEqual(updated);
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${COLLECTION}/us-employees`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/us-employees`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -126,7 +140,7 @@ describe('ConditionSetsApi (unit)', () => {
       await permit.api.conditionSets.delete('us-employees');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/us-employees`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/us-employees`);
     });
   });
 

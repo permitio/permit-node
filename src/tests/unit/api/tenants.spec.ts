@@ -1,7 +1,12 @@
 import { PermitApiError } from '../../../api/base';
 import { TenantCreate, TenantUpdate } from '../../../api/tenants';
 import { Permit } from '../../../index';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import {
+  createMockPermit,
+  MOCK_API_ORIGIN,
+  MOCK_PDP_ORIGIN,
+  MockTransport,
+} from '../../helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // tenants URL is scoped under `/v2/facts/{proj}/{env}/tenants`. Tenants is a
@@ -20,12 +25,14 @@ describe('TenantsApi (unit)', () => {
 
   describe('list', () => {
     it('GETs the env-scoped collection without injecting pagination defaults', async () => {
-      rest.resolveWith([]);
+      const response = [{ key: 't1', id: 'tenant-1' }];
+      rest.resolveWith(response);
 
-      await permit.api.tenants.list();
+      const result = await permit.api.tenants.list();
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       // Unlike resources, tenants.list() forwards only the params it is given,
       // so page/per_page are absent when the caller omits them.
       expect(rest.last?.params).not.toHaveProperty('page');
@@ -38,7 +45,7 @@ describe('TenantsApi (unit)', () => {
       await permit.api.tenants.list({ page: 2, perPage: 5, search: 'acme' });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({
         page: '2',
         per_page: '5',
@@ -49,12 +56,14 @@ describe('TenantsApi (unit)', () => {
 
   describe('listTenantUsers', () => {
     it('GETs the tenant users sub-collection with the tenant key in the path', async () => {
-      rest.resolveWith({ data: [], total_count: 0, page_count: 0 });
+      const response = { data: [{ key: 'u1', id: 'user-1' }], total_count: 1, page_count: 1 };
+      rest.resolveWith(response);
 
-      await permit.api.tenants.listTenantUsers({ tenantKey: 't1' });
+      const result = await permit.api.tenants.listTenantUsers({ tenantKey: 't1' });
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/t1/users`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/t1/users`);
       expect(rest.last?.params).not.toHaveProperty('page');
     });
 
@@ -70,7 +79,7 @@ describe('TenantsApi (unit)', () => {
       });
 
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/t1/users`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/t1/users`);
       expect(rest.last?.params).toMatchObject({
         page: '3',
         per_page: '10',
@@ -82,30 +91,36 @@ describe('TenantsApi (unit)', () => {
 
   describe('get / getByKey / getById', () => {
     it('GETs a single tenant with the key in the path', async () => {
-      rest.resolveWith({ key: 't1' });
+      const response = { key: 't1' };
+      rest.resolveWith(response);
 
-      await permit.api.tenants.get('t1');
+      const result = await permit.api.tenants.get('t1');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/t1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/t1`);
     });
 
     it('getByKey is an alias for get', async () => {
-      rest.resolveWith({ key: 't1' });
+      const response = { key: 't1' };
+      rest.resolveWith(response);
 
-      await permit.api.tenants.getByKey('t1');
+      const result = await permit.api.tenants.getByKey('t1');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/t1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/t1`);
     });
 
     it('getById is an alias for get', async () => {
-      rest.resolveWith({ key: 'tenant-id' });
+      const response = { key: 'tenant-id' };
+      rest.resolveWith(response);
 
-      await permit.api.tenants.getById('tenant-id');
+      const result = await permit.api.tenants.getById('tenant-id');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/tenant-id`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/tenant-id`);
     });
   });
 
@@ -117,12 +132,14 @@ describe('TenantsApi (unit)', () => {
     };
 
     it('POSTs the tenant body to the collection', async () => {
-      rest.resolveWith({ ...payload, id: 'tenant-1' });
+      const response = { ...payload, id: 'tenant-1' };
+      rest.resolveWith(response);
 
-      await permit.api.tenants.create(payload);
+      const result = await permit.api.tenants.create(payload);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -130,12 +147,14 @@ describe('TenantsApi (unit)', () => {
   describe('update', () => {
     it('PATCHes the tenant body to the keyed path', async () => {
       const body: TenantUpdate = { name: 'Renamed' };
-      rest.resolveWith({ key: 't1', name: 'Renamed' });
+      const response = { key: 't1', name: 'Renamed' };
+      rest.resolveWith(response);
 
-      await permit.api.tenants.update('t1', body);
+      const result = await permit.api.tenants.update('t1', body);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${COLLECTION}/t1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/t1`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -147,7 +166,7 @@ describe('TenantsApi (unit)', () => {
       await permit.api.tenants.delete('t1');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/t1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/t1`);
     });
   });
 
@@ -158,7 +177,7 @@ describe('TenantsApi (unit)', () => {
       await permit.api.tenants.deleteTenantUser('t1', 'u1');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/t1/users/u1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/t1/users/u1`);
     });
   });
 
@@ -170,7 +189,8 @@ describe('TenantsApi (unit)', () => {
 
       rest.resolveWith([]);
       await tenants.list();
-      expect(rest.last?.url).toContain('http://localhost:8000');
+      expect(rest.last?.origin).toBe(MOCK_API_ORIGIN);
+      expect(rest.last?.path).toBe(COLLECTION);
     });
 
     it('returns a distinct clone that dispatches to the PDP host when proxy is on', async () => {
@@ -182,19 +202,23 @@ describe('TenantsApi (unit)', () => {
 
       proxied.rest.resolveWith([]);
       await synced.list();
-      expect(proxied.rest.last?.url).toContain('http://localhost:7766/v2/facts');
+      expect(proxied.rest.last?.origin).toBe(MOCK_PDP_ORIGIN);
+      expect(proxied.rest.last?.path).toBe(COLLECTION);
     });
   });
 
   describe('proxyFactsViaPdp', () => {
     it('routes the request through the PDP host while still using the rest transport', async () => {
       const proxied = createMockPermit({ proxyFactsViaPdp: true });
-      proxied.rest.resolveWith([]);
+      const response = [{ key: 't1', id: 'tenant-1' }];
+      proxied.rest.resolveWith(response);
 
-      await proxied.permit.api.tenants.list();
+      const result = await proxied.permit.api.tenants.list();
 
+      expect(result).toEqual(response);
       expect(proxied.rest.last?.method).toBe('GET');
-      expect(proxied.rest.last?.url).toContain('http://localhost:7766/v2/facts/proj/env/tenants');
+      expect(proxied.rest.last?.origin).toBe(MOCK_PDP_ORIGIN);
+      expect(proxied.rest.last?.path).toBe(COLLECTION);
     });
   });
 

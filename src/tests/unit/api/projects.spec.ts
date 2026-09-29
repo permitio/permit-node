@@ -19,12 +19,14 @@ describe('ProjectsApi (unit)', () => {
 
   describe('list', () => {
     it('GETs the projects collection with default pagination', async () => {
-      rest.resolveWith([]);
+      const projects = [{ key: 'proj-a', id: 'proj-id-1' }];
+      rest.resolveWith(projects);
 
-      await permit.api.projects.list();
+      const result = await permit.api.projects.list();
 
+      expect(result).toEqual(projects);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
     });
 
@@ -34,36 +36,42 @@ describe('ProjectsApi (unit)', () => {
       await permit.api.projects.list({ page: 3, perPage: 25 });
 
       expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '3', per_page: '25' });
     });
   });
 
   describe('get / getByKey / getById', () => {
+    const project = { key: 'proj-a', id: 'proj-id-1' };
+
     it('GETs a single project with the key in the path', async () => {
-      rest.resolveWith({ key: 'proj-a' });
+      rest.resolveWith(project);
 
-      await permit.api.projects.get('proj-a');
+      const result = await permit.api.projects.get('proj-a');
 
+      expect(result).toEqual(project);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/proj-a`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/proj-a`);
     });
 
     it('getByKey is an alias for get', async () => {
-      rest.resolveWith({ key: 'proj-a' });
+      rest.resolveWith(project);
 
-      await permit.api.projects.getByKey('proj-a');
+      const result = await permit.api.projects.getByKey('proj-a');
 
+      expect(result).toEqual(project);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/proj-a`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/proj-a`);
     });
 
     it('getById is an alias for get', async () => {
-      rest.resolveWith({ key: 'proj-1' });
+      rest.resolveWith(project);
 
-      await permit.api.projects.getById('proj-1');
+      const result = await permit.api.projects.getById('proj-1');
 
+      expect(result).toEqual(project);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(`${COLLECTION}/proj-1`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/proj-1`);
     });
   });
 
@@ -74,12 +82,14 @@ describe('ProjectsApi (unit)', () => {
     };
 
     it('POSTs the project body to the collection', async () => {
-      rest.resolveWith({ ...payload, id: 'proj-id-1' });
+      const created = { ...payload, id: 'proj-id-1' };
+      rest.resolveWith(created);
 
-      await permit.api.projects.create(payload);
+      const result = await permit.api.projects.create(payload);
 
+      expect(result).toEqual(created);
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
     });
   });
@@ -87,12 +97,14 @@ describe('ProjectsApi (unit)', () => {
   describe('update', () => {
     it('PATCHes the project body to the keyed path', async () => {
       const body: ProjectUpdate = { name: 'Renamed' };
-      rest.resolveWith({ key: 'proj-a', name: 'Renamed' });
+      const updated = { key: 'proj-a', name: 'Renamed' };
+      rest.resolveWith(updated);
 
-      await permit.api.projects.update('proj-a', body);
+      const result = await permit.api.projects.update('proj-a', body);
 
+      expect(result).toEqual(updated);
       expect(rest.last?.method).toBe('PATCH');
-      expect(rest.last?.url).toContain(`${COLLECTION}/proj-a`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/proj-a`);
       expect(rest.last?.data).toEqual(body);
     });
   });
@@ -104,7 +116,7 @@ describe('ProjectsApi (unit)', () => {
       await permit.api.projects.delete('proj-a');
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(`${COLLECTION}/proj-a`);
+      expect(rest.last?.path).toBe(`${COLLECTION}/proj-a`);
     });
   });
 

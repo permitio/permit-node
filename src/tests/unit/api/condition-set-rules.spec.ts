@@ -19,16 +19,25 @@ describe('ConditionSetRulesApi (unit)', () => {
 
   describe('list', () => {
     it('GETs the env-scoped collection mapping filters to wire params', async () => {
-      rest.resolveWith([]);
+      const rules = [
+        {
+          id: 'rule-1',
+          user_set: 'us-employees',
+          permission: 'document:read',
+          resource_set: 'confidential-docs',
+        },
+      ];
+      rest.resolveWith(rules);
 
-      await permit.api.conditionSetRules.list({
+      const result = await permit.api.conditionSetRules.list({
         userSetKey: 'us-employees',
         permissionKey: 'document:read',
         resourceSetKey: 'confidential-docs',
       });
 
+      expect(result).toEqual(rules);
       expect(rest.last?.method).toBe('GET');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       // userSetKey/permissionKey/resourceSetKey map to snake_case wire params.
       expect(rest.last?.params).toMatchObject({
         user_set: 'us-employees',
@@ -50,6 +59,7 @@ describe('ConditionSetRulesApi (unit)', () => {
         perPage: 10,
       });
 
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '2', per_page: '10' });
     });
   });
@@ -61,14 +71,16 @@ describe('ConditionSetRulesApi (unit)', () => {
       resource_set: 'confidential-docs',
     };
 
-    it('POSTs the rule body to the collection', async () => {
+    it('POSTs the rule body to the collection and returns the created rule', async () => {
       // assignSetPermissions returns an array; the SDK unwraps `.data[0]`.
-      rest.resolveWith([{ ...rule, id: 'rule-1' }]);
+      const created = { ...rule, id: 'rule-1' };
+      rest.resolveWith([created]);
 
-      await permit.api.conditionSetRules.create(rule);
+      const result = await permit.api.conditionSetRules.create(rule);
 
+      expect(result).toEqual(created);
       expect(rest.last?.method).toBe('POST');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(rule);
     });
   });
@@ -86,7 +98,7 @@ describe('ConditionSetRulesApi (unit)', () => {
       await permit.api.conditionSetRules.delete(rule);
 
       expect(rest.last?.method).toBe('DELETE');
-      expect(rest.last?.url).toContain(COLLECTION);
+      expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(rule);
     });
   });
