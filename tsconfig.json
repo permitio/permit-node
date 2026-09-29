@@ -1,5 +1,5 @@
 {
-  // Read by editors, ESLint, tsup and Vitest. It covers every TypeScript file in the repository,
-  // tests included. `yarn build:types` uses tsconfig.build.json instead.
+  // Read by editors, ESLint and Vitest. It covers every TypeScript file in the repository, tests
+  // included. The build (tsup and `yarn build:types`) and typedoc use tsconfig.build.json instead.
   "extends": "./tsconfig.test.json"
 }

@@ -5,6 +5,8 @@ export default defineConfig({
   // declarations that `tsc` emits (build:types). Tests import from src/, and the
   // module-import tests load only build/index.js and build/index.mjs.
   entry: ['src/index.ts'],
+  // tsconfig.json also covers the tests and the Vitest globals; build from the SDK-only config.
+  tsconfig: 'tsconfig.build.json',
   format: ['cjs', 'esm'],
   dts: false,
   splitting: false,
