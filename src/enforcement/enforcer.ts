@@ -5,6 +5,8 @@ import URL from 'url-parse';
 import { IPermitConfig } from '../config';
 import { CheckConfig, Context, ContextStore } from '../utils/context';
 import { AxiosLoggingInterceptor } from '../utils/http-logger';
+import { resolveRetryConfig } from '../utils/retry';
+import { AxiosRetryInterceptor } from '../utils/retry-interceptor';
 
 import {
   AllTenantsResponse,
@@ -137,18 +139,13 @@ export class Enforcer implements IEnforcer {
     opaBaseUrl.set('port', '8181');
     opaBaseUrl.set('pathname', `${opaBaseUrl.pathname}v1/data/permit/`);
     const version = process.env.npm_package_version ?? 'unknown';
-    if (config.axiosInstance) {
-      this.client = config.axiosInstance;
-      this.client.defaults.baseURL = `${this.config.pdp}/`;
-      this.client.defaults.headers.common['X-Permit-SDK-Version'] = `node:${version}`;
-    } else {
-      this.client = axios.create({
-        baseURL: `${this.config.pdp}/`,
-        headers: {
-          'X-Permit-SDK-Version': `node:${version}`,
-        },
-      });
-    }
+    // PDP gets its own dedicated axios instance so PDP-only POST retries never
+    // apply to the shared REST API client (config.axiosInstance) — REST writes
+    // must never be retried.
+    this.client = axios.create({
+      baseURL: `${this.config.pdp}/`,
+      headers: { 'X-Permit-SDK-Version': `node:${version}` },
+    });
     if (config.opaAxiosInstance) {
       this.opaClient = config.opaAxiosInstance;
       this.opaClient.defaults.baseURL = opaBaseUrl.toString();
@@ -163,6 +160,20 @@ export class Enforcer implements IEnforcer {
     }
     this.logger = logger;
     AxiosLoggingInterceptor.setupInterceptor(this.client, this.logger);
+
+    // Setup retry interceptors for PDP clients
+    // Use pdpRetry config if provided, otherwise fall back to main retry config
+    const pdpRetryConfig = resolveRetryConfig(config.pdpRetry ?? config.retry);
+    if (pdpRetryConfig.enabled) {
+      // For PDP calls, enable POST retry since check operations are idempotent
+      const pdpRetryWithPost = {
+        ...pdpRetryConfig,
+        retryMethods: [...new Set([...pdpRetryConfig.retryMethods, 'POST'])],
+      };
+      AxiosRetryInterceptor.setupInterceptor(this.client, pdpRetryWithPost, this.logger, 'PDP');
+      AxiosRetryInterceptor.setupInterceptor(this.opaClient, pdpRetryWithPost, this.logger, 'OPA');
+    }
+
     this.contextStore = new ContextStore();
   }
 

@@ -2,6 +2,7 @@ import globalAxios, { AxiosInstance } from 'axios';
 import _ from 'lodash';
 
 import { ApiContext } from './api/context';
+import { IRetryConfig } from './utils/retry';
 import { RecursivePartial } from './utils/types';
 
 export type FactsSyncTimeoutPolicy = 'ignore' | 'fail';
@@ -83,6 +84,10 @@ export interface IPermitConfig {
    * an optional custom axios instance, to control the behavior of the HTTP client
    * used to connect to the Permit REST API.
    *
+   * This instance applies to the REST API only. PDP and OPA calls use dedicated
+   * internal axios instances, so their retry policy can differ and non-idempotent
+   * POST writes on the shared REST client are never retried.
+   *
    * @see https://axios-http.com/docs/instance
    * @see https://axios-http.com/docs/req_config
    */
@@ -103,13 +108,33 @@ export interface IPermitConfig {
    */
   factsSyncTimeoutPolicy: FactsSyncTimeoutPolicy | null;
   /**
-   * an optional custom axios instance for opa, to control the behavior of the HTTP client
-   * used to connect to the Permit REST API.
+   * an optional custom axios instance for OPA, to control the behavior of the HTTP
+   * client used to connect to OPA. This applies to OPA calls only and is separate
+   * from `axiosInstance` (REST API) and the dedicated internal PDP instance.
    *
    * @see https://axios-http.com/docs/instance
    * @see https://axios-http.com/docs/req_config
    */
   opaAxiosInstance?: AxiosInstance;
+
+  /**
+   * Configuration for automatic retry of failed requests.
+   * Retries are opt-in: when omitted or set to false, retries are disabled.
+   * Providing a config object enables them (3 retries with exponential backoff
+   * by default).
+   *
+   * @see {@link IRetryConfig}
+   */
+  retry?: IRetryConfig | false;
+
+  /**
+   * Optional separate retry configuration for PDP (enforcement) calls.
+   * If not provided, uses the main `retry` configuration.
+   * Set to false to disable retries for PDP calls only.
+   *
+   * @see {@link IRetryConfig}
+   */
+  pdpRetry?: IRetryConfig | false;
 }
 
 /**
