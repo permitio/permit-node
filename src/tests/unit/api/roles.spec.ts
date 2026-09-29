@@ -19,10 +19,12 @@ describe('RolesApi (unit)', () => {
 
   describe('list', () => {
     it('GETs the env-scoped collection with default pagination', async () => {
-      rest.resolveWith([]);
+      const response = [{ key: 'admin', id: 'role-1' }];
+      rest.resolveWith(response);
 
-      await permit.api.roles.list();
+      const result = await permit.api.roles.list();
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
@@ -30,10 +32,13 @@ describe('RolesApi (unit)', () => {
     });
 
     it('forwards page, perPage and includeTotalCount as wire params', async () => {
-      rest.resolveWith({ data: [], total_count: 0, page_count: 0 });
+      const response = { data: [{ key: 'admin', id: 'role-1' }], total_count: 1, page_count: 1 };
+      rest.resolveWith(response);
 
-      await permit.api.roles.list({ page: 3, perPage: 25, includeTotalCount: true });
+      const result = await permit.api.roles.list({ page: 3, perPage: 25, includeTotalCount: true });
 
+      // With includeTotalCount the paginated envelope is returned as is.
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({
@@ -46,28 +51,34 @@ describe('RolesApi (unit)', () => {
 
   describe('get / getByKey / getById', () => {
     it('GETs a single role with the key in the path', async () => {
-      rest.resolveWith({ key: 'admin' });
+      const response = { key: 'admin' };
+      rest.resolveWith(response);
 
-      await permit.api.roles.get('admin');
+      const result = await permit.api.roles.get('admin');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(`${COLLECTION}/admin`);
     });
 
     it('getByKey is an alias for get', async () => {
-      rest.resolveWith({ key: 'admin' });
+      const response = { key: 'admin' };
+      rest.resolveWith(response);
 
-      await permit.api.roles.getByKey('admin');
+      const result = await permit.api.roles.getByKey('admin');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(`${COLLECTION}/admin`);
     });
 
     it('getById is an alias for get', async () => {
-      rest.resolveWith({ key: 'role-1' });
+      const response = { key: 'role-1' };
+      rest.resolveWith(response);
 
-      await permit.api.roles.getById('role-1');
+      const result = await permit.api.roles.getById('role-1');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(`${COLLECTION}/role-1`);
     });
@@ -81,10 +92,12 @@ describe('RolesApi (unit)', () => {
     };
 
     it('POSTs the role body to the collection', async () => {
-      rest.resolveWith({ ...payload, id: 'role-1' });
+      const response = { ...payload, id: 'role-1' };
+      rest.resolveWith(response);
 
-      await permit.api.roles.create(payload);
+      const result = await permit.api.roles.create(payload);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('POST');
       expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
@@ -94,10 +107,12 @@ describe('RolesApi (unit)', () => {
   describe('update', () => {
     it('PATCHes the role body to the keyed path', async () => {
       const body: RoleUpdate = { name: 'Renamed' };
-      rest.resolveWith({ key: 'admin', name: 'Renamed' });
+      const response = { key: 'admin', name: 'Renamed' };
+      rest.resolveWith(response);
 
-      await permit.api.roles.update('admin', body);
+      const result = await permit.api.roles.update('admin', body);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('PATCH');
       expect(rest.last?.path).toBe(`${COLLECTION}/admin`);
       expect(rest.last?.data).toEqual(body);
@@ -118,10 +133,12 @@ describe('RolesApi (unit)', () => {
   describe('assignPermissions', () => {
     it('POSTs the permissions body to the role permissions path', async () => {
       const permissions = ['doc:read', 'doc:write'];
-      rest.resolveWith({ key: 'admin' });
+      const response = { key: 'admin' };
+      rest.resolveWith(response);
 
-      await permit.api.roles.assignPermissions('admin', permissions);
+      const result = await permit.api.roles.assignPermissions('admin', permissions);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('POST');
       expect(rest.last?.path).toBe(`${COLLECTION}/admin/permissions`);
       expect(rest.last?.data).toEqual({ permissions });
@@ -131,10 +148,12 @@ describe('RolesApi (unit)', () => {
   describe('removePermissions', () => {
     it('DELETEs the permissions body from the role permissions path', async () => {
       const permissions = ['doc:write'];
-      rest.resolveWith({ key: 'admin' });
+      const response = { key: 'admin' };
+      rest.resolveWith(response);
 
-      await permit.api.roles.removePermissions('admin', permissions);
+      const result = await permit.api.roles.removePermissions('admin', permissions);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('DELETE');
       expect(rest.last?.path).toBe(`${COLLECTION}/admin/permissions`);
       expect(rest.last?.data).toEqual({ permissions });

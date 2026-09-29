@@ -19,14 +19,23 @@ describe('ConditionSetRulesApi (unit)', () => {
 
   describe('list', () => {
     it('GETs the env-scoped collection mapping filters to wire params', async () => {
-      rest.resolveWith([]);
+      const rules = [
+        {
+          id: 'rule-1',
+          user_set: 'us-employees',
+          permission: 'document:read',
+          resource_set: 'confidential-docs',
+        },
+      ];
+      rest.resolveWith(rules);
 
-      await permit.api.conditionSetRules.list({
+      const result = await permit.api.conditionSetRules.list({
         userSetKey: 'us-employees',
         permissionKey: 'document:read',
         resourceSetKey: 'confidential-docs',
       });
 
+      expect(result).toEqual(rules);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(COLLECTION);
       // userSetKey/permissionKey/resourceSetKey map to snake_case wire params.
@@ -62,12 +71,14 @@ describe('ConditionSetRulesApi (unit)', () => {
       resource_set: 'confidential-docs',
     };
 
-    it('POSTs the rule body to the collection', async () => {
+    it('POSTs the rule body to the collection and returns the created rule', async () => {
       // assignSetPermissions returns an array; the SDK unwraps `.data[0]`.
-      rest.resolveWith([{ ...rule, id: 'rule-1' }]);
+      const created = { ...rule, id: 'rule-1' };
+      rest.resolveWith([created]);
 
-      await permit.api.conditionSetRules.create(rule);
+      const result = await permit.api.conditionSetRules.create(rule);
 
+      expect(result).toEqual(created);
       expect(rest.last?.method).toBe('POST');
       expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(rule);

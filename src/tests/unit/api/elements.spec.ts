@@ -33,11 +33,13 @@ describe('ElementsClient (unit)', () => {
 
       const result = await permit.elements.loginAs({ userId: 'user-1', tenantId: 'tenant-1' });
 
-      // The raw response fields are spread through unchanged...
-      expect(result.token).toBe('tok-123');
-      expect(result.redirect_url).toBe('https://app.permit.io/embed');
-      // ...and `content.url` mirrors the redirect_url so callers can embed it.
-      expect(result.content).toEqual({ url: 'https://app.permit.io/embed' });
+      // The raw response fields are spread through unchanged, and `content.url`
+      // mirrors the redirect_url so callers can embed it.
+      expect(result).toEqual({
+        redirect_url: 'https://app.permit.io/embed',
+        token: 'tok-123',
+        content: { url: 'https://app.permit.io/embed' },
+      });
     });
 
     it('maps a 403 forbidden response to PermitApiError', async () => {

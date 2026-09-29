@@ -22,10 +22,12 @@ describe('ResourceActionGroupsApi (unit)', () => {
 
   describe('list', () => {
     it('GETs the resource-scoped action_groups collection with default pagination', async () => {
-      rest.resolveWith([]);
+      const response = [{ key: 'item-1', id: 'item-id-1' }];
+      rest.resolveWith(response);
 
-      await permit.api.actionGroups.list({ resourceKey: RESOURCE });
+      const result = await permit.api.actionGroups.list({ resourceKey: RESOURCE });
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
@@ -44,28 +46,34 @@ describe('ResourceActionGroupsApi (unit)', () => {
 
   describe('get / getByKey / getById', () => {
     it('GETs a single group with the resource key and group key in the path', async () => {
-      rest.resolveWith({ key: 'editing' });
+      const response = { key: 'editing' };
+      rest.resolveWith(response);
 
-      await permit.api.actionGroups.get(RESOURCE, 'editing');
+      const result = await permit.api.actionGroups.get(RESOURCE, 'editing');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(`${COLLECTION}/editing`);
     });
 
     it('getByKey is an alias for get', async () => {
-      rest.resolveWith({ key: 'editing' });
+      const response = { key: 'editing' };
+      rest.resolveWith(response);
 
-      await permit.api.actionGroups.getByKey(RESOURCE, 'editing');
+      const result = await permit.api.actionGroups.getByKey(RESOURCE, 'editing');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(`${COLLECTION}/editing`);
     });
 
     it('getById is an alias for get', async () => {
-      rest.resolveWith({ key: 'group-1' });
+      const response = { key: 'group-1' };
+      rest.resolveWith(response);
 
-      await permit.api.actionGroups.getById(RESOURCE, 'group-1');
+      const result = await permit.api.actionGroups.getById(RESOURCE, 'group-1');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(`${COLLECTION}/group-1`);
     });
@@ -79,10 +87,12 @@ describe('ResourceActionGroupsApi (unit)', () => {
     };
 
     it('POSTs the group body to the resource-scoped collection', async () => {
-      rest.resolveWith({ ...payload, id: 'group-1' });
+      const response = { ...payload, id: 'group-1' };
+      rest.resolveWith(response);
 
-      await permit.api.actionGroups.create(RESOURCE, payload);
+      const result = await permit.api.actionGroups.create(RESOURCE, payload);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('POST');
       expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
@@ -92,10 +102,12 @@ describe('ResourceActionGroupsApi (unit)', () => {
   describe('update', () => {
     it('PATCHes the group body to the keyed path', async () => {
       const body: ResourceActionGroupUpdate = { name: 'Editing renamed' };
-      rest.resolveWith({ key: 'editing', name: 'Editing renamed' });
+      const response = { key: 'editing', name: 'Editing renamed' };
+      rest.resolveWith(response);
 
-      await permit.api.actionGroups.update(RESOURCE, 'editing', body);
+      const result = await permit.api.actionGroups.update(RESOURCE, 'editing', body);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('PATCH');
       expect(rest.last?.path).toBe(`${COLLECTION}/editing`);
       expect(rest.last?.data).toEqual(body);

@@ -30,10 +30,12 @@ describe('RoleAssignmentsApi (unit)', () => {
 
   describe('list', () => {
     it('GETs the env-scoped collection with default pagination', async () => {
-      rest.resolveWith([]);
+      const response = [{ user: 'user-1', role: 'admin', tenant: 'acme', id: 'ra-1' }];
+      rest.resolveWith(response);
 
-      await permit.api.roleAssignments.list({});
+      const result = await permit.api.roleAssignments.list({});
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(COLLECTION);
       // page/per_page are always sent (SDK defaults 1/100) and serialized as strings.
@@ -64,10 +66,21 @@ describe('RoleAssignmentsApi (unit)', () => {
     });
 
     it('forwards page, perPage and includeTotalCount as wire params', async () => {
-      rest.resolveWith({ data: [], total_count: 0, page_count: 0 });
+      const response = {
+        data: [{ user: 'user-1', role: 'admin', tenant: 'acme', id: 'ra-1' }],
+        total_count: 1,
+        page_count: 1,
+      };
+      rest.resolveWith(response);
 
-      await permit.api.roleAssignments.list({ page: 2, perPage: 5, includeTotalCount: true });
+      const result = await permit.api.roleAssignments.list({
+        page: 2,
+        perPage: 5,
+        includeTotalCount: true,
+      });
 
+      // With includeTotalCount the paginated envelope is returned as is.
+      expect(result).toEqual(response);
       expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({
         page: '2',
@@ -94,10 +107,12 @@ describe('RoleAssignmentsApi (unit)', () => {
     };
 
     it('POSTs the assignment body to the collection', async () => {
-      rest.resolveWith({ ...payload, id: 'ra-1' });
+      const response = { ...payload, id: 'ra-1' };
+      rest.resolveWith(response);
 
-      await permit.api.roleAssignments.assign(payload);
+      const result = await permit.api.roleAssignments.assign(payload);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('POST');
       expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
@@ -129,10 +144,12 @@ describe('RoleAssignmentsApi (unit)', () => {
     ];
 
     it('POSTs the array of assignments to the bulk path', async () => {
-      rest.resolveWith({ assignments: [] });
+      const response = { assignments_created: 2 };
+      rest.resolveWith(response);
 
-      await permit.api.roleAssignments.bulkAssign(payload);
+      const result = await permit.api.roleAssignments.bulkAssign(payload);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('POST');
       expect(rest.last?.path).toBe(BULK);
       expect(rest.last?.data).toEqual(payload);
@@ -146,10 +163,12 @@ describe('RoleAssignmentsApi (unit)', () => {
     ];
 
     it('DELETEs the array of unassignments at the bulk path', async () => {
-      rest.resolveWith({ assignments: [] });
+      const response = { assignments_removed: 2 };
+      rest.resolveWith(response);
 
-      await permit.api.roleAssignments.bulkUnassign(payload);
+      const result = await permit.api.roleAssignments.bulkUnassign(payload);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('DELETE');
       expect(rest.last?.path).toBe(BULK);
       expect(rest.last?.data).toEqual(payload);

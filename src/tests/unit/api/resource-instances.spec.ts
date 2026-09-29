@@ -25,10 +25,12 @@ describe('ResourceInstancesApi (unit)', () => {
 
   describe('list', () => {
     it('GETs the env-scoped collection without injecting pagination defaults', async () => {
-      rest.resolveWith([]);
+      const response = [{ key: 'inst-1', resource: 'document' }];
+      rest.resolveWith(response);
 
-      await permit.api.resourceInstances.list();
+      const result = await permit.api.resourceInstances.list();
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(COLLECTION);
       // list() forwards only the params it is given, so page/per_page and the
@@ -61,28 +63,34 @@ describe('ResourceInstancesApi (unit)', () => {
 
   describe('get / getByKey / getById', () => {
     it('GETs a single resource instance with the key in the path', async () => {
-      rest.resolveWith({ key: 'inst-1' });
+      const response = { key: 'inst-1' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceInstances.get('inst-1');
+      const result = await permit.api.resourceInstances.get('inst-1');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(`${COLLECTION}/inst-1`);
     });
 
     it('getByKey is an alias for get', async () => {
-      rest.resolveWith({ key: 'inst-1' });
+      const response = { key: 'inst-1' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceInstances.getByKey('inst-1');
+      const result = await permit.api.resourceInstances.getByKey('inst-1');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(`${COLLECTION}/inst-1`);
     });
 
     it('getById is an alias for get', async () => {
-      rest.resolveWith({ key: 'instance-id' });
+      const response = { key: 'instance-id' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceInstances.getById('instance-id');
+      const result = await permit.api.resourceInstances.getById('instance-id');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(`${COLLECTION}/instance-id`);
     });
@@ -97,10 +105,12 @@ describe('ResourceInstancesApi (unit)', () => {
     };
 
     it('POSTs the resource-instance body to the collection', async () => {
-      rest.resolveWith({ ...payload, id: 'inst-id-1' });
+      const response = { ...payload, id: 'inst-id-1' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceInstances.create(payload);
+      const result = await permit.api.resourceInstances.create(payload);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('POST');
       expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
@@ -110,10 +120,12 @@ describe('ResourceInstancesApi (unit)', () => {
   describe('update', () => {
     it('PATCHes the resource-instance body to the keyed path', async () => {
       const body: ResourceInstanceUpdate = { attributes: { private: false } };
-      rest.resolveWith({ key: 'inst-1' });
+      const response = { key: 'inst-1' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceInstances.update('inst-1', body);
+      const result = await permit.api.resourceInstances.update('inst-1', body);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('PATCH');
       expect(rest.last?.path).toBe(`${COLLECTION}/inst-1`);
       expect(rest.last?.data).toEqual(body);
@@ -160,10 +172,12 @@ describe('ResourceInstancesApi (unit)', () => {
   describe('proxyFactsViaPdp', () => {
     it('routes the request through the PDP host while still using the rest transport', async () => {
       const proxied = createMockPermit({ proxyFactsViaPdp: true });
-      proxied.rest.resolveWith([]);
+      const response = [{ key: 'inst-1', resource: 'document' }];
+      proxied.rest.resolveWith(response);
 
-      await proxied.permit.api.resourceInstances.list();
+      const result = await proxied.permit.api.resourceInstances.list();
 
+      expect(result).toEqual(response);
       expect(proxied.rest.last?.method).toBe('GET');
       expect(proxied.rest.last?.origin).toBe(MOCK_PDP_ORIGIN);
       expect(proxied.rest.last?.path).toBe(COLLECTION);

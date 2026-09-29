@@ -23,10 +23,12 @@ describe('EnvironmentsApi (unit)', () => {
 
   describe('list', () => {
     it('GETs the project-scoped collection with default pagination', async () => {
-      rest.resolveWith([]);
+      const environments = [{ key: ENV, id: 'env-id-1' }];
+      rest.resolveWith(environments);
 
-      await permit.api.environments.list({ projectKey: PROJECT });
+      const result = await permit.api.environments.list({ projectKey: PROJECT });
 
+      expect(result).toEqual(environments);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
@@ -44,29 +46,34 @@ describe('EnvironmentsApi (unit)', () => {
   });
 
   describe('get / getByKey / getById', () => {
+    const environment = { key: ENV, id: 'env-id-1' };
+
     it('GETs a single environment with both keys in the path', async () => {
-      rest.resolveWith({ key: ENV });
+      rest.resolveWith(environment);
 
-      await permit.api.environments.get(PROJECT, ENV);
+      const result = await permit.api.environments.get(PROJECT, ENV);
 
+      expect(result).toEqual(environment);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(RESOURCE);
     });
 
     it('getByKey is an alias for get', async () => {
-      rest.resolveWith({ key: ENV });
+      rest.resolveWith(environment);
 
-      await permit.api.environments.getByKey(PROJECT, ENV);
+      const result = await permit.api.environments.getByKey(PROJECT, ENV);
 
+      expect(result).toEqual(environment);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(RESOURCE);
     });
 
     it('getById is an alias for get', async () => {
-      rest.resolveWith({ key: ENV });
+      rest.resolveWith(environment);
 
-      await permit.api.environments.getById(PROJECT, ENV);
+      const result = await permit.api.environments.getById(PROJECT, ENV);
 
+      expect(result).toEqual(environment);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(RESOURCE);
     });
@@ -74,10 +81,12 @@ describe('EnvironmentsApi (unit)', () => {
 
   describe('getStats', () => {
     it('GETs the stats sub-path', async () => {
-      rest.resolveWith({});
+      const stats = { key: ENV, stats: { roles: 2, users: 3 } };
+      rest.resolveWith(stats);
 
-      await permit.api.environments.getStats(PROJECT, ENV);
+      const result = await permit.api.environments.getStats(PROJECT, ENV);
 
+      expect(result).toEqual(stats);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(`${RESOURCE}/stats`);
     });
@@ -85,10 +94,12 @@ describe('EnvironmentsApi (unit)', () => {
 
   describe('getApiKey', () => {
     it('GETs the api-key path keyed by project and environment', async () => {
-      rest.resolveWith({ secret: 'permit_key' });
+      const apiKey = { id: 'key-1', secret: 'permit_key' };
+      rest.resolveWith(apiKey);
 
-      await permit.api.environments.getApiKey(PROJECT, ENV);
+      const result = await permit.api.environments.getApiKey(PROJECT, ENV);
 
+      expect(result).toEqual(apiKey);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(`/v2/api-key/${PROJECT}/${ENV}`);
     });
@@ -101,10 +112,12 @@ describe('EnvironmentsApi (unit)', () => {
     };
 
     it('POSTs the environment body to the project collection', async () => {
-      rest.resolveWith({ ...payload, id: 'env-id-1' });
+      const created = { ...payload, id: 'env-id-1' };
+      rest.resolveWith(created);
 
-      await permit.api.environments.create(PROJECT, payload);
+      const result = await permit.api.environments.create(PROJECT, payload);
 
+      expect(result).toEqual(created);
       expect(rest.last?.method).toBe('POST');
       expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
@@ -114,10 +127,12 @@ describe('EnvironmentsApi (unit)', () => {
   describe('update', () => {
     it('PATCHes the environment body to the keyed path', async () => {
       const body: EnvironmentUpdate = { name: 'Renamed' };
-      rest.resolveWith({ key: ENV, name: 'Renamed' });
+      const updated = { key: ENV, name: 'Renamed' };
+      rest.resolveWith(updated);
 
-      await permit.api.environments.update(PROJECT, ENV, body);
+      const result = await permit.api.environments.update(PROJECT, ENV, body);
 
+      expect(result).toEqual(updated);
       expect(rest.last?.method).toBe('PATCH');
       expect(rest.last?.path).toBe(RESOURCE);
       expect(rest.last?.data).toEqual(body);
@@ -130,10 +145,12 @@ describe('EnvironmentsApi (unit)', () => {
         target_env: { existing: 'env-b' },
         conflict_strategy: 'overwrite',
       };
-      rest.resolveWith({ key: 'env-b' });
+      const target = { key: 'env-b', id: 'env-id-2' };
+      rest.resolveWith(target);
 
-      await permit.api.environments.copy(PROJECT, ENV, copyParams);
+      const result = await permit.api.environments.copy(PROJECT, ENV, copyParams);
 
+      expect(result).toEqual(target);
       expect(rest.last?.method).toBe('POST');
       expect(rest.last?.path).toBe(`${RESOURCE}/copy`);
       expect(rest.last?.data).toEqual(copyParams);

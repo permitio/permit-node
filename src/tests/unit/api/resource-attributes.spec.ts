@@ -21,10 +21,12 @@ describe('ResourceAttributesApi (unit)', () => {
 
   describe('list', () => {
     it('GETs the resource-scoped attributes collection with default pagination', async () => {
-      rest.resolveWith([]);
+      const response = [{ key: 'item-1', id: 'item-id-1' }];
+      rest.resolveWith(response);
 
-      await permit.api.resourceAttributes.list({ resourceKey: RESOURCE });
+      const result = await permit.api.resourceAttributes.list({ resourceKey: RESOURCE });
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
@@ -43,28 +45,34 @@ describe('ResourceAttributesApi (unit)', () => {
 
   describe('get / getByKey / getById', () => {
     it('GETs a single attribute with the resource key and attribute key in the path', async () => {
-      rest.resolveWith({ key: 'owner' });
+      const response = { key: 'owner' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceAttributes.get(RESOURCE, 'owner');
+      const result = await permit.api.resourceAttributes.get(RESOURCE, 'owner');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(`${COLLECTION}/owner`);
     });
 
     it('getByKey is an alias for get', async () => {
-      rest.resolveWith({ key: 'owner' });
+      const response = { key: 'owner' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceAttributes.getByKey(RESOURCE, 'owner');
+      const result = await permit.api.resourceAttributes.getByKey(RESOURCE, 'owner');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(`${COLLECTION}/owner`);
     });
 
     it('getById is an alias for get', async () => {
-      rest.resolveWith({ key: 'attr-1' });
+      const response = { key: 'attr-1' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceAttributes.getById(RESOURCE, 'attr-1');
+      const result = await permit.api.resourceAttributes.getById(RESOURCE, 'attr-1');
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(`${COLLECTION}/attr-1`);
     });
@@ -74,10 +82,12 @@ describe('ResourceAttributesApi (unit)', () => {
     const payload: ResourceAttributeCreate = { key: 'owner', type: AttributeType.String };
 
     it('POSTs the attribute body to the resource-scoped collection', async () => {
-      rest.resolveWith({ ...payload, id: 'attr-1' });
+      const response = { ...payload, id: 'attr-1' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceAttributes.create(RESOURCE, payload);
+      const result = await permit.api.resourceAttributes.create(RESOURCE, payload);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('POST');
       expect(rest.last?.path).toBe(COLLECTION);
       expect(rest.last?.data).toEqual(payload);
@@ -87,10 +97,12 @@ describe('ResourceAttributesApi (unit)', () => {
   describe('update', () => {
     it('PATCHes the attribute body to the keyed path', async () => {
       const body: ResourceAttributeUpdate = { type: AttributeType.Number };
-      rest.resolveWith({ key: 'owner', type: 'number' });
+      const response = { key: 'owner', type: 'number' };
+      rest.resolveWith(response);
 
-      await permit.api.resourceAttributes.update(RESOURCE, 'owner', body);
+      const result = await permit.api.resourceAttributes.update(RESOURCE, 'owner', body);
 
+      expect(result).toEqual(response);
       expect(rest.last?.method).toBe('PATCH');
       expect(rest.last?.path).toBe(`${COLLECTION}/owner`);
       expect(rest.last?.data).toEqual(body);
