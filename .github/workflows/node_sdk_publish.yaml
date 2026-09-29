@@ -30,7 +30,6 @@ jobs:
       # variable is undefined. Publishing gets its token from Trusted Publishing.
       NODE_AUTH_TOKEN: ''
     steps:
-      # Safe: this workflow makes only local git commits (docs/version bump); nothing is pushed.
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -51,21 +50,15 @@ jobs:
         timeout-minutes: 5
         run: npm install -g npm@12 && npm --version # zizmor: ignore[adhoc-packages]
 
-      - name: Set git user
-        run: |
-          git config --global user.email "eli@permit.io"
-          git config --global user.name "elimoshkovich"
-
+      # --ignore-scripts: dependency install scripts must not run in a job that
+      # can publish. yarn test builds the package.
       - name: Install dependencies
         timeout-minutes: 5
-        run: |
-          rm -rf node_modules
-          yarn install
-          yarn run build
-          yarn docs ; git add docs/ ; git commit -m "update tsdoc"
+        run: yarn install --frozen-lockfile --ignore-scripts
 
-      # Unit and module-import tests only. The integration and e2e suites need a
-      # provisioned environment and PDP, and run in the CI workflow's backend job.
+      # Build, then the unit and module-import tests. The integration and e2e
+      # suites need a provisioned environment and PDP, and run in the CI
+      # workflow's backend job.
       - name: Run tests
         timeout-minutes: 10
         run: yarn test
@@ -98,4 +91,3 @@ jobs:
         #   permitio/permit-node -> Settings -> Trusted Publishers
         #   (workflow: node_sdk_publish.yaml, environment: production)
         # Provenance attestations are generated automatically.
-
