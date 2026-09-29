@@ -1,4 +1,4 @@
-import anyTest, { ExecutionContext, TestInterface } from 'ava';
+import pino from 'pino';
 
 import {
   ApiKeyLevel,
@@ -10,10 +10,16 @@ import {
   ProjectCreate,
   ProjectRead,
 } from '../../index';
-import { handleApiError, printBreak, provideTestExecutionContext, TestContext } from '../fixtures';
+import { createTestClient, handleApiError, printBreak } from '../fixtures';
 
-const test = anyTest as TestInterface<TestContext>;
-test.before(provideTestExecutionContext);
+let logger: pino.Logger;
+
+// The two suites below exercise org- and project-scoped clients (constructed at
+// module scope). createTestClient() is still invoked in beforeAll so the suite
+// honors the same PDP_API_KEY gate as the rest of the integration tests.
+beforeAll(() => {
+  ({ logger } = createTestClient());
+});
 
 const TEST_PROJECT_KEY = 'test-node-proj';
 const CREATED_PROJECTS: ProjectCreate[] = [{ key: TEST_PROJECT_KEY, name: 'New Node Project' }];
@@ -40,159 +46,156 @@ const permitWithProjectLevelApiKey = new Permit({
   },
 });
 
-async function cleanup(permit: Permit, projectKey: string, t: ExecutionContext<TestContext>) {
-  t.context.logger.info('Running cleanup...');
+async function cleanup(client: Permit, projectKey: string) {
+  logger.info('Running cleanup...');
   for (const env of CREATED_ENVIRONMENTS) {
     try {
-      await permit.api.environments.delete(projectKey, env.key);
+      await client.api.environments.delete(projectKey, env.key);
     } catch (error) {
       if (error instanceof PermitApiError && error.response?.status === 404) {
-        t.context.logger.info(
-          `SKIPPING delete, env does not exist: ${env.key}, project_key=${projectKey}`,
-        );
+        logger.info(`SKIPPING delete, env does not exist: ${env.key}, project_key=${projectKey}`);
       }
     }
   }
   printBreak();
 }
 
-test.serial('environment creation with org level api key', async (t) => {
-  const permit = permitWithOrgLevelApiKey;
-  t.context.logger.info(`token: ${permit.config.token}`);
+it('environment creation with org level api key', async () => {
+  const client = permitWithOrgLevelApiKey;
+  logger.info(`token: ${client.config.token}`);
 
   try {
-    await permit.api.ensureAccessLevel(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
+    await client.api.ensureAccessLevel(ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
   } catch (error) {
-    t.context.logger.warn('this test must run with an org level api key');
+    logger.warn('this test must run with an org level api key');
     return;
   }
-  t.is(permit.config.apiContext.permittedAccessLevel, ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY);
+  expect(client.config.apiContext.permittedAccessLevel).toBe(
+    ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY,
+  );
 
   try {
-    await cleanup(permit, TEST_PROJECT_KEY, t);
+    await cleanup(client, TEST_PROJECT_KEY);
     const projects: ProjectRead[] = [];
     for (const projectData of CREATED_PROJECTS) {
-      t.context.logger.info(`trying to creating project: ${projectData.key}`);
+      logger.info(`trying to creating project: ${projectData.key}`);
       try {
         let project: ProjectRead;
         try {
-          project = await permit.api.projects.create(projectData);
+          project = await client.api.projects.create(projectData);
         } catch (error) {
           if (error instanceof PermitApiError && error.response?.status === 409) {
-            t.context.logger.info(`SKIPPING create, project already exists: ${projectData.key}`);
+            logger.info(`SKIPPING create, project already exists: ${projectData.key}`);
           }
-          project = await permit.api.projects.get(projectData.key);
+          project = await client.api.projects.get(projectData.key);
         }
         projects.push(project);
-        t.truthy(project);
-        t.is(project.key, projectData.key);
-        t.is(project.name, projectData.name);
-        t.true(project.description == projectData.description); // will compare null and undefined as well
+        expect(project).toBeTruthy();
+        expect(project.key).toBe(projectData.key);
+        expect(project.name).toBe(projectData.name);
+        expect(project.description == projectData.description).toBe(true); // will compare null and undefined as well
       } catch (error) {
         if (error instanceof PermitApiError) {
-          handleApiError(error, 'Got API Error', t);
+          handleApiError(error, 'Got API Error', logger);
         } else if (error instanceof PermitConnectionError) {
           throw error;
         } else {
-          t.context.logger.error(`Got error: ${error}`);
-          t.fail(`Got error: ${error}`);
+          logger.error(`Got error: ${error}`);
+          throw new Error(`Got error: ${error}`);
         }
       }
     }
 
     printBreak();
 
-    const environmentsOriginal = await permit.api.environments.list({
+    const environmentsOriginal = await client.api.environments.list({
       projectKey: projects[0]?.key,
     });
     const originalNumOfEnvs = environmentsOriginal.length;
 
     for (const environmentData of CREATED_ENVIRONMENTS) {
-      t.context.logger.info(`creating environment: ${environmentData.key}`);
-      const environment: EnvironmentRead = await permit.api.environments.create(
+      logger.info(`creating environment: ${environmentData.key}`);
+      const environment: EnvironmentRead = await client.api.environments.create(
         projects[0].key,
         environmentData,
       );
-      t.truthy(environment);
-      t.is(environment.key, environmentData.key);
-      t.is(environment.name, environmentData.name);
-      t.true(environment.description == environmentData.description); // will compare null and undefined as well
-      t.is(environment.project_id, projects[0].id);
+      expect(environment).toBeTruthy();
+      expect(environment.key).toBe(environmentData.key);
+      expect(environment.name).toBe(environmentData.name);
+      expect(environment.description == environmentData.description).toBe(true); // will compare null and undefined as well
+      expect(environment.project_id).toBe(projects[0].id);
     }
 
     printBreak();
 
-    const environments = await permit.api.environments.list({ projectKey: projects[0]?.key });
-    t.context.logger.info(`environments: ${environments.map((e) => e.key)}`);
-    t.is(environments.length, CREATED_ENVIRONMENTS.length + originalNumOfEnvs); // each project has 2 default `dev` and `prod` environments
+    const environments = await client.api.environments.list({ projectKey: projects[0]?.key });
+    logger.info(`environments: ${environments.map((e) => e.key)}`);
+    expect(environments.length).toBe(CREATED_ENVIRONMENTS.length + originalNumOfEnvs); // each project has 2 default `dev` and `prod` environments
 
-    const testEnvironment = await permit.api.environments.get(
+    const testEnvironment = await client.api.environments.get(
       TEST_PROJECT_KEY,
       CREATED_ENVIRONMENTS[0].key,
     );
 
-    t.truthy(testEnvironment);
-    t.is(testEnvironment.key, CREATED_ENVIRONMENTS[0].key);
-    t.is(testEnvironment.name, CREATED_ENVIRONMENTS[0].name);
-    t.true(testEnvironment.description == CREATED_ENVIRONMENTS[0].description); // will compare null and undefined as well
-  } catch (error) {
-    t.context.logger.error(`Got error: ${error}`);
-    t.fail(`Got error: ${error}`);
+    expect(testEnvironment).toBeTruthy();
+    expect(testEnvironment.key).toBe(CREATED_ENVIRONMENTS[0].key);
+    expect(testEnvironment.name).toBe(CREATED_ENVIRONMENTS[0].name);
+    expect(testEnvironment.description == CREATED_ENVIRONMENTS[0].description).toBe(true); // will compare null and undefined as well
   } finally {
     printBreak();
-    await cleanup(permit, TEST_PROJECT_KEY, t);
+    await cleanup(client, TEST_PROJECT_KEY);
   }
 });
 
-test.serial('environment creation with project level api key', async (t) => {
-  const permit = permitWithProjectLevelApiKey;
+it('environment creation with project level api key', async () => {
+  const client = permitWithProjectLevelApiKey;
 
   try {
-    await permit.api.ensureAccessLevel(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
+    await client.api.ensureAccessLevel(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
   } catch (error) {
-    t.context.logger.warn('this test must run with a project level api key');
+    logger.warn('this test must run with a project level api key');
     return;
   }
-  t.is(permit.config.apiContext.permittedAccessLevel, ApiKeyLevel.PROJECT_LEVEL_API_KEY);
+  expect(client.config.apiContext.permittedAccessLevel).toBe(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
 
   try {
-    const project = permit.config.apiContext.project;
-    t.truthy(project);
+    const project = client.config.apiContext.project;
+    expect(project).toBeTruthy();
     const projectId = String(project);
 
-    const projectRead = await permit.api.projects.get(projectId);
-    t.is(String(projectRead.id), projectId);
+    const projectRead = await client.api.projects.get(projectId);
+    expect(String(projectRead.id)).toBe(projectId);
 
-    await cleanup(permit, projectRead.key, t);
+    await cleanup(client, projectRead.key);
 
     for (const environmentData of CREATED_ENVIRONMENTS) {
-      t.context.logger.info(`creating environment: ${environmentData.key}`);
-      const environment: EnvironmentRead = await permit.api.environments.create(
+      logger.info(`creating environment: ${environmentData.key}`);
+      const environment: EnvironmentRead = await client.api.environments.create(
         projectRead.key,
         environmentData,
       );
-      t.truthy(environment);
-      t.is(environment.key, environmentData.key);
-      t.is(environment.name, environmentData.name);
-      t.true(environment.description == environmentData.description); // will compare null and undefined as well
-      t.is(environment.project_id, projectRead.id);
+      expect(environment).toBeTruthy();
+      expect(environment.key).toBe(environmentData.key);
+      expect(environment.name).toBe(environmentData.name);
+      expect(environment.description == environmentData.description).toBe(true); // will compare null and undefined as well
+      expect(environment.project_id).toBe(projectRead.id);
     }
 
-    const environments = await permit.api.environments.list({ projectKey: projectRead?.key });
+    const environments = await client.api.environments.list({ projectKey: projectRead?.key });
     const actualEnvSet = environments.map((env) => env.key);
     const createdEnvSet = new Set(CREATED_ENVIRONMENTS.map((env) => env.key));
     const intersection = new Set(actualEnvSet.filter((x) => createdEnvSet.has(x)));
-    t.is(intersection.size, 2);
+    expect(intersection.size).toBe(2);
   } catch (error) {
     if (error instanceof PermitApiError) {
-      handleApiError(error, 'Got API Error', t);
+      handleApiError(error, 'Got API Error', logger);
     } else if (error instanceof PermitConnectionError) {
       throw error;
     } else {
-      t.context.logger.error(`Got error: ${error}`);
-      t.fail(`Got error: ${error}`);
+      logger.error(`Got error: ${error}`);
+      throw new Error(`Got error: ${error}`);
     }
   } finally {
-    await cleanup(permit, TEST_PROJECT_KEY, t);
+    await cleanup(client, TEST_PROJECT_KEY);
   }
 });

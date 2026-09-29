@@ -1,4 +1,3 @@
-import test from 'ava';
 import { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 
 // Reaches the private REST (config.axiosInstance) and PDP (enforcer.client)
@@ -68,108 +67,124 @@ async function newPermit(overrides: Record<string, unknown>): Promise<PermitInte
   return new Permit({ token: 'test', ...overrides }) as unknown as PermitInternals;
 }
 
-test('REST and PDP use separate axios instances', async (t) => {
+// Captures the delays axios-retry schedules via setTimeout while firing each
+// callback immediately, so the retries proceed without any real waiting.
+function captureScheduledDelays(): { delays: number[]; restore: () => void } {
+  const delays: number[] = [];
+  const realSetTimeout = globalThis.setTimeout;
+  const spy = vi.spyOn(globalThis, 'setTimeout').mockImplementation(((
+    fn: () => void,
+    delay?: number,
+  ): ReturnType<typeof setTimeout> => {
+    delays.push(delay ?? 0);
+    return realSetTimeout(fn, 0);
+  }) as typeof setTimeout);
+  return { delays, restore: () => spy.mockRestore() };
+}
+
+it('REST and PDP use separate axios instances', async () => {
   const permit = await newPermit({ retry: { maxRetries: 1 }, pdpRetry: { maxRetries: 1 } });
 
-  t.not(permit.config.axiosInstance, permit.enforcer.client);
+  expect(permit.config.axiosInstance).not.toBe(permit.enforcer.client);
 });
 
-test('REST instance does not retry POST while PDP instance does', async (t) => {
+it('REST instance does not retry POST while PDP instance does', async () => {
   const permit = await newPermit({ retry: tiny, pdpRetry: tiny });
 
   const rest = installRejectingAdapter(permit.config.axiosInstance);
   const pdp = installRejectingAdapter(permit.enforcer.client);
 
-  await t.throwsAsync(() => permit.config.axiosInstance.request({ method: 'POST', url: '/x' }));
-  await t.throwsAsync(() => permit.enforcer.client.request({ method: 'POST', url: '/x' }));
+  await expect(
+    permit.config.axiosInstance.request({ method: 'POST', url: '/x' }),
+  ).rejects.toThrow();
+  await expect(permit.enforcer.client.request({ method: 'POST', url: '/x' })).rejects.toThrow();
 
   // REST never retries POST -> exactly one adapter call.
-  t.is(rest.count(), 1);
+  expect(rest.count()).toBe(1);
   // PDP retries POST (maxRetries: 2) -> initial call + two retries = three.
-  t.is(pdp.count(), 3);
+  expect(pdp.count()).toBe(3);
 });
 
-test('a retryable GET retries up to maxRetries then rejects', async (t) => {
+it('a retryable GET retries up to maxRetries then rejects', async () => {
   const permit = await newPermit({ retry: tiny });
   const rest = installRejectingAdapter(permit.config.axiosInstance);
 
-  await t.throwsAsync(() => permit.config.axiosInstance.request({ method: 'GET', url: '/x' }));
+  await expect(permit.config.axiosInstance.request({ method: 'GET', url: '/x' })).rejects.toThrow();
 
   // maxRetries: 2 -> initial call + two retries = three total.
-  t.is(rest.count(), 3);
+  expect(rest.count()).toBe(3);
 });
 
-test('a non-retryable status (400) is not retried', async (t) => {
+it('a non-retryable status (400) is not retried', async () => {
   const permit = await newPermit({ retry: tiny });
   const rest = installRejectingAdapter(permit.config.axiosInstance, 400);
 
-  await t.throwsAsync(() => permit.config.axiosInstance.request({ method: 'GET', url: '/x' }));
+  await expect(permit.config.axiosInstance.request({ method: 'GET', url: '/x' })).rejects.toThrow();
 
-  t.is(rest.count(), 1);
+  expect(rest.count()).toBe(1);
 });
 
-test('a disallowed method on the REST instance is not retried', async (t) => {
+it('a disallowed method on the REST instance is not retried', async () => {
   const permit = await newPermit({ retry: tiny });
   const rest = installRejectingAdapter(permit.config.axiosInstance);
 
   // PUT is in DEFAULT_RETRY_METHODS but POST is not, so POST must not retry.
-  await t.throwsAsync(() => permit.config.axiosInstance.request({ method: 'POST', url: '/x' }));
+  await expect(
+    permit.config.axiosInstance.request({ method: 'POST', url: '/x' }),
+  ).rejects.toThrow();
 
-  t.is(rest.count(), 1);
+  expect(rest.count()).toBe(1);
 });
 
-test('disabled retry (retry: false) installs no retry', async (t) => {
+it('disabled retry (retry: false) installs no retry', async () => {
   const permit = await newPermit({ retry: false });
   const rest = installRejectingAdapter(permit.config.axiosInstance);
 
-  await t.throwsAsync(() => permit.config.axiosInstance.request({ method: 'GET', url: '/x' }));
+  await expect(permit.config.axiosInstance.request({ method: 'GET', url: '/x' })).rejects.toThrow();
 
-  t.is(rest.count(), 1);
+  expect(rest.count()).toBe(1);
 });
 
-test('REST instance never retries POST even when the user opts POST in', async (t) => {
+it('REST instance never retries POST even when the user opts POST in', async () => {
   // POST is stripped from the REST retryMethods regardless of user config, so
   // non-idempotent REST writes are never repeated.
   const permit = await newPermit({ retry: { ...tiny, retryMethods: ['GET', 'POST'] } });
   const rest = installRejectingAdapter(permit.config.axiosInstance);
 
-  await t.throwsAsync(() => permit.config.axiosInstance.request({ method: 'POST', url: '/x' }));
+  await expect(
+    permit.config.axiosInstance.request({ method: 'POST', url: '/x' }),
+  ).rejects.toThrow();
 
-  t.is(rest.count(), 1);
+  expect(rest.count()).toBe(1);
 });
 
-test.serial('maps axios-retry retryCount to our 0-based attempt number', async (t) => {
+it('maps axios-retry retryCount to our 0-based attempt number', async () => {
   // axios-retry passes a 1-based retryCount; the interceptor must subtract one
   // so the first retry uses attempt 0. With jitter removed, attempt 0 -> 30ms
   // and attempt 1 (the off-by-one bug) -> 90ms. We capture the delay axios-retry
   // schedules via setTimeout instead of measuring wall-clock time, so the check
   // is deterministic and concurrency-safe.
-  const realRandom = Math.random;
-  const realSetTimeout = global.setTimeout;
-  const scheduledDelays: number[] = [];
-  Math.random = () => 0; // strip jitter
-  // Capture the delay, then fire immediately so the retry still proceeds.
-  global.setTimeout = ((fn: () => void, delay?: number): ReturnType<typeof setTimeout> => {
-    scheduledDelays.push(delay ?? 0);
-    return realSetTimeout(fn, 0);
-  }) as typeof setTimeout;
+  const randomSpy = vi.spyOn(Math, 'random').mockReturnValue(0); // strip jitter
+  const { delays: scheduledDelays, restore } = captureScheduledDelays();
   try {
     const permit = await newPermit({
       retry: { maxRetries: 1, retryDelay: 30, backoffMultiplier: 3, maxDelay: 10000 },
     });
     installRejectingAdapter(permit.config.axiosInstance);
 
-    await t.throwsAsync(() => permit.config.axiosInstance.request({ method: 'GET', url: '/x' }));
+    await expect(
+      permit.config.axiosInstance.request({ method: 'GET', url: '/x' }),
+    ).rejects.toThrow();
 
-    t.true(scheduledDelays.includes(30), `expected a 30ms delay, got ${scheduledDelays.join(',')}`);
-    t.false(scheduledDelays.includes(90), 'attempt-1 (off-by-one) delay must not be used');
+    expect(scheduledDelays.includes(30)).toBe(true);
+    expect(scheduledDelays.includes(90)).toBe(false);
   } finally {
-    Math.random = realRandom;
-    global.setTimeout = realSetTimeout;
+    restore();
+    randomSpy.mockRestore();
   }
 });
 
-test('a retry recovers: GET succeeds after one failed attempt', async (t) => {
+it('a retry recovers: GET succeeds after one failed attempt', async () => {
   const permit = await newPermit({
     retry: { maxRetries: 2, retryDelay: 1, maxDelay: 5, backoffMultiplier: 1 },
   });
@@ -178,23 +193,18 @@ test('a retry recovers: GET succeeds after one failed attempt', async (t) => {
   const response = await permit.config.axiosInstance.request({ method: 'GET', url: '/x' });
 
   // Initial failure + one retry that succeeds.
-  t.is(rest.count(), 2);
-  t.is(response.status, 200);
-  t.deepEqual(response.data, { ok: true });
+  expect(rest.count()).toBe(2);
+  expect(response.status).toBe(200);
+  expect(response.data).toEqual({ ok: true });
 });
 
-test.serial('Retry-After header drives the retry delay end-to-end', async (t) => {
+it('Retry-After header drives the retry delay end-to-end', async () => {
   // 429 with `retry-after: 2` (seconds) must produce a 2000ms scheduled delay,
   // which exceeds the 10ms backoff and is under maxDelay, proving Retry-After
   // flows through calculateRetryDelay via our retryDelay callback. The
   // Retry-After branch returns the exact value with no jitter, so we only need
   // to capture the setTimeout delay (nothing is actually awaited).
-  const realSetTimeout = global.setTimeout;
-  const scheduledDelays: number[] = [];
-  global.setTimeout = ((fn: () => void, delay?: number): ReturnType<typeof setTimeout> => {
-    scheduledDelays.push(delay ?? 0);
-    return realSetTimeout(fn, 0);
-  }) as typeof setTimeout;
+  const { delays: scheduledDelays, restore } = captureScheduledDelays();
   try {
     const permit = await newPermit({
       retry: { maxRetries: 1, retryDelay: 10, maxDelay: 30000, backoffMultiplier: 1 },
@@ -219,15 +229,14 @@ test.serial('Retry-After header drives the retry delay end-to-end', async (t) =>
       return Promise.reject(error);
     };
 
-    await t.throwsAsync(() => permit.config.axiosInstance.request({ method: 'GET', url: '/x' }));
+    await expect(
+      permit.config.axiosInstance.request({ method: 'GET', url: '/x' }),
+    ).rejects.toThrow();
 
     // 429 is retryable and GET is allowed, so it retried once.
-    t.is(calls, 2);
-    t.true(
-      scheduledDelays.includes(2000),
-      `expected a 2000ms delay, got ${scheduledDelays.join(',')}`,
-    );
+    expect(calls).toBe(2);
+    expect(scheduledDelays.includes(2000)).toBe(true);
   } finally {
-    global.setTimeout = realSetTimeout;
+    restore();
   }
 });
