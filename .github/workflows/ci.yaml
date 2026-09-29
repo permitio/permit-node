@@ -29,6 +29,7 @@ env:
   # Pushes and PRs from this repository, other than Dependabot's, must run the
   # backend suite; the test job fails them if the secret is missing.
   BACKEND_REQUIRED: ${{ github.event_name == 'push' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]') }}
+  PDP_IMAGE: permitio/pdp-v2:0.9.16@sha256:e3cf30794ec2d256636b4714641df46e51ee58a3f1f0d24c606e214e0bf8669a
 
 jobs:
   lint-and-build:
@@ -126,14 +127,16 @@ jobs:
           echo "::add-mask::${env_api_key}"
           echo "ENV_API_KEY=${env_api_key}" >> "$GITHUB_ENV"
 
+      # 7766 is the PDP API. 8181 is the PDP's OPA, which the SDK derives from
+      # the PDP URL for the rbac spec's useOpa checks.
       - name: Start local PDP
         if: env.RUN_BACKEND == 'true'
         timeout-minutes: 5
         run: |
           PDP_API_KEY="$ENV_API_KEY" PERMIT_API_KEY="$ENV_API_KEY" docker run -d --name pdp \
-            -p 7766:7000 \
+            -p 127.0.0.1:7766:7000 -p 127.0.0.1:8181:8181 \
             -e PDP_API_KEY -e PERMIT_API_KEY \
-            permitio/pdp-v2:latest
+            "$PDP_IMAGE"
 
       # ---------- Both paths ----------
       - name: Checkout code
@@ -168,10 +171,10 @@ jobs:
           PDP_API_KEY: ${{ env.ENV_API_KEY }}
           PERMIT_API_KEY: ${{ env.ENV_API_KEY }}
           API_TIER: prod
-          # Force IPv4: Node resolves `localhost` to ::1 first, but the runner's
-          # Docker IPv6 publish refuses connections, so PDP checks would hit
-          # ECONNREFUSED. 127.0.0.1 pins the working IPv4 path.
+          # Force IPv4: Node resolves `localhost` to ::1 first, but the PDP is
+          # published on 127.0.0.1 only, so PDP checks would hit ECONNREFUSED.
           PDP_URL: http://127.0.0.1:7766
+          PERMIT_RUN_OPA_E2E: 'true'
         run: yarn test:ci:full
 
       # Dump PDP diagnostics whenever the backend path fails. The SDK reports

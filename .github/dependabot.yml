@@ -1,6 +1,8 @@
 version: 2
 updates:
-  # Keeps the SHA-pinned actions in .github/workflows current.
+  # Keeps the SHA-pinned actions in .github/workflows current. The PDP image in
+  # ci.yaml is started with docker run, which Dependabot does not track, so its
+  # version and digest are bumped by hand.
   - package-ecosystem: github-actions
     directory: /
     schedule:
