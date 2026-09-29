@@ -94,17 +94,45 @@ jobs:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
           # Pass the release tag through an environment variable to prevent shell
-          # injection. Bump only the top-level "version" field. npm is JSON-aware
-          # (unlike greedy sed, which also rewrites scripts.version); no git
-          # tag/commit is created, re-runs on the same version are tolerated, and
-          # the "version" lifecycle script (standard-version) is skipped.
+          # injection. Validate it is a literal semantic version (not a keyword like
+          # "minor" or "patch" that npm version would accept). Bump only the
+          # top-level "version" field. npm is JSON-aware (unlike greedy sed, which
+          # also rewrites scripts.version); no git tag/commit is created, re-runs on
+          # the same version are tolerated, and the "version" lifecycle script
+          # (standard-version) is skipped.
+          node -e "
+            const semver = require('semver');
+            const tag = process.env.RELEASE_TAG;
+            // Normalize: strip leading 'v' (e.g. 'v2.7.6' -> '2.7.6')
+            const normalized = tag.replace(/^v/, '');
+            // Validate: must be a valid semantic version
+            if (!semver.valid(normalized)) {
+              console.error('Release tag ' + JSON.stringify(tag) + ' is not a valid semantic version');
+              process.exit(1);
+            }
+          "
           npm version "$RELEASE_TAG" --no-git-tag-version --allow-same-version --ignore-scripts
-          # Fail fast if the bump ever corrupts the scripts.version lifecycle hook (the original #89 bug).
-          node -e "if (require('./package.json').scripts.version !== 'standard-version') { console.error('scripts.version was corrupted by the version bump'); process.exit(1); }"
+          # Assert: package.json version matches the normalized release tag
+          node -e "
+            const semver = require('semver');
+            const tag = process.env.RELEASE_TAG;
+            const normalized = tag.replace(/^v/, '');
+            const pkg = require('./package.json');
+            if (pkg.version !== normalized) {
+              console.error('Version mismatch: expected ' + JSON.stringify(normalized) + ', got ' + JSON.stringify(pkg.version));
+              process.exit(1);
+            }
+            if (pkg.scripts.version !== 'standard-version') {
+              console.error('scripts.version was corrupted by the version bump');
+              process.exit(1);
+            }
+          "
 
       - name: Publish package to NPM
+        env:
+          IS_PRERELEASE: ${{ github.event.release.prerelease }}
         run: |
-          if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
+          if [[ "$IS_PRERELEASE" == "true" ]]; then
             echo "Publishing as a release candidate (rc)..."
             npm publish --access public --tag rc
           else
