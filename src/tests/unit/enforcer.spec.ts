@@ -1,5 +1,5 @@
 import test from 'ava';
-import axios from 'axios';
+import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import pino from 'pino';
 
 import { buildOpaBaseUrl } from '../../enforcement/enforcer';
@@ -61,11 +61,40 @@ test('new Permit with an invalid credential-bearing PDP URL does not expose the 
   t.false(JSON.stringify(pino.stdSerializers.err(error)).includes('pdp-secret'));
 });
 
-test('Enforcer wires the OPA client base URL to buildOpaBaseUrl(pdp)', (t) => {
-  // Guards the integration the refactor actually edits: the constructed OPA axios
-  // client must take its baseURL from the helper. Passing an opaAxiosInstance lets
-  // us read what the Enforcer set, without a live PDP or network call.
+// A non-default scheme, port and path, so a constructor that ignores the configured
+// PDP (or an OPA client that ignores the derived base URL) fails the tests below.
+const CONFIGURED_PDP = 'https://pdp.example.com:1234/prefix/';
+const EXPECTED_OPA_CHECK_URL = 'https://pdp.example.com:8181/prefix/v1/data/permit/root';
+
+// Reaches the SDK-created OPA client, as retry-interceptor.spec.ts does for enforcer.client.
+interface PermitInternals {
+  enforcer: { opaClient: AxiosInstance };
+}
+
+// Records the URL axios would request and answers with an OPA allow decision, so the
+// check runs end to end without a network call.
+function captureRequestUrls(instance: AxiosInstance): string[] {
+  const urls: string[] = [];
+  instance.defaults.adapter = async (config: InternalAxiosRequestConfig) => {
+    urls.push(axios.getUri(config));
+    return { status: 200, statusText: 'OK', headers: {}, config, data: { allow: true } };
+  };
+  return urls;
+}
+
+test('a useOpa check posts to the OPA root derived from the configured PDP', async (t) => {
+  const permit = new Permit({ token: 'test-token', pdp: CONFIGURED_PDP });
+  const urls = captureRequestUrls((permit as unknown as PermitInternals).enforcer.opaClient);
+
+  t.true(await permit.check('user', 'read', 'document', {}, { useOpa: true }));
+  t.deepEqual(urls, [EXPECTED_OPA_CHECK_URL]);
+});
+
+test('a useOpa check through an injected opaAxiosInstance posts to the same OPA root', async (t) => {
   const opaAxiosInstance = axios.create();
-  new Permit({ token: 'test-token', pdp: 'http://localhost:7766', opaAxiosInstance });
-  t.is(opaAxiosInstance.defaults.baseURL, buildOpaBaseUrl('http://localhost:7766'));
+  const urls = captureRequestUrls(opaAxiosInstance);
+  const permit = new Permit({ token: 'test-token', pdp: CONFIGURED_PDP, opaAxiosInstance });
+
+  t.true(await permit.check('user', 'read', 'document', {}, { useOpa: true }));
+  t.deepEqual(urls, [EXPECTED_OPA_CHECK_URL]);
 });
