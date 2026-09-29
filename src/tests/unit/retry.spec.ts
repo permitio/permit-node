@@ -164,15 +164,18 @@ it('calculateRetryDelay calculates exponential backoff correctly', () => {
 
   // First retry (attempt 0): 1000 * 2^0 = 1000ms + jitter
   const delay0 = calculateRetryDelay(0, config);
-  expect(delay0 >= 1000 && delay0 <= 1100).toBe(true); // 10% jitter max
+  expect(delay0).toBeGreaterThanOrEqual(1000);
+  expect(delay0).toBeLessThanOrEqual(1100); // 10% jitter max
 
   // Second retry (attempt 1): 1000 * 2^1 = 2000ms + jitter
   const delay1 = calculateRetryDelay(1, config);
-  expect(delay1 >= 2000 && delay1 <= 2200).toBe(true);
+  expect(delay1).toBeGreaterThanOrEqual(2000);
+  expect(delay1).toBeLessThanOrEqual(2200);
 
   // Third retry (attempt 2): 1000 * 2^2 = 4000ms + jitter
   const delay2 = calculateRetryDelay(2, config);
-  expect(delay2 >= 4000 && delay2 <= 4400).toBe(true);
+  expect(delay2).toBeGreaterThanOrEqual(4000);
+  expect(delay2).toBeLessThanOrEqual(4400);
 });
 
 it('calculateRetryDelay respects maxDelay limit', () => {
@@ -185,7 +188,7 @@ it('calculateRetryDelay respects maxDelay limit', () => {
 
   // Even with high multiplier, should cap at maxDelay
   const delay = calculateRetryDelay(5, config);
-  expect(delay <= 5000).toBe(true);
+  expect(delay).toBe(5000);
 });
 
 it('calculateRetryDelay respects Retry-After header', () => {
@@ -212,7 +215,8 @@ it('calculateRetryDelay ignores Retry-After when disabled', () => {
 
   const delay = calculateRetryDelay(0, config, '60');
   // Should use exponential backoff, not Retry-After
-  expect(delay >= 1000 && delay <= 1100).toBe(true);
+  expect(delay).toBeGreaterThanOrEqual(1000);
+  expect(delay).toBeLessThanOrEqual(1100);
 });
 
 // ============================================
