@@ -1,7 +1,5 @@
-import { createServer, IncomingHttpHeaders } from 'http';
-import { Socket } from 'net';
-
-import { ExecutionContext } from 'ava';
+import { createServer, IncomingHttpHeaders } from 'node:http';
+import { Socket } from 'node:net';
 
 export const TEST_TOKEN = 'permit-test-token-do-not-log';
 
@@ -22,9 +20,12 @@ interface TestPdp {
   requests: CapturedRequest[];
 }
 
-/** Starts an HTTP PDP fixture; omitting the reply leaves requests pending for timeout tests. */
-export async function startPdp(t: ExecutionContext, reply?: PdpReply): Promise<TestPdp> {
-  // AVA isolates each test file in a worker; keep loopback traffic off inherited proxies.
+/**
+ * Starts an HTTP PDP fixture on a free loopback port for the current test and closes it when the
+ * test finishes. Omitting the reply leaves requests pending, for timeout tests.
+ */
+export async function startPdp(reply?: PdpReply): Promise<TestPdp> {
+  // Vitest runs each test file in its own worker; keep loopback traffic off inherited proxies.
   const proxyExclusions = [
     process.env.npm_config_no_proxy,
     process.env.no_proxy,
@@ -83,7 +84,7 @@ export async function startPdp(t: ExecutionContext, reply?: PdpReply): Promise<T
     });
   });
 
-  t.teardown(async () => {
+  onTestFinished(async () => {
     await new Promise<void>((resolve, reject) => {
       server.close((error) => (error ? reject(error) : resolve()));
       for (const socket of sockets) {
@@ -104,22 +105,17 @@ export async function startPdp(t: ExecutionContext, reply?: PdpReply): Promise<T
 
 /** Asserts the exact SDK HTTP contract and JSON payload received by the PDP. */
 export function assertPdpRequest(
-  t: ExecutionContext,
   request: CapturedRequest | undefined,
   expected: { path: string; body: unknown; sdk?: string },
 ): void {
-  if (!request) {
-    t.fail('The PDP did not receive the expected HTTP request');
-    return;
-  }
-  t.deepEqual(request.body, expected.body);
-  t.is(request.method, 'POST');
-  t.is(request.path, expected.path);
-  t.is(request.headers.authorization, `Bearer ${TEST_TOKEN}`);
-  t.is(
-    request.headers['x-permit-sdk-version'],
+  assert(request, 'The PDP did not receive the expected HTTP request');
+  expect(request.body).toStrictEqual(expected.body);
+  expect(request.method).toBe('POST');
+  expect(request.path).toBe(expected.path);
+  expect(request.headers.authorization).toBe(`Bearer ${TEST_TOKEN}`);
+  expect(request.headers['x-permit-sdk-version']).toBe(
     `node:${process.env.npm_package_version ?? 'unknown'}`,
   );
-  t.is(request.headers['x-permit-sdk-language'], expected.sdk);
-  t.is(request.headers['content-type'], 'application/json');
+  expect(request.headers['x-permit-sdk-language']).toBe(expected.sdk);
+  expect(request.headers['content-type']).toBe('application/json');
 }

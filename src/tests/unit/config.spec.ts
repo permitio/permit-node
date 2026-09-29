@@ -1,5 +1,6 @@
 import { ApiContext } from '../../api/context';
 import { ConfigFactory } from '../../config';
+import { Permit } from '../../index';
 
 const ENV_KEYS = [
   'PERMIT_API_KEY',
@@ -124,6 +125,62 @@ describe('ConfigFactory (unit)', () => {
 
       expect(ConfigFactory.build({}).token).toBe('env-key');
       expect(ConfigFactory.build({ token: 'explicit' }).token).toBe('explicit');
+    });
+  });
+
+  describe('PERMIT_LOG_JSON', () => {
+    function setLogJsonEnv(value: string | undefined): void {
+      if (value === undefined) {
+        delete process.env.PERMIT_LOG_JSON;
+      } else {
+        process.env.PERMIT_LOG_JSON = value;
+      }
+    }
+
+    function envLabel(value: string | undefined): string {
+      return value === undefined ? 'unset' : JSON.stringify(value);
+    }
+
+    const envCases: [string | undefined, boolean][] = [
+      [undefined, true],
+      ['true', true],
+      ['TRUE', true],
+      [' True ', true],
+      ['false', false],
+      ['False', false],
+      [' FALSE\n', false],
+      ['yes', true],
+      ['no', true],
+      ['', true],
+      ['0', true],
+      ['{', true],
+    ];
+    for (const [value, expected] of envCases) {
+      it(`PER-16493: PERMIT_LOG_JSON=${envLabel(value)} gives log.json ${expected}`, () => {
+        setLogJsonEnv(value);
+        expect(ConfigFactory.build({}).log.json).toBe(expected);
+      });
+    }
+
+    const overrideCases: [string | undefined, boolean][] = [
+      [undefined, false],
+      ['true', false],
+      ['false', true],
+      ['FALSE', true],
+      ['yes', false],
+      ['', true],
+    ];
+    for (const [value, json] of overrideCases) {
+      it(`PER-16493: log.json ${json} overrides PERMIT_LOG_JSON=${envLabel(value)}`, () => {
+        setLogJsonEnv(value);
+        expect(ConfigFactory.build({ log: { json } }).log.json).toBe(json);
+      });
+    }
+
+    it('PER-16493: an unrecognized PERMIT_LOG_JSON does not break new Permit()', () => {
+      setLogJsonEnv('yes');
+      const permit = new Permit({ token: 'test-token', log: { level: 'silent', json: false } });
+      expect(permit.config.log.json).toBe(false);
     });
   });
 });
