@@ -23,11 +23,14 @@ jobs:
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
+          # This job can publish, so never restore a dependency cache into it.
+          package-manager-cache: false
 
       # Pinned to a major so a new npm major cannot change publishing unannounced.
-      # Trusted Publishing needs npm 11.5.1 or later.
+      # Trusted Publishing needs npm 11.5.1 or later. npm itself has no lockfile
+      # to install from, hence the adhoc-packages exception.
       - name: Upgrade npm for Trusted Publishing
-        run: npm install -g npm@12 && npm --version
+        run: npm install -g npm@12 && npm --version # zizmor: ignore[adhoc-packages]
 
       - name: Set git user
         run: |
@@ -47,11 +50,12 @@ jobs:
         run: yarn test
 
       - name: Bump version at package.json
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
           # Use the release tag as the version, stripping any leading 'v'
           # (e.g. 'v2.7.6' -> '2.7.6') so it is valid semver for npm.
-          VERSION=${{ github.event.release.tag_name }}
-          VERSION=${VERSION#v}
+          VERSION=${RELEASE_TAG#v}
           sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" package.json
           cat package.json
 
