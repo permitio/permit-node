@@ -140,7 +140,8 @@ describe('REST API errors (unit)', () => {
       expect(serialized.originalError.config.method).toBe('get');
     });
 
-    it(`PER-16544: a ${status} error from a deprecated REST method does not expose the API key`, async () => {
+    const deprecatedError = `a ${status} error from a deprecated REST method`;
+    it(`PER-16544: ${deprecatedError} does not expose the API key`, async () => {
       const permit = createPermit(await startApi({ status, body }));
       const error = await rejectionOf(permit.api.getUser('user-1'));
       expect(axios.isAxiosError(error)).toBe(true);
