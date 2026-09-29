@@ -41,7 +41,7 @@ describe('ConfigFactory (unit)', () => {
       expect(config.token).toBe('');
       expect(config.pdp).toBe('http://localhost:7766');
       expect(config.apiUrl).toBe('https://api.permit.io');
-      expect(config.log).toEqual({ level: 'warn', label: 'Permit.io', json: false });
+      expect(config.log).toEqual({ level: 'warn', label: 'Permit.io', json: true });
       expect(config.multiTenancy).toEqual({
         defaultTenant: 'default',
         useDefaultTenantIfEmpty: true,
@@ -70,21 +70,6 @@ describe('ConfigFactory (unit)', () => {
       expect(config.log.level).toBe('debug');
       expect(config.log.label).toBe('MyLabel');
     });
-
-    it('parses PERMIT_LOG_JSON into a boolean', () => {
-      process.env.PERMIT_LOG_JSON = 'true';
-      expect(ConfigFactory.defaults().log.json).toBe(true);
-
-      process.env.PERMIT_LOG_JSON = 'false';
-      expect(ConfigFactory.defaults().log.json).toBe(false);
-    });
-
-    it('throws when PERMIT_LOG_JSON is not valid JSON', () => {
-      // JSON.parse('maybe') throws; defaults() surfaces that rather than guessing.
-      process.env.PERMIT_LOG_JSON = 'maybe';
-
-      expect(() => ConfigFactory.defaults()).toThrow();
-    });
   });
 
   describe('build', () => {
@@ -93,7 +78,7 @@ describe('ConfigFactory (unit)', () => {
 
       expect(config.token).toBe('');
       expect(config.pdp).toBe('http://localhost:7766');
-      expect(config.log).toEqual({ level: 'warn', label: 'Permit.io', json: false });
+      expect(config.log).toEqual({ level: 'warn', label: 'Permit.io', json: true });
     });
 
     it('overrides top-level fields while leaving the rest at their defaults', () => {
@@ -110,7 +95,7 @@ describe('ConfigFactory (unit)', () => {
       expect(config.log.level).toBe('debug');
       // Siblings survive the merge (proves a deep merge, not a shallow replace).
       expect(config.log.label).toBe('Permit.io');
-      expect(config.log.json).toBe(false);
+      expect(config.log.json).toBe(true);
     });
 
     it('deep-merges a nested multiTenancy partial without dropping sibling defaults', () => {

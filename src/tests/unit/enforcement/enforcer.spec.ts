@@ -1,6 +1,5 @@
 import { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
-import { PermitConnectionError, PermitPDPStatusError } from '../../../enforcement/enforcer';
 import { ICheckQuery } from '../../../enforcement/interfaces';
 import { Permit } from '../../../index';
 import { createMockPermit, MockTransport } from '../../helpers/mock-api';
@@ -9,6 +8,10 @@ import { createMockPermit, MockTransport } from '../../helpers/mock-api';
 // by `pdp`) and the OPA client (captured by `opa`, used only when a check is
 // made with `{ useOpa: true }`). Both default to the seeded pdp host
 // (http://localhost:7766/, OPA rewritten to port 8181 + /v1/data/permit/).
+//
+// PDP error mapping, the throwOnError fallbacks, per-check bulk context and
+// checkAllTenants are tested against a local HTTP PDP in pdp-errors.spec.ts,
+// bulk-check-context.spec.ts and check-all-tenants.spec.ts.
 describe('Enforcer (unit)', () => {
   let permit: Permit;
   let pdp: MockTransport;
@@ -148,45 +151,6 @@ describe('Enforcer (unit)', () => {
     });
   });
 
-  describe('check - error handling', () => {
-    // A non-200 PDP response makes the SDK throw a PermitPDPStatusError inside the
-    // `.then`, but the trailing `.catch` re-wraps every rejection into a
-    // PermitConnectionError, so PermitPDPStatusError never actually surfaces to
-    // the caller. We assert the behavior the SDK exhibits today.
-    it('surfaces a non-200 PDP response as PermitConnectionError', async () => {
-      pdp.resolveWith({ allow: true }, 502);
-
-      const error = await permit.check('alice', 'read', 'doc').catch((err) => err);
-
-      expect(error).toBeInstanceOf(PermitConnectionError);
-      expect(error).not.toBeInstanceOf(PermitPDPStatusError);
-      expect(error.message).toContain('unexpected status code');
-    });
-
-    it('maps a network/HTTP rejection to PermitConnectionError', async () => {
-      pdp.rejectWith(500, { message: 'boom' });
-
-      const error = await permit.check('alice', 'read', 'doc').catch((err) => err);
-
-      expect(error).toBeInstanceOf(PermitConnectionError);
-    });
-
-    it('swallows the error and returns false when throwOnError is false per-call', async () => {
-      pdp.rejectWith(500, { message: 'boom' });
-
-      const allowed = await permit.check('alice', 'read', 'doc', {}, { throwOnError: false });
-
-      expect(allowed).toBe(false);
-    });
-
-    it('swallows the error and returns false when throwOnError is false in config', async () => {
-      permit.config.throwOnError = false;
-      pdp.rejectWith(500, { message: 'boom' });
-
-      expect(await permit.check('alice', 'read', 'doc')).toBe(false);
-    });
-  });
-
   describe('check - timeout passthrough', () => {
     it('forwards the per-call timeout to the PDP request config', async () => {
       const { client } = (permit as unknown as { enforcer: { client: AxiosInstance } }).enforcer;
@@ -250,28 +214,6 @@ describe('Enforcer (unit)', () => {
       expect(await permit.bulkCheck([])).toEqual([]);
     });
 
-    it('returns an empty array when throwOnError is false and the PDP errors', async () => {
-      pdp.rejectWith(500, { message: 'boom' });
-
-      const decisions = await permit.bulkCheck(
-        [{ user: 'u1', action: 'read', resource: 'doc' }],
-        {},
-        { throwOnError: false },
-      );
-
-      expect(decisions).toEqual([]);
-    });
-
-    it('throws PermitConnectionError on PDP error by default', async () => {
-      pdp.rejectWith(500, { message: 'boom' });
-
-      const error = await permit
-        .bulkCheck([{ user: 'u1', action: 'read', resource: 'doc' }])
-        .catch((err) => err);
-
-      expect(error).toBeInstanceOf(PermitConnectionError);
-    });
-
     it('forwards the per-call timeout to the PDP request config', async () => {
       const { client } = (permit as unknown as { enforcer: { client: AxiosInstance } }).enforcer;
       let seenTimeout: number | undefined;
@@ -325,24 +267,6 @@ describe('Enforcer (unit)', () => {
       expect(permissions).toEqual({ 'doc:1': { permissions: ['read'] } });
     });
 
-    it('returns {} when throwOnError is false and the PDP errors', async () => {
-      pdp.rejectWith(404, { message: 'not found' });
-
-      const permissions = await permit.getUserPermissions('bob', undefined, undefined, undefined, {
-        throwOnError: false,
-      });
-
-      expect(permissions).toEqual({});
-    });
-
-    it('throws PermitConnectionError on PDP error by default', async () => {
-      pdp.rejectWith(500, { message: 'boom' });
-
-      const error = await permit.getUserPermissions('bob').catch((err) => err);
-
-      expect(error).toBeInstanceOf(PermitConnectionError);
-    });
-
     it('forwards the per-call timeout to the PDP request config', async () => {
       const { client } = (permit as unknown as { enforcer: { client: AxiosInstance } }).enforcer;
       let seenTimeout: number | undefined;
@@ -356,60 +280,6 @@ describe('Enforcer (unit)', () => {
       await permit.getUserPermissions('bob', undefined, undefined, undefined, { timeout: 1234 });
 
       expect(seenTimeout).toBe(1234);
-    });
-  });
-
-  describe('checkAllTenants', () => {
-    // TODO(PER-15318): asserts current buggy behavior. checkAllTenants passes
-    // `{ headers, params }` as the POST *body* (axios's 2nd arg) instead of as a
-    // request config, so the auth header / query params end up serialized into
-    // the request body and never become real headers or query params, and the
-    // user/action/resource are sent raw (not normalized).
-    it('sends headers and params in the request body (not as real headers/params)', async () => {
-      pdp.resolveWith({
-        allowedTenants: [
-          { tenant: { key: 't1', attributes: {} } },
-          { tenant: { key: 't2', attributes: { plan: 'pro' } } },
-        ],
-      });
-
-      const tenants = await permit.checkAllTenants(
-        'alice',
-        'read',
-        'document',
-        { region: 'eu' },
-        'node',
-      );
-
-      expect(tenants).toEqual([
-        { key: 't1', attributes: {} },
-        { key: 't2', attributes: { plan: 'pro' } },
-      ]);
-      expect(pdp.last?.method).toBe('POST');
-      expect(pdp.last?.url).toBe('/allowed/all-tenants');
-      expect(pdp.last?.data).toEqual({
-        headers: { Authorization: 'Bearer test-token', 'X-Permit-Sdk-Language': 'node' },
-        params: { user: 'alice', action: 'read', resource: 'document', context: { region: 'eu' } },
-      });
-      // The Authorization header is buried in the body, so it is not a real header.
-      expect(pdp.last?.headers?.Authorization).toBeUndefined();
-    });
-
-    // see PER-15318 (asserted above) — this also asserts the current buggy body placement
-    it('defaults the sdk language to `node` when omitted', async () => {
-      pdp.resolveWith({ allowedTenants: [] });
-
-      const tenants = await permit.checkAllTenants('alice', 'read', 'document');
-
-      expect(tenants).toEqual([]);
-      expect(pdp.last?.data?.headers?.['X-Permit-Sdk-Language']).toBe('node');
-      // context defaults to an empty object when not provided.
-      expect(pdp.last?.data?.params).toEqual({
-        user: 'alice',
-        action: 'read',
-        resource: 'document',
-        context: {},
-      });
     });
   });
 });

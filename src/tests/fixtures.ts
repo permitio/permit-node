@@ -32,11 +32,17 @@ export function createTestClient(opts: CreateTestClientOptions = {}): TestClient
 }
 
 export function handleApiError(
-  error: PermitApiError<any>,
+  error: PermitApiError<unknown>,
   message: string,
   logger: pino.Logger,
 ): never {
-  const err = `${message}: status=${error.response?.status}, url=${error.request.url}, method=${error.request.method}, details=${error.response?.data}`;
+  const request = error.originalError.config;
+  const err = [
+    `${message}: status=${error.response?.status}`,
+    `url=${request?.url}`,
+    `method=${request?.method}`,
+    `details=${JSON.stringify(error.response?.data)}`,
+  ].join(', ');
   logger.error(err);
   throw new Error(err);
 }
