@@ -175,6 +175,10 @@ jobs:
           # published on 127.0.0.1 only, so PDP checks would hit ECONNREFUSED.
           PDP_URL: http://127.0.0.1:7766
           PERMIT_RUN_OPA_E2E: 'true'
+          # The project-level environment test needs a project-scoped key. It
+          # is skipped, with the reason in the report, while this secret is
+          # unset, because the env key above is scoped to one environment.
+          PROJECT_PDP_API_KEY: ${{ secrets.PROJECT_PDP_API_KEY }}
         run: yarn test:ci:full
 
       # Dump PDP diagnostics whenever the backend path fails. The SDK reports
