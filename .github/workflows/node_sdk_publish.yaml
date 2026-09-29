@@ -10,17 +10,23 @@ env:
 jobs:
   publish_node_sdk:
     runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      id-token: write # Required for npm Trusted Publishing (OIDC)
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
-          token: ${{ secrets.NPM_TOKEN }}
-      
+
+      - name: Upgrade npm for Trusted Publishing
+        run: npm install -g npm@latest && npm --version
+
       - name: Set git user
         run: |
           git config --global user.email "eli@permit.io"
@@ -55,10 +61,12 @@ jobs:
             https://api.permit.io/v2/api-key/${{ env.PROJECT_ID }}/${{ env.ENV_ID }} \
             -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}')
 
-          # Extract the secret from the response which is the API_KEY of the new env
-          echo "ENV_API_KEY=$(echo "$response" | jq -r '.secret')" >> $GITHUB_ENV
-
-          echo "New env api key: $ENV_API_KEY"
+          # Extract the api key secret and register it for masking BEFORE writing
+          # it to the environment, so it is redacted everywhere in the logs
+          # (including the env-group dumps of every later step). Do not echo it.
+          ENV_API_KEY=$(echo "$response" | jq -r '.secret')
+          echo "::add-mask::$ENV_API_KEY"
+          echo "ENV_API_KEY=$ENV_API_KEY" >> "$GITHUB_ENV"
 
       - name: local PDP runnning
         env:
@@ -83,18 +91,26 @@ jobs:
           
       - name: Bump version at package.json
         run: |
-          sed -i "s/\"version\": \".*\"/\"version\": \"${{ github.event.release.tag_name }}\"/" package.json
+          # Use the release tag as the version, stripping any leading 'v'
+          # (e.g. 'v2.7.6' -> '2.7.6') so it is valid semver for npm.
+          VERSION=${{ github.event.release.tag_name }}
+          VERSION=${VERSION#v}
+          sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" package.json
           cat package.json
-      
+
       - name: Publish package to NPM
         run: |
           if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
             echo "Publishing as a release candidate (rc)..."
-            yarn publish --access public --tag rc
+            npm publish --access public --tag rc
           else
             echo "Publishing as the latest release..."
-            yarn publish --access public
+            npm publish --access public
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        # No NPM_TOKEN needed — authenticated via npm Trusted Publishing (OIDC),
+        # which requires the job's `id-token: write` permission above plus a
+        # Trusted Publisher configured on npmjs.com:
+        #   permitio/permit-node -> Settings -> Trusted Publishers
+        #   (workflow: node_sdk_publish.yaml, environment: production)
+        # Provenance attestations are generated automatically.
 
