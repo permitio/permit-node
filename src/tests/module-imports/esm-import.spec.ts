@@ -1,33 +1,32 @@
-import * as path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { builtFile, probePackage } from './package-probe';
 
-// Validate the BUILT ES Module artifact (build/index.mjs) the package actually
-// ships, not the TypeScript source. This is a packaging-regression guard.
-const builtMjsUrl = pathToFileURL(path.resolve(__dirname, '../../../build/index.mjs')).href;
-
-it('ES Module import of the built bundle exposes Permit', async () => {
-  const built = await import(builtMjsUrl);
-
-  expect(typeof built.Permit).toBe('function');
-  expect(built.Permit.name).toBe('Permit');
-
-  const permit = new built.Permit({
-    token: 'test-token',
-    pdp: 'http://localhost:7766',
+// Validates the BUILT package the way an ES module consumer loads it: a static
+// `import ... from 'permitio'` in a separate Node process, resolved through the
+// package.json `exports` map. This is a packaging-regression guard.
+describe('ES module import of the built package', () => {
+  it("resolves through the exports map to build/index.mjs in Node's ESM loader", async () => {
+    expect(await probePackage('esm')).toHaveProperty('resolved', builtFile('index.mjs'));
   });
 
-  expect(permit).toBeTruthy();
-  expect(typeof permit.check).toBe('function');
-  expect(typeof permit.api).toBe('object');
-  expect(typeof permit.elements).toBe('object');
-  expect(typeof permit.config).toBe('object');
-});
+  it('exposes Permit and the public API classes as named exports', async () => {
+    expect(await probePackage('esm')).toHaveProperty('names', {
+      Permit: 'Permit',
+      ApiClient: 'ApiClient',
+      ElementsClient: 'ElementsClient',
+    });
+  });
 
-it('ES Module import of the built bundle exposes the public API classes', async () => {
-  const built = await import(builtMjsUrl);
+  it('constructs a Permit with the given config and its API modules', async () => {
+    const probe = await probePackage('esm');
 
-  expect(typeof built.ApiClient).toBe('function');
-  expect(built.ApiClient.name).toBe('ApiClient');
-  expect(typeof built.ElementsClient).toBe('function');
-  expect(built.ElementsClient.name).toBe('ElementsClient');
+    expect(probe).toHaveProperty('members', {
+      check: 'function',
+      api: 'object',
+      elements: 'object',
+      users: 'object',
+      resources: 'object',
+      roles: 'object',
+    });
+    expect(probe).toHaveProperty('config', { token: 'test-token', pdp: 'http://localhost:7766' });
+  });
 });
