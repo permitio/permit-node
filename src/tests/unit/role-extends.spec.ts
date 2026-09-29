@@ -15,8 +15,8 @@ type IsExact<A, B> = (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B
 type Assert<T extends true> = T;
 type Inheritance = { extends?: Array<string> };
 
-// yarn test:unit runs build:types before AVA. Pick preserves the optional modifier, and
-// exact equality rejects any, null, non-array values, and a required property (even with undefined).
+// yarn test:unit runs build:types before AVA. Pick preserves the optional modifier, and exact
+// equality rejects any, null, non-array values, and a required property (even with undefined).
 export type RoleInheritanceContracts = [
   Assert<IsExact<Pick<RoleCreate, 'extends'>, Inheritance>>,
   Assert<IsExact<Pick<RoleRead, 'extends'>, Inheritance>>,
