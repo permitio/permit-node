@@ -1,6 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Logger } from 'pino';
-import URL from 'url-parse';
 
 import { IPermitConfig } from '../config';
 import { CheckConfig, Context, ContextStore } from '../utils/context';
@@ -132,6 +131,34 @@ export interface IEnforcer {
 }
 
 /**
+ * Builds the OPA client base URL from the configured PDP URL by forcing the OPA
+ * port (8181) and appending the OPA data path, using the native WHATWG `URL`
+ * (Node >= 10) in place of the previous `url-parse` dependency (#106).
+ *
+ * @param pdp - The configured PDP base URL (e.g. `http://localhost:7766`).
+ * @returns The OPA base URL (e.g. `http://localhost:8181/v1/data/permit/`). A PDP
+ *   path with no trailing slash is glued to the data path (`/prefix` ->
+ *   `/prefixv1/data/permit/`), preserved from `url-parse` and locked by a test.
+ * @throws {PermitError} on input without a scheme (e.g. `localhost`); a `host:port`
+ *   value like `localhost:7766` is misparsed, not rejected — pass a full URL. The
+ *   error omits the configured value because it may carry credentials.
+ */
+export function buildOpaBaseUrl(pdp: string): string {
+  let opaBaseUrl: URL;
+  try {
+    opaBaseUrl = new URL(pdp);
+  } catch {
+    throw new PermitError(
+      'Invalid PDP URL in the "pdp" option: expected an absolute http(s) URL, ' +
+        'e.g. "http://localhost:7766".',
+    );
+  }
+  opaBaseUrl.port = '8181';
+  opaBaseUrl.pathname = `${opaBaseUrl.pathname}v1/data/permit/`;
+  return opaBaseUrl.toString();
+}
+
+/**
  * The {@link Enforcer} class is responsible for performing permission checks against the PDP.
  * It implements the {@link IEnforcer} interface.
  */
@@ -146,9 +173,7 @@ export class Enforcer implements IEnforcer {
    * @param logger - The logger instance for logging.
    */
   constructor(private config: IPermitConfig, private logger: Logger) {
-    const opaBaseUrl = new URL(this.config.pdp);
-    opaBaseUrl.set('port', '8181');
-    opaBaseUrl.set('pathname', `${opaBaseUrl.pathname}v1/data/permit/`);
+    const opaBaseUrl = buildOpaBaseUrl(this.config.pdp);
     const version = process.env.npm_package_version ?? 'unknown';
     // PDP gets its own dedicated axios instance so PDP-only POST retries never
     // apply to the shared REST API client (config.axiosInstance) — REST writes
@@ -159,11 +184,11 @@ export class Enforcer implements IEnforcer {
     });
     if (config.opaAxiosInstance) {
       this.opaClient = config.opaAxiosInstance;
-      this.opaClient.defaults.baseURL = opaBaseUrl.toString();
+      this.opaClient.defaults.baseURL = opaBaseUrl;
       this.opaClient.defaults.headers.common['X-Permit-SDK-Version'] = `node:${version}`;
     } else {
       this.opaClient = axios.create({
-        baseURL: opaBaseUrl.toString(),
+        baseURL: opaBaseUrl,
         headers: {
           'X-Permit-SDK-Version': `node:${version}`,
         },
