@@ -10,7 +10,8 @@ defaults:
 
 jobs:
   publish_node_sdk:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     environment: production
     permissions:
       contents: read
@@ -40,6 +41,7 @@ jobs:
       # Trusted Publishing needs npm 11.5.1 or later. npm itself has no lockfile
       # to install from, hence the adhoc-packages exception.
       - name: Upgrade npm for Trusted Publishing
+        timeout-minutes: 5
         run: npm install -g npm@12 && npm --version # zizmor: ignore[adhoc-packages]
 
       - name: Set git user
@@ -48,6 +50,7 @@ jobs:
           git config --global user.name "elimoshkovich"
 
       - name: Install dependencies
+        timeout-minutes: 5
         run: |
           rm -rf node_modules
           yarn install
@@ -57,6 +60,7 @@ jobs:
       # Unit and module-import tests only. The integration and e2e suites need a
       # provisioned environment and PDP, and run in the CI workflow's backend job.
       - name: Run tests
+        timeout-minutes: 10
         run: yarn test
 
       - name: Bump version at package.json
@@ -70,6 +74,7 @@ jobs:
           cat package.json
 
       - name: Publish package to NPM
+        timeout-minutes: 5
         run: |
           if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
             echo "Publishing as a release candidate (rc)..."

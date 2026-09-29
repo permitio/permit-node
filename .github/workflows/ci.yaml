@@ -32,7 +32,8 @@ env:
 
 jobs:
   lint-and-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -52,7 +53,8 @@ jobs:
 
   test:
     needs: lint-and-build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -70,6 +72,7 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
+        timeout-minutes: 5
         run: yarn install --frozen-lockfile
 
       # Fail instead of reporting green on the no-backend suite alone.
@@ -83,11 +86,12 @@ jobs:
       - name: Provision temp Permit env
         id: provision
         if: env.RUN_BACKEND == 'true'
+        timeout-minutes: 2
         env:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
           ENV_KEY: node-sdk-ci-${{ github.run_id }}-${{ github.run_attempt }}-n${{ matrix.node-version }}
         run: |
-          response=$(curl -sS -X POST \
+          response=$(curl -sS --max-time 30 -X POST \
             "https://api.permit.io/v2/projects/${PROJECT_ID}/envs" \
             -H "Authorization: Bearer ${PROJECT_API_KEY}" \
             -H 'Content-Type: application/json' \
@@ -101,11 +105,12 @@ jobs:
 
       - name: Fetch env API key
         if: env.RUN_BACKEND == 'true'
+        timeout-minutes: 2
         env:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
           ENV_ID: ${{ steps.provision.outputs.env_id }}
         run: |
-          response=$(curl -sS -X GET \
+          response=$(curl -sS --max-time 30 --retry 3 -X GET \
             "https://api.permit.io/v2/api-key/${PROJECT_ID}/${ENV_ID}" \
             -H "Authorization: Bearer ${PROJECT_API_KEY}")
           env_api_key=$(printf '%s' "$response" | jq -r '.secret // empty')
@@ -119,6 +124,7 @@ jobs:
 
       - name: Start local PDP
         if: env.RUN_BACKEND == 'true'
+        timeout-minutes: 5
         run: |
           docker run -d --name pdp -p 7766:7000 \
             -e PDP_API_KEY="$ENV_API_KEY" \
@@ -127,20 +133,15 @@ jobs:
 
       - name: Wait for PDP to be ready
         if: env.RUN_BACKEND == 'true'
+        timeout-minutes: 3
         run: |
-          for i in $(seq 1 60); do
-            if curl -sf http://127.0.0.1:7766/healthy >/dev/null; then
-              echo "PDP ready after ${i} attempt(s)"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "PDP did not become healthy in time; dumping logs:" >&2
-          docker logs pdp || true
-          exit 1
+          curl -fsS -o /dev/null --max-time 2 \
+            --retry 60 --retry-delay 2 --retry-max-time 150 --retry-all-errors \
+            http://127.0.0.1:7766/healthy
 
       - name: Run full test suite (backend)
         if: env.RUN_BACKEND == 'true'
+        timeout-minutes: 20
         env:
           PDP_API_KEY: ${{ env.ENV_API_KEY }}
           PERMIT_API_KEY: ${{ env.ENV_API_KEY }}
@@ -156,7 +157,8 @@ jobs:
       # invisible; this captures container state and logs to tell a transient
       # restart/readiness blip apart from a crashed/exited container.
       - name: Dump PDP diagnostics on failure
-        if: ${{ failure() && env.RUN_BACKEND == 'true' }}
+        if: failure() && env.RUN_BACKEND == 'true'
+        timeout-minutes: 2
         run: |
           echo "::group::docker ps -a"
           docker ps -a --filter name=pdp || true
@@ -169,22 +171,24 @@ jobs:
           echo "::group::docker logs pdp"
           docker logs pdp || true
           echo "::endgroup::"
-          echo "::group::curl -sv http://localhost:7766/healthy"
-          curl -sv http://localhost:7766/healthy || true
+          echo "::group::curl -sv http://127.0.0.1:7766/healthy"
+          curl -sv --max-time 5 http://127.0.0.1:7766/healthy || true
           echo "::endgroup::"
 
       # ---------- No-backend path (forks / Dependabot) ----------
       - name: Run no-backend test suite
         if: env.RUN_BACKEND != 'true'
+        timeout-minutes: 10
         run: yarn test
 
       # ---------- Cleanup (always, even on failure/cancel) ----------
       - name: Delete temp Permit env
         if: ${{ always() && steps.provision.outputs.env_id != '' }}
+        timeout-minutes: 2
         env:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
           ENV_ID: ${{ steps.provision.outputs.env_id }}
         run: |
-          curl -sS -X DELETE \
+          curl -sS --max-time 30 --retry 3 -X DELETE \
             "https://api.permit.io/v2/projects/${PROJECT_ID}/envs/${ENV_ID}" \
             -H "Authorization: Bearer ${PROJECT_API_KEY}" || true
