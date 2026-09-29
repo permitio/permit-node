@@ -138,6 +138,14 @@ export interface IPermitConfig {
 }
 
 /**
+ * Reads PERMIT_LOG_JSON, ignoring letter case and surrounding whitespace. Only `false` selects
+ * pretty output: `true`, an unset variable and unrecognized values all keep the JSON default.
+ */
+function logJsonFromEnv(): boolean {
+  return process.env.PERMIT_LOG_JSON?.trim().toLowerCase() !== 'false';
+}
+
+/**
  * A factory class for the Permit SDK configuration
  */
 export class ConfigFactory {
@@ -155,7 +163,7 @@ export class ConfigFactory {
         // Label added to logs
         label: _.get(process.env, 'PERMIT_LOG_LABEL', 'Permit.io'),
         // When logging - dump full data to console as JSON
-        json: JSON.parse(_.get(process.env, 'PERMIT_LOG_JSON', 'false')),
+        json: logJsonFromEnv(),
       },
       multiTenancy: {
         defaultTenant: 'default',

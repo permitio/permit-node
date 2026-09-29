@@ -1,6 +1,7 @@
 import util from 'util';
 
 import pino from 'pino';
+import pretty from 'pino-pretty';
 
 import { IPermitConfig } from './config';
 
@@ -10,11 +11,13 @@ export function prettyConsoleLog(label: string, data: any) {
 
 export class LoggerFactory {
   static createLogger(config: IPermitConfig): pino.Logger {
-    return pino({
+    const options = {
       level: config.log.level,
-      prettyPrint: config.log.json ? { levelFirst: true } : false,
       base: { label: config.log.label },
       timestamp: pino.stdTimeFunctions.isoTime,
-    });
+    };
+    return config.log.json
+      ? pino(options)
+      : pino(options, pretty({ levelFirst: true, sync: true }));
   }
 }

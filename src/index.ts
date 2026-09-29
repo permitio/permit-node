@@ -168,9 +168,7 @@ export class Permit implements IPermitClient {
     this.enforcer = new Enforcer(this.config, this.logger);
     this.elements = new ElementsClient(this.config, this.logger);
 
-    this.logger.debug(
-      `Permit.io SDK initialized with config:\n${JSON.stringify(this.config, undefined, 2)}`,
-    );
+    this.logger.debug('Permit.io SDK initialized');
   }
 
   /**
