@@ -1,8 +1,9 @@
 import test from 'ava';
 import axios from 'axios';
+import pino from 'pino';
 
 import { buildOpaBaseUrl } from '../../enforcement/enforcer';
-import { Permit } from '../../index';
+import { Permit, PermitError } from '../../index';
 
 // The OPA client base URL is derived from the configured PDP URL by forcing the
 // OPA port (8181) and appending the OPA data path. This was previously built
@@ -41,10 +42,23 @@ test('buildOpaBaseUrl: a path-prefixed PDP preserves the pre-existing concatenat
   );
 });
 
-test('buildOpaBaseUrl: a PDP without a scheme throws (invalid absolute URL)', (t) => {
+test('buildOpaBaseUrl: a PDP without a scheme throws a PermitError naming the pdp option', (t) => {
   // Scheme-less input (bare host or `//host:port`) throws at construction; `localhost:7766` is misparsed, not rejected.
-  t.throws(() => buildOpaBaseUrl('localhost'), { instanceOf: TypeError });
-  t.throws(() => buildOpaBaseUrl('//localhost:7766'), { instanceOf: TypeError });
+  for (const pdp of ['localhost', '//localhost:7766']) {
+    t.throws(() => buildOpaBaseUrl(pdp), {
+      instanceOf: PermitError,
+      message: /"pdp" option.*absolute http\(s\) URL/,
+    });
+  }
+});
+
+test('new Permit with an invalid credential-bearing PDP URL does not expose the credentials', (t) => {
+  const error = t.throws(
+    () => new Permit({ token: 'test-token', pdp: 'http://pdp-user:pdp-secret@localhost:bad' }),
+    { instanceOf: PermitError },
+  );
+  // Serialize the way the SDK's pino logger would, so enumerable error fields are covered too.
+  t.false(JSON.stringify(pino.stdSerializers.err(error)).includes('pdp-secret'));
 });
 
 test('Enforcer wires the OPA client base URL to buildOpaBaseUrl(pdp)', (t) => {

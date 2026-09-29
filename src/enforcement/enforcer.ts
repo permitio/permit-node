@@ -128,11 +128,20 @@ export interface IEnforcer {
  * @returns The OPA base URL (e.g. `http://localhost:8181/v1/data/permit/`). A PDP
  *   path with no trailing slash is glued to the data path (`/prefix` ->
  *   `/prefixv1/data/permit/`), preserved from `url-parse` and locked by a test.
- * @throws {TypeError} on input without a scheme (e.g. `localhost`); a `host:port`
- *   value like `localhost:7766` is misparsed, not rejected — pass a full URL.
+ * @throws {PermitError} on input without a scheme (e.g. `localhost`); a `host:port`
+ *   value like `localhost:7766` is misparsed, not rejected — pass a full URL. The
+ *   error omits the configured value because it may carry credentials.
  */
 export function buildOpaBaseUrl(pdp: string): string {
-  const opaBaseUrl = new URL(pdp);
+  let opaBaseUrl: URL;
+  try {
+    opaBaseUrl = new URL(pdp);
+  } catch {
+    throw new PermitError(
+      'Invalid PDP URL in the "pdp" option: expected an absolute http(s) URL, ' +
+        'e.g. "http://localhost:7766".',
+    );
+  }
   opaBaseUrl.port = '8181';
   opaBaseUrl.pathname = `${opaBaseUrl.pathname}v1/data/permit/`;
   return opaBaseUrl.toString();
