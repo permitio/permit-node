@@ -1,5 +1,5 @@
 import { IPermitClient } from '../../index';
-import { createTestClient } from '../fixtures';
+import { cleanUp, createTestClient } from '../fixtures';
 import { waitFor } from '../helpers/wait-for';
 
 let permit: IPermitClient;
@@ -29,7 +29,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   if (!permit) return; // beforeAll never initialized the client (e.g. missing key)
-  await permit.api.users.bulkUserDelete(USER_KEYS).catch(() => null);
+  await cleanUp({ [`users ${PREFIX}-user-*`]: () => permit.api.users.bulkUserDelete(USER_KEYS) });
 });
 
 it('List users scoped by prefix returns exactly the created users', async () => {
