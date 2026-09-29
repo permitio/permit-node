@@ -273,25 +273,20 @@ it('Permission check e2e test', async () => {
       { user: user, action: 'read', resource: { type: document.key, tenant: tenant.key } },
       { user: user, action: 'create', resource: { type: document.key, tenant: tenant.key } },
     ];
-    await waitFor(
-      async () => {
-        const d = await permit.bulkCheck(bulkQueries);
-        return d.length === 2 && d[0] === true && d[1] === false;
-      },
+    const decisions = await waitFor(
+      () => permit.bulkCheck(bulkQueries),
+      (d) => d.length === 2 && d[0] === true && d[1] === false,
       { timeoutMs: 60_000, intervalMs: 1_000, message: 'bulkCheck did not converge' },
     );
-    const decisions = await permit.bulkCheck(bulkQueries);
-    expect(decisions.length === 2).toBe(true);
-    expect(decisions[0]).toBe(true);
-    expect(decisions[1]).toBe(false);
+    expect(decisions).toEqual([true, false]);
 
     logger.info('testing get user permissions matches assigned roles permissions');
-    await waitFor(
-      async () => `__tenant:${tenant.key}` in (await permit.getUserPermissions(user.key)),
+    const userPermissions = await waitFor(
+      () => permit.getUserPermissions(user.key),
+      (permissions) => `__tenant:${tenant.key}` in permissions,
       { timeoutMs: 60_000, intervalMs: 1_000, message: 'getUserPermissions did not converge' },
     );
-    const userPermissions = await permit.getUserPermissions(user.key);
-    expect(`__tenant:${tenant.key}` in userPermissions).toBe(true);
+    expect(userPermissions).toHaveProperty([`__tenant:${tenant.key}`]);
     viewer.permissions?.forEach((permission) => {
       expect(userPermissions[tenant.key].permissions.includes(permission)).toBe(true);
     });

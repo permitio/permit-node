@@ -575,12 +575,11 @@ it('Permission check e2e test', async () => {
       // sleep. Polling all assertions also covers steps whose assertions are all
       // negative, which a positives-only gate would skip without waiting.
       await waitFor(
-        async () => {
-          const results = await Promise.all(
+        () =>
+          Promise.all(
             testStep.assertions.map((a) => permit.check(a.user, a.action, a.resource_instance)),
-          );
-          return results.every((res, i) => res === testStep.assertions[i].result);
-        },
+          ),
+        (results) => results.every((res, i) => res === testStep.assertions[i].result),
         { timeoutMs: 150_000, intervalMs: 1_000, message: 'rebac step did not converge' },
       );
       for (const assertion of testStep.assertions) {

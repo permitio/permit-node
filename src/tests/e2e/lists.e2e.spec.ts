@@ -16,8 +16,14 @@ beforeAll(async () => {
   // Bulk create is eventually consistent; gate until all 10 users are listable
   // so the exact-count assertions below don't race the write propagating.
   await waitFor(
-    async () => (await permit.api.users.list({ search: PREFIX, perPage: 100 })).total_count === 10,
-    { timeoutMs: 60_000, intervalMs: 1_000, message: 'created users not yet listable' },
+    () => permit.api.users.list({ search: PREFIX, perPage: 100 }),
+    (users) => users.total_count === 10,
+    {
+      timeoutMs: 60_000,
+      intervalMs: 1_000,
+      message: 'created users not yet listable',
+      describe: (users) => `total_count=${users.total_count}`,
+    },
   );
 });
 
