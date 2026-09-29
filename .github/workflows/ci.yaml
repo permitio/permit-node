@@ -39,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [20, 22]
+        node-version: [22, 24]
     env:
       # Backend suite runs only for same-repo events AND when the provisioning
       # secret is available. Fork PRs and secret-less runs (e.g. Dependabot)
