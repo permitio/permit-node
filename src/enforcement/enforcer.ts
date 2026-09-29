@@ -310,7 +310,10 @@ export class Enforcer implements IEnforcer {
     const checkTimeout = config.timeout || this.config.timeout;
     const inputs: Array<ICheckInput> = [];
     checks.forEach((check) => {
-      const input = this.buildCheckInput(check.user, check.action, check.resource, context);
+      const input = this.buildCheckInput(check.user, check.action, check.resource, {
+        ...context,
+        ...check.context,
+      });
       inputs.push(input);
     });
 
