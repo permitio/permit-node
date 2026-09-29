@@ -22,9 +22,9 @@ defaults:
 env:
   # github actions project id (under 'Permit.io Tests' workspace)
   PROJECT_ID: 7f55831d77c642739bc17733ab0af138
-  # The backend suite runs when the environment-provisioning secret is
-  # available. Fork PRs and Dependabot PRs get no Actions secrets, so they run
-  # the no-backend suite.
+  # The integration and e2e tests run when the environment-provisioning secret
+  # is available. Fork PRs and Dependabot PRs get no Actions secrets, so they
+  # run only the unit and module-import tests.
   RUN_BACKEND: ${{ secrets.PROJECT_API_KEY != '' }}
   # Pushes and PRs from this repository, other than Dependabot's, must run the
   # backend suite; the test job fails them if the secret is missing.
@@ -66,14 +66,14 @@ jobs:
       # key even when this job is cancelled while creating it.
       ENV_KEY: node-sdk-ci-${{ github.run_id }}-${{ github.run_attempt }}-n${{ matrix.node-version }}
     steps:
-      # Fail instead of reporting green on the no-backend suite alone.
+      # Fail instead of reporting green on the unit and module-import tests alone.
       - name: Require backend secret on same-repo runs
         if: env.BACKEND_REQUIRED == 'true' && env.RUN_BACKEND != 'true'
         run: |
           echo "::error::PROJECT_API_KEY is not set for a same-repo run, so integration and e2e tests would not run." >&2
           exit 1
 
-      # ---------- Backend path ----------
+      # ---------- Backend setup ----------
       # PROJECT_API_KEY is used only in the next two steps. They run before
       # checkout, so no repository or dependency code runs while it is in use.
       - name: Provision temp Permit env
@@ -101,7 +101,10 @@ jobs:
           fi
           echo "env_id=${env_id}" >> "$GITHUB_OUTPUT"
 
+      # The key goes to a step output, not $GITHUB_ENV, so only the steps that
+      # name it get it: the PDP, and the integration and e2e tests.
       - name: Fetch env API key
+        id: env_api_key
         if: env.RUN_BACKEND == 'true'
         timeout-minutes: 2
         env:
@@ -123,17 +126,20 @@ jobs:
             echo "::error::The API key response for env ${ENV_KEY} (HTTP ${status}) has no secret field." >&2
             exit 1
           fi
-          # Mask BEFORE writing to the env file so it is redacted everywhere.
+          # Mask BEFORE writing the output so it is redacted everywhere.
           echo "::add-mask::${env_api_key}"
-          echo "ENV_API_KEY=${env_api_key}" >> "$GITHUB_ENV"
+          echo "api_key=${env_api_key}" >> "$GITHUB_OUTPUT"
 
       # 7766 is the PDP API. 8181 is the PDP's OPA, which the SDK derives from
       # the PDP URL for the rbac spec's useOpa checks.
       - name: Start local PDP
         if: env.RUN_BACKEND == 'true'
         timeout-minutes: 5
+        env:
+          PDP_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
+          PERMIT_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
         run: |
-          PDP_API_KEY="$ENV_API_KEY" PERMIT_API_KEY="$ENV_API_KEY" docker run -d --name pdp \
+          docker run -d --name pdp \
             -p 127.0.0.1:7766:7000 -p 127.0.0.1:8181:8181 \
             -e PDP_API_KEY -e PERMIT_API_KEY \
             "$PDP_IMAGE"
@@ -156,6 +162,12 @@ jobs:
         timeout-minutes: 5
         run: yarn install --frozen-lockfile --ignore-scripts
 
+      # Builds, then runs the tests that need no backend. No API key is set.
+      - name: Run unit and module-import tests
+        timeout-minutes: 10
+        run: yarn test
+
+      # ---------- Backend tests ----------
       - name: Wait for PDP to be ready
         if: env.RUN_BACKEND == 'true'
         timeout-minutes: 3
@@ -164,22 +176,30 @@ jobs:
             --retry 60 --retry-delay 2 --retry-max-time 150 --retry-all-errors \
             http://127.0.0.1:7766/healthy
 
-      - name: Run full test suite (backend)
+      - name: Run integration tests
+        if: env.RUN_BACKEND == 'true'
+        timeout-minutes: 10
+        env:
+          PDP_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
+          PERMIT_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
+          # The project-level environment test needs a project-scoped key. It
+          # is skipped, with the reason in the report, while this secret is
+          # unset, because the env key above is scoped to one environment.
+          PROJECT_PDP_API_KEY: ${{ secrets.PROJECT_PDP_API_KEY }}
+        run: yarn test:integration
+
+      - name: Run e2e tests
         if: env.RUN_BACKEND == 'true'
         timeout-minutes: 20
         env:
-          PDP_API_KEY: ${{ env.ENV_API_KEY }}
-          PERMIT_API_KEY: ${{ env.ENV_API_KEY }}
+          PDP_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
+          PERMIT_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
           API_TIER: prod
           # Force IPv4: Node resolves `localhost` to ::1 first, but the PDP is
           # published on 127.0.0.1 only, so PDP checks would hit ECONNREFUSED.
           PDP_URL: http://127.0.0.1:7766
           PERMIT_RUN_OPA_E2E: 'true'
-          # The project-level environment test needs a project-scoped key. It
-          # is skipped, with the reason in the report, while this secret is
-          # unset, because the env key above is scoped to one environment.
-          PROJECT_PDP_API_KEY: ${{ secrets.PROJECT_PDP_API_KEY }}
-        run: yarn test:ci:full
+        run: yarn test:e2e
 
       # Dump PDP diagnostics whenever the backend path fails. The SDK reports
       # PDP connection errors with no HTTP response, so the PDP side is otherwise
@@ -203,12 +223,6 @@ jobs:
           echo "::group::curl -sv http://127.0.0.1:7766/healthy"
           curl -sv --max-time 5 http://127.0.0.1:7766/healthy || true
           echo "::endgroup::"
-
-      # ---------- No-backend path (forks / Dependabot) ----------
-      - name: Run no-backend test suite
-        if: env.RUN_BACKEND != 'true'
-        timeout-minutes: 10
-        run: yarn test
 
   # Runs after every test leg, including failed and cancelled ones, with no
   # checkout, so the project API key never shares a job with repository code.
