@@ -13,6 +13,15 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  # The backend suite runs when the environment-provisioning secret is
+  # available. Fork PRs and Dependabot PRs get no Actions secrets, so they run
+  # the no-backend suite.
+  RUN_BACKEND: ${{ secrets.PROJECT_API_KEY != '' }}
+  # Pushes and PRs from this repository, other than Dependabot's, must run the
+  # backend suite; the test job fails them if the secret is missing.
+  BACKEND_REQUIRED: ${{ github.event_name == 'push' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]') }}
+
 jobs:
   lint-and-build:
     runs-on: ubuntu-latest
@@ -40,11 +49,6 @@ jobs:
       fail-fast: false
       matrix:
         node-version: [22, 24]
-    env:
-      # Backend suite runs only for same-repo events AND when the provisioning
-      # secret is available. Fork PRs and secret-less runs (e.g. Dependabot)
-      # fall back to the no-backend suite.
-      RUN_BACKEND: ${{ (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) && secrets.PROJECT_API_KEY != '' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -60,16 +64,14 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      # Fail fast if a same-repo run lacks the backend secret, so the full
-      # suite can't be silently downgraded to unit-only and still report green.
-      # Forks (different head repo) intentionally skip this and fall back below.
+      # Fail instead of reporting green on the no-backend suite alone.
       - name: Require backend secret on same-repo runs
-        if: ${{ (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) && env.RUN_BACKEND != 'true' }}
+        if: env.BACKEND_REQUIRED == 'true' && env.RUN_BACKEND != 'true'
         run: |
-          echo "::error::PROJECT_API_KEY is not set for a same-repo run; integration/e2e would be silently skipped. Failing instead of reporting a misleading green." >&2
+          echo "::error::PROJECT_API_KEY is not set for a same-repo run, so integration and e2e tests would not run." >&2
           exit 1
 
-      # ---------- Backend path (same-repo only) ----------
+      # ---------- Backend path ----------
       - name: Provision temp Permit env
         id: provision
         if: env.RUN_BACKEND == 'true'
@@ -168,7 +170,7 @@ jobs:
           curl -sv http://localhost:7766/healthy || true
           echo "::endgroup::"
 
-      # ---------- No-backend path (forks / secret-less) ----------
+      # ---------- No-backend path (forks / Dependabot) ----------
       - name: Run no-backend test suite
         if: env.RUN_BACKEND != 'true'
         run: yarn test
