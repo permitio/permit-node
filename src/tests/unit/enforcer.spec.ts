@@ -32,7 +32,7 @@ test('buildOpaBaseUrl: an existing port is overridden with 8181', (t) => {
   );
 });
 
-test('buildOpaBaseUrl: a path-prefixed PDP preserves the pre-existing concatenation behaviour', (t) => {
+test('buildOpaBaseUrl: a path prefix preserves the existing concatenation behaviour', (t) => {
   // Pre-existing url-parse quirk: a path with no trailing slash glues onto the data path.
   t.is(
     buildOpaBaseUrl('http://localhost:7766/prefix'),
@@ -53,7 +53,8 @@ test('buildOpaBaseUrl: dot segments in the PDP path are resolved before the data
 });
 
 test('buildOpaBaseUrl: a PDP without a scheme throws a PermitError naming the pdp option', (t) => {
-  // Scheme-less input (bare host or `//host:port`) throws at construction; `localhost:7766` is misparsed, not rejected.
+  // Bare hosts and `//host:port` throw at construction; `localhost:7766` is misparsed,
+  // not rejected.
   for (const pdp of ['localhost', '//localhost:7766']) {
     t.throws(() => buildOpaBaseUrl(pdp), {
       instanceOf: PermitError,
@@ -62,7 +63,7 @@ test('buildOpaBaseUrl: a PDP without a scheme throws a PermitError naming the pd
   }
 });
 
-test('new Permit with an invalid credential-bearing PDP URL does not expose the credentials', (t) => {
+test('new Permit does not expose credentials from an invalid PDP URL', (t) => {
   const error = t.throws(
     () => new Permit({ token: 'test-token', pdp: 'http://pdp-user:pdp-secret@localhost:bad' }),
     { instanceOf: PermitError },
@@ -100,7 +101,7 @@ test('a useOpa check posts to the OPA root derived from the configured PDP', asy
   t.deepEqual(urls, [EXPECTED_OPA_CHECK_URL]);
 });
 
-test('a useOpa check through an injected opaAxiosInstance posts to the same OPA root', async (t) => {
+test('a useOpa check through an injected opaAxiosInstance posts to the OPA root', async (t) => {
   const opaAxiosInstance = axios.create();
   const urls = captureRequestUrls(opaAxiosInstance);
   const permit = new Permit({ token: 'test-token', pdp: CONFIGURED_PDP, opaAxiosInstance });
