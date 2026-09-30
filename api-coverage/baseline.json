@@ -28,15 +28,13 @@
       "src/api/tenants.ts:TenantsApi": "978b7a88e00d28f9ffceacfc51c31fed3005f68a8a3ac04a06c94e20b450c9c9",
       "src/api/users.ts:UsersApi": "4873322e964985928eba4ec3a4e4156870021fe8df7d78eabd51b965bba02590",
       "src/config.ts:ConfigFactory": "94628fdfe2b721ad342897863ab40a344171d70edc118a125bef831a547a7545",
-      "src/enforcement/enforcer.ts:Enforcer": "53a4bd2522ec3383412646903f13d02a06fa0b9896c48f9807c00a6f0e49f26c",
+      "src/enforcement/enforcer.ts:Enforcer": "172af01b55613e1966fb0d31e27c2d2e36a15f0333e7e525cc89ee74fde16ed1",
       "src/enforcement/enforcer.ts:PermitConnectionError": "4436ea68a128004dfebfb7553aa29e5e12a78806069bdc791a96e55071cfa227",
       "src/enforcement/enforcer.ts:PermitError": "2e807340ef6424a4c40d7609ea925baa9b64c91f543db2132217a51646270bdd",
       "src/enforcement/enforcer.ts:PermitPDPStatusError": "a1b9c351d5a2e1b5dd225d6aef626bf1b93c3f4a49275190c8b201f275b7045e",
-      "src/index.ts:Permit": "04f817cfd772f784164a06d37d3e3c9df0f312d8e14dfe6bd559840281a6ceaf",
+      "src/index.ts:Permit": "c6fa5f1096570ac5cd0f2bbf4b1011b02b28abcde996f67283ccca65d9671660",
       "src/logger.ts:LoggerFactory": "0df4a89a8e7564c508ae19fc674363efdb9453beeaf4ae72fdb14ae537da99a6",
-      "src/utils/context.ts:ContextStore": "1c28fa6cab436af789cd1f8cb17fd81e7d132dc3fb177d0397b1dab84481a331",
-      "src/utils/http-logger.ts:AxiosLoggingInterceptor": "21dc9830e7d0ebecf458867ab89215563ed61e6ea592c7cf27ba2f4459b1781b",
-      "src/utils/retry-interceptor.ts:AxiosRetryInterceptor": "50e39bcb98e3f8de45e7b7a5cb05d607ac70a2039c97b14335ca7d72089c7744"
+      "src/utils/context.ts:ContextStore": "1c28fa6cab436af789cd1f8cb17fd81e7d132dc3fb177d0397b1dab84481a331"
     },
     "authoredShapes": {
       "src/api/api-client.ts:IPermitApi": {
@@ -735,6 +733,17 @@
         "kind": "type",
         "type": "Record<string, any>"
       },
+      "src/utils/http-transport.ts:TransportOptions": {
+        "extends": [],
+        "kind": "interface",
+        "members": [
+          "caller: AxiosInstance;",
+          "defaults?: Pick<AxiosRequestConfig, 'baseURL' | 'headers'>;",
+          "logger: Logger;",
+          "name: string;",
+          "retry: IResolvedRetryConfig;"
+        ]
+      },
       "src/utils/regex.ts:RegexMatch": {
         "extends": [],
         "kind": "interface",
@@ -1116,6 +1125,78 @@
           "returns": "val is Dict"
         }
       },
+      "src/utils/http-transport.ts:createOwnedTransport": {
+        "implementationSha256": "c7efe8a54efdb7a6bb51e9cc49382724ff2cfae33494f8780ecaf40ca03dbf6a",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "options",
+              "optional": false,
+              "type": "TransportOptions"
+            }
+          ],
+          "returns": "AxiosInstance"
+        }
+      },
+      "src/utils/http-transport.ts:dispatch": {
+        "implementationSha256": "6d48be3eeb2c60ed3a627b47365e4698770db57038d3e699d7663a9a83ecaee7",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "options",
+              "optional": false,
+              "type": "TransportOptions"
+            },
+            {
+              "initializer": null,
+              "name": "config",
+              "optional": false,
+              "type": "InternalAxiosRequestConfig"
+            }
+          ],
+          "returns": "Promise<AxiosResponse>"
+        }
+      },
+      "src/utils/http-transport.ts:throwIfCancelled": {
+        "implementationSha256": "cfecb5dd11985a9ecec8c07d8dee50302972a2c892f4824adc0116f3fec03c56",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "config",
+              "optional": false,
+              "type": "InternalAxiosRequestConfig"
+            }
+          ],
+          "returns": "void"
+        }
+      },
+      "src/utils/http-transport.ts:waitForRetry": {
+        "implementationSha256": "ee4bfc6495844e453d1aa2cbed595f499a699663ebd55c9fd87bda382966cc59",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "delay",
+              "optional": false,
+              "type": "number"
+            },
+            {
+              "initializer": null,
+              "name": "configs",
+              "optional": false,
+              "type": "readonly InternalAxiosRequestConfig[]"
+            }
+          ],
+          "returns": "Promise<void>"
+        }
+      },
       "src/utils/regex.ts:escapeRegex": {
         "implementationSha256": "0b7482e4184183f3821997786874e7db2c3f9b172ca2aedfefd9471ddc77ecd1",
         "signature": {
@@ -1168,7 +1249,7 @@
         }
       },
       "src/utils/retry.ts:calculateRetryDelay": {
-        "implementationSha256": "b4aa4e0804cf02a53f1963d9321ba6172421f037175787d3b2b76500c5e12d73",
+        "implementationSha256": "e3dd9f15b1ee3bbfdb8e330a221331bc3d02bf99cd3bbfbcadbdd6af1415125d",
         "signature": {
           "generics": [],
           "parameters": [
@@ -1188,14 +1269,29 @@
               "initializer": null,
               "name": "retryAfterHeader",
               "optional": true,
-              "type": "string"
+              "type": "unknown"
             }
           ],
           "returns": "number"
         }
       },
       "src/utils/retry.ts:defaultRetryCondition": {
-        "implementationSha256": "4cffc44cc40208c1ce20c3500543f6d51a3122f25c5f804f2ec97e7c31e29383",
+        "implementationSha256": "4d1b77c87c755b6d1dd4e21fd4813d4598782c270e5224f41df2e929afff3728",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "error",
+              "optional": false,
+              "type": "AxiosError"
+            }
+          ],
+          "returns": "boolean"
+        }
+      },
+      "src/utils/retry.ts:isNonRetryableError": {
+        "implementationSha256": "50fe6803eebbc75baba4e62f6bf30eaac36b6af42d34a342b09c9bb8cb6eb7c9",
         "signature": {
           "generics": [],
           "parameters": [
@@ -1210,7 +1306,7 @@
         }
       },
       "src/utils/retry.ts:parseRetryAfter": {
-        "implementationSha256": "149e760ac426aa96c0e2ce9cd3809b104fbe6fcc055dd99f01b63d5662fe2b07",
+        "implementationSha256": "3d1437cb28d7c9250c235ba4662e81026c39f042662b642a1fee84204ea02655",
         "signature": {
           "generics": [],
           "parameters": [
@@ -1218,14 +1314,14 @@
               "initializer": null,
               "name": "value",
               "optional": false,
-              "type": "string"
+              "type": "unknown"
             }
           ],
           "returns": "number | null"
         }
       },
       "src/utils/retry.ts:resolveRetryConfig": {
-        "implementationSha256": "6d9ff8a918dd8ae4aa8bc62cb458eaa9abec80918f0431636351097b634884f0",
+        "implementationSha256": "573281b5397cb5c1bd2d9f559d6abda8a113d0cf7dd45a79a24c7850d6f3f5e8",
         "signature": {
           "generics": [],
           "parameters": [
@@ -1237,6 +1333,21 @@
             }
           ],
           "returns": "IResolvedRetryConfig"
+        }
+      },
+      "src/utils/retry.ts:validateRetryConfig": {
+        "implementationSha256": "091fe57386160cc68fbcc583bc25e8c9dcfe8733c8d8d96e28f3969b783861e0",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "config",
+              "optional": false,
+              "type": "IRetryConfig"
+            }
+          ],
+          "returns": "void"
         }
       }
     },
@@ -20298,17 +20409,21 @@
       "src/api/roles.ts:RolesApi.constructor": "2bd0e83b72db918151a36152c736dee3a84e871230cc08005d6996474752f5dc",
       "src/api/tenants.ts:TenantsApi.constructor": "96523707d9000da9684d07a184c403aae94ade746ecbe6fb220711e750c3b332",
       "src/api/users.ts:UsersApi.constructor": "c3f53ff93453caac14ceb493c097cdf551654434a54b8c4ebea2ed01db1d620f",
-      "src/enforcement/enforcer.ts:Enforcer.constructor": "369809e87d80b46a64198b8567d96735375b17b70fe55de4357d3ac6c092ac63",
+      "src/enforcement/enforcer.ts:Enforcer.constructor": "c061950b57df51721ae75d0599581a771771e9124f64c6bb39ccccd743ada33f",
       "src/enforcement/enforcer.ts:PermitConnectionError.constructor": "3e614a3405ec83bf71001352c6ef3e89042e3ecdf45cd32cb8149d029d8c9756",
       "src/enforcement/enforcer.ts:PermitError.constructor": "af7a578ddde15be83f1874292dc6dd50e71b656ff3dcdbc13fe85b6f5f020d82",
       "src/enforcement/enforcer.ts:PermitPDPStatusError.constructor": "db9087ada7c466bc4b53c71a1b654b99c04c4177a6e04efea40696035fd07135",
       "src/enforcement/enforcer.ts:RESOURCE_DELIMITER": "84621939eae999affeb1c6c48d23371c99a953b6c56aa67ebd94e3b541a3cfd1",
-      "src/index.ts:Permit.constructor": "e336dac61b762ce0d02381b55534a34dc0915cb7b60eb6ffb2dab2fc7972f02a",
+      "src/index.ts:Permit.constructor": "b6301b8640c58ccca371786a6733976a7102e6d5aa77cf99af4b6c99962832a8",
       "src/utils/context.ts:ContextStore.baseContext": "e55a3d84c22b3b144eb4ab9b68731dd74c2e3e92b54db022740dfdcfd3c5cd96",
       "src/utils/context.ts:ContextStore.transforms": "18dc1ac26ebfbe260624f4303177b4cafdcd1586682c5227da84acf27010261c",
       "src/utils/retry.ts:DEFAULT_RETRY_CONFIG": "a124e39640a8af9b5972e0913062592cd4e8c5b4d370c343476c0f43fef9e4ac",
       "src/utils/retry.ts:DEFAULT_RETRY_METHODS": "493ceb034dd8e692cfd6136eb9d1ef03f4195b1354581c363782866f7e32ec86",
-      "src/utils/retry.ts:RETRYABLE_STATUS_CODES": "37cecf83a25d09b0bdab97d5d6901aab85f871cf9ada5fe25a76f3bf6b8424f8"
+      "src/utils/retry.ts:RETRYABLE_STATUS_CODES": "37cecf83a25d09b0bdab97d5d6901aab85f871cf9ada5fe25a76f3bf6b8424f8",
+      "src/utils/retry.ts:httpMethods": "cf801f911dbcd4d7e2853f05305e186b097e789a3c14440623c13047ec72a00b",
+      "src/utils/retry.ts:maximumTimerDelay": "4947b585ee731c61bd9a008ba1016e23c06be3ad1aa5770f561ab23aab338e66",
+      "src/utils/retry.ts:permanentErrorCodes": "ce4cccfdfe51f554290c473da0979da371faa4bdc8f4b10dbee66c878d759ced",
+      "src/utils/retry.ts:transientNetworkCodes": "2cdb83120b7946d946f283ace219d13f1001bd369c5062fa8bf7032f9c8bee1c"
     },
     "methods": {
       "permit.api.actionGroups.create": {

@@ -64,8 +64,11 @@ export interface IPermitConfig {
   multiTenancy: IMultiTenancyConfig;
 
   /**
-   * specifies the number of milliseconds before a permit.check() request times out.
-   * If the request takes longer than `timeout`, the request will be aborted.
+   * PDP/OPA request timeout in milliseconds; 0 disables it. REST and Elements use
+   * the supplied Axios instance timeout instead. When retries are enabled,
+   * failed attempts and backoff consume one shared timeout budget. Each retry receives
+   * the remaining Axios timeout. Caller adapters must honor it; arbitrary caller hooks
+   * are not interrupted. When omitted, supplied transport timeout defaults are preserved.
    */
   timeout: number | undefined;
 
@@ -84,9 +87,13 @@ export interface IPermitConfig {
    * an optional custom axios instance, to control the behavior of the HTTP client
    * used to connect to the Permit REST API.
    *
-   * This instance applies to the REST API only. PDP and OPA calls use dedicated
-   * internal axios instances, so their retry policy can differ and non-idempotent
-   * POST writes on the shared REST client are never retried.
+   * This instance applies to REST and Elements only. The SDK delegates each attempt
+   * through its current adapters, transforms and interceptors without changing defaults
+   * or installing handlers. SDK routes and Bearer tokens override transport defaults.
+   * SDK requests explicitly set allowAbsoluteUrls:true so caller base URLs cannot prefix
+   * an SDK destination. Direct caller requests retain the caller's own setting.
+   * SDK retry/logging policies stay private; caller-owned retries and redirects remain
+   * the caller's responsibility. PDP uses an internal transport; OPA has its own option.
    *
    * @see https://axios-http.com/docs/instance
    * @see https://axios-http.com/docs/req_config
@@ -111,6 +118,8 @@ export interface IPermitConfig {
    * an optional custom axios instance for OPA, to control the behavior of the HTTP
    * client used to connect to OPA. This applies to OPA calls only and is separate
    * from `axiosInstance` (REST API) and the dedicated internal PDP instance.
+   * Its defaults and interceptors remain unchanged. SDK routing, headers and retry policy
+   * are applied privately; intentional caller hooks still run for each attempt.
    *
    * @see https://axios-http.com/docs/instance
    * @see https://axios-http.com/docs/req_config

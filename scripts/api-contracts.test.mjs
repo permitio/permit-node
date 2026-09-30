@@ -732,3 +732,44 @@ for (const level of ['document', 'path', 'operation']) {
     });
   }
 }
+
+test('unreviewed transport factories cannot inherit a known facade classification by name', () => {
+  const copy = sourceCopy();
+  writeFileSync(
+    join(copy, 'src/utils/unreviewed-transport.ts'),
+    "import axios from 'axios'; export function createOwnedTransport() { return axios.create(); }\n",
+  );
+  replace(
+    join(copy, 'src/enforcement/enforcer.ts'),
+    "'#src/utils/http-transport'",
+    "'#src/utils/unreviewed-transport'",
+  );
+  expect(() => extractSdk(copy)).toThrow(/Unknown HTTP client/);
+}, 20_000);
+
+test('dynamic facade routing defaults cannot silently receive static route evidence', () => {
+  const copy = sourceCopy();
+  replace(
+    join(copy, 'src/enforcement/enforcer.ts'),
+    'defaults: { baseURL: `${this.config.pdp}/`, headers }',
+    'defaults: Object.assign({}, { baseURL: `${this.config.pdp}/`, headers })',
+  );
+  expect(() => extractSdk(copy)).toThrow(/routing defaults must be a checked object literal/);
+}, 20_000);
+
+test('changed facade destinations require an intentional contract review', () => {
+  const copy = sourceCopy();
+  replace(
+    join(copy, 'src/enforcement/enforcer.ts'),
+    'baseURL: `${this.config.pdp}/`',
+    'baseURL: `${this.config.pdp}/changed/`',
+  );
+  const changed = evidence();
+  changed.baseline.sdk = sdkSnapshot(sdk);
+  changed.sdk = extractSdk(copy);
+  const report = coverageReport(changed);
+  expect(report.integrity).toBe('FAIL');
+  expect(report.failures.some((entry) => entry.path === '/sdk/transports/Enforcer.client')).toBe(
+    true,
+  );
+}, 20_000);

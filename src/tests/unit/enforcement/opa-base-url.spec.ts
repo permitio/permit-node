@@ -17,7 +17,7 @@ import { Permit, PermitError } from '#src/index';
 const CONFIGURED_PDP = 'https://pdp.example.com:1234/prefix/';
 const EXPECTED_OPA_CHECK_URL = 'https://pdp.example.com:8181/prefix/v1/data/permit/root';
 
-// Reaches the SDK-created OPA client, as retry-interceptor.spec.ts does for enforcer.client.
+// Reaches the private SDK OPA facade to inspect its URL construction.
 interface PermitInternals {
   enforcer: { opaClient: AxiosInstance };
 }

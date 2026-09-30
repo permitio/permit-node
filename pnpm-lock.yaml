@@ -169,9 +169,6 @@ importers:
       axios:
         specifier: 1.20.0
         version: 1.20.0(debug@4.4.1(supports-color@9.4.0))(supports-color@9.4.0)
-      axios-retry:
-        specifier: 4.5.0
-        version: 4.5.0(axios@1.20.0(debug@4.4.1(supports-color@9.4.0))(supports-color@9.4.0))
       lodash:
         specifier: 4.18.1
         version: 4.18.1
@@ -1158,11 +1155,6 @@ packages:
     resolution: {integrity: sha512-kNOjDqAh7px0XWNI+4QbzoiR/nTkHAWNud2uvnJquD1/x5a7EQZMJT0AczqK0Qn67oY/TTQ1LbUKajZpp3I9tQ==}
     engines: {node: '>=8.0.0'}
 
-  axios-retry@4.5.0:
-    resolution: {integrity: sha512-aR99oXhpEDGo0UuAlYcn2iGRds30k366Zfa05XWScR9QaQD4JYiP3/1Qt1u7YlefUOK+cn0CcwoL1oefavQUlQ==}
-    peerDependencies:
-      axios: 0.x || 1.x
-
   axios@1.20.0:
     resolution: {integrity: sha512-r8aOh8j9cGKpgQAqpzrUHnSIc6a59Y3Xf/cv8sy1DrHCkZHzQGEuoq1tARk6qSyDdtQGSDgpb9kFlruzPvrgwg==}
 
@@ -1500,10 +1492,6 @@ packages:
   is-fullwidth-code-point@3.0.0:
     resolution: {integrity: sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==}
     engines: {node: '>=8'}
-
-  is-retry-allowed@2.2.0:
-    resolution: {integrity: sha512-XVm7LOeLpTW4jV19QSH38vkswxoLud8sQ57YwJVTPWdiaI9I8keEhGFpBlslyVsgdQy4Opg8QOLb8YRgsyZiQg==}
-    engines: {node: '>=10'}
 
   iterare@1.2.1:
     resolution: {integrity: sha512-RKYVTCjAnRthyJes037NX/IiqeidgN1xc3j1RjFfECFp28A1GVwK9nA+i0rJPaHqSZwygLzRnFlzUuHFoWWy+Q==}
@@ -2726,11 +2714,6 @@ snapshots:
 
   atomic-sleep@1.0.0: {}
 
-  axios-retry@4.5.0(axios@1.20.0(debug@4.4.1(supports-color@9.4.0))(supports-color@9.4.0)):
-    dependencies:
-      axios: 1.20.0(debug@4.4.1(supports-color@9.4.0))(supports-color@9.4.0)
-      is-retry-allowed: 2.2.0
-
   axios@1.20.0(debug@4.4.1(supports-color@9.4.0))(supports-color@9.4.0):
     dependencies:
       follow-redirects: 1.16.0(debug@4.4.1(supports-color@9.4.0))
@@ -3070,8 +3053,6 @@ snapshots:
   ip-address@10.7.2: {}
 
   is-fullwidth-code-point@3.0.0: {}
-
-  is-retry-allowed@2.2.0: {}
 
   iterare@1.2.1: {}
 

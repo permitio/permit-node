@@ -1,4 +1,4 @@
-import { AxiosError } from 'axios';
+import { AxiosError, isCancel } from 'axios';
 
 /**
  * HTTP status codes that should trigger a retry.
@@ -61,7 +61,8 @@ export interface IRetryConfig {
 
   /**
    * Custom function to determine if a request should be retried.
-   * If not provided, uses default retry condition (network errors + retryable status codes).
+   * If not provided, retries recognized transient network errors and retryable status codes.
+   * Cancellation, invalid request configuration and unsafe REST methods cannot be overridden.
    */
   retryCondition?: RetryConditionFn;
 
@@ -72,7 +73,8 @@ export interface IRetryConfig {
 
   /**
    * HTTP methods to retry. Defaults to ['GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE'].
-   * POST is excluded by default as it may not be idempotent.
+   * REST POST/PATCH are never retried by the SDK, even if listed. PDP/OPA authorization
+   * POST requests are idempotent and are added to their separate retry policy.
    */
   retryMethods?: string[];
 }
@@ -95,13 +97,41 @@ export interface IResolvedRetryConfig {
  * Default retry condition: retry on network errors and retryable HTTP status codes
  */
 export function defaultRetryCondition(error: AxiosError): boolean {
-  // Network errors (no response) - connection refused, timeout, etc.
-  if (!error.response) {
-    return true;
-  }
+  if (isNonRetryableError(error)) return false;
+  if (error.response) return RETRYABLE_STATUS_CODES.includes(error.response.status);
+  return transientNetworkCodes.has(error.code ?? '');
+}
 
-  // Retryable status codes
-  return RETRYABLE_STATUS_CODES.includes(error.response.status);
+const transientNetworkCodes = new Set([
+  'ERR_NETWORK',
+  'ECONNRESET',
+  'ECONNREFUSED',
+  'ECONNABORTED',
+  'ETIMEDOUT',
+  'EAI_AGAIN',
+  'EPIPE',
+  'ENETUNREACH',
+  'EHOSTUNREACH',
+]);
+const permanentErrorCodes = new Set([
+  'ERR_CANCELED',
+  'ERR_BAD_OPTION',
+  'ERR_BAD_OPTION_VALUE',
+  'ERR_INVALID_URL',
+  'ERR_NOT_SUPPORT',
+  'ERR_DEPRECATED',
+  'ERR_FR_TOO_MANY_REDIRECTS',
+]);
+
+/** Cancellation and invalid request configuration cannot be overridden by retry predicates. */
+export function isNonRetryableError(error: AxiosError): boolean {
+  return (
+    isCancel(error) ||
+    Boolean(error.config?.signal?.aborted) ||
+    Boolean(error.config?.cancelToken?.reason) ||
+    permanentErrorCodes.has(error.code ?? '') ||
+    (!error.response && ['ERR_BAD_REQUEST', 'ERR_BAD_RESPONSE'].includes(error.code ?? ''))
+  );
 }
 
 /**
@@ -129,16 +159,19 @@ export const DEFAULT_RETRY_CONFIG: IResolvedRetryConfig = Object.freeze({
  * @param value - The Retry-After header value
  * @returns The delay in milliseconds, or null if parsing fails
  */
-export function parseRetryAfter(value: string): number | null {
+export function parseRetryAfter(value: unknown): number | null {
+  if (typeof value !== 'string') return null;
   // Try parsing as delta-seconds. Per the Retry-After spec this must be
   // digits only, so reject values like "5abc" that parseInt would accept.
   const trimmed = value.trim();
   if (/^\d+$/.test(trimmed)) {
-    return Number(trimmed) * 1000;
+    const milliseconds = Number(trimmed) * 1000;
+    return Number.isFinite(milliseconds) ? milliseconds : null;
   }
 
   // Try parsing as HTTP-date (e.g., "Wed, 21 Oct 2015 07:28:00 GMT")
-  const date = Date.parse(value);
+  if (!/^[A-Za-z]{3,9},?\s/.test(trimmed)) return null;
+  const date = Date.parse(trimmed);
   if (!isNaN(date)) {
     return Math.max(0, date - Date.now());
   }
@@ -157,7 +190,7 @@ export function parseRetryAfter(value: string): number | null {
 export function calculateRetryDelay(
   attemptNumber: number,
   config: IResolvedRetryConfig,
-  retryAfterHeader?: string,
+  retryAfterHeader?: unknown,
 ): number {
   // Respect Retry-After header if present and configured
   if (config.respectRetryAfter && retryAfterHeader) {
@@ -168,7 +201,13 @@ export function calculateRetryDelay(
   }
 
   // Exponential backoff: delay * (multiplier ^ attempt)
-  const exponentialDelay = config.retryDelay * Math.pow(config.backoffMultiplier, attemptNumber);
+  const exponentialDelay =
+    config.retryDelay === 0
+      ? 0
+      : Math.min(
+          config.retryDelay * Math.pow(config.backoffMultiplier, attemptNumber),
+          config.maxDelay,
+        );
 
   // Add jitter (0-10% of the delay) to prevent thundering herd
   const jitter = Math.random() * 0.1 * exponentialDelay;
@@ -189,7 +228,7 @@ export function resolveRetryConfig(
   // No retry config (undefined) or explicit `false` => retries are off.
   // Return a fresh object with a cloned retryMethods array so callers can
   // never mutate DEFAULT_RETRY_CONFIG or its array.
-  if (!userConfig) {
+  if (userConfig === undefined || userConfig === false) {
     return {
       ...DEFAULT_RETRY_CONFIG,
       enabled: false,
@@ -197,6 +236,7 @@ export function resolveRetryConfig(
     };
   }
 
+  validateRetryConfig(userConfig);
   // Providing a retry config object opts you in, unless `enabled: false` is set.
   const retryMethods = userConfig.retryMethods ?? DEFAULT_RETRY_CONFIG.retryMethods;
   return {
@@ -211,4 +251,63 @@ export function resolveRetryConfig(
     // which uppercases the request method.
     retryMethods: retryMethods.map((m) => m.toUpperCase()),
   };
+}
+
+const maximumTimerDelay = 2_147_483_647;
+const httpMethods = new Set([
+  'GET',
+  'HEAD',
+  'OPTIONS',
+  'PUT',
+  'DELETE',
+  'POST',
+  'PATCH',
+  'TRACE',
+  'CONNECT',
+]);
+
+function validateRetryConfig(config: IRetryConfig): void {
+  if (config === null || typeof config !== 'object' || Array.isArray(config)) {
+    throw new TypeError('Invalid retry configuration: use an options object or false.');
+  }
+  for (const key of ['enabled', 'respectRetryAfter'] as const) {
+    if (config[key] !== undefined && typeof config[key] !== 'boolean') {
+      throw new TypeError(`Invalid retry.${key}: expected a boolean.`);
+    }
+  }
+  if (
+    config.maxRetries !== undefined &&
+    (!Number.isSafeInteger(config.maxRetries) || config.maxRetries < 0)
+  ) {
+    throw new TypeError('Invalid retry.maxRetries: expected a nonnegative safe integer.');
+  }
+  for (const key of ['retryDelay', 'maxDelay'] as const) {
+    const value = config[key];
+    if (
+      value !== undefined &&
+      (!Number.isFinite(value) || value < 0 || value > maximumTimerDelay)
+    ) {
+      throw new TypeError(
+        `Invalid retry.${key}: expected milliseconds between 0 and ${maximumTimerDelay}.`,
+      );
+    }
+  }
+  if (
+    config.backoffMultiplier !== undefined &&
+    (!Number.isFinite(config.backoffMultiplier) || config.backoffMultiplier < 1)
+  ) {
+    throw new TypeError('Invalid retry.backoffMultiplier: expected a finite number of at least 1.');
+  }
+  if (config.retryCondition !== undefined && typeof config.retryCondition !== 'function') {
+    throw new TypeError('Invalid retry.retryCondition: expected a function returning a boolean.');
+  }
+  if (
+    config.retryMethods !== undefined &&
+    (!Array.isArray(config.retryMethods) ||
+      Array.from(config.retryMethods).some(
+        (method) => typeof method !== 'string' || !httpMethods.has(method.toUpperCase()),
+      ))
+  ) {
+    throw new TypeError('Invalid retry.retryMethods: expected an array of HTTP method names.');
+  }
 }

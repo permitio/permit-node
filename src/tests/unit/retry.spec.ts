@@ -42,8 +42,9 @@ it('RETRYABLE_STATUS_CODES contains expected status codes', () => {
 // Tests for defaultRetryCondition
 // ============================================
 
-it('defaultRetryCondition returns true for network errors (no response)', () => {
+it('defaultRetryCondition returns true for a transient network error', () => {
   const error = createAxiosError();
+  error.code = 'ECONNRESET';
   expect(defaultRetryCondition(error)).toBe(true);
 });
 
@@ -338,14 +339,14 @@ it('DEFAULT_RETRY_CONFIG has expected default values', () => {
 // ============================================
 
 it('retry types are exported from SDK', async () => {
-  const sdk = await import('../../index');
+  const sdk = await import('#src/index');
 
   expect(sdk.RETRYABLE_STATUS_CODES).toBeTruthy();
   expect(sdk.RETRYABLE_STATUS_CODES).toEqual([408, 429, 500, 502, 503, 504]);
 });
 
 it('Permit accepts retry configuration', async () => {
-  const { Permit } = await import('../../index');
+  const { Permit } = await import('#src/index');
 
   // With retry off (opt-in default)
   const permit1 = new Permit({ token: 'test' });

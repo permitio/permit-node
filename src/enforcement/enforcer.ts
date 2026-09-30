@@ -3,9 +3,8 @@ import { type Logger } from 'pino';
 
 import { type IPermitConfig } from '#src/config';
 import { type CheckConfig, type Context, ContextStore } from '#src/utils/context';
-import { AxiosLoggingInterceptor } from '#src/utils/http-logger';
+import { createOwnedTransport } from '#src/utils/http-transport';
 import { resolveRetryConfig } from '#src/utils/retry';
-import { AxiosRetryInterceptor } from '#src/utils/retry-interceptor';
 
 import {
   type IAction,
@@ -178,39 +177,31 @@ export class Enforcer implements IEnforcer {
   ) {
     const opaBaseUrl = buildOpaBaseUrl(this.config.pdp);
     const version = process.env['npm_package_version'] ?? 'unknown';
-    // PDP gets its own dedicated axios instance so PDP-only POST retries never
-    // apply to the shared REST API client (config.axiosInstance) — REST writes
-    // must never be retried.
-    this.client = axios.create({
-      baseURL: `${this.config.pdp}/`,
-      headers: { 'X-Permit-SDK-Version': `node:${version}` },
+    const resolvedRetry = resolveRetryConfig(
+      config.pdpRetry === undefined ? config.retry : config.pdpRetry,
+    );
+    const retry = {
+      ...resolvedRetry,
+      retryMethods: [...new Set([...resolvedRetry.retryMethods, 'POST'])],
+    };
+    const headers = {
+      'X-Permit-SDK-Version': `node:${version}`,
+      'Content-Type': 'application/json',
+    };
+    this.client = createOwnedTransport({
+      caller: axios.create(),
+      logger: this.logger,
+      retry,
+      name: 'PDP',
+      defaults: { baseURL: `${this.config.pdp}/`, headers },
     });
-    if (config.opaAxiosInstance) {
-      this.opaClient = config.opaAxiosInstance;
-      this.opaClient.defaults.baseURL = opaBaseUrl;
-      this.opaClient.defaults.headers.common['X-Permit-SDK-Version'] = `node:${version}`;
-    } else {
-      this.opaClient = axios.create({
-        baseURL: opaBaseUrl,
-        headers: {
-          'X-Permit-SDK-Version': `node:${version}`,
-        },
-      });
-    }
-    AxiosLoggingInterceptor.setupInterceptor(this.client, this.logger);
-
-    // Setup retry interceptors for PDP clients
-    // Use pdpRetry config if provided, otherwise fall back to main retry config
-    const pdpRetryConfig = resolveRetryConfig(config.pdpRetry ?? config.retry);
-    if (pdpRetryConfig.enabled) {
-      // For PDP calls, enable POST retry since check operations are idempotent
-      const pdpRetryWithPost = {
-        ...pdpRetryConfig,
-        retryMethods: [...new Set([...pdpRetryConfig.retryMethods, 'POST'])],
-      };
-      AxiosRetryInterceptor.setupInterceptor(this.client, pdpRetryWithPost, this.logger, 'PDP');
-      AxiosRetryInterceptor.setupInterceptor(this.opaClient, pdpRetryWithPost, this.logger, 'OPA');
-    }
+    this.opaClient = createOwnedTransport({
+      caller: config.opaAxiosInstance ?? axios.create(),
+      logger: this.logger,
+      retry,
+      name: 'OPA',
+      defaults: { baseURL: opaBaseUrl, headers },
+    });
 
     this.contextStore = new ContextStore();
   }

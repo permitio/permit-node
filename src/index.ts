@@ -14,9 +14,8 @@ import {
 } from '#src/enforcement/interfaces';
 import { LoggerFactory } from '#src/logger';
 import { type CheckConfig, type Context } from '#src/utils/context';
-import { AxiosLoggingInterceptor } from '#src/utils/http-logger';
+import { createOwnedTransport } from '#src/utils/http-transport';
 import { resolveRetryConfig } from '#src/utils/retry';
-import { AxiosRetryInterceptor } from '#src/utils/retry-interceptor';
 import { type RecursivePartial } from '#src/utils/types';
 
 // exported interfaces
@@ -145,32 +144,24 @@ export class Permit implements IPermitClient {
   constructor(config: RecursivePartial<IPermitConfig>) {
     this.config = ConfigFactory.build(config);
     this.logger = LoggerFactory.createLogger(this.config);
-    AxiosLoggingInterceptor.setupInterceptor(this.config.axiosInstance, this.logger);
-
-    // Setup retry interceptor for REST API calls.
-    // Strip POST from the REST retryMethods regardless of user config: REST
-    // writes are non-idempotent and must never be repeated. (This is symmetric
-    // with the enforcer, which ADDS POST for the idempotent PDP/OPA check calls.)
     const resolvedRetryConfig = resolveRetryConfig(this.config.retry);
-    const restRetryConfig = {
-      ...resolvedRetryConfig,
-      retryMethods: resolvedRetryConfig.retryMethods.filter((m) => m !== 'POST'),
+    const restConfig = {
+      ...this.config,
+      axiosInstance: createOwnedTransport({
+        caller: this.config.axiosInstance,
+        logger: this.logger,
+        retry: {
+          ...resolvedRetryConfig,
+          retryMethods: resolvedRetryConfig.retryMethods.filter(
+            (method) => method !== 'POST' && method !== 'PATCH',
+          ),
+        },
+        name: 'API',
+      }),
     };
-    // Skip the install when no methods remain (e.g. retryMethods: ['POST']),
-    // which would otherwise add an interceptor that can never retry.
-    if (resolvedRetryConfig.enabled && restRetryConfig.retryMethods.length > 0) {
-      AxiosRetryInterceptor.setupInterceptor(
-        this.config.axiosInstance,
-        restRetryConfig,
-        this.logger,
-        'API',
-      );
-    }
-
-    this.api = new ApiClient(this.config, this.logger);
-
+    this.api = new ApiClient(restConfig, this.logger);
     this.enforcer = new Enforcer(this.config, this.logger);
-    this.elements = new ElementsClient(this.config, this.logger);
+    this.elements = new ElementsClient(restConfig, this.logger);
 
     this.logger.debug('Permit.io SDK initialized');
   }

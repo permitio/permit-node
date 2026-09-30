@@ -56,7 +56,7 @@ they are **off** unless you pass a `retry` config (or `retry: { enabled: true }`
 When enabled, the defaults are:
 
 - **3 retries** (up to 4 total attempts) with exponential backoff
-- Retries on network errors and status codes: `408`, `429`, `500`, `502`, `503`, `504`
+- Retries on recognized transient network errors and status codes: `408`, `429`, `500`, `502`, `503`, `504`
 - Respects `Retry-After` headers for rate limiting (429)
 
 `maxRetries` is the number of retries _after_ the initial request, so the default of `3` means up to 4 total requests.
@@ -64,8 +64,33 @@ When enabled, the defaults are:
 > **Behavioral note**
 >
 > - Retries are opt-in — providing a `retry` config object turns them on; omitting it (or passing `retry: false`) leaves them off.
-> - When enabled, PDP/OPA calls additionally retry `POST` because check operations are idempotent. The REST API does **not** retry `POST`, so non-idempotent writes are never repeated.
-> - A custom `axiosInstance` applies to the REST API only; PDP and OPA calls use dedicated internal axios instances.
+> - When enabled, PDP/OPA calls additionally retry `POST` because authorization queries are idempotent.
+> - SDK retries never repeat REST `POST` or `PATCH`, even when listed in `retryMethods`. The default idempotent methods remain `GET`, `HEAD`, `OPTIONS`, `PUT` and `DELETE`.
+> - Cancellation and invalid request configuration are never retried, even with a custom predicate. Unclassified response-less errors are not retried by the default predicate.
+
+Retry options are checked when the SDK is constructed. Counts must be nonnegative safe integers;
+delays must be finite milliseconds from 0 through 2,147,483,647; the backoff multiplier must be
+finite and at least 1. Retry predicates must return a boolean. Invalid configuration fails with
+an actionable error instead of silently accepting a malformed policy.
+
+For 3.0, failed attempts and backoff consume **one Axios timeout budget**. Each retry gets the
+remaining timeout, and a delay that exhausts the budget prevents another attempt. The SDK `timeout`
+option applies to PDP/OPA; REST and Elements use the supplied Axios instance's timeout. A timeout
+of 0 disables the deadline; omitted SDK timeouts preserve caller defaults. This changes the earlier
+behavior that reset the full timeout for every retry. Axios adapters must honor the timeout;
+arbitrary caller interceptors or adapters are not interrupted by an SDK wall-clock deadline.
+
+A supplied `axiosInstance` serves REST and Elements; `opaAxiosInstance` serves OPA. The SDK keeps
+these caller instances unchanged and delegates every attempt through their live adapters,
+transforms and interceptors. Two SDK instances can share a client while retaining separate
+routes, Bearer tokens, logging and SDK retry policies. SDK requests explicitly allow their configured
+absolute URLs even when the caller default `allowAbsoluteUrls` is false, so a caller base URL cannot
+prefix or reroute an SDK destination. Direct caller requests retain that caller restriction and remain
+usable and does not acquire SDK retries. Default Basic credentials cannot replace an explicit
+SDK Bearer token. Intentional caller hooks can still rewrite request configuration, including
+headers and transforms; caller-owned retry or redirect behavior remains the caller's responsibility.
+PDP requests use a separate internal transport. There are no SDK registrations on supplied
+instances to dispose of.
 
 ### Customizing Retry Behavior
 

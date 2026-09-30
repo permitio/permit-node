@@ -266,10 +266,26 @@ export function extractSdk(root) {
         ts.isBinaryExpression(node) &&
         ts.isPropertyAccessExpression(node.left) &&
         node.left.expression.kind === ts.SyntaxKind.ThisKeyword &&
-        ts.isCallExpression(node.right) &&
-        node.right.expression.getText() === 'axios.create'
+        ts.isCallExpression(node.right)
       ) {
-        const base = node.right.arguments[0]?.properties?.find(
+        const factory = symbolDeclaration(node.right.expression);
+        const ownedTransport =
+          factory &&
+          ts.isFunctionDeclaration(factory) &&
+          factory.name?.text === 'createOwnedTransport' &&
+          location(factory).file === 'src/utils/http-transport.ts';
+        if (!ownedTransport && node.right.expression.getText() !== 'axios.create') return;
+        let options = node.right.arguments[0];
+        if (ownedTransport) {
+          if (!options || !ts.isObjectLiteralExpression(options))
+            throw new Error('SDK transport options must be a checked object literal.');
+          options = options.properties.find(
+            (property) => property.name && propertyName(property.name) === 'defaults',
+          )?.initializer;
+          if (!options || !ts.isObjectLiteralExpression(options))
+            throw new Error('SDK transport routing defaults must be a checked object literal.');
+        }
+        const base = options?.properties?.find(
           (property) => property.name && propertyName(property.name) === 'baseURL',
         );
         if (!base?.initializer) throw new Error('Axios client has no declared base URL.');
