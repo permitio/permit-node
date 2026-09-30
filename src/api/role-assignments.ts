@@ -3,6 +3,7 @@ import { type Logger } from 'pino';
 import { type IPermitConfig } from '#src/config';
 import {
   RoleAssignmentsApi as AutogenRoleAssignmentsApi,
+  Configuration,
   type BulkRoleAssignmentReport,
   type BulkRoleUnAssignmentReport,
   type PaginatedResultRoleAssignmentDetailedRead,
@@ -58,25 +59,31 @@ export interface IBaseListRoleAssignments extends IBasePaginationExtended {
   detailed?: boolean;
 }
 
-type IListRoleAssignmentsIncludeTotalCount = IBaseListRoleAssignments & { includeTotalCount: true };
+export type IListRoleAssignments = IBaseListRoleAssignments;
 
-type IListRoleAssignmentsDetailed = IBaseListRoleAssignments & { detailed: true };
+/** Filters for the dedicated detailed endpoint, which always includes total counts. */
+export type IListRoleAssignmentsDetailed = Omit<
+  IBaseListRoleAssignments,
+  'detailed' | 'includeTotalCount'
+> & {
+  /** Resource type key or ID to filter by. */
+  resource?: string;
+};
 
-export type IListRoleAssignments =
-  | IBaseListRoleAssignments
-  | IListRoleAssignmentsIncludeTotalCount
-  | IListRoleAssignmentsDetailed;
+type RoleAssignmentListResult<Details, Counts> = Details extends true
+  ? Counts extends true
+    ? PaginatedResultRoleAssignmentDetailedRead
+    : RoleAssignmentDetailedRead[]
+  : Counts extends true
+    ? PaginatedResultRoleAssignmentRead
+    : RoleAssignmentRead[];
 
-type ReturnListRoleAssignments<T extends IListRoleAssignments> =
-  T extends IListRoleAssignmentsIncludeTotalCount
-    ? // with total count
-      T extends IListRoleAssignmentsDetailed
-      ? PaginatedResultRoleAssignmentDetailedRead
-      : PaginatedResultRoleAssignmentRead
-    : // without total count
-      T extends IListRoleAssignmentsDetailed
-      ? RoleAssignmentDetailedRead[]
-      : RoleAssignmentRead[];
+type ReturnListRoleAssignments<T extends IListRoleAssignments> = T extends unknown
+  ? RoleAssignmentListResult<
+      'detailed' extends keyof T ? T['detailed'] : false,
+      'includeTotalCount' extends keyof T ? T['includeTotalCount'] : false
+    >
+  : never;
 
 /**
  * API client for managing role assignments.
@@ -91,6 +98,18 @@ export interface IRoleAssignmentsApi extends IWaitForSync {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   list<T extends IListRoleAssignments>(params: T): Promise<ReturnListRoleAssignments<T>>;
+
+  /**
+   * Lists role assignments with nested details through the dedicated endpoint.
+   * Uses the control plane even when facts proxying or waitForSync is enabled.
+   * @param params - Filters and pagination. Pages start at 1; perPage defaults to 100.
+   * @returns The complete detailed envelope, including data, total_count, and optional page_count.
+   * @throws {@link PermitApiError} If the API rejects the request.
+   * @throws {@link PermitContextError} If the environment context or API key is insufficient.
+   */
+  listDetailed(
+    params?: IListRoleAssignmentsDetailed,
+  ): Promise<PaginatedResultRoleAssignmentDetailedRead>;
 
   /**
    * Assigns a role to a user in the scope of a given tenant.
@@ -140,6 +159,7 @@ export interface IRoleAssignmentsApi extends IWaitForSync {
  */
 export class RoleAssignmentsApi extends BaseFactsPermitAPI implements IRoleAssignmentsApi {
   private roleAssignments: AutogenRoleAssignmentsApi;
+  private detailedRoleAssignments: AutogenRoleAssignmentsApi;
 
   /**
    * Creates an instance of the RoleAssignmentsApi.
@@ -148,11 +168,62 @@ export class RoleAssignmentsApi extends BaseFactsPermitAPI implements IRoleAssig
    */
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
+    this.detailedRoleAssignments = new AutogenRoleAssignmentsApi(
+      new Configuration({
+        basePath: this.config.apiUrl,
+        accessToken: this.config.token,
+        baseOptions: {
+          headers: {
+            'X-Permit-SDK-Version':
+              this.openapiClientConfig.baseOptions.headers['X-Permit-SDK-Version'],
+          },
+        },
+      }),
+      BASE_PATH,
+      this.config.axiosInstance,
+    );
     this.roleAssignments = new AutogenRoleAssignmentsApi(
       this.openapiClientConfig,
       BASE_PATH,
       this.config.axiosInstance,
     );
+  }
+
+  /**
+   * Lists role assignments with nested details through the dedicated endpoint.
+   * Uses the control plane even when facts proxying or waitForSync is enabled.
+   * @param params - Filters and pagination. Pages start at 1; perPage defaults to 100.
+   * @returns The complete detailed envelope, including data, total_count, and optional page_count.
+   * @throws {@link PermitApiError} If the API rejects the request.
+   * @throws {@link PermitContextError} If the environment context or API key is insufficient.
+   */
+  public async listDetailed({
+    user,
+    tenant,
+    role,
+    resource,
+    resourceInstance,
+    page = 1,
+    perPage = 100,
+  }: IListRoleAssignmentsDetailed = {}): Promise<PaginatedResultRoleAssignmentDetailedRead> {
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
+    try {
+      return (
+        await this.detailedRoleAssignments.listRoleAssignmentsDetailed({
+          ...this.config.apiContext.environmentContext,
+          ...(user !== undefined && { user: [user] }),
+          ...(tenant !== undefined && { tenant: [tenant] }),
+          ...(role !== undefined && { role: [role] }),
+          ...(resource !== undefined && { resource }),
+          ...(resourceInstance !== undefined && { resourceInstance }),
+          page,
+          perPage,
+        })
+      ).data;
+    } catch (err) {
+      this.handleApiError(err);
+    }
   }
 
   /**

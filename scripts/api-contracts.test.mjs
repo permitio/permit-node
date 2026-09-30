@@ -57,7 +57,7 @@ test('accounts for complete source denominators while leaving parity and backend
   expect(report.sharedTarget.status).toBe('UNAVAILABLE');
   expect(report.realBackend.status).toBe('NOT_MEASURED');
   expect(report.operations).toHaveLength(307);
-  expect(report.counts.publicHttpMethods).toBe(167);
+  expect(report.counts.publicHttpMethods).toBe(172);
   expect(report.operations.filter((op) => op.source === 'control-plane')).toHaveLength(263);
   expect(report.operations.filter((op) => op.source === 'pdp-container')).toHaveLength(34);
   expect(report.operations.filter((op) => op.source === 'pdp-cloud')).toHaveLength(10);
@@ -105,6 +105,66 @@ test('exposes eight GA core Groups operations while preserving deferred and depr
   expect(groups.filter((operation) => operation.lifecycle === 'EAP')).toHaveLength(4);
   expect(groups.filter((operation) => operation.lifecycle === 'deprecated')).toHaveLength(2);
   expect(groups.filter((operation) => operation.coverage !== 'exposed')).toHaveLength(8);
+});
+
+test('exposes five P1 operations and defers individual PDP refresh', () => {
+  const report = coverageReport(evidence());
+  const planned = report.operations.filter(
+    (operation) => operation.decision?.owner === 'PER-16567',
+  );
+  expect(planned).toHaveLength(5);
+  expect(
+    planned.every((operation) => operation.lifecycle === 'GA' && operation.coverage === 'exposed'),
+  ).toBe(true);
+  expect(
+    planned.flatMap((operation) => operation.methods.map((method) => method.name)).sort(),
+  ).toEqual([
+    'permit.api.pdps.refresh',
+    'permit.api.relationshipTuples.listDetailed',
+    'permit.api.resourceInstances.listDetailed',
+    'permit.api.roleAssignments.listDetailed',
+    'permit.api.tenants.addUser',
+  ]);
+  const individual = report.operations.find(
+    (operation) => operation.path === '/v2/pdps/{proj_id}/{env_id}/configs/{pdp_id}/refresh',
+  );
+  expect(individual.lifecycle).toBe('GA');
+  expect(individual.decision.action).toBe('defer');
+  expect(individual.decision.reason).toContain('P2');
+  expect(individual.methods).toEqual([]);
+});
+
+test('extracts explicit control-plane calls while preserving older facts proxy routes', () => {
+  const membership = sdk.methods.find((method) => method.name === 'permit.api.tenants.addUser');
+  expect(membership.factsProxy).toBe(false);
+  for (const name of ['relationshipTuples', 'resourceInstances', 'roleAssignments']) {
+    expect(
+      sdk.methods.find((method) => method.name === `permit.api.${name}.listDetailed`).factsProxy,
+    ).toBe(false);
+    expect(sdk.methods.find((method) => method.name === `permit.api.${name}.list`).factsProxy).toBe(
+      true,
+    );
+  }
+
+  for (const name of ['create', 'update', 'delete', 'deleteTenantUser']) {
+    expect(
+      sdk.methods.find((method) => method.name === `permit.api.tenants.${name}`).factsProxy,
+    ).toBe(true);
+  }
+  const report = coverageReport(evidence());
+  expect(
+    report.sdkOnly.some(
+      (entry) => entry.name === membership.name && entry.target === 'pdp-forwarding',
+    ),
+  ).toBe(false);
+  const copy = sourceCopy();
+  replace(
+    join(copy, 'src/api/tenants.ts'),
+    'basePath: this.config.apiUrl',
+    'basePath: this.config.pdp',
+  );
+  const changed = extractSdk(copy);
+  expect(changed.methods.find((method) => method.name === membership.name).factsProxy).toBe(true);
 });
 
 for (const [name, mutate, kind] of [

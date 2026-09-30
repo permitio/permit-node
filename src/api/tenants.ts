@@ -3,6 +3,9 @@ import { type Logger } from 'pino';
 import { type IPermitConfig } from '#src/config';
 import {
   TenantsApi as AutogenTenantsApi,
+  Configuration,
+  type UserCreate,
+  type UserRead,
   type PaginatedResultUserRead,
   type TenantCreate,
   type TenantRead,
@@ -50,6 +53,19 @@ export interface ITenantsApi extends IWaitForSync {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   listTenantUsers(params: IListTenantUsers): Promise<PaginatedResultUserRead>;
+
+  /**
+   * Creates a new user and associates it with a tenant, without requiring a role assignment.
+   * Uses the control-plane API even when facts proxying or waitForSync is enabled.
+   * The acknowledgement does not guarantee that the PDP has synchronized the membership.
+   * @param tenantKey - The existing tenant key or ID.
+   * @param userData - New user data; role_assignments is optional.
+   * @returns The created user, including its tenant membership.
+   * @throws {@link PermitApiError} If the user already exists, the tenant is missing,
+   * or the API rejects the request.
+   * @throws {@link PermitContextError} If the environment context or API key is insufficient.
+   */
+  addUser(tenantKey: string, userData: UserCreate): Promise<UserRead>;
 
   /**
    * Retrieves a tenant by its key.
@@ -131,6 +147,7 @@ export interface ITenantsApi extends IWaitForSync {
  */
 export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
   private tenants: AutogenTenantsApi;
+  private membership: AutogenTenantsApi;
 
   /**
    * Creates an instance of the TenantsApi.
@@ -139,6 +156,20 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
    */
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
+    this.membership = new AutogenTenantsApi(
+      new Configuration({
+        basePath: this.config.apiUrl,
+        accessToken: this.config.token,
+        baseOptions: {
+          headers: {
+            'X-Permit-SDK-Version':
+              this.openapiClientConfig.baseOptions.headers['X-Permit-SDK-Version'],
+          },
+        },
+      }),
+      BASE_PATH,
+      this.config.axiosInstance,
+    );
     this.tenants = new AutogenTenantsApi(
       this.openapiClientConfig,
       BASE_PATH,
@@ -165,6 +196,33 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
         })
       ).data;
       return Array.isArray(response) ? response : response.data;
+    } catch (err) {
+      this.handleApiError(err);
+    }
+  }
+
+  /**
+   * Creates a new user and associates it with a tenant, without requiring a role assignment.
+   * Uses the control-plane API even when facts proxying or waitForSync is enabled.
+   * The acknowledgement does not guarantee that the PDP has synchronized the membership.
+   * @param tenantKey - The existing tenant key or ID.
+   * @param userData - New user data; role_assignments is optional.
+   * @returns The created user, including its tenant membership.
+   * @throws {@link PermitApiError} If the user already exists, the tenant is missing,
+   * or the API rejects the request.
+   * @throws {@link PermitContextError} If the environment context or API key is insufficient.
+   */
+  public async addUser(tenantKey: string, userData: UserCreate): Promise<UserRead> {
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
+    try {
+      return (
+        await this.membership.addUserToTenant({
+          ...this.config.apiContext.environmentContext,
+          tenantId: tenantKey,
+          userCreate: userData,
+        })
+      ).data;
     } catch (err) {
       this.handleApiError(err);
     }

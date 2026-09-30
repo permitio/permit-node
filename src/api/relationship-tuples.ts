@@ -3,9 +3,11 @@ import { type Logger } from 'pino';
 import { type IPermitConfig } from '#src/config';
 import {
   RelationshipTuplesApi as AutogenRelationshipTuplesApi,
+  Configuration,
   type RelationshipTupleCreate,
   type RelationshipTupleDelete,
   type RelationshipTupleRead,
+  type PaginatedResultRelationshipTupleDetailedRead,
 } from '#src/openapi/index';
 import { BASE_PATH } from '#src/openapi/base';
 
@@ -16,6 +18,8 @@ export {
   type RelationshipTupleCreate,
   type RelationshipTupleDelete,
   type RelationshipTupleRead,
+  type RelationshipTupleDetailedRead,
+  type PaginatedResultRelationshipTupleDetailedRead,
   type RelationshipTupleCreateBulkOperation,
   type RelationshipTupleDeleteBulkOperation,
 } from '#src/openapi/index';
@@ -67,6 +71,18 @@ export interface IRelationshipTuplesApi extends IWaitForSync {
   list(params: IListRelationshipTuples): Promise<RelationshipTupleRead[]>;
 
   /**
+   * Lists relationship tuples with nested details through the dedicated endpoint.
+   * Uses the control plane even when facts proxying or waitForSync is enabled.
+   * @param params - Filters and pagination. Pages start at 1; perPage defaults to 100.
+   * @returns The complete detailed envelope, including data, total_count, and optional page_count.
+   * @throws {@link PermitApiError} If the API rejects the request.
+   * @throws {@link PermitContextError} If the environment context or API key is insufficient.
+   */
+  listDetailed(
+    params?: IListRelationshipTuples,
+  ): Promise<PaginatedResultRelationshipTupleDetailedRead>;
+
+  /**
    * Creates a new relationship tuple, that states that a relationship (of type: relation)
    * exists between two resource instances: the subject and the object.
    *
@@ -115,6 +131,7 @@ export interface IRelationshipTuplesApi extends IWaitForSync {
  */
 export class RelationshipTuplesApi extends BaseFactsPermitAPI implements IRelationshipTuplesApi {
   private relationshipTuples: AutogenRelationshipTuplesApi;
+  private detailedRelationshipTuples: AutogenRelationshipTuplesApi;
 
   /**
    * Creates an instance of the RelationshipTuplesApi.
@@ -123,11 +140,54 @@ export class RelationshipTuplesApi extends BaseFactsPermitAPI implements IRelati
    */
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
+    this.detailedRelationshipTuples = new AutogenRelationshipTuplesApi(
+      new Configuration({
+        basePath: this.config.apiUrl,
+        accessToken: this.config.token,
+        baseOptions: {
+          headers: {
+            'X-Permit-SDK-Version':
+              this.openapiClientConfig.baseOptions.headers['X-Permit-SDK-Version'],
+          },
+        },
+      }),
+      BASE_PATH,
+      this.config.axiosInstance,
+    );
     this.relationshipTuples = new AutogenRelationshipTuplesApi(
       this.openapiClientConfig,
       BASE_PATH,
       this.config.axiosInstance,
     );
+  }
+
+  /**
+   * Lists relationship tuples with nested details through the dedicated endpoint.
+   * Uses the control plane even when facts proxying or waitForSync is enabled.
+   * @param params - Filters and pagination. Pages start at 1; perPage defaults to 100.
+   * @returns The complete detailed envelope, including data, total_count, and optional page_count.
+   * @throws {@link PermitApiError} If the API rejects the request.
+   * @throws {@link PermitContextError} If the environment context or API key is insufficient.
+   */
+  public async listDetailed({
+    page = 1,
+    perPage = 100,
+    ...params
+  }: IListRelationshipTuples = {}): Promise<PaginatedResultRelationshipTupleDetailedRead> {
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
+    try {
+      return (
+        await this.detailedRelationshipTuples.listRelationshipTuplesDetailed({
+          ...params,
+          ...this.config.apiContext.environmentContext,
+          page,
+          perPage,
+        })
+      ).data;
+    } catch (err) {
+      this.handleApiError(err);
+    }
   }
 
   /**

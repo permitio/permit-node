@@ -551,7 +551,7 @@
     "control-plane GET /v2/facts/{proj_id}/{env_id}/relationship_tuples/detailed": {
       "action": "add",
       "owner": "PER-16567",
-      "reason": "Approved tenant-membership, detailed-list and PDP-refresh follow-up; no implementation is claimed here.",
+      "reason": "Approved P1 GA operation verified against the generated contract and exposed by the typed tenant-membership, dedicated detailed-list, or environment-refresh method.",
       "source": "https://linear.app/permit/issue/PER-16567",
       "lifecycle": "GA"
     },
@@ -572,7 +572,7 @@
     "control-plane GET /v2/facts/{proj_id}/{env_id}/resource_instances/detailed": {
       "action": "add",
       "owner": "PER-16567",
-      "reason": "Approved tenant-membership, detailed-list and PDP-refresh follow-up; no implementation is claimed here.",
+      "reason": "Approved P1 GA operation verified against the generated contract and exposed by the typed tenant-membership, dedicated detailed-list, or environment-refresh method.",
       "source": "https://linear.app/permit/issue/PER-16567",
       "lifecycle": "GA"
     },
@@ -586,7 +586,7 @@
     "control-plane GET /v2/facts/{proj_id}/{env_id}/role_assignments/detailed": {
       "action": "add",
       "owner": "PER-16567",
-      "reason": "Approved tenant-membership, detailed-list and PDP-refresh follow-up; no implementation is claimed here.",
+      "reason": "Approved P1 GA operation verified against the generated contract and exposed by the typed tenant-membership, dedicated detailed-list, or environment-refresh method.",
       "source": "https://linear.app/permit/issue/PER-16567",
       "lifecycle": "GA"
     },
@@ -1440,7 +1440,7 @@
     "control-plane POST /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users": {
       "action": "add",
       "owner": "PER-16567",
-      "reason": "Approved tenant-membership, detailed-list and PDP-refresh follow-up; no implementation is claimed here.",
+      "reason": "Approved P1 GA operation verified against the generated contract and exposed by the typed tenant-membership, dedicated detailed-list, or environment-refresh method.",
       "source": "https://linear.app/permit/issue/PER-16567",
       "lifecycle": "GA"
     },
@@ -1501,10 +1501,10 @@
       "lifecycle": "GA"
     },
     "control-plane POST /v2/pdps/{proj_id}/{env_id}/configs/{pdp_id}/refresh": {
-      "action": "add",
-      "owner": "PER-16567",
-      "reason": "Approved tenant-membership, detailed-list and PDP-refresh follow-up; no implementation is claimed here.",
-      "source": "https://linear.app/permit/issue/PER-16567",
+      "action": "defer",
+      "owner": "PER-16337",
+      "reason": "Individual-PDP data refresh is P2 for a later 3.x release; only environment-wide refresh is approved for PER-16567.",
+      "source": "https://linear.app/permit/issue/PER-16337",
       "lifecycle": "GA"
     },
     "control-plane POST /v2/pdps/{proj_id}/{env_id}/configs/{pdp_id}/rotate-api-key": {
@@ -1524,7 +1524,7 @@
     "control-plane POST /v2/pdps/{proj_id}/{env_id}/configs/refresh": {
       "action": "add",
       "owner": "PER-16567",
-      "reason": "Approved tenant-membership, detailed-list and PDP-refresh follow-up; no implementation is claimed here.",
+      "reason": "Approved P1 GA operation verified against the generated contract and exposed by the typed tenant-membership, dedicated detailed-list, or environment-refresh method.",
       "source": "https://linear.app/permit/issue/PER-16567",
       "lifecycle": "GA"
     },

@@ -280,6 +280,47 @@ granted resource role; revoking the grant or removing membership removes that in
 policy and facts synchronization. Both adding and removing a user require the tenant JSON body.
 Role assignment and removal require `role`, `resource`, `resource_instance`, and `tenant`.
 
+## Tenant membership, detailed lists, and PDP refresh
+
+`permit.api.tenants.addUser(tenantKeyOrId, userData)` creates a new user and associates it
+with an existing tenant. Pass `UserCreate` data with a `key`; no role assignment is required.
+The backend rejects an already-existing user. This method always uses the control-plane API,
+even with `proxyFactsViaPdp` or `waitForSync`; its response does not guarantee PDP synchronization.
+
+```typescript
+await permit.api.tenants.addUser('east', { key: 'new-user' });
+const tuples = await permit.api.relationshipTuples.listDetailed({ tenant: 'east' });
+const instances = await permit.api.resourceInstances.listDetailed({
+  tenant: 'east',
+  resource: 'document',
+  search: ['report'],
+  page: 1,
+  perPage: 20,
+});
+const assignments = await permit.api.roleAssignments.listDetailed({ user: 'new-user' });
+console.log(tuples.data, instances.total_count, assignments.page_count);
+
+const refresh = await permit.api.pdps.refresh({ reason: 'Reload external data' });
+console.log(refresh.update_id, refresh.pdp_ids);
+```
+
+Each `listDetailed` uses the dedicated control-plane `/detailed` endpoint, even when facts
+proxying or `waitForSync` is enabled, and returns its full paginated
+envelope, including nested details, `total_count`, and optional `page_count`. Pagination defaults
+to page 1 with 100 rows. Relationship filters accept `tenant`, `subject`, `relation`, `object`,
+`objectType`, and `subjectType`. Instance filters accept `tenant`, `resource`, and `search` terms.
+Assignment filters accept `user`, `role`, `tenant`, `resource`, and `resourceInstance`.
+Dedicated detailed lists have no `detailed` or `includeTotalCount` switches. The existing
+`roleAssignments.list` retains its query behavior; dynamic flags return the corresponding
+array/envelope and base/detailed type unions.
+
+`permit.api.pdps.refresh` requests a data refresh for all PDP configurations in the selected
+environment through the control plane. It requires an API key with update access to those
+configurations and accepts an optional `reason`. The returned update ID and PDP IDs acknowledge
+the request; they do not signal completion. Environment refresh does not accept `shard_id`.
+Individual-PDP refresh remains deferred. All five methods require a selected environment and
+an environment-level API key or broader access.
+
 ## Documentation
 
 [Read the documentation at Permit.io website](https://docs.permit.io/sdk/nodejs/quickstart-nodejs#add-the-sdk-to-your-js-code)

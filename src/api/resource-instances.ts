@@ -3,8 +3,10 @@ import { type Logger } from 'pino';
 import { type IPermitConfig } from '#src/config';
 import {
   ResourceInstancesApi as AutogenResourceInstancesApi,
+  Configuration,
   type ResourceInstanceCreate,
   type ResourceInstanceRead,
+  type PaginatedResultResourceInstanceDetailedRead,
   type ResourceInstanceUpdate,
 } from '#src/openapi/index';
 import { BASE_PATH } from '#src/openapi/base';
@@ -15,6 +17,8 @@ import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 export {
   type ResourceInstanceCreate,
   type ResourceInstanceRead,
+  type ResourceInstanceDetailedRead,
+  type PaginatedResultResourceInstanceDetailedRead,
   type ResourceInstanceUpdate,
 } from '#src/openapi/index';
 
@@ -27,6 +31,12 @@ export interface IListResourceInstanceParams extends IPagination {
   resource?: string;
 }
 
+/** Filters for the dedicated resource-instance detailed list. */
+export interface IListResourceInstanceDetailedParams extends IListResourceInstanceParams {
+  /** Search terms to match against the instance key. */
+  search?: string[];
+}
+
 export interface IResourceInstancesApi extends IWaitForSync {
   /**
    * Retrieves a list of resource instances.
@@ -37,6 +47,18 @@ export interface IResourceInstancesApi extends IWaitForSync {
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   list(params?: IListResourceInstanceParams): Promise<ResourceInstanceRead[]>;
+
+  /**
+   * Lists resource instances with nested details through the dedicated endpoint.
+   * Uses the control plane even when facts proxying or waitForSync is enabled.
+   * @param params - Filters and pagination. Pages start at 1; perPage defaults to 100.
+   * @returns The complete detailed envelope, including data, total_count, and optional page_count.
+   * @throws {@link PermitApiError} If the API rejects the request.
+   * @throws {@link PermitContextError} If the environment context or API key is insufficient.
+   */
+  listDetailed(
+    params?: IListResourceInstanceDetailedParams,
+  ): Promise<PaginatedResultResourceInstanceDetailedRead>;
 
   /**
    * Retrieves a instance by its key.
@@ -107,6 +129,7 @@ export interface IResourceInstancesApi extends IWaitForSync {
  */
 export class ResourceInstancesApi extends BaseFactsPermitAPI implements IResourceInstancesApi {
   private instances: AutogenResourceInstancesApi;
+  private detailedInstances: AutogenResourceInstancesApi;
 
   /**
    * Creates an instance of the ResourceInstancesApi.
@@ -115,11 +138,53 @@ export class ResourceInstancesApi extends BaseFactsPermitAPI implements IResourc
    */
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
+    this.detailedInstances = new AutogenResourceInstancesApi(
+      new Configuration({
+        basePath: this.config.apiUrl,
+        accessToken: this.config.token,
+        baseOptions: {
+          headers: {
+            'X-Permit-SDK-Version':
+              this.openapiClientConfig.baseOptions.headers['X-Permit-SDK-Version'],
+          },
+        },
+      }),
+      BASE_PATH,
+      this.config.axiosInstance,
+    );
     this.instances = new AutogenResourceInstancesApi(
       this.openapiClientConfig,
       BASE_PATH,
       this.config.axiosInstance,
     );
+  }
+
+  /**
+   * Lists resource instances with nested details through the dedicated endpoint.
+   * Uses the control plane even when facts proxying or waitForSync is enabled.
+   * @param params - Filters and pagination. Pages start at 1; perPage defaults to 100.
+   * @returns The complete detailed envelope, including data, total_count, and optional page_count.
+   * @throws {@link PermitApiError} If the API rejects the request.
+   * @throws {@link PermitContextError} If the environment context or API key is insufficient.
+   */
+  public async listDetailed(
+    params: IListResourceInstanceDetailedParams = {},
+  ): Promise<PaginatedResultResourceInstanceDetailedRead> {
+    const { page = 1, perPage = 100, ...filters } = params;
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
+    try {
+      return (
+        await this.detailedInstances.listResourceInstancesDetailed({
+          ...filters,
+          ...this.config.apiContext.environmentContext,
+          page,
+          perPage,
+        })
+      ).data;
+    } catch (err) {
+      this.handleApiError(err);
+    }
   }
 
   /**

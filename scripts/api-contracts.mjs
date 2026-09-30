@@ -237,6 +237,8 @@ export function extractSdk(root) {
     return symbol?.valueDeclaration ?? symbol?.declarations?.[0];
   };
   const instances = new Map();
+  const controlPlaneClients = new Set();
+  const controlPlaneRoutes = new WeakSet();
   const transports = {};
   const httpClients = new Map();
   for (const clazz of authored) {
@@ -249,8 +251,36 @@ export function extractSdk(root) {
         ts.isNewExpression(node.right)
       ) {
         const target = symbolDeclaration(node.right.expression);
-        if (target && ts.isClassDeclaration(target))
-          instances.set(`${clazz.name.text}.${node.left.name.text}`, target);
+        if (target && ts.isClassDeclaration(target)) {
+          const clientKey = `${clazz.name.text}.${node.left.name.text}`;
+          instances.set(clientKey, target);
+          const configuration = node.right.arguments?.[0];
+          const configurationClass =
+            configuration && ts.isNewExpression(configuration)
+              ? symbolDeclaration(configuration.expression)
+              : undefined;
+          const options = configuration?.arguments?.[0];
+          const base =
+            options && ts.isObjectLiteralExpression(options)
+              ? options.properties.find(
+                  (property) =>
+                    ts.isPropertyAssignment(property) && propertyName(property.name) === 'basePath',
+                )?.initializer
+              : undefined;
+          if (
+            location(target).file.startsWith('src/openapi/api/') &&
+            configurationClass &&
+            ts.isClassDeclaration(configurationClass) &&
+            location(configurationClass).file === 'src/openapi/configuration.ts' &&
+            base &&
+            ts.isPropertyAccessExpression(base) &&
+            base.name.text === 'apiUrl' &&
+            ts.isPropertyAccessExpression(base.expression) &&
+            base.expression.name.text === 'config' &&
+            base.expression.expression.kind === ts.SyntaxKind.ThisKeyword
+          )
+            controlPlaneClients.add(clientKey);
+        }
       }
     });
   }
@@ -408,7 +438,23 @@ export function extractSdk(root) {
         }
       } else {
         const declaration = concreteCall(node, owner);
-        if (declaration) routes.push(...routesFor(declaration, seen));
+        if (declaration) {
+          const resolved = routesFor(declaration, seen);
+          const explicitControlPlane =
+            owner &&
+            ts.isPropertyAccessExpression(call) &&
+            ts.isPropertyAccessExpression(call.expression) &&
+            call.expression.expression.kind === ts.SyntaxKind.ThisKeyword &&
+            controlPlaneClients.has(`${owner.name.text}.${call.expression.name.text}`);
+          routes.push(
+            ...resolved.map((route) => {
+              if (!explicitControlPlane) return route;
+              const direct = { ...route };
+              controlPlaneRoutes.add(direct);
+              return direct;
+            }),
+          );
+        }
       }
     });
     if (owner?.name?.text === 'BasePermitApi' && method.name?.text === 'setContextFromApiKey')
@@ -460,6 +506,7 @@ export function extractSdk(root) {
       const unique = new Map();
       for (const route of routes)
         unique.set(`${route.target ?? 'api'} ${route.method} ${route.path}`, route);
+      const dispatches = routes.filter((route) => !route.supporting);
       const entry = {
         name: `${prefix}.${name}`,
         deprecated:
@@ -471,7 +518,9 @@ export function extractSdk(root) {
           .map((entry) =>
             checker.signatureToString(entry, undefined, ts.TypeFormatFlags.NoTruncation),
           ),
-        factsProxy: factsProxy(clazz),
+        factsProxy:
+          factsProxy(clazz) &&
+          (dispatches.length === 0 || dispatches.some((route) => !controlPlaneRoutes.has(route))),
         source: location(method),
         routes: [...unique.values()],
       };
