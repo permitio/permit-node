@@ -156,20 +156,23 @@ describe('Enforcer (unit)', () => {
   });
 
   describe('check - timeout passthrough', () => {
-    it('forwards the per-call timeout to the PDP request config', async () => {
-      const { client } = (permit as unknown as { enforcer: { client: AxiosInstance } }).enforcer;
-      let seenTimeout: number | undefined;
-      client.defaults.adapter = async (
-        config: InternalAxiosRequestConfig,
-      ): Promise<AxiosResponse> => {
-        seenTimeout = config.timeout;
-        return { data: { allow: true }, status: 200, statusText: 'OK', headers: {}, config };
-      };
+    it.each([0, 1234])(
+      'forwards per-call timeout %i to the PDP request config',
+      async (timeout) => {
+        const { client } = (permit as unknown as { enforcer: { client: AxiosInstance } }).enforcer;
+        let seenTimeout: number | undefined;
+        client.defaults.adapter = async (
+          config: InternalAxiosRequestConfig,
+        ): Promise<AxiosResponse> => {
+          seenTimeout = config.timeout;
+          return { data: { allow: true }, status: 200, statusText: 'OK', headers: {}, config };
+        };
 
-      await permit.check('alice', 'read', 'doc', {}, { timeout: 1234 });
+        await permit.check('alice', 'read', 'doc', {}, { timeout });
 
-      expect(seenTimeout).toBe(1234);
-    });
+        expect(seenTimeout).toBe(timeout);
+      },
+    );
   });
 
   describe('bulkCheck', () => {
@@ -218,24 +221,29 @@ describe('Enforcer (unit)', () => {
       expect(await permit.bulkCheck([])).toEqual([]);
     });
 
-    it('forwards the per-call timeout to the PDP request config', async () => {
-      const { client } = (permit as unknown as { enforcer: { client: AxiosInstance } }).enforcer;
-      let seenTimeout: number | undefined;
-      client.defaults.adapter = async (
-        config: InternalAxiosRequestConfig,
-      ): Promise<AxiosResponse> => {
-        seenTimeout = config.timeout;
-        return { data: { allow: [] }, status: 200, statusText: 'OK', headers: {}, config };
-      };
+    it.each([0, 1234])(
+      'forwards per-call timeout %i to the PDP request config',
+      async (timeout) => {
+        const { client } = (permit as unknown as { enforcer: { client: AxiosInstance } }).enforcer;
+        let seenTimeout: number | undefined;
+        client.defaults.adapter = async (
+          config: InternalAxiosRequestConfig,
+        ): Promise<AxiosResponse> => {
+          seenTimeout = config.timeout;
+          return {
+            data: { allow: [{ allow: true }] },
+            status: 200,
+            statusText: 'OK',
+            headers: {},
+            config,
+          };
+        };
 
-      await permit.bulkCheck(
-        [{ user: 'u1', action: 'read', resource: 'doc' }],
-        {},
-        { timeout: 1234 },
-      );
+        await permit.bulkCheck([{ user: 'u1', action: 'read', resource: 'doc' }], {}, { timeout });
 
-      expect(seenTimeout).toBe(1234);
-    });
+        expect(seenTimeout).toBe(timeout);
+      },
+    );
   });
 
   describe('getUserPermissions', () => {
@@ -271,19 +279,22 @@ describe('Enforcer (unit)', () => {
       expect(permissions).toEqual({ 'doc:1': { permissions: ['read'] } });
     });
 
-    it('forwards the per-call timeout to the PDP request config', async () => {
-      const { client } = (permit as unknown as { enforcer: { client: AxiosInstance } }).enforcer;
-      let seenTimeout: number | undefined;
-      client.defaults.adapter = async (
-        config: InternalAxiosRequestConfig,
-      ): Promise<AxiosResponse> => {
-        seenTimeout = config.timeout;
-        return { data: {}, status: 200, statusText: 'OK', headers: {}, config };
-      };
+    it.each([0, 1234])(
+      'forwards per-call timeout %i to the PDP request config',
+      async (timeout) => {
+        const { client } = (permit as unknown as { enforcer: { client: AxiosInstance } }).enforcer;
+        let seenTimeout: number | undefined;
+        client.defaults.adapter = async (
+          config: InternalAxiosRequestConfig,
+        ): Promise<AxiosResponse> => {
+          seenTimeout = config.timeout;
+          return { data: {}, status: 200, statusText: 'OK', headers: {}, config };
+        };
 
-      await permit.getUserPermissions('bob', undefined, undefined, undefined, { timeout: 1234 });
+        await permit.getUserPermissions('bob', undefined, undefined, undefined, { timeout });
 
-      expect(seenTimeout).toBe(1234);
-    });
+        expect(seenTimeout).toBe(timeout);
+      },
+    );
   });
 });

@@ -146,6 +146,26 @@ try {
 ```
 
 These rules apply to `check`, `bulkCheck`, `getUserPermissions`, and `checkAllTenants`.
+PDP responses are validated before authorization data reaches the caller. Direct PDP responses
+and OPA `result` envelopes are supported. Decisions must be literal booleans; bulk results must
+contain exactly one decision for each requested position. An empty bulk request requires an empty
+result. Every all-tenant entry must have `allow: true` and a tenant with a string key; a denied or
+malformed entry invalidates the whole result. A legacy `result` boolean alongside `allow` is
+additive metadata and does not override the decision.
+
+Permission entries must contain string arrays when `permissions` or `roles` are supplied. Tenant
+and resource details require string keys, resources also require a string type, and supplied
+attributes must be objects. The SDK applies the PDP's documented defaults: missing permissions
+become `[]`, missing attributes become `{}`, and nullable optional roles/tenant/resource fields are
+omitted. Null permissions or attributes are invalid. Extra fields are retained. Dictionary identifiers
+such as `result`, `permissions`, and `__proto__` remain valid; a valid direct map takes precedence
+over interpreting it as an OPA envelope.
+
+These are deliberate next-major response contract changes: malformed responses that previously
+escaped as truthy values, incomplete bulk arrays, or unchecked permission/tenant objects now fail.
+`useOpa: true` is supported by `check()` only; bulk and permission calls reject it under the same
+error policy instead of ignoring it. Per-call `timeout: 0` disables the timeout.
+
 With `throwOnError: false`, failures, including an invalid resource string, return `false` for
 `check`, one `false` per input for `bulkCheck`, `{}` for `getUserPermissions`, and `[]` for
 `checkAllTenants`. The first three methods also accept per-call error-policy overrides;

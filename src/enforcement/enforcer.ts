@@ -8,26 +8,26 @@ import { resolveRetryConfig } from '#src/utils/retry';
 import { AxiosRetryInterceptor } from '#src/utils/retry-interceptor';
 
 import {
-  type AllTenantsResponse,
-  type BulkOpaDecisionResult,
-  type BulkPolicyDecision,
   type IAction,
   type ICheckInput,
   type ICheckOpaInput,
   type ICheckQuery,
   type IResource,
-  isOpaGetUserPermissionsResult,
   type IUser,
   type IUserPermissions,
-  type OpaDecisionResult,
-  type OpaGetUserPermissionsResult,
-  type PolicyDecision,
   type TenantDetails,
 } from '#src/enforcement/interfaces';
 
+import {
+  parseAllTenantsResponse,
+  parseBulkResponse,
+  parseCheckResponse,
+  parsePermissionsResponse,
+} from '#src/enforcement/responses';
+
 const RESOURCE_DELIMITER = ':';
 
-function isString(x: any): x is string {
+function isString(x: unknown): x is string {
   return typeof x === 'string';
 }
 
@@ -247,7 +247,10 @@ export class Enforcer implements IEnforcer {
     resource_types?: string[],
     config: CheckConfig = {},
   ): Promise<IUserPermissions> {
-    const checkTimeout = config.timeout || this.config.timeout;
+    const checkTimeout = config.timeout ?? this.config.timeout;
+    if (config.useOpa) {
+      throw new PermitError('The useOpa option is supported only by permit.check()');
+    }
     const input = {
       user: isString(user) ? { key: user } : user,
       tenants,
@@ -255,7 +258,7 @@ export class Enforcer implements IEnforcer {
       resource_types,
     };
     return await this.client
-      .post<OpaGetUserPermissionsResult | IUserPermissions>('user-permissions', input, {
+      .post<unknown>('user-permissions', input, {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
         },
@@ -268,7 +271,7 @@ export class Enforcer implements IEnforcer {
         const permissions = this.parsePdpResponse(
           'getUserPermissions',
           response,
-          (data) => (isOpaGetUserPermissionsResult(data) ? data.result.permissions : data) || {},
+          parsePermissionsResponse,
         );
         this.logger.info(
           `permit.getUserPermissions(${Enforcer.userRepr(input.user)}) = ${JSON.stringify(
@@ -288,6 +291,7 @@ export class Enforcer implements IEnforcer {
     context: Context = {}, // context provided specifically for this query
     config: CheckConfig = {},
   ): Promise<Array<boolean>> {
+    const checkCount = checks.length;
     return await this.bulkCheckWithExceptions(checks, context, config).catch((err) => {
       const shouldThrow =
         config.throwOnError === undefined ? this.config.throwOnError : config.throwOnError;
@@ -295,7 +299,7 @@ export class Enforcer implements IEnforcer {
         throw err;
       } else {
         this.logger.error(err);
-        return checks.map(() => false);
+        return Array.from({ length: checkCount }, () => false);
       }
     });
   }
@@ -332,18 +336,24 @@ export class Enforcer implements IEnforcer {
     context: Context = {}, // context provided specifically for this query
     config: CheckConfig = {},
   ): Promise<Array<boolean>> {
-    const checkTimeout = config.timeout || this.config.timeout;
+    const checkTimeout = config.timeout ?? this.config.timeout;
+    if (config.useOpa) {
+      throw new PermitError('The useOpa option is supported only by permit.check()');
+    }
     const inputs: Array<ICheckInput> = [];
-    checks.forEach((check) => {
+    for (const check of checks) {
+      if (check === undefined) {
+        throw new PermitError('permit.bulkCheck() requires a check at every array position');
+      }
       const input = this.buildCheckInput(check.user, check.action, check.resource, {
         ...context,
         ...check.context,
       });
       inputs.push(input);
-    });
+    }
 
     return await this.client
-      .post<BulkPolicyDecision | BulkOpaDecisionResult>('allowed/bulk', inputs, {
+      .post<unknown>('allowed/bulk', inputs, {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
         },
@@ -354,9 +364,7 @@ export class Enforcer implements IEnforcer {
           throw this.pdpStatusError('bulkCheck', response.status, response.data);
         }
         const decisions = this.parsePdpResponse('bulkCheck', response, (data) =>
-          (('allow' in data ? data.allow : data.result.allow) || []).map(
-            (decision) => decision.allow || false,
-          ),
+          parseBulkResponse(data, inputs.length),
         );
         this.logger.info(
           `permit.bulkCheck(${inputs.map((input) => this.checkInputRepr(input))}) = ${decisions}`,
@@ -409,7 +417,7 @@ export class Enforcer implements IEnforcer {
     };
 
     return await this.client
-      .post<AllTenantsResponse>('allowed/all-tenants', input, {
+      .post<unknown>('allowed/all-tenants', input, {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
           'X-Permit-Sdk-Language': sdk,
@@ -420,9 +428,7 @@ export class Enforcer implements IEnforcer {
         if (response.status !== 200) {
           throw this.pdpStatusError('checkAllTenants', response.status, response.data);
         }
-        return this.parsePdpResponse('checkAllTenants', response, (data) =>
-          data.allowed_tenants.map((item) => item.tenant),
-        );
+        return this.parsePdpResponse('checkAllTenants', response, parseAllTenantsResponse);
       })
       .catch((error: unknown) => {
         const errorMessage = `Error in permit.checkAllTenants(${this.checkInputRepr(input)})`;
@@ -462,10 +468,10 @@ export class Enforcer implements IEnforcer {
     const client = config?.useOpa ? this.opaClient : this.client;
     const path = config?.useOpa ? 'root' : 'allowed';
 
-    const checkTimeout = config.timeout || this.config.timeout;
+    const checkTimeout = config.timeout ?? this.config.timeout;
 
     return await client
-      .post<PolicyDecision | OpaDecisionResult>(path, input, {
+      .post<unknown>(path, input, {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
         },
@@ -475,11 +481,7 @@ export class Enforcer implements IEnforcer {
         if (response.status !== 200) {
           throw this.pdpStatusError('check', response.status, response.data);
         }
-        const decision = this.parsePdpResponse(
-          'check',
-          response,
-          (data) => ('allow' in data ? data.allow : data.result.allow) || false,
-        );
+        const decision = this.parsePdpResponse('check', response, parseCheckResponse);
 
         this.logger.info(`permit.check(${this.checkInputRepr(checkInput)}) = ${decision}`);
         return decision;
@@ -508,10 +510,10 @@ export class Enforcer implements IEnforcer {
    * Reads the body of a successful PDP response. The PDP was reachable, so a body without the
    * expected shape is reported as a {@link PermitPDPStatusError}, not as a connection failure.
    */
-  private parsePdpResponse<T, R>(
+  private parsePdpResponse<R>(
     method: string,
-    response: AxiosResponse<T>,
-    parse: (data: T) => R,
+    response: AxiosResponse<unknown>,
+    parse: (data: unknown) => R,
   ): R {
     try {
       return parse(response.data);

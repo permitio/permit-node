@@ -138,6 +138,7 @@ export interface TenantDetails {
 }
 
 export interface AllTenantsCheckResponse {
+  allow: true;
   tenant: TenantDetails;
 }
 
@@ -177,8 +178,4 @@ export interface GetUserPermissionsResult {
 
 export interface OpaGetUserPermissionsResult {
   result: GetUserPermissionsResult;
-}
-
-export function isOpaGetUserPermissionsResult(obj: any): obj is OpaGetUserPermissionsResult {
-  return 'result' in obj;
 }

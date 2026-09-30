@@ -13,7 +13,7 @@ describe('checkAllTenants (unit)', () => {
     ];
     const pdp = await startPdp({
       status: 200,
-      body: { allowed_tenants: tenants.map((tenant) => ({ tenant })) },
+      body: { allowed_tenants: tenants.map((tenant) => ({ allow: true, tenant })) },
     });
     const permit = new Permit({
       token: TEST_TOKEN,

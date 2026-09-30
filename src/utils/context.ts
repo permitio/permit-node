@@ -3,7 +3,9 @@ export interface Context {
 }
 
 export interface CheckConfig {
+  /** Use the OPA endpoint for check(); bulkCheck/getUserPermissions reject true. */
   useOpa?: boolean;
+  /** Request timeout in milliseconds; zero disables the timeout for this call. */
   timeout?: number;
   throwOnError?: boolean;
 }
