@@ -50,10 +50,12 @@
     "test:codegen": "pnpm run build && vitest run --project codegen",
     "lint:oxlint": "oxlint --deny-warnings .",
     "lint:format": "oxfmt --check .",
-    "verify": "pnpm exec prek run --config .pre-commit-config.yaml --all-files && pnpm run build && vitest run --project unit --project module-imports --project codegen",
+    "verify": "pnpm exec prek run --config .pre-commit-config.yaml --all-files && pnpm run build && vitest run --project unit --project module-imports --project codegen && pnpm run check:api-contracts",
     "hooks:install": "node scripts/hooks.mjs",
     "normalize:openapi": "node scripts/normalize-openapi.mjs && oxfmt --write src/openapi",
-    "audit:dependencies": "node scripts/audit-dependencies.mjs"
+    "audit:dependencies": "node scripts/audit-dependencies.mjs",
+    "check:api-contracts": "node scripts/check-api-contracts.mjs",
+    "check:api-drift": "node scripts/check-api-contracts.mjs --live"
   },
   "dependencies": {
     "axios": "1.20.0",

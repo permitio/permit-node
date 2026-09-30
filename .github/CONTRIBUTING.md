@@ -10,7 +10,7 @@ pnpm verify
 ```
 
 `verify` runs the frozen dependency check, Oxlint, Oxfmt, strict TypeScript, both module builds,
-and all local unit, module-import, and tooling tests. It requires no Permit credentials or Java.
+all local unit, module-import, and tooling tests, and the reviewed API contract inventory. It requires no Permit credentials or Java.
 CI uses the same verification command. Use `pnpm fix` for lint fixes and formatting, then rerun
 `pnpm verify`. Hooks check files without rewriting them.
 
@@ -49,6 +49,14 @@ historical fixture or change API shapes merely to make a tooling check pass.
 
 `test:integration` and `test:e2e` use a Permit backend. Run them locally only with explicit
 authorization. The standard verification command uses local fixtures only.
+
+## API operation and shape evidence
+
+`pnpm check:api-contracts` verifies the local AST inventory, source provenance and exact operation
+omission decisions. `pnpm check:api-drift` also compares current public schema documentation with
+the pinned snapshots; it makes no backend operation calls. Reports distinguish local integrity,
+coverage gaps, the unavailable shared parity target and unmeasured backend behavior. See
+[the evidence guide](../api-coverage/README.md) before changing a baseline or exclusion.
 
 ## Documentation and changes
 
