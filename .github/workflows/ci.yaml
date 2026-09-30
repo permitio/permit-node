@@ -32,7 +32,12 @@ env:
   PDP_IMAGE: permitio/pdp-v2:0.9.16@sha256:e3cf30794ec2d256636b4714641df46e51ee58a3f1f0d24c606e214e0bf8669a
 
 jobs:
+  dependency-security:
+    # Both forms use the caller's commit; actionlint 1.7.12 does not yet accept `$/`.
+    uses: ./.github/workflows/dependency-security.yaml # zizmor: ignore[self-repository]
+
   lint-and-build:
+    needs: dependency-security
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -276,6 +281,7 @@ jobs:
           done
 
   codegen-guard:
+    needs: dependency-security
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:

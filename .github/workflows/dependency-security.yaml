@@ -1,0 +1,68 @@
+name: Dependency security
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 8 * * 1'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash --noprofile --norc -euo pipefail {0}
+
+jobs:
+  audit:
+    name: Dependency security (Node ${{ matrix.node }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22.13.0', '24.0.0']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node }}
+          package-manager-cache: false
+      - name: Setup Trivy
+        uses: aquasecurity/setup-trivy@81e514348e19b6112ce2a7e3ecbafe19c1e1f567 # v0.3.1
+        with:
+          version: v0.74.0
+          cache: false
+      - name: Audit before installing dependencies
+        run: node scripts/audit-dependencies.mjs --locked-only --out security-preinstall
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Build and pack the candidate
+        run: |
+          pnpm build
+          pnpm pack --out candidate.tgz --ignore-scripts
+      - name: Audit locked and fresh consumer trees
+        run: node scripts/audit-dependencies.mjs --artifact candidate.tgz --out security-report
+      - name: Report a scan that did not complete
+        if: failure() || cancelled()
+        run: |
+          echo 'Dependency security did not complete successfully; inspect the lane reports and failed steps.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Save dependency security evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dependency-security-${{ matrix.node }}
+          path: |
+            security-preinstall/
+            security-report/
+          if-no-files-found: error

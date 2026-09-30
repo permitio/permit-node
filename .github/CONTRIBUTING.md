@@ -58,3 +58,46 @@ Keep generated documentation out of unrelated changes.
 
 Keep changes focused, preserve supported runtime behavior, and describe validation and remaining
 limitations in the PR. Check [AGENTS.md](../AGENTS.md) for repository development rules.
+
+## Dependency security
+
+Install [Trivy 0.74.0](https://github.com/aquasecurity/trivy/releases/tag/v0.74.0) for the same
+scanner used in CI. The audit runner uses Node built-ins and runs before SDK dependencies install:
+
+```sh
+node scripts/audit-dependencies.mjs --locked-only --out security-preinstall
+pnpm install --frozen-lockfile --ignore-scripts
+pnpm build
+pnpm pack --out candidate.tgz --ignore-scripts
+pnpm audit:dependencies --artifact candidate.tgz --out security-report
+```
+
+The report covers the locked SDK runtime graph, the complete development/tooling workspace,
+and two independently resolved consumers of the actual tarball. Runtime dependencies are exact
+pins, so the minimum and newest supported direct versions are identical. Both consumer lanes
+resolve current compatible transitive versions; neither claims to test the lowest transitive
+versions. Adding dependency ranges or peer dependencies requires explicit supported-range lanes.
+
+The pinned pnpm resolver uses a 24-hour release delay and disables scripts. It resolves a consumer
+lockfile, audits it, then performs a frozen installation only after that lane passes. Trivy's
+runtime dependency graph must match an independent pnpm lock inventory. Empty results, incomplete
+inventory, malformed output, process failures and unresolved consumer installs are INVALID.
+
+Exit codes are 0 (PASS), 1 (FAIL: fixable HIGH/CRITICAL findings) and 2 (INVALID: not completed).
+All other advisories and registry severity totals remain visible in JSON and Markdown, including
+findings without available fixes. Raw scanner output and each consumer lockfile are retained.
+Do not add ignored advisory IDs, dependency overrides or scanner suppression files.
+
+CI requires these checks on Node 22.13 and 24.0. The weekly Monday workflow and manual dispatch
+publish GitHub summaries and downloadable evidence; repository maintainers review failed runs.
+Slack delivery requires a separately authorized destination and is not configured here.
+The release job also scans its final tarball immediately before publication with scripts disabled;
+it cannot publish if either scanner or consumer lane fails. npm Trusted Publishing requires
+Node >=22.14.0 and npm >=11.5.1; the release job validates the npm bundled with its Node 24 runner.
+The supported SDK Node floor remains 22.13.0.
+
+Dependabot groups runtime and tooling minor/patch updates, uses `increase`, and waits seven days
+(fourteen for majors). Its published support matrix currently lists pnpm through version 10;
+pnpm 12 lock updates are not yet verified. Maintainers must review dependency update failures and
+apply compatible pinned updates manually until the bot supports this lockfile. The scheduled
+security gate does not depend on Dependabot and continues to scan all four trees.

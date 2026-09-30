@@ -15,3 +15,8 @@ src/openapi/.npmignore
 src/openapi/.openapi-generator-ignore
 src/openapi/git_push.sh
 
+
+security-report/
+security-preinstall/
+security-release/
+*.tgz

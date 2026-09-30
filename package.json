@@ -44,7 +44,6 @@
     "coverage": "vitest run --project unit --coverage",
     "docs": "node tools/compiler/docs.mjs",
     "docs:watch": "node tools/compiler/docs.mjs --watch",
-    "version": "standard-version",
     "generate-openapi-client": "node scripts/generate-openapi.mjs",
     "check:openapi": "node scripts/generate-openapi.mjs --check",
     "check:codegen": "node scripts/check-codegen.mjs",
@@ -53,7 +52,8 @@
     "lint:format": "oxfmt --check .",
     "verify": "pnpm exec prek run --config .pre-commit-config.yaml --all-files && pnpm run build && vitest run --project unit --project module-imports --project codegen",
     "hooks:install": "node scripts/hooks.mjs",
-    "normalize:openapi": "node scripts/normalize-openapi.mjs && oxfmt --write src/openapi"
+    "normalize:openapi": "node scripts/normalize-openapi.mjs && oxfmt --write src/openapi",
+    "audit:dependencies": "node scripts/audit-dependencies.mjs"
   },
   "dependencies": {
     "axios": "1.20.0",
@@ -73,7 +73,6 @@
     "oxfmt": "0.71.0",
     "oxlint": "1.86.0",
     "semver": "7.8.5",
-    "standard-version": "9.5.0",
     "typescript": "7.0.2",
     "vite": "8.3.1",
     "vitest": "5.0.2"

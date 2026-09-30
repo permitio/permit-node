@@ -16,9 +16,16 @@ defaults:
     shell: bash --noprofile --norc -euo pipefail {0}
 
 jobs:
+  dependency-security:
+    permissions:
+      contents: read
+    # Both forms use the caller's commit; actionlint 1.7.12 does not yet accept `$/`.
+    uses: ./.github/workflows/dependency-security.yaml # zizmor: ignore[self-repository]
+
   publish_node_sdk:
+    needs: dependency-security
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 35
     environment: production
     permissions:
       contents: read
@@ -50,18 +57,23 @@ jobs:
           # This job can publish, so never restore a dependency cache into it.
           package-manager-cache: false
 
-      # Pinned to a major so a new npm major cannot change publishing unannounced.
-      # Trusted Publishing needs npm 11.5.1 or later. npm itself has no lockfile
-      # to install from, hence the adhoc-packages exception.
-      - name: Upgrade npm for Trusted Publishing
-        timeout-minutes: 5
-        run: npm install -g --ignore-scripts npm@12 && npm --version # zizmor: ignore[adhoc-packages]
+      - name: Setup Trivy
+        uses: aquasecurity/setup-trivy@81e514348e19b6112ce2a7e3ecbafe19c1e1f567 # v0.3.1
+        with:
+          version: v0.74.0
+          cache: false
+
+      - name: Audit before installing dependencies
+        run: node scripts/audit-dependencies.mjs --locked-only --out security-preinstall
 
       # --ignore-scripts: dependency install scripts must not run in a job that
       # can publish. pnpm test builds the package.
       - name: Install dependencies
         timeout-minutes: 5
         run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Verify bundled npm supports Trusted Publishing
+        run: node scripts/check-publish-runtime.mjs
 
       # Build, then the unit and module-import tests. The integration and e2e
       # suites need a provisioned environment and PDP, and run in the CI
@@ -74,50 +86,25 @@ jobs:
         env:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          # Pass the release tag through an environment variable to prevent shell
-          # injection. Validate it is a literal semantic version (not a keyword like
-          # "minor" or "patch" that npm version would accept). Bump only the
-          # top-level "version" field. npm is JSON-aware (unlike greedy sed, which
-          # also rewrites scripts.version); no git tag/commit is created, re-runs on
-          # the same version are tolerated, and the "version" lifecycle script
-          # (standard-version) is skipped.
-          node -e "
-            const semver = require('semver');
-            const tag = process.env.RELEASE_TAG;
-            if (!semver.valid(tag)) {
-              console.error('Release tag', JSON.stringify(tag), 'is not a valid semantic version');
-              process.exit(1);
-            }
-          "
-          npm version "$RELEASE_TAG" --no-git-tag-version --allow-same-version --ignore-scripts
-          # Assert: package.json version matches the normalized release tag
-          node -e "
-            const semver = require('semver');
-            const tag = process.env.RELEASE_TAG;
-            // npm strips both the optional 'v' prefix and semver build metadata.
-            const normalized = semver.valid(tag);
-            const pkg = require('./package.json');
-            if (pkg.version !== normalized) {
-              console.error('Version mismatch: expected', normalized, 'got', pkg.version);
-              process.exit(1);
-            }
-            if (pkg.scripts.version !== 'standard-version') {
-              console.error('scripts.version was corrupted by the version bump');
-              process.exit(1);
-            }
-          "
+          node scripts/set-release-version.mjs
+
+      - name: Pack the release candidate
+        run: |
+          pnpm pack --out release.tgz --ignore-scripts
 
       - name: Publish package to NPM
-        timeout-minutes: 5
+        timeout-minutes: 15
         env:
           IS_PRERELEASE: ${{ github.event.release.prerelease }}
         run: |
+          # A failed or incomplete scan exits before npm can publish.
+          node scripts/audit-dependencies.mjs --artifact release.tgz --out security-release
           if [[ "$IS_PRERELEASE" == "true" ]]; then
             echo "Publishing as a release candidate (rc)..."
-            npm publish --access public --tag rc
+            npm publish release.tgz --ignore-scripts --access public --tag rc
           else
             echo "Publishing as the latest release..."
-            npm publish --access public
+            npm publish release.tgz --ignore-scripts --access public
           fi
         # No NPM_TOKEN needed — authenticated via npm Trusted Publishing (OIDC),
         # which requires the job's `id-token: write` permission above plus a
@@ -125,3 +112,13 @@ jobs:
         #   permitio/permit-node -> Settings -> Trusted Publishers
         #   (workflow: node_sdk_publish.yaml, environment: production)
         # Provenance attestations are generated automatically.
+
+      - name: Save dependency security evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-dependency-security
+          path: |
+            security-preinstall/
+            security-release/
+          if-no-files-found: error

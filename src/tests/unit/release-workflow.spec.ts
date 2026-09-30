@@ -1,11 +1,13 @@
 import { spawnSync } from 'child_process';
 import {
+  copyFileSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
   readdirSync,
   readFileSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from 'fs';
 import { tmpdir } from 'os';
@@ -34,6 +36,16 @@ function fixture() {
   onTestFinished(() => rmSync(cwd, { recursive: true, force: true }));
   const bin = join(cwd, 'bin');
   mkdirSync(bin);
+  mkdirSync(join(cwd, 'scripts'));
+  copyFileSync(
+    join(root, 'scripts/set-release-version.mjs'),
+    join(cwd, 'scripts/set-release-version.mjs'),
+  );
+  symlinkSync(join(root, 'node_modules'), join(cwd, 'node_modules'), 'dir');
+  writeFileSync(
+    join(cwd, 'scripts/audit-dependencies.mjs'),
+    'process.exitCode = Number(process.env.AUDIT_STATUS ?? 0);',
+  );
   writeFileSync(
     join(bin, 'standard-version'),
     '#!/bin/bash\nset -euo pipefail\ntouch lifecycle-ran\nexit 73\n',
@@ -43,6 +55,7 @@ function fixture() {
     ...manifest,
     scripts: {
       ...manifest.scripts,
+      version: 'standard-version',
       preversion: 'standard-version',
       postversion: 'standard-version',
     },
@@ -155,14 +168,31 @@ test('release bump catches an npm success that leaves the wrong version', () => 
   expect(result.stderr).toMatch(/Version mismatch/);
 });
 
-test('release bump detects a corrupted version lifecycle script', () => {
+test('release bump detects npm corruption of unrelated package metadata', () => {
   const f = fixture();
-  f.pkg.scripts.version = '2.5.2';
-  writeFileSync(join(f.cwd, 'package.json'), JSON.stringify(f.pkg));
+  f.stubNpm(
+    `node <<'NODE'
+const fs = require('fs');
+const p = require('./package.json');
+p.version = '2.7.7';
+p.scripts.version = 'corrupted';
+fs.writeFileSync('package.json', JSON.stringify(p));
+NODE`,
+  );
   const result = f.run(bumpScript, { RELEASE_TAG: 'v2.7.7' });
   expect(result.status, result.stderr).toBe(1);
-  expect(result.stderr).toMatch(/scripts.version was corrupted/);
+  expect(result.stderr).toMatch(/changed package metadata/);
 });
+
+for (const status of ['1', '2']) {
+  test(`dependency audit exit ${status} makes publication unreachable`, () => {
+    const f = fixture();
+    f.stubNpm('touch published\n');
+    const result = f.run(publishScript, { AUDIT_STATUS: status, IS_PRERELEASE: 'false' });
+    expect(result.status, result.stderr).toBe(Number(status));
+    expect(existsSync(join(f.cwd, 'published'))).toBe(false);
+  });
+}
 
 for (const prerelease of ['true', 'false']) {
   for (const status of [0, 42]) {
@@ -171,7 +201,7 @@ for (const prerelease of ['true', 'false']) {
       f.stubNpm(`printf '%s\\n' "$@" > publish-args\nexit ${status}\n`);
       const result = f.run(publishScript, { IS_PRERELEASE: prerelease });
       expect(result.status, result.stderr).toBe(status);
-      const args = ['publish', '--access', 'public'];
+      const args = ['publish', 'release.tgz', '--ignore-scripts', '--access', 'public'];
       if (prerelease === 'true') {
         args.push('--tag', 'rc');
       }

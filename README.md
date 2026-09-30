@@ -40,10 +40,13 @@ and its [migration inventory](openapi/MIGRATION.md).
 
 ## Release
 
-1. Update the version in `package.json`
-2. Execute `pnpm run build`
-3. Execute `pnpm run docs ; git add docs/ ; git commit -m "update tsdoc"` to update the auto generated docs
-4. Execute `pnpm publish --access public`
+Releases use the `Release permit Node SDK` GitHub workflow after maintainer approval. The workflow
+validates the literal release tag, verifies dependency security on both supported Node floors,
+builds and tests the SDK, then scans and publishes the same tarball through npm Trusted Publishing.
+Dependency installation, packing, and publication disable lifecycle scripts. Failed or incomplete
+security scans block publication. Release candidates use the `rc` distribution tag.
+
+See [Contributing](.github/CONTRIBUTING.md#dependency-security) for local scan commands and reports.
 
 ## Retry Configuration
 
