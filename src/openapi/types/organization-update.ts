@@ -10,19 +10,13 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface OrganizationUpdate
- */
 export interface OrganizationUpdate {
   /**
    * The name of the organization, usually it\'s your company\'s name.
-   * @type {string}
    */
   name?: string;
   /**
    * the settings for this project
-   * @type {object}
    */
   settings?: object;
 }

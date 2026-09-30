@@ -10,14 +10,6 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface BulkRoleAssignmentReport
- */
 export interface BulkRoleAssignmentReport {
-  /**
-   *
-   * @type {number}
-   */
   assignments_created?: number;
 }

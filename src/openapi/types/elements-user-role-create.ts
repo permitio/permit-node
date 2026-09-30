@@ -10,14 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface ElementsUserRoleCreate
- */
 export interface ElementsUserRoleCreate {
   /**
    * the role that will be assigned (accepts either the role id or the role key)
-   * @type {string}
    */
   role: string;
 }

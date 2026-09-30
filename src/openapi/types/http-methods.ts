@@ -12,7 +12,6 @@
 
 /**
  * An enumeration.
- * @enum {string}
  */
 
 export const HttpMethods = {

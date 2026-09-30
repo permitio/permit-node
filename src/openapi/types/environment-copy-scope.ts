@@ -11,37 +11,27 @@
  */
 
 // May contain unused imports in some cases
-import { type ResourceSets } from './resource-sets';
-// May contain unused imports in some cases
-import { type Resources } from './resources';
-// May contain unused imports in some cases
-import { type Roles } from './roles';
-// May contain unused imports in some cases
-import { type UserSets } from './user-sets';
+import type { EnvironmentCopyScopeFilters } from './environment-copy-scope-filters';
 
-/**
- *
- * @interface EnvironmentCopyScope
- */
 export interface EnvironmentCopyScope {
   /**
-   *
-   * @type {Resources}
+   * Resources to copy
    */
-  resources?: Resources;
+  resources?: EnvironmentCopyScopeFilters;
   /**
-   *
-   * @type {Roles}
+   * Roles to copy
    */
-  roles?: Roles;
+  roles?: EnvironmentCopyScopeFilters;
   /**
-   *
-   * @type {UserSets}
+   * User sets to copy
    */
-  user_sets?: UserSets;
+  user_sets?: EnvironmentCopyScopeFilters;
   /**
-   *
-   * @type {ResourceSets}
+   * Resource sets to copy
    */
-  resource_sets?: ResourceSets;
+  resource_sets?: EnvironmentCopyScopeFilters;
+  /**
+   * Custom policies to copy
+   */
+  custom_policies?: EnvironmentCopyScopeFilters;
 }

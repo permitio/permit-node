@@ -10,54 +10,18 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface UserObj
- */
+// May contain unused imports in some cases
+import type { RelationshipTupleObj } from './relationship-tuple-obj';
+
 export interface UserObj {
-  /**
-   *
-   * @type {string}
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   */
   key: string;
-  /**
-   *
-   * @type {string}
-   */
   email?: string;
-  /**
-   *
-   * @type {string}
-   */
   first_name?: string;
-  /**
-   *
-   * @type {string}
-   */
   last_name?: string;
-  /**
-   *
-   * @type {object}
-   */
   attributes?: object;
-  /**
-   *
-   * @type {Array<string>}
-   */
+  roles?: Array<RelationshipTupleObj>;
   assigned_roles?: Array<string>;
-  /**
-   *
-   * @type {string}
-   */
   created_at: string;
-  /**
-   *
-   * @type {string}
-   */
   updated_at: string;
 }

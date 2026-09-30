@@ -11,78 +11,20 @@
  */
 
 // May contain unused imports in some cases
-import { ElementsPermissionLevel } from './elements-permission-level';
-// May contain unused imports in some cases
-import { type GrantedTo } from './granted-to';
+import type { ElementsPermissionLevel } from './elements-permission-level';
 
-/**
- *
- * @interface ElementsRoleRead
- */
 export interface ElementsRoleRead {
   /**
-   * The name of the role
-   * @type {string}
-   */
-  name: string;
-  /**
-   * optional description string explaining what this role represents, or what permissions are granted to it.
-   * @type {string}
-   */
-  description?: string;
-  /**
-   * list of action keys that define what actions this resource role is permitted to do
-   * @type {Array<string>}
-   */
-  permissions?: Array<string>;
-  /**
-   * optional dictionary of key-value pairs that can be used to store arbitrary metadata about this role. This metadata can be used to filter role using query parameters with attr_ prefix, currently supports only \'equals\' operator
-   * @type {object}
-   */
-  attributes?: object;
-  /**
-   *
-   * @type {GrantedTo}
-   */
-  granted_to?: GrantedTo;
-  /**
-   * A URL-friendly name of the role (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the role.
-   * @type {string}
-   */
-  key: string;
-  /**
    * Unique id of the role
-   * @type {string}
    */
   id: string;
   /**
-   * Unique id of the organization that the role belongs to.
-   * @type {string}
+   * A URL-friendly name of the role (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the role.
    */
-  organization_id: string;
+  key: string;
   /**
-   * Unique id of the project that the role belongs to.
-   * @type {string}
+   * The name of the role
    */
-  project_id: string;
-  /**
-   * Unique id of the environment that the role belongs to.
-   * @type {string}
-   */
-  environment_id: string;
-  /**
-   * Date and time when the role was created (ISO_8601 format).
-   * @type {string}
-   */
-  created_at: string;
-  /**
-   * Date and time when the role was last updated/modified (ISO_8601 format).
-   * @type {string}
-   */
-  updated_at: string;
-  /**
-   *
-   * @type {ElementsPermissionLevel}
-   */
+  name: string;
   permission_level: ElementsPermissionLevel;
 }

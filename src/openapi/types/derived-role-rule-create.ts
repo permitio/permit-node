@@ -10,31 +10,24 @@
  * Do not edit the class manually.
  */
 
-import { type PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings } from './permit-backend-schemas-schema-derived-role-derived-role-settings';
+// May contain unused imports in some cases
+import type { PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings } from './permit-backend-schemas-schema-derived-role-rule-derivation-settings';
 
-/**
- *
- * @interface DerivedRoleRuleCreate
- */
 export interface DerivedRoleRuleCreate {
   /**
    * the role key that needs to exist on the related resource (from the relation)
-   * @type {string}
    */
   role: string;
   /**
    * the resource key that needs to exist on the related role (from the relation)
-   * @type {string}
    */
   on_resource: string;
   /**
    * the relation key that needs to exist between the resource and the related resource
-   * @type {string}
    */
   linked_by_relation: string;
   /**
-   * condition for the rule to be applied
-   * @type {PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings}
+   * the settings of the derived role rule
    */
-  when?: PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings;
+  when?: PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings;
 }

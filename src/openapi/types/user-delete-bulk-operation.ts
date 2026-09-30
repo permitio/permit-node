@@ -10,14 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface UserDeleteBulkOperation
- */
 export interface UserDeleteBulkOperation {
   /**
-   *
-   * @type {any}
+   * List of user idents to delete. Either the unique id or the key of the users.
    */
-  idents: any;
+  idents: Array<string>;
 }

@@ -10,8 +10,4 @@
  * Do not edit the class manually.
  */
 
-/**
- * Parent Condition Set
- * @interface ParentId
- */
-export interface ParentId {}
+export type ParentId = string;

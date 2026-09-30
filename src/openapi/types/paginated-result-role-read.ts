@@ -11,26 +11,13 @@
  */
 
 // May contain unused imports in some cases
-import { type RoleRead } from './role-read';
+import type { RoleRead } from './role-read';
 
-/**
- *
- * @interface PaginatedResultRoleRead
- */
 export interface PaginatedResultRoleRead {
   /**
    * List of Roles
-   * @type {Array<RoleRead>}
    */
   data: Array<RoleRead>;
-  /**
-   *
-   * @type {number}
-   */
   total_count: number;
-  /**
-   *
-   * @type {number}
-   */
   page_count?: number;
 }

@@ -10,39 +10,11 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface RoleAssignmentUser
- */
 export interface RoleAssignmentUser {
-  /**
-   *
-   * @type {string}
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   */
   key: string;
-  /**
-   *
-   * @type {string}
-   */
   email?: string;
-  /**
-   *
-   * @type {string}
-   */
   first_name?: string;
-  /**
-   *
-   * @type {string}
-   */
   last_name?: string;
-  /**
-   *
-   * @type {Record<string,unknown>}
-   */
-  attributes?: Record<string, unknown>;
+  attributes?: object;
 }

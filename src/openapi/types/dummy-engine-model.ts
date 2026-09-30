@@ -11,21 +11,12 @@
  */
 
 // May contain unused imports in some cases
-import { Engine } from './engine';
+import type { Engine } from './engine';
 
 /**
  * dummy engine class in case we couldn\'t parse the log but we didn\'t want to drop it
- * @interface DummyEngineModel
  */
 export interface DummyEngineModel {
-  /**
-   *
-   * @type {Engine}
-   */
   engine?: Engine;
-  /**
-   *
-   * @type {string}
-   */
   timestamp?: string;
 }

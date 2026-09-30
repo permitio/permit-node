@@ -11,31 +11,20 @@
  */
 
 // May contain unused imports in some cases
-import { type ParentId } from './parent-id';
+import type { ParentId } from './parent-id';
 
-/**
- *
- * @interface ConditionSetUpdate
- */
 export interface ConditionSetUpdate {
   /**
    * A descriptive name for the set, i.e: \'US based employees\' or \'Users behind VPN\'
-   * @type {string}
    */
   name?: string;
   /**
    * an optional longer description of the set
-   * @type {string}
    */
   description?: string;
   /**
    * a boolean expression that consists of multiple conditions, with and/or logic.
-   * @type {object}
    */
   conditions?: object;
-  /**
-   *
-   * @type {ParentId}
-   */
   parent_id?: ParentId;
 }

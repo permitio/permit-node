@@ -10,46 +10,33 @@
  * Do not edit the class manually.
  */
 
-import { type UserRoleCreate } from './user-role-create';
+// May contain unused imports in some cases
+import type { UserRoleCreate } from './user-role-create';
 
-/**
- *
- * @interface ElementsUserCreate
- */
 export interface ElementsUserCreate {
   /**
    * A unique id by which Permit will identify the user for permission checks.
-   * @type {string}
    */
   key: string;
   /**
    * The email of the user. If synced, will be unique inside the environment.
-   * @type {string}
    */
   email?: string;
   /**
    * First name of the user.
-   * @type {string}
    */
   first_name?: string;
   /**
    * Last name of the user.
-   * @type {string}
    */
   last_name?: string;
   /**
    * Arbitrary user attributes that will be used to enforce attribute-based access control policies.
-   * @type {object}
    */
   attributes?: object;
   /**
    * List of roles to assign to the user in the environment.
-   * @type {UserRoleCreate[]}
    */
-  role_assignments?: UserRoleCreate[];
-  /**
-   *
-   * @type {string}
-   */
+  role_assignments?: Array<UserRoleCreate>;
   role?: string;
 }

@@ -11,26 +11,13 @@
  */
 
 // May contain unused imports in some cases
-import { type RoleAssignmentDetailedRead } from './role-assignment-detailed-read';
+import type { RoleAssignmentDetailedRead } from './role-assignment-detailed-read';
 
-/**
- *
- * @interface PaginatedResultRoleAssignmentDetailedRead
- */
 export interface PaginatedResultRoleAssignmentDetailedRead {
   /**
    * List of Role Assignment Detaileds
-   * @type {Array<RoleAssignmentDetailedRead>}
    */
   data: Array<RoleAssignmentDetailedRead>;
-  /**
-   *
-   * @type {number}
-   */
   total_count: number;
-  /**
-   *
-   * @type {number}
-   */
   page_count?: number;
 }

@@ -10,30 +10,10 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface ActivityDetailsObject
- */
 export interface ActivityDetailsObject {
-  /**
-   *
-   * @type {string}
-   */
   id?: string;
-  /**
-   *
-   * @type {string}
-   */
   key?: string;
-  /**
-   *
-   * @type {string}
-   */
   kind?: ActivityDetailsObjectKindEnum;
-  /**
-   *
-   * @type {string}
-   */
   type: string;
 }
 

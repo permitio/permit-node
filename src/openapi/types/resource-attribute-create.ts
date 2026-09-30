@@ -11,26 +11,19 @@
  */
 
 // May contain unused imports in some cases
-import { AttributeType } from './attribute-type';
+import type { AttributeType } from './attribute-type';
 
-/**
- *
- * @interface ResourceAttributeCreate
- */
 export interface ResourceAttributeCreate {
   /**
    * A URL-friendly name of the attribute (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the attribute.
-   * @type {string}
    */
   key: string;
   /**
    * The type of the attribute, we currently support: `bool`, `number` (ints, floats), `time` (a timestamp), `string`, and `json`.
-   * @type {AttributeType}
    */
   type: AttributeType;
   /**
    * An optional longer description of what this attribute respresents in your system
-   * @type {string}
    */
   description?: string;
 }

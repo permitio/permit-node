@@ -11,41 +11,19 @@
  */
 
 // May contain unused imports in some cases
-import { HttpMethods } from './http-methods';
+import type { HttpMethods } from './http-methods';
 
 /**
  * Config for HttpFetchProvider\'s Adding HTTP headers.
- * @interface OPALHttpFetcherConfig
  */
 export interface OPALHttpFetcherConfig {
   /**
    * indicates to OPAL client that it should use a custom FetcherProvider to fetch the data
-   * @type {string}
    */
   fetcher?: string;
-  /**
-   *
-   * @type {{ [key: string]: string; }}
-   */
   headers?: { [key: string]: string };
-  /**
-   *
-   * @type {boolean}
-   */
   is_json?: boolean;
-  /**
-   *
-   * @type {boolean}
-   */
   process_data?: boolean;
-  /**
-   *
-   * @type {HttpMethods}
-   */
   method?: HttpMethods;
-  /**
-   *
-   * @type {any}
-   */
   data?: any;
 }

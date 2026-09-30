@@ -11,20 +11,6 @@
  */
 
 // May contain unused imports in some cases
+import type { PdpConfigObj } from './pdp-config-obj';
 
-/**
- *
- * @interface PdpConfigObject
- */
-export interface PdpConfigObject {
-  /**
-   *
-   * @type {string}
-   */
-  id: string;
-  /**
-   *
-   * @type {string}
-   */
-  name: string;
-}
+export type PdpConfigObject = PdpConfigObj | object;

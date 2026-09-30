@@ -11,31 +11,23 @@
  */
 
 // May contain unused imports in some cases
-import { AttributeType } from './attribute-type';
+import type { AttributeType } from './attribute-type';
 
-/**
- *
- * @interface AttributeBlockRead
- */
 export interface AttributeBlockRead {
   /**
    * The type of the attribute, we currently support: `bool`, `number` (ints, floats), `time` (a timestamp), `string`, and `json`.
-   * @type {AttributeType}
    */
   type: AttributeType;
   /**
    * optional description string explaining what data this attribute will store
-   * @type {string}
    */
   description?: string;
   /**
    * Unique id of the attribute
-   * @type {string}
    */
   id: string;
   /**
    * action key
-   * @type {string}
    */
   key?: string;
 }

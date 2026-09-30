@@ -4,7 +4,7 @@ import { Permit } from '#src/index';
 import {
   type DerivedRoleRuleCreate,
   type DerivedRoleRuleDelete,
-  type PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
+  type PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings,
 } from '#src/openapi/index';
 import { createMockPermit, type MockTransport } from '#src/tests/helpers/mock-api';
 
@@ -249,7 +249,7 @@ describe('ResourceRolesApi (unit)', () => {
     });
 
     describe('updateRoleDerivationConditions', () => {
-      const conditions: PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings = {
+      const conditions: PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings = {
         no_direct_roles_on_object: true,
       };
 

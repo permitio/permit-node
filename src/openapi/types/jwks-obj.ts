@@ -10,14 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface JwksObj
- */
 export interface JwksObj {
   /**
    * The keys to match against the request headers
-   * @type {Array<object>}
    */
   keys: Array<object>;
 }

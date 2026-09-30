@@ -10,14 +10,12 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
-import { Configuration } from './configuration';
+import type { AxiosInstance, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import type { Configuration } from './configuration';
 
 export const BASE_PATH = 'http://localhost'.replace(/\/+$/, '');
 
-/**
- *
- */
 export const COLLECTION_FORMATS = {
   csv: ',',
   ssv: ' ',
@@ -25,19 +23,11 @@ export const COLLECTION_FORMATS = {
   pipes: '|',
 };
 
-/**
- *
- * @interface RequestArgs
- */
 export interface RequestArgs {
   url: string;
-  options: AxiosRequestConfig;
+  options: RawAxiosRequestConfig;
 }
 
-/**
- *
- * @class BaseAPI
- */
 export class BaseAPI {
   protected configuration: Configuration | undefined;
 
@@ -48,22 +38,26 @@ export class BaseAPI {
   ) {
     if (configuration) {
       this.configuration = configuration;
-      this.basePath = configuration.basePath || this.basePath;
+      this.basePath = configuration.basePath ?? basePath;
     }
   }
 }
 
-/**
- *
- * @class RequiredError
- * @extends {Error}
- */
 export class RequiredError extends Error {
-  override name = 'RequiredError' as const;
   constructor(
     public field: string,
     msg?: string,
   ) {
     super(msg);
+    this.name = 'RequiredError';
   }
 }
+
+interface ServerMap {
+  [key: string]: {
+    url: string;
+    description: string;
+  }[];
+}
+
+export const operationServerMap: ServerMap = {};

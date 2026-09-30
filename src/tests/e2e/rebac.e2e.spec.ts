@@ -221,7 +221,7 @@ interface CheckAssertion {
 
 interface TestStep {
   name: string;
-  assignments: RoleAssignmentCreate[];
+  assignments: Array<RoleAssignmentCreate & { tenant: string }>;
   assertions: CheckAssertion[];
 }
 

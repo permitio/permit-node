@@ -10,14 +10,6 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface BulkRoleUnAssignmentReport
- */
 export interface BulkRoleUnAssignmentReport {
-  /**
-   *
-   * @type {number}
-   */
   assignments_removed?: number;
 }

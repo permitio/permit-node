@@ -134,12 +134,13 @@ export class ResourceInstancesApi extends BaseFactsPermitAPI implements IResourc
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
-      return (
+      const response = (
         await this.instances.listResourceInstances({
           ...params,
           ...this.config.apiContext.environmentContext,
         })
       ).data;
+      return Array.isArray(response) ? response : response.data;
     } catch (err) {
       this.handleApiError(err);
     }

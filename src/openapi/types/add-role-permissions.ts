@@ -10,14 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface AddRolePermissions
- */
 export interface AddRolePermissions {
   /**
    * List of permissions to assign to the role. If a permission is already granted to the role it is skipped. Each permission can be either a resource action id, or `{resource_key}:{action_key}`, i.e: the \"permission name\".
-   * @type {Array<string>}
    */
   permissions: Array<string>;
 }

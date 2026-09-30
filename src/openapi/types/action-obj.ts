@@ -10,34 +10,10 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface ActionObj
- */
 export interface ActionObj {
-  /**
-   *
-   * @type {string}
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   */
   key: string;
-  /**
-   *
-   * @type {string}
-   */
   name?: string;
-  /**
-   *
-   * @type {string}
-   */
   created_at: string;
-  /**
-   *
-   * @type {string}
-   */
   updated_at: string;
 }

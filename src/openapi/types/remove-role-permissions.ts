@@ -10,14 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface RemoveRolePermissions
- */
 export interface RemoveRolePermissions {
   /**
    * List of permissions to remove from the role. If a permission is not found it is skipped. Each permission can be either a resource action id, or `{resource_key}:{action_key}`,i.e: the \"permission name\".
-   * @type {Array<string>}
    */
   permissions: Array<string>;
 }

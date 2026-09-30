@@ -10,39 +10,40 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface OrganizationRead
- */
+// May contain unused imports in some cases
+import type { UsageLimits } from './usage-limits';
+
 export interface OrganizationRead {
   /**
    * A URL-friendly name of the organization (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the organization.
-   * @type {string}
    */
   key: string;
   /**
    * Unique id of the organization
-   * @type {string}
    */
   id: string;
   /**
+   * Is this an enterprise account?
+   */
+  is_enterprise: boolean;
+  /**
+   * Usage limits for this organization
+   */
+  usage_limits?: UsageLimits;
+  /**
    * Date and time when the organization was created (ISO_8601 format).
-   * @type {string}
    */
   created_at: string;
   /**
    * Date and time when the organization was last updated/modified (ISO_8601 format).
-   * @type {string}
    */
   updated_at: string;
   /**
    * The name of the organization, usually it\'s your company\'s name.
-   * @type {string}
    */
   name: string;
   /**
    * the settings for this project
-   * @type {object}
    */
   settings?: object;
 }

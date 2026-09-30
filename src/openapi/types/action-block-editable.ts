@@ -10,24 +10,16 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface ActionBlockEditable
- */
 export interface ActionBlockEditable {
   /**
    * a more descriptive name for the action
-   * @type {string}
    */
   name?: string;
   /**
    * optional description string explaining what this action represents in your system
-   * @type {string}
    */
   description?: string;
-  /**
-   *
-   * @type {object}
-   */
   attributes?: object;
+  v1compat_path?: string;
+  v1compat_name?: string;
 }

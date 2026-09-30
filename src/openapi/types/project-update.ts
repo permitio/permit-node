@@ -10,29 +10,21 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface ProjectUpdate
- */
 export interface ProjectUpdate {
   /**
    * The name of the project
-   * @type {string}
    */
   name?: string;
   /**
    * a longer description outlining the project objectives
-   * @type {string}
    */
   description?: string;
   /**
    * the settings for this project
-   * @type {object}
    */
   settings?: object;
   /**
    * the id of the policy repo to use for this project
-   * @type {string}
    */
   active_policy_repo_id?: string;
 }

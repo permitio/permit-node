@@ -20,10 +20,13 @@ published entry points, and runs local unit, module-import, and tooling tests.
 
 ## Generated source
 
-Do not rebaseline generated API shapes as part of tooling changes. The generation script runs
-`normalize:openapi`, which applies compiler-directed type imports and compatibility annotations,
-then formats the result. Keep the normalization tests and public declaration checks passing.
-The pinned fixture guard checks generator behavior independently; `pnpm check:codegen` needs Java.
+Regenerate from the reviewed committed snapshot with `pnpm generate-openapi-client`. The shared
+configuration, checked schema corrections and narrow template adaptations live in `openapi/` and
+`scripts/openapi-*.mjs`. The generator normalizes strict imports and annotations, formats output,
+and checks the SDK before replacing generated files. Keep the normalization and shape tests passing.
+`pnpm check:openapi` verifies two clean generations and committed output; `pnpm check:codegen`
+retains the historical fixture checks. Both require Java 17. See `openapi/README.md` before
+refreshing the snapshot; never bypass schema validation or invent unspecified bulk-result fields.
 
 ## Dependencies and hooks
 

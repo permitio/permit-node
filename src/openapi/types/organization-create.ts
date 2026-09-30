@@ -10,24 +10,17 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface OrganizationCreate
- */
 export interface OrganizationCreate {
   /**
    * A URL-friendly name of the organization (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the organization.
-   * @type {string}
    */
   key: string;
   /**
    * The name of the organization, usually it\'s your company\'s name.
-   * @type {string}
    */
   name: string;
   /**
    * the settings for this project
-   * @type {object}
    */
   settings?: object;
 }

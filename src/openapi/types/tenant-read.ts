@@ -10,64 +10,49 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface TenantRead
- */
 export interface TenantRead {
   /**
    * A unique id by which Permit will identify the tenant. The tenant key must be url-friendly (slugified).
-   * @type {string}
    */
   key: string;
   /**
    * Unique id of the tenant
-   * @type {string}
    */
   id: string;
   /**
    * Unique id of the organization that the tenant belongs to.
-   * @type {string}
    */
   organization_id: string;
   /**
    * Unique id of the project that the tenant belongs to.
-   * @type {string}
    */
   project_id: string;
   /**
    * Unique id of the environment that the tenant belongs to.
-   * @type {string}
    */
   environment_id: string;
   /**
    * Date and time when the tenant was created (ISO_8601 format).
-   * @type {string}
    */
   created_at: string;
   /**
    * Date and time when the tenant was last updated/modified (ISO_8601 format).
-   * @type {string}
    */
   updated_at: string;
   /**
    * Date and time when the tenant was last active (ISO_8601 format). In other words, this is the last time a permission check was done on a resource belonging to this tenant.
-   * @type {string}
    */
   last_action_at: string;
   /**
    * A descriptive name for the tenant
-   * @type {string}
    */
   name: string;
   /**
    * an optional longer description of the tenant
-   * @type {string}
    */
   description?: string;
   /**
    * Arbitraty tenant attributes that will be used to enforce attribute-based access control policies.
-   * @type {object}
    */
   attributes?: object;
 }

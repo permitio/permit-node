@@ -10,8 +10,4 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface LocationInner
- */
-export interface LocationInner {}
+export type LocationInner = number | string;

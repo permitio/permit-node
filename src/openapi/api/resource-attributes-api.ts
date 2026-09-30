@@ -10,8 +10,9 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
-import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
@@ -21,11 +22,11 @@ import {
   setSearchParams,
   toPathString,
 } from '../common';
-import { Configuration } from '../configuration';
-import {
-  type ResourceAttributeCreate,
-  type ResourceAttributeRead,
-  type ResourceAttributeUpdate,
+import type { Configuration } from '../configuration';
+import type {
+  ResourceAttributeCreate,
+  ResourceAttributeRead,
+  ResourceAttributeUpdate,
 } from '../types';
 /**
  * ResourceAttributesApi - axios parameter creator
@@ -35,26 +36,26 @@ export const ResourceAttributesApiAxiosParamCreator = function (configuration?: 
     /**
      * Creates a new attribute as part of the resource definition.
      * @summary Create Resource Attribute
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {ResourceAttributeCreate} resourceAttributeCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createResourceAttribute: async (
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       resourceAttributeCreate: ResourceAttributeCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'resourceId' is not null or undefined
+      assertParamExists('createResourceAttribute', 'resourceId', resourceId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('createResourceAttribute', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('createResourceAttribute', 'envId', envId);
-      // verify required parameter 'resourceId' is not null or undefined
-      assertParamExists('createResourceAttribute', 'resourceId', resourceId);
       // verify required parameter 'resourceAttributeCreate' is not null or undefined
       assertParamExists(
         'createResourceAttribute',
@@ -62,9 +63,9 @@ export const ResourceAttributesApiAxiosParamCreator = function (configuration?: 
         resourceAttributeCreate,
       );
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)));
+        .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -81,6 +82,7 @@ export const ResourceAttributesApiAxiosParamCreator = function (configuration?: 
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -103,38 +105,38 @@ export const ResourceAttributesApiAxiosParamCreator = function (configuration?: 
     /**
      * Deletes the attribute and all its related data.  Note: If the attribute is used by policies, removing it will cause the attribute to evaluate as `undefined`.
      * @summary Delete Resource Attribute
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteResourceAttribute: async (
-      projId: string,
-      envId: string,
       resourceId: string,
       attributeId: string,
+      projId: string,
+      envId: string,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('deleteResourceAttribute', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('deleteResourceAttribute', 'envId', envId);
       // verify required parameter 'resourceId' is not null or undefined
       assertParamExists('deleteResourceAttribute', 'resourceId', resourceId);
       // verify required parameter 'attributeId' is not null or undefined
       assertParamExists('deleteResourceAttribute', 'attributeId', attributeId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('deleteResourceAttribute', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('deleteResourceAttribute', 'envId', envId);
       const localVarPath =
         `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes/{attribute_id}`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-          .replace(`{${'attribute_id'}}`, encodeURIComponent(String(attributeId)));
+          .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+          .replace('{attribute_id}', encodeURIComponent(String(attributeId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -158,6 +160,8 @@ export const ResourceAttributesApiAxiosParamCreator = function (configuration?: 
         localVarQueryParameter['per_page'] = perPage;
       }
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -174,34 +178,34 @@ export const ResourceAttributesApiAxiosParamCreator = function (configuration?: 
     /**
      * Gets a single attribute defined on the resource, if such attribute exists.
      * @summary Get Resource Attribute
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getResourceAttribute: async (
-      projId: string,
-      envId: string,
       resourceId: string,
       attributeId: string,
-      options: AxiosRequestConfig = {},
+      projId: string,
+      envId: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('getResourceAttribute', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('getResourceAttribute', 'envId', envId);
       // verify required parameter 'resourceId' is not null or undefined
       assertParamExists('getResourceAttribute', 'resourceId', resourceId);
       // verify required parameter 'attributeId' is not null or undefined
       assertParamExists('getResourceAttribute', 'attributeId', attributeId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getResourceAttribute', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getResourceAttribute', 'envId', envId);
       const localVarPath =
         `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes/{attribute_id}`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-          .replace(`{${'attribute_id'}}`, encodeURIComponent(String(attributeId)));
+          .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+          .replace('{attribute_id}', encodeURIComponent(String(attributeId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -216,6 +220,8 @@ export const ResourceAttributesApiAxiosParamCreator = function (configuration?: 
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -233,32 +239,32 @@ export const ResourceAttributesApiAxiosParamCreator = function (configuration?: 
     /**
      * Lists all the attributes defined on the resource.
      * @summary List Resource Attributes
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listResourceAttributes: async (
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'resourceId' is not null or undefined
+      assertParamExists('listResourceAttributes', 'resourceId', resourceId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('listResourceAttributes', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('listResourceAttributes', 'envId', envId);
-      // verify required parameter 'resourceId' is not null or undefined
-      assertParamExists('listResourceAttributes', 'resourceId', resourceId);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)));
+        .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -282,6 +288,8 @@ export const ResourceAttributesApiAxiosParamCreator = function (configuration?: 
         localVarQueryParameter['per_page'] = perPage;
       }
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -298,30 +306,30 @@ export const ResourceAttributesApiAxiosParamCreator = function (configuration?: 
     /**
      * Partially updates the attribute defined on a resource. Fields that will be provided will be completely overwritten.
      * @summary Update Resource Attribute
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ResourceAttributeUpdate} resourceAttributeUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateResourceAttribute: async (
-      projId: string,
-      envId: string,
       resourceId: string,
       attributeId: string,
+      projId: string,
+      envId: string,
       resourceAttributeUpdate: ResourceAttributeUpdate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('updateResourceAttribute', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('updateResourceAttribute', 'envId', envId);
       // verify required parameter 'resourceId' is not null or undefined
       assertParamExists('updateResourceAttribute', 'resourceId', resourceId);
       // verify required parameter 'attributeId' is not null or undefined
       assertParamExists('updateResourceAttribute', 'attributeId', attributeId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('updateResourceAttribute', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('updateResourceAttribute', 'envId', envId);
       // verify required parameter 'resourceAttributeUpdate' is not null or undefined
       assertParamExists(
         'updateResourceAttribute',
@@ -330,10 +338,10 @@ export const ResourceAttributesApiAxiosParamCreator = function (configuration?: 
       );
       const localVarPath =
         `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes/{attribute_id}`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-          .replace(`{${'attribute_id'}}`, encodeURIComponent(String(attributeId)));
+          .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+          .replace('{attribute_id}', encodeURIComponent(String(attributeId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -350,6 +358,7 @@ export const ResourceAttributesApiAxiosParamCreator = function (configuration?: 
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -381,146 +390,201 @@ export const ResourceAttributesApiFp = function (configuration?: Configuration) 
     /**
      * Creates a new attribute as part of the resource definition.
      * @summary Create Resource Attribute
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {ResourceAttributeCreate} resourceAttributeCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async createResourceAttribute(
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       resourceAttributeCreate: ResourceAttributeCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceAttributeRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createResourceAttribute(
+        resourceId,
         projId,
         envId,
-        resourceId,
         resourceAttributeCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceAttributesApi.createResourceAttribute']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Deletes the attribute and all its related data.  Note: If the attribute is used by policies, removing it will cause the attribute to evaluate as `undefined`.
      * @summary Delete Resource Attribute
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deleteResourceAttribute(
-      projId: string,
-      envId: string,
       resourceId: string,
       attributeId: string,
+      projId: string,
+      envId: string,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteResourceAttribute(
-        projId,
-        envId,
         resourceId,
         attributeId,
+        projId,
+        envId,
         page,
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceAttributesApi.deleteResourceAttribute']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Gets a single attribute defined on the resource, if such attribute exists.
      * @summary Get Resource Attribute
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getResourceAttribute(
-      projId: string,
-      envId: string,
       resourceId: string,
       attributeId: string,
-      options?: AxiosRequestConfig,
+      projId: string,
+      envId: string,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceAttributeRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getResourceAttribute(
-        projId,
-        envId,
         resourceId,
         attributeId,
+        projId,
+        envId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceAttributesApi.getResourceAttribute']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists all the attributes defined on the resource.
      * @summary List Resource Attributes
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listResourceAttributes(
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ResourceAttributeRead>>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listResourceAttributes(
+        resourceId,
         projId,
         envId,
-        resourceId,
         page,
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceAttributesApi.listResourceAttributes']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Partially updates the attribute defined on a resource. Fields that will be provided will be completely overwritten.
      * @summary Update Resource Attribute
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ResourceAttributeUpdate} resourceAttributeUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async updateResourceAttribute(
-      projId: string,
-      envId: string,
       resourceId: string,
       attributeId: string,
+      projId: string,
+      envId: string,
       resourceAttributeUpdate: ResourceAttributeUpdate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceAttributeRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateResourceAttribute(
-        projId,
-        envId,
         resourceId,
         attributeId,
+        projId,
+        envId,
         resourceAttributeUpdate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceAttributesApi.updateResourceAttribute']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
@@ -538,119 +602,108 @@ export const ResourceAttributesApiFactory = function (
     /**
      * Creates a new attribute as part of the resource definition.
      * @summary Create Resource Attribute
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {ResourceAttributeCreate} resourceAttributeCreate
+     * @param {ResourceAttributesApiCreateResourceAttributeRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createResourceAttribute(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      resourceAttributeCreate: ResourceAttributeCreate,
-      options?: any,
+      requestParameters: ResourceAttributesApiCreateResourceAttributeRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceAttributeRead> {
       return localVarFp
-        .createResourceAttribute(projId, envId, resourceId, resourceAttributeCreate, options)
+        .createResourceAttribute(
+          requestParameters.resourceId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.resourceAttributeCreate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes the attribute and all its related data.  Note: If the attribute is used by policies, removing it will cause the attribute to evaluate as `undefined`.
      * @summary Delete Resource Attribute
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {ResourceAttributesApiDeleteResourceAttributeRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteResourceAttribute(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      attributeId: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
+      requestParameters: ResourceAttributesApiDeleteResourceAttributeRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<void> {
       return localVarFp
-        .deleteResourceAttribute(projId, envId, resourceId, attributeId, page, perPage, options)
+        .deleteResourceAttribute(
+          requestParameters.resourceId,
+          requestParameters.attributeId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Gets a single attribute defined on the resource, if such attribute exists.
      * @summary Get Resource Attribute
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
+     * @param {ResourceAttributesApiGetResourceAttributeRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getResourceAttribute(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      attributeId: string,
-      options?: any,
+      requestParameters: ResourceAttributesApiGetResourceAttributeRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceAttributeRead> {
       return localVarFp
-        .getResourceAttribute(projId, envId, resourceId, attributeId, options)
+        .getResourceAttribute(
+          requestParameters.resourceId,
+          requestParameters.attributeId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists all the attributes defined on the resource.
      * @summary List Resource Attributes
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {ResourceAttributesApiListResourceAttributesRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listResourceAttributes(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
+      requestParameters: ResourceAttributesApiListResourceAttributesRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<Array<ResourceAttributeRead>> {
       return localVarFp
-        .listResourceAttributes(projId, envId, resourceId, page, perPage, options)
+        .listResourceAttributes(
+          requestParameters.resourceId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Partially updates the attribute defined on a resource. Fields that will be provided will be completely overwritten.
      * @summary Update Resource Attribute
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
-     * @param {ResourceAttributeUpdate} resourceAttributeUpdate
+     * @param {ResourceAttributesApiUpdateResourceAttributeRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateResourceAttribute(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      attributeId: string,
-      resourceAttributeUpdate: ResourceAttributeUpdate,
-      options?: any,
+      requestParameters: ResourceAttributesApiUpdateResourceAttributeRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceAttributeRead> {
       return localVarFp
         .updateResourceAttribute(
-          projId,
-          envId,
-          resourceId,
-          attributeId,
-          resourceAttributeUpdate,
+          requestParameters.resourceId,
+          requestParameters.attributeId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.resourceAttributeUpdate,
           options,
         )
         .then((request) => request(axios, basePath));
@@ -660,182 +713,145 @@ export const ResourceAttributesApiFactory = function (
 
 /**
  * Request parameters for createResourceAttribute operation in ResourceAttributesApi.
- * @interface ResourceAttributesApiCreateResourceAttributeRequest
  */
 export interface ResourceAttributesApiCreateResourceAttributeRequest {
   /**
+   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+   */
+  readonly resourceId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly resourceId: string;
-
-  /**
-   *
-   * @type {ResourceAttributeCreate}
-   */
   readonly resourceAttributeCreate: ResourceAttributeCreate;
 }
 
 /**
  * Request parameters for deleteResourceAttribute operation in ResourceAttributesApi.
- * @interface ResourceAttributesApiDeleteResourceAttributeRequest
  */
 export interface ResourceAttributesApiDeleteResourceAttributeRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly attributeId: string;
 
   /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
+  /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for getResourceAttribute operation in ResourceAttributesApi.
- * @interface ResourceAttributesApiGetResourceAttributeRequest
  */
 export interface ResourceAttributesApiGetResourceAttributeRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly attributeId: string;
-}
 
-/**
- * Request parameters for listResourceAttributes operation in ResourceAttributesApi.
- * @interface ResourceAttributesApiListResourceAttributesRequest
- */
-export interface ResourceAttributesApiListResourceAttributesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
+}
 
+/**
+ * Request parameters for listResourceAttributes operation in ResourceAttributesApi.
+ */
+export interface ResourceAttributesApiListResourceAttributesRequest {
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly resourceId: string;
 
   /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
+  /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateResourceAttribute operation in ResourceAttributesApi.
- * @interface ResourceAttributesApiUpdateResourceAttributeRequest
  */
 export interface ResourceAttributesApiUpdateResourceAttributeRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly attributeId: string;
 
   /**
-   *
-   * @type {ResourceAttributeUpdate}
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
   readonly resourceAttributeUpdate: ResourceAttributeUpdate;
 }
 
 /**
  * ResourceAttributesApi - object-oriented interface
- * @class ResourceAttributesApi
- * @extends {BaseAPI}
  */
 export class ResourceAttributesApi extends BaseAPI {
   /**
@@ -843,17 +859,17 @@ export class ResourceAttributesApi extends BaseAPI {
    * @summary Create Resource Attribute
    * @param {ResourceAttributesApiCreateResourceAttributeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public createResourceAttribute(
     requestParameters: ResourceAttributesApiCreateResourceAttributeRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceAttributesApiFp(this.configuration)
       .createResourceAttribute(
+        requestParameters.resourceId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.resourceId,
         requestParameters.resourceAttributeCreate,
         options,
       )
@@ -865,18 +881,18 @@ export class ResourceAttributesApi extends BaseAPI {
    * @summary Delete Resource Attribute
    * @param {ResourceAttributesApiDeleteResourceAttributeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public deleteResourceAttribute(
     requestParameters: ResourceAttributesApiDeleteResourceAttributeRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceAttributesApiFp(this.configuration)
       .deleteResourceAttribute(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.attributeId,
+        requestParameters.projId,
+        requestParameters.envId,
         requestParameters.page,
         requestParameters.perPage,
         options,
@@ -889,18 +905,18 @@ export class ResourceAttributesApi extends BaseAPI {
    * @summary Get Resource Attribute
    * @param {ResourceAttributesApiGetResourceAttributeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public getResourceAttribute(
     requestParameters: ResourceAttributesApiGetResourceAttributeRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceAttributesApiFp(this.configuration)
       .getResourceAttribute(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.attributeId,
+        requestParameters.projId,
+        requestParameters.envId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -911,17 +927,17 @@ export class ResourceAttributesApi extends BaseAPI {
    * @summary List Resource Attributes
    * @param {ResourceAttributesApiListResourceAttributesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public listResourceAttributes(
     requestParameters: ResourceAttributesApiListResourceAttributesRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceAttributesApiFp(this.configuration)
       .listResourceAttributes(
+        requestParameters.resourceId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.resourceId,
         requestParameters.page,
         requestParameters.perPage,
         options,
@@ -934,18 +950,18 @@ export class ResourceAttributesApi extends BaseAPI {
    * @summary Update Resource Attribute
    * @param {ResourceAttributesApiUpdateResourceAttributeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public updateResourceAttribute(
     requestParameters: ResourceAttributesApiUpdateResourceAttributeRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceAttributesApiFp(this.configuration)
       .updateResourceAttribute(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.attributeId,
+        requestParameters.projId,
+        requestParameters.envId,
         requestParameters.resourceAttributeUpdate,
         options,
       )

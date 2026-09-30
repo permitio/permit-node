@@ -17,9 +17,6 @@ import {
 } from '#src/openapi/index';
 import { BulkOperationsApi } from '#src/openapi/api/bulk-operations-api';
 import { BASE_PATH } from '#src/openapi/base';
-import { type UserCreateBulkOperation } from '#src/openapi/types/user-create-bulk-operation';
-import { type UserDeleteBulkOperation } from '#src/openapi/types/user-delete-bulk-operation';
-import { type UserReplaceBulkOperation } from '#src/openapi/types/user-replace-bulk-operation';
 
 import { BaseFactsPermitAPI, type IPagination, type IWaitForSync } from '#src/api/base';
 import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
@@ -231,7 +228,7 @@ export interface IUsersApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkUserCreate(users: UserCreate[]): Promise<UserCreateBulkOperation>;
+  bulkUserCreate(users: UserCreate[]): Promise<object>;
 
   /**
    * Deletes users in bulk.
@@ -241,7 +238,7 @@ export interface IUsersApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkUserDelete(userKeys: string[]): Promise<UserDeleteBulkOperation>;
+  bulkUserDelete(userKeys: string[]): Promise<object>;
 
   /**
    * Replaces users in bulk.
@@ -253,7 +250,7 @@ export interface IUsersApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkUserReplace(users: UserCreate[]): Promise<UserReplaceBulkOperation>;
+  bulkUserReplace(users: UserCreate[]): Promise<object>;
 }
 
 /**
@@ -490,12 +487,10 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
-      return (
-        await this.roleAssignments.unassignRole({
-          ...this.config.apiContext.environmentContext,
-          roleAssignmentRemove: unassignment,
-        })
-      ).data;
+      await this.roleAssignments.unassignRole({
+        ...this.config.apiContext.environmentContext,
+        roleAssignmentRemove: unassignment,
+      });
     } catch (err) {
       this.handleApiError(err);
     }
@@ -505,25 +500,23 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
    * Creates users in bulk.
    *
    * @param users The array of users to create.
-   * @returns A promise that resolves to the bulk creation result.
+   * @returns The response object. Its fields are unspecified by the current API schema.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async bulkUserCreate(users: UserCreate[]): Promise<UserCreateBulkOperation> {
-    // Ensure access level and context
+  public async bulkUserCreate(users: UserCreate[]): Promise<object> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.bulkOperationsApi.bulkCreateUsers({
           ...this.config.apiContext.environmentContext,
-          userCreateBulkOperations: {
+          userCreateBulkOperation: {
             operations: users,
           },
         })
       ).data;
     } catch (err) {
-      // Handle any errors that occur during the API call
       this.handleApiError(err);
     }
   }
@@ -532,12 +525,11 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
    * Deletes users in bulk.
    *
    * @param userKeys The array of user keys to delete.
-   * @returns A promise that resolves to the bulk deletion result.
+   * @returns The response object. Its fields are unspecified by the current API schema.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async bulkUserDelete(userKeys: string[]): Promise<UserDeleteBulkOperation> {
-    // Ensure access level and context
+  public async bulkUserDelete(userKeys: string[]): Promise<object> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -550,7 +542,6 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
         })
       ).data;
     } catch (err) {
-      // Handle any errors that occur during the API call
       this.handleApiError(err);
     }
   }
@@ -561,12 +552,11 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
    * If a user exists, it will be replaced. Otherwise, it will be created.
    *
    * @param users The array of users to replace.
-   * @returns A promise that resolves to the bulk replacement result.
+   * @returns The response object. Its fields are unspecified by the current API schema.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async bulkUserReplace(users: UserCreate[]): Promise<UserReplaceBulkOperation> {
-    // Ensure access level and context
+  public async bulkUserReplace(users: UserCreate[]): Promise<object> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -579,7 +569,6 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
         })
       ).data;
     } catch (err) {
-      // Handle any errors that occur during the API call
       this.handleApiError(err);
     }
   }
@@ -615,8 +604,8 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
       return (
         await this.roleAssignments.listRoleAssignments({
           ...this.config.apiContext.environmentContext,
-          user,
-          ...(tenant !== undefined && { tenant }),
+          user: [user],
+          ...(tenant !== undefined && { tenant: [tenant] }),
           page,
           perPage,
           detailed,

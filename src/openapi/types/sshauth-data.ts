@@ -10,29 +10,18 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface SSHAuthData
- */
 export interface SSHAuthData {
-  /**
-   *
-   * @type {string}
-   */
   auth_type?: SSHAuthDataAuthTypeEnum;
   /**
    * SSH username
-   * @type {string}
    */
   username: string;
   /**
    * SSH public key
-   * @type {string}
    */
   public_key?: string;
   /**
    * SSH private key
-   * @type {string}
    */
   private_key: string;
 }

@@ -77,7 +77,7 @@ export interface IDeprecatedWriteApis {
   updateRole(roleId: string, role: RoleUpdate): Promise<RoleRead>;
   deleteRole(roleId: string): Promise<AxiosResponse<void>>;
   assignRole(assignedRole: RoleAssignmentCreate): Promise<RoleAssignmentRead>;
-  unassignRole(removedRole: RoleAssignmentRemove): Promise<AxiosResponse<void>>;
+  unassignRole(removedRole: RoleAssignmentRemove): Promise<AxiosResponse<RoleAssignmentRead>>;
   createResource(resource: ResourceCreate): Promise<ResourceRead>;
   updateResource(resourceId: string, resource: ResourceUpdate): Promise<ResourceRead>;
   deleteResource(resourceId: string): Promise<AxiosResponse<void>>;
@@ -227,7 +227,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
       });
 
       this.logger.debug(`[${response.status}] permit.api.listRoles()`);
-      return response.data;
+      return Array.isArray(response.data) ? response.data : response.data.data;
     } catch (err) {
       if (axios.isAxiosError(err)) {
         this.logger.error(
@@ -354,7 +354,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...(page !== undefined && { page }),
       });
       this.logger.debug(`[${response.status}] permit.api.listTenants(${page ?? ''})`);
-      return response.data;
+      return Array.isArray(response.data) ? response.data : response.data.data;
     } catch (err) {
       if (axios.isAxiosError(err)) {
         this.logger.error(
@@ -412,8 +412,8 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     try {
       const response = await this._roleAssignments.listRoleAssignments({
         ...this.config.apiContext.environmentContext,
-        user: user,
-        ...(tenant !== undefined && { tenant }),
+        user: [user],
+        ...(tenant !== undefined && { tenant: [tenant] }),
       });
       this.logger.debug(
         `[${response.status}] permit.api.getAssignedRoles(${user}, ${tenant ?? 'all tenants'})`,
@@ -880,7 +880,9 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    * @deprecated replaced with permit.api.users.unassignRole()
    */
-  public async unassignRole(removedRole: RoleAssignmentRemove): Promise<AxiosResponse<void>> {
+  public async unassignRole(
+    removedRole: RoleAssignmentRemove,
+  ): Promise<AxiosResponse<RoleAssignmentRead>> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {

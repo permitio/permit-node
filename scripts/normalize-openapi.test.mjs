@@ -60,7 +60,7 @@ test.each([false, true])(
 import { Model, Unused } from './model';
 import { AxiosInstance, AxiosResponse } from 'axios';
 /**
- * Stored API configuration.
+ * Stored API configuration.${'  '}
  * @export
  * @memberof Configuration
  */
@@ -84,6 +84,7 @@ export const createRequestFunction = function (globalAxios: AxiosInstance) {
     expect(normalized).not.toContain('Unused');
     expect(normalized).not.toContain('@export');
     expect(normalized).not.toContain('@memberof');
+    expect(normalized).not.toMatch(/configuration\. +\n/);
     const result = spawnSync(
       process.execPath,
       [join(process.cwd(), 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.build.json'],
@@ -123,4 +124,20 @@ test('rejects invalid compiler options instead of silently normalizing a partial
   const root = fixture();
   writeFileSync(join(root, 'tsconfig.build.json'), '{"compilerOptions":{"target":"invalid"}}');
   expect(() => normalizeOpenApi(root)).toThrow(/TS6046/);
+});
+
+test('removes imports used only by generated required-parameter documentation', () => {
+  const root = fixture();
+  writeFileSync(join(root, 'src/openapi/base.ts'), 'export class RequiredError extends Error {}');
+  const file = join(root, 'src/openapi/api.ts');
+  writeFileSync(
+    file,
+    `import { RequiredError } from './base';
+/** @throws {RequiredError} */
+export function read(): string { return 'ok'; }`,
+  );
+  normalizeOpenApi(root);
+  const result = readFileSync(file, 'utf8');
+  expect(result).not.toContain("from './base'");
+  expect(result).toContain('@throws If a required parameter is missing.');
 });

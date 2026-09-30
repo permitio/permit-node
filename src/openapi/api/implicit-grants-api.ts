@@ -10,8 +10,9 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
-import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
@@ -21,12 +22,12 @@ import {
   setSearchParams,
   toPathString,
 } from '../common';
-import { Configuration } from '../configuration';
-import {
-  type DerivedRoleRuleCreate,
-  type DerivedRoleRuleDelete,
-  type DerivedRoleRuleRead,
-  type PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
+import type { Configuration } from '../configuration';
+import type {
+  DerivedRoleRuleCreate,
+  DerivedRoleRuleDelete,
+  DerivedRoleRuleRead,
+  PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings,
 } from '../types';
 /**
  * ImplicitGrantsApi - axios parameter creator
@@ -36,38 +37,38 @@ export const ImplicitGrantsApiAxiosParamCreator = function (configuration?: Conf
     /**
      * Creates an implicit grant on a given role
      * @summary Create Implicit Grant
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {DerivedRoleRuleCreate} derivedRoleRuleCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createImplicitGrant: async (
-      projId: string,
-      envId: string,
       resourceId: string,
       roleId: string,
+      projId: string,
+      envId: string,
       derivedRoleRuleCreate: DerivedRoleRuleCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('createImplicitGrant', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('createImplicitGrant', 'envId', envId);
       // verify required parameter 'resourceId' is not null or undefined
       assertParamExists('createImplicitGrant', 'resourceId', resourceId);
       // verify required parameter 'roleId' is not null or undefined
       assertParamExists('createImplicitGrant', 'roleId', roleId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('createImplicitGrant', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('createImplicitGrant', 'envId', envId);
       // verify required parameter 'derivedRoleRuleCreate' is not null or undefined
       assertParamExists('createImplicitGrant', 'derivedRoleRuleCreate', derivedRoleRuleCreate);
       const localVarPath =
         `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/implicit_grants`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-          .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)));
+          .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+          .replace('{role_id}', encodeURIComponent(String(roleId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -84,6 +85,7 @@ export const ImplicitGrantsApiAxiosParamCreator = function (configuration?: Conf
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -106,38 +108,38 @@ export const ImplicitGrantsApiAxiosParamCreator = function (configuration?: Conf
     /**
      * Deletes an implicit grant on a given role
      * @summary Delete Implicit Grant
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {DerivedRoleRuleDelete} derivedRoleRuleDelete
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteImplicitGrant: async (
-      projId: string,
-      envId: string,
       roleId: string,
       resourceId: string,
+      projId: string,
+      envId: string,
       derivedRoleRuleDelete: DerivedRoleRuleDelete,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('deleteImplicitGrant', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('deleteImplicitGrant', 'envId', envId);
       // verify required parameter 'roleId' is not null or undefined
       assertParamExists('deleteImplicitGrant', 'roleId', roleId);
       // verify required parameter 'resourceId' is not null or undefined
       assertParamExists('deleteImplicitGrant', 'resourceId', resourceId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('deleteImplicitGrant', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('deleteImplicitGrant', 'envId', envId);
       // verify required parameter 'derivedRoleRuleDelete' is not null or undefined
       assertParamExists('deleteImplicitGrant', 'derivedRoleRuleDelete', derivedRoleRuleDelete);
       const localVarPath =
         `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/implicit_grants`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)))
-          .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)));
+          .replace('{role_id}', encodeURIComponent(String(roleId)))
+          .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -154,6 +156,7 @@ export const ImplicitGrantsApiAxiosParamCreator = function (configuration?: Conf
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -176,42 +179,42 @@ export const ImplicitGrantsApiAxiosParamCreator = function (configuration?: Conf
     /**
      * Update the `when` for implicit grants on a given role
      * @summary Update Implicit Grants Conditions
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings} permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings} permitBackendSchemasSchemaDerivedRoleRuleDerivationSettings
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateImplicitGrantsConditions: async (
-      projId: string,
-      envId: string,
       resourceId: string,
       roleId: string,
-      permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings: PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
-      options: AxiosRequestConfig = {},
+      projId: string,
+      envId: string,
+      permitBackendSchemasSchemaDerivedRoleRuleDerivationSettings: PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('updateImplicitGrantsConditions', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('updateImplicitGrantsConditions', 'envId', envId);
       // verify required parameter 'resourceId' is not null or undefined
       assertParamExists('updateImplicitGrantsConditions', 'resourceId', resourceId);
       // verify required parameter 'roleId' is not null or undefined
       assertParamExists('updateImplicitGrantsConditions', 'roleId', roleId);
-      // verify required parameter 'permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings' is not null or undefined
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('updateImplicitGrantsConditions', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('updateImplicitGrantsConditions', 'envId', envId);
+      // verify required parameter 'permitBackendSchemasSchemaDerivedRoleRuleDerivationSettings' is not null or undefined
       assertParamExists(
         'updateImplicitGrantsConditions',
-        'permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings',
-        permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
+        'permitBackendSchemasSchemaDerivedRoleRuleDerivationSettings',
+        permitBackendSchemasSchemaDerivedRoleRuleDerivationSettings,
       );
       const localVarPath =
         `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/implicit_grants/conditions`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-          .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)));
+          .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+          .replace('{role_id}', encodeURIComponent(String(roleId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -228,6 +231,7 @@ export const ImplicitGrantsApiAxiosParamCreator = function (configuration?: Conf
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -237,7 +241,7 @@ export const ImplicitGrantsApiAxiosParamCreator = function (configuration?: Conf
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
+        permitBackendSchemasSchemaDerivedRoleRuleDerivationSettings,
         localVarRequestOptions,
         configuration,
       );
@@ -259,94 +263,125 @@ export const ImplicitGrantsApiFp = function (configuration?: Configuration) {
     /**
      * Creates an implicit grant on a given role
      * @summary Create Implicit Grant
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {DerivedRoleRuleCreate} derivedRoleRuleCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async createImplicitGrant(
-      projId: string,
-      envId: string,
       resourceId: string,
       roleId: string,
+      projId: string,
+      envId: string,
       derivedRoleRuleCreate: DerivedRoleRuleCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DerivedRoleRuleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createImplicitGrant(
-        projId,
-        envId,
         resourceId,
         roleId,
+        projId,
+        envId,
         derivedRoleRuleCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ImplicitGrantsApi.createImplicitGrant']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Deletes an implicit grant on a given role
      * @summary Delete Implicit Grant
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {DerivedRoleRuleDelete} derivedRoleRuleDelete
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deleteImplicitGrant(
-      projId: string,
-      envId: string,
       roleId: string,
       resourceId: string,
+      projId: string,
+      envId: string,
       derivedRoleRuleDelete: DerivedRoleRuleDelete,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteImplicitGrant(
-        projId,
-        envId,
         roleId,
         resourceId,
+        projId,
+        envId,
         derivedRoleRuleDelete,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ImplicitGrantsApi.deleteImplicitGrant']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Update the `when` for implicit grants on a given role
      * @summary Update Implicit Grants Conditions
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings} permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings} permitBackendSchemasSchemaDerivedRoleRuleDerivationSettings
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async updateImplicitGrantsConditions(
-      projId: string,
-      envId: string,
       resourceId: string,
       roleId: string,
-      permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings: PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
-      options?: AxiosRequestConfig,
+      projId: string,
+      envId: string,
+      permitBackendSchemasSchemaDerivedRoleRuleDerivationSettings: PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
         basePath?: string,
-      ) => AxiosPromise<PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings>
+      ) => AxiosPromise<PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateImplicitGrantsConditions(
-        projId,
-        envId,
         resourceId,
         roleId,
-        permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
+        projId,
+        envId,
+        permitBackendSchemasSchemaDerivedRoleRuleDerivationSettings,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ImplicitGrantsApi.updateImplicitGrantsConditions']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
@@ -364,75 +399,65 @@ export const ImplicitGrantsApiFactory = function (
     /**
      * Creates an implicit grant on a given role
      * @summary Create Implicit Grant
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {DerivedRoleRuleCreate} derivedRoleRuleCreate
+     * @param {ImplicitGrantsApiCreateImplicitGrantRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createImplicitGrant(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      roleId: string,
-      derivedRoleRuleCreate: DerivedRoleRuleCreate,
-      options?: any,
+      requestParameters: ImplicitGrantsApiCreateImplicitGrantRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<DerivedRoleRuleRead> {
       return localVarFp
-        .createImplicitGrant(projId, envId, resourceId, roleId, derivedRoleRuleCreate, options)
+        .createImplicitGrant(
+          requestParameters.resourceId,
+          requestParameters.roleId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.derivedRoleRuleCreate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes an implicit grant on a given role
      * @summary Delete Implicit Grant
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {DerivedRoleRuleDelete} derivedRoleRuleDelete
+     * @param {ImplicitGrantsApiDeleteImplicitGrantRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteImplicitGrant(
-      projId: string,
-      envId: string,
-      roleId: string,
-      resourceId: string,
-      derivedRoleRuleDelete: DerivedRoleRuleDelete,
-      options?: any,
+      requestParameters: ImplicitGrantsApiDeleteImplicitGrantRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<void> {
       return localVarFp
-        .deleteImplicitGrant(projId, envId, roleId, resourceId, derivedRoleRuleDelete, options)
+        .deleteImplicitGrant(
+          requestParameters.roleId,
+          requestParameters.resourceId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.derivedRoleRuleDelete,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Update the `when` for implicit grants on a given role
      * @summary Update Implicit Grants Conditions
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings} permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings
+     * @param {ImplicitGrantsApiUpdateImplicitGrantsConditionsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateImplicitGrantsConditions(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      roleId: string,
-      permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings: PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
-      options?: any,
-    ): AxiosPromise<PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings> {
+      requestParameters: ImplicitGrantsApiUpdateImplicitGrantsConditionsRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings> {
       return localVarFp
         .updateImplicitGrantsConditions(
-          projId,
-          envId,
-          resourceId,
-          roleId,
-          permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
+          requestParameters.resourceId,
+          requestParameters.roleId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.permitBackendSchemasSchemaDerivedRoleRuleDerivationSettings,
           options,
         )
         .then((request) => request(axios, basePath));
@@ -442,116 +467,87 @@ export const ImplicitGrantsApiFactory = function (
 
 /**
  * Request parameters for createImplicitGrant operation in ImplicitGrantsApi.
- * @interface ImplicitGrantsApiCreateImplicitGrantRequest
  */
 export interface ImplicitGrantsApiCreateImplicitGrantRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly roleId: string;
 
   /**
-   *
-   * @type {DerivedRoleRuleCreate}
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
   readonly derivedRoleRuleCreate: DerivedRoleRuleCreate;
 }
 
 /**
  * Request parameters for deleteImplicitGrant operation in ImplicitGrantsApi.
- * @interface ImplicitGrantsApiDeleteImplicitGrantRequest
  */
 export interface ImplicitGrantsApiDeleteImplicitGrantRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly roleId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly resourceId: string;
 
   /**
-   *
-   * @type {DerivedRoleRuleDelete}
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
   readonly derivedRoleRuleDelete: DerivedRoleRuleDelete;
 }
 
 /**
  * Request parameters for updateImplicitGrantsConditions operation in ImplicitGrantsApi.
- * @interface ImplicitGrantsApiUpdateImplicitGrantsConditionsRequest
  */
 export interface ImplicitGrantsApiUpdateImplicitGrantsConditionsRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly roleId: string;
 
   /**
-   *
-   * @type {PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings}
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    */
-  readonly permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings: PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings;
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
+  readonly permitBackendSchemasSchemaDerivedRoleRuleDerivationSettings: PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings;
 }
 
 /**
  * ImplicitGrantsApi - object-oriented interface
- * @class ImplicitGrantsApi
- * @extends {BaseAPI}
  */
 export class ImplicitGrantsApi extends BaseAPI {
   /**
@@ -559,18 +555,18 @@ export class ImplicitGrantsApi extends BaseAPI {
    * @summary Create Implicit Grant
    * @param {ImplicitGrantsApiCreateImplicitGrantRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public createImplicitGrant(
     requestParameters: ImplicitGrantsApiCreateImplicitGrantRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ImplicitGrantsApiFp(this.configuration)
       .createImplicitGrant(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.roleId,
+        requestParameters.projId,
+        requestParameters.envId,
         requestParameters.derivedRoleRuleCreate,
         options,
       )
@@ -582,18 +578,18 @@ export class ImplicitGrantsApi extends BaseAPI {
    * @summary Delete Implicit Grant
    * @param {ImplicitGrantsApiDeleteImplicitGrantRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public deleteImplicitGrant(
     requestParameters: ImplicitGrantsApiDeleteImplicitGrantRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ImplicitGrantsApiFp(this.configuration)
       .deleteImplicitGrant(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.roleId,
         requestParameters.resourceId,
+        requestParameters.projId,
+        requestParameters.envId,
         requestParameters.derivedRoleRuleDelete,
         options,
       )
@@ -605,19 +601,19 @@ export class ImplicitGrantsApi extends BaseAPI {
    * @summary Update Implicit Grants Conditions
    * @param {ImplicitGrantsApiUpdateImplicitGrantsConditionsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public updateImplicitGrantsConditions(
     requestParameters: ImplicitGrantsApiUpdateImplicitGrantsConditionsRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ImplicitGrantsApiFp(this.configuration)
       .updateImplicitGrantsConditions(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.roleId,
-        requestParameters.permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.permitBackendSchemasSchemaDerivedRoleRuleDerivationSettings,
         options,
       )
       .then((request) => request(this.axios, this.basePath));

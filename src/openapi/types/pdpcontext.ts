@@ -10,29 +10,12 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface PDPContext
- */
 export interface PDPContext {
-  /**
-   *
-   * @type {string}
-   */
   customer_id: string;
-  /**
-   *
-   * @type {string}
-   */
   client_id: string;
-  /**
-   *
-   * @type {string}
-   */
   backend_tier: string;
-  /**
-   *
-   * @type {string}
-   */
   component?: string;
+  org_id: string;
+  project_id: string;
+  env_id: string;
 }

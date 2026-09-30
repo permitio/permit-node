@@ -10,14 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface ResourceInstanceUpdate
- */
 export interface ResourceInstanceUpdate {
   /**
-   * Arbitraty resource attributes that will be used to enforce attribute-based access control policies.
-   * @type {object}
+   * Arbitrary resource attributes that will be used to enforce attribute-based access control policies.
    */
   attributes?: object;
 }

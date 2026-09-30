@@ -10,24 +10,17 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface APIKeyScopeRead
- */
 export interface APIKeyScopeRead {
   /**
    * Unique id of the organization that the api_key belongs to.
-   * @type {string}
    */
   organization_id: string;
   /**
    * Unique id of the project that the api_key belongs to.
-   * @type {string}
    */
   project_id?: string;
   /**
    * Unique id of the environment that the api_key belongs to.
-   * @type {string}
    */
   environment_id?: string;
 }

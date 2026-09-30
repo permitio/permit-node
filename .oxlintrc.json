@@ -4,7 +4,7 @@
   "categories": {
     "correctness": "error"
   },
-  "ignorePatterns": ["build/**", "docs/**", "coverage/**", "node_modules/**"],
+  "ignorePatterns": ["build/**", "docs/**", "coverage/**", "node_modules/**", ".openapi-*/**"],
   "env": {
     "builtin": true,
     "node": true,

@@ -11,41 +11,31 @@
  */
 
 // May contain unused imports in some cases
-import { type GrantedTo1 } from './granted-to1';
+import type { DerivedRoleBlockEdit } from './derived-role-block-edit';
 
-/**
- *
- * @interface ResourceRoleUpdate
- */
 export interface ResourceRoleUpdate {
   /**
    * The name of the role
-   * @type {string}
    */
   name?: string;
   /**
    * optional description string explaining what this role represents, or what permissions are granted to it.
-   * @type {string}
    */
   description?: string;
   /**
    * list of action keys that define what actions this resource role is permitted to do
-   * @type {Array<string>}
    */
   permissions?: Array<string>;
   /**
    * optional dictionary of key-value pairs that can be used to store arbitrary metadata about this role. This metadata can be used to filter role using query parameters with attr_ prefix, currently supports only \'equals\' operator
-   * @type {object}
    */
   attributes?: object;
   /**
    * list of role keys that define what roles this role extends. In other words: this role will automatically inherit all the permissions of the given roles in this list.
-   * @type {Array<string>}
    */
   extends?: Array<string>;
   /**
-   *
-   * @type {GrantedTo1}
+   * Derived role that inherit will be applied on this role
    */
-  granted_to?: GrantedTo1;
+  granted_to?: DerivedRoleBlockEdit;
 }

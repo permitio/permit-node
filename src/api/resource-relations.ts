@@ -130,7 +130,7 @@ export class ResourceRelationsApi extends BasePermitApi implements IResourceRela
           page,
           perPage,
         })
-      ).data;
+      ).data.data;
     } catch (err) {
       this.handleApiError(err);
     }

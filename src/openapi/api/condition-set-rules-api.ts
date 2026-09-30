@@ -10,8 +10,9 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
-import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
@@ -21,13 +22,12 @@ import {
   setSearchParams,
   toPathString,
 } from '../common';
-import { Configuration } from '../configuration';
-import {
-  type ConditionSetRuleCreate,
-  type ConditionSetRuleRead,
-  type ConditionSetRuleRemove,
+import type { Configuration } from '../configuration';
+import type {
+  ConditionSetRuleCreate,
+  ConditionSetRuleRead,
+  ConditionSetRuleRemove,
 } from '../types';
-
 /**
  * ConditionSetRulesApi - axios parameter creator
  */
@@ -40,13 +40,13 @@ export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: C
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ConditionSetRuleCreate} conditionSetRuleCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     assignSetPermissions: async (
       projId: string,
       envId: string,
       conditionSetRuleCreate: ConditionSetRuleCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('assignSetPermissions', 'projId', projId);
@@ -55,8 +55,8 @@ export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: C
       // verify required parameter 'conditionSetRuleCreate' is not null or undefined
       assertParamExists('assignSetPermissions', 'conditionSetRuleCreate', conditionSetRuleCreate);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/set_rules`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -73,6 +73,7 @@ export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: C
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -103,7 +104,7 @@ export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: C
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listSetPermissions: async (
       projId: string,
@@ -113,15 +114,15 @@ export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: C
       resourceSet?: string,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('listSetPermissions', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('listSetPermissions', 'envId', envId);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/set_rules`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -157,6 +158,8 @@ export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: C
         localVarQueryParameter['per_page'] = perPage;
       }
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -177,13 +180,13 @@ export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: C
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ConditionSetRuleRemove} conditionSetRuleRemove
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     unassignSetPermissions: async (
       projId: string,
       envId: string,
       conditionSetRuleRemove: ConditionSetRuleRemove,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('unassignSetPermissions', 'projId', projId);
@@ -192,8 +195,8 @@ export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: C
       // verify required parameter 'conditionSetRuleRemove' is not null or undefined
       assertParamExists('unassignSetPermissions', 'conditionSetRuleRemove', conditionSetRuleRemove);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/set_rules`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -210,6 +213,7 @@ export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: C
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -245,13 +249,13 @@ export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ConditionSetRuleCreate} conditionSetRuleCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async assignSetPermissions(
       projId: string,
       envId: string,
       conditionSetRuleCreate: ConditionSetRuleCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ConditionSetRuleRead>>
     > {
@@ -261,7 +265,18 @@ export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
         conditionSetRuleCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ConditionSetRulesApi.assignSetPermissions']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists the condition set rules matching the filter. - If the `user_set` filter is present, will only return the permissions set of that user set. - If the `permission` filter is present, will only return the permissions sets that equals to the queried permission. - If the `resource_set` filter is present, will only return the permissions set of that resource set.
@@ -274,7 +289,7 @@ export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listSetPermissions(
       projId: string,
@@ -284,7 +299,7 @@ export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
       resourceSet?: string,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ConditionSetRuleRead>>
     > {
@@ -298,7 +313,18 @@ export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ConditionSetRulesApi.listSetPermissions']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Revokes permissions to a user set *on* a resource set.  If the permission is not granted, it is skipped.
@@ -307,13 +333,13 @@ export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ConditionSetRuleRemove} conditionSetRuleRemove
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async unassignSetPermissions(
       projId: string,
       envId: string,
       conditionSetRuleRemove: ConditionSetRuleRemove,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.unassignSetPermissions(
         projId,
@@ -321,7 +347,18 @@ export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
         conditionSetRuleRemove,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ConditionSetRulesApi.unassignSetPermissions']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
@@ -339,66 +376,65 @@ export const ConditionSetRulesApiFactory = function (
     /**
      * Grant permissions to a user set *on* a resource set.  If the permission is already granted, it is skipped.
      * @summary Assign Set Permissions
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {ConditionSetRuleCreate} conditionSetRuleCreate
+     * @param {ConditionSetRulesApiAssignSetPermissionsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     assignSetPermissions(
-      projId: string,
-      envId: string,
-      conditionSetRuleCreate: ConditionSetRuleCreate,
-      options?: any,
+      requestParameters: ConditionSetRulesApiAssignSetPermissionsRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<Array<ConditionSetRuleRead>> {
       return localVarFp
-        .assignSetPermissions(projId, envId, conditionSetRuleCreate, options)
+        .assignSetPermissions(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.conditionSetRuleCreate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists the condition set rules matching the filter. - If the `user_set` filter is present, will only return the permissions set of that user set. - If the `permission` filter is present, will only return the permissions sets that equals to the queried permission. - If the `resource_set` filter is present, will only return the permissions set of that resource set.
      * @summary List Set Permissions
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [userSet] optional user set filter, will only return rules where the permission is granted to this user set
-     * @param {string} [permission] optional permission filter, will only return condition set rules granting this permission
-     * @param {string} [resourceSet] optional resource set filter, will only return rules where the permission is granted on this resource set
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {ConditionSetRulesApiListSetPermissionsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listSetPermissions(
-      projId: string,
-      envId: string,
-      userSet?: string,
-      permission?: string,
-      resourceSet?: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
+      requestParameters: ConditionSetRulesApiListSetPermissionsRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<Array<ConditionSetRuleRead>> {
       return localVarFp
-        .listSetPermissions(projId, envId, userSet, permission, resourceSet, page, perPage, options)
+        .listSetPermissions(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.userSet,
+          requestParameters.permission,
+          requestParameters.resourceSet,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Revokes permissions to a user set *on* a resource set.  If the permission is not granted, it is skipped.
      * @summary Unassign Set Permissions
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {ConditionSetRuleRemove} conditionSetRuleRemove
+     * @param {ConditionSetRulesApiUnassignSetPermissionsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     unassignSetPermissions(
-      projId: string,
-      envId: string,
-      conditionSetRuleRemove: ConditionSetRuleRemove,
-      options?: any,
+      requestParameters: ConditionSetRulesApiUnassignSetPermissionsRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<void> {
       return localVarFp
-        .unassignSetPermissions(projId, envId, conditionSetRuleRemove, options)
+        .unassignSetPermissions(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.conditionSetRuleRemove,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
@@ -406,104 +442,80 @@ export const ConditionSetRulesApiFactory = function (
 
 /**
  * Request parameters for assignSetPermissions operation in ConditionSetRulesApi.
- * @interface ConditionSetRulesApiAssignSetPermissionsRequest
  */
 export interface ConditionSetRulesApiAssignSetPermissionsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
-  /**
-   *
-   * @type {ConditionSetRuleCreate}
-   */
   readonly conditionSetRuleCreate: ConditionSetRuleCreate;
 }
 
 /**
  * Request parameters for listSetPermissions operation in ConditionSetRulesApi.
- * @interface ConditionSetRulesApiListSetPermissionsRequest
  */
 export interface ConditionSetRulesApiListSetPermissionsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
   /**
    * optional user set filter, will only return rules where the permission is granted to this user set
-   * @type {string}
    */
   readonly userSet?: string;
 
   /**
    * optional permission filter, will only return condition set rules granting this permission
-   * @type {string}
    */
   readonly permission?: string;
 
   /**
    * optional resource set filter, will only return rules where the permission is granted on this resource set
-   * @type {string}
    */
   readonly resourceSet?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for unassignSetPermissions operation in ConditionSetRulesApi.
- * @interface ConditionSetRulesApiUnassignSetPermissionsRequest
  */
 export interface ConditionSetRulesApiUnassignSetPermissionsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
-  /**
-   *
-   * @type {ConditionSetRuleRemove}
-   */
   readonly conditionSetRuleRemove: ConditionSetRuleRemove;
 }
 
 /**
  * ConditionSetRulesApi - object-oriented interface
- * @class ConditionSetRulesApi
- * @extends {BaseAPI}
  */
 export class ConditionSetRulesApi extends BaseAPI {
   /**
@@ -511,11 +523,11 @@ export class ConditionSetRulesApi extends BaseAPI {
    * @summary Assign Set Permissions
    * @param {ConditionSetRulesApiAssignSetPermissionsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public assignSetPermissions(
     requestParameters: ConditionSetRulesApiAssignSetPermissionsRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ConditionSetRulesApiFp(this.configuration)
       .assignSetPermissions(
@@ -532,11 +544,11 @@ export class ConditionSetRulesApi extends BaseAPI {
    * @summary List Set Permissions
    * @param {ConditionSetRulesApiListSetPermissionsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public listSetPermissions(
     requestParameters: ConditionSetRulesApiListSetPermissionsRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ConditionSetRulesApiFp(this.configuration)
       .listSetPermissions(
@@ -557,11 +569,11 @@ export class ConditionSetRulesApi extends BaseAPI {
    * @summary Unassign Set Permissions
    * @param {ConditionSetRulesApiUnassignSetPermissionsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public unassignSetPermissions(
     requestParameters: ConditionSetRulesApiUnassignSetPermissionsRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ConditionSetRulesApiFp(this.configuration)
       .unassignSetPermissions(

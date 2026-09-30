@@ -11,91 +11,31 @@
  */
 
 // May contain unused imports in some cases
-import { APIKeyOwnerType } from './apikey-owner-type';
+import type { APIKeyOwnerType } from './apikey-owner-type';
 // May contain unused imports in some cases
-import { type EnvironmentRead } from './environment-read';
+import type { EnvironmentRead } from './environment-read';
 // May contain unused imports in some cases
-import { MemberAccessLevel } from './member-access-level';
+import type { MemberAccessLevel } from './member-access-level';
 // May contain unused imports in some cases
-import { MemberAccessObj } from './member-access-obj';
+import type { MemberAccessObj } from './member-access-obj';
 // May contain unused imports in some cases
-import { type OrgMemberRead } from './org-member-read';
+import type { OrgMemberRead } from './org-member-read';
 // May contain unused imports in some cases
-import { type ProjectRead } from './project-read';
+import type { ProjectRead } from './project-read';
 
-/**
- *
- * @interface APIKeyRead
- */
 export interface APIKeyRead {
-  /**
-   *
-   * @type {string}
-   */
   organization_id: string;
-  /**
-   *
-   * @type {string}
-   */
   project_id?: string;
-  /**
-   *
-   * @type {string}
-   */
   environment_id?: string;
-  /**
-   *
-   * @type {MemberAccessObj}
-   */
   object_type?: MemberAccessObj;
-  /**
-   *
-   * @type {MemberAccessLevel}
-   */
   access_level?: MemberAccessLevel;
-  /**
-   *
-   * @type {APIKeyOwnerType}
-   */
   owner_type: APIKeyOwnerType;
-  /**
-   *
-   * @type {string}
-   */
   name?: string;
-  /**
-   *
-   * @type {string}
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   */
   secret?: string;
-  /**
-   *
-   * @type {string}
-   */
   created_at: string;
-  /**
-   *
-   * @type {OrgMemberRead}
-   */
   created_by_member?: OrgMemberRead;
-  /**
-   *
-   * @type {string}
-   */
   last_used_at?: string;
-  /**
-   *
-   * @type {EnvironmentRead}
-   */
   env?: EnvironmentRead;
-  /**
-   *
-   * @type {ProjectRead}
-   */
   project?: ProjectRead;
 }

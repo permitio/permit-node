@@ -11,71 +11,19 @@
  */
 
 // May contain unused imports in some cases
-
+import type { AVPEngineDecisionLog } from './avpengine-decision-log';
+// May contain unused imports in some cases
+import type { DummyEngineModel } from './dummy-engine-model';
+// May contain unused imports in some cases
+// May contain unused imports in some cases
+import type { GenericEngineDecisionLog } from './generic-engine-decision-log';
+// May contain unused imports in some cases
+import type { OPAEngineDecisionLog } from './opaengine-decision-log';
+// May contain unused imports in some cases
 // May contain unused imports in some cases
 
-// May contain unused imports in some cases
-import { Engine } from './engine';
-// May contain unused imports in some cases
-
-// May contain unused imports in some cases
-import { type OPALabels } from './opalabels';
-// May contain unused imports in some cases
-import { type OPAMetrics } from './opametrics';
-
-/**
- *
- * @interface RawData
- */
-export interface RawData {
-  /**
-   *
-   * @type {Engine}
-   */
-  engine?: Engine;
-  /**
-   *
-   * @type {string}
-   */
-  decision_id: string;
-  /**
-   *
-   * @type {OPALabels}
-   */
-  labels: OPALabels;
-  /**
-   *
-   * @type {string}
-   */
-  timestamp: string;
-  /**
-   *
-   * @type {string}
-   */
-  path: string;
-  /**
-   *
-   * @type {object}
-   */
-  input: object;
-  /**
-   *
-   * @type {object}
-   */
-  result: object;
-  /**
-   *
-   * @type {OPAMetrics}
-   */
-  metrics: OPAMetrics;
-  /**
-   *
-   * @type {string}
-   */
-  tenant: string;
-  /**
-   *
-   * @type {number}
-   */
-  process_time_ms?: number;
-}
+export type RawData =
+  | AVPEngineDecisionLog
+  | DummyEngineModel
+  | GenericEngineDecisionLog
+  | OPAEngineDecisionLog;

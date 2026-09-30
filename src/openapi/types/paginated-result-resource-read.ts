@@ -11,26 +11,13 @@
  */
 
 // May contain unused imports in some cases
-import { type ResourceRead } from './resource-read';
+import type { ResourceRead } from './resource-read';
 
-/**
- *
- * @interface PaginatedResultResourceRead
- */
 export interface PaginatedResultResourceRead {
   /**
    * List of Resources
-   * @type {Array<ResourceRead>}
    */
   data: Array<ResourceRead>;
-  /**
-   *
-   * @type {number}
-   */
   total_count: number;
-  /**
-   *
-   * @type {number}
-   */
   page_count?: number;
 }

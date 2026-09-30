@@ -11,59 +11,46 @@
  */
 
 // May contain unused imports in some cases
-import { type RoleAssignmentResourceInstance } from './role-assignment-resource-instance';
-import { type RoleAssignmentRole } from './role-assignment-role';
-import { type RoleAssignmentTenant } from './role-assignment-tenant';
-import { type RoleAssignmentUser } from './role-assignment-user';
+import type { RoleAssignmentResourceInstance } from './role-assignment-resource-instance';
+// May contain unused imports in some cases
+import type { RoleAssignmentRole } from './role-assignment-role';
+// May contain unused imports in some cases
+import type { RoleAssignmentTenant } from './role-assignment-tenant';
+// May contain unused imports in some cases
+import type { RoleAssignmentUser } from './role-assignment-user';
 
-/**
- *
- * @interface RoleAssignmentDetailedRead
- */
 export interface RoleAssignmentDetailedRead {
   /**
    * Unique id of the role assignment
-   * @type {string}
    */
   id: string;
   /**
    * the role that is assigned
-   * @type {RoleAssignmentRole}
    */
   role: RoleAssignmentRole;
   /**
    * the user the role is assigned to
-   * @type {RoleAssignmentUser}
    */
   user: RoleAssignmentUser;
   /**
    * the tenant the role is associated with
-   * @type {RoleAssignmentTenant}
    */
   tenant: RoleAssignmentTenant;
-  /**
-   *
-   * @type {RoleAssignmentResourceInstance}
-   */
   resource_instance?: RoleAssignmentResourceInstance;
   /**
    * Unique id of the organization that the role assignment belongs to.
-   * @type {string}
    */
   organization_id: string;
   /**
    * Unique id of the project that the role assignment belongs to.
-   * @type {string}
    */
   project_id: string;
   /**
    * Unique id of the environment that the role assignment belongs to.
-   * @type {string}
    */
   environment_id: string;
   /**
    * Date and time when the role assignment was created (ISO_8601 format).
-   * @type {string}
    */
   created_at: string;
 }

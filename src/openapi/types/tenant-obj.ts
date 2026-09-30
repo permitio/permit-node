@@ -10,39 +10,11 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface TenantObj
- */
 export interface TenantObj {
-  /**
-   *
-   * @type {string}
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   */
   key: string;
-  /**
-   *
-   * @type {string}
-   */
   name?: string;
-  /**
-   *
-   * @type {object}
-   */
   attributes?: object;
-  /**
-   *
-   * @type {string}
-   */
   created_at: string;
-  /**
-   *
-   * @type {string}
-   */
   updated_at: string;
 }

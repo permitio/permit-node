@@ -10,8 +10,9 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
-import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
@@ -21,13 +22,13 @@ import {
   setSearchParams,
   toPathString,
 } from '../common';
-import { Configuration } from '../configuration';
-import {
-  type PaginatedResultResourceRead,
-  type ResourceCreate,
-  type ResourceRead,
-  type ResourceReplace,
-  type ResourceUpdate,
+import type { Configuration } from '../configuration';
+import type {
+  ResourceCreate,
+  ResourceRead,
+  ResourceReplace,
+  ResourceUpdate,
+  ResponseListResourcesV2SchemaProjIdEnvIdResourcesGet,
 } from '../types';
 /**
  * ResourcesApi - axios parameter creator
@@ -41,13 +42,13 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ResourceCreate} resourceCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createResource: async (
       projId: string,
       envId: string,
       resourceCreate: ResourceCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('createResource', 'projId', projId);
@@ -56,8 +57,8 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
       // verify required parameter 'resourceCreate' is not null or undefined
       assertParamExists('createResource', 'resourceCreate', resourceCreate);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -74,6 +75,7 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -96,28 +98,28 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
     /**
      * Deletes the resource and all its related data.
      * @summary Delete Resource
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteResource: async (
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'resourceId' is not null or undefined
+      assertParamExists('deleteResource', 'resourceId', resourceId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('deleteResource', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('deleteResource', 'envId', envId);
-      // verify required parameter 'resourceId' is not null or undefined
-      assertParamExists('deleteResource', 'resourceId', resourceId);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)));
+        .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -132,6 +134,8 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -149,28 +153,28 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
     /**
      * Gets a single resource, if such resource exists.
      * @summary Get Resource
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getResource: async (
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'resourceId' is not null or undefined
+      assertParamExists('getResource', 'resourceId', resourceId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('getResource', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('getResource', 'envId', envId);
-      // verify required parameter 'resourceId' is not null or undefined
-      assertParamExists('getResource', 'resourceId', resourceId);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)));
+        .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -185,6 +189,8 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -205,28 +211,30 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {boolean} [includeBuiltIn] Whether to include or exclude built-in resources, default is False
+     * @param {boolean} [includeTotalCount] Include total count in response
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {includeTotalCount} [includeTotalCount] Include the total count of resources in the response, default is False
+     * @param {string} [search] Text search for the object name or key
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listResources: async (
       projId: string,
       envId: string,
       includeBuiltIn?: boolean,
+      includeTotalCount?: boolean,
       page?: number,
       perPage?: number,
-      includeTotalCount?: boolean,
-      options: AxiosRequestConfig = {},
+      search?: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('listResources', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('listResources', 'envId', envId);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -246,6 +254,10 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
         localVarQueryParameter['include_built_in'] = includeBuiltIn;
       }
 
+      if (includeTotalCount !== undefined) {
+        localVarQueryParameter['include_total_count'] = includeTotalCount;
+      }
+
       if (page !== undefined) {
         localVarQueryParameter['page'] = page;
       }
@@ -254,9 +266,11 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
         localVarQueryParameter['per_page'] = perPage;
       }
 
-      if (includeTotalCount !== undefined) {
-        localVarQueryParameter['include_total_count'] = includeTotalCount;
+      if (search !== undefined) {
+        localVarQueryParameter['search'] = search;
       }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -272,34 +286,34 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
       };
     },
     /**
-     * Completely replaces the resource definition.  - If the resource key is changed, all role and permissions assignments for the the resource will be revoked. - If the resource key is unchanged, but some actions are removed or renamed from the resource definition, role and permissions assignments for these actions will be revoked.  TODO: we need to decide if we are auto-revoking, or if we are rejecting the PUT completely while there are permissions that can be affected.
+     * Replaces the resource definition, or creates it if it doesn\'t exist.  - If some actions are removed or renamed from the resource definition, role and permissions assignments for these actions will be revoked.
      * @summary Replace Resource
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {ResourceReplace} resourceReplace
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     replaceResource: async (
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       resourceReplace: ResourceReplace,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'resourceId' is not null or undefined
+      assertParamExists('replaceResource', 'resourceId', resourceId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('replaceResource', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('replaceResource', 'envId', envId);
-      // verify required parameter 'resourceId' is not null or undefined
-      assertParamExists('replaceResource', 'resourceId', resourceId);
       // verify required parameter 'resourceReplace' is not null or undefined
       assertParamExists('replaceResource', 'resourceReplace', resourceReplace);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)));
+        .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -316,6 +330,7 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -338,32 +353,32 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
     /**
      * Partially updates the resource definition. Fields that will be provided will be completely overwritten.
      * @summary Update Resource
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {ResourceUpdate} resourceUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateResource: async (
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       resourceUpdate: ResourceUpdate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'resourceId' is not null or undefined
+      assertParamExists('updateResource', 'resourceId', resourceId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('updateResource', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('updateResource', 'envId', envId);
-      // verify required parameter 'resourceId' is not null or undefined
-      assertParamExists('updateResource', 'resourceId', resourceId);
       // verify required parameter 'resourceUpdate' is not null or undefined
       assertParamExists('updateResource', 'resourceUpdate', resourceUpdate);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)));
+        .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -380,6 +395,7 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -415,13 +431,13 @@ export const ResourcesApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ResourceCreate} resourceCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async createResource(
       projId: string,
       envId: string,
       resourceCreate: ResourceCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createResource(
         projId,
@@ -429,53 +445,80 @@ export const ResourcesApiFp = function (configuration?: Configuration) {
         resourceCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourcesApi.createResource']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Deletes the resource and all its related data.
      * @summary Delete Resource
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deleteResource(
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteResource(
+        resourceId,
         projId,
         envId,
-        resourceId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourcesApi.deleteResource']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Gets a single resource, if such resource exists.
      * @summary Get Resource
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getResource(
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getResource(
+        resourceId,
         projId,
         envId,
-        resourceId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourcesApi.getResource']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists all the resources defined in your schema.
@@ -483,88 +526,118 @@ export const ResourcesApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {boolean} [includeBuiltIn] Whether to include or exclude built-in resources, default is False
+     * @param {boolean} [includeTotalCount] Include total count in response
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {includeTotalCount} [includeTotalCount] Include the total count of resources in the response, default is False
+     * @param {string} [search] Text search for the object name or key
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listResources(
       projId: string,
       envId: string,
       includeBuiltIn?: boolean,
+      includeTotalCount?: boolean,
       page?: number,
       perPage?: number,
-      includeTotalCount?: boolean,
-      options?: AxiosRequestConfig,
+      search?: string,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
         basePath?: string,
-      ) => AxiosPromise<Array<ResourceRead> | PaginatedResultResourceRead>
+      ) => AxiosPromise<ResponseListResourcesV2SchemaProjIdEnvIdResourcesGet>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listResources(
         projId,
         envId,
         includeBuiltIn,
+        includeTotalCount,
         page,
         perPage,
-        includeTotalCount,
+        search,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourcesApi.listResources']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * Completely replaces the resource definition.  - If the resource key is changed, all role and permissions assignments for the the resource will be revoked. - If the resource key is unchanged, but some actions are removed or renamed from the resource definition, role and permissions assignments for these actions will be revoked.  TODO: we need to decide if we are auto-revoking, or if we are rejecting the PUT completely while there are permissions that can be affected.
+     * Replaces the resource definition, or creates it if it doesn\'t exist.  - If some actions are removed or renamed from the resource definition, role and permissions assignments for these actions will be revoked.
      * @summary Replace Resource
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {ResourceReplace} resourceReplace
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async replaceResource(
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       resourceReplace: ResourceReplace,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.replaceResource(
+        resourceId,
         projId,
         envId,
-        resourceId,
         resourceReplace,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourcesApi.replaceResource']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Partially updates the resource definition. Fields that will be provided will be completely overwritten.
      * @summary Update Resource
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {ResourceUpdate} resourceUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async updateResource(
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       resourceUpdate: ResourceUpdate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateResource(
+        resourceId,
         projId,
         envId,
-        resourceId,
         resourceUpdate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourcesApi.updateResource']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
@@ -582,125 +655,127 @@ export const ResourcesApiFactory = function (
     /**
      * Creates a new resource (a type of object you may protect with permissions).
      * @summary Create Resource
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {ResourceCreate} resourceCreate
+     * @param {ResourcesApiCreateResourceRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createResource(
-      projId: string,
-      envId: string,
-      resourceCreate: ResourceCreate,
-      options?: any,
+      requestParameters: ResourcesApiCreateResourceRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceRead> {
       return localVarFp
-        .createResource(projId, envId, resourceCreate, options)
+        .createResource(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.resourceCreate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes the resource and all its related data.
      * @summary Delete Resource
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+     * @param {ResourcesApiDeleteResourceRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteResource(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      options?: any,
+      requestParameters: ResourcesApiDeleteResourceRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<void> {
       return localVarFp
-        .deleteResource(projId, envId, resourceId, options)
+        .deleteResource(
+          requestParameters.resourceId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Gets a single resource, if such resource exists.
      * @summary Get Resource
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+     * @param {ResourcesApiGetResourceRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getResource(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      options?: any,
+      requestParameters: ResourcesApiGetResourceRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceRead> {
       return localVarFp
-        .getResource(projId, envId, resourceId, options)
+        .getResource(
+          requestParameters.resourceId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists all the resources defined in your schema.
      * @summary List Resources
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {boolean} [includeBuiltIn] Whether to include or exclude built-in resources, default is False
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
-     * @param {includeTotalCount} [includeTotalCount] Include the total count of resources in the response, default is False
+     * @param {ResourcesApiListResourcesRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listResources(
-      projId: string,
-      envId: string,
-      includeBuiltIn?: boolean,
-      page?: number,
-      perPage?: number,
-      includeTotalCount?: boolean,
-      options?: any,
-    ): AxiosPromise<Array<ResourceRead> | PaginatedResultResourceRead> {
+      requestParameters: ResourcesApiListResourcesRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ResponseListResourcesV2SchemaProjIdEnvIdResourcesGet> {
       return localVarFp
-        .listResources(projId, envId, includeBuiltIn, page, perPage, includeTotalCount, options)
+        .listResources(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.includeBuiltIn,
+          requestParameters.includeTotalCount,
+          requestParameters.page,
+          requestParameters.perPage,
+          requestParameters.search,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
-     * Completely replaces the resource definition.  - If the resource key is changed, all role and permissions assignments for the the resource will be revoked. - If the resource key is unchanged, but some actions are removed or renamed from the resource definition, role and permissions assignments for these actions will be revoked.  TODO: we need to decide if we are auto-revoking, or if we are rejecting the PUT completely while there are permissions that can be affected.
+     * Replaces the resource definition, or creates it if it doesn\'t exist.  - If some actions are removed or renamed from the resource definition, role and permissions assignments for these actions will be revoked.
      * @summary Replace Resource
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {ResourceReplace} resourceReplace
+     * @param {ResourcesApiReplaceResourceRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     replaceResource(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      resourceReplace: ResourceReplace,
-      options?: any,
+      requestParameters: ResourcesApiReplaceResourceRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceRead> {
       return localVarFp
-        .replaceResource(projId, envId, resourceId, resourceReplace, options)
+        .replaceResource(
+          requestParameters.resourceId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.resourceReplace,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Partially updates the resource definition. Fields that will be provided will be completely overwritten.
      * @summary Update Resource
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {ResourceUpdate} resourceUpdate
+     * @param {ResourcesApiUpdateResourceRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateResource(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      resourceUpdate: ResourceUpdate,
-      options?: any,
+      requestParameters: ResourcesApiUpdateResourceRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceRead> {
       return localVarFp
-        .updateResource(projId, envId, resourceId, resourceUpdate, options)
+        .updateResource(
+          requestParameters.resourceId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.resourceUpdate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
@@ -708,183 +783,147 @@ export const ResourcesApiFactory = function (
 
 /**
  * Request parameters for createResource operation in ResourcesApi.
- * @interface ResourcesApiCreateResourceRequest
  */
 export interface ResourcesApiCreateResourceRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
-  /**
-   *
-   * @type {ResourceCreate}
-   */
   readonly resourceCreate: ResourceCreate;
 }
 
 /**
  * Request parameters for deleteResource operation in ResourcesApi.
- * @interface ResourcesApiDeleteResourceRequest
  */
 export interface ResourcesApiDeleteResourceRequest {
   /**
+   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+   */
+  readonly resourceId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
-
-  /**
-   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly resourceId: string;
 }
 
 /**
  * Request parameters for getResource operation in ResourcesApi.
- * @interface ResourcesApiGetResourceRequest
  */
 export interface ResourcesApiGetResourceRequest {
   /**
+   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+   */
+  readonly resourceId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
-
-  /**
-   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly resourceId: string;
 }
 
 /**
  * Request parameters for listResources operation in ResourcesApi.
- * @interface ResourcesApiListResourcesRequest
  */
 export interface ResourcesApiListResourcesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
   /**
    * Whether to include or exclude built-in resources, default is False
-   * @type {boolean}
    */
   readonly includeBuiltIn?: boolean;
 
   /**
+   * Include total count in response
+   */
+  readonly includeTotalCount?: boolean;
+
+  /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
    */
   readonly perPage?: number;
 
   /**
-   * Include total count in response
-   * @type {boolean}
-   * @default false
+   * Text search for the object name or key
    */
-  readonly includeTotalCount?: boolean;
+  readonly search?: string;
 }
 
 /**
  * Request parameters for replaceResource operation in ResourcesApi.
- * @interface ResourcesApiReplaceResourceRequest
  */
 export interface ResourcesApiReplaceResourceRequest {
   /**
+   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+   */
+  readonly resourceId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly resourceId: string;
-
-  /**
-   *
-   * @type {ResourceReplace}
-   */
   readonly resourceReplace: ResourceReplace;
 }
 
 /**
  * Request parameters for updateResource operation in ResourcesApi.
- * @interface ResourcesApiUpdateResourceRequest
  */
 export interface ResourcesApiUpdateResourceRequest {
   /**
+   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+   */
+  readonly resourceId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly resourceId: string;
-
-  /**
-   *
-   * @type {ResourceUpdate}
-   */
   readonly resourceUpdate: ResourceUpdate;
 }
 
 /**
  * ResourcesApi - object-oriented interface
- * @class ResourcesApi
- * @extends {BaseAPI}
  */
 export class ResourcesApi extends BaseAPI {
   /**
@@ -892,11 +931,11 @@ export class ResourcesApi extends BaseAPI {
    * @summary Create Resource
    * @param {ResourcesApiCreateResourceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public createResource(
     requestParameters: ResourcesApiCreateResourceRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourcesApiFp(this.configuration)
       .createResource(
@@ -913,17 +952,17 @@ export class ResourcesApi extends BaseAPI {
    * @summary Delete Resource
    * @param {ResourcesApiDeleteResourceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public deleteResource(
     requestParameters: ResourcesApiDeleteResourceRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourcesApiFp(this.configuration)
       .deleteResource(
+        requestParameters.resourceId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.resourceId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -934,17 +973,17 @@ export class ResourcesApi extends BaseAPI {
    * @summary Get Resource
    * @param {ResourcesApiGetResourceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public getResource(
     requestParameters: ResourcesApiGetResourceRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourcesApiFp(this.configuration)
       .getResource(
+        requestParameters.resourceId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.resourceId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -955,41 +994,42 @@ export class ResourcesApi extends BaseAPI {
    * @summary List Resources
    * @param {ResourcesApiListResourcesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public listResources(
     requestParameters: ResourcesApiListResourcesRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourcesApiFp(this.configuration)
       .listResources(
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.includeBuiltIn,
+        requestParameters.includeTotalCount,
         requestParameters.page,
         requestParameters.perPage,
-        requestParameters.includeTotalCount,
+        requestParameters.search,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
-   * Completely replaces the resource definition.  - If the resource key is changed, all role and permissions assignments for the the resource will be revoked. - If the resource key is unchanged, but some actions are removed or renamed from the resource definition, role and permissions assignments for these actions will be revoked.  TODO: we need to decide if we are auto-revoking, or if we are rejecting the PUT completely while there are permissions that can be affected.
+   * Replaces the resource definition, or creates it if it doesn\'t exist.  - If some actions are removed or renamed from the resource definition, role and permissions assignments for these actions will be revoked.
    * @summary Replace Resource
    * @param {ResourcesApiReplaceResourceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public replaceResource(
     requestParameters: ResourcesApiReplaceResourceRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourcesApiFp(this.configuration)
       .replaceResource(
+        requestParameters.resourceId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.resourceId,
         requestParameters.resourceReplace,
         options,
       )
@@ -1001,17 +1041,17 @@ export class ResourcesApi extends BaseAPI {
    * @summary Update Resource
    * @param {ResourcesApiUpdateResourceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public updateResource(
     requestParameters: ResourcesApiUpdateResourceRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourcesApiFp(this.configuration)
       .updateResource(
+        requestParameters.resourceId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.resourceId,
         requestParameters.resourceUpdate,
         options,
       )

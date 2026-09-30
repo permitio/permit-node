@@ -11,21 +11,15 @@
  */
 
 // May contain unused imports in some cases
-import { AttributeType } from './attribute-type';
+import type { AttributeType } from './attribute-type';
 
-/**
- *
- * @interface ResourceAttributeUpdate
- */
 export interface ResourceAttributeUpdate {
   /**
    * The type of the attribute, we currently support: `bool`, `number` (ints, floats), `time` (a timestamp), `string`, and `json`.
-   * @type {AttributeType}
    */
   type?: AttributeType;
   /**
    * An optional longer description of what this attribute respresents in your system
-   * @type {string}
    */
   description?: string;
 }

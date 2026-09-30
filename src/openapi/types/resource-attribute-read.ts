@@ -11,71 +11,55 @@
  */
 
 // May contain unused imports in some cases
-import { AttributeType } from './attribute-type';
+import type { AttributeType } from './attribute-type';
 
-/**
- *
- * @interface ResourceAttributeRead
- */
 export interface ResourceAttributeRead {
   /**
    * The type of the attribute, we currently support: `bool`, `number` (ints, floats), `time` (a timestamp), `string`, and `json`.
-   * @type {AttributeType}
    */
   type: AttributeType;
   /**
    * An optional longer description of what this attribute respresents in your system
-   * @type {string}
    */
   description?: string;
   /**
    * A URL-friendly name of the attribute (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the attribute.
-   * @type {string}
    */
   key: string;
   /**
    * Unique id of the attribute
-   * @type {string}
    */
   id: string;
   /**
    * Unique id of the resource that the attribute belongs to.
-   * @type {string}
    */
   resource_id: string;
   /**
    * A URL-friendly name of the resource (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the resource.
-   * @type {string}
    */
   resource_key: string;
   /**
    * Unique id of the organization that the attribute belongs to.
-   * @type {string}
    */
   organization_id: string;
   /**
    * Unique id of the project that the attribute belongs to.
-   * @type {string}
    */
   project_id: string;
   /**
    * Unique id of the environment that the attribute belongs to.
-   * @type {string}
    */
   environment_id: string;
   /**
    * Date and time when the attribute was created (ISO_8601 format).
-   * @type {string}
    */
   created_at: string;
   /**
    * Date and time when the attribute was last updated/modified (ISO_8601 format).
-   * @type {string}
    */
   updated_at: string;
   /**
    * Whether the attribute is built-in, and managed by the Permit system.
-   * @type {boolean}
    */
   built_in: boolean;
 }

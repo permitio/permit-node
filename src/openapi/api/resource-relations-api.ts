@@ -10,8 +10,9 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
-import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
@@ -21,8 +22,8 @@ import {
   setSearchParams,
   toPathString,
 } from '../common';
-import { Configuration } from '../configuration';
-import { type RelationCreate, type RelationRead } from '../types';
+import type { Configuration } from '../configuration';
+import type { PaginatedResultRelationRead, RelationCreate, RelationRead } from '../types';
 /**
  * ResourceRelationsApi - axios parameter creator
  */
@@ -31,32 +32,32 @@ export const ResourceRelationsApiAxiosParamCreator = function (configuration?: C
     /**
      * Creates a resource relation to another resource
      * @summary Create Resource Relation
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {RelationCreate} relationCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createResourceRelation: async (
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       relationCreate: RelationCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'resourceId' is not null or undefined
+      assertParamExists('createResourceRelation', 'resourceId', resourceId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('createResourceRelation', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('createResourceRelation', 'envId', envId);
-      // verify required parameter 'resourceId' is not null or undefined
-      assertParamExists('createResourceRelation', 'resourceId', resourceId);
       // verify required parameter 'relationCreate' is not null or undefined
       assertParamExists('createResourceRelation', 'relationCreate', relationCreate);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)));
+        .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -73,6 +74,7 @@ export const ResourceRelationsApiAxiosParamCreator = function (configuration?: C
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -95,34 +97,34 @@ export const ResourceRelationsApiAxiosParamCreator = function (configuration?: C
     /**
      * Deletes a resource relation
      * @summary Delete Resource Relation
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} relationId Either the unique id of the relation, or the URL-friendly key of the relation (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteResourceRelation: async (
-      projId: string,
-      envId: string,
       resourceId: string,
       relationId: string,
-      options: AxiosRequestConfig = {},
+      projId: string,
+      envId: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('deleteResourceRelation', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('deleteResourceRelation', 'envId', envId);
       // verify required parameter 'resourceId' is not null or undefined
       assertParamExists('deleteResourceRelation', 'resourceId', resourceId);
       // verify required parameter 'relationId' is not null or undefined
       assertParamExists('deleteResourceRelation', 'relationId', relationId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('deleteResourceRelation', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('deleteResourceRelation', 'envId', envId);
       const localVarPath =
         `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations/{relation_id}`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-          .replace(`{${'relation_id'}}`, encodeURIComponent(String(relationId)));
+          .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+          .replace('{relation_id}', encodeURIComponent(String(relationId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -137,6 +139,8 @@ export const ResourceRelationsApiAxiosParamCreator = function (configuration?: C
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -154,34 +158,34 @@ export const ResourceRelationsApiAxiosParamCreator = function (configuration?: C
     /**
      * Get a resource relation
      * @summary Get Resource Relation
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} relationId Either the unique id of the relation, or the URL-friendly key of the relation (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getResourceRelation: async (
-      projId: string,
-      envId: string,
       resourceId: string,
       relationId: string,
-      options: AxiosRequestConfig = {},
+      projId: string,
+      envId: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('getResourceRelation', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('getResourceRelation', 'envId', envId);
       // verify required parameter 'resourceId' is not null or undefined
       assertParamExists('getResourceRelation', 'resourceId', resourceId);
       // verify required parameter 'relationId' is not null or undefined
       assertParamExists('getResourceRelation', 'relationId', relationId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getResourceRelation', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getResourceRelation', 'envId', envId);
       const localVarPath =
         `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations/{relation_id}`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-          .replace(`{${'relation_id'}}`, encodeURIComponent(String(relationId)));
+          .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+          .replace('{relation_id}', encodeURIComponent(String(relationId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -197,6 +201,8 @@ export const ResourceRelationsApiAxiosParamCreator = function (configuration?: C
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -211,34 +217,34 @@ export const ResourceRelationsApiAxiosParamCreator = function (configuration?: C
       };
     },
     /**
-     * Creates a resource relation to another resource
+     * List relations on a given resource
      * @summary List Resource Relations
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listResourceRelations: async (
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'resourceId' is not null or undefined
+      assertParamExists('listResourceRelations', 'resourceId', resourceId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('listResourceRelations', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('listResourceRelations', 'envId', envId);
-      // verify required parameter 'resourceId' is not null or undefined
-      assertParamExists('listResourceRelations', 'resourceId', resourceId);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)));
+        .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -261,6 +267,8 @@ export const ResourceRelationsApiAxiosParamCreator = function (configuration?: C
       if (perPage !== undefined) {
         localVarQueryParameter['per_page'] = perPage;
       }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -287,109 +295,155 @@ export const ResourceRelationsApiFp = function (configuration?: Configuration) {
     /**
      * Creates a resource relation to another resource
      * @summary Create Resource Relation
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {RelationCreate} relationCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async createResourceRelation(
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       relationCreate: RelationCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RelationRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createResourceRelation(
+        resourceId,
         projId,
         envId,
-        resourceId,
         relationCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceRelationsApi.createResourceRelation']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Deletes a resource relation
      * @summary Delete Resource Relation
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} relationId Either the unique id of the relation, or the URL-friendly key of the relation (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deleteResourceRelation(
-      projId: string,
-      envId: string,
       resourceId: string,
       relationId: string,
-      options?: AxiosRequestConfig,
+      projId: string,
+      envId: string,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteResourceRelation(
-        projId,
-        envId,
         resourceId,
         relationId,
+        projId,
+        envId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceRelationsApi.deleteResourceRelation']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Get a resource relation
      * @summary Get Resource Relation
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} relationId Either the unique id of the relation, or the URL-friendly key of the relation (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async getResourceRelation(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      relationId: string,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RelationRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getResourceRelation(
-        projId,
-        envId,
-        resourceId,
-        relationId,
-        options,
-      );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
-     * Creates a resource relation to another resource
-     * @summary List Resource Relations
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    async getResourceRelation(
+      resourceId: string,
+      relationId: string,
+      projId: string,
+      envId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RelationRead>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getResourceRelation(
+        resourceId,
+        relationId,
+        projId,
+        envId,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceRelationsApi.getResourceRelation']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * List relations on a given resource
+     * @summary List Resource Relations
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listResourceRelations(
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<RelationRead>>> {
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResultRelationRead>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listResourceRelations(
+        resourceId,
         projId,
         envId,
-        resourceId,
         page,
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceRelationsApi.listResourceRelations']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
@@ -407,87 +461,86 @@ export const ResourceRelationsApiFactory = function (
     /**
      * Creates a resource relation to another resource
      * @summary Create Resource Relation
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {RelationCreate} relationCreate
+     * @param {ResourceRelationsApiCreateResourceRelationRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createResourceRelation(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      relationCreate: RelationCreate,
-      options?: any,
+      requestParameters: ResourceRelationsApiCreateResourceRelationRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<RelationRead> {
       return localVarFp
-        .createResourceRelation(projId, envId, resourceId, relationCreate, options)
+        .createResourceRelation(
+          requestParameters.resourceId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.relationCreate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes a resource relation
      * @summary Delete Resource Relation
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} relationId Either the unique id of the relation, or the URL-friendly key of the relation (i.e: the \&quot;slug\&quot;).
+     * @param {ResourceRelationsApiDeleteResourceRelationRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteResourceRelation(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      relationId: string,
-      options?: any,
+      requestParameters: ResourceRelationsApiDeleteResourceRelationRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<void> {
       return localVarFp
-        .deleteResourceRelation(projId, envId, resourceId, relationId, options)
+        .deleteResourceRelation(
+          requestParameters.resourceId,
+          requestParameters.relationId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Get a resource relation
      * @summary Get Resource Relation
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} relationId Either the unique id of the relation, or the URL-friendly key of the relation (i.e: the \&quot;slug\&quot;).
+     * @param {ResourceRelationsApiGetResourceRelationRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getResourceRelation(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      relationId: string,
-      options?: any,
+      requestParameters: ResourceRelationsApiGetResourceRelationRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<RelationRead> {
       return localVarFp
-        .getResourceRelation(projId, envId, resourceId, relationId, options)
+        .getResourceRelation(
+          requestParameters.resourceId,
+          requestParameters.relationId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
-     * Creates a resource relation to another resource
+     * List relations on a given resource
      * @summary List Resource Relations
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {ResourceRelationsApiListResourceRelationsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listResourceRelations(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
-    ): AxiosPromise<Array<RelationRead>> {
+      requestParameters: ResourceRelationsApiListResourceRelationsRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PaginatedResultRelationRead> {
       return localVarFp
-        .listResourceRelations(projId, envId, resourceId, page, perPage, options)
+        .listResourceRelations(
+          requestParameters.resourceId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
@@ -495,134 +548,108 @@ export const ResourceRelationsApiFactory = function (
 
 /**
  * Request parameters for createResourceRelation operation in ResourceRelationsApi.
- * @interface ResourceRelationsApiCreateResourceRelationRequest
  */
 export interface ResourceRelationsApiCreateResourceRelationRequest {
   /**
+   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+   */
+  readonly resourceId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly resourceId: string;
-
-  /**
-   *
-   * @type {RelationCreate}
-   */
   readonly relationCreate: RelationCreate;
 }
 
 /**
  * Request parameters for deleteResourceRelation operation in ResourceRelationsApi.
- * @interface ResourceRelationsApiDeleteResourceRelationRequest
  */
 export interface ResourceRelationsApiDeleteResourceRelationRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the relation, or the URL-friendly key of the relation (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly relationId: string;
+
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
 }
 
 /**
  * Request parameters for getResourceRelation operation in ResourceRelationsApi.
- * @interface ResourceRelationsApiGetResourceRelationRequest
  */
 export interface ResourceRelationsApiGetResourceRelationRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the relation, or the URL-friendly key of the relation (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly relationId: string;
-}
 
-/**
- * Request parameters for listResourceRelations operation in ResourceRelationsApi.
- * @interface ResourceRelationsApiListResourceRelationsRequest
- */
-export interface ResourceRelationsApiListResourceRelationsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
+}
 
+/**
+ * Request parameters for listResourceRelations operation in ResourceRelationsApi.
+ */
+export interface ResourceRelationsApiListResourceRelationsRequest {
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly resourceId: string;
 
   /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
+  /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
    */
   readonly perPage?: number;
 }
 
 /**
  * ResourceRelationsApi - object-oriented interface
- * @class ResourceRelationsApi
- * @extends {BaseAPI}
  */
 export class ResourceRelationsApi extends BaseAPI {
   /**
@@ -630,17 +657,17 @@ export class ResourceRelationsApi extends BaseAPI {
    * @summary Create Resource Relation
    * @param {ResourceRelationsApiCreateResourceRelationRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public createResourceRelation(
     requestParameters: ResourceRelationsApiCreateResourceRelationRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceRelationsApiFp(this.configuration)
       .createResourceRelation(
+        requestParameters.resourceId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.resourceId,
         requestParameters.relationCreate,
         options,
       )
@@ -652,18 +679,18 @@ export class ResourceRelationsApi extends BaseAPI {
    * @summary Delete Resource Relation
    * @param {ResourceRelationsApiDeleteResourceRelationRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public deleteResourceRelation(
     requestParameters: ResourceRelationsApiDeleteResourceRelationRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceRelationsApiFp(this.configuration)
       .deleteResourceRelation(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.relationId,
+        requestParameters.projId,
+        requestParameters.envId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -674,39 +701,39 @@ export class ResourceRelationsApi extends BaseAPI {
    * @summary Get Resource Relation
    * @param {ResourceRelationsApiGetResourceRelationRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public getResourceRelation(
     requestParameters: ResourceRelationsApiGetResourceRelationRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceRelationsApiFp(this.configuration)
       .getResourceRelation(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.relationId,
+        requestParameters.projId,
+        requestParameters.envId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
-   * Creates a resource relation to another resource
+   * List relations on a given resource
    * @summary List Resource Relations
    * @param {ResourceRelationsApiListResourceRelationsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public listResourceRelations(
     requestParameters: ResourceRelationsApiListResourceRelationsRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceRelationsApiFp(this.configuration)
       .listResourceRelations(
+        requestParameters.resourceId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.resourceId,
         requestParameters.page,
         requestParameters.perPage,
         options,

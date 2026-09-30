@@ -11,27 +11,11 @@
  */
 
 // May contain unused imports in some cases
-import { type ActivityDetailsObjectData } from './activity-details-object-data';
+import type { ActivityDetailsObjectData } from './activity-details-object-data';
 
-/**
- *
- * @interface ActivityDetailsList
- */
 export interface ActivityDetailsList {
-  /**
-   *
-   * @type {string}
-   */
   kind?: ActivityDetailsListKindEnum;
-  /**
-   *
-   * @type {string}
-   */
   type: string;
-  /**
-   *
-   * @type {Array<ActivityDetailsObjectData>}
-   */
   items: Array<ActivityDetailsObjectData>;
 }
 

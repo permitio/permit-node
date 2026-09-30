@@ -10,34 +10,24 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface ActionBlockRead
- */
 export interface ActionBlockRead {
   /**
    * a more descriptive name for the action
-   * @type {string}
    */
   name?: string;
   /**
    * optional description string explaining what this action represents in your system
-   * @type {string}
    */
   description?: string;
-  /**
-   *
-   * @type {object}
-   */
   attributes?: object;
+  v1compat_path?: string;
+  v1compat_name?: string;
   /**
    * Unique id of the action
-   * @type {string}
    */
   id: string;
   /**
    * action key
-   * @type {string}
    */
   key?: string;
 }

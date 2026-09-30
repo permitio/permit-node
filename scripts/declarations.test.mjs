@@ -110,14 +110,14 @@ test('every bulk API request declaration resolves its referenced generated model
     `import type { BulkOperationsApi } from ${JSON.stringify(bulk)};
 const create: Parameters<BulkOperationsApi['bulkReplaceResourceInstances']>[0] = {
   projId: 'project', envId: 'environment',
-  resourceInstanceCreateBulkOperation: { operations: [{ key: 'instance', resource: 'document' }] },
+  resourceInstanceCreateBulkOperation: { operations: [{ key: 'instance', resource: 'document', tenant: 'default' }] },
 };
 const remove: Parameters<BulkOperationsApi['bulkDeleteResourceInstances']>[0] = {
   projId: 'project', envId: 'environment',
   resourceInstanceDeleteBulkOperation: { idents: ['document:instance'] },
 };
 const createUsers: Parameters<BulkOperationsApi['bulkCreateUsers']>[0] = {
-  projId: 'project', envId: 'environment', userCreateBulkOperations: { operations: [] },
+  projId: 'project', envId: 'environment', userCreateBulkOperation: { operations: [] },
 };
 const deleteUsers: Parameters<BulkOperationsApi['bulkDeleteUsers']>[0] = {
   projId: 'project', envId: 'environment', userDeleteBulkOperation: { idents: [] },

@@ -10,8 +10,7 @@
  * Do not edit the class manually.
  */
 
-/**
- * Data payload to embed within the data update (instead of having the client fetch it from the url).
- * @interface Data
- */
-export interface Data {}
+// May contain unused imports in some cases
+import type { JSONPatchAction } from './jsonpatch-action';
+
+export type Data = Array<JSONPatchAction> | Array<any> | object;

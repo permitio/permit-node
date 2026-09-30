@@ -11,16 +11,14 @@
  */
 
 // May contain unused imports in some cases
-import { type DataSourceEntry } from './data-source-entry';
+import type { DataSourceEntryWithPollingInterval } from './data-source-entry-with-polling-interval';
 
 /**
  * Static list of Data Source Entries returned to client.  Answers this question for the client: from where should i get the full picture of data i need? (as opposed to incremental data updates)
- * @interface DataSourceConfig
  */
 export interface DataSourceConfig {
   /**
    * list of data sources and how to fetch from them
-   * @type {Array<DataSourceEntry>}
    */
-  entries: Array<DataSourceEntry>;
+  entries?: Array<DataSourceEntryWithPollingInterval>;
 }

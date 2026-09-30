@@ -11,16 +11,8 @@
  */
 
 // May contain unused imports in some cases
-import { type CallbacksInner } from './callbacks-inner';
+import type { CallbacksInner } from './callbacks-inner';
 
-/**
- *
- * @interface OPALUpdateCallback
- */
 export interface OPALUpdateCallback {
-  /**
-   *
-   * @type {Array<CallbacksInner>}
-   */
   callbacks: Array<CallbacksInner>;
 }

@@ -11,10 +11,8 @@
  */
 
 // May contain unused imports in some cases
-import { type EnvironmentCopyScopeFilters } from './environment-copy-scope-filters';
+import type { PaginatedResultResourceRoleRead } from './paginated-result-resource-role-read';
+// May contain unused imports in some cases
+import type { ResourceRoleRead } from './resource-role-read';
 
-/**
- * @type Roles
- * Roles to copy
- */
-export type Roles = EnvironmentCopyScopeFilters;
+export type Roles = Array<ResourceRoleRead> | PaginatedResultResourceRoleRead;

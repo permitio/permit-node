@@ -11,90 +11,77 @@
  */
 
 // May contain unused imports in some cases
-import { type ActionBlockRead } from './action-block-read';
+import type { ActionBlockRead } from './action-block-read';
 // May contain unused imports in some cases
-import { type AttributeBlockRead } from './attribute-block-read';
+import type { AttributeBlockRead } from './attribute-block-read';
 // May contain unused imports in some cases
-import { type RelationBlockRead } from './relation-block-read';
+import type { RelationBlockRead } from './relation-block-read';
+// May contain unused imports in some cases
+import type { ResourceRoleRead } from './resource-role-read';
 
-/**
- *
- * @interface ResourceRead
- */
 export interface ResourceRead {
   /**
    * A URL-friendly name of the resource (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the resource.
-   * @type {string}
    */
   key: string;
   /**
    * Unique id of the resource
-   * @type {string}
    */
   id: string;
   /**
    * Unique id of the organization that the resource belongs to.
-   * @type {string}
    */
   organization_id: string;
   /**
    * Unique id of the project that the resource belongs to.
-   * @type {string}
    */
   project_id: string;
   /**
    * Unique id of the environment that the resource belongs to.
-   * @type {string}
    */
   environment_id: string;
   /**
    * Date and time when the resource was created (ISO_8601 format).
-   * @type {string}
    */
   created_at: string;
   /**
    * Date and time when the resource was last updated/modified (ISO_8601 format).
-   * @type {string}
    */
   updated_at: string;
   /**
    * The name of the resource
-   * @type {string}
    */
   name: string;
   /**
    * The [URN](https://en.wikipedia.org/wiki/Uniform_Resource_Name) (Uniform Resource Name) of the resource
-   * @type {string}
    */
   urn?: string;
   /**
    * An optional longer description of what this resource respresents in your system
-   * @type {string}
    */
   description?: string;
   /**
    *          A actions definition block, typically contained within a resource type definition block.         The actions represents the ways you can interact with a protected resource.
-   * @type {{ [key: string]: ActionBlockRead; }}
    */
   actions?: { [key: string]: ActionBlockRead };
   /**
+   * optional dictionary of key-value pairs that can be used to store arbitrary metadata about this resource. This metadata can be used to filter resource using query parameters with attr_ prefix
+   */
+  type_attributes?: object;
+  /**
    * Attributes that each resource of this type defines, and can be used in your ABAC policies.
-   * @type {{ [key: string]: AttributeBlockRead; }}
    */
   attributes?: { [key: string]: AttributeBlockRead };
   /**
    * Roles defined on this resource. The key is the role name, and the value contains the role properties such as granted permissions, etc.
-   * @type {object}
    */
-  roles?: object;
+  roles?: { [key: string]: ResourceRoleRead };
   /**
    *          A relations definition block, typically contained within a resource type definition block.         The relations represents the ways you can interact with a protected resource.
-   * @type {{ [key: string]: RelationBlockRead; }}
    */
   relations?: { [key: string]: RelationBlockRead };
-  /**
-   *
-   * @type {{ [key: string]: Array<string>; }}
-   */
+  v1compat_path?: string;
+  v1compat_type?: string;
+  v1compat_name?: string;
   action_groups?: { [key: string]: Array<string> };
 }

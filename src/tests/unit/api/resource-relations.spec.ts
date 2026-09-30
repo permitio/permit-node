@@ -21,7 +21,7 @@ describe('ResourceRelationsApi (unit)', () => {
   describe('list', () => {
     it('GETs the resource-scoped relations collection with default pagination', async () => {
       const response = [{ key: 'item-1', id: 'item-id-1' }];
-      rest.resolveWith(response);
+      rest.resolveWith({ data: response, total_count: 1, page_count: 1 });
 
       const result = await permit.api.resourceRelations.list({ resourceKey: RESOURCE });
 
@@ -33,9 +33,15 @@ describe('ResourceRelationsApi (unit)', () => {
     });
 
     it('forwards page and perPage as wire params', async () => {
-      rest.resolveWith([]);
+      rest.resolveWith({ data: [], total_count: 0, page_count: 0 });
 
-      await permit.api.resourceRelations.list({ resourceKey: RESOURCE, page: 3, perPage: 25 });
+      const result = await permit.api.resourceRelations.list({
+        resourceKey: RESOURCE,
+        page: 3,
+        perPage: 25,
+      });
+
+      expect(result).toEqual([]);
 
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(COLLECTION);

@@ -11,37 +11,17 @@
  */
 
 // May contain unused imports in some cases
-import { type OPALClient } from './opalclient';
+import type { OPALClient } from './opalclient';
 // May contain unused imports in some cases
-import { type OpalCommon } from './opal-common';
+import type { OPALCommon } from './opalcommon';
 // May contain unused imports in some cases
-import { type PDPContext } from './pdpcontext';
+import type { PDPContext } from './pdpcontext';
 // May contain unused imports in some cases
-import { type Pdp } from './pdp';
+import type { PdpValues } from './pdp-values';
 
-/**
- *
- * @interface RemoteConfig
- */
 export interface RemoteConfig {
-  /**
-   *
-   * @type {OpalCommon}
-   */
-  opal_common?: OpalCommon;
-  /**
-   *
-   * @type {OPALClient}
-   */
+  opal_common: OPALCommon;
   opal_client: OPALClient;
-  /**
-   *
-   * @type {Pdp}
-   */
-  pdp?: Pdp;
-  /**
-   *
-   * @type {PDPContext}
-   */
+  pdp?: PdpValues;
   context: PDPContext;
 }

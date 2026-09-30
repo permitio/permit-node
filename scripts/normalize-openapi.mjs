@@ -148,6 +148,12 @@ export function normalizeOpenApi(root = process.cwd()) {
     }
     text = text.replaceAll('/* tslint:disable */\n', '').replaceAll('/* eslint-disable */\n', '');
     text = text.replace(/^\s*\* @(?:export|memberof)\b[^\n]*\n/gm, '');
+    text = text.replace(/^(\s*\*.*?)[ \t]+$/gm, '$1');
+    // JSDoc-only RequiredError imports are retained by TypeScript but unused at runtime.
+    text = text.replaceAll(
+      '@throws {RequiredError}',
+      '@throws If a required parameter is missing.',
+    );
     writeFileSync(file, text);
   }
   service.dispose();

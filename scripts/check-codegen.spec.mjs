@@ -1,6 +1,8 @@
+import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import {
   copyFileSync,
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -17,8 +19,9 @@ import { fileURLToPath } from 'node:url';
 import { expect, onTestFinished, test } from 'vitest';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const packageJson = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+const generatorConfig = JSON.parse(readFileSync(join(root, 'openapi/generator.json'), 'utf8'));
 const cleanTypes = {
+  'callbacks-inner.ts': 'export type CallbacksInner = Array<any> | string;',
   'role-create.ts': "export interface RoleCreate { 'key': string; 'extends'?: Array<string>; }",
   'resource-role-create.ts': "export interface ResourceRoleCreate { 'extends'?: Array<string>; }",
   'group-assign-user.ts': "export interface GroupAssignUser { 'tenant': string; }",
@@ -40,6 +43,7 @@ const path = require('path');
 const config = JSON.parse(fs.readFileSync('mock-generator.json'));
 fs.writeFileSync('invocation.json', JSON.stringify({args: process.argv.slice(2),
   cwd: process.cwd(), pwd: process.env.PWD, initCwd: process.env.INIT_CWD}));
+if (config.warning) console.warn(config.warning);
 if (config.exit) process.exit(config.exit);
 if (config.signal) process.kill(process.pid, config.signal);
 const out = process.argv[process.argv.indexOf('-o') + 1];
@@ -50,13 +54,14 @@ for (const [name, source] of Object.entries(config.types)) {
   fs.writeFileSync(path.join(types, name), source);
 }
 for (let i = Object.keys(config.types).length; i < 344; i++) {
-  fs.writeFileSync(path.join(types, 'filler-' + i + '.ts'), 'export interface Filler {}');
+  fs.writeFileSync(path.join(types, 'filler-' + i + '.ts'), 'export interface Filler { value: string; }');
 }
+fs.writeFileSync(path.join(out, 'common.ts'), "export const createRequestFunction = () => { return <T, R>(axios, basePath): Promise<R> => { const url = (axios.defaults.baseURL ? '' : configuration?.basePath ?? basePath) + axiosArgs.url; return axios.request<T, R>(axiosRequestArgs) as Promise<R>; }; };");
 const meta = path.join(out, '.openapi-generator');
 fs.mkdirSync(meta, {recursive: true});
 if (!config.noVersion) fs.writeFileSync(path.join(meta, 'VERSION'), config.version || '7.25.0');
 if (!config.noManifest) {
-  const entries = fs.readdirSync(types).map(f => modelPackage + '/' + f);
+  const entries = ['common.ts', ...fs.readdirSync(types).map(f => modelPackage + '/' + f)];
   if (config.missingFile) entries.push(modelPackage + '/missing.ts');
   fs.writeFileSync(path.join(meta, 'FILES'), config.emptyManifest ? '' : entries.join('\\n'));
 }
@@ -65,10 +70,19 @@ if (!config.noManifest) {
 function setup(changes = {}) {
   const dir = realpathSync(mkdtempSync(join(tmpdir(), 'codegen test ')));
   onTestFinished(() => rmSync(dir, { recursive: true, force: true }));
-  for (const name of ['scripts', 'src/tests/codegen/fixtures', 'node_modules/.bin']) {
+  for (const name of ['scripts', 'openapi', 'src/tests/codegen/fixtures', 'node_modules/.bin']) {
     mkdirSync(join(dir, name), { recursive: true });
   }
-  copyFileSync(join(root, 'scripts/check-codegen.mjs'), join(dir, 'scripts/check-codegen.mjs'));
+  for (const file of [
+    'check-codegen.mjs',
+    'openapi-generator.mjs',
+    'openapi-shapes.mjs',
+    'openapi-source.mjs',
+    'package.json',
+  ]) {
+    copyFileSync(join(root, 'scripts', file), join(dir, 'scripts', file));
+  }
+  writeFileSync(join(dir, 'openapi/generator.json'), JSON.stringify(generatorConfig));
   mkdirSync(join(dir, 'node_modules/@permitio'), { recursive: true });
   symlinkSync(
     join(root, 'tools/compiler'),
@@ -76,12 +90,24 @@ function setup(changes = {}) {
     'dir',
   );
   const wrapperDir = join(dir, 'node_modules/@openapitools/openapi-generator-cli');
-  mkdirSync(wrapperDir, { recursive: true });
+  mkdirSync(join(wrapperDir, 'versions'), { recursive: true });
+  const jar = 'reviewed fixture JAR';
+  writeFileSync(join(wrapperDir, 'versions/7.25.0.jar'), jar);
+  writeFileSync(
+    join(dir, 'openapi/provenance.json'),
+    JSON.stringify({
+      generator: '7.25.0',
+      generatorSha256: createHash('sha256').update(jar).digest('hex'),
+    }),
+  );
   writeFileSync(join(wrapperDir, 'main.js'), wrapper, { mode: 0o755 });
   symlinkSync(join(wrapperDir, 'main.js'), join(dir, 'node_modules/.bin/openapi-generator-cli'));
-  writeFileSync(join(dir, 'package.json'), JSON.stringify(packageJson));
+  writeFileSync(join(dir, 'package.json'), '{"type":"commonjs"}');
   writeFileSync(join(dir, 'openapitools.json'), '{"generator-cli":{"version":"7.25.0"}}');
-  writeFileSync(join(dir, 'src/tests/codegen/fixtures/openapi-3.1.0.json'), '{"openapi":"3.1.0"}');
+  copyFileSync(
+    join(root, 'src/tests/codegen/fixtures/openapi-3.1.0.json'),
+    join(dir, 'src/tests/codegen/fixtures/openapi-3.1.0.json'),
+  );
   const config = { types: { ...cleanTypes }, ...changes };
   writeFileSync(join(dir, 'mock-generator.json'), JSON.stringify(config));
   return dir;
@@ -210,30 +236,41 @@ test('allows nested free-form dictionaries and comments mentioning index signatu
   expect(result.output).not.toMatch(/fully typed/);
 });
 
-test('reads additional properties and validation flags from the package script', () => {
+test('reads the shared generator configuration with validation enabled', () => {
   const dir = setup({ modelPackage: 'models' });
-  const pkg = structuredClone(packageJson);
-  pkg.scripts['generate-openapi-client'] = pkg.scripts['generate-openapi-client']
-    .replace('modelPackage=types', 'modelPackage=models,stringEnums=true')
-    .replace(' --skip-validate-spec', '');
-  writeFileSync(join(dir, 'package.json'), JSON.stringify(pkg));
+  const config = structuredClone(generatorConfig);
+  config.additionalProperties.modelPackage = 'models';
+  config.additionalProperties.stringEnums = true;
+  writeFileSync(join(dir, 'openapi/generator.json'), JSON.stringify(config));
   const result = run(dir);
   expect(result.status, result.output).toBe(0);
   const { args } = JSON.parse(readFileSync(join(dir, 'invocation.json'), 'utf8'));
-  expect(args.some((arg) => arg.includes('modelPackage=models,stringEnums=true'))).toBe(true);
+  expect(args[args.indexOf('-c') + 1]).toBe('openapi/generator.json');
+  expect(args[args.indexOf('-t') + 1]).toBe('openapi/templates');
   expect(args.includes('--skip-validate-spec')).toBe(false);
 });
 
-for (const [label, transform, pattern] of [
-  ['generator flag', (s) => s.replace('-g typescript-axios', ''), /generate-openapi-client/],
-  ['additional properties', (s) => s.replace(/--additional-properties=\S+/, ''), /additional/],
-  ['unknown flag', (s) => s.replace(' -g ', ' --unknown-option -g '), /unsupported|unknown/i],
+for (const [label, changes, pattern] of [
+  ['generator', { generatorName: 'java' }, /typescript-axios/],
+  ['additional properties', { additionalProperties: undefined }, /apiPackage/],
+  ['unknown option', { unknown: true }, /unsupported/i],
+  [
+    'unsafe model directory',
+    { additionalProperties: { apiPackage: 'api', modelPackage: '$HOME' } },
+    /modelPackage/,
+  ],
+  [
+    'nested model directory',
+    { additionalProperties: { apiPackage: 'api', modelPackage: '..' } },
+    /modelPackage/,
+  ],
 ]) {
-  test(`rejects an unsupported package script: ${label}`, () => {
+  test(`rejects unsupported generator configuration: ${label}`, () => {
     const dir = setup();
-    const pkg = structuredClone(packageJson);
-    pkg.scripts['generate-openapi-client'] = transform(pkg.scripts['generate-openapi-client']);
-    writeFileSync(join(dir, 'package.json'), JSON.stringify(pkg));
+    writeFileSync(
+      join(dir, 'openapi/generator.json'),
+      JSON.stringify({ ...generatorConfig, ...changes }),
+    );
     fails(dir, pattern);
   });
 }
@@ -245,7 +282,7 @@ test('rejects a downgraded fixture header', () => {
 });
 
 for (const [label, file, content, pattern] of [
-  ['invalid JSON', 'openapitools.json', '{', /Cannot read JSON.*openapitools.json/],
+  ['invalid JSON', 'openapitools.json', '{', /JSON/],
   ['missing version', 'openapitools.json', '{}', /explicit stable generator version/],
   [
     'non-numeric version',
@@ -253,7 +290,7 @@ for (const [label, file, content, pattern] of [
     '{"generator-cli":{"version":"latest"}}',
     /explicit stable generator version/,
   ],
-  ['missing script', 'package.json', '{}', /generate-openapi-client/],
+  ['missing generator', 'openapi/generator.json', '{}', /typescript-axios/],
 ]) {
   test(`rejects ${label} before generation`, () => {
     const dir = setup();
@@ -262,25 +299,8 @@ for (const [label, file, content, pattern] of [
   });
 }
 
-for (const [label, transform, pattern] of [
-  ['unsafe options', (s) => s.replace('modelPackage=types', 'modelPackage=$HOME'), /syntax/],
-  ['missing model directory', (s) => s.replace(',modelPackage=types', ''), /modelPackage/],
-  [
-    'nested model directory',
-    (s) => s.replace('modelPackage=types', 'modelPackage=..'),
-    /modelPackage/,
-  ],
-]) {
-  test(`rejects ${label}`, () => {
-    const dir = setup();
-    const pkg = structuredClone(packageJson);
-    pkg.scripts['generate-openapi-client'] = transform(pkg.scripts['generate-openapi-client']);
-    writeFileSync(join(dir, 'package.json'), JSON.stringify(pkg));
-    fails(dir, pattern);
-  });
-}
-
 for (const [label, source, pattern] of [
+  ['empty interface', 'export interface Example {}', /empty interface/],
   ['type alias collapse', 'export type Example = any;', /type alias Example/],
   ['untyped property', 'export interface Example { key; }', /example.ts:key/],
   ['invalid TypeScript', 'export interface Example {', /Invalid generated TypeScript/],
@@ -307,9 +327,64 @@ test('rejects a missing model directory after reported completion', () => {
 
 test('reports pnpm install when all node dependencies are missing', () => {
   const dir = setup();
-  rmSync(join(dir, 'node_modules'), { recursive: true });
+  rmSync(join(dir, 'node_modules/@openapitools'), { recursive: true });
   const result = run(dir);
   expect(result.status).toBe(1);
   expect(result.output).toMatch(/pnpm install/);
   expect(result.output).not.toMatch(/ERR_MODULE_NOT_FOUND/);
+});
+
+test('rejects an unexpected successful generator warning', () => {
+  fails(
+    setup({ warning: '[main] WARN unsupported schema keyword' }),
+    /Unexpected generator diagnostic/,
+  );
+});
+
+test('does not accept a known diagnostic promoted to an error', () => {
+  fails(
+    setup({ warning: '[main] ERROR Failed to get the schema name: null' }),
+    /Unexpected generator diagnostic/,
+  );
+});
+
+test('rejects changed tuple output instead of applying a stale repair', () => {
+  fails(
+    setup({
+      types: { ...cleanTypes, 'callbacks-inner.ts': 'export type CallbacksInner = string;' },
+    }),
+    /tuple generator behavior changed/,
+  );
+});
+
+test('rejects changed routing output instead of applying a stale compatibility correction', () => {
+  const dir = setup();
+  const path = join(dir, 'node_modules/@openapitools/openapi-generator-cli/main.js');
+  writeFileSync(
+    path,
+    wrapper +
+      "\nfs.writeFileSync(require('path').join(out, 'common.ts'), 'export const changed = true;');",
+  );
+  fails(dir, /Generated request routing changed/);
+});
+
+test('a mismatched cached JAR never executes the generator', () => {
+  const dir = setup();
+  writeFileSync(
+    join(dir, 'node_modules/@openapitools/openapi-generator-cli/versions/7.25.0.jar'),
+    'wrong archive',
+  );
+  fails(dir, /Generator JAR hash differs/);
+  expect(existsSync(join(dir, 'invocation.json'))).toBe(false);
+});
+
+test('rejects changed generic return code instead of concealing its type', () => {
+  const dir = setup();
+  const path = join(dir, 'node_modules/@openapitools/openapi-generator-cli/main.js');
+  writeFileSync(
+    path,
+    wrapper +
+      "\nconst file = require('path').join(out, 'common.ts'); fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace('as Promise<R>', 'as any'));",
+  );
+  fails(dir, /Generated Axios return type changed/);
 });

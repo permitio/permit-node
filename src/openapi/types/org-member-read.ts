@@ -11,100 +11,73 @@
  */
 
 // May contain unused imports in some cases
-import { type IdentityRead } from './identity-read';
+import type { IdentityRead } from './identity-read';
 // May contain unused imports in some cases
-import { type InviteRead } from './invite-read';
+import type { InviteRead } from './invite-read';
 // May contain unused imports in some cases
-import { OnboardingStep } from './onboarding-step';
+import type { OnboardingStep } from './onboarding-step';
 
-/**
- *
- * @interface OrgMemberRead
- */
 export interface OrgMemberRead {
   /**
    * Unique id of the account member
-   * @type {string}
    */
   id: string;
   /**
    * Email of the user controlling this account
-   * @type {string}
    */
   email: string;
   /**
    * Whether this email address is verified or not. For social providers like \'Login with Google\' this is done automatically, otherwise we will send the user a verification link in email.
-   * @type {boolean}
    */
   email_verified: boolean;
   /**
    * Name of this user
-   * @type {string}
    */
   name?: string;
   /**
    * First name of the user
-   * @type {string}
    */
   given_name?: string;
   /**
    * Last name of the user
-   * @type {string}
    */
   family_name?: string;
   /**
    * URL to picture, photo, or avatar of the user that controls this account.
-   * @type {string}
    */
   picture?: string;
   /**
    * Whether or not this user has special access to permit.io organizations
-   * @type {boolean}
    */
   is_superuser: boolean;
   /**
    * Whether or not this user is currently onboarding, needs to be replaced by a user journey object
-   * @type {boolean}
    */
   is_onboarding: boolean;
   /**
    * the step the user is currently going through in onboarding
-   * @type {OnboardingStep}
    */
   onboarding_step: OnboardingStep;
   /**
    * Date and time when the account member was created (ISO_8601 format).
-   * @type {string}
    */
   created_at: string;
   /**
    * Last date and time this user logged in (ISO_8601 format).
-   * @type {string}
    */
   last_login?: string;
   /**
    * Last IP address from which this user logged in.
-   * @type {string}
    */
   last_ip?: string;
   /**
    * Total number of logins this user has performed.
-   * @type {number}
    */
   logins_count?: number;
-  /**
-   *
-   * @type {Array<IdentityRead>}
-   */
   identities: Array<IdentityRead>;
-  /**
-   *
-   * @type {InviteRead}
-   */
   invite?: InviteRead;
   /**
    * Custom permit.io dashboard settings, such as preferred theme, etc.
-   * @type {object}
    */
   settings: object;
 }

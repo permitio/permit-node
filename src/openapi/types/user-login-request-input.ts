@@ -10,19 +10,13 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface UserLoginRequestInput
- */
 export interface UserLoginRequestInput {
   /**
    * ID or key of the user for whom to generate a token
-   * @type {string}
    */
   user_id: string;
   /**
    * ID or key of the tenant to which access is requested
-   * @type {string}
    */
   tenant_id: string;
 }

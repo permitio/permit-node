@@ -10,24 +10,8 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface RelationshipTupleObj
- */
 export interface RelationshipTupleObj {
-  /**
-   *
-   * @type {string}
-   */
   subject_str: string;
-  /**
-   *
-   * @type {string}
-   */
   relation_str: string;
-  /**
-   *
-   * @type {string}
-   */
   object_str: string;
 }

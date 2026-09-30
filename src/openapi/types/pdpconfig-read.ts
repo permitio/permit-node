@@ -10,39 +10,30 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface PDPConfigRead
- */
 export interface PDPConfigRead {
-  /**
-   *
-   * @type {string}
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   */
   name?: string;
   /**
    * Unique id of the organization that the pdp_config belongs to.
-   * @type {string}
    */
   organization_id: string;
   /**
    * Unique id of the project that the pdp_config belongs to.
-   * @type {string}
    */
   project_id: string;
   /**
    * Unique id of the environment that the pdp_config belongs to.
-   * @type {string}
    */
   environment_id: string;
-  /**
-   *
-   * @type {string}
-   */
   client_secret: string;
+  opal_server_access_token?: string;
+  num_shards?: number;
+  /**
+   * Whether debug audit logs are enabled or not
+   */
+  debug_audit_logs?: boolean;
+  /**
+   * The minimum image version of PDP that can connect to this config
+   */
+  min_pdp_version?: string;
 }

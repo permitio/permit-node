@@ -11,40 +11,32 @@
  */
 
 // May contain unused imports in some cases
-import { ElementsType } from './elements-type';
+import type { ElementsType } from './elements-type';
 // May contain unused imports in some cases
-import { type Settings } from './settings';
+import type { SettingsValue } from './settings-value';
 // May contain unused imports in some cases
-import { type WebhookUpdate } from './webhook-update';
+import type { WebhookUpdate } from './webhook-update';
 
-/**
- *
- * @interface ElementsConfigUpdate
- */
 export interface ElementsConfigUpdate {
   /**
    * The name of the elements_config
-   * @type {string}
    */
   name?: string;
   /**
    * The type of the elements interface, e.g: user management
-   * @type {ElementsType}
    */
   elements_type?: ElementsType;
   /**
    * Obj with the options of the elements interface, e.g: primary color
-   * @type {{ [key: string]: Settings; }}
    */
-  settings?: { [key: string]: Settings };
+  settings?: { [key: string]: SettingsValue };
+  /**
+   * Whether to send email notifications to users using your Email Provider you set
+   */
+  email_notifications?: boolean;
   /**
    * Obj with levels as keys and role ids as values
-   * @type {{ [key: string]: Array<string>; }}
    */
   roles_to_levels: { [key: string]: Array<string> };
-  /**
-   *
-   * @type {WebhookUpdate}
-   */
   webhook?: WebhookUpdate;
 }

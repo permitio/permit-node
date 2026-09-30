@@ -12,12 +12,12 @@
 
 /**
  * An enumeration.
- * @enum {string}
  */
 
 export const Engine = {
   Opa: 'OPA',
   Avp: 'AVP',
+  Generic: 'GENERIC',
 } as const;
 
 export type Engine = (typeof Engine)[keyof typeof Engine];

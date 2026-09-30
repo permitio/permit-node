@@ -11,28 +11,21 @@
  */
 
 // May contain unused imports in some cases
-import { type DerivedRoleRuleRead } from './derived-role-rule-read';
+import type { DerivedRoleRuleRead } from './derived-role-rule-read';
 // May contain unused imports in some cases
-import { type When } from './when';
+import type { PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings } from './permit-backend-schemas-schema-derived-role-rule-derivation-settings';
 
-/**
- *
- * @interface DerivedRoleBlockRead
- */
 export interface DerivedRoleBlockRead {
   /**
-   *
-   * @type {When}
+   * the settings of the derived role
    */
-  when?: When;
+  when?: PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings;
   /**
    * The unique id of the derived_role
-   * @type {string}
    */
   id: string;
   /**
    * the rules of the derived role
-   * @type {Array<DerivedRoleRuleRead>}
    */
   users_with_role?: Array<DerivedRoleRuleRead>;
 }

@@ -11,36 +11,23 @@
  */
 
 // May contain unused imports in some cases
-import { type Scope } from './scope';
+import type { EnvironmentCopyConflictStrategy } from './environment-copy-conflict-strategy';
 // May contain unused imports in some cases
-import { type TargetEnv } from './target-env';
+import type { EnvironmentCopyScope } from './environment-copy-scope';
+// May contain unused imports in some cases
+import type { EnvironmentCopyTarget } from './environment-copy-target';
 
-/**
- *
- * @interface EnvironmentCopy
- */
 export interface EnvironmentCopy {
   /**
-   *
-   * @type {TargetEnv}
+   * If copying a new environment, the environment configuration. If copying to an existing environment, the environment identifier
    */
-  target_env: TargetEnv;
+  target_env: EnvironmentCopyTarget;
   /**
    * Action to take when detecting a conflict when copying. Only applies to copying into an existing environment
-   * @type {string}
    */
-  conflict_strategy?: EnvironmentCopyConflictStrategyEnum;
+  conflict_strategy?: EnvironmentCopyConflictStrategy;
   /**
-   *
-   * @type {Scope}
+   * Filters to include and exclude copied objects
    */
-  scope?: Scope;
+  scope?: EnvironmentCopyScope;
 }
-
-export const EnvironmentCopyConflictStrategyEnum = {
-  Fail: 'fail',
-  Overwrite: 'overwrite',
-} as const;
-
-export type EnvironmentCopyConflictStrategyEnum =
-  (typeof EnvironmentCopyConflictStrategyEnum)[keyof typeof EnvironmentCopyConflictStrategyEnum];

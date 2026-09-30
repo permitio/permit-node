@@ -10,89 +10,22 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface APIHistoryEventRead
- */
 export interface APIHistoryEventRead {
-  /**
-   *
-   * @type {string}
-   */
   timestamp: string;
-  /**
-   *
-   * @type {string}
-   */
+  timestamp_utc?: string;
   method: string;
-  /**
-   *
-   * @type {string}
-   */
   path: string;
-  /**
-   *
-   * @type {boolean}
-   */
   success: boolean;
-  /**
-   *
-   * @type {number}
-   */
   status: number;
-  /**
-   *
-   * @type {string}
-   */
   request_id?: string;
-  /**
-   *
-   * @type {string}
-   */
   client_ip: string;
-  /**
-   *
-   * @type {string}
-   */
   actor_type: string;
-  /**
-   *
-   * @type {string}
-   */
   actor_id: string;
-  /**
-   *
-   * @type {string}
-   */
   actor_display_name?: string;
-  /**
-   *
-   * @type {string}
-   */
   org_id?: string;
-  /**
-   *
-   * @type {string}
-   */
   project_key?: string;
-  /**
-   *
-   * @type {string}
-   */
   project_id?: string;
-  /**
-   *
-   * @type {string}
-   */
   env_key?: string;
-  /**
-   *
-   * @type {string}
-   */
   env_id?: string;
-  /**
-   *
-   * @type {string}
-   */
   id: string;
 }

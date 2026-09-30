@@ -11,23 +11,17 @@
  */
 
 // May contain unused imports in some cases
-import { type DerivedRoleRuleCreate } from './derived-role-rule-create';
+import type { DerivedRoleRuleCreate } from './derived-role-rule-create';
 // May contain unused imports in some cases
-import { type When } from './when';
+import type { PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings } from './permit-backend-schemas-schema-derived-role-rule-derivation-settings';
 
-/**
- *
- * @interface DerivedRoleBlockEdit
- */
 export interface DerivedRoleBlockEdit {
   /**
-   *
-   * @type {When}
+   * the settings of the derived role
    */
-  when?: When;
+  when?: PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings;
   /**
    * the rules of the derived role
-   * @type {Array<DerivedRoleRuleCreate>}
    */
   users_with_role?: Array<DerivedRoleRuleCreate>;
 }

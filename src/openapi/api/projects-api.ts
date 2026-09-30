@@ -10,8 +10,9 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
-import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
@@ -21,8 +22,8 @@ import {
   setSearchParams,
   toPathString,
 } from '../common';
-import { Configuration } from '../configuration';
-import { type ProjectCreate, type ProjectRead, type ProjectUpdate } from '../types';
+import type { Configuration } from '../configuration';
+import type { ProjectCreate, ProjectRead, ProjectUpdate } from '../types';
 /**
  * ProjectsApi - axios parameter creator
  */
@@ -33,11 +34,11 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
      * @summary Create Project
      * @param {ProjectCreate} projectCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createProject: async (
       projectCreate: ProjectCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projectCreate' is not null or undefined
       assertParamExists('createProject', 'projectCreate', projectCreate);
@@ -58,6 +59,7 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -82,16 +84,16 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
      * @summary Delete Project
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteProject: async (
       projId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('deleteProject', 'projId', projId);
       const localVarPath = `/v2/projects/{proj_id}`.replace(
-        `{${'proj_id'}}`,
+        '{proj_id}',
         encodeURIComponent(String(projId)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -108,6 +110,8 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -127,13 +131,16 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
      * @summary Get Project
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    getProject: async (projId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    getProject: async (
+      projId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('getProject', 'projId', projId);
       const localVarPath = `/v2/projects/{proj_id}`.replace(
-        `{${'proj_id'}}`,
+        '{proj_id}',
         encodeURIComponent(String(projId)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -150,6 +157,8 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -170,12 +179,12 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listProjects: async (
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/v2/projects`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -201,6 +210,8 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
         localVarQueryParameter['per_page'] = perPage;
       }
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -220,19 +231,19 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {ProjectUpdate} projectUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateProject: async (
       projId: string,
       projectUpdate: ProjectUpdate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('updateProject', 'projId', projId);
       // verify required parameter 'projectUpdate' is not null or undefined
       assertParamExists('updateProject', 'projectUpdate', projectUpdate);
       const localVarPath = `/v2/projects/{proj_id}`.replace(
-        `{${'proj_id'}}`,
+        '{proj_id}',
         encodeURIComponent(String(projId)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -251,6 +262,7 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -284,45 +296,72 @@ export const ProjectsApiFp = function (configuration?: Configuration) {
      * @summary Create Project
      * @param {ProjectCreate} projectCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async createProject(
       projectCreate: ProjectCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createProject(
         projectCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ProjectsApi.createProject']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Deletes the project and all its related data.
      * @summary Delete Project
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deleteProject(
       projId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteProject(projId, options);
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ProjectsApi.deleteProject']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Gets a single project matching the given proj_id, if such project exists.
      * @summary Get Project
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getProject(
       projId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getProject(projId, options);
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ProjectsApi.getProject']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists all the projects under the active organization.
@@ -330,19 +369,28 @@ export const ProjectsApiFp = function (configuration?: Configuration) {
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listProjects(
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ProjectRead>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listProjects(
         page,
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ProjectsApi.listProjects']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Updates the project.
@@ -350,19 +398,28 @@ export const ProjectsApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {ProjectUpdate} projectUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async updateProject(
       projId: string,
       projectUpdate: ProjectUpdate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateProject(
         projId,
         projectUpdate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ProjectsApi.updateProject']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
@@ -380,63 +437,76 @@ export const ProjectsApiFactory = function (
     /**
      * Creates a new project under the active organization.
      * @summary Create Project
-     * @param {ProjectCreate} projectCreate
+     * @param {ProjectsApiCreateProjectRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    createProject(projectCreate: ProjectCreate, options?: any): AxiosPromise<ProjectRead> {
+    createProject(
+      requestParameters: ProjectsApiCreateProjectRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ProjectRead> {
       return localVarFp
-        .createProject(projectCreate, options)
+        .createProject(requestParameters.projectCreate, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes the project and all its related data.
      * @summary Delete Project
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {ProjectsApiDeleteProjectRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    deleteProject(projId: string, options?: any): AxiosPromise<void> {
-      return localVarFp.deleteProject(projId, options).then((request) => request(axios, basePath));
+    deleteProject(
+      requestParameters: ProjectsApiDeleteProjectRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<void> {
+      return localVarFp
+        .deleteProject(requestParameters.projId, options)
+        .then((request) => request(axios, basePath));
     },
     /**
      * Gets a single project matching the given proj_id, if such project exists.
      * @summary Get Project
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {ProjectsApiGetProjectRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    getProject(projId: string, options?: any): AxiosPromise<ProjectRead> {
-      return localVarFp.getProject(projId, options).then((request) => request(axios, basePath));
+    getProject(
+      requestParameters: ProjectsApiGetProjectRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ProjectRead> {
+      return localVarFp
+        .getProject(requestParameters.projId, options)
+        .then((request) => request(axios, basePath));
     },
     /**
      * Lists all the projects under the active organization.
      * @summary List Projects
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {ProjectsApiListProjectsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    listProjects(page?: number, perPage?: number, options?: any): AxiosPromise<Array<ProjectRead>> {
+    listProjects(
+      requestParameters: ProjectsApiListProjectsRequest = {},
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<Array<ProjectRead>> {
       return localVarFp
-        .listProjects(page, perPage, options)
+        .listProjects(requestParameters.page, requestParameters.perPage, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Updates the project.
      * @summary Update Project
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {ProjectUpdate} projectUpdate
+     * @param {ProjectsApiUpdateProjectRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateProject(
-      projId: string,
-      projectUpdate: ProjectUpdate,
-      options?: any,
+      requestParameters: ProjectsApiUpdateProjectRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ProjectRead> {
       return localVarFp
-        .updateProject(projId, projectUpdate, options)
+        .updateProject(requestParameters.projId, requestParameters.projectUpdate, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -444,80 +514,60 @@ export const ProjectsApiFactory = function (
 
 /**
  * Request parameters for createProject operation in ProjectsApi.
- * @interface ProjectsApiCreateProjectRequest
  */
 export interface ProjectsApiCreateProjectRequest {
-  /**
-   *
-   * @type {ProjectCreate}
-   */
   readonly projectCreate: ProjectCreate;
 }
 
 /**
  * Request parameters for deleteProject operation in ProjectsApi.
- * @interface ProjectsApiDeleteProjectRequest
  */
 export interface ProjectsApiDeleteProjectRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 }
 
 /**
  * Request parameters for getProject operation in ProjectsApi.
- * @interface ProjectsApiGetProjectRequest
  */
 export interface ProjectsApiGetProjectRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 }
 
 /**
  * Request parameters for listProjects operation in ProjectsApi.
- * @interface ProjectsApiListProjectsRequest
  */
 export interface ProjectsApiListProjectsRequest {
   /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateProject operation in ProjectsApi.
- * @interface ProjectsApiUpdateProjectRequest
  */
 export interface ProjectsApiUpdateProjectRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
-  /**
-   *
-   * @type {ProjectUpdate}
-   */
   readonly projectUpdate: ProjectUpdate;
 }
 
 /**
  * ProjectsApi - object-oriented interface
- * @class ProjectsApi
- * @extends {BaseAPI}
  */
 export class ProjectsApi extends BaseAPI {
   /**
@@ -525,11 +575,11 @@ export class ProjectsApi extends BaseAPI {
    * @summary Create Project
    * @param {ProjectsApiCreateProjectRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public createProject(
     requestParameters: ProjectsApiCreateProjectRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ProjectsApiFp(this.configuration)
       .createProject(requestParameters.projectCreate, options)
@@ -541,11 +591,11 @@ export class ProjectsApi extends BaseAPI {
    * @summary Delete Project
    * @param {ProjectsApiDeleteProjectRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public deleteProject(
     requestParameters: ProjectsApiDeleteProjectRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ProjectsApiFp(this.configuration)
       .deleteProject(requestParameters.projId, options)
@@ -557,9 +607,12 @@ export class ProjectsApi extends BaseAPI {
    * @summary Get Project
    * @param {ProjectsApiGetProjectRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
-  public getProject(requestParameters: ProjectsApiGetProjectRequest, options?: AxiosRequestConfig) {
+  public getProject(
+    requestParameters: ProjectsApiGetProjectRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
     return ProjectsApiFp(this.configuration)
       .getProject(requestParameters.projId, options)
       .then((request) => request(this.axios, this.basePath));
@@ -570,11 +623,11 @@ export class ProjectsApi extends BaseAPI {
    * @summary List Projects
    * @param {ProjectsApiListProjectsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public listProjects(
     requestParameters: ProjectsApiListProjectsRequest = {},
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ProjectsApiFp(this.configuration)
       .listProjects(requestParameters.page, requestParameters.perPage, options)
@@ -586,11 +639,11 @@ export class ProjectsApi extends BaseAPI {
    * @summary Update Project
    * @param {ProjectsApiUpdateProjectRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public updateProject(
     requestParameters: ProjectsApiUpdateProjectRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ProjectsApiFp(this.configuration)
       .updateProject(requestParameters.projId, requestParameters.projectUpdate, options)

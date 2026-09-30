@@ -10,8 +10,9 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
-import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
@@ -21,15 +22,16 @@ import {
   setSearchParams,
   toPathString,
 } from '../common';
-import { Configuration } from '../configuration';
-import {
-  type EnvironmentCopy,
-  type EnvironmentCreate,
-  type EnvironmentRead,
-  type EnvironmentStats,
-  type EnvironmentUpdate,
+import type { Configuration } from '../configuration';
+import type {
+  EnvironmentCopy,
+  EnvironmentCreate,
+  EnvironmentRead,
+  EnvironmentReadWithEmailConfig,
+  EnvironmentStats,
+  EnvironmentUpdate,
+  TaskResultEnvironmentRead,
 } from '../types';
-
 /**
  * EnvironmentsApi - axios parameter creator
  */
@@ -42,13 +44,13 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {EnvironmentCopy} environmentCopy
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     copyEnvironment: async (
       projId: string,
       envId: string,
       environmentCopy: EnvironmentCopy,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('copyEnvironment', 'projId', projId);
@@ -57,8 +59,8 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
       // verify required parameter 'environmentCopy' is not null or undefined
       assertParamExists('copyEnvironment', 'environmentCopy', environmentCopy);
       const localVarPath = `/v2/projects/{proj_id}/envs/{env_id}/copy`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -75,6 +77,73 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        environmentCopy,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Copy environment  This endpoint either duplicates an existing environment to a new environment in the same project, or copies from an existing environment to another existing environment.  The `scope` object controls which objects will be copied to the target environment.  To clone to a new environment, the user must have write permissions to the containing project. To clone into an existing environment, the user must have write permissions to the target environment.  Copying environments across projects or organizations is not allowed.
+     * @summary Copy Environment Async
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {EnvironmentCopy} environmentCopy
+     * @param {number} [wait] Time in seconds to wait for the task to complete. Default is 0, means no wait.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    copyEnvironmentAsync: async (
+      projId: string,
+      envId: string,
+      environmentCopy: EnvironmentCopy,
+      wait?: number,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('copyEnvironmentAsync', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('copyEnvironmentAsync', 'envId', envId);
+      // verify required parameter 'environmentCopy' is not null or undefined
+      assertParamExists('copyEnvironmentAsync', 'environmentCopy', environmentCopy);
+      const localVarPath = `/v2/projects/{proj_id}/envs/{env_id}/copy/async`
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (wait !== undefined) {
+        localVarQueryParameter['wait'] = wait;
+      }
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -100,19 +169,19 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {EnvironmentCreate} environmentCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createEnvironment: async (
       projId: string,
       environmentCreate: EnvironmentCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('createEnvironment', 'projId', projId);
       // verify required parameter 'environmentCreate' is not null or undefined
       assertParamExists('createEnvironment', 'environmentCreate', environmentCreate);
       const localVarPath = `/v2/projects/{proj_id}/envs`.replace(
-        `{${'proj_id'}}`,
+        '{proj_id}',
         encodeURIComponent(String(projId)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -131,6 +200,7 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -156,20 +226,20 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteEnvironment: async (
       projId: string,
       envId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('deleteEnvironment', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('deleteEnvironment', 'envId', envId);
       const localVarPath = `/v2/projects/{proj_id}/envs/{env_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -184,6 +254,69 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Get the result of a copy environment task.
+     * @summary Get Copy Environment Task Result
+     * @param {string} taskId The unique id of the task.
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {number} [wait] Time in seconds to wait for the task to complete. Default is 0, means no wait.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    getCopyEnvironmentAsyncResult: async (
+      taskId: string,
+      projId: string,
+      envId: string,
+      wait?: number,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskId' is not null or undefined
+      assertParamExists('getCopyEnvironmentAsyncResult', 'taskId', taskId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getCopyEnvironmentAsyncResult', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getCopyEnvironmentAsyncResult', 'envId', envId);
+      const localVarPath = `/v2/projects/{proj_id}/envs/{env_id}/copy/async/{task_id}/result`
+        .replace('{task_id}', encodeURIComponent(String(taskId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (wait !== undefined) {
+        localVarQueryParameter['wait'] = wait;
+      }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -204,20 +337,20 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getEnvironment: async (
       projId: string,
       envId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('getEnvironment', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('getEnvironment', 'envId', envId);
       const localVarPath = `/v2/projects/{proj_id}/envs/{env_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -232,6 +365,8 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -253,18 +388,18 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listEnvironments: async (
       projId: string,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('listEnvironments', 'projId', projId);
       const localVarPath = `/v2/projects/{proj_id}/envs`.replace(
-        `{${'proj_id'}}`,
+        '{proj_id}',
         encodeURIComponent(String(projId)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -290,6 +425,8 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
         localVarQueryParameter['per_page'] = perPage;
       }
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -309,20 +446,20 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     statsEnvironments: async (
       projId: string,
       envId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('statsEnvironments', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('statsEnvironments', 'envId', envId);
       const localVarPath = `/v2/projects/{proj_id}/envs/{env_id}/stats`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -337,6 +474,64 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Test Jwks Url.
+     * @summary Test Jwks By Url
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} [url] URL of JWKs to test
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    testJwksByUrl: async (
+      projId: string,
+      envId: string,
+      url?: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('testJwksByUrl', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('testJwksByUrl', 'envId', envId);
+      const localVarPath = `/v2/projects/{proj_id}/envs/{env_id}/test_jwks`
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (url !== undefined) {
+        localVarQueryParameter['url'] = url;
+      }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -358,13 +553,13 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {EnvironmentUpdate} environmentUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateEnvironment: async (
       projId: string,
       envId: string,
       environmentUpdate: EnvironmentUpdate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('updateEnvironment', 'projId', projId);
@@ -373,8 +568,8 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
       // verify required parameter 'environmentUpdate' is not null or undefined
       assertParamExists('updateEnvironment', 'environmentUpdate', environmentUpdate);
       const localVarPath = `/v2/projects/{proj_id}/envs/{env_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -391,6 +586,7 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -426,13 +622,13 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {EnvironmentCopy} environmentCopy
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async copyEnvironment(
       projId: string,
       envId: string,
       environmentCopy: EnvironmentCopy,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EnvironmentRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.copyEnvironment(
         projId,
@@ -440,7 +636,54 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
         environmentCopy,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['EnvironmentsApi.copyEnvironment']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Copy environment  This endpoint either duplicates an existing environment to a new environment in the same project, or copies from an existing environment to another existing environment.  The `scope` object controls which objects will be copied to the target environment.  To clone to a new environment, the user must have write permissions to the containing project. To clone into an existing environment, the user must have write permissions to the target environment.  Copying environments across projects or organizations is not allowed.
+     * @summary Copy Environment Async
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {EnvironmentCopy} environmentCopy
+     * @param {number} [wait] Time in seconds to wait for the task to complete. Default is 0, means no wait.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    async copyEnvironmentAsync(
+      projId: string,
+      envId: string,
+      environmentCopy: EnvironmentCopy,
+      wait?: number,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskResultEnvironmentRead>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.copyEnvironmentAsync(
+        projId,
+        envId,
+        environmentCopy,
+        wait,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['EnvironmentsApi.copyEnvironmentAsync']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Creates a new environment under a given project.
@@ -448,19 +691,29 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {EnvironmentCreate} environmentCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async createEnvironment(
       projId: string,
       environmentCreate: EnvironmentCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EnvironmentRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createEnvironment(
         projId,
         environmentCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['EnvironmentsApi.createEnvironment']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Deletes an environment and all its related data.
@@ -468,19 +721,68 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deleteEnvironment(
       projId: string,
       envId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteEnvironment(
         projId,
         envId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['EnvironmentsApi.deleteEnvironment']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Get the result of a copy environment task.
+     * @summary Get Copy Environment Task Result
+     * @param {string} taskId The unique id of the task.
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {number} [wait] Time in seconds to wait for the task to complete. Default is 0, means no wait.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    async getCopyEnvironmentAsyncResult(
+      taskId: string,
+      projId: string,
+      envId: string,
+      wait?: number,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskResultEnvironmentRead>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getCopyEnvironmentAsyncResult(
+        taskId,
+        projId,
+        envId,
+        wait,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['EnvironmentsApi.getCopyEnvironmentAsyncResult']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Gets a single environment matching the given env_id, if such environment exists.
@@ -488,19 +790,30 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getEnvironment(
       projId: string,
       envId: string,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EnvironmentRead>> {
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<EnvironmentReadWithEmailConfig>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getEnvironment(
         projId,
         envId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['EnvironmentsApi.getEnvironment']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists all the environments under a given project.
@@ -509,21 +822,35 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listEnvironments(
       projId: string,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EnvironmentRead>>> {
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<Array<EnvironmentReadWithEmailConfig>>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listEnvironments(
         projId,
         page,
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['EnvironmentsApi.listEnvironments']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      *
@@ -531,19 +858,61 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async statsEnvironments(
       projId: string,
       envId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EnvironmentStats>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.statsEnvironments(
         projId,
         envId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['EnvironmentsApi.statsEnvironments']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Test Jwks Url.
+     * @summary Test Jwks By Url
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} [url] URL of JWKs to test
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    async testJwksByUrl(
+      projId: string,
+      envId: string,
+      url?: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<object>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.testJwksByUrl(
+        projId,
+        envId,
+        url,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['EnvironmentsApi.testJwksByUrl']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Updates the environment.
@@ -552,13 +921,13 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {EnvironmentUpdate} environmentUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async updateEnvironment(
       projId: string,
       envId: string,
       environmentUpdate: EnvironmentUpdate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EnvironmentRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateEnvironment(
         projId,
@@ -566,7 +935,17 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
         environmentUpdate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['EnvironmentsApi.updateEnvironment']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
@@ -584,118 +963,183 @@ export const EnvironmentsApiFactory = function (
     /**
      * Copy environment  This endpoint either duplicates an existing environment to a new environment in the same project, or copies from an existing environment to another existing environment.  The `scope` object controls which objects will be copied to the target environment.  To clone to a new environment, the user must have write permissions to the containing project. To clone into an existing environment, the user must have write permissions to the target environment.  Copying environments across projects or organizations is not allowed.
      * @summary Copy Environment
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {EnvironmentCopy} environmentCopy
+     * @param {EnvironmentsApiCopyEnvironmentRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     copyEnvironment(
-      projId: string,
-      envId: string,
-      environmentCopy: EnvironmentCopy,
-      options?: any,
+      requestParameters: EnvironmentsApiCopyEnvironmentRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<EnvironmentRead> {
       return localVarFp
-        .copyEnvironment(projId, envId, environmentCopy, options)
+        .copyEnvironment(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.environmentCopy,
+          options,
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Copy environment  This endpoint either duplicates an existing environment to a new environment in the same project, or copies from an existing environment to another existing environment.  The `scope` object controls which objects will be copied to the target environment.  To clone to a new environment, the user must have write permissions to the containing project. To clone into an existing environment, the user must have write permissions to the target environment.  Copying environments across projects or organizations is not allowed.
+     * @summary Copy Environment Async
+     * @param {EnvironmentsApiCopyEnvironmentAsyncRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    copyEnvironmentAsync(
+      requestParameters: EnvironmentsApiCopyEnvironmentAsyncRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<TaskResultEnvironmentRead> {
+      return localVarFp
+        .copyEnvironmentAsync(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.environmentCopy,
+          requestParameters.wait,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Creates a new environment under a given project.
      * @summary Create Environment
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {EnvironmentCreate} environmentCreate
+     * @param {EnvironmentsApiCreateEnvironmentRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createEnvironment(
-      projId: string,
-      environmentCreate: EnvironmentCreate,
-      options?: any,
+      requestParameters: EnvironmentsApiCreateEnvironmentRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<EnvironmentRead> {
       return localVarFp
-        .createEnvironment(projId, environmentCreate, options)
+        .createEnvironment(requestParameters.projId, requestParameters.environmentCreate, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes an environment and all its related data.
      * @summary Delete Environment
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {EnvironmentsApiDeleteEnvironmentRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    deleteEnvironment(projId: string, envId: string, options?: any): AxiosPromise<void> {
+    deleteEnvironment(
+      requestParameters: EnvironmentsApiDeleteEnvironmentRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<void> {
       return localVarFp
-        .deleteEnvironment(projId, envId, options)
+        .deleteEnvironment(requestParameters.projId, requestParameters.envId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Get the result of a copy environment task.
+     * @summary Get Copy Environment Task Result
+     * @param {EnvironmentsApiGetCopyEnvironmentAsyncResultRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    getCopyEnvironmentAsyncResult(
+      requestParameters: EnvironmentsApiGetCopyEnvironmentAsyncResultRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<TaskResultEnvironmentRead> {
+      return localVarFp
+        .getCopyEnvironmentAsyncResult(
+          requestParameters.taskId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.wait,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Gets a single environment matching the given env_id, if such environment exists.
      * @summary Get Environment
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {EnvironmentsApiGetEnvironmentRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    getEnvironment(projId: string, envId: string, options?: any): AxiosPromise<EnvironmentRead> {
+    getEnvironment(
+      requestParameters: EnvironmentsApiGetEnvironmentRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<EnvironmentReadWithEmailConfig> {
       return localVarFp
-        .getEnvironment(projId, envId, options)
+        .getEnvironment(requestParameters.projId, requestParameters.envId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists all the environments under a given project.
      * @summary List Environments
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {EnvironmentsApiListEnvironmentsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listEnvironments(
-      projId: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
-    ): AxiosPromise<Array<EnvironmentRead>> {
+      requestParameters: EnvironmentsApiListEnvironmentsRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<Array<EnvironmentReadWithEmailConfig>> {
       return localVarFp
-        .listEnvironments(projId, page, perPage, options)
+        .listEnvironments(
+          requestParameters.projId,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Stats Environments
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {EnvironmentsApiStatsEnvironmentsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     statsEnvironments(
-      projId: string,
-      envId: string,
-      options?: any,
+      requestParameters: EnvironmentsApiStatsEnvironmentsRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<EnvironmentStats> {
       return localVarFp
-        .statsEnvironments(projId, envId, options)
+        .statsEnvironments(requestParameters.projId, requestParameters.envId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Test Jwks Url.
+     * @summary Test Jwks By Url
+     * @param {EnvironmentsApiTestJwksByUrlRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    testJwksByUrl(
+      requestParameters: EnvironmentsApiTestJwksByUrlRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<object> {
+      return localVarFp
+        .testJwksByUrl(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.url,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Updates the environment.
      * @summary Update Environment
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {EnvironmentUpdate} environmentUpdate
+     * @param {EnvironmentsApiUpdateEnvironmentRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateEnvironment(
-      projId: string,
-      envId: string,
-      environmentUpdate: EnvironmentUpdate,
-      options?: any,
+      requestParameters: EnvironmentsApiUpdateEnvironmentRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<EnvironmentRead> {
       return localVarFp
-        .updateEnvironment(projId, envId, environmentUpdate, options)
+        .updateEnvironment(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.environmentUpdate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
@@ -703,152 +1147,184 @@ export const EnvironmentsApiFactory = function (
 
 /**
  * Request parameters for copyEnvironment operation in EnvironmentsApi.
- * @interface EnvironmentsApiCopyEnvironmentRequest
  */
 export interface EnvironmentsApiCopyEnvironmentRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
-  /**
-   *
-   * @type {EnvironmentCopy}
-   */
   readonly environmentCopy: EnvironmentCopy;
 }
 
 /**
- * Request parameters for createEnvironment operation in EnvironmentsApi.
- * @interface EnvironmentsApiCreateEnvironmentRequest
+ * Request parameters for copyEnvironmentAsync operation in EnvironmentsApi.
  */
-export interface EnvironmentsApiCreateEnvironmentRequest {
+export interface EnvironmentsApiCopyEnvironmentAsyncRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
-   *
-   * @type {EnvironmentCreate}
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    */
+  readonly envId: string;
+
+  readonly environmentCopy: EnvironmentCopy;
+
+  /**
+   * Time in seconds to wait for the task to complete. Default is 0, means no wait.
+   */
+  readonly wait?: number;
+}
+
+/**
+ * Request parameters for createEnvironment operation in EnvironmentsApi.
+ */
+export interface EnvironmentsApiCreateEnvironmentRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
   readonly environmentCreate: EnvironmentCreate;
 }
 
 /**
  * Request parameters for deleteEnvironment operation in EnvironmentsApi.
- * @interface EnvironmentsApiDeleteEnvironmentRequest
  */
 export interface EnvironmentsApiDeleteEnvironmentRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 }
 
 /**
- * Request parameters for getEnvironment operation in EnvironmentsApi.
- * @interface EnvironmentsApiGetEnvironmentRequest
+ * Request parameters for getCopyEnvironmentAsyncResult operation in EnvironmentsApi.
  */
-export interface EnvironmentsApiGetEnvironmentRequest {
+export interface EnvironmentsApiGetCopyEnvironmentAsyncResultRequest {
+  /**
+   * The unique id of the task.
+   */
+  readonly taskId: string;
+
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
+   */
+  readonly envId: string;
+
+  /**
+   * Time in seconds to wait for the task to complete. Default is 0, means no wait.
+   */
+  readonly wait?: number;
+}
+
+/**
+ * Request parameters for getEnvironment operation in EnvironmentsApi.
+ */
+export interface EnvironmentsApiGetEnvironmentRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    */
   readonly envId: string;
 }
 
 /**
  * Request parameters for listEnvironments operation in EnvironmentsApi.
- * @interface EnvironmentsApiListEnvironmentsRequest
  */
 export interface EnvironmentsApiListEnvironmentsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for statsEnvironments operation in EnvironmentsApi.
- * @interface EnvironmentsApiStatsEnvironmentsRequest
  */
 export interface EnvironmentsApiStatsEnvironmentsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 }
 
 /**
- * Request parameters for updateEnvironment operation in EnvironmentsApi.
- * @interface EnvironmentsApiUpdateEnvironmentRequest
+ * Request parameters for testJwksByUrl operation in EnvironmentsApi.
  */
-export interface EnvironmentsApiUpdateEnvironmentRequest {
+export interface EnvironmentsApiTestJwksByUrlRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
   /**
-   *
-   * @type {EnvironmentUpdate}
+   * URL of JWKs to test
    */
+  readonly url?: string;
+}
+
+/**
+ * Request parameters for updateEnvironment operation in EnvironmentsApi.
+ */
+export interface EnvironmentsApiUpdateEnvironmentRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
   readonly environmentUpdate: EnvironmentUpdate;
 }
 
 /**
  * EnvironmentsApi - object-oriented interface
- * @class EnvironmentsApi
- * @extends {BaseAPI}
  */
 export class EnvironmentsApi extends BaseAPI {
   /**
@@ -856,11 +1332,11 @@ export class EnvironmentsApi extends BaseAPI {
    * @summary Copy Environment
    * @param {EnvironmentsApiCopyEnvironmentRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public copyEnvironment(
     requestParameters: EnvironmentsApiCopyEnvironmentRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return EnvironmentsApiFp(this.configuration)
       .copyEnvironment(
@@ -873,15 +1349,37 @@ export class EnvironmentsApi extends BaseAPI {
   }
 
   /**
+   * Copy environment  This endpoint either duplicates an existing environment to a new environment in the same project, or copies from an existing environment to another existing environment.  The `scope` object controls which objects will be copied to the target environment.  To clone to a new environment, the user must have write permissions to the containing project. To clone into an existing environment, the user must have write permissions to the target environment.  Copying environments across projects or organizations is not allowed.
+   * @summary Copy Environment Async
+   * @param {EnvironmentsApiCopyEnvironmentAsyncRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws If a required parameter is missing.
+   */
+  public copyEnvironmentAsync(
+    requestParameters: EnvironmentsApiCopyEnvironmentAsyncRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return EnvironmentsApiFp(this.configuration)
+      .copyEnvironmentAsync(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.environmentCopy,
+        requestParameters.wait,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
    * Creates a new environment under a given project.
    * @summary Create Environment
    * @param {EnvironmentsApiCreateEnvironmentRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public createEnvironment(
     requestParameters: EnvironmentsApiCreateEnvironmentRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return EnvironmentsApiFp(this.configuration)
       .createEnvironment(requestParameters.projId, requestParameters.environmentCreate, options)
@@ -893,14 +1391,36 @@ export class EnvironmentsApi extends BaseAPI {
    * @summary Delete Environment
    * @param {EnvironmentsApiDeleteEnvironmentRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public deleteEnvironment(
     requestParameters: EnvironmentsApiDeleteEnvironmentRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return EnvironmentsApiFp(this.configuration)
       .deleteEnvironment(requestParameters.projId, requestParameters.envId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Get the result of a copy environment task.
+   * @summary Get Copy Environment Task Result
+   * @param {EnvironmentsApiGetCopyEnvironmentAsyncResultRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws If a required parameter is missing.
+   */
+  public getCopyEnvironmentAsyncResult(
+    requestParameters: EnvironmentsApiGetCopyEnvironmentAsyncResultRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return EnvironmentsApiFp(this.configuration)
+      .getCopyEnvironmentAsyncResult(
+        requestParameters.taskId,
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.wait,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -909,11 +1429,11 @@ export class EnvironmentsApi extends BaseAPI {
    * @summary Get Environment
    * @param {EnvironmentsApiGetEnvironmentRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public getEnvironment(
     requestParameters: EnvironmentsApiGetEnvironmentRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return EnvironmentsApiFp(this.configuration)
       .getEnvironment(requestParameters.projId, requestParameters.envId, options)
@@ -925,11 +1445,11 @@ export class EnvironmentsApi extends BaseAPI {
    * @summary List Environments
    * @param {EnvironmentsApiListEnvironmentsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public listEnvironments(
     requestParameters: EnvironmentsApiListEnvironmentsRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return EnvironmentsApiFp(this.configuration)
       .listEnvironments(
@@ -946,14 +1466,35 @@ export class EnvironmentsApi extends BaseAPI {
    * @summary Stats Environments
    * @param {EnvironmentsApiStatsEnvironmentsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public statsEnvironments(
     requestParameters: EnvironmentsApiStatsEnvironmentsRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return EnvironmentsApiFp(this.configuration)
       .statsEnvironments(requestParameters.projId, requestParameters.envId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Test Jwks Url.
+   * @summary Test Jwks By Url
+   * @param {EnvironmentsApiTestJwksByUrlRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws If a required parameter is missing.
+   */
+  public testJwksByUrl(
+    requestParameters: EnvironmentsApiTestJwksByUrlRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return EnvironmentsApiFp(this.configuration)
+      .testJwksByUrl(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.url,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -962,11 +1503,11 @@ export class EnvironmentsApi extends BaseAPI {
    * @summary Update Environment
    * @param {EnvironmentsApiUpdateEnvironmentRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public updateEnvironment(
     requestParameters: EnvironmentsApiUpdateEnvironmentRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return EnvironmentsApiFp(this.configuration)
       .updateEnvironment(

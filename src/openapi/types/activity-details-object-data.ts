@@ -10,19 +10,7 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface ActivityDetailsObjectData
- */
 export interface ActivityDetailsObjectData {
-  /**
-   *
-   * @type {string}
-   */
   id?: string;
-  /**
-   *
-   * @type {string}
-   */
   key?: string;
 }

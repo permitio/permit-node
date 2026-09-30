@@ -11,58 +11,45 @@
  */
 
 // May contain unused imports in some cases
-import { InviteStatus } from './invite-status';
+import type { InviteStatus } from './invite-status';
 // May contain unused imports in some cases
-import { MemberAccessLevel } from './member-access-level';
+import type { MemberAccessLevel } from './member-access-level';
 
-/**
- *
- * @interface InviteRead
- */
 export interface InviteRead {
   /**
    * Unique id of the invite
-   * @type {string}
    */
   member_id?: string;
   /**
    * The invited member\'s email address
-   * @type {string}
    */
   email: string;
   /**
    * The role the member will be assigned with
-   * @type {MemberAccessLevel}
    */
   role?: MemberAccessLevel;
   /**
    * Unique id of the invite
-   * @type {string}
    */
   id: string;
   /**
    * Unique id of the organization that the invite belongs to.
-   * @type {string}
    */
   organization_id: string;
   /**
    * The invite code that is sent to the member\'s email
-   * @type {string}
    */
   invite_code: string;
   /**
    * Date and time when the invite was created (ISO_8601 format).
-   * @type {string}
    */
   created_at: string;
   /**
    * The status of the invite (pending, failed, etc)
-   * @type {InviteStatus}
    */
   status: InviteStatus;
   /**
    * if failed, the reason the invitation failed
-   * @type {string}
    */
   failed_reason?: string;
 }

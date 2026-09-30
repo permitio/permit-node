@@ -11,36 +11,21 @@
  */
 
 // May contain unused imports in some cases
-import { type SSHAuthData } from './sshauth-data';
+import type { SSHAuthData } from './sshauth-data';
 
-/**
- *
- * @interface PolicyRepoCreate
- */
 export interface PolicyRepoCreate {
   /**
    * A URL-friendly name of the policy repo (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the policy repo.
-   * @type {string}
    */
   key: string;
   /**
-   *
-   * @type {string}
+   * The SSH URL of the git repository (e.g. git@github.com:username/repository.git)
    */
   url: string;
-  /**
-   *
-   * @type {string}
-   */
   main_branch_name?: string;
-  /**
-   *
-   * @type {SSHAuthData}
-   */
   credentials: SSHAuthData;
   /**
    * if you want to change your policy repository to this repo right after it is validated
-   * @type {boolean}
    */
   activate_when_validated?: boolean;
 }

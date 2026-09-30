@@ -10,14 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface RelationshipTupleCreateBulkOperation
- */
+// May contain unused imports in some cases
+import type { RelationshipTupleCreate } from './relationship-tuple-create';
+
 export interface RelationshipTupleCreateBulkOperation {
-  /**
-   *
-   * @type {any}
-   */
-  operations: any;
+  operations: Array<RelationshipTupleCreate>;
 }

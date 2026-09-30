@@ -10,19 +10,7 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface OPALabels
- */
 export interface OPALabels {
-  /**
-   *
-   * @type {string}
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   */
   version: string;
 }

@@ -11,26 +11,22 @@
  */
 
 // May contain unused imports in some cases
-import { UserStatus } from './user-status';
+import type { UserResourceInstanceRole } from './user-resource-instance-role';
+// May contain unused imports in some cases
+import type { UserStatus } from './user-status';
 
-/**
- *
- * @interface UserInTenant
- */
 export interface UserInTenant {
   /**
    * The tenant key which the user is associated with
-   * @type {string}
    */
   tenant: string;
   /**
    * List of roles assigned to the user in that tenant
-   * @type {Array<string>}
    */
   roles: Array<string>;
   /**
    * Whether the user has signed in or not
-   * @type {UserStatus}
    */
   status: UserStatus;
+  resource_instance_roles?: Array<UserResourceInstanceRole>;
 }

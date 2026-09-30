@@ -10,6 +10,18 @@
  * Do not edit the class manually.
  */
 
+interface AWSv4Configuration {
+  options?: {
+    region?: string;
+    service?: string;
+  };
+  credentials?: {
+    accessKeyId?: string;
+    secretAccessKey?: string;
+    sessionToken?: string;
+  };
+}
+
 export interface ConfigurationParameters {
   apiKey?:
     | string
@@ -23,7 +35,9 @@ export interface ConfigurationParameters {
     | Promise<string>
     | ((name?: string, scopes?: string[]) => string)
     | ((name?: string, scopes?: string[]) => Promise<string>);
+  awsv4?: AWSv4Configuration;
   basePath?: string;
+  serverIndex?: number;
   baseOptions?: any;
   formDataCtor?: new () => any;
 }
@@ -34,21 +48,14 @@ export class Configuration {
    * @param name security name
    */
   apiKey?:
-    | string
-    | Promise<string>
-    | ((name: string) => string)
-    | ((name: string) => Promise<string>)
+    | (string | Promise<string> | ((name: string) => string) | ((name: string) => Promise<string>))
     | undefined;
   /**
    * parameter for basic security
-   *
-   * @type {string}
    */
   username?: string | undefined;
   /**
    * parameter for basic security
-   *
-   * @type {string}
    */
   password?: string | undefined;
   /**
@@ -57,21 +64,33 @@ export class Configuration {
    * @param scopes oauth2 scope
    */
   accessToken?:
-    | string
-    | Promise<string>
-    | ((name?: string, scopes?: string[]) => string)
-    | ((name?: string, scopes?: string[]) => Promise<string>)
+    | (
+        | string
+        | Promise<string>
+        | ((name?: string, scopes?: string[]) => string)
+        | ((name?: string, scopes?: string[]) => Promise<string>)
+      )
     | undefined;
   /**
+   * parameter for aws4 signature security
+   * @param {Object} AWS4Signature - AWS4 Signature security
+   * @param {string} options.region - aws region
+   * @param {string} options.service - name of the service.
+   * @param {string} credentials.accessKeyId - aws access key id
+   * @param {string} credentials.secretAccessKey - aws access key
+   * @param {string} credentials.sessionToken - aws session token
+   */
+  awsv4?: AWSv4Configuration | undefined;
+  /**
    * override base path
-   *
-   * @type {string}
    */
   basePath?: string | undefined;
   /**
+   * override server index
+   */
+  serverIndex?: number | undefined;
+  /**
    * base options for axios calls
-   *
-   * @type {any}
    */
   baseOptions?: any;
   /**
@@ -88,8 +107,15 @@ export class Configuration {
     this.username = param.username;
     this.password = param.password;
     this.accessToken = param.accessToken;
+    this.awsv4 = param.awsv4;
     this.basePath = param.basePath;
-    this.baseOptions = param.baseOptions;
+    this.serverIndex = param.serverIndex;
+    this.baseOptions = {
+      ...param.baseOptions,
+      headers: {
+        ...param.baseOptions?.headers,
+      },
+    };
     this.formDataCtor = param.formDataCtor;
   }
 
@@ -104,12 +130,7 @@ export class Configuration {
    * @return True if the given MIME is JSON, false otherwise.
    */
   public isJsonMime(mime: string): boolean {
-    const jsonMime: RegExp = new RegExp(
-      '^(application/json|[^;/ \t]+/[^;/ \t]+[+]json)[ \t]*(;.*)?$',
-      'i',
-    );
-    return (
-      mime !== null && (jsonMime.test(mime) || mime.toLowerCase() === 'application/json-patch+json')
-    );
+    const jsonMime: RegExp = /^(application\/json|[^;/ \t]+\/[^;/ \t]+[+]json)[ \t]*(;.*)?$/i;
+    return mime !== null && jsonMime.test(mime);
   }
 }

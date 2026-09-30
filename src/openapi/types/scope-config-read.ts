@@ -11,46 +11,32 @@
  */
 
 // May contain unused imports in some cases
-import { type OpalCommonSchemasDataDataSourceConfig } from './opal-common-schemas-data-data-source-config';
+import type { DataSourceConfig } from './data-source-config';
 
-/**
- *
- * @interface ScopeConfigRead
- */
 export interface ScopeConfigRead {
-  /**
-   *
-   * @type {OpalCommonSchemasDataDataSourceConfig}
-   */
-  data?: OpalCommonSchemasDataDataSourceConfig;
+  data?: DataSourceConfig;
   /**
    * Unique id of the ScopeConfig
-   * @type {string}
    */
   id: string;
   /**
    * Unique id of the organization that the ScopeConfig belongs to.
-   * @type {string}
    */
   organization_id: string;
   /**
    * Unique id of the project that the ScopeConfig belongs to.
-   * @type {string}
    */
   project_id: string;
   /**
    * Unique id of the environment that the ScopeConfig belongs to.
-   * @type {string}
    */
   environment_id: string;
   /**
    * Date and time when the ScopeConfig was created (ISO_8601 format).
-   * @type {string}
    */
   created_at: string;
   /**
    * Date and time when the ScopeConfig was last updated/modified (ISO_8601 format).
-   * @type {string}
    */
   updated_at: string;
 }

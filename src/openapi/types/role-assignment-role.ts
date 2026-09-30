@@ -10,29 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface RoleAssignmentRole
- */
 export interface RoleAssignmentRole {
-  /**
-   *
-   * @type {string}
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   */
   key: string;
-  /**
-   *
-   * @type {string}
-   */
   name: string;
-  /**
-   *
-   * @type {Array<string>}
-   */
   permissions?: Array<string>;
 }

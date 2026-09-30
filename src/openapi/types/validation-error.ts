@@ -11,26 +11,10 @@
  */
 
 // May contain unused imports in some cases
-import { type LocationInner } from './location-inner';
+import type { LocationInner } from './location-inner';
 
-/**
- *
- * @interface ValidationError
- */
 export interface ValidationError {
-  /**
-   *
-   * @type {Array<LocationInner>}
-   */
   loc: Array<LocationInner>;
-  /**
-   *
-   * @type {string}
-   */
   msg: string;
-  /**
-   *
-   * @type {string}
-   */
   type: string;
 }

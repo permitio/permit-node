@@ -10,8 +10,5 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface CallbacksInner
- */
-export interface CallbacksInner {}
+import type { OPALHttpFetcherConfig } from './opalhttp-fetcher-config';
+export type CallbacksInner = string | [string, OPALHttpFetcherConfig];

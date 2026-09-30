@@ -10,29 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface RoleAssignmentTenant
- */
 export interface RoleAssignmentTenant {
-  /**
-   *
-   * @type {string}
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   */
   key: string;
-  /**
-   *
-   * @type {string}
-   */
   name: string;
-  /**
-   *
-   * @type {Record<string, unknown>}
-   */
-  attributes?: Record<string, unknown>;
+  attributes?: object;
 }

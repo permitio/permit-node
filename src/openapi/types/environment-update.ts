@@ -11,31 +11,27 @@
  */
 
 // May contain unused imports in some cases
-import { type Jwks } from './jwks';
+import type { JwksConfig } from './jwks-config';
 
-/**
- *
- * @interface EnvironmentUpdate
- */
 export interface EnvironmentUpdate {
   /**
    * The name of the environment
-   * @type {string}
    */
   name?: string;
   /**
    * an optional longer description of the environment
-   * @type {string}
    */
   description?: string;
   /**
    * when using gitops feature, an optional branch name for the environment
-   * @type {string}
    */
   custom_branch_name?: string;
   /**
-   *
-   * @type {Jwks}
+   * jwks for element frontend only login
    */
-  jwks?: Jwks;
+  jwks?: JwksConfig;
+  /**
+   * the settings for this environment
+   */
+  settings?: object;
 }

@@ -315,3 +315,6 @@ jobs:
 
       - name: Codegen type-shape guard
         run: pnpm check:codegen
+
+      - name: Reviewed OpenAPI reproduction
+        run: pnpm check:openapi

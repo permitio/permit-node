@@ -11,26 +11,13 @@
  */
 
 // May contain unused imports in some cases
-import { type ConditionSetRead } from './condition-set-read';
+import type { ConditionSetRead } from './condition-set-read';
 
-/**
- *
- * @interface PaginatedResultConditionSetRead
- */
 export interface PaginatedResultConditionSetRead {
   /**
    * List of Condition Sets
-   * @type {Array<ConditionSetRead>}
    */
   data: Array<ConditionSetRead>;
-  /**
-   *
-   * @type {number}
-   */
   total_count: number;
-  /**
-   *
-   * @type {number}
-   */
   page_count?: number;
 }

@@ -10,8 +10,9 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
-import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
@@ -21,14 +22,15 @@ import {
   setSearchParams,
   toPathString,
 } from '../common';
-import { Configuration } from '../configuration';
-import {
-  type AddRolePermissions,
-  type PaginatedResultRoleRead,
-  type RemoveRolePermissions,
-  type RoleCreate,
-  type RoleRead,
-  type RoleUpdate,
+import type { Configuration } from '../configuration';
+import type {
+  AddRolePermissions,
+  RemoveRolePermissions,
+  ResponseListRolesV2SchemaProjIdEnvIdRolesGet,
+  RoleCreate,
+  RoleList,
+  RoleRead,
+  RoleUpdate,
 } from '../types';
 /**
  * RolesApi - axios parameter creator
@@ -36,92 +38,34 @@ import {
 export const RolesApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * This endpoint is part of the role hierarchy feature.  Makes role with id `role_id` extend the role with id `parent_role_id`. In other words, `role_id` will automatically be assigned any permissions that are granted to `parent_role_id`.  We can say the `role_id` **extends** `parent_role_id` or **inherits** from `parent_role_id`.  If `role_id` is already an ancestor of `parent_role_id`, the request will fail with HTTP 400 to prevent a cycle in the role hierarchy.
-     * @summary Add Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    addParentRole: async (
-      projId: string,
-      envId: string,
-      roleId: string,
-      parentRoleId: string,
-      options: AxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('addParentRole', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('addParentRole', 'envId', envId);
-      // verify required parameter 'roleId' is not null or undefined
-      assertParamExists('addParentRole', 'roleId', roleId);
-      // verify required parameter 'parentRoleId' is not null or undefined
-      assertParamExists('addParentRole', 'parentRoleId', parentRoleId);
-      const localVarPath = `/v2/schema/{proj_id}/{env_id}/roles/{role_id}/parents/{parent_role_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)))
-        .replace(`{${'parent_role_id'}}`, encodeURIComponent(String(parentRoleId)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication HTTPBearer required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
      * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
      * @summary Assign Permissions To Role
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {AddRolePermissions} addRolePermissions
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     assignPermissionsToRole: async (
+      roleId: string,
       projId: string,
       envId: string,
-      roleId: string,
       addRolePermissions: AddRolePermissions,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'roleId' is not null or undefined
+      assertParamExists('assignPermissionsToRole', 'roleId', roleId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('assignPermissionsToRole', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('assignPermissionsToRole', 'envId', envId);
-      // verify required parameter 'roleId' is not null or undefined
-      assertParamExists('assignPermissionsToRole', 'roleId', roleId);
       // verify required parameter 'addRolePermissions' is not null or undefined
       assertParamExists('assignPermissionsToRole', 'addRolePermissions', addRolePermissions);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/roles/{role_id}/permissions`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)));
+        .replace('{role_id}', encodeURIComponent(String(roleId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -138,6 +82,7 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -164,13 +109,13 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RoleCreate} roleCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createRole: async (
       projId: string,
       envId: string,
       roleCreate: RoleCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('createRole', 'projId', projId);
@@ -179,8 +124,8 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       // verify required parameter 'roleCreate' is not null or undefined
       assertParamExists('createRole', 'roleCreate', roleCreate);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/roles`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -197,6 +142,7 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -219,28 +165,28 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
     /**
      * Deletes a tenant role and all its related data. This includes any permissions granted to said role.
      * @summary Delete Role
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteRole: async (
+      roleId: string,
       projId: string,
       envId: string,
-      roleId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'roleId' is not null or undefined
+      assertParamExists('deleteRole', 'roleId', roleId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('deleteRole', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('deleteRole', 'envId', envId);
-      // verify required parameter 'roleId' is not null or undefined
-      assertParamExists('deleteRole', 'roleId', roleId);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/roles/{role_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)));
+        .replace('{role_id}', encodeURIComponent(String(roleId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -255,6 +201,8 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -272,28 +220,28 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
     /**
      * Gets a single tenant role, if such role exists.
      * @summary Get Role
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getRole: async (
+      roleId: string,
       projId: string,
       envId: string,
-      roleId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'roleId' is not null or undefined
+      assertParamExists('getRole', 'roleId', roleId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('getRole', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('getRole', 'envId', envId);
-      // verify required parameter 'roleId' is not null or undefined
-      assertParamExists('getRole', 'roleId', roleId);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/roles/{role_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)));
+        .replace('{role_id}', encodeURIComponent(String(roleId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -308,6 +256,118 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get Role Ancestors
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    getRoleAncestors: async (
+      roleId: string,
+      projId: string,
+      envId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'roleId' is not null or undefined
+      assertParamExists('getRoleAncestors', 'roleId', roleId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getRoleAncestors', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getRoleAncestors', 'envId', envId);
+      const localVarPath = `/v2/schema/{proj_id}/{env_id}/roles/{role_id}/ancestors`
+        .replace('{role_id}', encodeURIComponent(String(roleId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get Role Descendants
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    getRoleDescendants: async (
+      roleId: string,
+      projId: string,
+      envId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'roleId' is not null or undefined
+      assertParamExists('getRoleDescendants', 'roleId', roleId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getRoleDescendants', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getRoleDescendants', 'envId', envId);
+      const localVarPath = `/v2/schema/{proj_id}/{env_id}/roles/{role_id}/descendants`
+        .replace('{role_id}', encodeURIComponent(String(roleId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -327,27 +387,29 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
      * @summary List Roles
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {boolean} [includeTotalCount] Include total count in response
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {boolean} [includeTotalCount] Include total count in response (default to false)
+     * @param {string} [search] Text search for the object name or key
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listRoles: async (
       projId: string,
       envId: string,
+      includeTotalCount?: boolean,
       page?: number,
       perPage?: number,
-      includeTotalCount?: boolean,
-      options: AxiosRequestConfig = {},
+      search?: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('listRoles', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('listRoles', 'envId', envId);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/roles`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -355,17 +417,17 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
         baseOptions = configuration.baseOptions;
       }
 
-      const localVarRequestOptions: Record<string, unknown> = {
-        method: 'GET',
-        ...baseOptions,
-        ...options,
-      };
-      const localVarHeaderParameter: Record<string, unknown> = {};
-      const localVarQueryParameter: Record<string, unknown> = {};
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
 
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (includeTotalCount !== undefined) {
+        localVarQueryParameter['include_total_count'] = includeTotalCount;
+      }
 
       if (page !== undefined) {
         localVarQueryParameter['page'] = page;
@@ -375,67 +437,11 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
         localVarQueryParameter['per_page'] = perPage;
       }
 
-      if (includeTotalCount !== undefined) {
-        localVarQueryParameter['include_total_count'] = includeTotalCount;
+      if (search !== undefined) {
+        localVarQueryParameter['search'] = search;
       }
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions['headers'] = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     * This endpoint is part of the role hierarchy feature.  Removes `parent_role_id` from the list of parent roles of role with id `role_id`. In other words, `role_id` will no longer be automatically assigned permissions that are granted to `parent_role_id`.  We can say the `role_id` **not longer extends** `parent_role_id` or **no longer inherits** from `parent_role_id`.
-     * @summary Remove Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    removeParentRole: async (
-      projId: string,
-      envId: string,
-      roleId: string,
-      parentRoleId: string,
-      options: AxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('removeParentRole', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('removeParentRole', 'envId', envId);
-      // verify required parameter 'roleId' is not null or undefined
-      assertParamExists('removeParentRole', 'roleId', roleId);
-      // verify required parameter 'parentRoleId' is not null or undefined
-      assertParamExists('removeParentRole', 'parentRoleId', parentRoleId);
-      const localVarPath = `/v2/schema/{proj_id}/{env_id}/roles/{role_id}/parents/{parent_role_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)))
-        .replace(`{${'parent_role_id'}}`, encodeURIComponent(String(parentRoleId)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication HTTPBearer required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -453,26 +459,26 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
     /**
      * Remove permissions from role.  If some of the permissions specified are already unassigned, will skip them.
      * @summary Remove Permissions From Role
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {RemoveRolePermissions} removeRolePermissions
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     removePermissionsFromRole: async (
+      roleId: string,
       projId: string,
       envId: string,
-      roleId: string,
       removeRolePermissions: RemoveRolePermissions,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'roleId' is not null or undefined
+      assertParamExists('removePermissionsFromRole', 'roleId', roleId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('removePermissionsFromRole', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('removePermissionsFromRole', 'envId', envId);
-      // verify required parameter 'roleId' is not null or undefined
-      assertParamExists('removePermissionsFromRole', 'roleId', roleId);
       // verify required parameter 'removeRolePermissions' is not null or undefined
       assertParamExists(
         'removePermissionsFromRole',
@@ -480,9 +486,9 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
         removeRolePermissions,
       );
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/roles/{role_id}/permissions`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)));
+        .replace('{role_id}', encodeURIComponent(String(roleId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -499,6 +505,7 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -521,32 +528,32 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
     /**
      * Partially updates a tenant role. Fields that will be provided will be completely overwritten.
      * @summary Update Role
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {RoleUpdate} roleUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateRole: async (
+      roleId: string,
       projId: string,
       envId: string,
-      roleId: string,
       roleUpdate: RoleUpdate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'roleId' is not null or undefined
+      assertParamExists('updateRole', 'roleId', roleId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('updateRole', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('updateRole', 'envId', envId);
-      // verify required parameter 'roleId' is not null or undefined
-      assertParamExists('updateRole', 'roleId', roleId);
       // verify required parameter 'roleUpdate' is not null or undefined
       assertParamExists('updateRole', 'roleUpdate', roleUpdate);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/roles/{role_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)));
+        .replace('{role_id}', encodeURIComponent(String(roleId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -563,6 +570,7 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -592,56 +600,39 @@ export const RolesApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = RolesApiAxiosParamCreator(configuration);
   return {
     /**
-     * This endpoint is part of the role hierarchy feature.  Makes role with id `role_id` extend the role with id `parent_role_id`. In other words, `role_id` will automatically be assigned any permissions that are granted to `parent_role_id`.  We can say the `role_id` **extends** `parent_role_id` or **inherits** from `parent_role_id`.  If `role_id` is already an ancestor of `parent_role_id`, the request will fail with HTTP 400 to prevent a cycle in the role hierarchy.
-     * @summary Add Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async addParentRole(
-      projId: string,
-      envId: string,
-      roleId: string,
-      parentRoleId: string,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.addParentRole(
-        projId,
-        envId,
-        roleId,
-        parentRoleId,
-        options,
-      );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
      * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
      * @summary Assign Permissions To Role
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {AddRolePermissions} addRolePermissions
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async assignPermissionsToRole(
+      roleId: string,
       projId: string,
       envId: string,
-      roleId: string,
       addRolePermissions: AddRolePermissions,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.assignPermissionsToRole(
+        roleId,
         projId,
         envId,
-        roleId,
         addRolePermissions,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RolesApi.assignPermissionsToRole']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Creates a new tenant role.
@@ -650,13 +641,13 @@ export const RolesApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RoleCreate} roleCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async createRole(
       projId: string,
       envId: string,
       roleCreate: RoleCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createRole(
         projId,
@@ -664,165 +655,261 @@ export const RolesApiFp = function (configuration?: Configuration) {
         roleCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RolesApi.createRole']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Deletes a tenant role and all its related data. This includes any permissions granted to said role.
      * @summary Delete Role
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deleteRole(
+      roleId: string,
       projId: string,
       envId: string,
-      roleId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteRole(
+        roleId,
         projId,
         envId,
-        roleId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RolesApi.deleteRole']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Gets a single tenant role, if such role exists.
      * @summary Get Role
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getRole(
+      roleId: string,
       projId: string,
       envId: string,
-      roleId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getRole(
+        roleId,
         projId,
         envId,
-        roleId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RolesApi.getRole']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     *
+     * @summary Get Role Ancestors
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    async getRoleAncestors(
+      roleId: string,
+      projId: string,
+      envId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleList>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getRoleAncestors(
+        roleId,
+        projId,
+        envId,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RolesApi.getRoleAncestors']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     *
+     * @summary Get Role Descendants
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    async getRoleDescendants(
+      roleId: string,
+      projId: string,
+      envId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleList>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getRoleDescendants(
+        roleId,
+        projId,
+        envId,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RolesApi.getRoleDescendants']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists all tenant roles.
      * @summary List Roles
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {boolean} [includeTotalCount] Include total count in response
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
-     * @param {boolean} [includeTotalCount] Include total count in response (default to false)
+     * @param {string} [search] Text search for the object name or key
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listRoles(
       projId: string,
       envId: string,
+      includeTotalCount?: boolean,
       page?: number,
       perPage?: number,
-      includeTotalCount?: boolean,
-      options?: AxiosRequestConfig,
+      search?: string,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
         basePath?: string,
-      ) => AxiosPromise<Array<RoleRead> | PaginatedResultRoleRead>
+      ) => AxiosPromise<ResponseListRolesV2SchemaProjIdEnvIdRolesGet>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listRoles(
         projId,
         envId,
+        includeTotalCount,
         page,
         perPage,
-        includeTotalCount,
+        search,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
-     * This endpoint is part of the role hierarchy feature.  Removes `parent_role_id` from the list of parent roles of role with id `role_id`. In other words, `role_id` will no longer be automatically assigned permissions that are granted to `parent_role_id`.  We can say the `role_id` **not longer extends** `parent_role_id` or **no longer inherits** from `parent_role_id`.
-     * @summary Remove Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async removeParentRole(
-      projId: string,
-      envId: string,
-      roleId: string,
-      parentRoleId: string,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.removeParentRole(
-        projId,
-        envId,
-        roleId,
-        parentRoleId,
-        options,
-      );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RolesApi.listRoles']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Remove permissions from role.  If some of the permissions specified are already unassigned, will skip them.
      * @summary Remove Permissions From Role
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {RemoveRolePermissions} removeRolePermissions
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async removePermissionsFromRole(
+      roleId: string,
       projId: string,
       envId: string,
-      roleId: string,
       removeRolePermissions: RemoveRolePermissions,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.removePermissionsFromRole(
+        roleId,
         projId,
         envId,
-        roleId,
         removeRolePermissions,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RolesApi.removePermissionsFromRole']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Partially updates a tenant role. Fields that will be provided will be completely overwritten.
      * @summary Update Role
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
      * @param {RoleUpdate} roleUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async updateRole(
+      roleId: string,
       projId: string,
       envId: string,
-      roleId: string,
       roleUpdate: RoleUpdate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateRole(
+        roleId,
         projId,
         envId,
-        roleId,
         roleUpdate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RolesApi.updateRole']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
@@ -838,484 +925,412 @@ export const RolesApiFactory = function (
   const localVarFp = RolesApiFp(configuration);
   return {
     /**
-     * This endpoint is part of the role hierarchy feature.  Makes role with id `role_id` extend the role with id `parent_role_id`. In other words, `role_id` will automatically be assigned any permissions that are granted to `parent_role_id`.  We can say the `role_id` **extends** `parent_role_id` or **inherits** from `parent_role_id`.  If `role_id` is already an ancestor of `parent_role_id`, the request will fail with HTTP 400 to prevent a cycle in the role hierarchy.
-     * @summary Add Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    addParentRole(
-      projId: string,
-      envId: string,
-      roleId: string,
-      parentRoleId: string,
-      options?: any,
-    ): AxiosPromise<RoleRead> {
-      return localVarFp
-        .addParentRole(projId, envId, roleId, parentRoleId, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
      * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
      * @summary Assign Permissions To Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {AddRolePermissions} addRolePermissions
+     * @param {RolesApiAssignPermissionsToRoleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     assignPermissionsToRole(
-      projId: string,
-      envId: string,
-      roleId: string,
-      addRolePermissions: AddRolePermissions,
-      options?: any,
+      requestParameters: RolesApiAssignPermissionsToRoleRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<RoleRead> {
       return localVarFp
-        .assignPermissionsToRole(projId, envId, roleId, addRolePermissions, options)
+        .assignPermissionsToRole(
+          requestParameters.roleId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.addRolePermissions,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Creates a new tenant role.
      * @summary Create Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {RoleCreate} roleCreate
+     * @param {RolesApiCreateRoleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createRole(
-      projId: string,
-      envId: string,
-      roleCreate: RoleCreate,
-      options?: any,
+      requestParameters: RolesApiCreateRoleRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<RoleRead> {
       return localVarFp
-        .createRole(projId, envId, roleCreate, options)
+        .createRole(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.roleCreate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes a tenant role and all its related data. This includes any permissions granted to said role.
      * @summary Delete Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {RolesApiDeleteRoleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    deleteRole(projId: string, envId: string, roleId: string, options?: any): AxiosPromise<void> {
+    deleteRole(
+      requestParameters: RolesApiDeleteRoleRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<void> {
       return localVarFp
-        .deleteRole(projId, envId, roleId, options)
+        .deleteRole(
+          requestParameters.roleId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Gets a single tenant role, if such role exists.
      * @summary Get Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {RolesApiGetRoleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    getRole(projId: string, envId: string, roleId: string, options?: any): AxiosPromise<RoleRead> {
+    getRole(
+      requestParameters: RolesApiGetRoleRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<RoleRead> {
       return localVarFp
-        .getRole(projId, envId, roleId, options)
+        .getRole(
+          requestParameters.roleId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get Role Ancestors
+     * @param {RolesApiGetRoleAncestorsRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    getRoleAncestors(
+      requestParameters: RolesApiGetRoleAncestorsRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<RoleList> {
+      return localVarFp
+        .getRoleAncestors(
+          requestParameters.roleId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get Role Descendants
+     * @param {RolesApiGetRoleDescendantsRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    getRoleDescendants(
+      requestParameters: RolesApiGetRoleDescendantsRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<RoleList> {
+      return localVarFp
+        .getRoleDescendants(
+          requestParameters.roleId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists all tenant roles.
      * @summary List Roles
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {RolesApiListRolesRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listRoles(
-      projId: string,
-      envId: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
-    ): AxiosPromise<Array<RoleRead> | PaginatedResultRoleRead> {
+      requestParameters: RolesApiListRolesRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ResponseListRolesV2SchemaProjIdEnvIdRolesGet> {
       return localVarFp
-        .listRoles(projId, envId, page, perPage, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     * This endpoint is part of the role hierarchy feature.  Removes `parent_role_id` from the list of parent roles of role with id `role_id`. In other words, `role_id` will no longer be automatically assigned permissions that are granted to `parent_role_id`.  We can say the `role_id` **not longer extends** `parent_role_id` or **no longer inherits** from `parent_role_id`.
-     * @summary Remove Parent Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {string} parentRoleId Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    removeParentRole(
-      projId: string,
-      envId: string,
-      roleId: string,
-      parentRoleId: string,
-      options?: any,
-    ): AxiosPromise<RoleRead> {
-      return localVarFp
-        .removeParentRole(projId, envId, roleId, parentRoleId, options)
+        .listRoles(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.includeTotalCount,
+          requestParameters.page,
+          requestParameters.perPage,
+          requestParameters.search,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Remove permissions from role.  If some of the permissions specified are already unassigned, will skip them.
      * @summary Remove Permissions From Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {RemoveRolePermissions} removeRolePermissions
+     * @param {RolesApiRemovePermissionsFromRoleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     removePermissionsFromRole(
-      projId: string,
-      envId: string,
-      roleId: string,
-      removeRolePermissions: RemoveRolePermissions,
-      options?: any,
+      requestParameters: RolesApiRemovePermissionsFromRoleRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<RoleRead> {
       return localVarFp
-        .removePermissionsFromRole(projId, envId, roleId, removeRolePermissions, options)
+        .removePermissionsFromRole(
+          requestParameters.roleId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.removeRolePermissions,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Partially updates a tenant role. Fields that will be provided will be completely overwritten.
      * @summary Update Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {RoleUpdate} roleUpdate
+     * @param {RolesApiUpdateRoleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateRole(
-      projId: string,
-      envId: string,
-      roleId: string,
-      roleUpdate: RoleUpdate,
-      options?: any,
+      requestParameters: RolesApiUpdateRoleRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<RoleRead> {
       return localVarFp
-        .updateRole(projId, envId, roleId, roleUpdate, options)
+        .updateRole(
+          requestParameters.roleId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.roleUpdate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
 };
 
 /**
- * Request parameters for addParentRole operation in RolesApi.
- * @interface RolesApiAddParentRoleRequest
- */
-export interface RolesApiAddParentRoleRequest {
-  /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly envId: string;
-
-  /**
-   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly roleId: string;
-
-  /**
-   * Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly parentRoleId: string;
-}
-
-/**
  * Request parameters for assignPermissionsToRole operation in RolesApi.
- * @interface RolesApiAssignPermissionsToRoleRequest
  */
 export interface RolesApiAssignPermissionsToRoleRequest {
   /**
+   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+   */
+  readonly roleId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly roleId: string;
-
-  /**
-   *
-   * @type {AddRolePermissions}
-   */
   readonly addRolePermissions: AddRolePermissions;
 }
 
 /**
  * Request parameters for createRole operation in RolesApi.
- * @interface RolesApiCreateRoleRequest
  */
 export interface RolesApiCreateRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
-  /**
-   *
-   * @type {RoleCreate}
-   */
   readonly roleCreate: RoleCreate;
 }
 
 /**
  * Request parameters for deleteRole operation in RolesApi.
- * @interface RolesApiDeleteRoleRequest
  */
 export interface RolesApiDeleteRoleRequest {
   /**
+   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+   */
+  readonly roleId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
-
-  /**
-   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly roleId: string;
 }
 
 /**
  * Request parameters for getRole operation in RolesApi.
- * @interface RolesApiGetRoleRequest
  */
 export interface RolesApiGetRoleRequest {
   /**
+   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+   */
+  readonly roleId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
+}
 
+/**
+ * Request parameters for getRoleAncestors operation in RolesApi.
+ */
+export interface RolesApiGetRoleAncestorsRequest {
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly roleId: string;
+
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+}
+
+/**
+ * Request parameters for getRoleDescendants operation in RolesApi.
+ */
+export interface RolesApiGetRoleDescendantsRequest {
+  /**
+   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+   */
+  readonly roleId: string;
+
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
 }
 
 /**
  * Request parameters for listRoles operation in RolesApi.
- * @interface RolesApiListRolesRequest
  */
 export interface RolesApiListRolesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
   /**
+   * Include total count in response
+   */
+  readonly includeTotalCount?: boolean;
+
+  /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
    */
   readonly perPage?: number;
 
   /**
-   * Include total count in response
-   * @type {boolean}
-   * @default false
+   * Text search for the object name or key
    */
-  readonly includeTotalCount?: boolean;
-}
-
-/**
- * Request parameters for removeParentRole operation in RolesApi.
- * @interface RolesApiRemoveParentRoleRequest
- */
-export interface RolesApiRemoveParentRoleRequest {
-  /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly envId: string;
-
-  /**
-   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly roleId: string;
-
-  /**
-   * Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly parentRoleId: string;
+  readonly search?: string;
 }
 
 /**
  * Request parameters for removePermissionsFromRole operation in RolesApi.
- * @interface RolesApiRemovePermissionsFromRoleRequest
  */
 export interface RolesApiRemovePermissionsFromRoleRequest {
   /**
+   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+   */
+  readonly roleId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly roleId: string;
-
-  /**
-   *
-   * @type {RemoveRolePermissions}
-   */
   readonly removeRolePermissions: RemoveRolePermissions;
 }
 
 /**
  * Request parameters for updateRole operation in RolesApi.
- * @interface RolesApiUpdateRoleRequest
  */
 export interface RolesApiUpdateRoleRequest {
   /**
+   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+   */
+  readonly roleId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   */
-  readonly roleId: string;
-
-  /**
-   *
-   * @type {RoleUpdate}
-   */
   readonly roleUpdate: RoleUpdate;
 }
 
 /**
  * RolesApi - object-oriented interface
- * @class RolesApi
- * @extends {BaseAPI}
  */
 export class RolesApi extends BaseAPI {
-  /**
-   * This endpoint is part of the role hierarchy feature.  Makes role with id `role_id` extend the role with id `parent_role_id`. In other words, `role_id` will automatically be assigned any permissions that are granted to `parent_role_id`.  We can say the `role_id` **extends** `parent_role_id` or **inherits** from `parent_role_id`.  If `role_id` is already an ancestor of `parent_role_id`, the request will fail with HTTP 400 to prevent a cycle in the role hierarchy.
-   * @summary Add Parent Role
-   * @param {RolesApiAddParentRoleRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   */
-  public addParentRole(
-    requestParameters: RolesApiAddParentRoleRequest,
-    options?: AxiosRequestConfig,
-  ) {
-    return RolesApiFp(this.configuration)
-      .addParentRole(
-        requestParameters.projId,
-        requestParameters.envId,
-        requestParameters.roleId,
-        requestParameters.parentRoleId,
-        options,
-      )
-      .then((request) => request(this.axios, this.basePath));
-  }
-
   /**
    * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
    * @summary Assign Permissions To Role
    * @param {RolesApiAssignPermissionsToRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public assignPermissionsToRole(
     requestParameters: RolesApiAssignPermissionsToRoleRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return RolesApiFp(this.configuration)
       .assignPermissionsToRole(
+        requestParameters.roleId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.roleId,
         requestParameters.addRolePermissions,
         options,
       )
@@ -1327,9 +1342,9 @@ export class RolesApi extends BaseAPI {
    * @summary Create Role
    * @param {RolesApiCreateRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
-  public createRole(requestParameters: RolesApiCreateRoleRequest, options?: AxiosRequestConfig) {
+  public createRole(requestParameters: RolesApiCreateRoleRequest, options?: RawAxiosRequestConfig) {
     return RolesApiFp(this.configuration)
       .createRole(
         requestParameters.projId,
@@ -1345,14 +1360,14 @@ export class RolesApi extends BaseAPI {
    * @summary Delete Role
    * @param {RolesApiDeleteRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
-  public deleteRole(requestParameters: RolesApiDeleteRoleRequest, options?: AxiosRequestConfig) {
+  public deleteRole(requestParameters: RolesApiDeleteRoleRequest, options?: RawAxiosRequestConfig) {
     return RolesApiFp(this.configuration)
       .deleteRole(
+        requestParameters.roleId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.roleId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1363,11 +1378,53 @@ export class RolesApi extends BaseAPI {
    * @summary Get Role
    * @param {RolesApiGetRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
-  public getRole(requestParameters: RolesApiGetRoleRequest, options?: AxiosRequestConfig) {
+  public getRole(requestParameters: RolesApiGetRoleRequest, options?: RawAxiosRequestConfig) {
     return RolesApiFp(this.configuration)
-      .getRole(requestParameters.projId, requestParameters.envId, requestParameters.roleId, options)
+      .getRole(requestParameters.roleId, requestParameters.projId, requestParameters.envId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get Role Ancestors
+   * @param {RolesApiGetRoleAncestorsRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws If a required parameter is missing.
+   */
+  public getRoleAncestors(
+    requestParameters: RolesApiGetRoleAncestorsRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return RolesApiFp(this.configuration)
+      .getRoleAncestors(
+        requestParameters.roleId,
+        requestParameters.projId,
+        requestParameters.envId,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get Role Descendants
+   * @param {RolesApiGetRoleDescendantsRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws If a required parameter is missing.
+   */
+  public getRoleDescendants(
+    requestParameters: RolesApiGetRoleDescendantsRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return RolesApiFp(this.configuration)
+      .getRoleDescendants(
+        requestParameters.roleId,
+        requestParameters.projId,
+        requestParameters.envId,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -1376,38 +1433,17 @@ export class RolesApi extends BaseAPI {
    * @summary List Roles
    * @param {RolesApiListRolesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
-  public listRoles(requestParameters: RolesApiListRolesRequest, options?: AxiosRequestConfig) {
+  public listRoles(requestParameters: RolesApiListRolesRequest, options?: RawAxiosRequestConfig) {
     return RolesApiFp(this.configuration)
       .listRoles(
         requestParameters.projId,
         requestParameters.envId,
+        requestParameters.includeTotalCount,
         requestParameters.page,
         requestParameters.perPage,
-        requestParameters.includeTotalCount,
-        options,
-      )
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   * This endpoint is part of the role hierarchy feature.  Removes `parent_role_id` from the list of parent roles of role with id `role_id`. In other words, `role_id` will no longer be automatically assigned permissions that are granted to `parent_role_id`.  We can say the `role_id` **not longer extends** `parent_role_id` or **no longer inherits** from `parent_role_id`.
-   * @summary Remove Parent Role
-   * @param {RolesApiRemoveParentRoleRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   */
-  public removeParentRole(
-    requestParameters: RolesApiRemoveParentRoleRequest,
-    options?: AxiosRequestConfig,
-  ) {
-    return RolesApiFp(this.configuration)
-      .removeParentRole(
-        requestParameters.projId,
-        requestParameters.envId,
-        requestParameters.roleId,
-        requestParameters.parentRoleId,
+        requestParameters.search,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1418,17 +1454,17 @@ export class RolesApi extends BaseAPI {
    * @summary Remove Permissions From Role
    * @param {RolesApiRemovePermissionsFromRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public removePermissionsFromRole(
     requestParameters: RolesApiRemovePermissionsFromRoleRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return RolesApiFp(this.configuration)
       .removePermissionsFromRole(
+        requestParameters.roleId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.roleId,
         requestParameters.removeRolePermissions,
         options,
       )
@@ -1440,14 +1476,14 @@ export class RolesApi extends BaseAPI {
    * @summary Update Role
    * @param {RolesApiUpdateRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
-  public updateRole(requestParameters: RolesApiUpdateRoleRequest, options?: AxiosRequestConfig) {
+  public updateRole(requestParameters: RolesApiUpdateRoleRequest, options?: RawAxiosRequestConfig) {
     return RolesApiFp(this.configuration)
       .updateRole(
+        requestParameters.roleId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.roleId,
         requestParameters.roleUpdate,
         options,
       )

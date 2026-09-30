@@ -11,26 +11,16 @@
  */
 
 // May contain unused imports in some cases
-import { type Permission } from './permission';
+import type { Permission } from './permission';
 
-/**
- *
- * @interface OrgMemberCreate
- */
 export interface OrgMemberCreate {
   /**
    * Unique id of the account member
-   * @type {string}
    */
   id?: string;
   /**
    * Email of the user controlling this account
-   * @type {string}
    */
   email?: string;
-  /**
-   *
-   * @type {Array<Permission>}
-   */
   permissions: Array<Permission>;
 }

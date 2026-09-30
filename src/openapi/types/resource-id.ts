@@ -10,8 +10,4 @@
  * Do not edit the class manually.
  */
 
-/**
- * For ResourceSets, the id of the base resource.
- * @interface ResourceId
- */
-export interface ResourceId {}
+export type ResourceId = string;

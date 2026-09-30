@@ -11,26 +11,19 @@
  */
 
 // May contain unused imports in some cases
-import { MemberAccessLevel } from './member-access-level';
+import type { MemberAccessLevel } from './member-access-level';
 
-/**
- *
- * @interface InviteCreate
- */
 export interface InviteCreate {
   /**
    * Unique id of the invite
-   * @type {string}
    */
   member_id?: string;
   /**
    * The invited member\'s email address
-   * @type {string}
    */
   email: string;
   /**
    * The role the member will be assigned with
-   * @type {MemberAccessLevel}
    */
   role?: MemberAccessLevel;
 }

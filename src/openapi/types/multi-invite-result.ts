@@ -11,23 +11,14 @@
  */
 
 // May contain unused imports in some cases
-import { type FailedInvite } from './failed-invite';
+import type { FailedInvite } from './failed-invite';
 // May contain unused imports in some cases
-import { type InviteRead } from './invite-read';
+import type { InviteRead } from './invite-read';
 
-/**
- *
- * @interface MultiInviteResult
- */
 export interface MultiInviteResult {
-  /**
-   *
-   * @type {Array<InviteRead>}
-   */
   success: Array<InviteRead>;
   /**
    * invites that were not even attempted, and the reason why
-   * @type {Array<FailedInvite>}
    */
   failed?: Array<FailedInvite>;
 }

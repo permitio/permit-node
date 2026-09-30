@@ -11,21 +11,9 @@
  */
 
 // May contain unused imports in some cases
-import { AttributeType } from './attribute-type';
+import type { AttributeType } from './attribute-type';
 
-/**
- *
- * @interface ResourceAttributes
- */
 export interface ResourceAttributes {
-  /**
-   *
-   * @type {AttributeType}
-   */
   type: AttributeType;
-  /**
-   *
-   * @type {string}
-   */
   key: string;
 }

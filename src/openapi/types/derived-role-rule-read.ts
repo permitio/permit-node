@@ -10,39 +10,36 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface DerivedRoleRuleRead
- */
+// May contain unused imports in some cases
+import type { PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings } from './permit-backend-schemas-schema-derived-role-rule-derivation-settings';
+
 export interface DerivedRoleRuleRead {
   /**
    * the role id that needs to exist on the related resource (from the relation)
-   * @type {string}
    */
   role_id: string;
   /**
    * the resource id that needs to exist on the related role (from the relation)
-   * @type {string}
    */
   resource_id: string;
   /**
    * the relation id that needs to exist between the resource and the related resource
-   * @type {string}
    */
   relation_id: string;
   /**
    * the role key that needs to exist on the related resource (from the relation)
-   * @type {string}
    */
   role: string;
   /**
    * the resource key that needs to exist on the related role (from the relation)
-   * @type {string}
    */
   on_resource: string;
   /**
    * the relation key that needs to exist between the resource and the related resource
-   * @type {string}
    */
   linked_by_relation: string;
+  /**
+   * the settings of the derived role rule
+   */
+  when?: PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings;
 }

@@ -11,26 +11,13 @@
  */
 
 // May contain unused imports in some cases
-import { type ElementsConfigRead } from './elements-config-read';
+import type { ElementsConfigRead } from './elements-config-read';
 
-/**
- *
- * @interface PaginatedResultElementsConfigRead
- */
 export interface PaginatedResultElementsConfigRead {
   /**
    * List of Elements Configs
-   * @type {Array<ElementsConfigRead>}
    */
   data: Array<ElementsConfigRead>;
-  /**
-   *
-   * @type {number}
-   */
   total_count: number;
-  /**
-   *
-   * @type {number}
-   */
   page_count?: number;
 }

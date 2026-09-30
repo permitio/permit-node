@@ -10,14 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface UserCreateBulkOperation
- */
+// May contain unused imports in some cases
+import type { UserCreate } from './user-create';
+
 export interface UserCreateBulkOperation {
-  /**
-   *
-   * @type {any}
-   */
-  operations: any;
+  operations: Array<UserCreate>;
 }

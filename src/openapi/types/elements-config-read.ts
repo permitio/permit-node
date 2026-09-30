@@ -11,82 +11,63 @@
  */
 
 // May contain unused imports in some cases
-import { ElementsType } from './elements-type';
+import type { ElementsType } from './elements-type';
 // May contain unused imports in some cases
-import { type PermissionLevelRoleRead } from './permission-level-role-read';
+import type { PermissionLevelRoleRead } from './permission-level-role-read';
 // May contain unused imports in some cases
-import { type Settings } from './settings';
+import type { SettingsValue } from './settings-value';
 // May contain unused imports in some cases
-import { type WebhookRead } from './webhook-read';
+import type { WebhookRead } from './webhook-read';
 
-/**
- *
- * @interface ElementsConfigRead
- */
 export interface ElementsConfigRead {
   /**
    * A URL-friendly name of the elements_config (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the elements_config.
-   * @type {string}
    */
   key: string;
   /**
    * Unique id of the elements_config
-   * @type {string}
    */
   id: string;
   /**
    * Unique id of the organization that the elements_config belongs to.
-   * @type {string}
    */
   organization_id: string;
   /**
    * Unique id of the project that the elements_config belongs to.
-   * @type {string}
    */
   project_id: string;
   /**
    * Unique id of the environment that the elements_config belongs to.
-   * @type {string}
    */
   environment_id: string;
   /**
    * Date and time when the elements_config was created (ISO_8601 format).
-   * @type {string}
    */
   created_at: string;
   /**
    * Date and time when the elements_config was last updated/modified (ISO_8601 format).
-   * @type {string}
    */
   updated_at: string;
-  /**
-   *
-   * @type {boolean}
-   */
   is_active: boolean;
   /**
    * The name of the elements_config
-   * @type {string}
    */
   name: string;
   /**
    * The type of the elements interface, e.g: user management
-   * @type {ElementsType}
    */
   elements_type: ElementsType;
   /**
    * Obj with the options of the elements interface, e.g: primary color
-   * @type {{ [key: string]: Settings; }}
    */
-  settings: { [key: string]: Settings };
+  settings: { [key: string]: SettingsValue };
+  /**
+   * Whether to send email notifications to users using your Email Provider you set
+   */
+  email_notifications?: boolean;
   /**
    * Obj with levels as keys and role ids as values
-   * @type {{ [key: string]: Array<PermissionLevelRoleRead>; }}
    */
   roles_to_levels: { [key: string]: Array<PermissionLevelRoleRead> };
-  /**
-   *
-   * @type {WebhookRead}
-   */
   webhook?: WebhookRead;
 }

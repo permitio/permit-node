@@ -11,26 +11,13 @@
  */
 
 // May contain unused imports in some cases
-import { type APIHistoryEventRead } from './apihistory-event-read';
+import type { APIHistoryEventRead } from './apihistory-event-read';
 
-/**
- *
- * @interface PaginatedResultAPIHistoryEventRead
- */
 export interface PaginatedResultAPIHistoryEventRead {
   /**
    * List of Api History Events
-   * @type {Array<APIHistoryEventRead>}
    */
   data: Array<APIHistoryEventRead>;
-  /**
-   *
-   * @type {number}
-   */
   total_count: number;
-  /**
-   *
-   * @type {number}
-   */
   page_count?: number;
 }

@@ -10,34 +10,25 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface ConditionSetRuleCreate
- */
 export interface ConditionSetRuleCreate {
   /**
    * The userset that will be given permission, i.e: all the users matching this rule will be given the specified permission
-   * @type {string}
    */
   user_set: string;
   /**
    * The permission that will be granted to the userset *on* the resourceset. The permission can be either a resource action id, or `{resource_key}:{action_key}`, i.e: the \"permission name\".
-   * @type {string}
    */
   permission: string;
   /**
    * The resourceset that represents the resources that are granted for access, i.e: all the resources matching this rule can be accessed by the userset to perform the granted *permission*
-   * @type {string}
    */
   resource_set: string;
   /**
    * if True, will set the condition set rule to the role\'s autogen user-set.
-   * @type {boolean}
    */
   is_role?: boolean;
   /**
    * if True, will set the condition set rule to the resource\'s autogen resource-set.
-   * @type {boolean}
    */
   is_resource?: boolean;
 }

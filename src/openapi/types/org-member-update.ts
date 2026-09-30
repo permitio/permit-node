@@ -11,21 +11,15 @@
  */
 
 // May contain unused imports in some cases
-import { OnboardingStep } from './onboarding-step';
+import type { OnboardingStep } from './onboarding-step';
 
-/**
- *
- * @interface OrgMemberUpdate
- */
 export interface OrgMemberUpdate {
   /**
    * Custom permit.io dashboard settings, such as preferred theme, etc.
-   * @type {object}
    */
   settings?: object;
   /**
    * updates the onboarding step (optional)
-   * @type {OnboardingStep}
    */
   onboarding_step?: OnboardingStep;
 }

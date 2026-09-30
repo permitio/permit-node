@@ -7,7 +7,7 @@ import {
   type DerivedRoleRuleCreate,
   type DerivedRoleRuleDelete,
   type DerivedRoleRuleRead,
-  type PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
+  type PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings,
   type ResourceRoleCreate,
   type ResourceRoleRead,
   type ResourceRoleUpdate,
@@ -181,15 +181,15 @@ export interface IResourceRolesApi {
    * @param resourceKey The key of the resource.
    * @param roleKey - The key of the role.
    * @param conditions - An array of conditions to be assigned to the role.
-   * @returns A promise that resolves to a PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings object representing the derived role settings.
+   * @returns A promise that resolves to a PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings object representing the derived role settings.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   updateRoleDerivationConditions(
     resourceKey: string,
     roleKey: string,
-    conditions: PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
-  ): Promise<PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings>;
+    conditions: PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings,
+  ): Promise<PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings>;
 }
 
 /**
@@ -514,15 +514,15 @@ export class ResourceRolesApi extends BasePermitApi implements IResourceRolesApi
    * @param resourceKey - The key of the resource the role belongs to.
    * @param roleKey - The key of the role.
    * @param conditions - The conditions object.
-   * @returns The updated PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings.
+   * @returns The updated PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings.
    * @throws PermitApiError - If the API returns an error HTTP status code.
    * @throws PermitContextError - If the configured ApiContext does not match the required endpoint context.
    */
   async updateRoleDerivationConditions(
     resourceKey: string,
     roleKey: string,
-    conditions: PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
-  ): Promise<PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings> {
+    conditions: PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings,
+  ): Promise<PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -531,7 +531,7 @@ export class ResourceRolesApi extends BasePermitApi implements IResourceRolesApi
           ...this.config.apiContext.environmentContext,
           resourceId: resourceKey,
           roleId: roleKey,
-          permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings: conditions,
+          permitBackendSchemasSchemaDerivedRoleRuleDerivationSettings: conditions,
         })
       ).data;
     } catch (err) {

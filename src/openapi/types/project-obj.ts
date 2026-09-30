@@ -10,34 +10,10 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface ProjectObj
- */
 export interface ProjectObj {
-  /**
-   *
-   * @type {string}
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   */
   key: string;
-  /**
-   *
-   * @type {string}
-   */
   name?: string;
-  /**
-   *
-   * @type {string}
-   */
   created_at: string;
-  /**
-   *
-   * @type {string}
-   */
   updated_at: string;
 }

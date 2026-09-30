@@ -10,19 +10,7 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface FailedInvite
- */
 export interface FailedInvite {
-  /**
-   *
-   * @type {string}
-   */
   email: string;
-  /**
-   *
-   * @type {string}
-   */
   reason: string;
 }

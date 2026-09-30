@@ -10,29 +10,24 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface ResourceActionCreate
- */
 export interface ResourceActionCreate {
   /**
    * A URL-friendly name of the action (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the action.
-   * @type {string}
    */
   key: string;
   /**
    * The name of the action
-   * @type {string}
    */
   name: string;
   /**
    * An optional longer description of what this action respresents in your system
-   * @type {string}
    */
   description?: string;
   /**
    * optional dictionary of key-value pairs that can be used to store arbitrary metadata about this action. This metadata can be used to filter actions using query parameters with attr_ prefix
-   * @type {object}
    */
   attributes?: object;
+  v1compat_path?: string;
+  v1compat_is_built_in?: boolean;
+  v1compat_name?: string;
 }

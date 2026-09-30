@@ -10,14 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface ElementsUserRoleRemove
- */
 export interface ElementsUserRoleRemove {
   /**
    * the role that will be unassigned (accepts either the role id or the role key)
-   * @type {string}
    */
   role: string;
 }

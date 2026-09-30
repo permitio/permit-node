@@ -10,29 +10,21 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface UserUpdate
- */
 export interface UserUpdate {
   /**
    * The email of the user. If synced, will be unique inside the environment.
-   * @type {string}
    */
   email?: string;
   /**
    * First name of the user.
-   * @type {string}
    */
   first_name?: string;
   /**
    * Last name of the user.
-   * @type {string}
    */
   last_name?: string;
   /**
    * Arbitrary user attributes that will be used to enforce attribute-based access control policies.
-   * @type {object}
    */
   attributes?: object;
 }

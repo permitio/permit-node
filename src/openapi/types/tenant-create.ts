@@ -10,29 +10,21 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface TenantCreate
- */
 export interface TenantCreate {
   /**
    * A unique id by which Permit will identify the tenant. The tenant key must be url-friendly (slugified).
-   * @type {string}
    */
   key: string;
   /**
    * A descriptive name for the tenant
-   * @type {string}
    */
   name: string;
   /**
    * an optional longer description of the tenant
-   * @type {string}
    */
   description?: string;
   /**
    * Arbitraty tenant attributes that will be used to enforce attribute-based access control policies.
-   * @type {object}
    */
   attributes?: object;
 }

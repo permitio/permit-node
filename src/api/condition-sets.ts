@@ -130,13 +130,14 @@ export class ConditionSetsApi extends BasePermitApi implements IConditionSetsApi
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
-      return (
+      const response = (
         await this.conditionSets.listConditionSets({
           ...this.config.apiContext.environmentContext,
           page,
           perPage,
         })
       ).data;
+      return Array.isArray(response) ? response : response.data;
     } catch (err) {
       this.handleApiError(err);
     }

@@ -10,40 +10,12 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface AVPEngineDecisionLog
- */
 export interface AVPEngineDecisionLog {
-  /**
-   *
-   * @type {string}
-   */
   engine?: AVPEngineDecisionLogEngineEnum;
-  /**
-   *
-   * @type {string}
-   */
   timestamp: string;
-  /**
-   *
-   * @type {string}
-   */
   tenant: string;
-  /**
-   *
-   * @type {number}
-   */
   process_time_ms?: number;
-  /**
-   *
-   * @type {object}
-   */
   input: object;
-  /**
-   *
-   * @type {object}
-   */
   result: object;
 }
 

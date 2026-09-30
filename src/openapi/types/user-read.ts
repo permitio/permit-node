@@ -11,79 +11,58 @@
  */
 
 // May contain unused imports in some cases
-import { type UserInTenant } from './user-in-tenant';
+import type { UserInTenant } from './user-in-tenant';
 // May contain unused imports in some cases
-import { type UserRole } from './user-role';
+import type { UserRole } from './user-role';
 
-/**
- *
- * @interface UserRead
- */
 export interface UserRead {
   /**
    * A unique id by which Permit will identify the user for permission checks.
-   * @type {string}
    */
   key: string;
   /**
    * Unique id of the user
-   * @type {string}
    */
   id: string;
   /**
    * Unique id of the organization that the user belongs to.
-   * @type {string}
    */
   organization_id: string;
   /**
    * Unique id of the project that the user belongs to.
-   * @type {string}
    */
   project_id: string;
   /**
    * Unique id of the environment that the user belongs to.
-   * @type {string}
    */
   environment_id: string;
-  /**
-   *
-   * @type {Array<UserInTenant>}
-   */
   associated_tenants?: Array<UserInTenant>;
   /**
-   *
-   * @type {Array<UserRole>}
    * @deprecated
    */
   roles?: Array<UserRole>;
   /**
+   * Date and time when the user was created (ISO_8601 format).
+   */
+  created_at: string;
+  /**
+   * Date and time when the user was last updated/modified (ISO_8601 format).
+   */
+  updated_at: string;
+  /**
    * The email of the user. If synced, will be unique inside the environment.
-   * @type {string}
    */
   email?: string;
   /**
    * First name of the user.
-   * @type {string}
    */
   first_name?: string;
   /**
    * Last name of the user.
-   * @type {string}
    */
   last_name?: string;
   /**
    * Arbitrary user attributes that will be used to enforce attribute-based access control policies.
-   * @type {object}
    */
   attributes?: object;
-  /**
-   * The date the user was created.
-   * @type {string}
-   */
-  created_at: string;
-  /**
-   * The date the user was last updated.
-   * @type {string}
-   */
-  updated_at: string;
 }

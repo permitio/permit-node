@@ -10,44 +10,12 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface OPAMetrics
- */
 export interface OPAMetrics {
-  /**
-   *
-   * @type {number}
-   */
   timer_rego_input_parse_ns?: number;
-  /**
-   *
-   * @type {number}
-   */
   timer_rego_query_parse_ns?: number;
-  /**
-   *
-   * @type {number}
-   */
   timer_rego_query_compile_ns?: number;
-  /**
-   *
-   * @type {number}
-   */
   timer_rego_query_eval_ns?: number;
-  /**
-   *
-   * @type {number}
-   */
   timer_rego_module_parse_ns?: number;
-  /**
-   *
-   * @type {number}
-   */
   timer_rego_module_compile_ns?: number;
-  /**
-   *
-   * @type {number}
-   */
   timer_server_handler_ns?: number;
 }

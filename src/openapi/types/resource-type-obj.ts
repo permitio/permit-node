@@ -11,41 +11,13 @@
  */
 
 // May contain unused imports in some cases
-import { type ResourceAttributes } from './resource-attributes';
+import type { ResourceAttributes } from './resource-attributes';
 
-/**
- *
- * @interface ResourceTypeObj
- */
 export interface ResourceTypeObj {
-  /**
-   *
-   * @type {string}
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   */
   key: string;
-  /**
-   *
-   * @type {string}
-   */
   name?: string;
-  /**
-   *
-   * @type {Array<ResourceAttributes>}
-   */
   attributes?: Array<ResourceAttributes>;
-  /**
-   *
-   * @type {string}
-   */
   created_at: string;
-  /**
-   *
-   * @type {string}
-   */
   updated_at: string;
 }

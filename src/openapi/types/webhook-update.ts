@@ -10,19 +10,13 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface WebhookUpdate
- */
 export interface WebhookUpdate {
   /**
    * The url to POST the webhook to
-   * @type {string}
    */
   url?: string;
   /**
    * An optional bearer token to use to authenticate the request
-   * @type {string}
    */
   bearer_token?: string;
 }

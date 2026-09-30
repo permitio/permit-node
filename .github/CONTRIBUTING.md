@@ -39,11 +39,13 @@ Add new source tests beside the code as `*.test.ts`; existing grouped `src/tests
 extended in place. Mock external boundaries and test malformed input and failures. Demonstrate
 that a representative regression fails when its fix is removed.
 
-`pnpm test:codegen` tests the generator guard and local tooling without Java. `pnpm check:codegen`
-regenerates the committed fixture using the pinned generator and requires Java. The
-`generate-openapi-client` command downloads the live schema, so use it only for an intentional,
-authorized API update. It runs `normalize:openapi` afterward to preserve strict compatibility.
-Never replace the pinned fixture or change API shapes to make a tooling migration pass.
+`pnpm test:codegen` tests the generator guard and local tooling without Java. Regeneration requires
+Java 17: `pnpm generate-openapi-client` reads the reviewed committed snapshot and shared configuration,
+then validates and normalizes the generated output before replacing it. `pnpm check:openapi` compares
+two clean generations with each other and the committed output. The separate `pnpm check:codegen`
+guard regenerates the historical fixture using the same pinned generator and configuration.
+See [the generation guide](../openapi/README.md) before refreshing the snapshot. Never replace the
+historical fixture or change API shapes merely to make a tooling check pass.
 
 `test:integration` and `test:e2e` use a Permit backend. Run them locally only with explicit
 authorization. The standard verification command uses local fixtures only.

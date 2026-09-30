@@ -10,14 +10,12 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface RelationshipTupleDeleteBulkOperation
- */
+// May contain unused imports in some cases
+import type { RelationshipTupleDelete } from './relationship-tuple-delete';
+
 export interface RelationshipTupleDeleteBulkOperation {
   /**
-   *
-   * @type {any}
+   * List of relationship tuples objects to delete
    */
-  idents: any;
+  idents: Array<RelationshipTupleDelete>;
 }

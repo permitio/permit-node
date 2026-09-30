@@ -10,29 +10,21 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface RelationCreate
- */
 export interface RelationCreate {
   /**
    * A URL-friendly name of the relation (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the relation.
-   * @type {string}
    */
   key: string;
   /**
    * The name of the relation
-   * @type {string}
    */
   name: string;
   /**
-   * An optional longer description of what this relation respresents in your system
-   * @type {string}
+   * An optional longer description of what this relation represents in your system
    */
   description?: string;
   /**
    * The subject resource ID or key
-   * @type {string}
    */
   subject_resource: string;
 }

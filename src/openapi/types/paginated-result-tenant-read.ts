@@ -11,26 +11,13 @@
  */
 
 // May contain unused imports in some cases
-import { type TenantRead } from './tenant-read';
+import type { TenantRead } from './tenant-read';
 
-/**
- *
- * @interface PaginatedResultTenantRead
- */
 export interface PaginatedResultTenantRead {
   /**
    * List of Tenants
-   * @type {Array<TenantRead>}
    */
   data: Array<TenantRead>;
-  /**
-   *
-   * @type {number}
-   */
   total_count: number;
-  /**
-   *
-   * @type {number}
-   */
   page_count?: number;
 }

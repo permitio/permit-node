@@ -11,48 +11,46 @@
  */
 
 // May contain unused imports in some cases
-import { type ActionBlockEditable } from './action-block-editable';
+import type { ActionBlockEditable } from './action-block-editable';
 // May contain unused imports in some cases
-import { type AttributeBlockEditable } from './attribute-block-editable';
+import type { AttributeBlockEditable } from './attribute-block-editable';
+// May contain unused imports in some cases
+import type { RoleBlockEditable } from './role-block-editable';
 
-/**
- *
- * @interface ResourceReplace
- */
 export interface ResourceReplace {
   /**
    * The name of the resource
-   * @type {string}
    */
   name: string;
   /**
    * The [URN](https://en.wikipedia.org/wiki/Uniform_Resource_Name) (Uniform Resource Name) of the resource
-   * @type {string}
    */
   urn?: string;
   /**
    * An optional longer description of what this resource respresents in your system
-   * @type {string}
    */
   description?: string;
   /**
    *          A actions definition block, typically contained within a resource type definition block.         The actions represents the ways you can interact with a protected resource.
-   * @type {{ [key: string]: ActionBlockEditable; }}
    */
   actions: { [key: string]: ActionBlockEditable };
   /**
+   * optional dictionary of key-value pairs that can be used to store arbitrary metadata about this resource. This metadata can be used to filter resource using query parameters with attr_ prefix
+   */
+  type_attributes?: object;
+  /**
    * Attributes that each resource of this type defines, and can be used in your ABAC policies.
-   * @type {{ [key: string]: AttributeBlockEditable; }}
    */
   attributes?: { [key: string]: AttributeBlockEditable };
   /**
    * Roles defined on this resource. The key is the role name, and the value contains the role properties such as granted permissions, base roles, etc.
-   * @type {object}
    */
-  roles?: object;
+  roles?: { [key: string]: RoleBlockEditable };
   /**
    * Relations to other resources. The key is the relation key, and the value is the related resource.
-   * @type {object}
    */
-  relations?: object;
+  relations?: { [key: string]: string };
+  v1compat_path?: string;
+  v1compat_type?: string;
+  v1compat_name?: string;
 }

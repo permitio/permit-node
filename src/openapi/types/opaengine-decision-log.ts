@@ -11,54 +11,18 @@
  */
 
 // May contain unused imports in some cases
-import { type OPALabels } from './opalabels';
+import type { OPALabels } from './opalabels';
 // May contain unused imports in some cases
-import { type OPAMetrics } from './opametrics';
+import type { OPAMetrics } from './opametrics';
 
-/**
- *
- * @interface OPAEngineDecisionLog
- */
 export interface OPAEngineDecisionLog {
-  /**
-   *
-   * @type {string}
-   */
   engine?: OPAEngineDecisionLogEngineEnum;
-  /**
-   *
-   * @type {string}
-   */
   decision_id: string;
-  /**
-   *
-   * @type {OPALabels}
-   */
   labels: OPALabels;
-  /**
-   *
-   * @type {string}
-   */
   timestamp: string;
-  /**
-   *
-   * @type {string}
-   */
   path: string;
-  /**
-   *
-   * @type {any}
-   */
   input?: any;
-  /**
-   *
-   * @type {any}
-   */
   result?: any;
-  /**
-   *
-   * @type {OPAMetrics}
-   */
   metrics: OPAMetrics;
 }
 

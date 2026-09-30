@@ -10,39 +10,29 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface IdentityRead
- */
 export interface IdentityRead {
   /**
    * Unique User Id of this identity in the identity provider (including the provider type)
-   * @type {string}
    */
   user_id: string;
   /**
    * The identity provider type this identity came from
-   * @type {string}
    */
   provider: string;
   /**
    * Unique User Id of this identity in the identity provider (NOT including the provider type)
-   * @type {string}
    */
   sub: string;
   /**
    * Email connected to this account identity
-   * @type {string}
    */
   email: string;
   /**
    * Whether this email address connected to this account identity is verified or not. For social providers like \'Login with Google\' this is done automatically, otherwise we will send the user a verification link in email.
-   * @type {boolean}
    */
   email_verified: boolean;
   /**
    * Raw user info json coming from our identity provider and matching a specific account identity
-   * @type {object}
    */
   auth0_info: object;
 }

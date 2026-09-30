@@ -10,74 +10,57 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface RoleAssignmentRead
- */
 export interface RoleAssignmentRead {
   /**
    * Unique id of the role assignment
-   * @type {string}
    */
   id: string;
   /**
    * the user the role is assigned to
-   * @type {string}
    */
   user: string;
   /**
    * the role that is assigned
-   * @type {string}
    */
   role: string;
   /**
    * the tenant the role is associated with
-   * @type {string}
    */
   tenant?: string;
   /**
    * the resource instance the role is associated with
-   * @type {string}
    */
   resource_instance?: string;
   /**
    * Unique id of the resource instance
-   * @type {string}
    */
   resource_instance_id?: string;
   /**
    * Unique id of the user
-   * @type {string}
    */
   user_id: string;
   /**
    * Unique id of the role
-   * @type {string}
    */
   role_id: string;
   /**
    * Unique id of the tenant
-   * @type {string}
    */
   tenant_id: string;
   /**
    * Unique id of the organization that the role assignment belongs to.
-   * @type {string}
    */
   organization_id: string;
   /**
    * Unique id of the project that the role assignment belongs to.
-   * @type {string}
    */
   project_id: string;
   /**
    * Unique id of the environment that the role assignment belongs to.
-   * @type {string}
    */
   environment_id: string;
   /**
    * Date and time when the role assignment was created (ISO_8601 format).
-   * @type {string}
    */
   created_at: string;
 }

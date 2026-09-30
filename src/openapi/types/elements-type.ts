@@ -12,13 +12,14 @@
 
 /**
  * An enumeration.
- * @enum {string}
  */
 
 export const ElementsType = {
   UserManagement: 'user_management',
   AuditLog: 'audit_log',
   ApprovalFlow: 'approval_flow',
+  OperationApproval: 'operation_approval',
+  ApprovalManagement: 'approval_management',
 } as const;
 
 export type ElementsType = (typeof ElementsType)[keyof typeof ElementsType];

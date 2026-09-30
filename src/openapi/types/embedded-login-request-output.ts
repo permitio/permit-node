@@ -10,34 +10,29 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface EmbeddedLoginRequestOutput
- */
 export interface EmbeddedLoginRequestOutput {
   /**
    * If the login request failed, this field will contain the error message
-   * @type {string}
    */
   error?: string;
   /**
    * If the login request failed, this field will contain the error code
-   * @type {number}
    */
   error_code?: number;
   /**
    * The auth token that lets your users login into permit elements
-   * @type {string}
    */
   token?: string;
   /**
    * Extra data that you can pass to the login request
-   * @type {string}
    */
   extra?: string;
   /**
    * The full URL to which the user should be redirected in order to complete the login process
-   * @type {string}
    */
   redirect_url: string;
+  /**
+   * The bearer token that lets your users login into permit elements
+   */
+  element_bearer_token?: string;
 }

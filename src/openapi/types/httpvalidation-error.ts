@@ -11,16 +11,8 @@
  */
 
 // May contain unused imports in some cases
-import { type ValidationError } from './validation-error';
+import type { ValidationError } from './validation-error';
 
-/**
- *
- * @interface HTTPValidationError
- */
 export interface HTTPValidationError {
-  /**
-   *
-   * @type {Array<ValidationError>}
-   */
   detail?: Array<ValidationError>;
 }

@@ -10,29 +10,18 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface ResourceActionGroupUpdate
- */
 export interface ResourceActionGroupUpdate {
   /**
    * The name of the action group
-   * @type {string}
    */
   name?: string;
   /**
    * An optional longer description of what this action group represents in your system
-   * @type {string}
    */
   description?: string;
   /**
    * optional dictionary of key-value pairs that can be used to store arbitrary metadata about this action group. This metadata can be used to filter action groups using query parameters with attr_ prefix
-   * @type {object}
    */
   attributes?: object;
-  /**
-   *
-   * @type {Array<string>}
-   */
   actions?: Array<string>;
 }

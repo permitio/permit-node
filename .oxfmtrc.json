@@ -9,7 +9,9 @@
     "docs/**",
     "coverage/**",
     "node_modules/**",
+    ".openapi-*/**",
     "pnpm-lock.yaml",
+    "openapi/permit-api.json",
     "src/tests/codegen/fixtures/openapi-3.1.0.json",
     "CHANGELOG.md",
     "LICENSE"

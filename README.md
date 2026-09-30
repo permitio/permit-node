@@ -34,7 +34,9 @@ at least 24 hours old; direct dependencies are saved with exact versions.
 
 `pnpm test` runs the unit and module-import suites without a Permit backend.
 `pnpm test:codegen` tests the generator guard without Java; `pnpm check:codegen` also
-regenerates the fixture and requires Java.
+regenerates the fixture and requires Java 17. `pnpm check:openapi` regenerates the reviewed
+production snapshot twice and verifies committed output. See [OpenAPI generation](openapi/README.md)
+and its [migration inventory](openapi/MIGRATION.md).
 
 ## Release
 

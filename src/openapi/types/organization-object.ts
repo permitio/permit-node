@@ -11,35 +11,6 @@
  */
 
 // May contain unused imports in some cases
+import type { OrganizationObj } from './organization-obj';
 
-/**
- *
- * @interface OrganizationObject
- */
-export interface OrganizationObject {
-  /**
-   *
-   * @type {string}
-   */
-  id: string;
-  /**
-   *
-   * @type {string}
-   */
-  key: string;
-  /**
-   *
-   * @type {string}
-   */
-  name?: string;
-  /**
-   *
-   * @type {string}
-   */
-  created_at: string;
-  /**
-   *
-   * @type {string}
-   */
-  updated_at: string;
-}
+export type OrganizationObject = OrganizationObj | object;

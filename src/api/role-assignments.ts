@@ -190,9 +190,9 @@ export class RoleAssignmentsApi extends BaseFactsPermitAPI implements IRoleAssig
       return (
         await this.roleAssignments.listRoleAssignments({
           ...this.config.apiContext.environmentContext,
-          ...(user !== undefined && { user }),
-          ...(tenant !== undefined && { tenant }),
-          ...(role !== undefined && { role }),
+          ...(user !== undefined && { user: [user] }),
+          ...(tenant !== undefined && { tenant: [tenant] }),
+          ...(role !== undefined && { role: [role] }),
           ...(resourceInstance !== undefined && { resourceInstance }),
           ...(detailed !== undefined && { detailed }),
           page,
@@ -240,12 +240,10 @@ export class RoleAssignmentsApi extends BaseFactsPermitAPI implements IRoleAssig
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
-      return (
-        await this.roleAssignments.unassignRole({
-          ...this.config.apiContext.environmentContext,
-          roleAssignmentRemove: unassignment,
-        })
-      ).data;
+      await this.roleAssignments.unassignRole({
+        ...this.config.apiContext.environmentContext,
+        roleAssignmentRemove: unassignment,
+      });
     } catch (err) {
       this.handleApiError(err);
     }

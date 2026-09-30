@@ -11,23 +11,11 @@
  */
 
 // May contain unused imports in some cases
-import { type ElementsConfigRead } from './elements-config-read';
+import type { ElementsConfigRead } from './elements-config-read';
 // May contain unused imports in some cases
-import { ElementsPermissionLevel } from './elements-permission-level';
+import type { ElementsPermissionLevel } from './elements-permission-level';
 
-/**
- *
- * @interface ElementsConfigRuntimeRead
- */
 export interface ElementsConfigRuntimeRead {
-  /**
-   *
-   * @type {ElementsConfigRead}
-   */
   config: ElementsConfigRead;
-  /**
-   *
-   * @type {ElementsPermissionLevel}
-   */
   current_permission_level: ElementsPermissionLevel;
 }

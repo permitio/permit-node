@@ -10,74 +10,57 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface RelationRead
- */
 export interface RelationRead {
   /**
-   * An optional longer description of what this relation respresents in your system
-   * @type {string}
+   * An optional longer description of what this relation represents in your system
    */
   description?: string;
   /**
    * The subject resource ID or key
-   * @type {string}
    */
   subject_resource: string;
   /**
    * A URL-friendly name of the relation (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the relation.
-   * @type {string}
    */
   key: string;
   /**
    * The name of the relation
-   * @type {string}
    */
   name: string;
   /**
    * Unique id of the relation
-   * @type {string}
    */
   id: string;
   /**
    * Unique id of the organization that the relation belongs to.
-   * @type {string}
    */
   organization_id: string;
   /**
    * Unique id of the project that the relation belongs to.
-   * @type {string}
    */
   project_id: string;
   /**
    * Unique id of the environment that the relation belongs to.
-   * @type {string}
    */
   environment_id: string;
   /**
    * Date and time when the relation was created (ISO_8601 format).
-   * @type {string}
    */
   created_at: string;
   /**
    * Date and time when the relation was last updated/modified (ISO_8601 format).
-   * @type {string}
    */
   updated_at: string;
   /**
    * The object resource id
-   * @type {string}
    */
   object_resource_id: string;
   /**
    * The object resource key
-   * @type {string}
    */
   object_resource: string;
   /**
    * The subject resource id
-   * @type {string}
    */
   subject_resource_id: string;
 }

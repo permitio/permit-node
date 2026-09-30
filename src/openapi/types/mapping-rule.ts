@@ -11,41 +11,42 @@
  */
 
 // May contain unused imports in some cases
-import { Methods } from './methods';
+import type { Methods } from './methods';
 
-/**
- *
- * @interface MappingRule
- */
 export interface MappingRule {
   /**
    * The URL to match against the request URL
-   * @type {string}
    */
   url: string;
   /**
+   * The URL type to match against the request URL can be, \'regex\' or none
+   */
+  url_type?: MappingRuleUrlTypeEnum;
+  /**
    * The HTTP method to match against the request method
-   * @type {Methods}
    */
   http_method: Methods;
   /**
    * The resource to match against the request resource
-   * @type {string}
    */
   resource: string;
   /**
    * The headers to match against the request headers
-   * @type {{ [key: string]: string; }}
    */
   headers?: { [key: string]: string };
   /**
    * The action to match against the request action
-   * @type {string}
    */
   action?: string;
   /**
    * The priority of the mapping rule. The higher the priority, the higher the precedence
-   * @type {number}
    */
   priority?: number;
 }
+
+export const MappingRuleUrlTypeEnum = {
+  Regex: 'regex',
+} as const;
+
+export type MappingRuleUrlTypeEnum =
+  (typeof MappingRuleUrlTypeEnum)[keyof typeof MappingRuleUrlTypeEnum];

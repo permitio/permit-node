@@ -10,19 +10,13 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface EnvironmentCopyScopeFilters
- */
 export interface EnvironmentCopyScopeFilters {
   /**
    * Objects to include (use * as wildcard)
-   * @type {Array<string>}
    */
   include?: Array<string>;
   /**
    * Object to exclude (use * as wildcard)
-   * @type {Array<string>}
    */
   exclude?: Array<string>;
 }

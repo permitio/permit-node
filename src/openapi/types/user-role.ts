@@ -10,19 +10,13 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface UserRole
- */
 export interface UserRole {
   /**
    * the role that is assigned
-   * @type {string}
    */
   role: string;
   /**
    * the tenant the role is associated with
-   * @type {string}
    */
   tenant: string;
 }

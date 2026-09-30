@@ -11,35 +11,6 @@
  */
 
 // May contain unused imports in some cases
+import type { ProjectObj } from './project-obj';
 
-/**
- *
- * @interface ProjectObject
- */
-export interface ProjectObject {
-  /**
-   *
-   * @type {string}
-   */
-  id: string;
-  /**
-   *
-   * @type {string}
-   */
-  key: string;
-  /**
-   *
-   * @type {string}
-   */
-  name?: string;
-  /**
-   *
-   * @type {string}
-   */
-  created_at: string;
-  /**
-   *
-   * @type {string}
-   */
-  updated_at: string;
-}
+export type ProjectObject = ProjectObj | object;

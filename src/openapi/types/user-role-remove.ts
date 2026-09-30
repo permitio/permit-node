@@ -10,24 +10,17 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface UserRoleRemove
- */
 export interface UserRoleRemove {
   /**
    * the role that will be unassigned (accepts either the role id or the role key)
-   * @type {string}
    */
   role: string;
   /**
    * the tenant the role is associated with (accepts either the tenant id or the tenant key)
-   * @type {string}
    */
-  tenant?: string;
+  tenant: string;
   /**
    * the resource instance the role is associated with (accepts either the resource instance id or key using this format resource_type:resource_instance)
-   * @type {string}
    */
   resource_instance?: string;
 }

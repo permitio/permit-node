@@ -10,8 +10,4 @@
  * Do not edit the class manually.
  */
 
-/**
- * Proxy config secret is set to enable the Permit Proxy to make proxied requests to the backend service.
- * @interface Secret
- */
-export interface Secret {}
+export type Secret = string | { [key: string]: string };

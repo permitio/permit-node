@@ -11,70 +11,52 @@
  */
 
 // May contain unused imports in some cases
-import { AuthMechanism } from './auth-mechanism';
+import type { AuthMechanism } from './auth-mechanism';
 // May contain unused imports in some cases
-import { type MappingRule } from './mapping-rule';
+import type { MappingRule } from './mapping-rule';
 // May contain unused imports in some cases
-import { type Secret } from './secret';
+import type { Secret } from './secret';
 
-/**
- *
- * @interface ProxyConfigRead
- */
 export interface ProxyConfigRead {
   /**
    * Proxy Config is set to enable the Permit Proxy to make proxied requests as part of the Frontend AuthZ.
-   * @type {string}
    */
   key: string;
   /**
    * Unique id of the proxy config
-   * @type {string}
    */
   id: string;
   /**
    * Unique id of the organization that the proxy config belongs to.
-   * @type {string}
    */
   organization_id: string;
   /**
    * Unique id of the project that the proxy config belongs to.
-   * @type {string}
    */
   project_id: string;
   /**
    * Unique id of the environment that the proxy config belongs to.
-   * @type {string}
    */
   environment_id: string;
   /**
    * Date and time when the proxy config was created (ISO_8601 format).
-   * @type {string}
    */
   created_at: string;
   /**
    * Date and time when the proxy config was last updated/modified (ISO_8601 format).
-   * @type {string}
    */
   updated_at: string;
-  /**
-   *
-   * @type {Secret}
-   */
   secret: Secret;
   /**
    * The name of the proxy config, for example: \'Stripe API\'
-   * @type {string}
    */
   name: string;
   /**
    * Proxy config mapping rules will include the rules that will be used to map the request to the backend service by a URL and a http method.
-   * @type {Array<MappingRule>}
    */
   mapping_rules?: Array<MappingRule>;
   /**
    * Proxy config auth mechanism will define the authentication mechanism that will be used to authenticate the request.  Bearer injects the secret into the Authorization header as a Bearer token,  Basic injects the secret into the Authorization header as a Basic user:password,  Headers injects plain headers into the request.
-   * @type {AuthMechanism}
    */
   auth_mechanism?: AuthMechanism;
 }

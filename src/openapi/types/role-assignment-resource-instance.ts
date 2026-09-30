@@ -10,29 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface RoleAssignmentResourceInstance
- */
 export interface RoleAssignmentResourceInstance {
-  /**
-   *
-   * @type {string}
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   */
   key: string;
-  /**
-   *
-   * @type {string}
-   */
   resource: string;
-  /**
-   *
-   * @type {Record<string, unknown>}
-   */
-  attributes?: Record<string, unknown>;
+  attributes?: object;
 }

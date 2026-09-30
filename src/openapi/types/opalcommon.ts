@@ -10,14 +10,7 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface OPALCommon
- */
 export interface OPALCommon {
-  /**
-   *
-   * @type {number}
-   */
   FETCHING_CALLBACK_TIMEOUT?: number;
+  AUTH_PUBLIC_KEY: string;
 }

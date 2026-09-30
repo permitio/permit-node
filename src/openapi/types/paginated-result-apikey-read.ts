@@ -11,26 +11,13 @@
  */
 
 // May contain unused imports in some cases
-import { type APIKeyRead } from './apikey-read';
+import type { APIKeyRead } from './apikey-read';
 
-/**
- *
- * @interface PaginatedResultAPIKeyRead
- */
 export interface PaginatedResultAPIKeyRead {
   /**
    * List of Api Keys
-   * @type {Array<APIKeyRead>}
    */
   data: Array<APIKeyRead>;
-  /**
-   *
-   * @type {number}
-   */
   total_count: number;
-  /**
-   *
-   * @type {number}
-   */
   page_count?: number;
 }

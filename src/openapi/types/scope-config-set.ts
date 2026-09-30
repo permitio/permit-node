@@ -11,16 +11,8 @@
  */
 
 // May contain unused imports in some cases
-import { type OpalCommonSchemasDataDataSourceConfig } from './opal-common-schemas-data-data-source-config';
+import type { DataSourceConfig } from './data-source-config';
 
-/**
- *
- * @interface ScopeConfigSet
- */
 export interface ScopeConfigSet {
-  /**
-   *
-   * @type {OpalCommonSchemasDataDataSourceConfig}
-   */
-  data?: OpalCommonSchemasDataDataSourceConfig;
+  data?: DataSourceConfig;
 }

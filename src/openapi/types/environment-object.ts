@@ -11,35 +11,6 @@
  */
 
 // May contain unused imports in some cases
+import type { EnvironmentObj } from './environment-obj';
 
-/**
- *
- * @interface EnvironmentObject
- */
-export interface EnvironmentObject {
-  /**
-   *
-   * @type {string}
-   */
-  id: string;
-  /**
-   *
-   * @type {string}
-   */
-  key: string;
-  /**
-   *
-   * @type {string}
-   */
-  name?: string;
-  /**
-   *
-   * @type {string}
-   */
-  created_at: string;
-  /**
-   *
-   * @type {string}
-   */
-  updated_at: string;
-}
+export type EnvironmentObject = EnvironmentObj | object;

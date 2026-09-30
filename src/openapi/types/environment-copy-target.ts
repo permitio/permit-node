@@ -11,21 +11,15 @@
  */
 
 // May contain unused imports in some cases
-import { type New } from './new';
+import type { EnvironmentCreate } from './environment-create';
 
-/**
- *
- * @interface EnvironmentCopyTarget
- */
 export interface EnvironmentCopyTarget {
   /**
    * Identifier of an existing environment to copy into
-   * @type {string}
    */
   existing?: string;
   /**
-   *
-   * @type {New}
+   * Description of the environment to create. This environment must not already exist.
    */
-  new?: New;
+  new?: EnvironmentCreate;
 }

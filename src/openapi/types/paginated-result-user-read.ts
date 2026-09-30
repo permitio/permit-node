@@ -11,26 +11,13 @@
  */
 
 // May contain unused imports in some cases
-import { type UserRead } from './user-read';
+import type { UserRead } from './user-read';
 
-/**
- *
- * @interface PaginatedResultUserRead
- */
 export interface PaginatedResultUserRead {
   /**
    * List of Users
-   * @type {Array<UserRead>}
    */
   data: Array<UserRead>;
-  /**
-   *
-   * @type {number}
-   */
   total_count: number;
-  /**
-   *
-   * @type {number}
-   */
   page_count?: number;
 }

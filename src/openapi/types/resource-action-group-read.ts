@@ -10,69 +10,50 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface ResourceActionGroupRead
- */
 export interface ResourceActionGroupRead {
   /**
    * The name of the action group
-   * @type {string}
    */
   name: string;
   /**
    * An optional longer description of what this action group represents in your system
-   * @type {string}
    */
   description?: string;
   /**
    * optional dictionary of key-value pairs that can be used to store arbitrary metadata about this action group. This metadata can be used to filter action groups using query parameters with attr_ prefix
-   * @type {object}
    */
   attributes?: object;
-  /**
-   *
-   * @type {Array<string>}
-   */
   actions?: Array<string>;
   /**
    * A URL-friendly name of the action group (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the action group.
-   * @type {string}
    */
   key: string;
   /**
    * Unique id of the action group
-   * @type {string}
    */
   id: string;
   /**
    * Unique id of the organization that the action group belongs to.
-   * @type {string}
    */
   organization_id: string;
   /**
    * Unique id of the project that the action group belongs to.
-   * @type {string}
    */
   project_id: string;
   /**
    * Unique id of the environment that the action group belongs to.
-   * @type {string}
    */
   environment_id: string;
   /**
    * Unique id of the resource that the action group belongs to.
-   * @type {string}
    */
   resource_id: string;
   /**
    * Date and time when the action group was created (ISO_8601 format).
-   * @type {string}
    */
   created_at: string;
   /**
    * Date and time when the action group was last updated/modified (ISO_8601 format).
-   * @type {string}
    */
   updated_at: string;
 }

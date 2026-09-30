@@ -11,35 +11,24 @@
  */
 
 // May contain unused imports in some cases
-import { AuthMechanism } from './auth-mechanism';
+import type { AuthMechanism } from './auth-mechanism';
 // May contain unused imports in some cases
-import { type MappingRule } from './mapping-rule';
+import type { MappingRuleUpdate } from './mapping-rule-update';
 // May contain unused imports in some cases
-import { type Secret } from './secret';
+import type { Secret } from './secret';
 
-/**
- *
- * @interface ProxyConfigUpdate
- */
 export interface ProxyConfigUpdate {
-  /**
-   *
-   * @type {Secret}
-   */
   secret?: Secret;
   /**
    * The name of the proxy config, for example: \'Stripe API\'
-   * @type {string}
    */
   name?: string;
   /**
-   * Proxy config mapping rules will include the rules that will be used to map the request to the backend service by a URL and a http method.
-   * @type {Array<MappingRule>}
+   * Proxy config mapping rules, with optional should_delete flag to indicate deletion.
    */
-  mapping_rules?: Array<MappingRule>;
+  mapping_rules?: Array<MappingRuleUpdate>;
   /**
    * Proxy config auth mechanism will define the authentication mechanism that will be used to authenticate the request.  Bearer injects the secret into the Authorization header as a Bearer token,  Basic injects the secret into the Authorization header as a Basic user:password,  Headers injects plain headers into the request.
-   * @type {AuthMechanism}
    */
   auth_mechanism?: AuthMechanism;
 }

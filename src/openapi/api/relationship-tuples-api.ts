@@ -10,8 +10,9 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
-import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
@@ -21,13 +22,15 @@ import {
   setSearchParams,
   toPathString,
 } from '../common';
-import { Configuration } from '../configuration';
-import {
-  type RelationshipTupleCreate,
-  type RelationshipTupleCreateBulkOperation,
-  type RelationshipTupleDelete,
-  type RelationshipTupleDeleteBulkOperation,
-  type RelationshipTupleRead,
+import type { Configuration } from '../configuration';
+import type {
+  PaginatedResultRelationshipTupleDetailedRead,
+  RelationshipTupleCreate,
+  RelationshipTupleCreateBulkOperation,
+  RelationshipTupleDelete,
+  RelationshipTupleDeleteBulkOperation,
+  RelationshipTupleRead,
+  ResponseListRelationshipTuplesV2FactsProjIdEnvIdRelationshipTuplesGet,
 } from '../types';
 /**
  * RelationshipTuplesApi - axios parameter creator
@@ -36,18 +39,18 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
   return {
     /**
      *
-     * @summary Bulk create relationship tuples(EAP)
-     * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @summary Bulk create relationship tuples
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RelationshipTupleCreateBulkOperation} relationshipTupleCreateBulkOperation
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     bulkCreateRelationshipTuples: async (
-      projId: any,
-      envId: any,
+      projId: string,
+      envId: string,
       relationshipTupleCreateBulkOperation: RelationshipTupleCreateBulkOperation,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('bulkCreateRelationshipTuples', 'projId', projId);
@@ -60,8 +63,8 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
         relationshipTupleCreateBulkOperation,
       );
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/relationship_tuples/bulk`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -78,6 +81,7 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -100,17 +104,17 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
     /**
      *
      * @summary Bulk Delete Relationship Tuples
-     * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RelationshipTupleDeleteBulkOperation} relationshipTupleDeleteBulkOperation
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     bulkDeleteRelationshipTuples: async (
-      projId: any,
-      envId: any,
+      projId: string,
+      envId: string,
       relationshipTupleDeleteBulkOperation: RelationshipTupleDeleteBulkOperation,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('bulkDeleteRelationshipTuples', 'projId', projId);
@@ -123,8 +127,8 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
         relationshipTupleDeleteBulkOperation,
       );
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/relationship_tuples/bulk`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -141,6 +145,7 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -167,13 +172,13 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RelationshipTupleCreate} relationshipTupleCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createRelationshipTuple: async (
       projId: string,
       envId: string,
       relationshipTupleCreate: RelationshipTupleCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('createRelationshipTuple', 'projId', projId);
@@ -186,8 +191,8 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
         relationshipTupleCreate,
       );
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/relationship_tuples`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -204,6 +209,7 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -230,13 +236,13 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RelationshipTupleDelete} relationshipTupleDelete
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteRelationshipTuple: async (
       projId: string,
       envId: string,
       relationshipTupleDelete: RelationshipTupleDelete,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('deleteRelationshipTuple', 'projId', projId);
@@ -249,8 +255,8 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
         relationshipTupleDelete,
       );
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/relationship_tuples`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -267,6 +273,7 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -291,19 +298,24 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
      * @summary List Relationship Tuples
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {boolean} [detailed] If true, will return the full subject and object resource instances.
+     * @param {boolean} [includeTotalCount] If true, returns the list of resource instances and the total count.
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {string} [tenant] The tenant key or id to filter by
      * @param {string} [subject] The subject to filter by, accepts either the resource instance id or resource_type:resource_instance
      * @param {string} [relation] The relation id or key to filter by
      * @param {string} [object] The object to filter by, accepts either the resource instance id or resource_type:resource_instance
+     * @param {string} [objectType] The object type to filter by, accepts resource type id or key
+     * @param {string} [subjectType] The subject type to filter by, accepts resource type id or key
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listRelationshipTuples: async (
       projId: string,
       envId: string,
-      detailed?: any,
+      detailed?: boolean,
+      includeTotalCount?: boolean,
       page?: number,
       perPage?: number,
       tenant?: string,
@@ -312,15 +324,15 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
       object?: string,
       objectType?: string,
       subjectType?: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('listRelationshipTuples', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('listRelationshipTuples', 'envId', envId);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/relationship_tuples`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -338,6 +350,10 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
 
       if (detailed !== undefined) {
         localVarQueryParameter['detailed'] = detailed;
+      }
+
+      if (includeTotalCount !== undefined) {
+        localVarQueryParameter['include_total_count'] = includeTotalCount;
       }
 
       if (page !== undefined) {
@@ -372,6 +388,106 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
         localVarQueryParameter['subject_type'] = subjectType;
       }
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Lists the relationship tuples defined within an environment.
+     * @summary List Relationship Tuples Detailed
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {string} [tenant] The tenant key or id to filter by
+     * @param {string} [subject] The subject to filter by, accepts either the resource instance id or resource_type:resource_instance
+     * @param {string} [relation] The relation id or key to filter by
+     * @param {string} [object] The object to filter by, accepts either the resource instance id or resource_type:resource_instance
+     * @param {string} [objectType] The object type to filter by, accepts resource type id or key
+     * @param {string} [subjectType] The subject type to filter by, accepts resource type id or key
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    listRelationshipTuplesDetailed: async (
+      projId: string,
+      envId: string,
+      page?: number,
+      perPage?: number,
+      tenant?: string,
+      subject?: string,
+      relation?: string,
+      object?: string,
+      objectType?: string,
+      subjectType?: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('listRelationshipTuplesDetailed', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('listRelationshipTuplesDetailed', 'envId', envId);
+      const localVarPath = `/v2/facts/{proj_id}/{env_id}/relationship_tuples/detailed`
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (perPage !== undefined) {
+        localVarQueryParameter['per_page'] = perPage;
+      }
+
+      if (tenant !== undefined) {
+        localVarQueryParameter['tenant'] = tenant;
+      }
+
+      if (subject !== undefined) {
+        localVarQueryParameter['subject'] = subject;
+      }
+
+      if (relation !== undefined) {
+        localVarQueryParameter['relation'] = relation;
+      }
+
+      if (object !== undefined) {
+        localVarQueryParameter['object'] = object;
+      }
+
+      if (objectType !== undefined) {
+        localVarQueryParameter['object_type'] = objectType;
+      }
+
+      if (subjectType !== undefined) {
+        localVarQueryParameter['subject_type'] = subjectType;
+      }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -396,49 +512,71 @@ export const RelationshipTuplesApiFp = function (configuration?: Configuration) 
   return {
     /**
      *
-     * @summary Bulk create relationship tuples(EAP)
-     * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @summary Bulk create relationship tuples
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RelationshipTupleCreateBulkOperation} relationshipTupleCreateBulkOperation
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async bulkCreateRelationshipTuples(
-      projId: any,
-      envId: any,
+      projId: string,
+      envId: string,
       relationshipTupleCreateBulkOperation: RelationshipTupleCreateBulkOperation,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<object>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.bulkCreateRelationshipTuples(
         projId,
         envId,
         relationshipTupleCreateBulkOperation,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RelationshipTuplesApi.bulkCreateRelationshipTuples']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      *
      * @summary Bulk Delete Relationship Tuples
-     * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RelationshipTupleDeleteBulkOperation} relationshipTupleDeleteBulkOperation
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async bulkDeleteRelationshipTuples(
-      projId: any,
-      envId: any,
+      projId: string,
+      envId: string,
       relationshipTupleDeleteBulkOperation: RelationshipTupleDeleteBulkOperation,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<object>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.bulkDeleteRelationshipTuples(
         projId,
         envId,
         relationshipTupleDeleteBulkOperation,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RelationshipTuplesApi.bulkDeleteRelationshipTuples']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Create a relationship between two resource instances using a relation.
@@ -447,13 +585,13 @@ export const RelationshipTuplesApiFp = function (configuration?: Configuration) 
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RelationshipTupleCreate} relationshipTupleCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async createRelationshipTuple(
       projId: string,
       envId: string,
       relationshipTupleCreate: RelationshipTupleCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RelationshipTupleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createRelationshipTuple(
         projId,
@@ -461,7 +599,18 @@ export const RelationshipTuplesApiFp = function (configuration?: Configuration) 
         relationshipTupleCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RelationshipTuplesApi.createRelationshipTuple']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Delete a relationship between two resource instances.
@@ -470,13 +619,13 @@ export const RelationshipTuplesApiFp = function (configuration?: Configuration) 
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RelationshipTupleDelete} relationshipTupleDelete
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deleteRelationshipTuple(
       projId: string,
       envId: string,
       relationshipTupleDelete: RelationshipTupleDelete,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteRelationshipTuple(
         projId,
@@ -484,26 +633,42 @@ export const RelationshipTuplesApiFp = function (configuration?: Configuration) 
         relationshipTupleDelete,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RelationshipTuplesApi.deleteRelationshipTuple']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists the relationship tuples defined within an environment.
      * @summary List Relationship Tuples
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {boolean} [detailed] If true, will return the full subject and object resource instances.
+     * @param {boolean} [includeTotalCount] If true, returns the list of resource instances and the total count.
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {string} [tenant] The tenant key or id to filter by
      * @param {string} [subject] The subject to filter by, accepts either the resource instance id or resource_type:resource_instance
      * @param {string} [relation] The relation id or key to filter by
      * @param {string} [object] The object to filter by, accepts either the resource instance id or resource_type:resource_instance
+     * @param {string} [objectType] The object type to filter by, accepts resource type id or key
+     * @param {string} [subjectType] The subject type to filter by, accepts resource type id or key
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listRelationshipTuples(
       projId: string,
       envId: string,
-      detailed?: any,
+      detailed?: boolean,
+      includeTotalCount?: boolean,
       page?: number,
       perPage?: number,
       tenant?: string,
@@ -512,14 +677,18 @@ export const RelationshipTuplesApiFp = function (configuration?: Configuration) 
       object?: string,
       objectType?: string,
       subjectType?: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<RelationshipTupleRead>>
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ResponseListRelationshipTuplesV2FactsProjIdEnvIdRelationshipTuplesGet>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listRelationshipTuples(
         projId,
         envId,
         detailed,
+        includeTotalCount,
         page,
         perPage,
         tenant,
@@ -530,7 +699,78 @@ export const RelationshipTuplesApiFp = function (configuration?: Configuration) 
         subjectType,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RelationshipTuplesApi.listRelationshipTuples']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Lists the relationship tuples defined within an environment.
+     * @summary List Relationship Tuples Detailed
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {string} [tenant] The tenant key or id to filter by
+     * @param {string} [subject] The subject to filter by, accepts either the resource instance id or resource_type:resource_instance
+     * @param {string} [relation] The relation id or key to filter by
+     * @param {string} [object] The object to filter by, accepts either the resource instance id or resource_type:resource_instance
+     * @param {string} [objectType] The object type to filter by, accepts resource type id or key
+     * @param {string} [subjectType] The subject type to filter by, accepts resource type id or key
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    async listRelationshipTuplesDetailed(
+      projId: string,
+      envId: string,
+      page?: number,
+      perPage?: number,
+      tenant?: string,
+      subject?: string,
+      relation?: string,
+      object?: string,
+      objectType?: string,
+      subjectType?: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<PaginatedResultRelationshipTupleDetailedRead>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.listRelationshipTuplesDetailed(
+        projId,
+        envId,
+        page,
+        perPage,
+        tenant,
+        subject,
+        relation,
+        object,
+        objectType,
+        subjectType,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RelationshipTuplesApi.listRelationshipTuplesDetailed']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
@@ -547,124 +787,136 @@ export const RelationshipTuplesApiFactory = function (
   return {
     /**
      *
-     * @summary Bulk create relationship tuples(EAP)
-     * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {RelationshipTupleCreateBulkOperation} relationshipTupleCreateBulkOperation
+     * @summary Bulk create relationship tuples
+     * @param {RelationshipTuplesApiBulkCreateRelationshipTuplesRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     bulkCreateRelationshipTuples(
-      projId: any,
-      envId: any,
-      relationshipTupleCreateBulkOperation: RelationshipTupleCreateBulkOperation,
-      options?: any,
-    ): AxiosPromise<any> {
+      requestParameters: RelationshipTuplesApiBulkCreateRelationshipTuplesRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<object> {
       return localVarFp
-        .bulkCreateRelationshipTuples(projId, envId, relationshipTupleCreateBulkOperation, options)
+        .bulkCreateRelationshipTuples(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.relationshipTupleCreateBulkOperation,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Bulk Delete Relationship Tuples
-     * @param {any} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {any} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {RelationshipTupleDeleteBulkOperation} relationshipTupleDeleteBulkOperation
+     * @param {RelationshipTuplesApiBulkDeleteRelationshipTuplesRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     bulkDeleteRelationshipTuples(
-      projId: any,
-      envId: any,
-      relationshipTupleDeleteBulkOperation: RelationshipTupleDeleteBulkOperation,
-      options?: any,
-    ): AxiosPromise<any> {
+      requestParameters: RelationshipTuplesApiBulkDeleteRelationshipTuplesRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<object> {
       return localVarFp
-        .bulkDeleteRelationshipTuples(projId, envId, relationshipTupleDeleteBulkOperation, options)
+        .bulkDeleteRelationshipTuples(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.relationshipTupleDeleteBulkOperation,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Create a relationship between two resource instances using a relation.
      * @summary Create Relationship Tuple
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {RelationshipTupleCreate} relationshipTupleCreate
+     * @param {RelationshipTuplesApiCreateRelationshipTupleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createRelationshipTuple(
-      projId: string,
-      envId: string,
-      relationshipTupleCreate: RelationshipTupleCreate,
-      options?: any,
+      requestParameters: RelationshipTuplesApiCreateRelationshipTupleRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<RelationshipTupleRead> {
       return localVarFp
-        .createRelationshipTuple(projId, envId, relationshipTupleCreate, options)
+        .createRelationshipTuple(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.relationshipTupleCreate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Delete a relationship between two resource instances.
      * @summary Delete Relationship Tuple
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {RelationshipTupleDelete} relationshipTupleDelete
+     * @param {RelationshipTuplesApiDeleteRelationshipTupleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteRelationshipTuple(
-      projId: string,
-      envId: string,
-      relationshipTupleDelete: RelationshipTupleDelete,
-      options?: any,
+      requestParameters: RelationshipTuplesApiDeleteRelationshipTupleRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<void> {
       return localVarFp
-        .deleteRelationshipTuple(projId, envId, relationshipTupleDelete, options)
+        .deleteRelationshipTuple(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.relationshipTupleDelete,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists the relationship tuples defined within an environment.
      * @summary List Relationship Tuples
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [detailed] If true, will return the full subject and object resource instances.
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
-     * @param {string} [tenant] The tenant key or id to filter by
-     * @param {string} [subject] The subject to filter by, accepts either the resource instance id or resource_type:resource_instance
-     * @param {string} [relation] The relation id or key to filter by
-     * @param {string} [object] The object to filter by, accepts either the resource instance id or resource_type:resource_instance
-     * @param {string} [objectType] The object type to filter by, accepts resource type id or key
-     * @param {string} [subjectType] The subject type to filter by, accepts resource type id or key
+     * @param {RelationshipTuplesApiListRelationshipTuplesRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listRelationshipTuples(
-      projId: string,
-      envId: string,
-      detailed?: any,
-      page?: number,
-      perPage?: number,
-      tenant?: string,
-      subject?: string,
-      relation?: string,
-      object?: string,
-      objectType?: string,
-      subjectType?: string,
-      options?: any,
-    ): AxiosPromise<Array<RelationshipTupleRead>> {
+      requestParameters: RelationshipTuplesApiListRelationshipTuplesRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ResponseListRelationshipTuplesV2FactsProjIdEnvIdRelationshipTuplesGet> {
       return localVarFp
         .listRelationshipTuples(
-          projId,
-          envId,
-          detailed,
-          page,
-          perPage,
-          tenant,
-          subject,
-          relation,
-          object,
-          objectType,
-          subjectType,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.detailed,
+          requestParameters.includeTotalCount,
+          requestParameters.page,
+          requestParameters.perPage,
+          requestParameters.tenant,
+          requestParameters.subject,
+          requestParameters.relation,
+          requestParameters.object,
+          requestParameters.objectType,
+          requestParameters.subjectType,
+          options,
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Lists the relationship tuples defined within an environment.
+     * @summary List Relationship Tuples Detailed
+     * @param {RelationshipTuplesApiListRelationshipTuplesDetailedRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    listRelationshipTuplesDetailed(
+      requestParameters: RelationshipTuplesApiListRelationshipTuplesDetailedRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PaginatedResultRelationshipTupleDetailedRead> {
+      return localVarFp
+        .listRelationshipTuplesDetailed(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.page,
+          requestParameters.perPage,
+          requestParameters.tenant,
+          requestParameters.subject,
+          requestParameters.relation,
+          requestParameters.object,
+          requestParameters.objectType,
+          requestParameters.subjectType,
           options,
         )
         .then((request) => request(axios, basePath));
@@ -674,196 +926,215 @@ export const RelationshipTuplesApiFactory = function (
 
 /**
  * Request parameters for bulkCreateRelationshipTuples operation in RelationshipTuplesApi.
- * @interface RelationshipTuplesApiBulkCreateRelationshipTuplesRequest
  */
 export interface RelationshipTuplesApiBulkCreateRelationshipTuplesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {any}
    */
-  readonly projId: any;
+  readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {any}
    */
-  readonly envId: any;
+  readonly envId: string;
 
-  /**
-   *
-   * @type {RelationshipTupleCreateBulkOperation}
-   */
   readonly relationshipTupleCreateBulkOperation: RelationshipTupleCreateBulkOperation;
 }
 
 /**
  * Request parameters for bulkDeleteRelationshipTuples operation in RelationshipTuplesApi.
- * @interface RelationshipTuplesApiBulkDeleteRelationshipTuplesRequest
  */
 export interface RelationshipTuplesApiBulkDeleteRelationshipTuplesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {any}
    */
-  readonly projId: any;
+  readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {any}
    */
-  readonly envId: any;
+  readonly envId: string;
 
-  /**
-   *
-   * @type {RelationshipTupleDeleteBulkOperation}
-   */
   readonly relationshipTupleDeleteBulkOperation: RelationshipTupleDeleteBulkOperation;
 }
 
 /**
  * Request parameters for createRelationshipTuple operation in RelationshipTuplesApi.
- * @interface RelationshipTuplesApiCreateRelationshipTupleRequest
  */
 export interface RelationshipTuplesApiCreateRelationshipTupleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
-  /**
-   *
-   * @type {RelationshipTupleCreate}
-   */
   readonly relationshipTupleCreate: RelationshipTupleCreate;
 }
 
 /**
  * Request parameters for deleteRelationshipTuple operation in RelationshipTuplesApi.
- * @interface RelationshipTuplesApiDeleteRelationshipTupleRequest
  */
 export interface RelationshipTuplesApiDeleteRelationshipTupleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
-  /**
-   *
-   * @type {RelationshipTupleDelete}
-   */
   readonly relationshipTupleDelete: RelationshipTupleDelete;
 }
 
 /**
  * Request parameters for listRelationshipTuples operation in RelationshipTuplesApi.
- * @interface RelationshipTuplesApiListRelationshipTuplesRequest
  */
 export interface RelationshipTuplesApiListRelationshipTuplesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
    */
   readonly envId: string;
 
   /**
    * If true, will return the full subject and object resource instances.
-   * @type {any}
    */
-  readonly detailed?: any;
+  readonly detailed?: boolean;
+
+  /**
+   * If true, returns the list of resource instances and the total count.
+   */
+  readonly includeTotalCount?: boolean;
 
   /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
    */
   readonly perPage?: number;
 
   /**
    * The tenant key or id to filter by
-   * @type {string}
    */
   readonly tenant?: string;
 
   /**
    * The subject to filter by, accepts either the resource instance id or resource_type:resource_instance
-   * @type {string}
    */
   readonly subject?: string;
 
   /**
    * The relation id or key to filter by
-   * @type {string}
    */
   readonly relation?: string;
 
   /**
    * The object to filter by, accepts either the resource instance id or resource_type:resource_instance
-   * @type {string}
    */
   readonly object?: string;
 
   /**
    * The object type to filter by, accepts resource type id or key
-   * @type {string}
    */
   readonly objectType?: string;
 
   /**
    * The subject type to filter by, accepts resource type id or key
-   * @type {string}
+   */
+  readonly subjectType?: string;
+}
+
+/**
+ * Request parameters for listRelationshipTuplesDetailed operation in RelationshipTuplesApi.
+ */
+export interface RelationshipTuplesApiListRelationshipTuplesDetailedRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
+  /**
+   * Page number of the results to fetch, starting at 1.
+   */
+  readonly page?: number;
+
+  /**
+   * The number of results per page (max 100).
+   */
+  readonly perPage?: number;
+
+  /**
+   * The tenant key or id to filter by
+   */
+  readonly tenant?: string;
+
+  /**
+   * The subject to filter by, accepts either the resource instance id or resource_type:resource_instance
+   */
+  readonly subject?: string;
+
+  /**
+   * The relation id or key to filter by
+   */
+  readonly relation?: string;
+
+  /**
+   * The object to filter by, accepts either the resource instance id or resource_type:resource_instance
+   */
+  readonly object?: string;
+
+  /**
+   * The object type to filter by, accepts resource type id or key
+   */
+  readonly objectType?: string;
+
+  /**
+   * The subject type to filter by, accepts resource type id or key
    */
   readonly subjectType?: string;
 }
 
 /**
  * RelationshipTuplesApi - object-oriented interface
- * @class RelationshipTuplesApi
- * @extends {BaseAPI}
  */
 export class RelationshipTuplesApi extends BaseAPI {
   /**
    *
-   * @summary Bulk create relationship tuples(EAP)
+   * @summary Bulk create relationship tuples
    * @param {RelationshipTuplesApiBulkCreateRelationshipTuplesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
-  public async bulkCreateRelationshipTuples(
+  public bulkCreateRelationshipTuples(
     requestParameters: RelationshipTuplesApiBulkCreateRelationshipTuplesRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
-    let request = await RelationshipTuplesApiFp(this.configuration).bulkCreateRelationshipTuples(
-      requestParameters.projId,
-      requestParameters.envId,
-      requestParameters.relationshipTupleCreateBulkOperation,
-      options,
-    );
-    return request(this.axios, this.basePath);
+    return RelationshipTuplesApiFp(this.configuration)
+      .bulkCreateRelationshipTuples(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.relationshipTupleCreateBulkOperation,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
   }
 
   /**
@@ -871,19 +1142,20 @@ export class RelationshipTuplesApi extends BaseAPI {
    * @summary Bulk Delete Relationship Tuples
    * @param {RelationshipTuplesApiBulkDeleteRelationshipTuplesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
-  public async bulkDeleteRelationshipTuples(
+  public bulkDeleteRelationshipTuples(
     requestParameters: RelationshipTuplesApiBulkDeleteRelationshipTuplesRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
-    let request = await RelationshipTuplesApiFp(this.configuration).bulkDeleteRelationshipTuples(
-      requestParameters.projId,
-      requestParameters.envId,
-      requestParameters.relationshipTupleDeleteBulkOperation,
-      options,
-    );
-    return request(this.axios, this.basePath);
+    return RelationshipTuplesApiFp(this.configuration)
+      .bulkDeleteRelationshipTuples(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.relationshipTupleDeleteBulkOperation,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
   }
 
   /**
@@ -891,11 +1163,11 @@ export class RelationshipTuplesApi extends BaseAPI {
    * @summary Create Relationship Tuple
    * @param {RelationshipTuplesApiCreateRelationshipTupleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public createRelationshipTuple(
     requestParameters: RelationshipTuplesApiCreateRelationshipTupleRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return RelationshipTuplesApiFp(this.configuration)
       .createRelationshipTuple(
@@ -912,11 +1184,11 @@ export class RelationshipTuplesApi extends BaseAPI {
    * @summary Delete Relationship Tuple
    * @param {RelationshipTuplesApiDeleteRelationshipTupleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public deleteRelationshipTuple(
     requestParameters: RelationshipTuplesApiDeleteRelationshipTupleRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return RelationshipTuplesApiFp(this.configuration)
       .deleteRelationshipTuple(
@@ -933,17 +1205,46 @@ export class RelationshipTuplesApi extends BaseAPI {
    * @summary List Relationship Tuples
    * @param {RelationshipTuplesApiListRelationshipTuplesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
+   * @throws If a required parameter is missing.
    */
   public listRelationshipTuples(
     requestParameters: RelationshipTuplesApiListRelationshipTuplesRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return RelationshipTuplesApiFp(this.configuration)
       .listRelationshipTuples(
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.detailed,
+        requestParameters.includeTotalCount,
+        requestParameters.page,
+        requestParameters.perPage,
+        requestParameters.tenant,
+        requestParameters.subject,
+        requestParameters.relation,
+        requestParameters.object,
+        requestParameters.objectType,
+        requestParameters.subjectType,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Lists the relationship tuples defined within an environment.
+   * @summary List Relationship Tuples Detailed
+   * @param {RelationshipTuplesApiListRelationshipTuplesDetailedRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws If a required parameter is missing.
+   */
+  public listRelationshipTuplesDetailed(
+    requestParameters: RelationshipTuplesApiListRelationshipTuplesDetailedRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return RelationshipTuplesApiFp(this.configuration)
+      .listRelationshipTuplesDetailed(
+        requestParameters.projId,
+        requestParameters.envId,
         requestParameters.page,
         requestParameters.perPage,
         requestParameters.tenant,

@@ -10,59 +10,45 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface ProjectRead
- */
 export interface ProjectRead {
   /**
    * A URL-friendly name of the project (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the project.
-   * @type {string}
    */
   key: string;
   /**
    * Optional namespace for URNs. If empty, URNs will be generated from project key.
-   * @type {string}
    */
   urn_namespace?: string;
   /**
    * Unique id of the project
-   * @type {string}
    */
   id: string;
   /**
    * Unique id of the organization that the project belongs to.
-   * @type {string}
    */
   organization_id: string;
   /**
    * Date and time when the project was created (ISO_8601 format).
-   * @type {string}
    */
   created_at: string;
   /**
    * Date and time when the project was last updated/modified (ISO_8601 format).
-   * @type {string}
    */
   updated_at: string;
   /**
    * The name of the project
-   * @type {string}
    */
   name: string;
   /**
    * a longer description outlining the project objectives
-   * @type {string}
    */
   description?: string;
   /**
    * the settings for this project
-   * @type {object}
    */
   settings?: object;
   /**
    * the id of the policy repo to use for this project
-   * @type {string}
    */
   active_policy_repo_id?: string;
 }

@@ -11,68 +11,20 @@
  */
 
 // May contain unused imports in some cases
-import { MemberAccessLevel } from './member-access-level';
+import type { MemberAccessLevel } from './member-access-level';
 // May contain unused imports in some cases
-import { MemberAccessObj } from './member-access-obj';
+import type { MemberAccessObj } from './member-access-obj';
 
-/**
- *
- * @interface Permission
- */
 export interface Permission {
-  /**
-   *
-   * @type {string}
-   */
   organization_id: string;
-  /**
-   *
-   * @type {string}
-   */
   project_id?: string;
-  /**
-   *
-   * @type {string}
-   */
   environment_id?: string;
-  /**
-   *
-   * @type {MemberAccessObj}
-   */
   object_type: MemberAccessObj;
-  /**
-   *
-   * @type {MemberAccessLevel}
-   */
   access_level: MemberAccessLevel;
-  /**
-   *
-   * @type {string}
-   */
   organization_key?: string;
-  /**
-   *
-   * @type {string}
-   */
   project_key?: string;
-  /**
-   *
-   * @type {string}
-   */
   environment_key?: string;
-  /**
-   *
-   * @type {string}
-   */
   organization_name?: string;
-  /**
-   *
-   * @type {string}
-   */
   project_name?: string;
-  /**
-   *
-   * @type {string}
-   */
   environment_name?: string;
 }

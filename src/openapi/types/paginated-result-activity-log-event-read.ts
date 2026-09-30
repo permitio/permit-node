@@ -11,26 +11,13 @@
  */
 
 // May contain unused imports in some cases
-import { type ActivityLogEventRead } from './activity-log-event-read';
+import type { ActivityLogEventRead } from './activity-log-event-read';
 
-/**
- *
- * @interface PaginatedResultActivityLogEventRead
- */
 export interface PaginatedResultActivityLogEventRead {
   /**
    * List of Activity Log Events
-   * @type {Array<ActivityLogEventRead>}
    */
   data: Array<ActivityLogEventRead>;
-  /**
-   *
-   * @type {number}
-   */
   total_count: number;
-  /**
-   *
-   * @type {number}
-   */
   page_count?: number;
 }

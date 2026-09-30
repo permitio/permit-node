@@ -10,19 +10,7 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface PdpConfigObj
- */
 export interface PdpConfigObj {
-  /**
-   *
-   * @type {string}
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   */
   name: string;
 }

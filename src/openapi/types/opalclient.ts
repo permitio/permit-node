@@ -11,63 +11,19 @@
  */
 
 // May contain unused imports in some cases
-import { type OPALHttpFetcherConfig } from './opalhttp-fetcher-config';
+import type { OPALHttpFetcherConfig } from './opalhttp-fetcher-config';
 // May contain unused imports in some cases
-import { type OPALUpdateCallback } from './opalupdate-callback';
+import type { OPALUpdateCallback } from './opalupdate-callback';
 
-/**
- *
- * @interface OPALClient
- */
 export interface OPALClient {
-  /**
-   *
-   * @type {Array<string>}
-   */
   DATA_TOPICS: Array<string>;
-  /**
-   *
-   * @type {string}
-   */
   CLIENT_TOKEN: string;
-  /**
-   *
-   * @type {string}
-   */
   SERVER_URL: string;
-  /**
-   *
-   * @type {string}
-   */
   SERVER_WS_URL: string;
-  /**
-   *
-   * @type {string}
-   */
   SERVER_PUBSUB_URL: string;
-  /**
-   *
-   * @type {string}
-   */
   DEFAULT_DATA_SOURCES_CONFIG_URL: string;
-  /**
-   *
-   * @type {string}
-   */
   SCOPE_ID?: string;
-  /**
-   *
-   * @type {boolean}
-   */
   SHOULD_REPORT_ON_DATA_UPDATES?: boolean;
-  /**
-   *
-   * @type {OPALUpdateCallback}
-   */
   DEFAULT_UPDATE_CALLBACKS?: OPALUpdateCallback;
-  /**
-   *
-   * @type {OPALHttpFetcherConfig}
-   */
   DEFAULT_UPDATE_CALLBACK_CONFIG?: OPALHttpFetcherConfig;
 }

@@ -11,81 +11,21 @@
  */
 
 // May contain unused imports in some cases
-import { type ActivityDetails } from './activity-details';
+import type { ActivityDetailsValue } from './activity-details-value';
 
-/**
- *
- * @interface ActivityLogEventRead
- */
 export interface ActivityLogEventRead {
-  /**
-   *
-   * @type {string}
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   */
   timestamp: string;
-  /**
-   *
-   * @type {string}
-   */
   activity_id?: string;
-  /**
-   *
-   * @type {string}
-   */
   activity_description?: string;
-  /**
-   *
-   * @type {{ [key: string]: ActivityDetails; }}
-   */
-  activity_details?: { [key: string]: ActivityDetails };
-  /**
-   *
-   * @type {string}
-   */
+  activity_details?: { [key: string]: ActivityDetailsValue };
   client_ip: string;
-  /**
-   *
-   * @type {string}
-   */
   actor_type: string;
-  /**
-   *
-   * @type {string}
-   */
   actor_id: string;
-  /**
-   *
-   * @type {string}
-   */
   actor_display_name?: string;
-  /**
-   *
-   * @type {string}
-   */
   org_id?: string;
-  /**
-   *
-   * @type {string}
-   */
   project_key?: string;
-  /**
-   *
-   * @type {string}
-   */
   project_id?: string;
-  /**
-   *
-   * @type {string}
-   */
   env_key?: string;
-  /**
-   *
-   * @type {string}
-   */
   env_id?: string;
 }

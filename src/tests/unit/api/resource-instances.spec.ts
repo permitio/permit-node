@@ -201,7 +201,7 @@ describe('ResourceInstancesApi (unit)', () => {
       rest.rejectWith(409, { message: 'already exists' });
 
       const error = await permit.api.resourceInstances
-        .create({ key: 'inst-1', resource: 'document' })
+        .create({ key: 'inst-1', resource: 'document', tenant: 'default' })
         .catch((err) => err);
 
       expect(error).toBeInstanceOf(PermitApiError);

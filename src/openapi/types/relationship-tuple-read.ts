@@ -10,74 +10,84 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @interface RelationshipTupleRead
- */
+// May contain unused imports in some cases
+import type { ResourceInstanceBlockRead } from './resource-instance-block-read';
+// May contain unused imports in some cases
+import type { StrippedRelationBlockRead } from './stripped-relation-block-read';
+// May contain unused imports in some cases
+import type { TenantBlockRead } from './tenant-block-read';
+
 export interface RelationshipTupleRead {
   /**
-   * Unique id of the relationship tuple
-   * @type {string}
-   */
-  id: string;
-  /**
    * resource_key:resource_instance_key of the subject
-   * @type {string}
    */
   subject: string;
   /**
    * key of the assigned relation
-   * @type {string}
    */
   relation: string;
   /**
    * resource_key:resource_instance_key of the object
-   * @type {string}
    */
   object: string;
   /**
+   * Unique id of the relationship tuple
+   */
+  id: string;
+  /**
+   * The tenant the relationship tuple is associated with
+   */
+  tenant: string;
+  /**
    * Unique id of the subject
-   * @type {string}
    */
   subject_id: string;
   /**
    * Unique id of the relation
-   * @type {string}
    */
   relation_id: string;
   /**
-   * Unique id of the object
-   * @type {string}
+   * Unique id of the object (null = all resources of this type)
    */
-  object_id: string;
+  object_id?: string;
   /**
    * Unique id of the tenant
-   * @type {string}
    */
   tenant_id: string;
   /**
    * Unique id of the organization that the relationship tuple belongs to.
-   * @type {string}
    */
   organization_id: string;
   /**
    * Unique id of the project that the relationship tuple belongs to.
-   * @type {string}
    */
   project_id: string;
   /**
    * Unique id of the environment that the relationship tuple belongs to.
-   * @type {string}
    */
   environment_id: string;
   /**
    * Date and time when the relationship tuple was created (ISO_8601 format).
-   * @type {string}
    */
   created_at: string;
   /**
    * Date and time when the relationship tuple was created (ISO_8601 format).
-   * @type {string}
    */
   updated_at: string;
+  /**
+   * The subject details of the relationship tuple
+   */
+  subject_details?: ResourceInstanceBlockRead;
+  /**
+   * The relation details of the relationship tuple
+   */
+  relation_details?: StrippedRelationBlockRead;
+  /**
+   * The object details of the relationship tuple
+   */
+  object_details?: ResourceInstanceBlockRead;
+  /**
+   * The tenant details of the relationship tuple
+   */
+  tenant_details?: TenantBlockRead;
 }
