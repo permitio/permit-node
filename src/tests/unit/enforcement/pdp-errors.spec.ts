@@ -61,6 +61,7 @@ const operations: {
       tenants: ['tenant-1'],
       resources: ['document:one'],
       resource_types: ['document'],
+      context: {},
     },
     denied: {},
     perCallErrors: true,

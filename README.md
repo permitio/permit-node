@@ -109,6 +109,15 @@ prefix or reroute an SDK destination. Direct caller requests retain that caller 
 usable and acquire no SDK retries. Default Basic credentials cannot replace an explicit
 SDK Bearer token. Intentional caller hooks can still rewrite request configuration, including
 headers and transforms; caller-owned retry or redirect behavior remains the caller's responsibility.
+For 3.0, the SDK serializes enforcement request bodies before dispatch so legal JSON dictionary
+keys such as `__proto__` and `constructor` survive Axios merging. A supplied OPA request
+interceptor or transform receives **JSON text**, including the `{ input: ... }` envelope.
+To edit it, parse the text, update the parsed object, and return serialized JSON. Earlier hooks
+that expected a raw object must be updated. Direct caller requests retain their own data shape.
+Circular references and unsupported JSON values raise a contextual `PermitError` before HTTP;
+explicit non-throwing authorization mode retains its deny result. The raw serialization exception
+and input are omitted from diagnostics.
+
 PDP requests use a separate internal transport. There are no SDK registrations on supplied
 instances to dispose of.
 
@@ -211,7 +220,8 @@ uninspectable primitive rejections use a useful operation fallback. Credentials 
 attributes are omitted from JSON and pretty
 SDK logs, including successful authorization calls.
 
-These rules apply to `check`, `bulkCheck`, `getUserPermissions`, and `checkAllTenants`.
+These rules apply to `check`, `bulkCheck`, `getUserPermissions`, `checkAllTenants`,
+`getAuthorizedUsers`, `getUserTenants`, and `filterObjects`.
 PDP responses are validated before authorization data reaches the caller. Direct PDP responses
 and OPA `result` envelopes are supported. Decisions must be literal booleans; bulk results must
 contain exactly one decision for each requested position. An empty bulk request requires an empty
@@ -236,6 +246,55 @@ With `throwOnError: false`, failures, including an invalid resource string, retu
 `check`, one `false` per input for `bulkCheck`, `{}` for `getUserPermissions`, and `[]` for
 `checkAllTenants`. The first three methods also accept per-call error-policy overrides;
 `checkAllTenants` uses the SDK setting.
+
+## PDP discovery and object filtering
+
+`getUserPermissions(user, tenants?, resources?, resourceTypes?, config?)` accepts request context
+in its existing fifth argument: `{ context: { requestFlag: true }, timeout: 1000 }`. Request values
+override the internal global context. A general `CheckConfig` does not accept a context option;
+other methods receive context as their own argument.
+
+`getAuthorizedUsers(action, resource, context?, config?)` queries `/authorized_users`, published
+by both container and cloud PDP contracts. It returns the complete `{ resource, tenant, users }`
+result, with each user's assignments retaining `user`, `tenant`, `resource`, and `role`. Legal
+own dictionary keys and additive response fields are preserved. Malformed results invalidate the
+whole response. A resource type or `type:key` string follows the same tenant defaults as `check`.
+
+`getUserTenants(user, context?, config?)` queries `/user-tenants` on a compatible container PDP.
+It returns role-derived tenant details; membership without a relevant role does not establish a
+positive result. Missing tenant attributes default to `{}`. The cloud PDP contract does not publish
+this endpoint, and no cloud runtime support is claimed. HTTP 404 raises an actionable capability
+error regardless of `throwOnError`; it does not guess which PDP host is configured.
+
+`filterObjects(user, action, objects, context?, config?)` performs one supported bulk check and
+returns the authorized original objects in input order, preserving duplicates, extra fields and
+object identity. Pass a dense readonly array of resources. Only `type`, `key`, `tenant`, and
+`attributes` are sent as resource fields; extra application fields remain on returned objects.
+Each object's optional `context` is sent as top-level check context with precedence global,
+then call, then object. A synchronous array snapshot keeps results aligned if the caller changes
+the array while the request is pending. Sparse or undefined slots reject before HTTP. Empty input
+returns `[]` without HTTP after validating options.
+
+```typescript
+const permissions = await permit.getUserPermissions('alice', undefined, undefined, undefined, {
+  context: { requestFlag: true },
+});
+const authorized = await permit.getAuthorizedUsers('read', 'document:report', {
+  requestFlag: true,
+});
+const tenants = await permit.getUserTenants('alice');
+const visible = await permit.filterObjects('alice', 'read', [
+  { type: 'document', key: 'report', title: 'Report', context: { requestFlag: true } },
+]);
+```
+
+The new discovery and filtering methods reject `useOpa: true` regardless of the error policy,
+including an empty filtering call. Operational or malformed-response failures follow normal
+`throwOnError`: non-throwing mode returns `[]` for tenant discovery/filtering and a normalized empty
+`{ resource, tenant, users: {} }` for authorized users. No partial authorization data is returned.
+Existing permission-query and bulk OPA error policies remain unchanged. `checkAllTenants` is
+retained; future deprecation planning does not remove it here. URL checking and AuthZEN remain
+deferred. Internal context transforms are not activated by these methods.
 
 ## Groups
 

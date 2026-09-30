@@ -7,26 +7,40 @@ import { ConfigFactory, type IPermitConfig, type IPermitOptions } from '#src/con
 import { Enforcer, type IEnforcer } from '#src/enforcement/enforcer';
 import {
   type ICheckQuery,
+  type IAuthorizedUsersResult,
+  type IFilterObject,
   type IResource,
   type IUser,
   type IUserPermissions,
   type TenantDetails,
 } from '#src/enforcement/interfaces';
 import { LoggerFactory } from '#src/logger';
-import { type CheckConfig, type Context } from '#src/utils/context';
+import { type CheckConfig, type Context, type GetUserPermissionsConfig } from '#src/utils/context';
 import { createOwnedTransport } from '#src/utils/http-transport';
 import { resolveRetryConfig } from '#src/utils/retry';
 
 // exported interfaces
 export * from '#src/api/index';
 export { type IPermitConfig, type IPermitOptions } from '#src/config';
-export { type IUser, type IAction, type IResource } from '#src/enforcement/interfaces';
+export {
+  type IUser,
+  type IAction,
+  type IResource,
+  type IFilterObject,
+  type IAuthorizedUserAssignment,
+  type IAuthorizedUsersResult,
+  type TenantDetails,
+} from '#src/enforcement/interfaces';
 export {
   PermitConnectionError,
   PermitError,
   PermitPDPStatusError,
 } from '#src/enforcement/enforcer';
-export { type Context, type ContextTransform } from '#src/utils/context';
+export {
+  type Context,
+  type ContextTransform,
+  type GetUserPermissionsConfig,
+} from '#src/utils/context';
 export { ApiContext, PermitContextError, ApiKeyLevel } from '#src/api/context';
 export { PermitApiError } from '#src/api/base';
 export { type IRetryConfig, type RetryConditionFn, RETRYABLE_STATUS_CODES } from '#src/utils/retry';
@@ -206,6 +220,70 @@ export class Permit implements IPermitClient {
   }
 
   /**
+   * Returns the full PDP result for users authorized to perform an action on a resource.
+   *
+   * @param action - Action to evaluate.
+   * @param resource - Resource type, type:key string, or resource attributes and tenant.
+   * @param context - Request context overriding existing global context.
+   * @param config - Timeout/error policy; unsupported useOpa:true always rejects.
+   * @returns The validated result or a normalized empty result in non-throwing mode.
+   * @throws {PermitError} For unsupported OPA, invalid resource strings, or non-JSON inputs.
+   * @throws {PermitConnectionError} On an operational failure in throwing mode.
+   * @throws {PermitPDPStatusError} On a rejected or malformed response in throwing mode.
+   */
+  public async getAuthorizedUsers(
+    action: string,
+    resource: IResource | string,
+    context?: Context,
+    config?: CheckConfig,
+  ): Promise<IAuthorizedUsersResult> {
+    return await this.enforcer.getAuthorizedUsers(action, resource, context, config);
+  }
+
+  /**
+   * Returns a user's role-derived tenants from a compatible container PDP; not published by cloud.
+   *
+   * @param user - User key or attributes.
+   * @param context - Request context overriding existing global context.
+   * @param config - Timeout/error policy; unsupported useOpa:true always rejects.
+   * @returns Validated tenants, or [] on operational failure in non-throwing mode.
+   * @throws {PermitError} For unsupported OPA or non-JSON input in throwing mode.
+   * @throws {PermitPDPStatusError} For an unavailable endpoint regardless of error policy,
+   *   or other rejected/malformed responses in throwing mode.
+   * @throws {PermitConnectionError} On an operational failure in throwing mode.
+   */
+  public async getUserTenants(
+    user: IUser | string,
+    context?: Context,
+    config?: CheckConfig,
+  ): Promise<TenantDetails[]> {
+    return await this.enforcer.getUserTenants(user, context, config);
+  }
+
+  /**
+   * Filters objects through bulk authorization while retaining original references and order.
+   *
+   * @param user - User key or attributes.
+   * @param action - Action to evaluate for every object.
+   * @param objects - Dense readonly array; extra fields remain in returned objects only.
+   * @param context - Shared request context; an object's context overrides it.
+   * @param config - Bulk timeout/error policy; unsupported OPA queries always reject.
+   * @returns Authorized original objects from a synchronous snapshot, including duplicates.
+   * @throws {PermitError} For unsupported OPA/invalid slots, or non-JSON inputs in throwing mode.
+   * @throws {PermitConnectionError} On an operational failure in throwing mode.
+   * @throws {PermitPDPStatusError} On rejected/malformed bulk responses in throwing mode.
+   */
+  public async filterObjects<T extends IFilterObject>(
+    user: IUser | string,
+    action: string,
+    objects: readonly T[],
+    context?: Context,
+    config?: CheckConfig,
+  ): Promise<T[]> {
+    return await this.enforcer.filterObjects(user, action, objects, context, config);
+  }
+
+  /**
    * Get all tenants available in the system.
    * @returns An array of TenantDetails representing all tenants.
    */
@@ -226,6 +304,7 @@ export class Permit implements IPermitClient {
    * @param tenants  - The list of tenants to filter the permissions on ( given by roles ).
    * @param resources - The list of resources to filter the permissions on ( given by resource roles ).
    * @param resource_types - The list of resource types to filter the permissions on ( given by resource roles ).
+   * @param config - Timeout/error policy and request context overriding existing global context.
    * @returns object with key as the resource identifier and value as the resource details and permissions.
    * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
    * @throws {@link PermitPDPStatusError} if the PDP returned an unexpected status code or response body.
@@ -235,7 +314,7 @@ export class Permit implements IPermitClient {
     tenants?: string[],
     resources?: string[],
     resource_types?: string[],
-    config?: CheckConfig,
+    config?: GetUserPermissionsConfig,
   ): Promise<IUserPermissions> {
     return await this.enforcer.getUserPermissions(user, tenants, resources, resource_types, config);
   }

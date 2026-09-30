@@ -1,4 +1,9 @@
-import { type IUserPermissions, type TenantDetails } from '#src/enforcement/interfaces';
+import {
+  type IAuthorizedUserAssignment,
+  type IAuthorizedUsersResult,
+  type IUserPermissions,
+  type TenantDetails,
+} from '#src/enforcement/interfaces';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -146,6 +151,71 @@ export function parseAllTenantsResponse(value: unknown): TenantDetails[] {
       throw new Error('Expected an allowed tenant with allow:true and a string tenant key');
     }
     result.push(normalizeTenant(entry['tenant']));
+  }
+  return result;
+}
+
+/**
+ * Reads the complete authorized-user envelope without accepting a partial assignment map.
+ *
+ * @param value - Untrusted direct PDP response body.
+ * @returns The validated result with legal dictionary keys and additive fields preserved.
+ * @throws {Error} If a required string, dictionary, array or assignment is malformed.
+ */
+export function parseAuthorizedUsersResponse(value: unknown): IAuthorizedUsersResult {
+  if (
+    !isRecord(value) ||
+    typeof value['resource'] !== 'string' ||
+    typeof value['tenant'] !== 'string' ||
+    !isRecord(value['users'])
+  ) {
+    throw new Error('Expected an authorized-user result with resource, tenant and users');
+  }
+  const users: [string, IAuthorizedUserAssignment[]][] = [];
+  for (const [key, assignments] of Object.entries(value['users'])) {
+    if (!Array.isArray(assignments)) throw new Error('Expected an assignment array per user');
+    const checked: IAuthorizedUserAssignment[] = [];
+    for (const assignment of assignments) {
+      if (
+        !isRecord(assignment) ||
+        typeof assignment['user'] !== 'string' ||
+        typeof assignment['tenant'] !== 'string' ||
+        typeof assignment['resource'] !== 'string' ||
+        typeof assignment['role'] !== 'string'
+      ) {
+        throw new Error('Expected four string fields in every authorized-user assignment');
+      }
+      checked.push({
+        ...assignment,
+        user: assignment['user'],
+        tenant: assignment['tenant'],
+        resource: assignment['resource'],
+        role: assignment['role'],
+      });
+    }
+    users.push([key, checked]);
+  }
+  return {
+    ...value,
+    resource: value['resource'],
+    tenant: value['tenant'],
+    users: Object.fromEntries(users),
+  };
+}
+
+/**
+ * Reads the container PDP's tenant array, applying only its documented attributes default.
+ *
+ * @param value - Untrusted direct PDP response body.
+ * @returns All validated tenants, preserving input order and additive fields.
+ * @throws {Error} If the array or any tenant is malformed.
+ */
+export function parseUserTenantsResponse(value: unknown): TenantDetails[] {
+  if (!Array.isArray(value)) throw new Error('Expected a user-tenants array');
+  const result: TenantDetails[] = [];
+  for (const tenant of value) {
+    if (!isTenantDetails(tenant)) throw new Error('Expected a tenant with a string key');
+    result.push(normalizeTenant(tenant));
   }
   return result;
 }

@@ -73,7 +73,7 @@ async function dispatch(
   options: TransportOptions,
   config: InternalAxiosRequestConfig,
 ): Promise<AxiosResponse> {
-  // The caller alone owns serialization, response parsing and its transport adapter.
+  // The SDK may supply serialized JSON; the caller owns applied transforms and its adapter.
   const {
     adapter: _adapter,
     transformRequest: _request,

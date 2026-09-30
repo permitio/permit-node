@@ -384,6 +384,53 @@ export function extractSdk(root) {
     }
     throw new Error(`Unresolved HTTP ${receiver ? 'receiver' : 'route'}: ${print(expression)}.`);
   }
+  function nativeJsonInput(expression) {
+    if (
+      ts.isCallExpression(expression) &&
+      expression.arguments.length === 1 &&
+      ts.isPropertyAccessExpression(expression.expression) &&
+      expression.expression.name.text === 'stringify' &&
+      ts.isIdentifier(expression.expression.expression) &&
+      expression.expression.expression.text === 'JSON' &&
+      checker
+        .getSymbolAtLocation(expression.expression.expression)
+        ?.declarations?.some((declaration) =>
+          program.isSourceFileDefaultLibrary(declaration.getSourceFile()),
+        )
+    )
+      return expression.arguments[0];
+    return undefined;
+  }
+  function requestBody(expression) {
+    const nativeInput = nativeJsonInput(expression);
+    if (nativeInput) return print(nativeInput);
+    if (ts.isCallExpression(expression)) {
+      const serializer = checker.getResolvedSignature(expression)?.declaration;
+      if (
+        serializer &&
+        ts.isMethodDeclaration(serializer) &&
+        serializer.name.getText() === 'serializeInput' &&
+        serializer.parent.name?.text === 'Enforcer' &&
+        location(serializer).file === 'src/enforcement/enforcer.ts'
+      ) {
+        const inputs = [];
+        visit(serializer.body, (node) => {
+          const input = nativeJsonInput(node);
+          if (input) inputs.push(input);
+        });
+        if (inputs.length !== 1 || !ts.isIdentifier(inputs[0]))
+          throw new Error('Enforcer serializer must stringify exactly one checked input.');
+        const index = serializer.parameters.findIndex(
+          (parameter) =>
+            checker.getSymbolAtLocation(parameter.name) === checker.getSymbolAtLocation(inputs[0]),
+        );
+        if (index < 0 || !expression.arguments[index])
+          throw new Error('Enforcer serializer must stringify its structural input argument.');
+        return print(expression.arguments[index]);
+      }
+    }
+    return print(expression);
+  }
   function routesFor(method, seen = new Set()) {
     if (seen.has(method)) return [];
     seen.add(method);
@@ -430,7 +477,7 @@ export function extractSdk(root) {
               path: `/${path.value.replace(/^\//, '')}`,
               target,
               conditions: { ...path.conditions, ...receiver.conditions },
-              body: node.arguments[1] ? print(node.arguments[1]) : null,
+              body: node.arguments[1] ? requestBody(node.arguments[1]) : null,
               response: node.typeArguments?.map(print) ?? [],
               source: location(node),
             });

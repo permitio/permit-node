@@ -90,6 +90,28 @@ export interface IResource {
   attributes?: Dict;
 }
 
+/** An object to filter, with request context that overrides the shared call context. */
+export interface IFilterObject extends IResource {
+  context?: Context;
+}
+
+/** A role assignment explaining a user's access to a resource. */
+export interface IAuthorizedUserAssignment {
+  user: string;
+  tenant: string;
+  resource: string;
+  role: string;
+  [id: string]: unknown;
+}
+
+/** The complete authorized-user result, including arbitrary user-key dictionary entries. */
+export interface IAuthorizedUsersResult {
+  resource: string;
+  tenant: string;
+  users: Record<string, IAuthorizedUserAssignment[]>;
+  [id: string]: unknown;
+}
+
 /**
  * Represents the bulk decision made by a policy.
  */

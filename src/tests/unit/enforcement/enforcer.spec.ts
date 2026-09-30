@@ -248,7 +248,7 @@ describe('Enforcer (unit)', () => {
   });
 
   describe('getUserPermissions', () => {
-    it('POSTs {user,tenants,resources,resource_types} to `user-permissions`', async () => {
+    it('POSTs permission filters and derived context to `user-permissions`', async () => {
       pdp.resolveWith({ 'doc:1': { permissions: ['read'] } });
 
       const permissions = await permit.getUserPermissions('bob', ['t1', 't2'], ['doc:1'], ['doc']);
@@ -261,6 +261,7 @@ describe('Enforcer (unit)', () => {
         tenants: ['t1', 't2'],
         resources: ['doc:1'],
         resource_types: ['doc'],
+        context: {},
       });
     });
 
@@ -269,7 +270,7 @@ describe('Enforcer (unit)', () => {
 
       await permit.getUserPermissions('bob');
 
-      expect(pdp.last?.data).toEqual({ user: { key: 'bob' } });
+      expect(pdp.last?.data).toEqual({ user: { key: 'bob' }, context: {} });
     });
 
     it('unwraps an OPA-shaped `{ result: { permissions } }` response', async () => {

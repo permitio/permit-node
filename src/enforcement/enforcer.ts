@@ -2,7 +2,12 @@ import axios, { AxiosError, type AxiosInstance, type AxiosResponse } from 'axios
 import { type Logger } from 'pino';
 
 import { type IPermitConfig } from '#src/config';
-import { type CheckConfig, type Context, ContextStore } from '#src/utils/context';
+import {
+  type CheckConfig,
+  type Context,
+  type GetUserPermissionsConfig,
+  ContextStore,
+} from '#src/utils/context';
 import { createOwnedTransport } from '#src/utils/http-transport';
 import {
   diagnosticAxiosError,
@@ -18,6 +23,8 @@ import { resolveRetryConfig } from '#src/utils/retry';
 
 import {
   type IAction,
+  type IAuthorizedUsersResult,
+  type IFilterObject,
   type ICheckInput,
   type ICheckOpaInput,
   type ICheckQuery,
@@ -29,6 +36,8 @@ import {
 
 import {
   parseAllTenantsResponse,
+  parseAuthorizedUsersResponse,
+  parseUserTenantsResponse,
   parseBulkResponse,
   parseCheckResponse,
   parsePermissionsResponse,
@@ -127,6 +136,7 @@ export interface IEnforcer {
    * @param tenants  - The list of tenants to filter the permissions on ( given by roles ).
    * @param resources - The list of resources to filter the permissions on ( given by resource roles ).
    * @param resource_types - The list of resource types to filter the permissions on ( given by resource roles ).
+   * @param config - Timeout/error policy and request context overriding existing global context.
    * @returns object with key as the resource identifier and value as the resource details and permissions.
    * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
    * @throws {@link PermitPDPStatusError} if the PDP's status code or response body is unexpected.
@@ -136,8 +146,32 @@ export interface IEnforcer {
     tenants?: string[],
     resources?: string[],
     resource_types?: string[],
-    config?: CheckConfig,
+    config?: GetUserPermissionsConfig,
   ): Promise<IUserPermissions>;
+
+  /** Queries the full authorized-user envelope; unsupported OPA queries always reject. */
+  getAuthorizedUsers(
+    action: IAction,
+    resource: IResource | string,
+    context?: Context,
+    config?: CheckConfig,
+  ): Promise<IAuthorizedUsersResult>;
+
+  /** Queries container PDP tenant membership; an unavailable endpoint always rejects. */
+  getUserTenants(
+    user: IUser | string,
+    context?: Context,
+    config?: CheckConfig,
+  ): Promise<TenantDetails[]>;
+
+  /** Filters a stable snapshot of objects through positional bulk authorization decisions. */
+  filterObjects<T extends IFilterObject>(
+    user: IUser | string,
+    action: IAction,
+    objects: readonly T[],
+    context?: Context,
+    config?: CheckConfig,
+  ): Promise<T[]>;
 
   /**
    * Get all tenants available in the system.
@@ -234,7 +268,7 @@ export class Enforcer implements IEnforcer {
     tenants?: string[],
     resources?: string[],
     resource_types?: string[],
-    config: CheckConfig = {},
+    config: GetUserPermissionsConfig = {},
   ): Promise<IUserPermissions> {
     return await this.getUserPermissionsWithExceptions(
       user,
@@ -262,7 +296,7 @@ export class Enforcer implements IEnforcer {
     tenants?: string[],
     resources?: string[],
     resource_types?: string[],
-    config: CheckConfig = {},
+    config: GetUserPermissionsConfig = {},
   ): Promise<IUserPermissions> {
     const checkTimeout = config.timeout ?? this.config.timeout;
     if (config.useOpa) {
@@ -273,9 +307,10 @@ export class Enforcer implements IEnforcer {
       tenants,
       resources,
       resource_types,
+      context: this.contextStore.getDerivedContext(config.context ?? {}),
     };
     return await this.client
-      .post<unknown>('user-permissions', input, {
+      .post<unknown>('user-permissions', this.serializeInput(input, 'getUserPermissions'), {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
         },
@@ -299,6 +334,175 @@ export class Enforcer implements IEnforcer {
       .catch((error: unknown) => {
         return this.handlePDPError(error, 'getUserPermissions');
       });
+  }
+
+  /**
+   * Queries the users authorized for a resource using the PDP's complete result envelope.
+   *
+   * @param action - Action to evaluate.
+   * @param resource - Resource type, type:key string or resource attributes and tenant.
+   * @param context - Request context overriding the existing global context.
+   * @param config - Timeout and error policy; useOpa:true is unsupported and always rejects.
+   * @returns The full result, or a normalized empty result in explicit non-throwing mode.
+   * @throws {PermitError} For unsupported OPA, invalid resource strings, or non-JSON inputs.
+   * @throws {PermitConnectionError} On operational failure in throwing mode.
+   * @throws {PermitPDPStatusError} On a rejected or malformed PDP response in throwing mode.
+   */
+  public async getAuthorizedUsers(
+    action: IAction,
+    resource: IResource | string,
+    context: Context = {},
+    config: CheckConfig = {},
+  ): Promise<IAuthorizedUsersResult> {
+    if (config.useOpa) {
+      throw new PermitError('The useOpa option is supported only by permit.check()');
+    }
+    const normalized = this.normalizeResource(
+      isString(resource) ? Enforcer.resourceFromString(resource) : resource,
+    );
+    const empty: IAuthorizedUsersResult = {
+      resource: `${normalized.type}:${normalized.key ?? '*'}`,
+      tenant: normalized.tenant || 'default',
+      users: {},
+    };
+    return await this.getAuthorizedUsersWithExceptions(action, normalized, context, config).catch(
+      (error: unknown) => {
+        if (config.throwOnError ?? this.config.throwOnError) throw error;
+        this.logger.error(
+          { err: diagnosticCause(error, [this.config.token]) },
+          'Permit authorization failed',
+        );
+        return empty;
+      },
+    );
+  }
+
+  private async getAuthorizedUsersWithExceptions(
+    action: IAction,
+    resource: IResource,
+    context: Context,
+    config: CheckConfig,
+  ): Promise<IAuthorizedUsersResult> {
+    const input = { action, resource, context: this.contextStore.getDerivedContext(context) };
+    const timeout = config.timeout ?? this.config.timeout;
+    return await this.client
+      .post<unknown>('authorized_users', this.serializeInput(input, 'getAuthorizedUsers'), {
+        headers: { Authorization: `Bearer ${this.config.token}` },
+        ...(timeout !== undefined && { timeout }),
+      })
+      .then((response) => {
+        if (response.status !== 200) throw this.pdpStatusError('getAuthorizedUsers', response);
+        return this.parsePdpResponse('getAuthorizedUsers', response, parseAuthorizedUsersResponse);
+      })
+      .catch((error: unknown) => this.handlePDPError(error, 'getAuthorizedUsers'));
+  }
+
+  /**
+   * Queries role-derived tenants for a user on a compatible container PDP.
+   *
+   * @param user - User key or attributes to query.
+   * @param context - Request context overriding the existing global context.
+   * @param config - Timeout and error policy; useOpa:true is unsupported and always rejects.
+   * @returns All tenants, or [] on operational failure in explicit non-throwing mode.
+   * @throws {PermitError} For unsupported OPA or non-JSON input in throwing mode.
+   * @throws {PermitPDPStatusError} If the endpoint is unavailable (including cloud PDPs), even
+   *   in non-throwing mode; also on rejected or malformed responses in throwing mode.
+   * @throws {PermitConnectionError} On operational failure in throwing mode.
+   */
+  public async getUserTenants(
+    user: IUser | string,
+    context: Context = {},
+    config: CheckConfig = {},
+  ): Promise<TenantDetails[]> {
+    if (config.useOpa) {
+      throw new PermitError('The useOpa option is supported only by permit.check()');
+    }
+    return await this.getUserTenantsWithExceptions(user, context, config).catch(
+      (error: unknown) => {
+        if (
+          (error instanceof PermitPDPStatusError && error.statusCode === 404) ||
+          (config.throwOnError ?? this.config.throwOnError)
+        ) {
+          throw error;
+        }
+        this.logger.error(
+          { err: diagnosticCause(error, [this.config.token]) },
+          'Permit authorization failed',
+        );
+        return [];
+      },
+    );
+  }
+
+  private async getUserTenantsWithExceptions(
+    user: IUser | string,
+    context: Context,
+    config: CheckConfig,
+  ): Promise<TenantDetails[]> {
+    const input = {
+      user: isString(user) ? { key: user } : user,
+      context: this.contextStore.getDerivedContext(context),
+    };
+    const timeout = config.timeout ?? this.config.timeout;
+    return await this.client
+      .post<unknown>('user-tenants', this.serializeInput(input, 'getUserTenants'), {
+        headers: { Authorization: `Bearer ${this.config.token}` },
+        ...(timeout !== undefined && { timeout }),
+      })
+      .then((response) => {
+        if (response.status !== 200) throw this.pdpStatusError('getUserTenants', response);
+        return this.parsePdpResponse('getUserTenants', response, parseUserTenantsResponse);
+      })
+      .catch((error: unknown) => this.handlePDPError(error, 'getUserTenants'));
+  }
+
+  /**
+   * Keeps objects authorized for an action, preserving original references and input order.
+   *
+   * @param user - User key or user attributes.
+   * @param action - Action to evaluate for every object.
+   * @param objects - Readonly dense array; only known resource fields are sent to the PDP.
+   * @param context - Shared context, overridden by each object's request context.
+   * @param config - Bulk timeout/error policy; unsupported OPA queries always reject.
+   * @returns The authorized subset of a synchronous array snapshot, including duplicates.
+   * @throws {PermitError} For unsupported OPA/invalid slots, or non-JSON inputs in throwing mode.
+   * @throws {PermitConnectionError} On operational failure in throwing mode.
+   * @throws {PermitPDPStatusError} On rejected or malformed bulk results in throwing mode.
+   */
+  public async filterObjects<T extends IFilterObject>(
+    user: IUser | string,
+    action: IAction,
+    objects: readonly T[],
+    context: Context = {},
+    config: CheckConfig = {},
+  ): Promise<T[]> {
+    if (config.useOpa) {
+      throw new PermitError('The useOpa option is supported only by permit.check()');
+    }
+    const snapshot = [...objects];
+    const checks: ICheckQuery[] = [];
+    for (const object of snapshot) {
+      if (object === undefined || object === null || typeof object.type !== 'string') {
+        throw new PermitError('permit.filterObjects() requires a resource at every array position');
+      }
+      const resource: IResource = {
+        type: object.type,
+        ...(object.key !== undefined && { key: object.key }),
+        ...(object.tenant !== undefined && { tenant: object.tenant }),
+        ...(object.attributes !== undefined && { attributes: object.attributes }),
+      };
+      checks.push({
+        user,
+        action,
+        resource,
+        ...(object.context !== undefined && {
+          context: object.context,
+        }),
+      });
+    }
+    if (snapshot.length === 0) return [];
+    const allowed = await this.bulkCheck(checks, context, config);
+    return snapshot.filter((_object, index) => allowed[index] === true);
   }
 
   public async bulkCheck(
@@ -365,7 +569,7 @@ export class Enforcer implements IEnforcer {
     }
 
     return await this.client
-      .post<unknown>('allowed/bulk', inputs, {
+      .post<unknown>('allowed/bulk', this.serializeInput(inputs, 'bulkCheck'), {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
         },
@@ -430,7 +634,7 @@ export class Enforcer implements IEnforcer {
     };
 
     return await this.client
-      .post<unknown>('allowed/all-tenants', input, {
+      .post<unknown>('allowed/all-tenants', this.serializeInput(input, 'checkAllTenants'), {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
           'X-Permit-Sdk-Language': sdk,
@@ -486,7 +690,7 @@ export class Enforcer implements IEnforcer {
     const checkTimeout = config.timeout ?? this.config.timeout;
 
     return await client
-      .post<unknown>(path, input, {
+      .post<unknown>(path, this.serializeInput(input, 'check'), {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
         },
@@ -506,6 +710,19 @@ export class Enforcer implements IEnforcer {
       });
   }
 
+  private serializeInput(input: unknown, method: string): string {
+    try {
+      const body = JSON.stringify(input);
+      if (typeof body === 'string') return body;
+    } catch {
+      // JSON errors may contain caller property names; omit the raw exception and request data.
+    }
+    throw new PermitError(
+      `Permit.${method}() input must be JSON-serializable. ` +
+        'Remove circular references and unsupported JSON values.',
+    );
+  }
+
   private pdpStatusError(
     method: string,
     response: AxiosResponse<unknown>,
@@ -514,13 +731,18 @@ export class Enforcer implements IEnforcer {
   ): PermitPDPStatusError {
     const status = diagnosticStatus(response.status);
     const statusLabel = status ?? 'unknown';
-    const message = malformedBody
-      ? `Permit.${method}() got an unexpected response body from the PDP ` +
-        `(status ${statusLabel}), please check that the SDK's pdp URL points to a Permit ` +
-        'PDP. Read more about setting up the PDP at https://docs.permit.io'
-      : `Permit.${method}() got an unexpected status code: ${statusLabel}, ` +
-        'please check your SDK init and make sure the PDP sidecar is configured correctly. ' +
-        'Read more about setting up the PDP at https://docs.permit.io';
+    const message =
+      method === 'getUserTenants' && status === 404
+        ? 'Permit.getUserTenants() endpoint /user-tenants is unavailable (status 404). ' +
+          'Configure a compatible Permit container PDP; the cloud PDP contract does not publish ' +
+          'this endpoint.'
+        : malformedBody
+          ? `Permit.${method}() got an unexpected response body from the PDP ` +
+            `(status ${statusLabel}), please check that the SDK's pdp URL points to a Permit ` +
+            'PDP. Read more about setting up the PDP at https://docs.permit.io'
+          : `Permit.${method}() got an unexpected status code: ${statusLabel}, ` +
+            'please check your SDK init and make sure the PDP sidecar is configured correctly. ' +
+            'Read more about setting up the PDP at https://docs.permit.io';
     const snapshot = diagnosticAxiosError(
       source ?? new AxiosError(message, undefined, response.config, undefined, response),
       [this.config.token],
@@ -570,7 +792,7 @@ export class Enforcer implements IEnforcer {
 
   // TODO: remove this eventually, once we decide on finalized structure of AuthzQuery
   private normalizeResource(resource: IResource): IResource {
-    const normalizedResource: IResource = Object.assign({}, resource);
+    const normalizedResource: IResource = { ...resource };
 
     // if tenant is empty, we might auto-set the default tenant according to config
     if (!normalizedResource.tenant && this.config.multiTenancy.useDefaultTenantIfEmpty) {
@@ -597,6 +819,9 @@ export class Enforcer implements IEnforcer {
       check: this.check.bind(this),
       bulkCheck: this.bulkCheck.bind(this),
       getUserPermissions: this.getUserPermissions.bind(this),
+      getAuthorizedUsers: this.getAuthorizedUsers.bind(this),
+      getUserTenants: this.getUserTenants.bind(this),
+      filterObjects: this.filterObjects.bind(this),
       checkAllTenants: this.checkAllTenants.bind(this),
     };
   }

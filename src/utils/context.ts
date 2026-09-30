@@ -3,11 +3,19 @@ export interface Context {
 }
 
 export interface CheckConfig {
-  /** Use the OPA endpoint for check(); bulkCheck/getUserPermissions reject true. */
+  /**
+   * Use OPA for check(); discovery/filtering reject true regardless of error policy.
+   * Existing bulk/permission queries retain their configured throw/deny policy.
+   */
   useOpa?: boolean;
   /** Request timeout in milliseconds; zero disables the timeout for this call. */
   timeout?: number;
   throwOnError?: boolean;
+}
+
+/** Options for a permission query, including its request-specific context. */
+export interface GetUserPermissionsConfig extends CheckConfig {
+  context?: Context;
 }
 
 export interface ContextTransform {
@@ -25,7 +33,7 @@ export class ContextStore {
    * add context to the base context
    */
   public add(context: Context): void {
-    this.baseContext = Object.assign(this.baseContext, context);
+    this.baseContext = { ...this.baseContext, ...context };
   }
 
   public registerTransform(transform: ContextTransform): void {
@@ -38,7 +46,7 @@ export class ContextStore {
    * context overrides the base (global) context.
    */
   public getDerivedContext(context: Context): Context {
-    return Object.assign({}, this.baseContext, context);
+    return { ...this.baseContext, ...context };
   }
 
   public transform(initialContext: Context): Context {

@@ -1965,7 +1965,7 @@
     "pdp-container POST /authorized_users": {
       "action": "add",
       "owner": "PER-16568",
-      "reason": "Approved PDP discovery follow-up; cloud/container support must follow the verified contract.",
+      "reason": "Approved complete authorized-user discovery: the pinned container and cloud contracts publish action/resource/request context and the full assignment envelope. Local evidence is recorded separately; no cloud runtime claim.",
       "source": "https://linear.app/permit/issue/PER-16568",
       "lifecycle": "GA"
     },
@@ -2063,14 +2063,14 @@
     "pdp-container POST /user-permissions": {
       "action": "retain",
       "owner": "PER-16568",
-      "reason": "An existing public method reaches this route. Request-context support remains a known PER-16568 gap; route exposure does not prove complete parameters or backend behavior.",
+      "reason": "Retain the existing permission query and add request context in its fifth config argument, preserving global then request precedence. Route exposure alone does not establish real backend behavior.",
       "source": "https://linear.app/permit/issue/PER-16568",
       "lifecycle": "GA"
     },
     "pdp-container POST /user-tenants": {
       "action": "add",
       "owner": "PER-16568",
-      "reason": "Approved PDP discovery follow-up; cloud/container support must follow the verified contract.",
+      "reason": "Approved container-only role-derived tenant discovery with request context and validated tenant details. The cloud contract omits this route; an unavailable endpoint raises an actionable capability error regardless of deny fallback.",
       "source": "https://linear.app/permit/issue/PER-16568",
       "lifecycle": "GA"
     },
@@ -2140,14 +2140,14 @@
     "pdp-cloud POST /authorized_users": {
       "action": "add",
       "owner": "PER-16568",
-      "reason": "Approved PDP discovery follow-up; cloud/container support must follow the verified contract.",
+      "reason": "Approved complete authorized-user discovery: the pinned container and cloud contracts publish action/resource/request context and the full assignment envelope. Local evidence is recorded separately; no cloud runtime claim.",
       "source": "https://linear.app/permit/issue/PER-16568",
       "lifecycle": "GA"
     },
     "pdp-cloud POST /user-permissions": {
       "action": "retain",
       "owner": "PER-16568",
-      "reason": "An existing public method reaches this route. Request-context support remains a known PER-16568 gap; route exposure does not prove complete parameters or backend behavior.",
+      "reason": "Retain the existing permission query and add request context in its fifth config argument, preserving global then request precedence. Route exposure alone does not establish real backend behavior.",
       "source": "https://linear.app/permit/issue/PER-16568",
       "lifecycle": "GA"
     }

@@ -44,7 +44,10 @@ be reconciled with the shared artifact when its owner publishes it; adoption is 
 
 The compiler-based extractor starts at the public `Permit` instance type. It follows exposed
 API properties, constructor-assigned implementations, inherited aliases and resolved calls
-through generated dispatch to HTTP parameter creators. Generated clients alone do not count
+through generated dispatch to HTTP parameter creators. Enforcement JSON serialization retains the
+structural input body in the inventory: the compiler verifies the private serializer's native
+`JSON.stringify` call and input parameter identity. Removing it, substituting a local lookalike,
+or bypassing it remains a measured change. Generated clients alone do not count
 as public `Permit` methods. Internal scope discovery appears as supporting-only evidence and
 receives no typed-wrapper credit. Explicit helper decisions cover route-free public methods;
 new unresolved methods fail instead of disappearing from the inventory.
@@ -90,8 +93,10 @@ exceptions fail the gate.
 
 The cloud schema lacks container-only routes such as all-tenants and user-tenants. A method's
 presence in one source never establishes support in another. Future and moving-latest PDPs need
-separate reviewed evidence. Existing all-tenants behavior is retained while PER-16568 owns its
-future compatibility decision.
+separate reviewed evidence. PER-16568 adds complete authorized-user discovery to the published
+container/cloud route and role-derived tenant discovery to the container-only route. It retains
+all-tenants behavior; future deprecation communication belongs to PER-16015. Object filtering
+composes the supported bulk operation and adds no server route.
 
 ## Reviewing a change
 
@@ -107,9 +112,9 @@ future compatibility decision.
 5. Run `pnpm verify`, the focused contract tests and the applicable separate wire/backend tests.
    Record the actual test level and runtime; do not copy a static PASS into backend evidence.
 
-The shared parity artifact is an external dependency of PER-16561. Existing groups,
-tenant/detailed-list/PDP-refresh and discovery gaps have their own feature owners; this check
-does not implement or promise those methods.
+The shared parity artifact is an external dependency of PER-16561. Feature additions have
+separate owners and independent wire/backend evidence; this check does not implement those
+methods or establish live behavior.
 
 ## Scheduled review and ownership
 

@@ -57,7 +57,7 @@ test('accounts for complete source denominators while leaving parity and backend
   expect(report.sharedTarget.status).toBe('UNAVAILABLE');
   expect(report.realBackend.status).toBe('NOT_MEASURED');
   expect(report.operations).toHaveLength(307);
-  expect(report.counts.publicHttpMethods).toBe(172);
+  expect(report.counts.publicHttpMethods).toBe(175);
   expect(report.operations.filter((op) => op.source === 'control-plane')).toHaveLength(263);
   expect(report.operations.filter((op) => op.source === 'pdp-container')).toHaveLength(34);
   expect(report.operations.filter((op) => op.source === 'pdp-cloud')).toHaveLength(10);
@@ -74,6 +74,78 @@ test('accounts for complete source denominators while leaving parity and backend
       .sort(),
   ).toEqual(['opa', 'pdp']);
 });
+
+test('exposes reviewed PDP discovery and filter composition without changing source denominators', () => {
+  const report = coverageReport(evidence());
+  for (const source of ['pdp-container', 'pdp-cloud']) {
+    const authorized = report.operations.find(
+      (entry) => entry.source === source && entry.path === '/authorized_users',
+    );
+    expect(authorized.coverage).toBe('exposed');
+    expect(authorized.methods.map((method) => method.name)).toEqual(['permit.getAuthorizedUsers']);
+    const permissions = report.operations.find(
+      (entry) => entry.source === source && entry.path === '/user-permissions',
+    );
+    expect(permissions.decision.reason).toContain('request context');
+  }
+  const tenants = report.operations.filter((entry) => entry.path === '/user-tenants');
+  expect(tenants).toHaveLength(1);
+  expect(tenants[0].source).toBe('pdp-container');
+  expect(tenants[0].methods.map((method) => method.name)).toEqual(['permit.getUserTenants']);
+  expect(sdk.methods.find((method) => method.name === 'permit.filterObjects').routes).toMatchObject(
+    [{ method: 'POST', path: '/allowed/bulk', target: 'pdp', body: 'inputs' }],
+  );
+  expect(report.operations).toHaveLength(307);
+  expect(report.counts.generatedMethods).toBe(266);
+  expect(report.counts.generatedModels).toBe(408);
+});
+
+test('extracts structural enforcement bodies through the compiler-verified JSON serializer', () => {
+  for (const name of [
+    'check',
+    'getUserPermissions',
+    'getAuthorizedUsers',
+    'getUserTenants',
+    'checkAllTenants',
+  ]) {
+    expect(
+      sdk.methods
+        .find((method) => method.name === `permit.${name}`)
+        .routes.every((route) => route.body === 'input'),
+    ).toBe(true);
+  }
+  const copy = sourceCopy();
+  replace(join(copy, 'src/enforcement/enforcer.ts'), 'JSON.stringify(input)', 'String(input)');
+  expect(() => extractSdk(copy)).toThrow('must stringify exactly one checked input');
+}, 20_000);
+
+test('a local JSON lookalike cannot hide a changed enforcement serializer', () => {
+  const copy = sourceCopy();
+  replace(
+    join(copy, 'src/enforcement/enforcer.ts'),
+    'const body = JSON.stringify(input);',
+    'const JSON = { stringify: (value: unknown) => String(value) }; ' +
+      'const body = JSON.stringify(input);',
+  );
+  expect(() => extractSdk(copy)).toThrow('must stringify exactly one checked input');
+}, 20_000);
+
+test('bypassing enforcement serialization remains a measured implementation change', () => {
+  const copy = sourceCopy();
+  replace(
+    join(copy, 'src/enforcement/enforcer.ts'),
+    "this.serializeInput(input, 'check')",
+    'input',
+  );
+  const changed = evidence();
+  changed.baseline.sdk = sdkSnapshot(sdk);
+  changed.sdk = extractSdk(copy);
+  const report = coverageReport(changed);
+  expect(report.integrity).toBe('FAIL');
+  expect(report.failures.some((failure) => failure.path.includes('checkWithExceptions'))).toBe(
+    true,
+  );
+}, 20_000);
 
 test('exposes eight GA core Groups operations while preserving deferred and deprecated rows', () => {
   const report = coverageReport(evidence());

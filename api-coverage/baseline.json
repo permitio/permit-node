@@ -29,13 +29,13 @@
       "src/api/tenants.ts:TenantsApi": "e4eac91e4bda02007f602cda0264a03ccf192f38593c7e94efc26e228d638e95",
       "src/api/users.ts:UsersApi": "4873322e964985928eba4ec3a4e4156870021fe8df7d78eabd51b965bba02590",
       "src/config.ts:ConfigFactory": "5dc5eeecb95886e850dae6c76c83ab96ac7c3f3661cee616d47e8e9f5dde4be4",
-      "src/enforcement/enforcer.ts:Enforcer": "877ef533c58d8c2edff70b4952edb3e7aa10cb94a86c3da1b76b3f0895d0bce5",
+      "src/enforcement/enforcer.ts:Enforcer": "e28263d8d0524865cbe7cc44a716d9b2bd64758f390ceca1a2e91fdc23532083",
       "src/enforcement/enforcer.ts:PermitConnectionError": "86cd79f9aa748daf1d8324a63993215e2aa1d7b7a05fdb71229666d5ad98dffb",
       "src/enforcement/enforcer.ts:PermitError": "93daac3739a0e4feefad07b32fd3817ddfd0682880874c0783c9ffd8d528e8c9",
       "src/enforcement/enforcer.ts:PermitPDPStatusError": "25fff480295bb4b4afaca85625891e5ea3e98c8767a68333a2a246f3a4acd82a",
-      "src/index.ts:Permit": "408e5d85b2467712ec9c1b49216aed71b8563a359373212b1f4d390130c7bd67",
+      "src/index.ts:Permit": "d4df300273e2b47ac939cb68e3a4796ab4604b84b1b1fc6da75c81df8fcee791",
       "src/logger.ts:LoggerFactory": "ac4bd9886641019a5aa3fb64bfe2d4baac7b8904c854afcbcda48af87fb35974",
-      "src/utils/context.ts:ContextStore": "1c28fa6cab436af789cd1f8cb17fd81e7d132dc3fb177d0397b1dab84481a331",
+      "src/utils/context.ts:ContextStore": "cc2bd712204599d5662ec76c578a5ce78b62c8817d28062413e667d26d7d8753",
       "src/api/pdps.ts:PdpsApi": "017e9bcd53ea41fc029b18c453cbf349c731613c9a994f236cb4029e5a1ae4b4"
     },
     "authoredShapes": {
@@ -645,7 +645,10 @@
           "bulkCheck(checks: Array<ICheckQuery>, context?: Context, config?: CheckConfig): Promise<Array<boolean>>;",
           "check(user: IUser | string, action: IAction, resource: IResource | string, context?: Context, config?: CheckConfig): Promise<boolean>;",
           "checkAllTenants(user: IUser | string, action: string, resource: IResource | string, context: Context | undefined, sdk: string | undefined): Promise<TenantDetails[]>;",
-          "getUserPermissions(user: IUser | string, tenants?: string[], resources?: string[], resource_types?: string[], config?: CheckConfig): Promise<IUserPermissions>;"
+          "filterObjects<T extends IFilterObject>(user: IUser | string, action: IAction, objects: readonly T[], context?: Context, config?: CheckConfig): Promise<T[]>;",
+          "getAuthorizedUsers(action: IAction, resource: IResource | string, context?: Context, config?: CheckConfig): Promise<IAuthorizedUsersResult>;",
+          "getUserPermissions(user: IUser | string, tenants?: string[], resources?: string[], resource_types?: string[], config?: GetUserPermissionsConfig): Promise<IUserPermissions>;",
+          "getUserTenants(user: IUser | string, context?: Context, config?: CheckConfig): Promise<TenantDetails[]>;"
         ]
       },
       "src/enforcement/interfaces.ts:AllTenantsCheckResponse": {
@@ -880,6 +883,37 @@
       "src/api/role-assignments.ts:RoleAssignmentListResult": {
         "kind": "type",
         "type": "Details extends true ? Counts extends true ? PaginatedResultRoleAssignmentDetailedRead : RoleAssignmentDetailedRead[] : Counts extends true ? PaginatedResultRoleAssignmentRead : RoleAssignmentRead[]"
+      },
+      "src/enforcement/interfaces.ts:IAuthorizedUserAssignment": {
+        "extends": [],
+        "kind": "interface",
+        "members": [
+          "[id: string]: unknown;",
+          "resource: string;",
+          "role: string;",
+          "tenant: string;",
+          "user: string;"
+        ]
+      },
+      "src/enforcement/interfaces.ts:IAuthorizedUsersResult": {
+        "extends": [],
+        "kind": "interface",
+        "members": [
+          "[id: string]: unknown;",
+          "resource: string;",
+          "tenant: string;",
+          "users: Record<string, IAuthorizedUserAssignment[]>;"
+        ]
+      },
+      "src/enforcement/interfaces.ts:IFilterObject": {
+        "extends": [" extends IResource"],
+        "kind": "interface",
+        "members": ["context?: Context;"]
+      },
+      "src/utils/context.ts:GetUserPermissionsConfig": {
+        "extends": [" extends CheckConfig"],
+        "kind": "interface",
+        "members": ["context?: Context;"]
       }
     },
     "functionShapes": {
@@ -2012,6 +2046,36 @@
           "generics": [],
           "parameters": [],
           "returns": "WeakMap<object, CollectedSecrets>"
+        }
+      },
+      "src/enforcement/responses.ts:parseAuthorizedUsersResponse": {
+        "implementationSha256": "36351955abe299a5b88949e9b16be0a5dab108310f5b74c726cb28a6040fd51a",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            }
+          ],
+          "returns": "IAuthorizedUsersResult"
+        }
+      },
+      "src/enforcement/responses.ts:parseUserTenantsResponse": {
+        "implementationSha256": "aec2cb606825f30e55aa71e346565e9f58f0768e4d99f4ce8c80bea010b0dcb2",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            }
+          ],
+          "returns": "TenantDetails[]"
         }
       }
     },
@@ -21023,17 +21087,17 @@
       "src/enforcement/enforcer.ts:.isString": "6809b400b07b7344d876bfa38d90a150c171ad47969b53e4014dd01a607b81e4",
       "src/enforcement/enforcer.ts:Enforcer.buildCheckInput": "0efb94d0ecaf599f8f17da7a6e205414703e1a99c74dc87f616de239b849a4c5",
       "src/enforcement/enforcer.ts:Enforcer.bulkCheck": "4f6aa0b3ea11aa46b60f46bf87454e822bf07b6072f65d4b5e2ae1f353f5cdf6",
-      "src/enforcement/enforcer.ts:Enforcer.bulkCheckWithExceptions": "74e073353ce677e8608923576f5bb147b9102338e2b3e8aa4f4108f792df4d67",
+      "src/enforcement/enforcer.ts:Enforcer.bulkCheckWithExceptions": "ce5417cfc7b224ef982df888ad24b381b24dab8218fc1ace3686aaf1c014c3f3",
       "src/enforcement/enforcer.ts:Enforcer.check": "fe2aadd9ee38992788a98629a092000ef302c6a1e37025395447804ee499af39",
       "src/enforcement/enforcer.ts:Enforcer.checkAllTenants": "aade4c8b413526c58d096401f27bb1b5ad34901ab9c4ff55896cf00eca4e8aee",
-      "src/enforcement/enforcer.ts:Enforcer.checkAllTenantsWithExceptions": "a4e546e92201477a41d6744e59eb5a8a678d0c2eb0e9e12ce1d80a34f3ec6c07",
-      "src/enforcement/enforcer.ts:Enforcer.checkWithExceptions": "1f6e4ee1810071ad0773c73cac438d2c73ac27afaa1488f3b3c3bdc6524dc0f1",
-      "src/enforcement/enforcer.ts:Enforcer.getUserPermissions": "fa2e108a9b18a7b9ce72315b02fc6eefa7a20985563c5434fe383b62cd0c607a",
-      "src/enforcement/enforcer.ts:Enforcer.getUserPermissionsWithExceptions": "4a5efe7f0ff8fc94d18b05e6461fa48428fbe72843bfbb92940dfa15ea1bad91",
+      "src/enforcement/enforcer.ts:Enforcer.checkAllTenantsWithExceptions": "13d4497c3bf0269461a6ada2160503cf5110d72b6ed5336ef7120a70a0a2016f",
+      "src/enforcement/enforcer.ts:Enforcer.checkWithExceptions": "4ddb948f534525d6cac7e8575d9851f3e27d44b4e8e289e707665d84040381c8",
+      "src/enforcement/enforcer.ts:Enforcer.getUserPermissions": "8486e109b4f2866f7f33948a26951520e5edb2e36ec547540ed27e11f8aa3e36",
+      "src/enforcement/enforcer.ts:Enforcer.getUserPermissionsWithExceptions": "b088d13931a7c1cd2ea8e275a38f781708af5896ef02d50f90e38ab01b681959",
       "src/enforcement/enforcer.ts:Enforcer.handlePDPError": "f131004953b9e0d9f2f0dd2b1e34bbdb3f2616bc1ede2572f1dae228f191073e",
-      "src/enforcement/enforcer.ts:Enforcer.normalizeResource": "ae6862007b1553652822758b489e0b87d62fe07516118a05824810e23f3bddae",
+      "src/enforcement/enforcer.ts:Enforcer.normalizeResource": "01287f313beea5f524091e1f6462e791cc06224b846aa0ce026bbfd5b7fd2a40",
       "src/enforcement/enforcer.ts:Enforcer.parsePdpResponse": "d695d7623e025411e93099861e180269dc692911469b815e5ccd9b2fd3bfc487",
-      "src/enforcement/enforcer.ts:Enforcer.pdpStatusError": "b707b995e5a6cc3352371bea6a34e19290762f3037fe5ea17c1c15a611126b2a",
+      "src/enforcement/enforcer.ts:Enforcer.pdpStatusError": "63a83a2d6f9c65bbe13680a79b71b9eb03ceb74f9a18185705b7d5671c395cb1",
       "src/enforcement/enforcer.ts:Enforcer.resourceFromString": "bedfdd6f1cbbdddd3d36a37b68a7478aa88774614a7185c87e909374431c3c56",
       "src/enforcement/responses.ts:.decisionEnvelope": "6102ee1ffde5f29db96bfcc06678ff799cd30d20b4e6a7ff341b03356e520d2c",
       "src/enforcement/responses.ts:.isRecord": "0cb132a41683f4fccd5a1b31dd4e808fc6892dcd2792d6776a4e2cce9fda60bf",
@@ -21041,8 +21105,8 @@
       "src/index.ts:Permit.bulkCheck": "f01262c79c16daaab9de2fcbf0d0877bbbe51539a800011631bde13af6b479b2",
       "src/index.ts:Permit.check": "5e33e78fc4f7cdbc61985edeb49407c06b1e9456aae74d3fdc1fa4a31c8e249d",
       "src/index.ts:Permit.checkAllTenants": "5c0d483d3923ba989988d38630f60352b279cc8d11301bb99983b4a8a99186c3",
-      "src/index.ts:Permit.getUserPermissions": "6ef63f68f9b7f43b7a0d73e305c0df296e7f351a7f72d24fe3d8f76bf20cecc8",
-      "src/utils/context.ts:ContextStore.getDerivedContext": "1abeb7f537972ec95b9a642ebf2f158d4112bd39a80a8e478695631e40762bac",
+      "src/index.ts:Permit.getUserPermissions": "561f30ed436101ac0cc9ed0a564ecda55aae4acb218849179b69d73cca5ebc4a",
+      "src/utils/context.ts:ContextStore.getDerivedContext": "f01adc283f3dc4a6c1fa5457f4a2044d7b22572f36640ef4ea22eb8bede62760",
       "src/utils/diagnostics.ts:.collect": "9bfdaac8b88e391f04c4478dee31d3138e8c47dc860dd04ba831e923be02e2c0",
       "src/utils/diagnostics.ts:.collectOmitted": "4cfbfafc34cbffbaff050f8861861ad0f1c45784661c05c1906e9a2c636bdce3",
       "src/utils/diagnostics.ts:.diagnosticAxiosError": "0eb0ad7f6e1f31661e05ac0295981b5861536adb057c961540f146e82eb45588",
@@ -21064,7 +21128,16 @@
       "src/api/relationship-tuples.ts:RelationshipTuplesApi.listDetailed": "4e845baceee7a2a0ff3fc96e661fd572039fcde7a6d358161390dfdc2e25e833",
       "src/api/resource-instances.ts:ResourceInstancesApi.listDetailed": "a200450130a691d8f078cf59102d957891967c0865adc29644a3c3f96b914a4c",
       "src/api/role-assignments.ts:RoleAssignmentsApi.listDetailed": "a11f1f0341d774ff45a0bf4de145a57ac2d659504f1341fb164d306919b0f47a",
-      "src/api/tenants.ts:TenantsApi.addUser": "610cc96a8cca1920ce04d814a0efa4d4cd9ed1163fd2abff4e06637725826b65"
+      "src/api/tenants.ts:TenantsApi.addUser": "610cc96a8cca1920ce04d814a0efa4d4cd9ed1163fd2abff4e06637725826b65",
+      "src/enforcement/enforcer.ts:Enforcer.filterObjects": "285f705d1fdee426fd673ce214362ddeccf6f04e75fb4f7e8e4d96c106cdc98d",
+      "src/enforcement/enforcer.ts:Enforcer.getAuthorizedUsers": "db7b2035003c51858f61300726d007521efa459eaf8ca3c10e0e0781d8165a92",
+      "src/enforcement/enforcer.ts:Enforcer.getAuthorizedUsersWithExceptions": "a5d75fbda4e7fadcefa14a9a20793bcceb6c83153c357560bf328389392c4de5",
+      "src/enforcement/enforcer.ts:Enforcer.getUserTenants": "3e94f803def7e980bbc686cb3eb3391f274c9e61f2b3ab5f99c36a8f2526897f",
+      "src/enforcement/enforcer.ts:Enforcer.getUserTenantsWithExceptions": "d5cdf4d301aba94dc14de9502aea88bfe74caaec0570ce1d4afbf536c9227c9a",
+      "src/enforcement/enforcer.ts:Enforcer.serializeInput": "ef1bbe63a7be82da81078edd3c35a3e70b9df21fac896512398a399cb0a0e86f",
+      "src/index.ts:Permit.filterObjects": "40a1dced3ad7041b12a88dddbe97131313eab52164b60698799ce17a591e7b8c",
+      "src/index.ts:Permit.getAuthorizedUsers": "b02e7d92f880af4f933f70d73f1eaa356a513b566f1ffbebb07c91090b0daf03",
+      "src/index.ts:Permit.getUserTenants": "7afb862bc0123cd6e54c5e4c265ddd93d0212bfa146e80ce54f2cafdbd0e3669"
     },
     "initializationShapes": {
       "src/api/api-client.ts:ApiClient.constructor": "2d367a87e169558716b15a7fa2f5224f295db02982e5ef0c30dd0376a1325178",
@@ -27030,7 +27103,7 @@
         "deprecated": false,
         "factsProxy": false,
         "publicSignatures": [
-          "(user: string | IUser, tenants?: string[] | undefined, resources?: string[] | undefined, resource_types?: string[] | undefined, config?: CheckConfig | undefined): Promise<IUserPermissions>"
+          "(user: string | IUser, tenants?: string[] | undefined, resources?: string[] | undefined, resource_types?: string[] | undefined, config?: GetUserPermissionsConfig | undefined): Promise<IUserPermissions>"
         ],
         "routes": [
           {
@@ -27073,7 +27146,7 @@
               "initializer": null,
               "name": "config",
               "optional": true,
-              "type": "CheckConfig"
+              "type": "GetUserPermissionsConfig"
             }
           ],
           "returns": "Promise<IUserPermissions>"
@@ -27246,6 +27319,147 @@
             }
           ],
           "returns": "Promise<UserRead>"
+        }
+      },
+      "permit.filterObjects": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "<T extends IFilterObject>(user: string | IUser, action: string, objects: readonly T[], context?: Context | undefined, config?: CheckConfig | undefined): Promise<T[]>"
+        ],
+        "routes": [
+          {
+            "body": "inputs",
+            "conditions": {},
+            "method": "POST",
+            "path": "/allowed/bulk",
+            "response": ["unknown"],
+            "target": "pdp"
+          }
+        ],
+        "signature": {
+          "generics": ["T extends IFilterObject"],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "user",
+              "optional": false,
+              "type": "IUser | string"
+            },
+            {
+              "initializer": null,
+              "name": "action",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "objects",
+              "optional": false,
+              "type": "readonly T[]"
+            },
+            {
+              "initializer": null,
+              "name": "context",
+              "optional": true,
+              "type": "Context"
+            },
+            {
+              "initializer": null,
+              "name": "config",
+              "optional": true,
+              "type": "CheckConfig"
+            }
+          ],
+          "returns": "Promise<T[]>"
+        }
+      },
+      "permit.getAuthorizedUsers": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(action: string, resource: string | IResource, context?: Context | undefined, config?: CheckConfig | undefined): Promise<IAuthorizedUsersResult>"
+        ],
+        "routes": [
+          {
+            "body": "input",
+            "conditions": {},
+            "method": "POST",
+            "path": "/authorized_users",
+            "response": ["unknown"],
+            "target": "pdp"
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "action",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "resource",
+              "optional": false,
+              "type": "IResource | string"
+            },
+            {
+              "initializer": null,
+              "name": "context",
+              "optional": true,
+              "type": "Context"
+            },
+            {
+              "initializer": null,
+              "name": "config",
+              "optional": true,
+              "type": "CheckConfig"
+            }
+          ],
+          "returns": "Promise<IAuthorizedUsersResult>"
+        }
+      },
+      "permit.getUserTenants": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(user: string | IUser, context?: Context | undefined, config?: CheckConfig | undefined): Promise<TenantDetails[]>"
+        ],
+        "routes": [
+          {
+            "body": "input",
+            "conditions": {},
+            "method": "POST",
+            "path": "/user-tenants",
+            "response": ["unknown"],
+            "target": "pdp"
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "user",
+              "optional": false,
+              "type": "IUser | string"
+            },
+            {
+              "initializer": null,
+              "name": "context",
+              "optional": true,
+              "type": "Context"
+            },
+            {
+              "initializer": null,
+              "name": "config",
+              "optional": true,
+              "type": "CheckConfig"
+            }
+          ],
+          "returns": "Promise<TenantDetails[]>"
         }
       }
     },
