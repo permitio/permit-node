@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,25 +11,21 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
 import { ConditionSetType } from './condition-set-type';
 
 /**
  *
- * @export
  * @interface ConditionSetData
  */
 export interface ConditionSetData {
   /**
    *
    * @type {ConditionSetType}
-   * @memberof ConditionSetData
    */
   type: ConditionSetType;
   /**
    *
    * @type {string}
-   * @memberof ConditionSetData
    */
   key: string;
 }

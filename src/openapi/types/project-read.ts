@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,68 +12,57 @@
 
 /**
  *
- * @export
  * @interface ProjectRead
  */
 export interface ProjectRead {
   /**
    * A URL-friendly name of the project (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the project.
    * @type {string}
-   * @memberof ProjectRead
    */
   key: string;
   /**
    * Optional namespace for URNs. If empty, URNs will be generated from project key.
    * @type {string}
-   * @memberof ProjectRead
    */
   urn_namespace?: string;
   /**
    * Unique id of the project
    * @type {string}
-   * @memberof ProjectRead
    */
   id: string;
   /**
    * Unique id of the organization that the project belongs to.
    * @type {string}
-   * @memberof ProjectRead
    */
   organization_id: string;
   /**
    * Date and time when the project was created (ISO_8601 format).
    * @type {string}
-   * @memberof ProjectRead
    */
   created_at: string;
   /**
    * Date and time when the project was last updated/modified (ISO_8601 format).
    * @type {string}
-   * @memberof ProjectRead
    */
   updated_at: string;
   /**
    * The name of the project
    * @type {string}
-   * @memberof ProjectRead
    */
   name: string;
   /**
    * a longer description outlining the project objectives
    * @type {string}
-   * @memberof ProjectRead
    */
   description?: string;
   /**
    * the settings for this project
    * @type {object}
-   * @memberof ProjectRead
    */
   settings?: object;
   /**
    * the id of the policy repo to use for this project
    * @type {string}
-   * @memberof ProjectRead
    */
   active_policy_repo_id?: string;
 }

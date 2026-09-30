@@ -1,7 +1,7 @@
-import { PermitApiError } from '../../../api/base';
-import { ProjectCreate, ProjectUpdate } from '../../../api/projects';
-import { Permit } from '../../../index';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import { PermitApiError } from '#src/api/base';
+import { type ProjectCreate, type ProjectUpdate } from '#src/api/projects';
+import { Permit } from '#src/index';
+import { createMockPermit, type MockTransport } from '#src/tests/helpers/mock-api';
 
 // Projects are an organization-scoped resource: their paths carry no
 // `{proj}/{env}` schema segment, just `/v2/projects[/{key}]`. The mock must be

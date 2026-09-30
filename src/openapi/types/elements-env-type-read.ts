@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,25 +11,21 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { PermissionLevelRoleRead } from './permission-level-role-read';
+import { type PermissionLevelRoleRead } from './permission-level-role-read';
 
 /**
  *
- * @export
  * @interface ElementsEnvTypeRead
  */
 export interface ElementsEnvTypeRead {
   /**
    * Obj with levels as keys and role ids as values
    * @type {{ [key: string]: Array<PermissionLevelRoleRead>; }}
-   * @memberof ElementsEnvTypeRead
    */
   roles_to_levels: { [key: string]: Array<PermissionLevelRoleRead> };
   /**
    * The type of the elements interface, e.g: user_management
    * @type {string}
-   * @memberof ElementsEnvTypeRead
    */
   elements_type: string;
 }

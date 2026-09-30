@@ -15,7 +15,11 @@ export function isDict(val: any): val is Dict {
 export function dictZip(keys: string[], values: string[]): Record<string, string> | undefined {
   if (keys.length === values.length) {
     return keys.reduce((acc: Record<string, string>, curr: string, index: number) => {
-      acc[curr] = values[index];
+      const value = values[index];
+      if (value === undefined) {
+        throw new Error('dictZip requires dense arrays of strings; a value is missing.');
+      }
+      acc[curr] = value;
       return acc;
     }, {});
   } else {

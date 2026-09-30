@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,12 +11,10 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { DataSourceEntry } from './data-source-entry';
+import { type DataSourceEntry } from './data-source-entry';
 
 /**
  * @type Entry
  * The entry that was processed
- * @export
  */
 export type Entry = DataSourceEntry;

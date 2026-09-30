@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,18 +11,13 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { DerivedRoleBlockRead } from './derived-role-block-read';
+import { type DerivedRoleBlockRead } from './derived-role-block-read';
 // May contain unused imports in some cases
-// @ts-ignore
-import { DerivedRoleRuleRead } from './derived-role-rule-read';
+
 // May contain unused imports in some cases
-// @ts-ignore
-import { When } from './when';
 
 /**
  * @type GrantedTo
  *          A derived role defintion block, typically contained whithin a role definition.         The derived role is a role that is derived from the role definition.
- * @export
  */
 export type GrantedTo = DerivedRoleBlockRead;

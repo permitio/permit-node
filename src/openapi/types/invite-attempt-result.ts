@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,20 +12,17 @@
 
 /**
  *
- * @export
  * @interface InviteAttemptResult
  */
 export interface InviteAttemptResult {
   /**
    * the invite code was accepted
    * @type {boolean}
-   * @memberof InviteAttemptResult
    */
   invite_successful?: boolean;
   /**
    * if the invite failed, the reason it failed
    * @type {string}
-   * @memberof InviteAttemptResult
    */
   invite_failed_reason?: string;
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,41 +10,27 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { FullData } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { ResponseGetDataForConditionSetV2InternalOpalDataOrgIdProjIdEnvIdConditionSetsConditionSetIdGet } from '../types';
-// @ts-ignore
-import { ResponseGetDataForResourceV2InternalOpalDataOrgIdProjIdEnvIdResourceTypesResourceIdGet } from '../types';
-// @ts-ignore
-import { ResponseGetDataForRoleV2InternalOpalDataOrgIdProjIdEnvIdRolesRoleIdGet } from '../types';
-// @ts-ignore
-import { ResponseGetDataForTenantV2InternalOpalDataOrgIdProjIdEnvIdTenantsTenantIdGet } from '../types';
-// @ts-ignore
-import { ResponseGetDataForUserV2InternalOpalDataOrgIdProjIdEnvIdUsersUserIdGet } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type FullData,
+  type ResponseGetDataForConditionSetV2InternalOpalDataOrgIdProjIdEnvIdConditionSetsConditionSetIdGet,
+  type ResponseGetDataForResourceV2InternalOpalDataOrgIdProjIdEnvIdResourceTypesResourceIdGet,
+  type ResponseGetDataForRoleV2InternalOpalDataOrgIdProjIdEnvIdRolesRoleIdGet,
+  type ResponseGetDataForTenantV2InternalOpalDataOrgIdProjIdEnvIdTenantsTenantIdGet,
+  type ResponseGetDataForUserV2InternalOpalDataOrgIdProjIdEnvIdUsersUserIdGet,
+} from '../types';
 /**
  * OPALDataApi - axios parameter creator
- * @export
  */
 export const OPALDataApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -470,7 +454,6 @@ export const OPALDataApiAxiosParamCreator = function (configuration?: Configurat
 
 /**
  * OPALDataApi - functional programming interface
- * @export
  */
 export const OPALDataApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = OPALDataApiAxiosParamCreator(configuration);
@@ -692,7 +675,6 @@ export const OPALDataApiFp = function (configuration?: Configuration) {
 
 /**
  * OPALDataApi - factory interface
- * @export
  */
 export const OPALDataApiFactory = function (
   configuration?: Configuration,
@@ -855,259 +837,222 @@ export const OPALDataApiFactory = function (
 
 /**
  * Request parameters for getAllData operation in OPALDataApi.
- * @export
  * @interface OPALDataApiGetAllDataRequest
  */
 export interface OPALDataApiGetAllDataRequest {
   /**
    * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetAllData
    */
   readonly orgId: string;
 
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetAllData
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetAllData
    */
   readonly envId: string;
 
   /**
    *
    * @type {boolean}
-   * @memberof OPALDataApiGetAllData
    */
   readonly internalUpdateCache?: boolean;
 }
 
 /**
  * Request parameters for getDataForConditionSet operation in OPALDataApi.
- * @export
  * @interface OPALDataApiGetDataForConditionSetRequest
  */
 export interface OPALDataApiGetDataForConditionSetRequest {
   /**
    * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForConditionSet
    */
   readonly orgId: string;
 
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForConditionSet
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForConditionSet
    */
   readonly envId: string;
 
   /**
    *
    * @type {string}
-   * @memberof OPALDataApiGetDataForConditionSet
    */
   readonly conditionSetId: string;
 }
 
 /**
  * Request parameters for getDataForResource operation in OPALDataApi.
- * @export
  * @interface OPALDataApiGetDataForResourceRequest
  */
 export interface OPALDataApiGetDataForResourceRequest {
   /**
    * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForResource
    */
   readonly orgId: string;
 
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForResource
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForResource
    */
   readonly envId: string;
 
   /**
    *
    * @type {string}
-   * @memberof OPALDataApiGetDataForResource
    */
   readonly resourceId: string;
 }
 
 /**
  * Request parameters for getDataForRole operation in OPALDataApi.
- * @export
  * @interface OPALDataApiGetDataForRoleRequest
  */
 export interface OPALDataApiGetDataForRoleRequest {
   /**
    * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForRole
    */
   readonly orgId: string;
 
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForRole
    */
   readonly envId: string;
 
   /**
    *
    * @type {string}
-   * @memberof OPALDataApiGetDataForRole
    */
   readonly roleId: string;
 }
 
 /**
  * Request parameters for getDataForSetRule operation in OPALDataApi.
- * @export
  * @interface OPALDataApiGetDataForSetRuleRequest
  */
 export interface OPALDataApiGetDataForSetRuleRequest {
   /**
    * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForSetRule
    */
   readonly orgId: string;
 
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForSetRule
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForSetRule
    */
   readonly envId: string;
 
   /**
    *
    * @type {string}
-   * @memberof OPALDataApiGetDataForSetRule
    */
   readonly userSetId: string;
 
   /**
    *
    * @type {string}
-   * @memberof OPALDataApiGetDataForSetRule
    */
   readonly resourceSetId: string;
 }
 
 /**
  * Request parameters for getDataForTenant operation in OPALDataApi.
- * @export
  * @interface OPALDataApiGetDataForTenantRequest
  */
 export interface OPALDataApiGetDataForTenantRequest {
   /**
    * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForTenant
    */
   readonly orgId: string;
 
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForTenant
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForTenant
    */
   readonly envId: string;
 
   /**
    *
    * @type {string}
-   * @memberof OPALDataApiGetDataForTenant
    */
   readonly tenantId: string;
 }
 
 /**
  * Request parameters for getDataForUser operation in OPALDataApi.
- * @export
  * @interface OPALDataApiGetDataForUserRequest
  */
 export interface OPALDataApiGetDataForUserRequest {
   /**
    * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForUser
    */
   readonly orgId: string;
 
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OPALDataApiGetDataForUser
    */
   readonly envId: string;
 
   /**
    *
    * @type {string}
-   * @memberof OPALDataApiGetDataForUser
    */
   readonly userId: string;
 }
 
 /**
  * OPALDataApi - object-oriented interface
- * @export
  * @class OPALDataApi
  * @extends {BaseAPI}
  */
@@ -1118,7 +1063,6 @@ export class OPALDataApi extends BaseAPI {
    * @param {OPALDataApiGetAllDataRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof OPALDataApi
    */
   public getAllData(requestParameters: OPALDataApiGetAllDataRequest, options?: AxiosRequestConfig) {
     return OPALDataApiFp(this.configuration)
@@ -1138,7 +1082,6 @@ export class OPALDataApi extends BaseAPI {
    * @param {OPALDataApiGetDataForConditionSetRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof OPALDataApi
    */
   public getDataForConditionSet(
     requestParameters: OPALDataApiGetDataForConditionSetRequest,
@@ -1161,7 +1104,6 @@ export class OPALDataApi extends BaseAPI {
    * @param {OPALDataApiGetDataForResourceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof OPALDataApi
    */
   public getDataForResource(
     requestParameters: OPALDataApiGetDataForResourceRequest,
@@ -1184,7 +1126,6 @@ export class OPALDataApi extends BaseAPI {
    * @param {OPALDataApiGetDataForRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof OPALDataApi
    */
   public getDataForRole(
     requestParameters: OPALDataApiGetDataForRoleRequest,
@@ -1207,7 +1148,6 @@ export class OPALDataApi extends BaseAPI {
    * @param {OPALDataApiGetDataForSetRuleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof OPALDataApi
    */
   public getDataForSetRule(
     requestParameters: OPALDataApiGetDataForSetRuleRequest,
@@ -1231,7 +1171,6 @@ export class OPALDataApi extends BaseAPI {
    * @param {OPALDataApiGetDataForTenantRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof OPALDataApi
    */
   public getDataForTenant(
     requestParameters: OPALDataApiGetDataForTenantRequest,
@@ -1254,7 +1193,6 @@ export class OPALDataApi extends BaseAPI {
    * @param {OPALDataApiGetDataForUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof OPALDataApi
    */
   public getDataForUser(
     requestParameters: OPALDataApiGetDataForUserRequest,

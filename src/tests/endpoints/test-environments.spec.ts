@@ -1,19 +1,19 @@
 import { randomUUID } from 'crypto';
 
 import pino from 'pino';
-import { TestContext } from 'vitest';
+import { type TestContext } from 'vitest';
 
 import {
   ApiKeyLevel,
-  EnvironmentCreate,
-  EnvironmentRead,
+  type EnvironmentCreate,
+  type EnvironmentRead,
   Permit,
   PermitApiError,
   PermitContextError,
-  ProjectCreate,
-  ProjectRead,
-} from '../../index';
-import { cleanUp, createTestClient, handleApiError, isApiStatus } from '../fixtures';
+  type ProjectCreate,
+  type ProjectRead,
+} from '#src/index';
+import { cleanUp, createTestClient, handleApiError, isApiStatus } from '#src/tests/fixtures';
 
 let logger: pino.Logger;
 
@@ -36,18 +36,18 @@ const CREATED_ENVIRONMENTS: EnvironmentCreate[] = [
 const CREATED_KEYS = CREATED_ENVIRONMENTS.map((env) => env.key);
 
 const permitWithOrgLevelApiKey = new Permit({
-  token: process.env.ORG_PDP_API_KEY || process.env.PDP_API_KEY || '',
-  pdp: process.env.PDP_URL || 'http://localhost:7766',
-  apiUrl: process.env.PDP_CONTROL_PLANE || 'https://api.permit.io',
+  token: process.env['ORG_PDP_API_KEY'] || process.env['PDP_API_KEY'] || '',
+  pdp: process.env['PDP_URL'] || 'http://localhost:7766',
+  apiUrl: process.env['PDP_CONTROL_PLANE'] || 'https://api.permit.io',
   log: {
     level: 'debug',
   },
 });
 
 const permitWithProjectLevelApiKey = new Permit({
-  token: process.env.PROJECT_PDP_API_KEY || process.env.PDP_API_KEY || '',
-  pdp: process.env.PDP_URL || 'http://localhost:7766',
-  apiUrl: process.env.PDP_CONTROL_PLANE || 'https://api.permit.io',
+  token: process.env['PROJECT_PDP_API_KEY'] || process.env['PDP_API_KEY'] || '',
+  pdp: process.env['PDP_URL'] || 'http://localhost:7766',
+  apiUrl: process.env['PDP_CONTROL_PLANE'] || 'https://api.permit.io',
   log: {
     level: 'debug',
   },
@@ -149,6 +149,7 @@ it('environment creation with org level api key', async (ctx) => {
     await expectCreatedEnvironmentsListed(client, project.key);
 
     const [firstEnvironment] = CREATED_ENVIRONMENTS;
+    assert(firstEnvironment !== undefined);
     const testEnvironment = await client.api.environments.get(project.key, firstEnvironment.key);
     expect(testEnvironment.key).toBe(firstEnvironment.key);
     expect(testEnvironment.name).toBe(firstEnvironment.name);

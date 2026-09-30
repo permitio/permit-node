@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,7 +12,6 @@
 
 /**
  * Proxy config secret is set to enable the Permit Proxy to make proxied requests to the backend service.
- * @export
  * @interface Secret
  */
 export interface Secret {}

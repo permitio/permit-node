@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,26 +12,22 @@
 
 /**
  *
- * @export
  * @interface ProjectRegeneration
  */
 export interface ProjectRegeneration {
   /**
    *
    * @type {string}
-   * @memberof ProjectRegeneration
    */
   scope: ProjectRegenerationScopeEnum;
   /**
    *
    * @type {string}
-   * @memberof ProjectRegeneration
    */
   org_id: string;
   /**
    *
    * @type {string}
-   * @memberof ProjectRegeneration
    */
   proj_id: string;
 }

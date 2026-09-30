@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,14 +12,12 @@
 
 /**
  *
- * @export
  * @interface ResourceInstanceUpdate
  */
 export interface ResourceInstanceUpdate {
   /**
    * Arbitraty resource attributes that will be used to enforce attribute-based access control policies.
    * @type {object}
-   * @memberof ResourceInstanceUpdate
    */
   attributes?: object;
 }

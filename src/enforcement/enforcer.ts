@@ -1,29 +1,29 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { Logger } from 'pino';
+import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
-import { CheckConfig, Context, ContextStore } from '../utils/context';
-import { AxiosLoggingInterceptor } from '../utils/http-logger';
-import { resolveRetryConfig } from '../utils/retry';
-import { AxiosRetryInterceptor } from '../utils/retry-interceptor';
+import { type IPermitConfig } from '#src/config';
+import { type CheckConfig, type Context, ContextStore } from '#src/utils/context';
+import { AxiosLoggingInterceptor } from '#src/utils/http-logger';
+import { resolveRetryConfig } from '#src/utils/retry';
+import { AxiosRetryInterceptor } from '#src/utils/retry-interceptor';
 
 import {
-  AllTenantsResponse,
-  BulkOpaDecisionResult,
-  BulkPolicyDecision,
-  IAction,
-  ICheckInput,
-  ICheckOpaInput,
-  ICheckQuery,
-  IResource,
+  type AllTenantsResponse,
+  type BulkOpaDecisionResult,
+  type BulkPolicyDecision,
+  type IAction,
+  type ICheckInput,
+  type ICheckOpaInput,
+  type ICheckQuery,
+  type IResource,
   isOpaGetUserPermissionsResult,
-  IUser,
-  IUserPermissions,
-  OpaDecisionResult,
-  OpaGetUserPermissionsResult,
-  PolicyDecision,
-  TenantDetails,
-} from './interfaces';
+  type IUser,
+  type IUserPermissions,
+  type OpaDecisionResult,
+  type OpaGetUserPermissionsResult,
+  type PolicyDecision,
+  type TenantDetails,
+} from '#src/enforcement/interfaces';
 
 const RESOURCE_DELIMITER = ':';
 
@@ -172,9 +172,12 @@ export class Enforcer implements IEnforcer {
    * @param config - The configuration object for the Permit SDK.
    * @param logger - The logger instance for logging.
    */
-  constructor(private config: IPermitConfig, private logger: Logger) {
+  constructor(
+    private config: IPermitConfig,
+    private logger: Logger,
+  ) {
     const opaBaseUrl = buildOpaBaseUrl(this.config.pdp);
-    const version = process.env.npm_package_version ?? 'unknown';
+    const version = process.env['npm_package_version'] ?? 'unknown';
     // PDP gets its own dedicated axios instance so PDP-only POST retries never
     // apply to the shared REST API client (config.axiosInstance) — REST writes
     // must never be retried.
@@ -194,7 +197,6 @@ export class Enforcer implements IEnforcer {
         },
       });
     }
-    this.logger = logger;
     AxiosLoggingInterceptor.setupInterceptor(this.client, this.logger);
 
     // Setup retry interceptors for PDP clients
@@ -257,7 +259,7 @@ export class Enforcer implements IEnforcer {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
         },
-        timeout: checkTimeout,
+        ...(checkTimeout !== undefined && { timeout: checkTimeout }),
       })
       .then((response) => {
         if (response.status !== 200) {
@@ -345,7 +347,7 @@ export class Enforcer implements IEnforcer {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
         },
-        timeout: checkTimeout,
+        ...(checkTimeout !== undefined && { timeout: checkTimeout }),
       })
       .then((response) => {
         if (response.status !== 200) {
@@ -412,7 +414,7 @@ export class Enforcer implements IEnforcer {
           Authorization: `Bearer ${this.config.token}`,
           'X-Permit-Sdk-Language': sdk,
         },
-        timeout: this.config.timeout,
+        ...(this.config.timeout !== undefined && { timeout: this.config.timeout }),
       })
       .then((response) => {
         if (response.status !== 200) {
@@ -467,7 +469,7 @@ export class Enforcer implements IEnforcer {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
         },
-        timeout: checkTimeout,
+        ...(checkTimeout !== undefined && { timeout: checkTimeout }),
       })
       .then((response) => {
         if (response.status !== 200) {
@@ -565,7 +567,7 @@ export class Enforcer implements IEnforcer {
   }
 
   private static resourceRepr(resource: IResource): string {
-    if (resource.attributes && resource.attributes.length > 0) {
+    if (resource.attributes && resource.attributes['length'] > 0) {
       return JSON.stringify(resource);
     }
 
@@ -579,12 +581,13 @@ export class Enforcer implements IEnforcer {
 
   private static resourceFromString(resource: string): IResource {
     const parts = resource.split(RESOURCE_DELIMITER);
-    if (parts.length < 1 || parts.length > 2) {
+    const [type, key] = parts;
+    if (type === undefined || parts.length > 2) {
       throw Error(`permit.check() got invalid resource string: '${resource}'`);
     }
     return {
-      type: parts[0],
-      key: parts.length > 1 ? parts[1] : undefined,
+      type,
+      ...(key !== undefined && { key }),
     };
   }
 

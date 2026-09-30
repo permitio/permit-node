@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,39 +10,28 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { AddRolePermissions, PaginatedResultRoleRead } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { RemoveRolePermissions } from '../types';
-// @ts-ignore
-import { RoleCreate } from '../types';
-// @ts-ignore
-import { RoleRead } from '../types';
-// @ts-ignore
-import { RoleUpdate } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type AddRolePermissions,
+  type PaginatedResultRoleRead,
+  type RemoveRolePermissions,
+  type RoleCreate,
+  type RoleRead,
+  type RoleUpdate,
+} from '../types';
 /**
  * RolesApi - axios parameter creator
- * @export
  */
 export const RolesApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -394,7 +381,7 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
+      localVarRequestOptions['headers'] = {
         ...localVarHeaderParameter,
         ...headersFromBaseOptions,
         ...options.headers,
@@ -600,7 +587,6 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
 
 /**
  * RolesApi - functional programming interface
- * @export
  */
 export const RolesApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = RolesApiAxiosParamCreator(configuration);
@@ -843,7 +829,6 @@ export const RolesApiFp = function (configuration?: Configuration) {
 
 /**
  * RolesApi - factory interface
- * @export
  */
 export const RolesApiFactory = function (
   configuration?: Configuration,
@@ -1030,196 +1015,168 @@ export const RolesApiFactory = function (
 
 /**
  * Request parameters for addParentRole operation in RolesApi.
- * @export
  * @interface RolesApiAddParentRoleRequest
  */
 export interface RolesApiAddParentRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiAddParentRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiAddParentRole
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiAddParentRole
    */
   readonly roleId: string;
 
   /**
    * Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiAddParentRole
    */
   readonly parentRoleId: string;
 }
 
 /**
  * Request parameters for assignPermissionsToRole operation in RolesApi.
- * @export
  * @interface RolesApiAssignPermissionsToRoleRequest
  */
 export interface RolesApiAssignPermissionsToRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiAssignPermissionsToRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiAssignPermissionsToRole
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiAssignPermissionsToRole
    */
   readonly roleId: string;
 
   /**
    *
    * @type {AddRolePermissions}
-   * @memberof RolesApiAssignPermissionsToRole
    */
   readonly addRolePermissions: AddRolePermissions;
 }
 
 /**
  * Request parameters for createRole operation in RolesApi.
- * @export
  * @interface RolesApiCreateRoleRequest
  */
 export interface RolesApiCreateRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiCreateRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiCreateRole
    */
   readonly envId: string;
 
   /**
    *
    * @type {RoleCreate}
-   * @memberof RolesApiCreateRole
    */
   readonly roleCreate: RoleCreate;
 }
 
 /**
  * Request parameters for deleteRole operation in RolesApi.
- * @export
  * @interface RolesApiDeleteRoleRequest
  */
 export interface RolesApiDeleteRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiDeleteRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiDeleteRole
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiDeleteRole
    */
   readonly roleId: string;
 }
 
 /**
  * Request parameters for getRole operation in RolesApi.
- * @export
  * @interface RolesApiGetRoleRequest
  */
 export interface RolesApiGetRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiGetRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiGetRole
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiGetRole
    */
   readonly roleId: string;
 }
 
 /**
  * Request parameters for listRoles operation in RolesApi.
- * @export
  * @interface RolesApiListRolesRequest
  */
 export interface RolesApiListRolesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiListRoles
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiListRoles
    */
   readonly envId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof RolesApiListRoles
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof RolesApiListRoles
    */
   readonly perPage?: number;
 
   /**
    * Include total count in response
    * @type {boolean}
-   * @memberof RolesApiListRoles
    * @default false
    */
   readonly includeTotalCount?: boolean;
@@ -1227,112 +1184,96 @@ export interface RolesApiListRolesRequest {
 
 /**
  * Request parameters for removeParentRole operation in RolesApi.
- * @export
  * @interface RolesApiRemoveParentRoleRequest
  */
 export interface RolesApiRemoveParentRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiRemoveParentRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiRemoveParentRole
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiRemoveParentRole
    */
   readonly roleId: string;
 
   /**
    * Either the unique id of the parent role, or the URL-friendly key of the parent role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiRemoveParentRole
    */
   readonly parentRoleId: string;
 }
 
 /**
  * Request parameters for removePermissionsFromRole operation in RolesApi.
- * @export
  * @interface RolesApiRemovePermissionsFromRoleRequest
  */
 export interface RolesApiRemovePermissionsFromRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiRemovePermissionsFromRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiRemovePermissionsFromRole
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiRemovePermissionsFromRole
    */
   readonly roleId: string;
 
   /**
    *
    * @type {RemoveRolePermissions}
-   * @memberof RolesApiRemovePermissionsFromRole
    */
   readonly removeRolePermissions: RemoveRolePermissions;
 }
 
 /**
  * Request parameters for updateRole operation in RolesApi.
- * @export
  * @interface RolesApiUpdateRoleRequest
  */
 export interface RolesApiUpdateRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiUpdateRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiUpdateRole
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RolesApiUpdateRole
    */
   readonly roleId: string;
 
   /**
    *
    * @type {RoleUpdate}
-   * @memberof RolesApiUpdateRole
    */
   readonly roleUpdate: RoleUpdate;
 }
 
 /**
  * RolesApi - object-oriented interface
- * @export
  * @class RolesApi
  * @extends {BaseAPI}
  */
@@ -1343,7 +1284,6 @@ export class RolesApi extends BaseAPI {
    * @param {RolesApiAddParentRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RolesApi
    */
   public addParentRole(
     requestParameters: RolesApiAddParentRoleRequest,
@@ -1366,7 +1306,6 @@ export class RolesApi extends BaseAPI {
    * @param {RolesApiAssignPermissionsToRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RolesApi
    */
   public assignPermissionsToRole(
     requestParameters: RolesApiAssignPermissionsToRoleRequest,
@@ -1389,7 +1328,6 @@ export class RolesApi extends BaseAPI {
    * @param {RolesApiCreateRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RolesApi
    */
   public createRole(requestParameters: RolesApiCreateRoleRequest, options?: AxiosRequestConfig) {
     return RolesApiFp(this.configuration)
@@ -1408,7 +1346,6 @@ export class RolesApi extends BaseAPI {
    * @param {RolesApiDeleteRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RolesApi
    */
   public deleteRole(requestParameters: RolesApiDeleteRoleRequest, options?: AxiosRequestConfig) {
     return RolesApiFp(this.configuration)
@@ -1427,7 +1364,6 @@ export class RolesApi extends BaseAPI {
    * @param {RolesApiGetRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RolesApi
    */
   public getRole(requestParameters: RolesApiGetRoleRequest, options?: AxiosRequestConfig) {
     return RolesApiFp(this.configuration)
@@ -1441,7 +1377,6 @@ export class RolesApi extends BaseAPI {
    * @param {RolesApiListRolesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RolesApi
    */
   public listRoles(requestParameters: RolesApiListRolesRequest, options?: AxiosRequestConfig) {
     return RolesApiFp(this.configuration)
@@ -1462,7 +1397,6 @@ export class RolesApi extends BaseAPI {
    * @param {RolesApiRemoveParentRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RolesApi
    */
   public removeParentRole(
     requestParameters: RolesApiRemoveParentRoleRequest,
@@ -1485,7 +1419,6 @@ export class RolesApi extends BaseAPI {
    * @param {RolesApiRemovePermissionsFromRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RolesApi
    */
   public removePermissionsFromRole(
     requestParameters: RolesApiRemovePermissionsFromRoleRequest,
@@ -1508,7 +1441,6 @@ export class RolesApi extends BaseAPI {
    * @param {RolesApiUpdateRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RolesApi
    */
   public updateRole(requestParameters: RolesApiUpdateRoleRequest, options?: AxiosRequestConfig) {
     return RolesApiFp(this.configuration)

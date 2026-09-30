@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,32 +12,27 @@
 
 /**
  *
- * @export
  * @interface SSHAuthData
  */
 export interface SSHAuthData {
   /**
    *
    * @type {string}
-   * @memberof SSHAuthData
    */
   auth_type?: SSHAuthDataAuthTypeEnum;
   /**
    * SSH username
    * @type {string}
-   * @memberof SSHAuthData
    */
   username: string;
   /**
    * SSH public key
    * @type {string}
-   * @memberof SSHAuthData
    */
   public_key?: string;
   /**
    * SSH private key
    * @type {string}
-   * @memberof SSHAuthData
    */
   private_key: string;
 }

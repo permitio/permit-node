@@ -1,8 +1,8 @@
-import { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { type AxiosInstance, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 
-import { ICheckQuery } from '../../../enforcement/interfaces';
-import { Permit } from '../../../index';
-import { createMockPermit, MOCK_PDP_ORIGIN, MockTransport } from '../../helpers/mock-api';
+import { type ICheckQuery } from '#src/enforcement/interfaces';
+import { Permit } from '#src/index';
+import { createMockPermit, MOCK_PDP_ORIGIN, type MockTransport } from '#src/tests/helpers/mock-api';
 
 // The enforcer talks to two dedicated axios instances: the PDP client (captured
 // by `pdp`) and the OPA client (captured by `opa`, used only when a check is

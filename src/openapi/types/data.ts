@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,7 +12,6 @@
 
 /**
  * Data payload to embed within the data update (instead of having the client fetch it from the url).
- * @export
  * @interface Data
  */
 export interface Data {}

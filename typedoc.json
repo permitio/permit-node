@@ -1,8 +1,8 @@
 {
-    "entryPoints": ["src/index.ts"],
-    "tsconfig": "tsconfig.build.json",
-    "exclude": ["**/*.spec.ts"],
-    "out": "docs",
-    "excludePrivate": true,
-    "excludeProtected": true
+  "entryPoints": ["src/index.ts"],
+  "tsconfig": "tsconfig.build.json",
+  "exclude": ["**/*.spec.ts"],
+  "out": "docs",
+  "excludePrivate": true,
+  "excludeProtected": true
 }

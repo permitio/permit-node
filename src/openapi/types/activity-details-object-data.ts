@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,20 +12,17 @@
 
 /**
  *
- * @export
  * @interface ActivityDetailsObjectData
  */
 export interface ActivityDetailsObjectData {
   /**
    *
    * @type {string}
-   * @memberof ActivityDetailsObjectData
    */
   id?: string;
   /**
    *
    * @type {string}
-   * @memberof ActivityDetailsObjectData
    */
   key?: string;
 }

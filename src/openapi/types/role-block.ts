@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,20 +12,17 @@
 
 /**
  *
- * @export
  * @interface RoleBlock
  */
 export interface RoleBlock {
   /**
    * optional description string explaining what this role represents, or what permissions are granted to it.
    * @type {string}
-   * @memberof RoleBlock
    */
   description?: string;
   /**
    * list of action keys that define what actions this resource role is permitted to do
    * @type {Array<string>}
-   * @memberof RoleBlock
    */
   permissions?: Array<string>;
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,25 +11,20 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { TenantData } from './tenant-data';
 
 /**
  *
- * @export
  * @interface ResponseGetDataForTenantV2InternalOpalDataOrgIdProjIdEnvIdTenantsTenantIdGet
  */
 export interface ResponseGetDataForTenantV2InternalOpalDataOrgIdProjIdEnvIdTenantsTenantIdGet {
   /**
    *
    * @type {{ [key: string]: Array<string>; }}
-   * @memberof ResponseGetDataForTenantV2InternalOpalDataOrgIdProjIdEnvIdTenantsTenantIdGet
    */
   roleAssignments?: { [key: string]: Array<string> };
   /**
    *
    * @type {object}
-   * @memberof ResponseGetDataForTenantV2InternalOpalDataOrgIdProjIdEnvIdTenantsTenantIdGet
    */
   attributes?: object;
 }

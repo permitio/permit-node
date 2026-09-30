@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,55 +11,46 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { OrgMemberReadWithGrants } from './org-member-read-with-grants';
+import { type OrgMemberReadWithGrants } from './org-member-read-with-grants';
 
 /**
  *
- * @export
  * @interface Statistics
  */
 export interface Statistics {
   /**
    *
    * @type {number}
-   * @memberof Statistics
    */
   roles: number;
   /**
    *
    * @type {number}
-   * @memberof Statistics
    */
   users: number;
   /**
    *
    * @type {number}
-   * @memberof Statistics
    */
   policies: number;
   /**
    *
    * @type {number}
-   * @memberof Statistics
    */
   resources: number;
   /**
    *
    * @type {number}
-   * @memberof Statistics
    */
   tenants: number;
   /**
    *
    * @type {boolean}
-   * @memberof Statistics
    */
   has_decision_logs: boolean;
   /**
    *
    * @type {Array<OrgMemberReadWithGrants>}
-   * @memberof Statistics
    */
   members: Array<OrgMemberReadWithGrants>;
 }

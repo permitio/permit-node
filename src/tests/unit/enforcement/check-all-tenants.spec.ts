@@ -1,9 +1,9 @@
 import pino from 'pino';
 
-import { ConfigFactory } from '../../../config';
-import { Enforcer } from '../../../enforcement/enforcer';
-import { Permit } from '../../../index';
-import { assertPdpRequest, startPdp, TEST_TOKEN } from '../../helpers/pdp-test-server';
+import { ConfigFactory } from '#src/config';
+import { Enforcer } from '#src/enforcement/enforcer';
+import { Permit } from '#src/index';
+import { assertPdpRequest, startPdp, TEST_TOKEN } from '#src/tests/helpers/pdp-test-server';
 
 describe('checkAllTenants (unit)', () => {
   it('PER-15318: checkAllTenants sends string inputs and maps allowed_tenants', async () => {

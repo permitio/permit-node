@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,25 +11,21 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { PDPState } from './pdpstate';
+import { type PDPState } from './pdpstate';
 
 /**
  *
- * @export
  * @interface PDPStateUpdate
  */
 export interface PDPStateUpdate {
   /**
    *
    * @type {string}
-   * @memberof PDPStateUpdate
    */
   pdp_instance_id: string;
   /**
    *
    * @type {PDPState}
-   * @memberof PDPStateUpdate
    */
   state: PDPState;
 }

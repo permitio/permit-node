@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,73 +11,59 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { ConditionSetData } from './condition-set-data';
+import { type ConditionSetData } from './condition-set-data';
 // May contain unused imports in some cases
-// @ts-ignore
-import { ResourceTypeData } from './resource-type-data';
+import { type ResourceTypeData } from './resource-type-data';
 // May contain unused imports in some cases
-// @ts-ignore
-import { RoleData } from './role-data';
+import { type RoleData } from './role-data';
 // May contain unused imports in some cases
-// @ts-ignore
-import { TenantData } from './tenant-data';
+import { type TenantData } from './tenant-data';
 // May contain unused imports in some cases
-// @ts-ignore
-import { UserData } from './user-data';
+import { type UserData } from './user-data';
 
 /**
  *
- * @export
  * @interface FullData
  */
 export interface FullData {
   /**
    *
    * @type {{ [key: string]: UserData; }}
-   * @memberof FullData
    */
   users: { [key: string]: UserData };
   /**
    *
    * @type {{ [key: string]: TenantData; }}
-   * @memberof FullData
    */
   tenants: { [key: string]: TenantData };
   /**
    *
    * @type {{ [key: string]: RoleData; }}
-   * @memberof FullData
    */
   roles: { [key: string]: RoleData };
   /**
    *
    * @type {{ [key: string]: { [key: string]: { [key: string]: Array<string>; }; }; }}
-   * @memberof FullData
    */
   condition_set_rules: { [key: string]: { [key: string]: { [key: string]: Array<string> } } };
   /**
    *
    * @type {{ [key: string]: { [key: string]: { [key: string]: Array<string>; }; }; }}
-   * @memberof FullData
    */
   relationships: { [key: string]: { [key: string]: { [key: string]: Array<string> } } };
   /**
    *
    * @type {{ [key: string]: ResourceTypeData; }}
-   * @memberof FullData
    */
   resource_types: { [key: string]: ResourceTypeData };
   /**
    *
    * @type {{ [key: string]: ConditionSetData; }}
-   * @memberof FullData
    */
   condition_sets: { [key: string]: ConditionSetData };
   /**
    *
    * @type {{ [key: string]: { [key: string]: Array<string>; }; }}
-   * @memberof FullData
    */
   role_assignments: { [key: string]: { [key: string]: Array<string> } };
 }

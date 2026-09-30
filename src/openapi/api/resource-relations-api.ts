@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,33 +10,21 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { RelationCreate } from '../types';
-// @ts-ignore
-import { RelationRead } from '../types';
+import { Configuration } from '../configuration';
+import { type RelationCreate, type RelationRead } from '../types';
 /**
  * ResourceRelationsApi - axios parameter creator
- * @export
  */
 export const ResourceRelationsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -294,7 +280,6 @@ export const ResourceRelationsApiAxiosParamCreator = function (configuration?: C
 
 /**
  * ResourceRelationsApi - functional programming interface
- * @export
  */
 export const ResourceRelationsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ResourceRelationsApiAxiosParamCreator(configuration);
@@ -411,7 +396,6 @@ export const ResourceRelationsApiFp = function (configuration?: Configuration) {
 
 /**
  * ResourceRelationsApi - factory interface
- * @export
  */
 export const ResourceRelationsApiFactory = function (
   configuration?: Configuration,
@@ -511,154 +495,132 @@ export const ResourceRelationsApiFactory = function (
 
 /**
  * Request parameters for createResourceRelation operation in ResourceRelationsApi.
- * @export
  * @interface ResourceRelationsApiCreateResourceRelationRequest
  */
 export interface ResourceRelationsApiCreateResourceRelationRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRelationsApiCreateResourceRelation
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRelationsApiCreateResourceRelation
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRelationsApiCreateResourceRelation
    */
   readonly resourceId: string;
 
   /**
    *
    * @type {RelationCreate}
-   * @memberof ResourceRelationsApiCreateResourceRelation
    */
   readonly relationCreate: RelationCreate;
 }
 
 /**
  * Request parameters for deleteResourceRelation operation in ResourceRelationsApi.
- * @export
  * @interface ResourceRelationsApiDeleteResourceRelationRequest
  */
 export interface ResourceRelationsApiDeleteResourceRelationRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRelationsApiDeleteResourceRelation
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRelationsApiDeleteResourceRelation
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRelationsApiDeleteResourceRelation
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the relation, or the URL-friendly key of the relation (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRelationsApiDeleteResourceRelation
    */
   readonly relationId: string;
 }
 
 /**
  * Request parameters for getResourceRelation operation in ResourceRelationsApi.
- * @export
  * @interface ResourceRelationsApiGetResourceRelationRequest
  */
 export interface ResourceRelationsApiGetResourceRelationRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRelationsApiGetResourceRelation
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRelationsApiGetResourceRelation
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRelationsApiGetResourceRelation
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the relation, or the URL-friendly key of the relation (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRelationsApiGetResourceRelation
    */
   readonly relationId: string;
 }
 
 /**
  * Request parameters for listResourceRelations operation in ResourceRelationsApi.
- * @export
  * @interface ResourceRelationsApiListResourceRelationsRequest
  */
 export interface ResourceRelationsApiListResourceRelationsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRelationsApiListResourceRelations
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRelationsApiListResourceRelations
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRelationsApiListResourceRelations
    */
   readonly resourceId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof ResourceRelationsApiListResourceRelations
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof ResourceRelationsApiListResourceRelations
    */
   readonly perPage?: number;
 }
 
 /**
  * ResourceRelationsApi - object-oriented interface
- * @export
  * @class ResourceRelationsApi
  * @extends {BaseAPI}
  */
@@ -669,7 +631,6 @@ export class ResourceRelationsApi extends BaseAPI {
    * @param {ResourceRelationsApiCreateResourceRelationRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceRelationsApi
    */
   public createResourceRelation(
     requestParameters: ResourceRelationsApiCreateResourceRelationRequest,
@@ -692,7 +653,6 @@ export class ResourceRelationsApi extends BaseAPI {
    * @param {ResourceRelationsApiDeleteResourceRelationRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceRelationsApi
    */
   public deleteResourceRelation(
     requestParameters: ResourceRelationsApiDeleteResourceRelationRequest,
@@ -715,7 +675,6 @@ export class ResourceRelationsApi extends BaseAPI {
    * @param {ResourceRelationsApiGetResourceRelationRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceRelationsApi
    */
   public getResourceRelation(
     requestParameters: ResourceRelationsApiGetResourceRelationRequest,
@@ -738,7 +697,6 @@ export class ResourceRelationsApi extends BaseAPI {
    * @param {ResourceRelationsApiListResourceRelationsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceRelationsApi
    */
   public listResourceRelations(
     requestParameters: ResourceRelationsApiListResourceRelationsRequest,

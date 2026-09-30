@@ -1,6 +1,6 @@
-import { ApiContext } from '../../api/context';
-import { ConfigFactory } from '../../config';
-import { Permit } from '../../index';
+import { ApiContext } from '#src/api/context';
+import { ConfigFactory } from '#src/config';
+import { Permit } from '#src/index';
 
 const ENV_KEYS = [
   'PERMIT_API_KEY',
@@ -56,11 +56,11 @@ describe('ConfigFactory (unit)', () => {
     });
 
     it('reads scalar overrides from the environment', () => {
-      process.env.PERMIT_API_KEY = 'env-key';
-      process.env.PERMIT_PDP_URL = 'http://pdp.local:7000';
-      process.env.PERMIT_API_URL = 'http://api.local:8000';
-      process.env.PERMIT_LOG_LEVEL = 'debug';
-      process.env.PERMIT_LOG_LABEL = 'MyLabel';
+      process.env['PERMIT_API_KEY'] = 'env-key';
+      process.env['PERMIT_PDP_URL'] = 'http://pdp.local:7000';
+      process.env['PERMIT_API_URL'] = 'http://api.local:8000';
+      process.env['PERMIT_LOG_LEVEL'] = 'debug';
+      process.env['PERMIT_LOG_LABEL'] = 'MyLabel';
 
       const config = ConfigFactory.defaults();
 
@@ -106,7 +106,7 @@ describe('ConfigFactory (unit)', () => {
     });
 
     it('layers an explicit token over the env-derived default', () => {
-      process.env.PERMIT_API_KEY = 'env-key';
+      process.env['PERMIT_API_KEY'] = 'env-key';
 
       expect(ConfigFactory.build({}).token).toBe('env-key');
       expect(ConfigFactory.build({ token: 'explicit' }).token).toBe('explicit');
@@ -116,9 +116,9 @@ describe('ConfigFactory (unit)', () => {
   describe('PERMIT_LOG_JSON', () => {
     function setLogJsonEnv(value: string | undefined): void {
       if (value === undefined) {
-        delete process.env.PERMIT_LOG_JSON;
+        delete process.env['PERMIT_LOG_JSON'];
       } else {
-        process.env.PERMIT_LOG_JSON = value;
+        process.env['PERMIT_LOG_JSON'] = value;
       }
     }
 

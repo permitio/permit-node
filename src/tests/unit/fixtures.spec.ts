@@ -1,8 +1,8 @@
 import { AxiosError, AxiosHeaders } from 'axios';
 import pino from 'pino';
 
-import { PermitApiError } from '../../index';
-import { cleanUp, expectNotFound, handleApiError, ignoreNotFound } from '../fixtures';
+import { PermitApiError } from '#src/index';
+import { cleanUp, expectNotFound, handleApiError, ignoreNotFound } from '#src/tests/fixtures';
 
 /** A REST error as the SDK raises it; no status means the request got no response. */
 function apiError(status?: number, data: unknown = { message: 'failed' }): PermitApiError<unknown> {

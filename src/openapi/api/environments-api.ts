@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,39 +10,28 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { EnvironmentCopy } from '../types';
-// @ts-ignore
-import { EnvironmentCreate } from '../types';
-// @ts-ignore
-import { EnvironmentRead } from '../types';
-// @ts-ignore
-import { EnvironmentStats } from '../types';
-// @ts-ignore
-import { EnvironmentUpdate } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type EnvironmentCopy,
+  type EnvironmentCreate,
+  type EnvironmentRead,
+  type EnvironmentStats,
+  type EnvironmentUpdate,
+} from '../types';
+
 /**
  * EnvironmentsApi - axios parameter creator
- * @export
  */
 export const EnvironmentsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -428,7 +415,6 @@ export const EnvironmentsApiAxiosParamCreator = function (configuration?: Config
 
 /**
  * EnvironmentsApi - functional programming interface
- * @export
  */
 export const EnvironmentsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = EnvironmentsApiAxiosParamCreator(configuration);
@@ -587,7 +573,6 @@ export const EnvironmentsApiFp = function (configuration?: Configuration) {
 
 /**
  * EnvironmentsApi - factory interface
- * @export
  */
 export const EnvironmentsApiFactory = function (
   configuration?: Configuration,
@@ -718,175 +703,150 @@ export const EnvironmentsApiFactory = function (
 
 /**
  * Request parameters for copyEnvironment operation in EnvironmentsApi.
- * @export
  * @interface EnvironmentsApiCopyEnvironmentRequest
  */
 export interface EnvironmentsApiCopyEnvironmentRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof EnvironmentsApiCopyEnvironment
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof EnvironmentsApiCopyEnvironment
    */
   readonly envId: string;
 
   /**
    *
    * @type {EnvironmentCopy}
-   * @memberof EnvironmentsApiCopyEnvironment
    */
   readonly environmentCopy: EnvironmentCopy;
 }
 
 /**
  * Request parameters for createEnvironment operation in EnvironmentsApi.
- * @export
  * @interface EnvironmentsApiCreateEnvironmentRequest
  */
 export interface EnvironmentsApiCreateEnvironmentRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof EnvironmentsApiCreateEnvironment
    */
   readonly projId: string;
 
   /**
    *
    * @type {EnvironmentCreate}
-   * @memberof EnvironmentsApiCreateEnvironment
    */
   readonly environmentCreate: EnvironmentCreate;
 }
 
 /**
  * Request parameters for deleteEnvironment operation in EnvironmentsApi.
- * @export
  * @interface EnvironmentsApiDeleteEnvironmentRequest
  */
 export interface EnvironmentsApiDeleteEnvironmentRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof EnvironmentsApiDeleteEnvironment
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof EnvironmentsApiDeleteEnvironment
    */
   readonly envId: string;
 }
 
 /**
  * Request parameters for getEnvironment operation in EnvironmentsApi.
- * @export
  * @interface EnvironmentsApiGetEnvironmentRequest
  */
 export interface EnvironmentsApiGetEnvironmentRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof EnvironmentsApiGetEnvironment
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof EnvironmentsApiGetEnvironment
    */
   readonly envId: string;
 }
 
 /**
  * Request parameters for listEnvironments operation in EnvironmentsApi.
- * @export
  * @interface EnvironmentsApiListEnvironmentsRequest
  */
 export interface EnvironmentsApiListEnvironmentsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof EnvironmentsApiListEnvironments
    */
   readonly projId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof EnvironmentsApiListEnvironments
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof EnvironmentsApiListEnvironments
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for statsEnvironments operation in EnvironmentsApi.
- * @export
  * @interface EnvironmentsApiStatsEnvironmentsRequest
  */
 export interface EnvironmentsApiStatsEnvironmentsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof EnvironmentsApiStatsEnvironments
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof EnvironmentsApiStatsEnvironments
    */
   readonly envId: string;
 }
 
 /**
  * Request parameters for updateEnvironment operation in EnvironmentsApi.
- * @export
  * @interface EnvironmentsApiUpdateEnvironmentRequest
  */
 export interface EnvironmentsApiUpdateEnvironmentRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof EnvironmentsApiUpdateEnvironment
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof EnvironmentsApiUpdateEnvironment
    */
   readonly envId: string;
 
   /**
    *
    * @type {EnvironmentUpdate}
-   * @memberof EnvironmentsApiUpdateEnvironment
    */
   readonly environmentUpdate: EnvironmentUpdate;
 }
 
 /**
  * EnvironmentsApi - object-oriented interface
- * @export
  * @class EnvironmentsApi
  * @extends {BaseAPI}
  */
@@ -897,7 +857,6 @@ export class EnvironmentsApi extends BaseAPI {
    * @param {EnvironmentsApiCopyEnvironmentRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof EnvironmentsApi
    */
   public copyEnvironment(
     requestParameters: EnvironmentsApiCopyEnvironmentRequest,
@@ -919,7 +878,6 @@ export class EnvironmentsApi extends BaseAPI {
    * @param {EnvironmentsApiCreateEnvironmentRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof EnvironmentsApi
    */
   public createEnvironment(
     requestParameters: EnvironmentsApiCreateEnvironmentRequest,
@@ -936,7 +894,6 @@ export class EnvironmentsApi extends BaseAPI {
    * @param {EnvironmentsApiDeleteEnvironmentRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof EnvironmentsApi
    */
   public deleteEnvironment(
     requestParameters: EnvironmentsApiDeleteEnvironmentRequest,
@@ -953,7 +910,6 @@ export class EnvironmentsApi extends BaseAPI {
    * @param {EnvironmentsApiGetEnvironmentRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof EnvironmentsApi
    */
   public getEnvironment(
     requestParameters: EnvironmentsApiGetEnvironmentRequest,
@@ -970,7 +926,6 @@ export class EnvironmentsApi extends BaseAPI {
    * @param {EnvironmentsApiListEnvironmentsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof EnvironmentsApi
    */
   public listEnvironments(
     requestParameters: EnvironmentsApiListEnvironmentsRequest,
@@ -992,7 +947,6 @@ export class EnvironmentsApi extends BaseAPI {
    * @param {EnvironmentsApiStatsEnvironmentsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof EnvironmentsApi
    */
   public statsEnvironments(
     requestParameters: EnvironmentsApiStatsEnvironmentsRequest,
@@ -1009,7 +963,6 @@ export class EnvironmentsApi extends BaseAPI {
    * @param {EnvironmentsApiUpdateEnvironmentRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof EnvironmentsApi
    */
   public updateEnvironment(
     requestParameters: EnvironmentsApiUpdateEnvironmentRequest,

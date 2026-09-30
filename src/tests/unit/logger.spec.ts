@@ -2,9 +2,9 @@ import {
   assertLogs,
   buildLoggerChild,
   captureLogs,
-  LoggerChild,
-  LogMode,
-} from '../helpers/logger-test-process';
+  type LoggerChild,
+  type LogMode,
+} from '#src/tests/helpers/logger-test-process';
 
 describe('LoggerFactory (unit)', () => {
   let child: LoggerChild;

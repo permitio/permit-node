@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,20 +12,17 @@
 
 /**
  *
- * @export
  * @interface RelationBlockRead
  */
 export interface RelationBlockRead {
   /**
    * Unique id of the relation
    * @type {string}
-   * @memberof RelationBlockRead
    */
   resource_id: string;
   /**
    * The resource key
    * @type {string}
-   * @memberof RelationBlockRead
    */
   resource: string;
 }

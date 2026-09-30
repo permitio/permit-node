@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,14 +12,12 @@
 
 /**
  *
- * @export
  * @interface OPALCommon
  */
 export interface OPALCommon {
   /**
    *
    * @type {number}
-   * @memberof OPALCommon
    */
   FETCHING_CALLBACK_TIMEOUT?: number;
 }

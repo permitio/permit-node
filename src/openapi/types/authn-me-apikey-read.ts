@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,58 +11,48 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
 import { APIKeyOwnerType } from './apikey-owner-type';
 // May contain unused imports in some cases
-// @ts-ignore
 import { MemberAccessObj } from './member-access-obj';
 
 /**
  *
- * @export
  * @interface AuthnMeAPIKeyRead
  */
 export interface AuthnMeAPIKeyRead {
   /**
    *
    * @type {string}
-   * @memberof AuthnMeAPIKeyRead
    */
   actor_type?: AuthnMeAPIKeyReadActorTypeEnum;
   /**
    *
    * @type {string}
-   * @memberof AuthnMeAPIKeyRead
    */
   id: string;
   /**
    *
    * @type {MemberAccessObj}
-   * @memberof AuthnMeAPIKeyRead
    */
   object_type: MemberAccessObj;
   /**
    *
    * @type {APIKeyOwnerType}
-   * @memberof AuthnMeAPIKeyRead
    */
   owner_type: APIKeyOwnerType;
   /**
    *
    * @type {string}
-   * @memberof AuthnMeAPIKeyRead
    */
   org_id: string;
   /**
    *
    * @type {string}
-   * @memberof AuthnMeAPIKeyRead
    */
   project_id?: string;
   /**
    *
    * @type {string}
-   * @memberof AuthnMeAPIKeyRead
    */
   env_id?: string;
 }

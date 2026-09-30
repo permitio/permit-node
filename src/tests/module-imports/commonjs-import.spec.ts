@@ -1,4 +1,4 @@
-import { builtFile, probePackage } from './package-probe';
+import { builtFile, probePackage } from '#src/tests/module-imports/package-probe';
 
 // Validates the BUILT package the way a CommonJS consumer loads it:
 // `require('permitio')` in a separate Node process, resolved through the

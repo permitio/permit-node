@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,67 +11,56 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
 import { OnboardingStep } from './onboarding-step';
 
 /**
  *
- * @export
  * @interface AuthnMeMemberRead
  */
 export interface AuthnMeMemberRead {
   /**
    *
    * @type {string}
-   * @memberof AuthnMeMemberRead
    */
   actor_type?: AuthnMeMemberReadActorTypeEnum;
   /**
    *
    * @type {string}
-   * @memberof AuthnMeMemberRead
    */
   id: string;
   /**
    * Email of the user controlling this account
    * @type {string}
-   * @memberof AuthnMeMemberRead
    */
   email: string;
   /**
    * Name of this user
    * @type {string}
-   * @memberof AuthnMeMemberRead
    */
   name?: string;
   /**
    * Given name of the user
    * @type {string}
-   * @memberof AuthnMeMemberRead
    */
   given_name?: string;
   /**
    * Family name of the user
    * @type {string}
-   * @memberof AuthnMeMemberRead
    */
   family_name?: string;
   /**
    * URL to picture, photo, or avatar of the user that controls this account.
    * @type {string}
-   * @memberof AuthnMeMemberRead
    */
   picture?: string;
   /**
    *
    * @type {boolean}
-   * @memberof AuthnMeMemberRead
    */
   is_onboarding: boolean;
   /**
    *
    * @type {OnboardingStep}
-   * @memberof AuthnMeMemberRead
    */
   onboarding_step: OnboardingStep;
 }

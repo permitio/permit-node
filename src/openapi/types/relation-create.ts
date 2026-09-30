@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,32 +12,27 @@
 
 /**
  *
- * @export
  * @interface RelationCreate
  */
 export interface RelationCreate {
   /**
    * A URL-friendly name of the relation (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the relation.
    * @type {string}
-   * @memberof RelationCreate
    */
   key: string;
   /**
    * The name of the relation
    * @type {string}
-   * @memberof RelationCreate
    */
   name: string;
   /**
    * An optional longer description of what this relation respresents in your system
    * @type {string}
-   * @memberof RelationCreate
    */
   description?: string;
   /**
    * The subject resource ID or key
    * @type {string}
-   * @memberof RelationCreate
    */
   subject_resource: string;
 }

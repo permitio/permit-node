@@ -1,7 +1,7 @@
-import { PermitApiError } from '../../../api/base';
-import { ResourceActionCreate, ResourceActionUpdate } from '../../../api/resource-actions';
-import { Permit } from '../../../index';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import { PermitApiError } from '#src/api/base';
+import { type ResourceActionCreate, type ResourceActionUpdate } from '#src/api/resource-actions';
+import { Permit } from '#src/index';
+import { createMockPermit, type MockTransport } from '#src/tests/helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // actions URL is nested under `/v2/schema/{proj}/{env}/resources/{resourceKey}/actions`.

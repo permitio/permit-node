@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,61 +11,50 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
 import { APIKeyOwnerType } from './apikey-owner-type';
 // May contain unused imports in some cases
-// @ts-ignore
 import { MemberAccessLevel } from './member-access-level';
 // May contain unused imports in some cases
-// @ts-ignore
 import { MemberAccessObj } from './member-access-obj';
 
 /**
  *
- * @export
  * @interface APIKeyCreate
  */
 export interface APIKeyCreate {
   /**
    *
    * @type {string}
-   * @memberof APIKeyCreate
    */
   organization_id: string;
   /**
    *
    * @type {string}
-   * @memberof APIKeyCreate
    */
   project_id?: string;
   /**
    *
    * @type {string}
-   * @memberof APIKeyCreate
    */
   environment_id?: string;
   /**
    *
    * @type {MemberAccessObj}
-   * @memberof APIKeyCreate
    */
   object_type?: MemberAccessObj;
   /**
    *
    * @type {MemberAccessLevel}
-   * @memberof APIKeyCreate
    */
   access_level?: MemberAccessLevel;
   /**
    *
    * @type {APIKeyOwnerType}
-   * @memberof APIKeyCreate
    */
   owner_type?: APIKeyOwnerType;
   /**
    *
    * @type {string}
-   * @memberof APIKeyCreate
    */
   name?: string;
 }

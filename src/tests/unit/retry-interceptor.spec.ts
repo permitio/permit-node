@@ -1,4 +1,4 @@
-import { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import { AxiosError, type AxiosInstance, type InternalAxiosRequestConfig } from 'axios';
 
 // Reaches the private REST (config.axiosInstance) and PDP (enforcer.client)
 // instances for the behavior tests below.

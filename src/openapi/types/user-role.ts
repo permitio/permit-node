@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,20 +12,17 @@
 
 /**
  *
- * @export
  * @interface UserRole
  */
 export interface UserRole {
   /**
    * the role that is assigned
    * @type {string}
-   * @memberof UserRole
    */
   role: string;
   /**
    * the tenant the role is associated with
    * @type {string}
-   * @memberof UserRole
    */
   tenant: string;
 }

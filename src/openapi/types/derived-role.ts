@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,34 +11,28 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { DerivedRoleRule } from './derived-role-rule';
+import { type DerivedRoleRule } from './derived-role-rule';
 // May contain unused imports in some cases
-// @ts-ignore
-import { PermitBackendSchemasSchemaOpalDataDerivedRoleSettings } from './permit-backend-schemas-schema-opal-data-derived-role-settings';
+import { type PermitBackendSchemasSchemaOpalDataDerivedRoleSettings } from './permit-backend-schemas-schema-opal-data-derived-role-settings';
 
 /**
  *
- * @export
  * @interface DerivedRole
  */
 export interface DerivedRole {
   /**
    *
    * @type {string}
-   * @memberof DerivedRole
    */
   conditions?: string;
   /**
    *
    * @type {PermitBackendSchemasSchemaOpalDataDerivedRoleSettings}
-   * @memberof DerivedRole
    */
   settings: PermitBackendSchemasSchemaOpalDataDerivedRoleSettings;
   /**
    *
    * @type {Array<DerivedRoleRule>}
-   * @memberof DerivedRole
    */
   rules: Array<DerivedRoleRule>;
 }

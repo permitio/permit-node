@@ -1,5 +1,5 @@
-import { Context } from '../utils/context';
-import { Dict } from '../utils/dict';
+import { type Context } from '#src/utils/context';
+import { type Dict } from '#src/utils/dict';
 
 export interface ICheckInput {
   user: IUser;

@@ -1,6 +1,6 @@
-import { IPermitClient, IResource } from '../../index';
-import { cleanUp, createTestClient } from '../fixtures';
-import { waitForCheck } from '../helpers/wait-for';
+import { type IPermitClient, type IResource } from '#src/index';
+import { cleanUp, createTestClient } from '#src/tests/fixtures';
+import { waitForCheck } from '#src/tests/helpers/wait-for';
 
 let permit: IPermitClient;
 
@@ -23,7 +23,7 @@ const createdUserKeys: string[] = [];
 const createdTenantKeys: string[] = [];
 
 beforeAll(async () => {
-  if (process.env.CLOUD_PDP === 'true') {
+  if (process.env['CLOUD_PDP'] === 'true') {
     throw new Error('This test is not supported with cloud PDP');
   }
   ({ permit } = createTestClient({ proxyFactsViaPdp: true }));

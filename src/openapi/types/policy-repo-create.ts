@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,43 +11,36 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { SSHAuthData } from './sshauth-data';
+import { type SSHAuthData } from './sshauth-data';
 
 /**
  *
- * @export
  * @interface PolicyRepoCreate
  */
 export interface PolicyRepoCreate {
   /**
    * A URL-friendly name of the policy repo (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the policy repo.
    * @type {string}
-   * @memberof PolicyRepoCreate
    */
   key: string;
   /**
    *
    * @type {string}
-   * @memberof PolicyRepoCreate
    */
   url: string;
   /**
    *
    * @type {string}
-   * @memberof PolicyRepoCreate
    */
   main_branch_name?: string;
   /**
    *
    * @type {SSHAuthData}
-   * @memberof PolicyRepoCreate
    */
   credentials: SSHAuthData;
   /**
    * if you want to change your policy repository to this repo right after it is validated
    * @type {boolean}
-   * @memberof PolicyRepoCreate
    */
   activate_when_validated?: boolean;
 }

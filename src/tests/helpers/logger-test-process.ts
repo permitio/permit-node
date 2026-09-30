@@ -3,9 +3,9 @@ import { mkdir, mkdtemp, rm } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
 
-import { build } from 'tsup';
+import { build } from 'esbuild';
 
-import { TEST_TOKEN } from './pdp-test-server';
+import { TEST_TOKEN } from '#src/tests/helpers/pdp-test-server';
 
 export type LogMode = 'default' | 'json' | 'env' | 'pretty' | 'env-pretty';
 
@@ -30,14 +30,14 @@ export async function buildLoggerChild(): Promise<LoggerChild> {
   const remove = () => rm(outDir, { recursive: true, force: true });
   try {
     await build({
-      config: false,
-      entry: { 'logger-child': join(__dirname, 'logger-child.ts') },
-      outDir,
-      format: ['cjs'],
+      entryPoints: [join(__dirname, 'logger-child.ts')],
+      outfile: join(outDir, 'logger-child.js'),
+      bundle: true,
+      tsconfig: resolve('tsconfig.build.json'),
+      format: 'cjs',
       platform: 'node',
-      target: 'node16',
-      skipNodeModulesBundle: true,
-      silent: true,
+      target: 'node22',
+      packages: 'external',
     });
   } catch (error: unknown) {
     await remove();
@@ -68,9 +68,9 @@ export async function captureLogs(
     options.failure ?? 'allow',
   ];
   const env: NodeJS.ProcessEnv = { ...process.env, NO_COLOR: '1', FORCE_COLOR: '0' };
-  delete env.PERMIT_LOG_JSON;
+  delete env['PERMIT_LOG_JSON'];
   if (mode === 'env' || mode === 'env-pretty') {
-    env.PERMIT_LOG_JSON = String(mode === 'env');
+    env['PERMIT_LOG_JSON'] = String(mode === 'env');
   }
   return promisify(execFile)(process.execPath, args, {
     encoding: 'utf8',
@@ -111,8 +111,8 @@ export function assertLogs(
       'Expected each log line to be a JSON object',
     );
     const fields = record as Record<string, unknown>;
-    expect(typeof fields.level).toBe('number');
-    expect(typeof fields.time).toBe('string');
-    expect(typeof fields.msg).toBe('string');
+    expect(typeof fields['level']).toBe('number');
+    expect(typeof fields['time']).toBe('string');
+    expect(typeof fields['msg']).toBe('string');
   }
 }

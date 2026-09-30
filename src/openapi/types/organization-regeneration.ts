@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,20 +12,17 @@
 
 /**
  *
- * @export
  * @interface OrganizationRegeneration
  */
 export interface OrganizationRegeneration {
   /**
    *
    * @type {string}
-   * @memberof OrganizationRegeneration
    */
   scope: OrganizationRegenerationScopeEnum;
   /**
    *
    * @type {string}
-   * @memberof OrganizationRegeneration
    */
   org_id: string;
 }

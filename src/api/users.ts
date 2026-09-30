@@ -1,38 +1,38 @@
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 import {
   RoleAssignmentsApi as AutogenRoleAssignmentsApi,
   UsersApi as AutogenUsersApi,
-  PaginatedResultRoleAssignmentDetailedRead,
-  PaginatedResultRoleAssignmentRead,
-  PaginatedResultUserRead,
-  RoleAssignmentCreate,
-  RoleAssignmentDetailedRead,
-  RoleAssignmentRead,
-  RoleAssignmentRemove,
-  UserCreate,
-  UserRead,
-  UserUpdate,
-} from '../openapi';
-import { BulkOperationsApi } from '../openapi/api/bulk-operations-api';
-import { BASE_PATH } from '../openapi/base';
-import { UserCreateBulkOperation } from '../openapi/types/user-create-bulk-operation';
-import { UserDeleteBulkOperation } from '../openapi/types/user-delete-bulk-operation';
-import { UserReplaceBulkOperation } from '../openapi/types/user-replace-bulk-operation';
+  type PaginatedResultRoleAssignmentDetailedRead,
+  type PaginatedResultRoleAssignmentRead,
+  type PaginatedResultUserRead,
+  type RoleAssignmentCreate,
+  type RoleAssignmentDetailedRead,
+  type RoleAssignmentRead,
+  type RoleAssignmentRemove,
+  type UserCreate,
+  type UserRead,
+  type UserUpdate,
+} from '#src/openapi/index';
+import { BulkOperationsApi } from '#src/openapi/api/bulk-operations-api';
+import { BASE_PATH } from '#src/openapi/base';
+import { type UserCreateBulkOperation } from '#src/openapi/types/user-create-bulk-operation';
+import { type UserDeleteBulkOperation } from '#src/openapi/types/user-delete-bulk-operation';
+import { type UserReplaceBulkOperation } from '#src/openapi/types/user-replace-bulk-operation';
 
-import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BaseFactsPermitAPI, type IPagination, type IWaitForSync } from '#src/api/base';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
 export {
-  PaginatedResultUserRead,
-  RoleAssignmentCreate,
-  RoleAssignmentRead,
-  RoleAssignmentRemove,
-  UserCreate,
-  UserRead,
-  UserUpdate,
-} from '../openapi';
+  type PaginatedResultUserRead,
+  type RoleAssignmentCreate,
+  type RoleAssignmentRead,
+  type RoleAssignmentRemove,
+  type UserCreate,
+  type UserRead,
+  type UserUpdate,
+} from '#src/openapi/index';
 
 export interface ICreateOrUpdateUserResult {
   /**
@@ -99,9 +99,9 @@ type ReturnIGetUserRolesType<T extends IGetUserRoles> = T extends IGetUserRolesW
     ? PaginatedResultRoleAssignmentDetailedRead
     : PaginatedResultRoleAssignmentRead
   : // without total count
-  T extends IGetUserRolesWithDetails
-  ? RoleAssignmentDetailedRead[]
-  : RoleAssignmentRead[];
+    T extends IGetUserRolesWithDetails
+    ? RoleAssignmentDetailedRead[]
+    : RoleAssignmentRead[];
 
 export interface IUsersListParams extends IPagination {
   search?: string;
@@ -216,7 +216,7 @@ export interface IUsersApi extends IWaitForSync {
    * Retrieves the roles assigned to a user in a given tenant (if the tenant filter is provided)
    * or across all tenants (if the tenant filter in not provided).
    *
-   * @param roleFilters - The filters for retrieving role assignments.
+   * @param params - The filters for retrieving role assignments.
    * @returns A promise that resolves with an array of role assignments for the user.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
@@ -588,7 +588,7 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
    * Retrieves the roles assigned to a user in a given tenant (if the tenant filter is provided)
    * or across all tenants (if the tenant filter in not provided).
    *
-   * @param roleFilters - The filters for retrieving role assignments.
+   * @param params - The filters for retrieving role assignments.
    * @returns A promise that resolves with an array of role assignments for the user.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
@@ -616,7 +616,7 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
         await this.roleAssignments.listRoleAssignments({
           ...this.config.apiContext.environmentContext,
           user,
-          tenant,
+          ...(tenant !== undefined && { tenant }),
           page,
           perPage,
           detailed,

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,37 +10,26 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { OrgMemberCreate } from '../types';
-// @ts-ignore
-import { OrgMemberReadWithGrants } from '../types';
-// @ts-ignore
-import { OrgMemberRemovePermissions } from '../types';
-// @ts-ignore
-import { OrgMemberUpdate } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type OrgMemberCreate,
+  type OrgMemberReadWithGrants,
+  type OrgMemberRemovePermissions,
+  type OrgMemberUpdate,
+} from '../types';
 /**
  * MembersApi - axios parameter creator
- * @export
  */
 export const MembersApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -409,7 +396,6 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
 
 /**
  * MembersApi - functional programming interface
- * @export
  */
 export const MembersApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = MembersApiAxiosParamCreator(configuration);
@@ -561,7 +547,6 @@ export const MembersApiFp = function (configuration?: Configuration) {
 
 /**
  * MembersApi - factory interface
- * @export
  */
 export const MembersApiFactory = function (
   configuration?: Configuration,
@@ -680,133 +665,114 @@ export const MembersApiFactory = function (
 
 /**
  * Request parameters for createOrganizationMembers operation in MembersApi.
- * @export
  * @interface MembersApiCreateOrganizationMembersRequest
  */
 export interface MembersApiCreateOrganizationMembersRequest {
   /**
    *
    * @type {OrgMemberCreate}
-   * @memberof MembersApiCreateOrganizationMembers
    */
   readonly orgMemberCreate: OrgMemberCreate;
 
   /**
    *
    * @type {string}
-   * @memberof MembersApiCreateOrganizationMembers
    */
   readonly inviterName?: string;
 
   /**
    *
    * @type {string}
-   * @memberof MembersApiCreateOrganizationMembers
    */
   readonly inviterEmail?: string;
 }
 
 /**
  * Request parameters for deleteOrganizationMember operation in MembersApi.
- * @export
  * @interface MembersApiDeleteOrganizationMemberRequest
  */
 export interface MembersApiDeleteOrganizationMemberRequest {
   /**
    * Either the unique id (UUID) of the account member, or the email address of the account member.
    * @type {string}
-   * @memberof MembersApiDeleteOrganizationMember
    */
   readonly memberId: string;
 }
 
 /**
  * Request parameters for deleteOrganizationPermissions operation in MembersApi.
- * @export
  * @interface MembersApiDeleteOrganizationPermissionsRequest
  */
 export interface MembersApiDeleteOrganizationPermissionsRequest {
   /**
    *
    * @type {OrgMemberRemovePermissions}
-   * @memberof MembersApiDeleteOrganizationPermissions
    */
   readonly orgMemberRemovePermissions: OrgMemberRemovePermissions;
 }
 
 /**
  * Request parameters for getOrganizationMember operation in MembersApi.
- * @export
  * @interface MembersApiGetOrganizationMemberRequest
  */
 export interface MembersApiGetOrganizationMemberRequest {
   /**
    * Either the unique id (UUID) of the account member, or the email address of the account member.
    * @type {string}
-   * @memberof MembersApiGetOrganizationMember
    */
   readonly memberId: string;
 }
 
 /**
  * Request parameters for listOrganizationMembers operation in MembersApi.
- * @export
  * @interface MembersApiListOrganizationMembersRequest
  */
 export interface MembersApiListOrganizationMembersRequest {
   /**
    *
    * @type {string}
-   * @memberof MembersApiListOrganizationMembers
    */
   readonly projectId?: string;
 
   /**
    *
    * @type {string}
-   * @memberof MembersApiListOrganizationMembers
    */
   readonly envId?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof MembersApiListOrganizationMembers
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof MembersApiListOrganizationMembers
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateOrganizationMember operation in MembersApi.
- * @export
  * @interface MembersApiUpdateOrganizationMemberRequest
  */
 export interface MembersApiUpdateOrganizationMemberRequest {
   /**
    * Either the unique id (UUID) of the account member, or the email address of the account member.
    * @type {string}
-   * @memberof MembersApiUpdateOrganizationMember
    */
   readonly memberId: string;
 
   /**
    *
    * @type {OrgMemberUpdate}
-   * @memberof MembersApiUpdateOrganizationMember
    */
   readonly orgMemberUpdate: OrgMemberUpdate;
 }
 
 /**
  * MembersApi - object-oriented interface
- * @export
  * @class MembersApi
  * @extends {BaseAPI}
  */
@@ -817,7 +783,6 @@ export class MembersApi extends BaseAPI {
    * @param {MembersApiCreateOrganizationMembersRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof MembersApi
    */
   public createOrganizationMembers(
     requestParameters: MembersApiCreateOrganizationMembersRequest,
@@ -839,7 +804,6 @@ export class MembersApi extends BaseAPI {
    * @param {MembersApiDeleteOrganizationMemberRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof MembersApi
    */
   public deleteOrganizationMember(
     requestParameters: MembersApiDeleteOrganizationMemberRequest,
@@ -856,7 +820,6 @@ export class MembersApi extends BaseAPI {
    * @param {MembersApiDeleteOrganizationPermissionsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof MembersApi
    */
   public deleteOrganizationPermissions(
     requestParameters: MembersApiDeleteOrganizationPermissionsRequest,
@@ -872,7 +835,6 @@ export class MembersApi extends BaseAPI {
    * @summary Get the authenticated account member
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof MembersApi
    */
   public getAuthenticatedMember(options?: AxiosRequestConfig) {
     return MembersApiFp(this.configuration)
@@ -886,7 +848,6 @@ export class MembersApi extends BaseAPI {
    * @param {MembersApiGetOrganizationMemberRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof MembersApi
    */
   public getOrganizationMember(
     requestParameters: MembersApiGetOrganizationMemberRequest,
@@ -903,7 +864,6 @@ export class MembersApi extends BaseAPI {
    * @param {MembersApiListOrganizationMembersRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof MembersApi
    */
   public listOrganizationMembers(
     requestParameters: MembersApiListOrganizationMembersRequest = {},
@@ -926,7 +886,6 @@ export class MembersApi extends BaseAPI {
    * @param {MembersApiUpdateOrganizationMemberRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof MembersApi
    */
   public updateOrganizationMember(
     requestParameters: MembersApiUpdateOrganizationMemberRequest,

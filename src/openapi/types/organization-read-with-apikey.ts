@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,56 +12,47 @@
 
 /**
  *
- * @export
  * @interface OrganizationReadWithAPIKey
  */
 export interface OrganizationReadWithAPIKey {
   /**
    * A URL-friendly name of the organization (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the organization.
    * @type {string}
-   * @memberof OrganizationReadWithAPIKey
    */
   key: string;
   /**
    * Unique id of the organization
    * @type {string}
-   * @memberof OrganizationReadWithAPIKey
    */
   id: string;
   /**
    * Date and time when the organization was created (ISO_8601 format).
    * @type {string}
-   * @memberof OrganizationReadWithAPIKey
    */
   created_at: string;
   /**
    * Date and time when the organization was last updated/modified (ISO_8601 format).
    * @type {string}
-   * @memberof OrganizationReadWithAPIKey
    */
   updated_at: string;
   /**
    * The name of the organization, usually it\'s your company\'s name.
    * @type {string}
-   * @memberof OrganizationReadWithAPIKey
    */
   name: string;
   /**
    * the settings for this project
    * @type {object}
-   * @memberof OrganizationReadWithAPIKey
    */
   settings?: object;
   /**
    *
    * @type {string}
-   * @memberof OrganizationReadWithAPIKey
    */
   api_key_id?: string;
   /**
    *
    * @type {string}
-   * @memberof OrganizationReadWithAPIKey
    */
   api_key_secret?: string;
 }

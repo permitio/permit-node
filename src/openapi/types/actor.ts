@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,24 +11,17 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { APIKeyOwnerType } from './apikey-owner-type';
+
 // May contain unused imports in some cases
-// @ts-ignore
-import { AuthnMeAPIKeyRead } from './authn-me-apikey-read';
+import { type AuthnMeAPIKeyRead } from './authn-me-apikey-read';
 // May contain unused imports in some cases
-// @ts-ignore
-import { AuthnMeMemberRead } from './authn-me-member-read';
+import { type AuthnMeMemberRead } from './authn-me-member-read';
 // May contain unused imports in some cases
-// @ts-ignore
-import { AuthnMeUserRead } from './authn-me-user-read';
+import { type AuthnMeUserRead } from './authn-me-user-read';
 // May contain unused imports in some cases
-// @ts-ignore
-import { MemberAccessObj } from './member-access-obj';
 
 /**
  * @type Actor
- * @export
  */
 export type Actor =
   | ({ actor_type: 'api_key' } & AuthnMeAPIKeyRead)

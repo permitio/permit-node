@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,37 +11,31 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { InviteAttemptResult } from './invite-attempt-result';
+import { type InviteAttemptResult } from './invite-attempt-result';
 
 /**
  *
- * @export
  * @interface LoginResult
  */
 export interface LoginResult {
   /**
    * whether login was successful
    * @type {boolean}
-   * @memberof LoginResult
    */
   logged_in: boolean;
   /**
    * when will the login session expire (the unix timestamp in seconds)
    * @type {number}
-   * @memberof LoginResult
    */
   expires_at: number;
   /**
    * the active organization on the session after the login
    * @type {string}
-   * @memberof LoginResult
    */
   active_org_id?: string;
   /**
    *
    * @type {InviteAttemptResult}
-   * @memberof LoginResult
    */
   invite_attempt?: InviteAttemptResult;
 }

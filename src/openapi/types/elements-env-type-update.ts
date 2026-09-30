@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,14 +12,12 @@
 
 /**
  *
- * @export
  * @interface ElementsEnvTypeUpdate
  */
 export interface ElementsEnvTypeUpdate {
   /**
    * Obj with levels as keys and role ids as values
    * @type {{ [key: string]: Array<string>; }}
-   * @memberof ElementsEnvTypeUpdate
    */
   roles_to_levels?: { [key: string]: Array<string> };
 }

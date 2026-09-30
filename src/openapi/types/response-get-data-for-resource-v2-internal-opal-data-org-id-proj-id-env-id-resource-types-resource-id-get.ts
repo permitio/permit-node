@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,19 +11,15 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { ResourceTypeData } from './resource-type-data';
 
 /**
  *
- * @export
  * @interface ResponseGetDataForResourceV2InternalOpalDataOrgIdProjIdEnvIdResourceTypesResourceIdGet
  */
 export interface ResponseGetDataForResourceV2InternalOpalDataOrgIdProjIdEnvIdResourceTypesResourceIdGet {
   /**
    *
    * @type {Array<string>}
-   * @memberof ResponseGetDataForResourceV2InternalOpalDataOrgIdProjIdEnvIdResourceTypesResourceIdGet
    */
   actions: Array<string>;
 }

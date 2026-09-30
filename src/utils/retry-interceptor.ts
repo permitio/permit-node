@@ -1,8 +1,8 @@
-import { AxiosError, AxiosInstance } from 'axios';
+import { AxiosError, type AxiosInstance } from 'axios';
 import axiosRetry from 'axios-retry';
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { calculateRetryDelay, IResolvedRetryConfig } from './retry';
+import { calculateRetryDelay, type IResolvedRetryConfig } from '#src/utils/retry';
 
 /**
  * Installs retry behavior on an axios instance using the axios-retry library,

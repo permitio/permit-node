@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,43 +10,29 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { ElementsRoleRead } from '../types';
-// @ts-ignore
-import { ElementsUserCreate } from '../types';
-// @ts-ignore
-import { ElementsUserRoleCreate } from '../types';
-// @ts-ignore
-import { ElementsUserRoleRemove } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PaginatedResultUserRead } from '../types';
-// @ts-ignore
-import { RoleAssignmentRead } from '../types';
-// @ts-ignore
-import { UserRead } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type ElementsRoleRead,
+  type ElementsUserCreate,
+  type ElementsUserRoleCreate,
+  type ElementsUserRoleRemove,
+  type PaginatedResultUserRead,
+  type RoleAssignmentRead,
+  type UserRead,
+} from '../types';
 /**
  * UsersElementsDataApi - axios parameter creator
- * @export
  */
 export const UsersElementsDataApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -523,7 +507,6 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
 
 /**
  * UsersElementsDataApi - functional programming interface
- * @export
  */
 export const UsersElementsDataApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = UsersElementsDataApiAxiosParamCreator(configuration);
@@ -734,7 +717,6 @@ export const UsersElementsDataApiFp = function (configuration?: Configuration) {
 
 /**
  * UsersElementsDataApi - factory interface
- * @export
  */
 export const UsersElementsDataApiFactory = function (
   configuration?: Configuration,
@@ -919,287 +901,246 @@ export const UsersElementsDataApiFactory = function (
 
 /**
  * Request parameters for elementsAssignRoleToUser operation in UsersElementsDataApi.
- * @export
  * @interface UsersElementsDataApiElementsAssignRoleToUserRequest
  */
 export interface UsersElementsDataApiElementsAssignRoleToUserRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsAssignRoleToUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsAssignRoleToUser
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsAssignRoleToUser
    */
   readonly elementsConfigId: string;
 
   /**
    * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsAssignRoleToUser
    */
   readonly userId: string;
 
   /**
    *
    * @type {ElementsUserRoleCreate}
-   * @memberof UsersElementsDataApiElementsAssignRoleToUser
    */
   readonly elementsUserRoleCreate: ElementsUserRoleCreate;
 }
 
 /**
  * Request parameters for elementsCreateUser operation in UsersElementsDataApi.
- * @export
  * @interface UsersElementsDataApiElementsCreateUserRequest
  */
 export interface UsersElementsDataApiElementsCreateUserRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsCreateUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsCreateUser
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsCreateUser
    */
   readonly elementsConfigId: string;
 
   /**
    *
    * @type {ElementsUserCreate}
-   * @memberof UsersElementsDataApiElementsCreateUser
    */
   readonly elementsUserCreate: ElementsUserCreate;
 }
 
 /**
  * Request parameters for elementsDeleteUser operation in UsersElementsDataApi.
- * @export
  * @interface UsersElementsDataApiElementsDeleteUserRequest
  */
 export interface UsersElementsDataApiElementsDeleteUserRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsDeleteUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsDeleteUser
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsDeleteUser
    */
   readonly elementsConfigId: string;
 
   /**
    * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsDeleteUser
    */
   readonly userId: string;
 }
 
 /**
  * Request parameters for elementsListRoles operation in UsersElementsDataApi.
- * @export
  * @interface UsersElementsDataApiElementsListRolesRequest
  */
 export interface UsersElementsDataApiElementsListRolesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsListRoles
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsListRoles
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsListRoles
    */
   readonly elementsConfigId: string;
 
   /**
    * Text search for the email field
    * @type {string}
-   * @memberof UsersElementsDataApiElementsListRoles
    */
   readonly search?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof UsersElementsDataApiElementsListRoles
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof UsersElementsDataApiElementsListRoles
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for elementsListUsers operation in UsersElementsDataApi.
- * @export
  * @interface UsersElementsDataApiElementsListUsersRequest
  */
 export interface UsersElementsDataApiElementsListUsersRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsListUsers
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsListUsers
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsListUsers
    */
   readonly elementsConfigId: string;
 
   /**
    * Text search for the email field
    * @type {string}
-   * @memberof UsersElementsDataApiElementsListUsers
    */
   readonly search?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof UsersElementsDataApiElementsListUsers
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof UsersElementsDataApiElementsListUsers
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for elementsUnassignRoleFromUser operation in UsersElementsDataApi.
- * @export
  * @interface UsersElementsDataApiElementsUnassignRoleFromUserRequest
  */
 export interface UsersElementsDataApiElementsUnassignRoleFromUserRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsUnassignRoleFromUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsUnassignRoleFromUser
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsUnassignRoleFromUser
    */
   readonly elementsConfigId: string;
 
   /**
    * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiElementsUnassignRoleFromUser
    */
   readonly userId: string;
 
   /**
    *
    * @type {ElementsUserRoleRemove}
-   * @memberof UsersElementsDataApiElementsUnassignRoleFromUser
    */
   readonly elementsUserRoleRemove: ElementsUserRoleRemove;
 }
 
 /**
  * Request parameters for setConfigActive operation in UsersElementsDataApi.
- * @export
  * @interface UsersElementsDataApiSetConfigActiveRequest
  */
 export interface UsersElementsDataApiSetConfigActiveRequest {
   /**
    * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiSetConfigActive
    */
   readonly elementsConfigId: string;
 
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiSetConfigActive
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersElementsDataApiSetConfigActive
    */
   readonly envId: string;
 }
 
 /**
  * UsersElementsDataApi - object-oriented interface
- * @export
  * @class UsersElementsDataApi
  * @extends {BaseAPI}
  */
@@ -1210,7 +1151,6 @@ export class UsersElementsDataApi extends BaseAPI {
    * @param {UsersElementsDataApiElementsAssignRoleToUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UsersElementsDataApi
    */
   public elementsAssignRoleToUser(
     requestParameters: UsersElementsDataApiElementsAssignRoleToUserRequest,
@@ -1234,7 +1174,6 @@ export class UsersElementsDataApi extends BaseAPI {
    * @param {UsersElementsDataApiElementsCreateUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UsersElementsDataApi
    */
   public elementsCreateUser(
     requestParameters: UsersElementsDataApiElementsCreateUserRequest,
@@ -1257,7 +1196,6 @@ export class UsersElementsDataApi extends BaseAPI {
    * @param {UsersElementsDataApiElementsDeleteUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UsersElementsDataApi
    */
   public elementsDeleteUser(
     requestParameters: UsersElementsDataApiElementsDeleteUserRequest,
@@ -1280,7 +1218,6 @@ export class UsersElementsDataApi extends BaseAPI {
    * @param {UsersElementsDataApiElementsListRolesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UsersElementsDataApi
    */
   public elementsListRoles(
     requestParameters: UsersElementsDataApiElementsListRolesRequest,
@@ -1305,7 +1242,6 @@ export class UsersElementsDataApi extends BaseAPI {
    * @param {UsersElementsDataApiElementsListUsersRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UsersElementsDataApi
    */
   public elementsListUsers(
     requestParameters: UsersElementsDataApiElementsListUsersRequest,
@@ -1330,7 +1266,6 @@ export class UsersElementsDataApi extends BaseAPI {
    * @param {UsersElementsDataApiElementsUnassignRoleFromUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UsersElementsDataApi
    */
   public elementsUnassignRoleFromUser(
     requestParameters: UsersElementsDataApiElementsUnassignRoleFromUserRequest,
@@ -1354,7 +1289,6 @@ export class UsersElementsDataApi extends BaseAPI {
    * @param {UsersElementsDataApiSetConfigActiveRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UsersElementsDataApi
    */
   public setConfigActive(
     requestParameters: UsersElementsDataApiSetConfigActiveRequest,

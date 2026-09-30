@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,37 +11,31 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { MemberInfo } from './member-info';
+import { type MemberInfo } from './member-info';
 
 /**
  *
- * @export
  * @interface MemberViewerContext
  */
 export interface MemberViewerContext {
   /**
    *
    * @type {string}
-   * @memberof MemberViewerContext
    */
   type: MemberViewerContextTypeEnum;
   /**
    *
    * @type {MemberInfo}
-   * @memberof MemberViewerContext
    */
   member: MemberInfo;
   /**
    *
    * @type {string}
-   * @memberof MemberViewerContext
    */
   session_id: string;
   /**
    *
    * @type {string}
-   * @memberof MemberViewerContext
    */
   user_id?: string;
 }

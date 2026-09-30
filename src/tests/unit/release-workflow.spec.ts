@@ -53,7 +53,7 @@ function fixture() {
   const env = {
     ...process.env,
     NODE_PATH: join(root, 'node_modules'),
-    PATH: bin + delimiter + process.env.PATH,
+    PATH: bin + delimiter + process.env['PATH'],
     npm_config_offline: 'true',
     npm_config_update_notifier: 'false',
   };

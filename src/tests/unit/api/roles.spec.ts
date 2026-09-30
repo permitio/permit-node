@@ -1,7 +1,7 @@
-import { PermitApiError } from '../../../api/base';
-import { RoleCreate, RoleUpdate } from '../../../api/roles';
-import { Permit } from '../../../index';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import { PermitApiError } from '#src/api/base';
+import { type RoleCreate, type RoleUpdate } from '#src/api/roles';
+import { Permit } from '#src/index';
+import { createMockPermit, type MockTransport } from '#src/tests/helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // roles URL is scoped under `/v2/schema/{proj}/{env}/roles`.

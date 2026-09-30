@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,26 +12,22 @@
 
 /**
  *
- * @export
  * @interface DerivedRoleRule
  */
 export interface DerivedRoleRule {
   /**
    *
    * @type {string}
-   * @memberof DerivedRoleRule
    */
   relation: string;
   /**
    *
    * @type {string}
-   * @memberof DerivedRoleRule
    */
   related_resource: string;
   /**
    *
    * @type {string}
-   * @memberof DerivedRoleRule
    */
   related_role: string;
 }

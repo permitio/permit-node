@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,19 +11,16 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { CallbacksInner } from './callbacks-inner';
+import { type CallbacksInner } from './callbacks-inner';
 
 /**
  *
- * @export
  * @interface OPALUpdateCallback
  */
 export interface OPALUpdateCallback {
   /**
    *
    * @type {Array<CallbacksInner>}
-   * @memberof OPALUpdateCallback
    */
   callbacks: Array<CallbacksInner>;
 }

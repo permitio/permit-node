@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,31 +11,26 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { DataEntryReport } from './data-entry-report';
+import { type DataEntryReport } from './data-entry-report';
 
 /**
  *
- * @export
  * @interface DataUpdateReport
  */
 export interface DataUpdateReport {
   /**
    *
    * @type {string}
-   * @memberof DataUpdateReport
    */
   update_id?: string;
   /**
    *
    * @type {Array<DataEntryReport>}
-   * @memberof DataUpdateReport
    */
   reports: Array<DataEntryReport>;
   /**
    *
    * @type {string}
-   * @memberof DataUpdateReport
    */
   policy_hash?: string;
 }

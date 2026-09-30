@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,35 +10,21 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { ProjectCreate } from '../types';
-// @ts-ignore
-import { ProjectRead } from '../types';
-// @ts-ignore
-import { ProjectUpdate } from '../types';
+import { Configuration } from '../configuration';
+import { type ProjectCreate, type ProjectRead, type ProjectUpdate } from '../types';
 /**
  * ProjectsApi - axios parameter creator
- * @export
  */
 export const ProjectsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -291,7 +275,6 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
 
 /**
  * ProjectsApi - functional programming interface
- * @export
  */
 export const ProjectsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ProjectsApiAxiosParamCreator(configuration);
@@ -386,7 +369,6 @@ export const ProjectsApiFp = function (configuration?: Configuration) {
 
 /**
  * ProjectsApi - factory interface
- * @export
  */
 export const ProjectsApiFactory = function (
   configuration?: Configuration,
@@ -462,91 +444,78 @@ export const ProjectsApiFactory = function (
 
 /**
  * Request parameters for createProject operation in ProjectsApi.
- * @export
  * @interface ProjectsApiCreateProjectRequest
  */
 export interface ProjectsApiCreateProjectRequest {
   /**
    *
    * @type {ProjectCreate}
-   * @memberof ProjectsApiCreateProject
    */
   readonly projectCreate: ProjectCreate;
 }
 
 /**
  * Request parameters for deleteProject operation in ProjectsApi.
- * @export
  * @interface ProjectsApiDeleteProjectRequest
  */
 export interface ProjectsApiDeleteProjectRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ProjectsApiDeleteProject
    */
   readonly projId: string;
 }
 
 /**
  * Request parameters for getProject operation in ProjectsApi.
- * @export
  * @interface ProjectsApiGetProjectRequest
  */
 export interface ProjectsApiGetProjectRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ProjectsApiGetProject
    */
   readonly projId: string;
 }
 
 /**
  * Request parameters for listProjects operation in ProjectsApi.
- * @export
  * @interface ProjectsApiListProjectsRequest
  */
 export interface ProjectsApiListProjectsRequest {
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof ProjectsApiListProjects
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof ProjectsApiListProjects
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateProject operation in ProjectsApi.
- * @export
  * @interface ProjectsApiUpdateProjectRequest
  */
 export interface ProjectsApiUpdateProjectRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ProjectsApiUpdateProject
    */
   readonly projId: string;
 
   /**
    *
    * @type {ProjectUpdate}
-   * @memberof ProjectsApiUpdateProject
    */
   readonly projectUpdate: ProjectUpdate;
 }
 
 /**
  * ProjectsApi - object-oriented interface
- * @export
  * @class ProjectsApi
  * @extends {BaseAPI}
  */
@@ -557,7 +526,6 @@ export class ProjectsApi extends BaseAPI {
    * @param {ProjectsApiCreateProjectRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ProjectsApi
    */
   public createProject(
     requestParameters: ProjectsApiCreateProjectRequest,
@@ -574,7 +542,6 @@ export class ProjectsApi extends BaseAPI {
    * @param {ProjectsApiDeleteProjectRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ProjectsApi
    */
   public deleteProject(
     requestParameters: ProjectsApiDeleteProjectRequest,
@@ -591,7 +558,6 @@ export class ProjectsApi extends BaseAPI {
    * @param {ProjectsApiGetProjectRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ProjectsApi
    */
   public getProject(requestParameters: ProjectsApiGetProjectRequest, options?: AxiosRequestConfig) {
     return ProjectsApiFp(this.configuration)
@@ -605,7 +571,6 @@ export class ProjectsApi extends BaseAPI {
    * @param {ProjectsApiListProjectsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ProjectsApi
    */
   public listProjects(
     requestParameters: ProjectsApiListProjectsRequest = {},
@@ -622,7 +587,6 @@ export class ProjectsApi extends BaseAPI {
    * @param {ProjectsApiUpdateProjectRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ProjectsApi
    */
   public updateProject(
     requestParameters: ProjectsApiUpdateProjectRequest,

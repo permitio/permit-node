@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,11 +11,9 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { PdpValues } from './pdp-values';
+import { type PdpValues } from './pdp-values';
 
 /**
  * @type Pdp
- * @export
  */
 export type Pdp = PdpValues;

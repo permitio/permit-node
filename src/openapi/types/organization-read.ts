@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,44 +12,37 @@
 
 /**
  *
- * @export
  * @interface OrganizationRead
  */
 export interface OrganizationRead {
   /**
    * A URL-friendly name of the organization (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the organization.
    * @type {string}
-   * @memberof OrganizationRead
    */
   key: string;
   /**
    * Unique id of the organization
    * @type {string}
-   * @memberof OrganizationRead
    */
   id: string;
   /**
    * Date and time when the organization was created (ISO_8601 format).
    * @type {string}
-   * @memberof OrganizationRead
    */
   created_at: string;
   /**
    * Date and time when the organization was last updated/modified (ISO_8601 format).
    * @type {string}
-   * @memberof OrganizationRead
    */
   updated_at: string;
   /**
    * The name of the organization, usually it\'s your company\'s name.
    * @type {string}
-   * @memberof OrganizationRead
    */
   name: string;
   /**
    * the settings for this project
    * @type {object}
-   * @memberof OrganizationRead
    */
   settings?: object;
 }

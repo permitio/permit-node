@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,39 +10,27 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { RelationshipTupleCreate } from '../types';
-// @ts-ignore
-import { RelationshipTupleCreateBulkOperation } from '../types';
-// @ts-ignore
-import { RelationshipTupleDelete } from '../types';
-// @ts-ignore
-import { RelationshipTupleDeleteBulkOperation } from '../types';
-// @ts-ignore
-import { RelationshipTupleRead } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type RelationshipTupleCreate,
+  type RelationshipTupleCreateBulkOperation,
+  type RelationshipTupleDelete,
+  type RelationshipTupleDeleteBulkOperation,
+  type RelationshipTupleRead,
+} from '../types';
 /**
  * RelationshipTuplesApi - axios parameter creator
- * @export
  */
 export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -404,7 +390,6 @@ export const RelationshipTuplesApiAxiosParamCreator = function (configuration?: 
 
 /**
  * RelationshipTuplesApi - functional programming interface
- * @export
  */
 export const RelationshipTuplesApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = RelationshipTuplesApiAxiosParamCreator(configuration);
@@ -552,7 +537,6 @@ export const RelationshipTuplesApiFp = function (configuration?: Configuration) 
 
 /**
  * RelationshipTuplesApi - factory interface
- * @export
  */
 export const RelationshipTuplesApiFactory = function (
   configuration?: Configuration,
@@ -690,203 +674,174 @@ export const RelationshipTuplesApiFactory = function (
 
 /**
  * Request parameters for bulkCreateRelationshipTuples operation in RelationshipTuplesApi.
- * @export
  * @interface RelationshipTuplesApiBulkCreateRelationshipTuplesRequest
  */
 export interface RelationshipTuplesApiBulkCreateRelationshipTuplesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof RelationshipTuplesApiBulkCreateRelationshipTuples
    */
   readonly projId: any;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof RelationshipTuplesApiBulkCreateRelationshipTuples
    */
   readonly envId: any;
 
   /**
    *
    * @type {RelationshipTupleCreateBulkOperation}
-   * @memberof RelationshipTuplesApiBulkCreateRelationshipTuples
    */
   readonly relationshipTupleCreateBulkOperation: RelationshipTupleCreateBulkOperation;
 }
 
 /**
  * Request parameters for bulkDeleteRelationshipTuples operation in RelationshipTuplesApi.
- * @export
  * @interface RelationshipTuplesApiBulkDeleteRelationshipTuplesRequest
  */
 export interface RelationshipTuplesApiBulkDeleteRelationshipTuplesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof RelationshipTuplesApiBulkDeleteRelationshipTuples
    */
   readonly projId: any;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof RelationshipTuplesApiBulkDeleteRelationshipTuples
    */
   readonly envId: any;
 
   /**
    *
    * @type {RelationshipTupleDeleteBulkOperation}
-   * @memberof RelationshipTuplesApiBulkDeleteRelationshipTuples
    */
   readonly relationshipTupleDeleteBulkOperation: RelationshipTupleDeleteBulkOperation;
 }
 
 /**
  * Request parameters for createRelationshipTuple operation in RelationshipTuplesApi.
- * @export
  * @interface RelationshipTuplesApiCreateRelationshipTupleRequest
  */
 export interface RelationshipTuplesApiCreateRelationshipTupleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RelationshipTuplesApiCreateRelationshipTuple
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RelationshipTuplesApiCreateRelationshipTuple
    */
   readonly envId: string;
 
   /**
    *
    * @type {RelationshipTupleCreate}
-   * @memberof RelationshipTuplesApiCreateRelationshipTuple
    */
   readonly relationshipTupleCreate: RelationshipTupleCreate;
 }
 
 /**
  * Request parameters for deleteRelationshipTuple operation in RelationshipTuplesApi.
- * @export
  * @interface RelationshipTuplesApiDeleteRelationshipTupleRequest
  */
 export interface RelationshipTuplesApiDeleteRelationshipTupleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RelationshipTuplesApiDeleteRelationshipTuple
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RelationshipTuplesApiDeleteRelationshipTuple
    */
   readonly envId: string;
 
   /**
    *
    * @type {RelationshipTupleDelete}
-   * @memberof RelationshipTuplesApiDeleteRelationshipTuple
    */
   readonly relationshipTupleDelete: RelationshipTupleDelete;
 }
 
 /**
  * Request parameters for listRelationshipTuples operation in RelationshipTuplesApi.
- * @export
  * @interface RelationshipTuplesApiListRelationshipTuplesRequest
  */
 export interface RelationshipTuplesApiListRelationshipTuplesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RelationshipTuplesApiListRelationshipTuples
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RelationshipTuplesApiListRelationshipTuples
    */
   readonly envId: string;
 
   /**
    * If true, will return the full subject and object resource instances.
    * @type {any}
-   * @memberof RelationshipTuplesApiListRelationshipTuples
    */
   readonly detailed?: any;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof RelationshipTuplesApiListRelationshipTuples
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof RelationshipTuplesApiListRelationshipTuples
    */
   readonly perPage?: number;
 
   /**
    * The tenant key or id to filter by
    * @type {string}
-   * @memberof RelationshipTuplesApiListRelationshipTuples
    */
   readonly tenant?: string;
 
   /**
    * The subject to filter by, accepts either the resource instance id or resource_type:resource_instance
    * @type {string}
-   * @memberof RelationshipTuplesApiListRelationshipTuples
    */
   readonly subject?: string;
 
   /**
    * The relation id or key to filter by
    * @type {string}
-   * @memberof RelationshipTuplesApiListRelationshipTuples
    */
   readonly relation?: string;
 
   /**
    * The object to filter by, accepts either the resource instance id or resource_type:resource_instance
    * @type {string}
-   * @memberof RelationshipTuplesApiListRelationshipTuples
    */
   readonly object?: string;
 
   /**
    * The object type to filter by, accepts resource type id or key
    * @type {string}
-   * @memberof RelationshipTuplesApiListRelationshipTuples
    */
   readonly objectType?: string;
 
   /**
    * The subject type to filter by, accepts resource type id or key
    * @type {string}
-   * @memberof RelationshipTuplesApiListRelationshipTuples
    */
   readonly subjectType?: string;
 }
 
 /**
  * RelationshipTuplesApi - object-oriented interface
- * @export
  * @class RelationshipTuplesApi
  * @extends {BaseAPI}
  */
@@ -897,7 +852,6 @@ export class RelationshipTuplesApi extends BaseAPI {
    * @param {RelationshipTuplesApiBulkCreateRelationshipTuplesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RelationshipTuplesApi
    */
   public async bulkCreateRelationshipTuples(
     requestParameters: RelationshipTuplesApiBulkCreateRelationshipTuplesRequest,
@@ -918,7 +872,6 @@ export class RelationshipTuplesApi extends BaseAPI {
    * @param {RelationshipTuplesApiBulkDeleteRelationshipTuplesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RelationshipTuplesApi
    */
   public async bulkDeleteRelationshipTuples(
     requestParameters: RelationshipTuplesApiBulkDeleteRelationshipTuplesRequest,
@@ -939,7 +892,6 @@ export class RelationshipTuplesApi extends BaseAPI {
    * @param {RelationshipTuplesApiCreateRelationshipTupleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RelationshipTuplesApi
    */
   public createRelationshipTuple(
     requestParameters: RelationshipTuplesApiCreateRelationshipTupleRequest,
@@ -961,7 +913,6 @@ export class RelationshipTuplesApi extends BaseAPI {
    * @param {RelationshipTuplesApiDeleteRelationshipTupleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RelationshipTuplesApi
    */
   public deleteRelationshipTuple(
     requestParameters: RelationshipTuplesApiDeleteRelationshipTupleRequest,
@@ -983,7 +934,6 @@ export class RelationshipTuplesApi extends BaseAPI {
    * @param {RelationshipTuplesApiListRelationshipTuplesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RelationshipTuplesApi
    */
   public listRelationshipTuples(
     requestParameters: RelationshipTuplesApiListRelationshipTuplesRequest,

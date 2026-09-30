@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,136 +11,113 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { AuditLogObjects } from './audit-log-objects';
+import { type AuditLogObjects } from './audit-log-objects';
 // May contain unused imports in some cases
-// @ts-ignore
-import { RawData } from './raw-data';
+import { type RawData } from './raw-data';
 
 /**
  *
- * @export
  * @interface DetailedAuditLog
  */
 export interface DetailedAuditLog {
   /**
    *
    * @type {string}
-   * @memberof DetailedAuditLog
    */
   id: string;
   /**
    *
    * @type {RawData}
-   * @memberof DetailedAuditLog
    */
   raw_data: RawData;
   /**
    *
    * @type {any}
-   * @memberof DetailedAuditLog
    */
   input?: any;
   /**
    *
    * @type {any}
-   * @memberof DetailedAuditLog
    */
   result?: any;
   /**
    *
    * @type {any}
-   * @memberof DetailedAuditLog
    */
   context?: any;
   /**
    *
    * @type {string}
-   * @memberof DetailedAuditLog
    */
   action?: string;
   /**
    *
    * @type {string}
-   * @memberof DetailedAuditLog
    */
   timestamp: string;
   /**
    *
    * @type {string}
-   * @memberof DetailedAuditLog
    */
   query?: string;
   /**
    *
    * @type {string}
-   * @memberof DetailedAuditLog
    */
   user_key?: string;
   /**
    *
    * @type {string}
-   * @memberof DetailedAuditLog
    */
   user_email?: string;
   /**
    *
    * @type {string}
-   * @memberof DetailedAuditLog
    */
   user_name?: string;
   /**
    *
    * @type {string}
-   * @memberof DetailedAuditLog
    */
   resource_type?: string;
   /**
    *
    * @type {string}
-   * @memberof DetailedAuditLog
    */
   tenant?: string;
   /**
    *
    * @type {boolean}
-   * @memberof DetailedAuditLog
    */
   decision?: boolean;
   /**
    *
    * @type {string}
-   * @memberof DetailedAuditLog
    */
   reason?: string;
   /**
    *
    * @type {string}
-   * @memberof DetailedAuditLog
    */
   pdp_config_id: string;
   /**
    *
    * @type {string}
-   * @memberof DetailedAuditLog
    */
   env_id: string;
   /**
    *
    * @type {string}
-   * @memberof DetailedAuditLog
    */
   project_id: string;
   /**
    *
    * @type {string}
-   * @memberof DetailedAuditLog
    */
   org_id: string;
   /**
    *
    * @type {AuditLogObjects}
-   * @memberof DetailedAuditLog
    */
   objects: AuditLogObjects;
 }

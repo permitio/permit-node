@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,30 +10,26 @@
  * Do not edit the class manually.
  */
 
-import { Allow } from './allow';
+import { type Allow } from './allow';
 
 /**
  *
- * @export
  * @interface AllowedResult
  */
 export interface AllowedResult {
   /**
    *
    * @type {string}
-   * @memberof AllowedResult
    */
   query_type: AllowedResultQueryTypeEnum;
   /**
    *
    * @type {Allow}
-   * @memberof AllowedResult
    */
   allow: Allow;
   /**
    *
    * @type {object}
-   * @memberof AllowedResult
    */
   debug: object;
 }

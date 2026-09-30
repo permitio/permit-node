@@ -1,8 +1,12 @@
-import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, {
+  type AxiosInstance,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
+} from 'axios';
 import pino from 'pino';
 
-import { AxiosLoggingInterceptor } from '../../../utils/http-logger';
-import { synthAxiosError } from '../../helpers/mock-api';
+import { AxiosLoggingInterceptor } from '#src/utils/http-logger';
+import { synthAxiosError } from '#src/tests/helpers/mock-api';
 
 type RequestUse = AxiosInstance['interceptors']['request']['use'];
 type RequestHandlers = Parameters<RequestUse>;

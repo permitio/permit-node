@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,25 +11,21 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { DerivedRole } from './derived-role';
+import { type DerivedRole } from './derived-role';
 
 /**
  *
- * @export
  * @interface ResourceTypeData
  */
 export interface ResourceTypeData {
   /**
    *
    * @type {Array<string>}
-   * @memberof ResourceTypeData
    */
   actions: Array<string>;
   /**
    *
    * @type {{ [key: string]: DerivedRole; }}
-   * @memberof ResourceTypeData
    */
   derived_roles: { [key: string]: DerivedRole };
 }

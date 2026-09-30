@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,14 +12,12 @@
 
 /**
  *
- * @export
  * @interface UserReplaceBulkOperation
  */
 export interface UserReplaceBulkOperation {
   /**
    *
    * @type {any}
-   * @memberof UserReplaceBulkOperation
    */
   operations: any;
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,35 +10,25 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { ResourceAttributeCreate } from '../types';
-// @ts-ignore
-import { ResourceAttributeRead } from '../types';
-// @ts-ignore
-import { ResourceAttributeUpdate } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type ResourceAttributeCreate,
+  type ResourceAttributeRead,
+  type ResourceAttributeUpdate,
+} from '../types';
 /**
  * UserAttributesApi - axios parameter creator
- * @export
  */
 export const UserAttributesApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -380,7 +368,6 @@ export const UserAttributesApiAxiosParamCreator = function (configuration?: Conf
 
 /**
  * UserAttributesApi - functional programming interface
- * @export
  */
 export const UserAttributesApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = UserAttributesApiAxiosParamCreator(configuration);
@@ -534,7 +521,6 @@ export const UserAttributesApiFp = function (configuration?: Configuration) {
 
 /**
  * UserAttributesApi - factory interface
- * @export
  */
 export const UserAttributesApiFactory = function (
   configuration?: Configuration,
@@ -668,210 +654,180 @@ export const UserAttributesApiFactory = function (
 
 /**
  * Request parameters for createUserAttribute operation in UserAttributesApi.
- * @export
  * @interface UserAttributesApiCreateUserAttributeRequest
  */
 export interface UserAttributesApiCreateUserAttributeRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UserAttributesApiCreateUserAttribute
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UserAttributesApiCreateUserAttribute
    */
   readonly envId: string;
 
   /**
    *
    * @type {ResourceAttributeCreate}
-   * @memberof UserAttributesApiCreateUserAttribute
    */
   readonly resourceAttributeCreate: ResourceAttributeCreate;
 
   /**
    *
    * @type {string}
-   * @memberof UserAttributesApiCreateUserAttribute
    */
   readonly resourceId?: string;
 }
 
 /**
  * Request parameters for deleteUserAttribute operation in UserAttributesApi.
- * @export
  * @interface UserAttributesApiDeleteUserAttributeRequest
  */
 export interface UserAttributesApiDeleteUserAttributeRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UserAttributesApiDeleteUserAttribute
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UserAttributesApiDeleteUserAttribute
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UserAttributesApiDeleteUserAttribute
    */
   readonly attributeId: string;
 
   /**
    *
    * @type {string}
-   * @memberof UserAttributesApiDeleteUserAttribute
    */
   readonly resourceId?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof UserAttributesApiDeleteUserAttribute
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof UserAttributesApiDeleteUserAttribute
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for getUserAttribute operation in UserAttributesApi.
- * @export
  * @interface UserAttributesApiGetUserAttributeRequest
  */
 export interface UserAttributesApiGetUserAttributeRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UserAttributesApiGetUserAttribute
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UserAttributesApiGetUserAttribute
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UserAttributesApiGetUserAttribute
    */
   readonly attributeId: string;
 
   /**
    *
    * @type {string}
-   * @memberof UserAttributesApiGetUserAttribute
    */
   readonly resourceId?: string;
 }
 
 /**
  * Request parameters for listUserAttributes operation in UserAttributesApi.
- * @export
  * @interface UserAttributesApiListUserAttributesRequest
  */
 export interface UserAttributesApiListUserAttributesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UserAttributesApiListUserAttributes
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UserAttributesApiListUserAttributes
    */
   readonly envId: string;
 
   /**
    *
    * @type {string}
-   * @memberof UserAttributesApiListUserAttributes
    */
   readonly resourceId?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof UserAttributesApiListUserAttributes
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof UserAttributesApiListUserAttributes
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateUserAttribute operation in UserAttributesApi.
- * @export
  * @interface UserAttributesApiUpdateUserAttributeRequest
  */
 export interface UserAttributesApiUpdateUserAttributeRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UserAttributesApiUpdateUserAttribute
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UserAttributesApiUpdateUserAttribute
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UserAttributesApiUpdateUserAttribute
    */
   readonly attributeId: string;
 
   /**
    *
    * @type {ResourceAttributeUpdate}
-   * @memberof UserAttributesApiUpdateUserAttribute
    */
   readonly resourceAttributeUpdate: ResourceAttributeUpdate;
 
   /**
    *
    * @type {string}
-   * @memberof UserAttributesApiUpdateUserAttribute
    */
   readonly resourceId?: string;
 }
 
 /**
  * UserAttributesApi - object-oriented interface
- * @export
  * @class UserAttributesApi
  * @extends {BaseAPI}
  */
@@ -882,7 +838,6 @@ export class UserAttributesApi extends BaseAPI {
    * @param {UserAttributesApiCreateUserAttributeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UserAttributesApi
    */
   public createUserAttribute(
     requestParameters: UserAttributesApiCreateUserAttributeRequest,
@@ -905,7 +860,6 @@ export class UserAttributesApi extends BaseAPI {
    * @param {UserAttributesApiDeleteUserAttributeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UserAttributesApi
    */
   public deleteUserAttribute(
     requestParameters: UserAttributesApiDeleteUserAttributeRequest,
@@ -930,7 +884,6 @@ export class UserAttributesApi extends BaseAPI {
    * @param {UserAttributesApiGetUserAttributeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UserAttributesApi
    */
   public getUserAttribute(
     requestParameters: UserAttributesApiGetUserAttributeRequest,
@@ -953,7 +906,6 @@ export class UserAttributesApi extends BaseAPI {
    * @param {UserAttributesApiListUserAttributesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UserAttributesApi
    */
   public listUserAttributes(
     requestParameters: UserAttributesApiListUserAttributesRequest,
@@ -977,7 +929,6 @@ export class UserAttributesApi extends BaseAPI {
    * @param {UserAttributesApiUpdateUserAttributeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UserAttributesApi
    */
   public updateUserAttribute(
     requestParameters: UserAttributesApiUpdateUserAttributeRequest,

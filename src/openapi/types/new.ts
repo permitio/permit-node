@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,15 +11,11 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { EnvironmentCreate } from './environment-create';
+import { type EnvironmentCreate } from './environment-create';
 // May contain unused imports in some cases
-// @ts-ignore
-import { Jwks } from './jwks';
 
 /**
  * @type New
  * Description of the environment to create. This environment must not already exist.
- * @export
  */
 export type New = EnvironmentCreate;

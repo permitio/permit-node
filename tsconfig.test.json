@@ -1,15 +1,10 @@
 {
-  // Type-checks the SDK together with its test suites and vitest.config.ts. It never emits:
-  // builds use tsconfig.build.json, which leaves out the tests and the Vitest globals.
   "extends": "./tsconfig.build.json",
   "compilerOptions": {
     "noEmit": true,
     "rootDir": ".",
-    // TypeScript 4.9 cannot check Vitest 4's declaration files: they use TypeScript 5 features
-    // and import packages that publish their types only through package.json "exports".
-    "skipLibCheck": true,
     "types": ["node", "vitest/globals"]
   },
-  "include": ["src/**/*.ts", "vitest.config.ts"],
-  "exclude": ["node_modules/**"]
+  "include": ["src/**/*.ts", "vitest.config.mts"],
+  "exclude": ["node_modules"]
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,46 +11,38 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
 import { MemberAccessLevel } from './member-access-level';
 // May contain unused imports in some cases
-// @ts-ignore
 import { MemberAccessObj } from './member-access-obj';
 
 /**
  *
- * @export
  * @interface ViewerGrant
  */
 export interface ViewerGrant {
   /**
    *
    * @type {MemberAccessLevel}
-   * @memberof ViewerGrant
    */
   role: MemberAccessLevel;
   /**
    *
    * @type {MemberAccessObj}
-   * @memberof ViewerGrant
    */
   type: MemberAccessObj;
   /**
    *
    * @type {string}
-   * @memberof ViewerGrant
    */
   org_id?: string;
   /**
    *
    * @type {string}
-   * @memberof ViewerGrant
    */
   project_id?: string;
   /**
    *
    * @type {string}
-   * @memberof ViewerGrant
    */
   env_id?: string;
 }

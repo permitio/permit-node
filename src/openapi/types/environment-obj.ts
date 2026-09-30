@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,38 +12,32 @@
 
 /**
  *
- * @export
  * @interface EnvironmentObj
  */
 export interface EnvironmentObj {
   /**
    *
    * @type {string}
-   * @memberof EnvironmentObj
    */
   id: string;
   /**
    *
    * @type {string}
-   * @memberof EnvironmentObj
    */
   key: string;
   /**
    *
    * @type {string}
-   * @memberof EnvironmentObj
    */
   name?: string;
   /**
    *
    * @type {string}
-   * @memberof EnvironmentObj
    */
   created_at: string;
   /**
    *
    * @type {string}
-   * @memberof EnvironmentObj
    */
   updated_at: string;
 }

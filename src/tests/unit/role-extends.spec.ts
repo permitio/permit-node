@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { Permit } from '../../index';
+import { Permit } from '#src/index';
 
 type RoleCreate = Parameters<Permit['api']['roles']['create']>[0];
 type RoleRead = Awaited<ReturnType<Permit['api']['roles']['get']>>;
@@ -9,9 +9,8 @@ type ResourceRoleCreate = Parameters<Permit['api']['resourceRoles']['create']>[1
 type ResourceRoleRead = Awaited<ReturnType<Permit['api']['resourceRoles']['get']>>;
 type ResourceRoleUpdate = Parameters<Permit['api']['resourceRoles']['update']>[2];
 
-type IsExact<A, B> = (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2
-  ? true
-  : false;
+type IsExact<A, B> =
+  (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;
 type Assert<T extends true> = T;
 type Inheritance = { extends?: Array<string> };
 

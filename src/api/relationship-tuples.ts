@@ -1,26 +1,26 @@
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 import {
   RelationshipTuplesApi as AutogenRelationshipTuplesApi,
-  RelationshipTupleCreate,
-  RelationshipTupleCreateBulkOperation,
-  RelationshipTupleDelete,
-  RelationshipTupleDeleteBulkOperation,
-  RelationshipTupleRead,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+  type RelationshipTupleCreate,
+  type RelationshipTupleCreateBulkOperation,
+  type RelationshipTupleDelete,
+  type RelationshipTupleDeleteBulkOperation,
+  type RelationshipTupleRead,
+} from '#src/openapi/index';
+import { BASE_PATH } from '#src/openapi/base';
 
-import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BaseFactsPermitAPI, type IPagination, type IWaitForSync } from '#src/api/base';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
 export {
-  RelationshipTupleCreate,
-  RelationshipTupleDelete,
-  RelationshipTupleRead,
-  RelationshipTupleCreateBulkOperation,
-  RelationshipTupleDeleteBulkOperation,
-} from '../openapi';
+  type RelationshipTupleCreate,
+  type RelationshipTupleDelete,
+  type RelationshipTupleRead,
+  type RelationshipTupleCreateBulkOperation,
+  type RelationshipTupleDeleteBulkOperation,
+} from '#src/openapi/index';
 
 /**
  * Represents the parameters for listing role createments.

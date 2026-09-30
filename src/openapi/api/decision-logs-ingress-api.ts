@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,29 +10,21 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
+import { Configuration } from '../configuration';
+
 /**
  * DecisionLogsIngressApi - axios parameter creator
- * @export
  */
 export const DecisionLogsIngressApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -92,7 +82,6 @@ export const DecisionLogsIngressApiAxiosParamCreator = function (configuration?:
 
 /**
  * DecisionLogsIngressApi - functional programming interface
- * @export
  */
 export const DecisionLogsIngressApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = DecisionLogsIngressApiAxiosParamCreator(configuration);
@@ -119,7 +108,6 @@ export const DecisionLogsIngressApiFp = function (configuration?: Configuration)
 
 /**
  * DecisionLogsIngressApi - factory interface
- * @export
  */
 export const DecisionLogsIngressApiFactory = function (
   configuration?: Configuration,
@@ -145,21 +133,18 @@ export const DecisionLogsIngressApiFactory = function (
 
 /**
  * Request parameters for insertOpaDecisionLogs operation in DecisionLogsIngressApi.
- * @export
  * @interface DecisionLogsIngressApiInsertOpaDecisionLogsRequest
  */
 export interface DecisionLogsIngressApiInsertOpaDecisionLogsRequest {
   /**
    *
    * @type {Array<object>}
-   * @memberof DecisionLogsIngressApiInsertOpaDecisionLogs
    */
   readonly requestBody: Array<object>;
 }
 
 /**
  * DecisionLogsIngressApi - object-oriented interface
- * @export
  * @class DecisionLogsIngressApi
  * @extends {BaseAPI}
  */
@@ -170,7 +155,6 @@ export class DecisionLogsIngressApi extends BaseAPI {
    * @param {DecisionLogsIngressApiInsertOpaDecisionLogsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof DecisionLogsIngressApi
    */
   public insertOpaDecisionLogs(
     requestParameters: DecisionLogsIngressApiInsertOpaDecisionLogsRequest,

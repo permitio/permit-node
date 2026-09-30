@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,45 +10,30 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { BulkRoleAssignmentReport } from '../types';
-// @ts-ignore
-import { BulkRoleUnAssignmentReport } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { RoleAssignmentCreate } from '../types';
-// @ts-ignore
-import { RoleAssignmentRead } from '../types';
-// @ts-ignore
-import { RoleAssignmentDetailedRead } from '../types';
-// @ts-ignore
-import { RoleAssignmentRemove } from '../types';
-// @ts-ignore
-import { PaginatedResultRoleAssignmentRead } from '../types';
-// @ts-ignore
-import { PaginatedResultRoleAssignmentDetailedRead } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type BulkRoleAssignmentReport,
+  type BulkRoleUnAssignmentReport,
+  type PaginatedResultRoleAssignmentDetailedRead,
+  type PaginatedResultRoleAssignmentRead,
+  type RoleAssignmentCreate,
+  type RoleAssignmentDetailedRead,
+  type RoleAssignmentRead,
+  type RoleAssignmentRemove,
+} from '../types';
 /**
  * RoleAssignmentsApi - axios parameter creator
- * @export
  */
 export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -397,7 +380,6 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
 
 /**
  * RoleAssignmentsApi - functional programming interface
- * @export
  */
 export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = RoleAssignmentsApiAxiosParamCreator(configuration);
@@ -560,7 +542,6 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
 
 /**
  * RoleAssignmentsApi - factory interface
- * @export
  */
 export const RoleAssignmentsApiFactory = function (
   configuration?: Configuration,
@@ -703,203 +684,174 @@ export const RoleAssignmentsApiFactory = function (
 
 /**
  * Request parameters for assignRole operation in RoleAssignmentsApi.
- * @export
  * @interface RoleAssignmentsApiAssignRoleRequest
  */
 export interface RoleAssignmentsApiAssignRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RoleAssignmentsApiAssignRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RoleAssignmentsApiAssignRole
    */
   readonly envId: string;
 
   /**
    *
    * @type {RoleAssignmentCreate}
-   * @memberof RoleAssignmentsApiAssignRole
    */
   readonly roleAssignmentCreate: RoleAssignmentCreate;
 }
 
 /**
  * Request parameters for bulkAssignRole operation in RoleAssignmentsApi.
- * @export
  * @interface RoleAssignmentsApiBulkAssignRoleRequest
  */
 export interface RoleAssignmentsApiBulkAssignRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RoleAssignmentsApiBulkAssignRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RoleAssignmentsApiBulkAssignRole
    */
   readonly envId: string;
 
   /**
    *
    * @type {Array<RoleAssignmentCreate>}
-   * @memberof RoleAssignmentsApiBulkAssignRole
    */
   readonly roleAssignmentCreate: Array<RoleAssignmentCreate>;
 }
 
 /**
  * Request parameters for bulkUnassignRole operation in RoleAssignmentsApi.
- * @export
  * @interface RoleAssignmentsApiBulkUnassignRoleRequest
  */
 export interface RoleAssignmentsApiBulkUnassignRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RoleAssignmentsApiBulkUnassignRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RoleAssignmentsApiBulkUnassignRole
    */
   readonly envId: string;
 
   /**
    *
    * @type {Array<RoleAssignmentRemove>}
-   * @memberof RoleAssignmentsApiBulkUnassignRole
    */
   readonly roleAssignmentRemove: Array<RoleAssignmentRemove>;
 }
 
 /**
  * Request parameters for listRoleAssignments operation in RoleAssignmentsApi.
- * @export
  * @interface RoleAssignmentsApiListRoleAssignmentsRequest
  */
 export interface RoleAssignmentsApiListRoleAssignmentsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly envId: string;
 
   /**
    * optional user(s) filter, will only return role assignments granted to this user(s).
    * @type {string}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly user?: string;
 
   /**
    * optional role(s) filter, will only return role assignments granting this role(s).
    * @type {string}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly role?: string;
 
   /**
    * optional tenant(s) filter, will only return role assignments granted in that tenant(s).
    * @type {string}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly tenant?: string;
 
   /**
    * optional resource **type** filter, will only return role assignments granted on that resource type.
    * @type {string}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly resource?: string;
 
   /**
    * optional resource instance filter, will only return role assignments granted on that resource instance.
    * @type {string}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly resourceInstance?: string;
 
   /**
    * Whether to return full details about the user, tenant and role
    * @type {boolean}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly detailed?: boolean;
 
   /**
    * If true, returns the list of role assignments and the total count.
    * @type {boolean}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly includeTotalCount?: boolean;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for unassignRole operation in RoleAssignmentsApi.
- * @export
  * @interface RoleAssignmentsApiUnassignRoleRequest
  */
 export interface RoleAssignmentsApiUnassignRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RoleAssignmentsApiUnassignRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof RoleAssignmentsApiUnassignRole
    */
   readonly envId: string;
 
   /**
    *
    * @type {RoleAssignmentRemove}
-   * @memberof RoleAssignmentsApiUnassignRole
    */
   readonly roleAssignmentRemove: RoleAssignmentRemove;
 }
 
 /**
  * RoleAssignmentsApi - object-oriented interface
- * @export
  * @class RoleAssignmentsApi
  * @extends {BaseAPI}
  */
@@ -910,7 +862,6 @@ export class RoleAssignmentsApi extends BaseAPI {
    * @param {RoleAssignmentsApiAssignRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RoleAssignmentsApi
    */
   public assignRole(
     requestParameters: RoleAssignmentsApiAssignRoleRequest,
@@ -932,7 +883,6 @@ export class RoleAssignmentsApi extends BaseAPI {
    * @param {RoleAssignmentsApiBulkAssignRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RoleAssignmentsApi
    */
   public bulkAssignRole(
     requestParameters: RoleAssignmentsApiBulkAssignRoleRequest,
@@ -954,7 +904,6 @@ export class RoleAssignmentsApi extends BaseAPI {
    * @param {RoleAssignmentsApiBulkUnassignRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RoleAssignmentsApi
    */
   public bulkUnassignRole(
     requestParameters: RoleAssignmentsApiBulkUnassignRoleRequest,
@@ -976,7 +925,6 @@ export class RoleAssignmentsApi extends BaseAPI {
    * @param {RoleAssignmentsApiListRoleAssignmentsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RoleAssignmentsApi
    */
   public listRoleAssignments(
     requestParameters: RoleAssignmentsApiListRoleAssignmentsRequest,
@@ -1006,7 +954,6 @@ export class RoleAssignmentsApi extends BaseAPI {
    * @param {RoleAssignmentsApiUnassignRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof RoleAssignmentsApi
    */
   public unassignRole(
     requestParameters: RoleAssignmentsApiUnassignRoleRequest,

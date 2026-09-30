@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,19 +11,16 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { Actor } from './actor';
+import { type Actor } from './actor';
 
 /**
  *
- * @export
  * @interface AuthnMeRead
  */
 export interface AuthnMeRead {
   /**
    *
    * @type {Actor}
-   * @memberof AuthnMeRead
    */
   actor: Actor;
 }

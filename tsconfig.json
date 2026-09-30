@@ -1,5 +1,3 @@
 {
-  // Read by editors, ESLint and Vitest. It covers every TypeScript file in the repository, tests
-  // included. The build (tsup and `pnpm build:types`) and typedoc use tsconfig.build.json instead.
   "extends": "./tsconfig.test.json"
 }

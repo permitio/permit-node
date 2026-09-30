@@ -1,5 +1,5 @@
 export function escapeRegex(s: string): string {
-  return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  return s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
 
 function makeRegexGlobal(re: RegExp): RegExp {
@@ -35,7 +35,7 @@ export function matchAll(re: RegExp, str: string): RegexMatch[] {
   let groups;
   while ((groups = regex.exec(str)) !== null) {
     const found = Array.from(groups);
-    const length = found[0].length;
+    const length = groups[0].length;
     matches.push({
       start: groups.index,
       end: groups.index + length - 1,

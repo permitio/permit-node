@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,45 +10,30 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { ElementsConfigCreate } from '../types';
-// @ts-ignore
-import { ElementsConfigRead } from '../types';
-// @ts-ignore
-import { ElementsConfigRuntimeRead } from '../types';
-// @ts-ignore
-import { ElementsConfigUpdate } from '../types';
-// @ts-ignore
-import { ElementsEnvTypeRead } from '../types';
-// @ts-ignore
-import { ElementsEnvTypeUpdate } from '../types';
-// @ts-ignore
-import { ElementsType } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PaginatedResultElementsConfigRead } from '../types';
+import { Configuration } from '../configuration';
+import {
+  ElementsType,
+  type ElementsConfigCreate,
+  type ElementsConfigRead,
+  type ElementsConfigRuntimeRead,
+  type ElementsConfigUpdate,
+  type ElementsEnvTypeRead,
+  type ElementsEnvTypeUpdate,
+  type PaginatedResultElementsConfigRead,
+} from '../types';
 /**
  * ElementsConfigsApi - axios parameter creator
- * @export
  */
 export const ElementsConfigsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -522,7 +505,6 @@ export const ElementsConfigsApiAxiosParamCreator = function (configuration?: Con
 
 /**
  * ElementsConfigsApi - functional programming interface
- * @export
  */
 export const ElementsConfigsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ElementsConfigsApiAxiosParamCreator(configuration);
@@ -729,7 +711,6 @@ export const ElementsConfigsApiFp = function (configuration?: Configuration) {
 
 /**
  * ElementsConfigsApi - factory interface
- * @export
  */
 export const ElementsConfigsApiFactory = function (
   configuration?: Configuration,
@@ -901,252 +882,216 @@ export const ElementsConfigsApiFactory = function (
 
 /**
  * Request parameters for createElementsConfig operation in ElementsConfigsApi.
- * @export
  * @interface ElementsConfigsApiCreateElementsConfigRequest
  */
 export interface ElementsConfigsApiCreateElementsConfigRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiCreateElementsConfig
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiCreateElementsConfig
    */
   readonly envId: string;
 
   /**
    *
    * @type {ElementsConfigCreate}
-   * @memberof ElementsConfigsApiCreateElementsConfig
    */
   readonly elementsConfigCreate: ElementsConfigCreate;
 }
 
 /**
  * Request parameters for deleteElementsConfig operation in ElementsConfigsApi.
- * @export
  * @interface ElementsConfigsApiDeleteElementsConfigRequest
  */
 export interface ElementsConfigsApiDeleteElementsConfigRequest {
   /**
    * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiDeleteElementsConfig
    */
   readonly elementsConfigId: string;
 
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiDeleteElementsConfig
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiDeleteElementsConfig
    */
   readonly envId: string;
 }
 
 /**
  * Request parameters for getElementsConfig operation in ElementsConfigsApi.
- * @export
  * @interface ElementsConfigsApiGetElementsConfigRequest
  */
 export interface ElementsConfigsApiGetElementsConfigRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiGetElementsConfig
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiGetElementsConfig
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiGetElementsConfig
    */
   readonly elementsConfigId: string;
 }
 
 /**
  * Request parameters for getElementsConfigRuntime operation in ElementsConfigsApi.
- * @export
  * @interface ElementsConfigsApiGetElementsConfigRuntimeRequest
  */
 export interface ElementsConfigsApiGetElementsConfigRuntimeRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiGetElementsConfigRuntime
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiGetElementsConfigRuntime
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiGetElementsConfigRuntime
    */
   readonly elementsConfigId: string;
 }
 
 /**
  * Request parameters for getElementsTypeConfig operation in ElementsConfigsApi.
- * @export
  * @interface ElementsConfigsApiGetElementsTypeConfigRequest
  */
 export interface ElementsConfigsApiGetElementsTypeConfigRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiGetElementsTypeConfig
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiGetElementsTypeConfig
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the elements_type, or the URL-friendly key of the elements_type (i.e: the \&quot;slug\&quot;).
    * @type {ElementsType}
-   * @memberof ElementsConfigsApiGetElementsTypeConfig
    */
   readonly elementType: ElementsType;
 }
 
 /**
  * Request parameters for listElementsConfigs operation in ElementsConfigsApi.
- * @export
  * @interface ElementsConfigsApiListElementsConfigsRequest
  */
 export interface ElementsConfigsApiListElementsConfigsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiListElementsConfigs
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiListElementsConfigs
    */
   readonly envId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof ElementsConfigsApiListElementsConfigs
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof ElementsConfigsApiListElementsConfigs
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateElementsConfig operation in ElementsConfigsApi.
- * @export
  * @interface ElementsConfigsApiUpdateElementsConfigRequest
  */
 export interface ElementsConfigsApiUpdateElementsConfigRequest {
   /**
    * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiUpdateElementsConfig
    */
   readonly elementsConfigId: string;
 
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiUpdateElementsConfig
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiUpdateElementsConfig
    */
   readonly envId: string;
 
   /**
    *
    * @type {ElementsConfigUpdate}
-   * @memberof ElementsConfigsApiUpdateElementsConfig
    */
   readonly elementsConfigUpdate: ElementsConfigUpdate;
 }
 
 /**
  * Request parameters for updateElementsTypePermissions operation in ElementsConfigsApi.
- * @export
  * @interface ElementsConfigsApiUpdateElementsTypePermissionsRequest
  */
 export interface ElementsConfigsApiUpdateElementsTypePermissionsRequest {
   /**
    * Either the unique id of the elements_type, or the URL-friendly key of the elements_type (i.e: the \&quot;slug\&quot;).
    * @type {ElementsType}
-   * @memberof ElementsConfigsApiUpdateElementsTypePermissions
    */
   readonly elementType: ElementsType;
 
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiUpdateElementsTypePermissions
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ElementsConfigsApiUpdateElementsTypePermissions
    */
   readonly envId: string;
 
   /**
    *
    * @type {ElementsEnvTypeUpdate}
-   * @memberof ElementsConfigsApiUpdateElementsTypePermissions
    */
   readonly elementsEnvTypeUpdate: ElementsEnvTypeUpdate;
 }
 
 /**
  * ElementsConfigsApi - object-oriented interface
- * @export
  * @class ElementsConfigsApi
  * @extends {BaseAPI}
  */
@@ -1157,7 +1102,6 @@ export class ElementsConfigsApi extends BaseAPI {
    * @param {ElementsConfigsApiCreateElementsConfigRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ElementsConfigsApi
    */
   public createElementsConfig(
     requestParameters: ElementsConfigsApiCreateElementsConfigRequest,
@@ -1179,7 +1123,6 @@ export class ElementsConfigsApi extends BaseAPI {
    * @param {ElementsConfigsApiDeleteElementsConfigRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ElementsConfigsApi
    */
   public deleteElementsConfig(
     requestParameters: ElementsConfigsApiDeleteElementsConfigRequest,
@@ -1201,7 +1144,6 @@ export class ElementsConfigsApi extends BaseAPI {
    * @param {ElementsConfigsApiGetElementsConfigRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ElementsConfigsApi
    */
   public getElementsConfig(
     requestParameters: ElementsConfigsApiGetElementsConfigRequest,
@@ -1223,7 +1165,6 @@ export class ElementsConfigsApi extends BaseAPI {
    * @param {ElementsConfigsApiGetElementsConfigRuntimeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ElementsConfigsApi
    */
   public getElementsConfigRuntime(
     requestParameters: ElementsConfigsApiGetElementsConfigRuntimeRequest,
@@ -1245,7 +1186,6 @@ export class ElementsConfigsApi extends BaseAPI {
    * @param {ElementsConfigsApiGetElementsTypeConfigRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ElementsConfigsApi
    */
   public getElementsTypeConfig(
     requestParameters: ElementsConfigsApiGetElementsTypeConfigRequest,
@@ -1267,7 +1207,6 @@ export class ElementsConfigsApi extends BaseAPI {
    * @param {ElementsConfigsApiListElementsConfigsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ElementsConfigsApi
    */
   public listElementsConfigs(
     requestParameters: ElementsConfigsApiListElementsConfigsRequest,
@@ -1290,7 +1229,6 @@ export class ElementsConfigsApi extends BaseAPI {
    * @param {ElementsConfigsApiUpdateElementsConfigRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ElementsConfigsApi
    */
   public updateElementsConfig(
     requestParameters: ElementsConfigsApiUpdateElementsConfigRequest,
@@ -1313,7 +1251,6 @@ export class ElementsConfigsApi extends BaseAPI {
    * @param {ElementsConfigsApiUpdateElementsTypePermissionsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ElementsConfigsApi
    */
   public updateElementsTypePermissions(
     requestParameters: ElementsConfigsApiUpdateElementsTypePermissionsRequest,

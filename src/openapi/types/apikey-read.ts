@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,112 +11,91 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
 import { APIKeyOwnerType } from './apikey-owner-type';
 // May contain unused imports in some cases
-// @ts-ignore
-import { EnvironmentRead } from './environment-read';
+import { type EnvironmentRead } from './environment-read';
 // May contain unused imports in some cases
-// @ts-ignore
 import { MemberAccessLevel } from './member-access-level';
 // May contain unused imports in some cases
-// @ts-ignore
 import { MemberAccessObj } from './member-access-obj';
 // May contain unused imports in some cases
-// @ts-ignore
-import { OrgMemberRead } from './org-member-read';
+import { type OrgMemberRead } from './org-member-read';
 // May contain unused imports in some cases
-// @ts-ignore
-import { ProjectRead } from './project-read';
+import { type ProjectRead } from './project-read';
 
 /**
  *
- * @export
  * @interface APIKeyRead
  */
 export interface APIKeyRead {
   /**
    *
    * @type {string}
-   * @memberof APIKeyRead
    */
   organization_id: string;
   /**
    *
    * @type {string}
-   * @memberof APIKeyRead
    */
   project_id?: string;
   /**
    *
    * @type {string}
-   * @memberof APIKeyRead
    */
   environment_id?: string;
   /**
    *
    * @type {MemberAccessObj}
-   * @memberof APIKeyRead
    */
   object_type?: MemberAccessObj;
   /**
    *
    * @type {MemberAccessLevel}
-   * @memberof APIKeyRead
    */
   access_level?: MemberAccessLevel;
   /**
    *
    * @type {APIKeyOwnerType}
-   * @memberof APIKeyRead
    */
   owner_type: APIKeyOwnerType;
   /**
    *
    * @type {string}
-   * @memberof APIKeyRead
    */
   name?: string;
   /**
    *
    * @type {string}
-   * @memberof APIKeyRead
    */
   id: string;
   /**
    *
    * @type {string}
-   * @memberof APIKeyRead
    */
   secret?: string;
   /**
    *
    * @type {string}
-   * @memberof APIKeyRead
    */
   created_at: string;
   /**
    *
    * @type {OrgMemberRead}
-   * @memberof APIKeyRead
    */
   created_by_member?: OrgMemberRead;
   /**
    *
    * @type {string}
-   * @memberof APIKeyRead
    */
   last_used_at?: string;
   /**
    *
    * @type {EnvironmentRead}
-   * @memberof APIKeyRead
    */
   env?: EnvironmentRead;
   /**
    *
    * @type {ProjectRead}
-   * @memberof APIKeyRead
    */
   project?: ProjectRead;
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,32 +12,27 @@
 
 /**
  *
- * @export
  * @interface PDPOPAInfo
  */
 export interface PDPOPAInfo {
   /**
    *
    * @type {string}
-   * @memberof PDPOPAInfo
    */
   version?: string;
   /**
    *
    * @type {string}
-   * @memberof PDPOPAInfo
    */
   go_version?: string;
   /**
    *
    * @type {string}
-   * @memberof PDPOPAInfo
    */
   platform?: string;
   /**
    *
    * @type {boolean}
-   * @memberof PDPOPAInfo
    */
   have_webassembly?: boolean;
 }

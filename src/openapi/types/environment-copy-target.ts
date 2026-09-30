@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,25 +11,21 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { New } from './new';
+import { type New } from './new';
 
 /**
  *
- * @export
  * @interface EnvironmentCopyTarget
  */
 export interface EnvironmentCopyTarget {
   /**
    * Identifier of an existing environment to copy into
    * @type {string}
-   * @memberof EnvironmentCopyTarget
    */
   existing?: string;
   /**
    *
    * @type {New}
-   * @memberof EnvironmentCopyTarget
    */
   new?: New;
 }

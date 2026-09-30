@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,20 +12,17 @@
 
 /**
  *
- * @export
  * @interface TenantData
  */
 export interface TenantData {
   /**
    *
    * @type {{ [key: string]: Array<string>; }}
-   * @memberof TenantData
    */
   roleAssignments?: { [key: string]: Array<string> };
   /**
    *
    * @type {object}
-   * @memberof TenantData
    */
   attributes?: object;
 }

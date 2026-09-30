@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,35 +10,25 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { ResourceActionCreate } from '../types';
-// @ts-ignore
-import { ResourceActionRead } from '../types';
-// @ts-ignore
-import { ResourceActionUpdate } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type ResourceActionCreate,
+  type ResourceActionRead,
+  type ResourceActionUpdate,
+} from '../types';
 /**
  * ResourceActionsApi - axios parameter creator
- * @export
  */
 export const ResourceActionsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -366,7 +354,6 @@ export const ResourceActionsApiAxiosParamCreator = function (configuration?: Con
 
 /**
  * ResourceActionsApi - functional programming interface
- * @export
  */
 export const ResourceActionsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ResourceActionsApiAxiosParamCreator(configuration);
@@ -514,7 +501,6 @@ export const ResourceActionsApiFp = function (configuration?: Configuration) {
 
 /**
  * ResourceActionsApi - factory interface
- * @export
  */
 export const ResourceActionsApiFactory = function (
   configuration?: Configuration,
@@ -637,196 +623,168 @@ export const ResourceActionsApiFactory = function (
 
 /**
  * Request parameters for createResourceAction operation in ResourceActionsApi.
- * @export
  * @interface ResourceActionsApiCreateResourceActionRequest
  */
 export interface ResourceActionsApiCreateResourceActionRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiCreateResourceAction
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiCreateResourceAction
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiCreateResourceAction
    */
   readonly resourceId: string;
 
   /**
    *
    * @type {ResourceActionCreate}
-   * @memberof ResourceActionsApiCreateResourceAction
    */
   readonly resourceActionCreate: ResourceActionCreate;
 }
 
 /**
  * Request parameters for deleteResourceAction operation in ResourceActionsApi.
- * @export
  * @interface ResourceActionsApiDeleteResourceActionRequest
  */
 export interface ResourceActionsApiDeleteResourceActionRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiDeleteResourceAction
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiDeleteResourceAction
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiDeleteResourceAction
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the action, or the URL-friendly key of the action (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiDeleteResourceAction
    */
   readonly actionId: string;
 }
 
 /**
  * Request parameters for getResourceAction operation in ResourceActionsApi.
- * @export
  * @interface ResourceActionsApiGetResourceActionRequest
  */
 export interface ResourceActionsApiGetResourceActionRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiGetResourceAction
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiGetResourceAction
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiGetResourceAction
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the action, or the URL-friendly key of the action (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiGetResourceAction
    */
   readonly actionId: string;
 }
 
 /**
  * Request parameters for listResourceActions operation in ResourceActionsApi.
- * @export
  * @interface ResourceActionsApiListResourceActionsRequest
  */
 export interface ResourceActionsApiListResourceActionsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiListResourceActions
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiListResourceActions
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiListResourceActions
    */
   readonly resourceId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof ResourceActionsApiListResourceActions
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof ResourceActionsApiListResourceActions
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateResourceAction operation in ResourceActionsApi.
- * @export
  * @interface ResourceActionsApiUpdateResourceActionRequest
  */
 export interface ResourceActionsApiUpdateResourceActionRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiUpdateResourceAction
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiUpdateResourceAction
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiUpdateResourceAction
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the action, or the URL-friendly key of the action (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionsApiUpdateResourceAction
    */
   readonly actionId: string;
 
   /**
    *
    * @type {ResourceActionUpdate}
-   * @memberof ResourceActionsApiUpdateResourceAction
    */
   readonly resourceActionUpdate: ResourceActionUpdate;
 }
 
 /**
  * ResourceActionsApi - object-oriented interface
- * @export
  * @class ResourceActionsApi
  * @extends {BaseAPI}
  */
@@ -837,7 +795,6 @@ export class ResourceActionsApi extends BaseAPI {
    * @param {ResourceActionsApiCreateResourceActionRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceActionsApi
    */
   public createResourceAction(
     requestParameters: ResourceActionsApiCreateResourceActionRequest,
@@ -860,7 +817,6 @@ export class ResourceActionsApi extends BaseAPI {
    * @param {ResourceActionsApiDeleteResourceActionRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceActionsApi
    */
   public deleteResourceAction(
     requestParameters: ResourceActionsApiDeleteResourceActionRequest,
@@ -883,7 +839,6 @@ export class ResourceActionsApi extends BaseAPI {
    * @param {ResourceActionsApiGetResourceActionRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceActionsApi
    */
   public getResourceAction(
     requestParameters: ResourceActionsApiGetResourceActionRequest,
@@ -906,7 +861,6 @@ export class ResourceActionsApi extends BaseAPI {
    * @param {ResourceActionsApiListResourceActionsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceActionsApi
    */
   public listResourceActions(
     requestParameters: ResourceActionsApiListResourceActionsRequest,
@@ -930,7 +884,6 @@ export class ResourceActionsApi extends BaseAPI {
    * @param {ResourceActionsApiUpdateResourceActionRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceActionsApi
    */
   public updateResourceAction(
     requestParameters: ResourceActionsApiUpdateResourceActionRequest,

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,31 +10,20 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { LanguageInstructions } from '../types';
+import { Configuration } from '../configuration';
+import { type LanguageInstructions } from '../types';
 /**
  * InstructionsApi - axios parameter creator
- * @export
  */
 export const InstructionsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -93,7 +80,6 @@ export const InstructionsApiAxiosParamCreator = function (configuration?: Config
 
 /**
  * InstructionsApi - functional programming interface
- * @export
  */
 export const InstructionsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = InstructionsApiAxiosParamCreator(configuration);
@@ -125,7 +111,6 @@ export const InstructionsApiFp = function (configuration?: Configuration) {
 
 /**
  * InstructionsApi - factory interface
- * @export
  */
 export const InstructionsApiFactory = function (
   configuration?: Configuration,
@@ -156,28 +141,24 @@ export const InstructionsApiFactory = function (
 
 /**
  * Request parameters for listLanguageInstructions operation in InstructionsApi.
- * @export
  * @interface InstructionsApiListLanguageInstructionsRequest
  */
 export interface InstructionsApiListLanguageInstructionsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof InstructionsApiListLanguageInstructions
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof InstructionsApiListLanguageInstructions
    */
   readonly envId: string;
 }
 
 /**
  * InstructionsApi - object-oriented interface
- * @export
  * @class InstructionsApi
  * @extends {BaseAPI}
  */
@@ -188,7 +169,6 @@ export class InstructionsApi extends BaseAPI {
    * @param {InstructionsApiListLanguageInstructionsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof InstructionsApi
    */
   public listLanguageInstructions(
     requestParameters: InstructionsApiListLanguageInstructionsRequest,

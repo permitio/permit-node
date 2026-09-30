@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,14 +12,12 @@
 
 /**
  *
- * @export
  * @interface PermitBackendSchemasSchemaOpalDataDerivedRoleSettings
  */
 export interface PermitBackendSchemasSchemaOpalDataDerivedRoleSettings {
   /**
    *
    * @type {boolean}
-   * @memberof PermitBackendSchemasSchemaOpalDataDerivedRoleSettings
    */
   superseded_by_direct_role?: boolean;
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,55 +11,46 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { Labels } from './labels';
+import { type Labels } from './labels';
 
 /**
  *
- * @export
  * @interface OPADecisionLog
  */
 export interface OPADecisionLog {
   /**
    *
    * @type {string}
-   * @memberof OPADecisionLog
    */
   decision_id: string;
   /**
    *
    * @type {Labels}
-   * @memberof OPADecisionLog
    */
   labels: Labels;
   /**
    *
    * @type {string}
-   * @memberof OPADecisionLog
    */
   run_id?: string;
   /**
    *
    * @type {string}
-   * @memberof OPADecisionLog
    */
   timestamp: string;
   /**
    *
    * @type {string}
-   * @memberof OPADecisionLog
    */
   path?: string;
   /**
    *
    * @type {object}
-   * @memberof OPADecisionLog
    */
   input?: object;
   /**
    *
    * @type {object}
-   * @memberof OPADecisionLog
    */
   result?: object;
 }

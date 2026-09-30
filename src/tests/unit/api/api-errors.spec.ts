@@ -4,8 +4,8 @@ import { inspect } from 'node:util';
 import axios from 'axios';
 import pino from 'pino';
 
-import { Permit, PermitApiError } from '../../../index';
-import { rejectionOf } from '../../helpers/rejection';
+import { Permit, PermitApiError } from '#src/index';
+import { rejectionOf } from '#src/tests/helpers/rejection';
 
 const TOKEN = 'permit_key_rest-token-do-not-log';
 const CUSTOM_SECRET = 'custom-header-secret-do-not-log';

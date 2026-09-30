@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,21 +11,16 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { APIKeyInfo } from './apikey-info';
+
 // May contain unused imports in some cases
-// @ts-ignore
-import { APIKeyViewerContext } from './apikey-viewer-context';
+import { type APIKeyViewerContext } from './apikey-viewer-context';
 // May contain unused imports in some cases
-// @ts-ignore
-import { MemberInfo } from './member-info';
+
 // May contain unused imports in some cases
-// @ts-ignore
-import { MemberViewerContext } from './member-viewer-context';
+import { type MemberViewerContext } from './member-viewer-context';
 
 /**
  * @type Viewer
- * @export
  */
 export type Viewer =
   | ({ type: 'api_key' } & APIKeyViewerContext)

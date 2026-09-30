@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,25 +11,21 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { Permission } from './permission';
+import { type Permission } from './permission';
 
 /**
  *
- * @export
  * @interface OrgMemberRemovePermissions
  */
 export interface OrgMemberRemovePermissions {
   /**
    * Unique id of the account member
    * @type {string}
-   * @memberof OrgMemberRemovePermissions
    */
   id: string;
   /**
    *
    * @type {Array<Permission>}
-   * @memberof OrgMemberRemovePermissions
    */
   permissions: Array<Permission>;
 }

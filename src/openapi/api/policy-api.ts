@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,31 +10,13 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
+import { createRequestFunction, DUMMY_BASE_URL, setSearchParams, toPathString } from '../common';
 import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
-import {
-  DUMMY_BASE_URL,
-  assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
-  createRequestFunction,
-} from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PermitBackendOpalApiDataDataSourceConfig } from '../types';
+import { type PermitBackendOpalApiDataDataSourceConfig } from '../types';
 /**
  * PolicyApi - axios parameter creator
- * @export
  */
 export const PolicyApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -125,7 +105,6 @@ export const PolicyApiAxiosParamCreator = function (configuration?: Configuratio
 
 /**
  * PolicyApi - functional programming interface
- * @export
  */
 export const PolicyApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = PolicyApiAxiosParamCreator(configuration);
@@ -176,7 +155,6 @@ export const PolicyApiFp = function (configuration?: Configuration) {
 
 /**
  * PolicyApi - factory interface
- * @export
  */
 export const PolicyApiFactory = function (
   configuration?: Configuration,
@@ -220,35 +198,30 @@ export const PolicyApiFactory = function (
 
 /**
  * Request parameters for getOpalDataSources operation in PolicyApi.
- * @export
  * @interface PolicyApiGetOpalDataSourcesRequest
  */
 export interface PolicyApiGetOpalDataSourcesRequest {
   /**
    *
    * @type {string}
-   * @memberof PolicyApiGetOpalDataSources
    */
   readonly token?: string;
 }
 
 /**
  * Request parameters for getOpalDataSourcesOpalDataConfigGet operation in PolicyApi.
- * @export
  * @interface PolicyApiGetOpalDataSourcesOpalDataConfigGetRequest
  */
 export interface PolicyApiGetOpalDataSourcesOpalDataConfigGetRequest {
   /**
    *
    * @type {string}
-   * @memberof PolicyApiGetOpalDataSourcesOpalDataConfigGet
    */
   readonly token?: string;
 }
 
 /**
  * PolicyApi - object-oriented interface
- * @export
  * @class PolicyApi
  * @extends {BaseAPI}
  */
@@ -259,7 +232,6 @@ export class PolicyApi extends BaseAPI {
    * @param {PolicyApiGetOpalDataSourcesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof PolicyApi
    */
   public getOpalDataSources(
     requestParameters: PolicyApiGetOpalDataSourcesRequest = {},
@@ -276,7 +248,6 @@ export class PolicyApi extends BaseAPI {
    * @param {PolicyApiGetOpalDataSourcesOpalDataConfigGetRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof PolicyApi
    */
   public getOpalDataSourcesOpalDataConfigGet(
     requestParameters: PolicyApiGetOpalDataSourcesOpalDataConfigGetRequest = {},

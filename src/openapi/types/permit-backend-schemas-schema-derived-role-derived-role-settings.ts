@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,14 +12,12 @@
 
 /**
  * Settings for a derived role
- * @export
  * @interface PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings
  */
 export interface PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings {
   /**
    * If true, the derived role will not take action if the resource has any direct role
    * @type {boolean}
-   * @memberof PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings
    */
   no_direct_roles_on_object?: boolean;
 }

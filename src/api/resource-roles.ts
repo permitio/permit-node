@@ -1,23 +1,27 @@
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 import {
   ResourceRolesApi as AutogenResourceRolesApi,
   ImplicitGrantsApi as AutogenRoleDerivationsApi,
-  DerivedRoleRuleCreate,
-  DerivedRoleRuleDelete,
-  DerivedRoleRuleRead,
-  PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
-  ResourceRoleCreate,
-  ResourceRoleRead,
-  ResourceRoleUpdate,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+  type DerivedRoleRuleCreate,
+  type DerivedRoleRuleDelete,
+  type DerivedRoleRuleRead,
+  type PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
+  type ResourceRoleCreate,
+  type ResourceRoleRead,
+  type ResourceRoleUpdate,
+} from '#src/openapi/index';
+import { BASE_PATH } from '#src/openapi/base';
 
-import { BasePermitApi, IPagination } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BasePermitApi, type IPagination } from '#src/api/base';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
-export { ResourceRoleCreate, ResourceRoleRead, ResourceRoleUpdate } from '../openapi';
+export {
+  type ResourceRoleCreate,
+  type ResourceRoleRead,
+  type ResourceRoleUpdate,
+} from '#src/openapi/index';
 
 export interface IListResourceRoles extends IPagination {
   resourceKey: string;

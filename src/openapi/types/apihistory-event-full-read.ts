@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,116 +12,97 @@
 
 /**
  *
- * @export
  * @interface APIHistoryEventFullRead
  */
 export interface APIHistoryEventFullRead {
   /**
    *
    * @type {File}
-   * @memberof APIHistoryEventFullRead
    */
   request_body?: File;
   /**
    *
    * @type {File}
-   * @memberof APIHistoryEventFullRead
    */
   response_body?: File;
   /**
    *
    * @type {string}
-   * @memberof APIHistoryEventFullRead
    */
   timestamp: string;
   /**
    *
    * @type {string}
-   * @memberof APIHistoryEventFullRead
    */
   method: string;
   /**
    *
    * @type {string}
-   * @memberof APIHistoryEventFullRead
    */
   path: string;
   /**
    *
    * @type {boolean}
-   * @memberof APIHistoryEventFullRead
    */
   success: boolean;
   /**
    *
    * @type {number}
-   * @memberof APIHistoryEventFullRead
    */
   status: number;
   /**
    *
    * @type {string}
-   * @memberof APIHistoryEventFullRead
    */
   request_id?: string;
   /**
    *
    * @type {string}
-   * @memberof APIHistoryEventFullRead
    */
   client_ip: string;
   /**
    *
    * @type {string}
-   * @memberof APIHistoryEventFullRead
    */
   actor_type: string;
   /**
    *
    * @type {string}
-   * @memberof APIHistoryEventFullRead
    */
   actor_id: string;
   /**
    *
    * @type {string}
-   * @memberof APIHistoryEventFullRead
    */
   actor_display_name?: string;
   /**
    *
    * @type {string}
-   * @memberof APIHistoryEventFullRead
    */
   org_id?: string;
   /**
    *
    * @type {string}
-   * @memberof APIHistoryEventFullRead
    */
   project_key?: string;
   /**
    *
    * @type {string}
-   * @memberof APIHistoryEventFullRead
    */
   project_id?: string;
   /**
    *
    * @type {string}
-   * @memberof APIHistoryEventFullRead
    */
   env_key?: string;
   /**
    *
    * @type {string}
-   * @memberof APIHistoryEventFullRead
    */
   env_id?: string;
   /**
    *
    * @type {string}
-   * @memberof APIHistoryEventFullRead
    */
   id: string;
 }

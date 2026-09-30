@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,38 +12,32 @@
 
 /**
  * Data source configuration - where client\'s should retrive data from and how they should store it
- * @export
  * @interface DataSourceEntry
  */
 export interface DataSourceEntry {
   /**
    * Url source to query for data
    * @type {string}
-   * @memberof DataSourceEntry
    */
   url: string;
   /**
    * Suggested fetcher configuration (e.g. auth or method) to fetch data with
    * @type {object}
-   * @memberof DataSourceEntry
    */
   config?: object;
   /**
    * topics the data applies to
    * @type {Array<string>}
-   * @memberof DataSourceEntry
    */
   topics?: Array<string>;
   /**
    * OPA data api path to store the document at
    * @type {string}
-   * @memberof DataSourceEntry
    */
   dst_path?: string;
   /**
    * Method used to write into OPA - PUT/PATCH
    * @type {string}
-   * @memberof DataSourceEntry
    */
   save_method?: string;
 }

@@ -1,7 +1,7 @@
-import { PermitApiError } from '../../../api/base';
-import { RelationCreate } from '../../../api/resource-relations';
-import { Permit } from '../../../index';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import { PermitApiError } from '#src/api/base';
+import { type RelationCreate } from '#src/api/resource-relations';
+import { Permit } from '#src/index';
+import { createMockPermit, type MockTransport } from '#src/tests/helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // relations URL is scoped under the resource passed to each call.

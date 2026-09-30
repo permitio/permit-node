@@ -1,7 +1,7 @@
 import pino from 'pino';
 
-import { IPermitClient, Permit, PermitApiError } from '../index';
-import { LoggerFactory } from '../logger';
+import { type IPermitClient, Permit, PermitApiError } from '#src/index';
+import { LoggerFactory } from '#src/logger';
 
 export interface TestClient {
   permit: IPermitClient;
@@ -16,15 +16,17 @@ export interface CreateTestClientOptions {
 
 export function createTestClient(opts: CreateTestClientOptions = {}): TestClient {
   const defaultPDPAddress =
-    process.env.CLOUD_PDP === 'true' ? 'https://cloudpdp.api.permit.io' : 'http://localhost:7766';
+    process.env['CLOUD_PDP'] === 'true'
+      ? 'https://cloudpdp.api.permit.io'
+      : 'http://localhost:7766';
   const defaultApiAddress =
-    process.env.API_TIER === 'prod' ? 'https://api.permit.io' : 'http://localhost:8000';
-  const token = process.env.PDP_API_KEY || '';
+    process.env['API_TIER'] === 'prod' ? 'https://api.permit.io' : 'http://localhost:8000';
+  const token = process.env['PDP_API_KEY'] || '';
   if (!token) throw new Error('PDP_API_KEY is not configured, test cannot run!');
   const permit = new Permit({
     token,
-    pdp: process.env.PDP_URL || defaultPDPAddress,
-    apiUrl: process.env.PDP_CONTROL_PLANE || defaultApiAddress,
+    pdp: process.env['PDP_URL'] || defaultPDPAddress,
+    apiUrl: process.env['PDP_CONTROL_PLANE'] || defaultApiAddress,
     log: { level: 'debug' },
     ...(opts.proxyFactsViaPdp ? { proxyFactsViaPdp: true } : {}),
   });

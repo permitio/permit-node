@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,35 +10,21 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { ProxyConfigCreate } from '../types';
-// @ts-ignore
-import { ProxyConfigRead } from '../types';
-// @ts-ignore
-import { ProxyConfigUpdate } from '../types';
+import { Configuration } from '../configuration';
+import { type ProxyConfigCreate, type ProxyConfigRead, type ProxyConfigUpdate } from '../types';
 /**
  * ProxyConfigApi - axios parameter creator
- * @export
  */
 export const ProxyConfigApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -338,7 +322,6 @@ export const ProxyConfigApiAxiosParamCreator = function (configuration?: Configu
 
 /**
  * ProxyConfigApi - functional programming interface
- * @export
  */
 export const ProxyConfigApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ProxyConfigApiAxiosParamCreator(configuration);
@@ -469,7 +452,6 @@ export const ProxyConfigApiFp = function (configuration?: Configuration) {
 
 /**
  * ProxyConfigApi - factory interface
- * @export
  */
 export const ProxyConfigApiFactory = function (
   configuration?: Configuration,
@@ -582,161 +564,138 @@ export const ProxyConfigApiFactory = function (
 
 /**
  * Request parameters for createProxyConfig operation in ProxyConfigApi.
- * @export
  * @interface ProxyConfigApiCreateProxyConfigRequest
  */
 export interface ProxyConfigApiCreateProxyConfigRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ProxyConfigApiCreateProxyConfig
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ProxyConfigApiCreateProxyConfig
    */
   readonly envId: string;
 
   /**
    *
    * @type {ProxyConfigCreate}
-   * @memberof ProxyConfigApiCreateProxyConfig
    */
   readonly proxyConfigCreate: ProxyConfigCreate;
 }
 
 /**
  * Request parameters for deleteProxyConfig operation in ProxyConfigApi.
- * @export
  * @interface ProxyConfigApiDeleteProxyConfigRequest
  */
 export interface ProxyConfigApiDeleteProxyConfigRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ProxyConfigApiDeleteProxyConfig
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ProxyConfigApiDeleteProxyConfig
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ProxyConfigApiDeleteProxyConfig
    */
   readonly proxyConfigId: string;
 }
 
 /**
  * Request parameters for getProxyConfig operation in ProxyConfigApi.
- * @export
  * @interface ProxyConfigApiGetProxyConfigRequest
  */
 export interface ProxyConfigApiGetProxyConfigRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ProxyConfigApiGetProxyConfig
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ProxyConfigApiGetProxyConfig
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ProxyConfigApiGetProxyConfig
    */
   readonly proxyConfigId: string;
 }
 
 /**
  * Request parameters for listProxyConfigs operation in ProxyConfigApi.
- * @export
  * @interface ProxyConfigApiListProxyConfigsRequest
  */
 export interface ProxyConfigApiListProxyConfigsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ProxyConfigApiListProxyConfigs
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ProxyConfigApiListProxyConfigs
    */
   readonly envId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof ProxyConfigApiListProxyConfigs
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof ProxyConfigApiListProxyConfigs
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateProxyConfig operation in ProxyConfigApi.
- * @export
  * @interface ProxyConfigApiUpdateProxyConfigRequest
  */
 export interface ProxyConfigApiUpdateProxyConfigRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ProxyConfigApiUpdateProxyConfig
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ProxyConfigApiUpdateProxyConfig
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ProxyConfigApiUpdateProxyConfig
    */
   readonly proxyConfigId: string;
 
   /**
    *
    * @type {ProxyConfigUpdate}
-   * @memberof ProxyConfigApiUpdateProxyConfig
    */
   readonly proxyConfigUpdate: ProxyConfigUpdate;
 }
 
 /**
  * ProxyConfigApi - object-oriented interface
- * @export
  * @class ProxyConfigApi
  * @extends {BaseAPI}
  */
@@ -747,7 +706,6 @@ export class ProxyConfigApi extends BaseAPI {
    * @param {ProxyConfigApiCreateProxyConfigRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ProxyConfigApi
    */
   public createProxyConfig(
     requestParameters: ProxyConfigApiCreateProxyConfigRequest,
@@ -769,7 +727,6 @@ export class ProxyConfigApi extends BaseAPI {
    * @param {ProxyConfigApiDeleteProxyConfigRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ProxyConfigApi
    */
   public deleteProxyConfig(
     requestParameters: ProxyConfigApiDeleteProxyConfigRequest,
@@ -791,7 +748,6 @@ export class ProxyConfigApi extends BaseAPI {
    * @param {ProxyConfigApiGetProxyConfigRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ProxyConfigApi
    */
   public getProxyConfig(
     requestParameters: ProxyConfigApiGetProxyConfigRequest,
@@ -813,7 +769,6 @@ export class ProxyConfigApi extends BaseAPI {
    * @param {ProxyConfigApiListProxyConfigsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ProxyConfigApi
    */
   public listProxyConfigs(
     requestParameters: ProxyConfigApiListProxyConfigsRequest,
@@ -836,7 +791,6 @@ export class ProxyConfigApi extends BaseAPI {
    * @param {ProxyConfigApiUpdateProxyConfigRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ProxyConfigApi
    */
   public updateProxyConfig(
     requestParameters: ProxyConfigApiUpdateProxyConfigRequest,

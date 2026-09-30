@@ -1,7 +1,7 @@
-import { PermitApiError } from '../../../api/base';
-import { ResourceCreate, ResourceReplace, ResourceUpdate } from '../../../api/resources';
-import { Permit } from '../../../index';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import { PermitApiError } from '#src/api/base';
+import { type ResourceCreate, type ResourceReplace, type ResourceUpdate } from '#src/api/resources';
+import { Permit } from '#src/index';
+import { createMockPermit, type MockTransport } from '#src/tests/helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // resources URL is scoped under `/v2/schema/{proj}/{env}/resources`.

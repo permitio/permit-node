@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,31 +11,26 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
 import { MemberAccessLevel } from './member-access-level';
 
 /**
  *
- * @export
  * @interface InviteCreate
  */
 export interface InviteCreate {
   /**
    * Unique id of the invite
    * @type {string}
-   * @memberof InviteCreate
    */
   member_id?: string;
   /**
    * The invited member\'s email address
    * @type {string}
-   * @memberof InviteCreate
    */
   email: string;
   /**
    * The role the member will be assigned with
    * @type {MemberAccessLevel}
-   * @memberof InviteCreate
    */
   role?: MemberAccessLevel;
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,35 +10,21 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PolicyRepoCreate } from '../types';
-// @ts-ignore
-import { PolicyRepoRead } from '../types';
-// @ts-ignore
-import { ProjectRead } from '../types';
+import { Configuration } from '../configuration';
+import { type PolicyRepoCreate, type PolicyRepoRead, type ProjectRead } from '../types';
 /**
  * PolicyGitRepositoriesApi - axios parameter creator
- * @export
  */
 export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -396,7 +380,6 @@ export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration
 
 /**
  * PolicyGitRepositoriesApi - functional programming interface
- * @export
  */
 export const PolicyGitRepositoriesApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = PolicyGitRepositoriesApiAxiosParamCreator(configuration);
@@ -543,7 +526,6 @@ export const PolicyGitRepositoriesApiFp = function (configuration?: Configuratio
 
 /**
  * PolicyGitRepositoriesApi - factory interface
- * @export
  */
 export const PolicyGitRepositoriesApiFactory = function (
   configuration?: Configuration,
@@ -656,147 +638,126 @@ export const PolicyGitRepositoriesApiFactory = function (
 
 /**
  * Request parameters for activatePolicyRepo operation in PolicyGitRepositoriesApi.
- * @export
  * @interface PolicyGitRepositoriesApiActivatePolicyRepoRequest
  */
 export interface PolicyGitRepositoriesApiActivatePolicyRepoRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof PolicyGitRepositoriesApiActivatePolicyRepo
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the policy repo, or the URL-friendly key of the policy repo (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof PolicyGitRepositoriesApiActivatePolicyRepo
    */
   readonly repoId: string;
 }
 
 /**
  * Request parameters for createPolicyRepo operation in PolicyGitRepositoriesApi.
- * @export
  * @interface PolicyGitRepositoriesApiCreatePolicyRepoRequest
  */
 export interface PolicyGitRepositoriesApiCreatePolicyRepoRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof PolicyGitRepositoriesApiCreatePolicyRepo
    */
   readonly projId: string;
 
   /**
    *
    * @type {PolicyRepoCreate}
-   * @memberof PolicyGitRepositoriesApiCreatePolicyRepo
    */
   readonly policyRepoCreate: PolicyRepoCreate;
 }
 
 /**
  * Request parameters for deletePolicyRepo operation in PolicyGitRepositoriesApi.
- * @export
  * @interface PolicyGitRepositoriesApiDeletePolicyRepoRequest
  */
 export interface PolicyGitRepositoriesApiDeletePolicyRepoRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof PolicyGitRepositoriesApiDeletePolicyRepo
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the policy repo, or the URL-friendly key of the policy repo (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof PolicyGitRepositoriesApiDeletePolicyRepo
    */
   readonly repoId: string;
 }
 
 /**
  * Request parameters for disableActivePolicyRepo operation in PolicyGitRepositoriesApi.
- * @export
  * @interface PolicyGitRepositoriesApiDisableActivePolicyRepoRequest
  */
 export interface PolicyGitRepositoriesApiDisableActivePolicyRepoRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof PolicyGitRepositoriesApiDisableActivePolicyRepo
    */
   readonly projId: string;
 }
 
 /**
  * Request parameters for getActivePolicyRepo operation in PolicyGitRepositoriesApi.
- * @export
  * @interface PolicyGitRepositoriesApiGetActivePolicyRepoRequest
  */
 export interface PolicyGitRepositoriesApiGetActivePolicyRepoRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof PolicyGitRepositoriesApiGetActivePolicyRepo
    */
   readonly projId: string;
 }
 
 /**
  * Request parameters for getPolicyRepo operation in PolicyGitRepositoriesApi.
- * @export
  * @interface PolicyGitRepositoriesApiGetPolicyRepoRequest
  */
 export interface PolicyGitRepositoriesApiGetPolicyRepoRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof PolicyGitRepositoriesApiGetPolicyRepo
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the policy repo, or the URL-friendly key of the policy repo (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof PolicyGitRepositoriesApiGetPolicyRepo
    */
   readonly repoId: string;
 }
 
 /**
  * Request parameters for listPolicyRepos operation in PolicyGitRepositoriesApi.
- * @export
  * @interface PolicyGitRepositoriesApiListPolicyReposRequest
  */
 export interface PolicyGitRepositoriesApiListPolicyReposRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof PolicyGitRepositoriesApiListPolicyRepos
    */
   readonly projId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof PolicyGitRepositoriesApiListPolicyRepos
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof PolicyGitRepositoriesApiListPolicyRepos
    */
   readonly perPage?: number;
 }
 
 /**
  * PolicyGitRepositoriesApi - object-oriented interface
- * @export
  * @class PolicyGitRepositoriesApi
  * @extends {BaseAPI}
  */
@@ -807,7 +768,6 @@ export class PolicyGitRepositoriesApi extends BaseAPI {
    * @param {PolicyGitRepositoriesApiActivatePolicyRepoRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof PolicyGitRepositoriesApi
    */
   public activatePolicyRepo(
     requestParameters: PolicyGitRepositoriesApiActivatePolicyRepoRequest,
@@ -824,7 +784,6 @@ export class PolicyGitRepositoriesApi extends BaseAPI {
    * @param {PolicyGitRepositoriesApiCreatePolicyRepoRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof PolicyGitRepositoriesApi
    */
   public createPolicyRepo(
     requestParameters: PolicyGitRepositoriesApiCreatePolicyRepoRequest,
@@ -841,7 +800,6 @@ export class PolicyGitRepositoriesApi extends BaseAPI {
    * @param {PolicyGitRepositoriesApiDeletePolicyRepoRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof PolicyGitRepositoriesApi
    */
   public deletePolicyRepo(
     requestParameters: PolicyGitRepositoriesApiDeletePolicyRepoRequest,
@@ -858,7 +816,6 @@ export class PolicyGitRepositoriesApi extends BaseAPI {
    * @param {PolicyGitRepositoriesApiDisableActivePolicyRepoRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof PolicyGitRepositoriesApi
    */
   public disableActivePolicyRepo(
     requestParameters: PolicyGitRepositoriesApiDisableActivePolicyRepoRequest,
@@ -875,7 +832,6 @@ export class PolicyGitRepositoriesApi extends BaseAPI {
    * @param {PolicyGitRepositoriesApiGetActivePolicyRepoRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof PolicyGitRepositoriesApi
    */
   public getActivePolicyRepo(
     requestParameters: PolicyGitRepositoriesApiGetActivePolicyRepoRequest,
@@ -892,7 +848,6 @@ export class PolicyGitRepositoriesApi extends BaseAPI {
    * @param {PolicyGitRepositoriesApiGetPolicyRepoRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof PolicyGitRepositoriesApi
    */
   public getPolicyRepo(
     requestParameters: PolicyGitRepositoriesApiGetPolicyRepoRequest,
@@ -909,7 +864,6 @@ export class PolicyGitRepositoriesApi extends BaseAPI {
    * @param {PolicyGitRepositoriesApiListPolicyReposRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof PolicyGitRepositoriesApi
    */
   public listPolicyRepos(
     requestParameters: PolicyGitRepositoriesApiListPolicyReposRequest,

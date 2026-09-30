@@ -1,7 +1,7 @@
 import { AxiosError, AxiosHeaders } from 'axios';
 
-import { PermitApiError, PermitConnectionError, PermitPDPStatusError } from '../../index';
-import { waitFor, waitForCheck } from '../helpers/wait-for';
+import { PermitApiError, PermitConnectionError, PermitPDPStatusError } from '#src/index';
+import { waitFor, waitForCheck } from '#src/tests/helpers/wait-for';
 
 beforeEach(() => {
   vi.useFakeTimers();

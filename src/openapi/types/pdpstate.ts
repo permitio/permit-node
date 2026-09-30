@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,52 +11,43 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { PDPInfo } from './pdpinfo';
+import { type PDPInfo } from './pdpinfo';
 // May contain unused imports in some cases
-// @ts-ignore
-import { PDPOPAInfo } from './pdpopainfo';
+import { type PDPOPAInfo } from './pdpopainfo';
 
 /**
  *
- * @export
  * @interface PDPState
  */
 export interface PDPState {
   /**
    *
    * @type {number}
-   * @memberof PDPState
    */
   api_version: number;
   /**
    *
    * @type {PDPInfo}
-   * @memberof PDPState
    */
   pdp?: PDPInfo;
   /**
    *
    * @type {PDPOPAInfo}
-   * @memberof PDPState
    */
   opa?: PDPOPAInfo;
   /**
    *
    * @type {string}
-   * @memberof PDPState
    */
   current_policy_hash?: string;
   /**
    *
    * @type {number}
-   * @memberof PDPState
    */
   most_recent_data?: number;
   /**
    *
    * @type {Array<string>}
-   * @memberof PDPState
    */
   seen_sdks?: Array<string>;
 }

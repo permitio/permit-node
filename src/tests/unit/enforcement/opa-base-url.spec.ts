@@ -1,8 +1,8 @@
-import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import axios, { type AxiosInstance, type InternalAxiosRequestConfig } from 'axios';
 import pino from 'pino';
 
-import { buildOpaBaseUrl } from '../../../enforcement/enforcer';
-import { Permit, PermitError } from '../../../index';
+import { buildOpaBaseUrl } from '#src/enforcement/enforcer';
+import { Permit, PermitError } from '#src/index';
 
 // The OPA client base URL is derived from the configured PDP URL by forcing the
 // OPA port (8181) and appending the OPA data path. This was previously built

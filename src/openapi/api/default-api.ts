@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,31 +10,19 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
-  DUMMY_BASE_URL,
-  assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  DUMMY_BASE_URL,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { OrganizationRead } from '../types';
+import { Configuration } from '../configuration';
+import { type OrganizationRead } from '../types';
 /**
  * DefaultApi - axios parameter creator
- * @export
  */
 export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -215,7 +201,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 /**
  * DefaultApi - functional programming interface
- * @export
  */
 export const DefaultApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration);
@@ -286,7 +271,6 @@ export const DefaultApiFp = function (configuration?: Configuration) {
 
 /**
  * DefaultApi - factory interface
- * @export
  */
 export const DefaultApiFactory = function (
   configuration?: Configuration,
@@ -351,7 +335,6 @@ export const DefaultApiFactory = function (
 
 /**
  * DefaultApi - object-oriented interface
- * @export
  * @class DefaultApi
  * @extends {BaseAPI}
  */
@@ -361,7 +344,6 @@ export class DefaultApi extends BaseAPI {
    * @summary Dummy
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof DefaultApi
    */
   public dummy(options?: AxiosRequestConfig) {
     return DefaultApiFp(this.configuration)
@@ -374,7 +356,6 @@ export class DefaultApi extends BaseAPI {
    * @summary Dummy Db
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof DefaultApi
    */
   public dummyDb(options?: AxiosRequestConfig) {
     return DefaultApiFp(this.configuration)
@@ -387,7 +368,6 @@ export class DefaultApi extends BaseAPI {
    * @summary Get Organization
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof DefaultApi
    */
   public getOrganizationV2StressDbOrganizationGet(options?: AxiosRequestConfig) {
     return DefaultApiFp(this.configuration)
@@ -400,7 +380,6 @@ export class DefaultApi extends BaseAPI {
    * @summary Get Organization With Authn
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof DefaultApi
    */
   public getOrganizationWithAuthn(options?: AxiosRequestConfig) {
     return DefaultApiFp(this.configuration)
@@ -413,7 +392,6 @@ export class DefaultApi extends BaseAPI {
    * @summary Get Organization With Authz
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof DefaultApi
    */
   public getOrganizationWithAuthz(options?: AxiosRequestConfig) {
     return DefaultApiFp(this.configuration)

@@ -4,11 +4,11 @@ import {
   calculateRetryDelay,
   DEFAULT_RETRY_CONFIG,
   defaultRetryCondition,
-  IRetryConfig,
+  type IRetryConfig,
   parseRetryAfter,
   resolveRetryConfig,
   RETRYABLE_STATUS_CODES,
-} from '../../utils/retry';
+} from '#src/utils/retry';
 
 // Helper to create mock AxiosError
 function createAxiosError(status?: number): AxiosError {

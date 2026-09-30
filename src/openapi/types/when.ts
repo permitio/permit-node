@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,12 +11,10 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings } from './permit-backend-schemas-schema-derived-role-derived-role-settings';
+import { type PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings } from './permit-backend-schemas-schema-derived-role-derived-role-settings';
 
 /**
  * @type When
  * the settings of the derived role
- * @export
  */
 export type When = PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings;

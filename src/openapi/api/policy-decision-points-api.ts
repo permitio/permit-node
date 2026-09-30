@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,37 +10,26 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { DataUpdateReport } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PDPConfigRead } from '../types';
-// @ts-ignore
-import { PDPStateUpdate } from '../types';
-// @ts-ignore
-import { RemoteConfig } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type DataUpdateReport,
+  type PDPConfigRead,
+  type PDPStateUpdate,
+  type RemoteConfig,
+} from '../types';
 /**
  * PolicyDecisionPointsApi - axios parameter creator
- * @export
  */
 export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -410,7 +397,6 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
 
 /**
  * PolicyDecisionPointsApi - functional programming interface
- * @export
  */
 export const PolicyDecisionPointsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = PolicyDecisionPointsApiAxiosParamCreator(configuration);
@@ -559,7 +545,6 @@ export const PolicyDecisionPointsApiFp = function (configuration?: Configuration
 
 /**
  * PolicyDecisionPointsApi - factory interface
- * @export
  */
 export const PolicyDecisionPointsApiFactory = function (
   configuration?: Configuration,
@@ -687,147 +672,126 @@ export const PolicyDecisionPointsApiFactory = function (
 
 /**
  * Request parameters for getAuthenticatingPdpConfigValues operation in PolicyDecisionPointsApi.
- * @export
  * @interface PolicyDecisionPointsApiGetAuthenticatingPdpConfigValuesRequest
  */
 export interface PolicyDecisionPointsApiGetAuthenticatingPdpConfigValuesRequest {
   /**
    *
    * @type {PDPStateUpdate}
-   * @memberof PolicyDecisionPointsApiGetAuthenticatingPdpConfigValues
    */
   readonly pDPStateUpdate: PDPStateUpdate;
 }
 
 /**
  * Request parameters for getPdpConfigValues operation in PolicyDecisionPointsApi.
- * @export
  * @interface PolicyDecisionPointsApiGetPdpConfigValuesRequest
  */
 export interface PolicyDecisionPointsApiGetPdpConfigValuesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof PolicyDecisionPointsApiGetPdpConfigValues
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof PolicyDecisionPointsApiGetPdpConfigValues
    */
   readonly envId: string;
 
   /**
    * The unique id of the pdp
    * @type {string}
-   * @memberof PolicyDecisionPointsApiGetPdpConfigValues
    */
   readonly pdpId: string;
 }
 
 /**
  * Request parameters for listPdpConfigs operation in PolicyDecisionPointsApi.
- * @export
  * @interface PolicyDecisionPointsApiListPdpConfigsRequest
  */
 export interface PolicyDecisionPointsApiListPdpConfigsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof PolicyDecisionPointsApiListPdpConfigs
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof PolicyDecisionPointsApiListPdpConfigs
    */
   readonly envId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof PolicyDecisionPointsApiListPdpConfigs
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof PolicyDecisionPointsApiListPdpConfigs
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for opalDataCallback operation in PolicyDecisionPointsApi.
- * @export
  * @interface PolicyDecisionPointsApiOpalDataCallbackRequest
  */
 export interface PolicyDecisionPointsApiOpalDataCallbackRequest {
   /**
    *
    * @type {string}
-   * @memberof PolicyDecisionPointsApiOpalDataCallback
    */
   readonly xPermitInstanceId: string;
 
   /**
    *
    * @type {DataUpdateReport}
-   * @memberof PolicyDecisionPointsApiOpalDataCallback
    */
   readonly dataUpdateReport: DataUpdateReport;
 }
 
 /**
  * Request parameters for pushPdpState operation in PolicyDecisionPointsApi.
- * @export
  * @interface PolicyDecisionPointsApiPushPdpStateRequest
  */
 export interface PolicyDecisionPointsApiPushPdpStateRequest {
   /**
    *
    * @type {PDPStateUpdate}
-   * @memberof PolicyDecisionPointsApiPushPdpState
    */
   readonly pDPStateUpdate: PDPStateUpdate;
 }
 
 /**
  * Request parameters for rotatePdpApiKey operation in PolicyDecisionPointsApi.
- * @export
  * @interface PolicyDecisionPointsApiRotatePdpApiKeyRequest
  */
 export interface PolicyDecisionPointsApiRotatePdpApiKeyRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof PolicyDecisionPointsApiRotatePdpApiKey
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof PolicyDecisionPointsApiRotatePdpApiKey
    */
   readonly envId: string;
 
   /**
    * The unique id of the pdp
    * @type {string}
-   * @memberof PolicyDecisionPointsApiRotatePdpApiKey
    */
   readonly pdpId: string;
 }
 
 /**
  * PolicyDecisionPointsApi - object-oriented interface
- * @export
  * @class PolicyDecisionPointsApi
  * @extends {BaseAPI}
  */
@@ -838,7 +802,6 @@ export class PolicyDecisionPointsApi extends BaseAPI {
    * @param {PolicyDecisionPointsApiGetAuthenticatingPdpConfigValuesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof PolicyDecisionPointsApi
    */
   public getAuthenticatingPdpConfigValues(
     requestParameters: PolicyDecisionPointsApiGetAuthenticatingPdpConfigValuesRequest,
@@ -854,7 +817,6 @@ export class PolicyDecisionPointsApi extends BaseAPI {
    * @summary Get connected PDP configuration
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof PolicyDecisionPointsApi
    */
   public getAuthenticatingPdpConfigValuesLegacy(options?: AxiosRequestConfig) {
     return PolicyDecisionPointsApiFp(this.configuration)
@@ -868,7 +830,6 @@ export class PolicyDecisionPointsApi extends BaseAPI {
    * @param {PolicyDecisionPointsApiGetPdpConfigValuesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof PolicyDecisionPointsApi
    */
   public getPdpConfigValues(
     requestParameters: PolicyDecisionPointsApiGetPdpConfigValuesRequest,
@@ -890,7 +851,6 @@ export class PolicyDecisionPointsApi extends BaseAPI {
    * @param {PolicyDecisionPointsApiListPdpConfigsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof PolicyDecisionPointsApi
    */
   public listPdpConfigs(
     requestParameters: PolicyDecisionPointsApiListPdpConfigsRequest,
@@ -913,7 +873,6 @@ export class PolicyDecisionPointsApi extends BaseAPI {
    * @param {PolicyDecisionPointsApiOpalDataCallbackRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof PolicyDecisionPointsApi
    */
   public opalDataCallback(
     requestParameters: PolicyDecisionPointsApiOpalDataCallbackRequest,
@@ -934,7 +893,6 @@ export class PolicyDecisionPointsApi extends BaseAPI {
    * @param {PolicyDecisionPointsApiPushPdpStateRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof PolicyDecisionPointsApi
    */
   public pushPdpState(
     requestParameters: PolicyDecisionPointsApiPushPdpStateRequest,
@@ -951,7 +909,6 @@ export class PolicyDecisionPointsApi extends BaseAPI {
    * @param {PolicyDecisionPointsApiRotatePdpApiKeyRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof PolicyDecisionPointsApi
    */
   public rotatePdpApiKey(
     requestParameters: PolicyDecisionPointsApiRotatePdpApiKeyRequest,

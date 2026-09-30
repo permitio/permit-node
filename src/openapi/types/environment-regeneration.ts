@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,32 +12,27 @@
 
 /**
  *
- * @export
  * @interface EnvironmentRegeneration
  */
 export interface EnvironmentRegeneration {
   /**
    *
    * @type {string}
-   * @memberof EnvironmentRegeneration
    */
   scope: EnvironmentRegenerationScopeEnum;
   /**
    *
    * @type {string}
-   * @memberof EnvironmentRegeneration
    */
   org_id: string;
   /**
    *
    * @type {string}
-   * @memberof EnvironmentRegeneration
    */
   proj_id: string;
   /**
    *
    * @type {string}
-   * @memberof EnvironmentRegeneration
    */
   env_id: string;
 }

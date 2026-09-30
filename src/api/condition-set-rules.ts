@@ -1,18 +1,26 @@
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 import {
   ConditionSetRulesApi as AutogenConditionSetRulesApi,
-  ConditionSetRuleCreate,
-  ConditionSetRuleRead,
-  ConditionSetRuleRemove,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+  type ConditionSetRuleCreate,
+  type ConditionSetRuleRead,
+  type ConditionSetRuleRemove,
+} from '#src/openapi/index';
+import { BASE_PATH } from '#src/openapi/base';
 
-import { BasePermitApi, IPagination, PermitApiError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ApiContext, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { BasePermitApi, type IPagination } from '#src/api/base';
+// oxlint-disable-next-line no-unused-vars -- Type imports resolve public TSDoc error/context links.
+import type { PermitApiError } from '#src/api/base';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
+// oxlint-disable-next-line no-unused-vars -- Type imports resolve public TSDoc error/context links.
+import type { ApiContext, PermitContextError } from '#src/api/context';
 
-export { ConditionSetRuleCreate, ConditionSetRuleRead, ConditionSetRuleRemove } from '../openapi';
+export {
+  type ConditionSetRuleCreate,
+  type ConditionSetRuleRead,
+  type ConditionSetRuleRemove,
+} from '#src/openapi/index';
 
 export interface IListConditionSetRules extends IPagination {
   /**
@@ -122,12 +130,18 @@ export class ConditionSetRulesApi extends BasePermitApi implements IConditionSet
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
-      return (
+      const created = (
         await this.setRules.assignSetPermissions({
           ...this.config.apiContext.environmentContext,
           conditionSetRuleCreate: rule,
         })
       ).data[0];
+      if (created === undefined) {
+        throw new Error(
+          'Creating a condition set rule returned no rule; inspect the API response.',
+        );
+      }
+      return created;
     } catch (err) {
       this.handleApiError(err);
     }

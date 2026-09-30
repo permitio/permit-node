@@ -1,4 +1,4 @@
-import { builtFile, probePackage } from './package-probe';
+import { builtFile, probePackage } from '#src/tests/module-imports/package-probe';
 
 // Validates the BUILT package the way an ES module consumer loads it: a static
 // `import ... from 'permitio'` in a separate Node process, resolved through the

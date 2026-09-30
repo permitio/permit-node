@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,43 +11,36 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { GrantedTo1 } from './granted-to1';
+import { type GrantedTo1 } from './granted-to1';
 
 /**
  *
- * @export
  * @interface Editable
  */
 export interface Editable {
   /**
    * The name of the role
    * @type {string}
-   * @memberof Editable
    */
   name: string;
   /**
    * optional description string explaining what this role represents, or what permissions are granted to it.
    * @type {string}
-   * @memberof Editable
    */
   description?: string;
   /**
    * list of action keys that define what actions this resource role is permitted to do
    * @type {Array<string>}
-   * @memberof Editable
    */
   permissions?: Array<string>;
   /**
    * optional dictionary of key-value pairs that can be used to store arbitrary metadata about this role. This metadata can be used to filter role using query parameters with attr_ prefix, currently supports only \'equals\' operator
    * @type {object}
-   * @memberof Editable
    */
   attributes?: object;
   /**
    *
    * @type {GrantedTo1}
-   * @memberof Editable
    */
   granted_to?: GrantedTo1;
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,18 +11,13 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { ActivityDetailsList } from './activity-details-list';
+import { type ActivityDetailsList } from './activity-details-list';
 // May contain unused imports in some cases
-// @ts-ignore
-import { ActivityDetailsObject } from './activity-details-object';
+import { type ActivityDetailsObject } from './activity-details-object';
 // May contain unused imports in some cases
-// @ts-ignore
-import { ActivityDetailsObjectData } from './activity-details-object-data';
 
 /**
  * @type ActivityDetails
- * @export
  */
 export type ActivityDetails =
   | ({ kind: 'list' } & ActivityDetailsList)

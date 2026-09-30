@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,39 +10,27 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { APIKeyCreate } from '../types';
-// @ts-ignore
-import { APIKeyRead } from '../types';
-// @ts-ignore
-import { APIKeyScopeRead } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { MemberAccessObj } from '../types';
-// @ts-ignore
-import { PaginatedResultAPIKeyRead } from '../types';
+import { Configuration } from '../configuration';
+import {
+  MemberAccessObj,
+  type APIKeyCreate,
+  type APIKeyRead,
+  type APIKeyScopeRead,
+  type PaginatedResultAPIKeyRead,
+} from '../types';
 /**
  * APIKeysApi - axios parameter creator
- * @export
  */
 export const APIKeysApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -374,7 +360,6 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
 
 /**
  * APIKeysApi - functional programming interface
- * @export
  */
 export const APIKeysApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = APIKeysApiAxiosParamCreator(configuration);
@@ -497,7 +482,6 @@ export const APIKeysApiFp = function (configuration?: Configuration) {
 
 /**
  * APIKeysApi - factory interface
- * @export
  */
 export const APIKeysApiFactory = function (
   configuration?: Configuration,
@@ -594,112 +578,96 @@ export const APIKeysApiFactory = function (
 
 /**
  * Request parameters for createApiKey operation in APIKeysApi.
- * @export
  * @interface APIKeysApiCreateApiKeyRequest
  */
 export interface APIKeysApiCreateApiKeyRequest {
   /**
    *
    * @type {APIKeyCreate}
-   * @memberof APIKeysApiCreateApiKey
    */
   readonly aPIKeyCreate: APIKeyCreate;
 }
 
 /**
  * Request parameters for deleteApiKey operation in APIKeysApi.
- * @export
  * @interface APIKeysApiDeleteApiKeyRequest
  */
 export interface APIKeysApiDeleteApiKeyRequest {
   /**
    * The unique id of the API key
    * @type {string}
-   * @memberof APIKeysApiDeleteApiKey
    */
   readonly apiKeyId: string;
 }
 
 /**
  * Request parameters for getApiKey operation in APIKeysApi.
- * @export
  * @interface APIKeysApiGetApiKeyRequest
  */
 export interface APIKeysApiGetApiKeyRequest {
   /**
    * The unique id of the API key
    * @type {string}
-   * @memberof APIKeysApiGetApiKey
    */
   readonly apiKeyId: string;
 }
 
 /**
  * Request parameters for getEnvironmentApiKey operation in APIKeysApi.
- * @export
  * @interface APIKeysApiGetEnvironmentApiKeyRequest
  */
 export interface APIKeysApiGetEnvironmentApiKeyRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof APIKeysApiGetEnvironmentApiKey
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof APIKeysApiGetEnvironmentApiKey
    */
   readonly envId: string;
 }
 
 /**
  * Request parameters for listApiKeys operation in APIKeysApi.
- * @export
  * @interface APIKeysApiListApiKeysRequest
  */
 export interface APIKeysApiListApiKeysRequest {
   /**
    *
    * @type {MemberAccessObj}
-   * @memberof APIKeysApiListApiKeys
    */
   readonly objectType?: MemberAccessObj;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof APIKeysApiListApiKeys
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof APIKeysApiListApiKeys
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for rotateApiKey operation in APIKeysApi.
- * @export
  * @interface APIKeysApiRotateApiKeyRequest
  */
 export interface APIKeysApiRotateApiKeyRequest {
   /**
    * The unique id of the API key
    * @type {string}
-   * @memberof APIKeysApiRotateApiKey
    */
   readonly apiKeyId: string;
 }
 
 /**
  * APIKeysApi - object-oriented interface
- * @export
  * @class APIKeysApi
  * @extends {BaseAPI}
  */
@@ -710,7 +678,6 @@ export class APIKeysApi extends BaseAPI {
    * @param {APIKeysApiCreateApiKeyRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof APIKeysApi
    */
   public createApiKey(
     requestParameters: APIKeysApiCreateApiKeyRequest,
@@ -727,7 +694,6 @@ export class APIKeysApi extends BaseAPI {
    * @param {APIKeysApiDeleteApiKeyRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof APIKeysApi
    */
   public deleteApiKey(
     requestParameters: APIKeysApiDeleteApiKeyRequest,
@@ -744,7 +710,6 @@ export class APIKeysApi extends BaseAPI {
    * @param {APIKeysApiGetApiKeyRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof APIKeysApi
    */
   public getApiKey(requestParameters: APIKeysApiGetApiKeyRequest, options?: AxiosRequestConfig) {
     return APIKeysApiFp(this.configuration)
@@ -757,7 +722,6 @@ export class APIKeysApi extends BaseAPI {
    * @summary Get Api Key Scope
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof APIKeysApi
    */
   public getApiKeyScope(options?: AxiosRequestConfig) {
     return APIKeysApiFp(this.configuration)
@@ -771,7 +735,6 @@ export class APIKeysApi extends BaseAPI {
    * @param {APIKeysApiGetEnvironmentApiKeyRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof APIKeysApi
    */
   public getEnvironmentApiKey(
     requestParameters: APIKeysApiGetEnvironmentApiKeyRequest,
@@ -788,7 +751,6 @@ export class APIKeysApi extends BaseAPI {
    * @param {APIKeysApiListApiKeysRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof APIKeysApi
    */
   public listApiKeys(
     requestParameters: APIKeysApiListApiKeysRequest = {},
@@ -810,7 +772,6 @@ export class APIKeysApi extends BaseAPI {
    * @param {APIKeysApiRotateApiKeyRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof APIKeysApi
    */
   public rotateApiKey(
     requestParameters: APIKeysApiRotateApiKeyRequest,

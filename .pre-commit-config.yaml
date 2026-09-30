@@ -1,0 +1,31 @@
+minimum_prek_version: '0.5.4'
+update:
+  cooldown_days: 7
+  freeze: true
+repos:
+  - repo: local
+    hooks:
+      - id: lockfile
+        name: Frozen dependency graph
+        entry: pnpm install --lockfile-only --offline --frozen-lockfile --ignore-scripts
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: oxlint
+        name: Oxlint
+        entry: pnpm run lint:oxlint
+        language: system
+        pass_filenames: false
+        types_or: [javascript, ts]
+      - id: oxfmt
+        name: Oxfmt
+        entry: pnpm run lint:format
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: typescript
+        name: Strict TypeScript
+        entry: pnpm run lint:types
+        language: system
+        pass_filenames: false
+        types_or: [javascript, ts]

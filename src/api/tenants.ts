@@ -1,19 +1,24 @@
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 import {
   TenantsApi as AutogenTenantsApi,
-  PaginatedResultUserRead,
-  TenantCreate,
-  TenantRead,
-  TenantUpdate,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+  type PaginatedResultUserRead,
+  type TenantCreate,
+  type TenantRead,
+  type TenantUpdate,
+} from '#src/openapi/index';
+import { BASE_PATH } from '#src/openapi/base';
 
-import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BaseFactsPermitAPI, type IPagination, type IWaitForSync } from '#src/api/base';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
-export { PaginatedResultUserRead, TenantCreate, TenantRead, TenantUpdate } from '../openapi';
+export {
+  type PaginatedResultUserRead,
+  type TenantCreate,
+  type TenantRead,
+  type TenantUpdate,
+} from '#src/openapi/index';
 
 export interface IListTenantUsers extends IPagination {
   tenantKey: string;
@@ -167,8 +172,7 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
   /**
    * Retrieves a list of users for a given tenant.
    *
-   * @param tenantKey - The key of the tenant for which to list users.
-   * @param params - pagination and filtering params.
+   * @param __namedParameters - Tenant key, pagination, and filtering options.
    * @returns A promise that resolves to a PaginatedResultUserRead object containing the list of tenant users.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.

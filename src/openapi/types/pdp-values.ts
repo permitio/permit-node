@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,26 +12,22 @@
 
 /**
  *
- * @export
  * @interface PdpValues
  */
 export interface PdpValues {
   /**
    *
    * @type {string}
-   * @memberof PdpValues
    */
   BACKEND_SERVICE_URL: string;
   /**
    *
    * @type {string}
-   * @memberof PdpValues
    */
   OPA_DECISION_LOG_INGRESS_ROUTE: string;
   /**
    *
    * @type {string}
-   * @memberof PdpValues
    */
   OPA_DECISION_LOG_INGRESS_BACKEND_TIER_URL: string;
 }

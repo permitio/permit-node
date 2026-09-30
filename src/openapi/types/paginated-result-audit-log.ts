@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,31 +11,26 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { AuditLog } from './audit-log';
+import { type AuditLog } from './audit-log';
 
 /**
  *
- * @export
  * @interface PaginatedResultAuditLog
  */
 export interface PaginatedResultAuditLog {
   /**
    * List of Audit Logs
    * @type {Array<AuditLog>}
-   * @memberof PaginatedResultAuditLog
    */
   data: Array<AuditLog>;
   /**
    *
    * @type {number}
-   * @memberof PaginatedResultAuditLog
    */
   total_count: number;
   /**
    *
    * @type {number}
-   * @memberof PaginatedResultAuditLog
    */
   page_count?: number;
 }

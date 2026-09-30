@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,37 +10,27 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { ConditionSetCreate } from '../types';
-// @ts-ignore
-import { ConditionSetRead } from '../types';
-// @ts-ignore
-import { ConditionSetType } from '../types';
-// @ts-ignore
-import { ConditionSetUpdate } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
+import { Configuration } from '../configuration';
+import {
+  ConditionSetType,
+  type ConditionSetCreate,
+  type ConditionSetRead,
+  type ConditionSetUpdate,
+} from '../types';
+
 /**
  * ConditionSetsApi - axios parameter creator
- * @export
  */
 export const ConditionSetsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -544,7 +532,6 @@ export const ConditionSetsApiAxiosParamCreator = function (configuration?: Confi
 
 /**
  * ConditionSetsApi - functional programming interface
- * @export
  */
 export const ConditionSetsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ConditionSetsApiAxiosParamCreator(configuration);
@@ -773,7 +760,6 @@ export const ConditionSetsApiFp = function (configuration?: Configuration) {
 
 /**
  * ConditionSetsApi - factory interface
- * @export
  */
 export const ConditionSetsApiFactory = function (
   configuration?: Configuration,
@@ -957,294 +943,252 @@ export const ConditionSetsApiFactory = function (
 
 /**
  * Request parameters for createConditionSet operation in ConditionSetsApi.
- * @export
  * @interface ConditionSetsApiCreateConditionSetRequest
  */
 export interface ConditionSetsApiCreateConditionSetRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiCreateConditionSet
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiCreateConditionSet
    */
   readonly envId: string;
 
   /**
    *
    * @type {ConditionSetCreate}
-   * @memberof ConditionSetsApiCreateConditionSet
    */
   readonly conditionSetCreate: ConditionSetCreate;
 }
 
 /**
  * Request parameters for deleteConditionSet operation in ConditionSetsApi.
- * @export
  * @interface ConditionSetsApiDeleteConditionSetRequest
  */
 export interface ConditionSetsApiDeleteConditionSetRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiDeleteConditionSet
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiDeleteConditionSet
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiDeleteConditionSet
    */
   readonly conditionSetId: string;
 }
 
 /**
  * Request parameters for getConditionSet operation in ConditionSetsApi.
- * @export
  * @interface ConditionSetsApiGetConditionSetRequest
  */
 export interface ConditionSetsApiGetConditionSetRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiGetConditionSet
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiGetConditionSet
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiGetConditionSet
    */
   readonly conditionSetId: string;
 }
 
 /**
  * Request parameters for getConditionSetAncestors operation in ConditionSetsApi.
- * @export
  * @interface ConditionSetsApiGetConditionSetAncestorsRequest
  */
 export interface ConditionSetsApiGetConditionSetAncestorsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiGetConditionSetAncestors
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiGetConditionSetAncestors
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiGetConditionSetAncestors
    */
   readonly conditionSetId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof ConditionSetsApiGetConditionSetAncestors
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof ConditionSetsApiGetConditionSetAncestors
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for getConditionSetDescendants operation in ConditionSetsApi.
- * @export
  * @interface ConditionSetsApiGetConditionSetDescendantsRequest
  */
 export interface ConditionSetsApiGetConditionSetDescendantsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiGetConditionSetDescendants
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiGetConditionSetDescendants
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiGetConditionSetDescendants
    */
   readonly conditionSetId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof ConditionSetsApiGetConditionSetDescendants
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof ConditionSetsApiGetConditionSetDescendants
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for getConditionSetPossibleParents operation in ConditionSetsApi.
- * @export
  * @interface ConditionSetsApiGetConditionSetPossibleParentsRequest
  */
 export interface ConditionSetsApiGetConditionSetPossibleParentsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiGetConditionSetPossibleParents
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiGetConditionSetPossibleParents
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiGetConditionSetPossibleParents
    */
   readonly conditionSetId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof ConditionSetsApiGetConditionSetPossibleParents
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof ConditionSetsApiGetConditionSetPossibleParents
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for listConditionSets operation in ConditionSetsApi.
- * @export
  * @interface ConditionSetsApiListConditionSetsRequest
  */
 export interface ConditionSetsApiListConditionSetsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiListConditionSets
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiListConditionSets
    */
   readonly envId: string;
 
   /**
    * if provided, will return only the condition sets of the specified type. e.g: only user sets.
    * @type {ConditionSetType}
-   * @memberof ConditionSetsApiListConditionSets
    */
   readonly type?: ConditionSetType;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof ConditionSetsApiListConditionSets
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof ConditionSetsApiListConditionSets
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateConditionSet operation in ConditionSetsApi.
- * @export
  * @interface ConditionSetsApiUpdateConditionSetRequest
  */
 export interface ConditionSetsApiUpdateConditionSetRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiUpdateConditionSet
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiUpdateConditionSet
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the condition set, or the URL-friendly key of the condition set (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetsApiUpdateConditionSet
    */
   readonly conditionSetId: string;
 
   /**
    *
    * @type {ConditionSetUpdate}
-   * @memberof ConditionSetsApiUpdateConditionSet
    */
   readonly conditionSetUpdate: ConditionSetUpdate;
 }
 
 /**
  * ConditionSetsApi - object-oriented interface
- * @export
  * @class ConditionSetsApi
  * @extends {BaseAPI}
  */
@@ -1255,7 +1199,6 @@ export class ConditionSetsApi extends BaseAPI {
    * @param {ConditionSetsApiCreateConditionSetRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ConditionSetsApi
    */
   public createConditionSet(
     requestParameters: ConditionSetsApiCreateConditionSetRequest,
@@ -1277,7 +1220,6 @@ export class ConditionSetsApi extends BaseAPI {
    * @param {ConditionSetsApiDeleteConditionSetRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ConditionSetsApi
    */
   public deleteConditionSet(
     requestParameters: ConditionSetsApiDeleteConditionSetRequest,
@@ -1299,7 +1241,6 @@ export class ConditionSetsApi extends BaseAPI {
    * @param {ConditionSetsApiGetConditionSetRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ConditionSetsApi
    */
   public getConditionSet(
     requestParameters: ConditionSetsApiGetConditionSetRequest,
@@ -1321,7 +1262,6 @@ export class ConditionSetsApi extends BaseAPI {
    * @param {ConditionSetsApiGetConditionSetAncestorsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ConditionSetsApi
    */
   public getConditionSetAncestors(
     requestParameters: ConditionSetsApiGetConditionSetAncestorsRequest,
@@ -1345,7 +1285,6 @@ export class ConditionSetsApi extends BaseAPI {
    * @param {ConditionSetsApiGetConditionSetDescendantsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ConditionSetsApi
    */
   public getConditionSetDescendants(
     requestParameters: ConditionSetsApiGetConditionSetDescendantsRequest,
@@ -1369,7 +1308,6 @@ export class ConditionSetsApi extends BaseAPI {
    * @param {ConditionSetsApiGetConditionSetPossibleParentsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ConditionSetsApi
    */
   public getConditionSetPossibleParents(
     requestParameters: ConditionSetsApiGetConditionSetPossibleParentsRequest,
@@ -1393,7 +1331,6 @@ export class ConditionSetsApi extends BaseAPI {
    * @param {ConditionSetsApiListConditionSetsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ConditionSetsApi
    */
   public listConditionSets(
     requestParameters: ConditionSetsApiListConditionSetsRequest,
@@ -1417,7 +1354,6 @@ export class ConditionSetsApi extends BaseAPI {
    * @param {ConditionSetsApiUpdateConditionSetRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ConditionSetsApi
    */
   public updateConditionSet(
     requestParameters: ConditionSetsApiUpdateConditionSetRequest,

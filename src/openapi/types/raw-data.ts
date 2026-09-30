@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,88 +11,71 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { AVPEngineDecisionLog } from './avpengine-decision-log';
+
 // May contain unused imports in some cases
-// @ts-ignore
-import { DummyEngineModel } from './dummy-engine-model';
+
 // May contain unused imports in some cases
-// @ts-ignore
 import { Engine } from './engine';
 // May contain unused imports in some cases
-// @ts-ignore
-import { OPAEngineDecisionLog } from './opaengine-decision-log';
+
 // May contain unused imports in some cases
-// @ts-ignore
-import { OPALabels } from './opalabels';
+import { type OPALabels } from './opalabels';
 // May contain unused imports in some cases
-// @ts-ignore
-import { OPAMetrics } from './opametrics';
+import { type OPAMetrics } from './opametrics';
 
 /**
  *
- * @export
  * @interface RawData
  */
 export interface RawData {
   /**
    *
    * @type {Engine}
-   * @memberof RawData
    */
   engine?: Engine;
   /**
    *
    * @type {string}
-   * @memberof RawData
    */
   decision_id: string;
   /**
    *
    * @type {OPALabels}
-   * @memberof RawData
    */
   labels: OPALabels;
   /**
    *
    * @type {string}
-   * @memberof RawData
    */
   timestamp: string;
   /**
    *
    * @type {string}
-   * @memberof RawData
    */
   path: string;
   /**
    *
    * @type {object}
-   * @memberof RawData
    */
   input: object;
   /**
    *
    * @type {object}
-   * @memberof RawData
    */
   result: object;
   /**
    *
    * @type {OPAMetrics}
-   * @memberof RawData
    */
   metrics: OPAMetrics;
   /**
    *
    * @type {string}
-   * @memberof RawData
    */
   tenant: string;
   /**
    *
    * @type {number}
-   * @memberof RawData
    */
   process_time_ms?: number;
 }

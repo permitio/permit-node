@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,19 +11,16 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { DataSourceEntry } from './data-source-entry';
+import { type DataSourceEntry } from './data-source-entry';
 
 /**
  * Static list of Data Source Entries returned to client.  Answers this question for the client: from where should i get the full picture of data i need? (as opposed to incremental data updates)
- * @export
  * @interface PermitBackendOpalApiDataDataSourceConfig
  */
 export interface PermitBackendOpalApiDataDataSourceConfig {
   /**
    * list of data sources and how to fetch from them
    * @type {Array<DataSourceEntry>}
-   * @memberof PermitBackendOpalApiDataDataSourceConfig
    */
   entries: Array<DataSourceEntry>;
 }

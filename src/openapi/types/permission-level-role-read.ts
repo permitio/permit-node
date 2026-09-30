@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,26 +12,22 @@
 
 /**
  *
- * @export
  * @interface PermissionLevelRoleRead
  */
 export interface PermissionLevelRoleRead {
   /**
    * Unique id of the elements_env
    * @type {string}
-   * @memberof PermissionLevelRoleRead
    */
   id: string;
   /**
    * A URL-friendly name of the elements_env (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the elements_env.
    * @type {string}
-   * @memberof PermissionLevelRoleRead
    */
   key: string;
   /**
    *
    * @type {string}
-   * @memberof PermissionLevelRoleRead
    */
   name: string;
 }

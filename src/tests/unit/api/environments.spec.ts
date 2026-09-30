@@ -1,7 +1,11 @@
-import { PermitApiError } from '../../../api/base';
-import { EnvironmentCopy, EnvironmentCreate, EnvironmentUpdate } from '../../../api/environments';
-import { Permit } from '../../../index';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import { PermitApiError } from '#src/api/base';
+import {
+  type EnvironmentCopy,
+  type EnvironmentCreate,
+  type EnvironmentUpdate,
+} from '#src/api/environments';
+import { Permit } from '#src/index';
+import { createMockPermit, type MockTransport } from '#src/tests/helpers/mock-api';
 
 // Environments live under a project: their paths are
 // `/v2/projects/{projectKey}/envs[/{environmentKey}]`. Every method requires an

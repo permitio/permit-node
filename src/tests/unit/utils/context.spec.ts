@@ -1,4 +1,4 @@
-import { Context, ContextStore } from '../../../utils/context';
+import { type Context, ContextStore } from '#src/utils/context';
 
 describe('ContextStore (unit)', () => {
   let store: ContextStore;
@@ -56,15 +56,15 @@ describe('ContextStore (unit)', () => {
 
   describe('registerTransform / transform', () => {
     it('applies registered transforms in registration order', () => {
-      store.registerTransform((ctx) => ({ ...ctx, order: [...(ctx.order ?? []), 1] }));
-      store.registerTransform((ctx) => ({ ...ctx, order: [...(ctx.order ?? []), 2] }));
+      store.registerTransform((ctx) => ({ ...ctx, order: [...(ctx['order'] ?? []), 1] }));
+      store.registerTransform((ctx) => ({ ...ctx, order: [...(ctx['order'] ?? []), 2] }));
 
       expect(store.transform({})).toEqual({ order: [1, 2] });
     });
 
     it('feeds each transform the output of the previous one', () => {
       store.registerTransform((ctx) => ({ ...ctx, x: 1 }));
-      store.registerTransform((ctx) => ({ ...ctx, y: ctx.x + 1 }));
+      store.registerTransform((ctx) => ({ ...ctx, y: ctx['x'] + 1 }));
 
       expect(store.transform({})).toEqual({ x: 1, y: 2 });
     });

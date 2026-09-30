@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,35 +10,25 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { ResourceInstanceCreate } from '../types';
-// @ts-ignore
-import { ResourceInstanceRead } from '../types';
-// @ts-ignore
-import { ResourceInstanceUpdate } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type ResourceInstanceCreate,
+  type ResourceInstanceRead,
+  type ResourceInstanceUpdate,
+} from '../types';
 /**
  * ResourceInstancesApi - axios parameter creator
- * @export
  */
 export const ResourceInstancesApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -350,7 +338,6 @@ export const ResourceInstancesApiAxiosParamCreator = function (configuration?: C
 
 /**
  * ResourceInstancesApi - functional programming interface
- * @export
  */
 export const ResourceInstancesApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ResourceInstancesApiAxiosParamCreator(configuration);
@@ -489,7 +476,6 @@ export const ResourceInstancesApiFp = function (configuration?: Configuration) {
 
 /**
  * ResourceInstancesApi - factory interface
- * @export
  */
 export const ResourceInstancesApiFactory = function (
   configuration?: Configuration,
@@ -606,175 +592,150 @@ export const ResourceInstancesApiFactory = function (
 
 /**
  * Request parameters for createResourceInstance operation in ResourceInstancesApi.
- * @export
  * @interface ResourceInstancesApiCreateResourceInstanceRequest
  */
 export interface ResourceInstancesApiCreateResourceInstanceRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceInstancesApiCreateResourceInstance
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceInstancesApiCreateResourceInstance
    */
   readonly envId: string;
 
   /**
    *
    * @type {ResourceInstanceCreate}
-   * @memberof ResourceInstancesApiCreateResourceInstance
    */
   readonly resourceInstanceCreate: ResourceInstanceCreate;
 }
 
 /**
  * Request parameters for deleteResourceInstance operation in ResourceInstancesApi.
- * @export
  * @interface ResourceInstancesApiDeleteResourceInstanceRequest
  */
 export interface ResourceInstancesApiDeleteResourceInstanceRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceInstancesApiDeleteResourceInstance
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceInstancesApiDeleteResourceInstance
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource instance, or the URL-friendly key of the resource instance (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceInstancesApiDeleteResourceInstance
    */
   readonly instanceId: string;
 }
 
 /**
  * Request parameters for getResourceInstance operation in ResourceInstancesApi.
- * @export
  * @interface ResourceInstancesApiGetResourceInstanceRequest
  */
 export interface ResourceInstancesApiGetResourceInstanceRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceInstancesApiGetResourceInstance
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceInstancesApiGetResourceInstance
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource instance, or the URL-friendly key of the resource instance (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceInstancesApiGetResourceInstance
    */
   readonly instanceId: string;
 }
 
 /**
  * Request parameters for listResourceInstances operation in ResourceInstancesApi.
- * @export
  * @interface ResourceInstancesApiListResourceInstancesRequest
  */
 export interface ResourceInstancesApiListResourceInstancesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceInstancesApiListResourceInstances
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceInstancesApiListResourceInstances
    */
   readonly envId: string;
 
   /**
    * The tenant key or id to filter by
    * @type {string}
-   * @memberof ResourceInstancesApiListResourceInstances
    */
   readonly tenant?: string;
 
   /**
    * The resource key or id to filter by
    * @type {string}
-   * @memberof ResourceInstancesApiListResourceInstances
    */
   readonly resource?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof ResourceInstancesApiListResourceInstances
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof ResourceInstancesApiListResourceInstances
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateResourceInstance operation in ResourceInstancesApi.
- * @export
  * @interface ResourceInstancesApiUpdateResourceInstanceRequest
  */
 export interface ResourceInstancesApiUpdateResourceInstanceRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceInstancesApiUpdateResourceInstance
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceInstancesApiUpdateResourceInstance
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource instance, or the URL-friendly key of the resource instance (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceInstancesApiUpdateResourceInstance
    */
   readonly instanceId: string;
 
   /**
    *
    * @type {ResourceInstanceUpdate}
-   * @memberof ResourceInstancesApiUpdateResourceInstance
    */
   readonly resourceInstanceUpdate: ResourceInstanceUpdate;
 }
 
 /**
  * ResourceInstancesApi - object-oriented interface
- * @export
  * @class ResourceInstancesApi
  * @extends {BaseAPI}
  */
@@ -785,7 +746,6 @@ export class ResourceInstancesApi extends BaseAPI {
    * @param {ResourceInstancesApiCreateResourceInstanceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceInstancesApi
    */
   public createResourceInstance(
     requestParameters: ResourceInstancesApiCreateResourceInstanceRequest,
@@ -807,7 +767,6 @@ export class ResourceInstancesApi extends BaseAPI {
    * @param {ResourceInstancesApiDeleteResourceInstanceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceInstancesApi
    */
   public deleteResourceInstance(
     requestParameters: ResourceInstancesApiDeleteResourceInstanceRequest,
@@ -829,7 +788,6 @@ export class ResourceInstancesApi extends BaseAPI {
    * @param {ResourceInstancesApiGetResourceInstanceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceInstancesApi
    */
   public getResourceInstance(
     requestParameters: ResourceInstancesApiGetResourceInstanceRequest,
@@ -851,7 +809,6 @@ export class ResourceInstancesApi extends BaseAPI {
    * @param {ResourceInstancesApiListResourceInstancesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceInstancesApi
    */
   public listResourceInstances(
     requestParameters: ResourceInstancesApiListResourceInstancesRequest,
@@ -876,7 +833,6 @@ export class ResourceInstancesApi extends BaseAPI {
    * @param {ResourceInstancesApiUpdateResourceInstanceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceInstancesApi
    */
   public updateResourceInstance(
     requestParameters: ResourceInstancesApiUpdateResourceInstanceRequest,

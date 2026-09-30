@@ -1,13 +1,13 @@
-import { PermitApiError } from '../../../api/base';
-import { Permit } from '../../../index';
+import { PermitApiError } from '#src/api/base';
+import { Permit } from '#src/index';
 import {
   ConditionSetType,
-  ResourceCreate,
-  RoleAssignmentCreate,
-  TenantUpdate,
-  UserCreate,
-} from '../../../openapi';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+  type ResourceCreate,
+  type RoleAssignmentCreate,
+  type TenantUpdate,
+  type UserCreate,
+} from '#src/openapi/index';
+import { createMockPermit, type MockTransport } from '#src/tests/helpers/mock-api';
 
 // The mock seeds an environment-level context with org='org', project='proj',
 // environment='env'. Facts modules scope under /v2/facts/{proj}/{env}, schema

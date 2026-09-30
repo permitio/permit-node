@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,19 +11,15 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { RoleData } from './role-data';
 
 /**
  *
- * @export
  * @interface ResponseGetDataForRoleV2InternalOpalDataOrgIdProjIdEnvIdRolesRoleIdGet
  */
 export interface ResponseGetDataForRoleV2InternalOpalDataOrgIdProjIdEnvIdRolesRoleIdGet {
   /**
    *
    * @type {{ [key: string]: Array<string>; }}
-   * @memberof ResponseGetDataForRoleV2InternalOpalDataOrgIdProjIdEnvIdRolesRoleIdGet
    */
   grants?: { [key: string]: Array<string> };
 }

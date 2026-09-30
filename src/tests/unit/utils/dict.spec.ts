@@ -1,4 +1,4 @@
-import { dictZip, isDict } from '../../../utils/dict';
+import { dictZip, isDict } from '#src/utils/dict';
 
 describe('dictZip (unit)', () => {
   it('zips equal-length keys and values into a record', () => {
@@ -12,6 +12,12 @@ describe('dictZip (unit)', () => {
 
   it('returns an empty record for two empty lists', () => {
     expect(dictZip([], [])).toEqual({});
+  });
+
+  it('rejects a missing value in a sparse array instead of returning an invalid record', () => {
+    const values = ['value'];
+    delete values[0];
+    expect(() => dictZip(['key'], values)).toThrow('dictZip requires dense arrays of strings');
   });
 
   it('lets the last value win when a key is repeated', () => {

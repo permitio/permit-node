@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,43 +10,29 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { InviteCreate } from '../types';
-// @ts-ignore
-import { InviteRead } from '../types';
-// @ts-ignore
-import { MultiInviteResult } from '../types';
-// @ts-ignore
-import { OrganizationCreate } from '../types';
-// @ts-ignore
-import { OrganizationRead } from '../types';
-// @ts-ignore
-import { OrganizationReadWithAPIKey } from '../types';
-// @ts-ignore
-import { OrganizationUpdate } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type InviteCreate,
+  type InviteRead,
+  type MultiInviteResult,
+  type OrganizationCreate,
+  type OrganizationRead,
+  type OrganizationReadWithAPIKey,
+  type OrganizationUpdate,
+} from '../types';
 /**
  * OrganizationsApi - axios parameter creator
- * @export
  */
 export const OrganizationsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -511,7 +495,6 @@ export const OrganizationsApiAxiosParamCreator = function (configuration?: Confi
 
 /**
  * OrganizationsApi - functional programming interface
- * @export
  */
 export const OrganizationsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = OrganizationsApiAxiosParamCreator(configuration);
@@ -691,7 +674,6 @@ export const OrganizationsApiFp = function (configuration?: Configuration) {
 
 /**
  * OrganizationsApi - factory interface
- * @export
  */
 export const OrganizationsApiFactory = function (
   configuration?: Configuration,
@@ -838,175 +820,150 @@ export const OrganizationsApiFactory = function (
 
 /**
  * Request parameters for cancelInvite operation in OrganizationsApi.
- * @export
  * @interface OrganizationsApiCancelInviteRequest
  */
 export interface OrganizationsApiCancelInviteRequest {
   /**
    * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OrganizationsApiCancelInvite
    */
   readonly orgId: string;
 
   /**
    * Id of the invite to cancel
    * @type {string}
-   * @memberof OrganizationsApiCancelInvite
    */
   readonly inviteId: string;
 }
 
 /**
  * Request parameters for createOrganization operation in OrganizationsApi.
- * @export
  * @interface OrganizationsApiCreateOrganizationRequest
  */
 export interface OrganizationsApiCreateOrganizationRequest {
   /**
    *
    * @type {OrganizationCreate}
-   * @memberof OrganizationsApiCreateOrganization
    */
   readonly organizationCreate: OrganizationCreate;
 }
 
 /**
  * Request parameters for deleteOrganization operation in OrganizationsApi.
- * @export
  * @interface OrganizationsApiDeleteOrganizationRequest
  */
 export interface OrganizationsApiDeleteOrganizationRequest {
   /**
    * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OrganizationsApiDeleteOrganization
    */
   readonly orgId: string;
 }
 
 /**
  * Request parameters for getOrganization operation in OrganizationsApi.
- * @export
  * @interface OrganizationsApiGetOrganizationRequest
  */
 export interface OrganizationsApiGetOrganizationRequest {
   /**
    * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OrganizationsApiGetOrganization
    */
   readonly orgId: string;
 }
 
 /**
  * Request parameters for inviteMembersToOrganization operation in OrganizationsApi.
- * @export
  * @interface OrganizationsApiInviteMembersToOrganizationRequest
  */
 export interface OrganizationsApiInviteMembersToOrganizationRequest {
   /**
    * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OrganizationsApiInviteMembersToOrganization
    */
   readonly orgId: string;
 
   /**
    *
    * @type {Array<InviteCreate>}
-   * @memberof OrganizationsApiInviteMembersToOrganization
    */
   readonly inviteCreate: Array<InviteCreate>;
 
   /**
    *
    * @type {string}
-   * @memberof OrganizationsApiInviteMembersToOrganization
    */
   readonly inviterName?: string;
 
   /**
    *
    * @type {string}
-   * @memberof OrganizationsApiInviteMembersToOrganization
    */
   readonly inviterEmail?: string;
 }
 
 /**
  * Request parameters for listOrganizationInvites operation in OrganizationsApi.
- * @export
  * @interface OrganizationsApiListOrganizationInvitesRequest
  */
 export interface OrganizationsApiListOrganizationInvitesRequest {
   /**
    * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OrganizationsApiListOrganizationInvites
    */
   readonly orgId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof OrganizationsApiListOrganizationInvites
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof OrganizationsApiListOrganizationInvites
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for listOrganizations operation in OrganizationsApi.
- * @export
  * @interface OrganizationsApiListOrganizationsRequest
  */
 export interface OrganizationsApiListOrganizationsRequest {
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof OrganizationsApiListOrganizations
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof OrganizationsApiListOrganizations
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateOrganization operation in OrganizationsApi.
- * @export
  * @interface OrganizationsApiUpdateOrganizationRequest
  */
 export interface OrganizationsApiUpdateOrganizationRequest {
   /**
    * Either the unique id of the organization, or the URL-friendly key of the organization (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof OrganizationsApiUpdateOrganization
    */
   readonly orgId: string;
 
   /**
    *
    * @type {OrganizationUpdate}
-   * @memberof OrganizationsApiUpdateOrganization
    */
   readonly organizationUpdate: OrganizationUpdate;
 }
 
 /**
  * OrganizationsApi - object-oriented interface
- * @export
  * @class OrganizationsApi
  * @extends {BaseAPI}
  */
@@ -1017,7 +974,6 @@ export class OrganizationsApi extends BaseAPI {
    * @param {OrganizationsApiCancelInviteRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof OrganizationsApi
    */
   public cancelInvite(
     requestParameters: OrganizationsApiCancelInviteRequest,
@@ -1034,7 +990,6 @@ export class OrganizationsApi extends BaseAPI {
    * @param {OrganizationsApiCreateOrganizationRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof OrganizationsApi
    */
   public createOrganization(
     requestParameters: OrganizationsApiCreateOrganizationRequest,
@@ -1051,7 +1006,6 @@ export class OrganizationsApi extends BaseAPI {
    * @param {OrganizationsApiDeleteOrganizationRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof OrganizationsApi
    */
   public deleteOrganization(
     requestParameters: OrganizationsApiDeleteOrganizationRequest,
@@ -1067,7 +1021,6 @@ export class OrganizationsApi extends BaseAPI {
    * @summary Get Active Organization
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof OrganizationsApi
    */
   public getActiveOrganization(options?: AxiosRequestConfig) {
     return OrganizationsApiFp(this.configuration)
@@ -1081,7 +1034,6 @@ export class OrganizationsApi extends BaseAPI {
    * @param {OrganizationsApiGetOrganizationRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof OrganizationsApi
    */
   public getOrganization(
     requestParameters: OrganizationsApiGetOrganizationRequest,
@@ -1098,7 +1050,6 @@ export class OrganizationsApi extends BaseAPI {
    * @param {OrganizationsApiInviteMembersToOrganizationRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof OrganizationsApi
    */
   public inviteMembersToOrganization(
     requestParameters: OrganizationsApiInviteMembersToOrganizationRequest,
@@ -1121,7 +1072,6 @@ export class OrganizationsApi extends BaseAPI {
    * @param {OrganizationsApiListOrganizationInvitesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof OrganizationsApi
    */
   public listOrganizationInvites(
     requestParameters: OrganizationsApiListOrganizationInvitesRequest,
@@ -1143,7 +1093,6 @@ export class OrganizationsApi extends BaseAPI {
    * @param {OrganizationsApiListOrganizationsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof OrganizationsApi
    */
   public listOrganizations(
     requestParameters: OrganizationsApiListOrganizationsRequest = {},
@@ -1160,7 +1109,6 @@ export class OrganizationsApi extends BaseAPI {
    * @param {OrganizationsApiUpdateOrganizationRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof OrganizationsApi
    */
   public updateOrganization(
     requestParameters: OrganizationsApiUpdateOrganizationRequest,

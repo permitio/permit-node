@@ -1,32 +1,32 @@
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 import {
   RoleAssignmentsApi as AutogenRoleAssignmentsApi,
-  BulkRoleAssignmentReport,
-  BulkRoleUnAssignmentReport,
-  PaginatedResultRoleAssignmentDetailedRead,
-  PaginatedResultRoleAssignmentRead,
-  RoleAssignmentCreate,
-  RoleAssignmentDetailedRead,
-  RoleAssignmentRead,
-  RoleAssignmentRemove,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+  type BulkRoleAssignmentReport,
+  type BulkRoleUnAssignmentReport,
+  type PaginatedResultRoleAssignmentDetailedRead,
+  type PaginatedResultRoleAssignmentRead,
+  type RoleAssignmentCreate,
+  type RoleAssignmentDetailedRead,
+  type RoleAssignmentRead,
+  type RoleAssignmentRemove,
+} from '#src/openapi/index';
+import { BASE_PATH } from '#src/openapi/base';
 
-import { BaseFactsPermitAPI, IBasePaginationExtended, IWaitForSync } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BaseFactsPermitAPI, type IBasePaginationExtended, type IWaitForSync } from '#src/api/base';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
 export {
-  BulkRoleAssignmentReport,
-  BulkRoleUnAssignmentReport,
-  PaginatedResultRoleAssignmentDetailedRead,
-  PaginatedResultRoleAssignmentRead,
-  RoleAssignmentCreate,
-  RoleAssignmentRead,
-  RoleAssignmentDetailedRead,
-  RoleAssignmentRemove,
-} from '../openapi';
+  type BulkRoleAssignmentReport,
+  type BulkRoleUnAssignmentReport,
+  type PaginatedResultRoleAssignmentDetailedRead,
+  type PaginatedResultRoleAssignmentRead,
+  type RoleAssignmentCreate,
+  type RoleAssignmentRead,
+  type RoleAssignmentDetailedRead,
+  type RoleAssignmentRemove,
+} from '#src/openapi/index';
 
 /**
  * Represents the parameters for listing role assignments.
@@ -74,9 +74,9 @@ type ReturnListRoleAssignments<T extends IListRoleAssignments> =
       ? PaginatedResultRoleAssignmentDetailedRead
       : PaginatedResultRoleAssignmentRead
     : // without total count
-    T extends IListRoleAssignmentsDetailed
-    ? RoleAssignmentDetailedRead[]
-    : RoleAssignmentRead[];
+      T extends IListRoleAssignmentsDetailed
+      ? RoleAssignmentDetailedRead[]
+      : RoleAssignmentRead[];
 
 /**
  * API client for managing role assignments.
@@ -190,14 +190,14 @@ export class RoleAssignmentsApi extends BaseFactsPermitAPI implements IRoleAssig
       return (
         await this.roleAssignments.listRoleAssignments({
           ...this.config.apiContext.environmentContext,
-          user,
-          tenant,
-          role,
-          resourceInstance,
-          detailed,
+          ...(user !== undefined && { user }),
+          ...(tenant !== undefined && { tenant }),
+          ...(role !== undefined && { role }),
+          ...(resourceInstance !== undefined && { resourceInstance }),
+          ...(detailed !== undefined && { detailed }),
           page,
           perPage,
-          includeTotalCount,
+          ...(includeTotalCount !== undefined && { includeTotalCount }),
         })
       ).data;
     } catch (err) {

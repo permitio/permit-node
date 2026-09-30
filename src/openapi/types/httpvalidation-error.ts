@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,19 +11,16 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { ValidationError } from './validation-error';
+import { type ValidationError } from './validation-error';
 
 /**
  *
- * @export
  * @interface HTTPValidationError
  */
 export interface HTTPValidationError {
   /**
    *
    * @type {Array<ValidationError>}
-   * @memberof HTTPValidationError
    */
   detail?: Array<ValidationError>;
 }

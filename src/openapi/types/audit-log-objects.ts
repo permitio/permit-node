@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,82 +11,65 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { ActionObj } from './action-obj';
+import { type ActionObj } from './action-obj';
 // May contain unused imports in some cases
-// @ts-ignore
-import { EnvironmentObject } from './environment-object';
+import { type EnvironmentObject } from './environment-object';
 // May contain unused imports in some cases
-// @ts-ignore
-import { OrganizationObject } from './organization-object';
+import { type OrganizationObject } from './organization-object';
 // May contain unused imports in some cases
-// @ts-ignore
-import { PdpConfigObject } from './pdp-config-object';
+import { type PdpConfigObject } from './pdp-config-object';
 // May contain unused imports in some cases
-// @ts-ignore
-import { ProjectObject } from './project-object';
+import { type ProjectObject } from './project-object';
 // May contain unused imports in some cases
-// @ts-ignore
-import { ResourceTypeObj } from './resource-type-obj';
+import { type ResourceTypeObj } from './resource-type-obj';
 // May contain unused imports in some cases
-// @ts-ignore
-import { TenantObj } from './tenant-obj';
+import { type TenantObj } from './tenant-obj';
 // May contain unused imports in some cases
-// @ts-ignore
-import { UserObj } from './user-obj';
+import { type UserObj } from './user-obj';
 
 /**
  *
- * @export
  * @interface AuditLogObjects
  */
 export interface AuditLogObjects {
   /**
    *
    * @type {OrganizationObject}
-   * @memberof AuditLogObjects
    */
   organization_object?: OrganizationObject;
   /**
    *
    * @type {ProjectObject}
-   * @memberof AuditLogObjects
    */
   project_object?: ProjectObject;
   /**
    *
    * @type {EnvironmentObject}
-   * @memberof AuditLogObjects
    */
   environment_object?: EnvironmentObject;
   /**
    *
    * @type {PdpConfigObject}
-   * @memberof AuditLogObjects
    */
   pdp_config_object?: PdpConfigObject;
   /**
    *
    * @type {UserObj}
-   * @memberof AuditLogObjects
    */
   user_object?: UserObj;
   /**
    *
    * @type {ActionObj}
-   * @memberof AuditLogObjects
    */
   action_object?: ActionObj;
   /**
    *
    * @type {ResourceTypeObj}
-   * @memberof AuditLogObjects
    */
   resource_type_object?: ResourceTypeObj;
   /**
    *
    * @type {TenantObj}
-   * @memberof AuditLogObjects
    */
   tenant_object?: TenantObj;
 }

@@ -69,7 +69,12 @@ function setup(changes = {}) {
     mkdirSync(join(dir, name), { recursive: true });
   }
   copyFileSync(join(root, 'scripts/check-codegen.mjs'), join(dir, 'scripts/check-codegen.mjs'));
-  symlinkSync(join(root, 'node_modules/typescript'), join(dir, 'node_modules/typescript'), 'dir');
+  mkdirSync(join(dir, 'node_modules/@permitio'), { recursive: true });
+  symlinkSync(
+    join(root, 'tools/compiler'),
+    join(dir, 'node_modules/@permitio/compiler-tools'),
+    'dir',
+  );
   const wrapperDir = join(dir, 'node_modules/@openapitools/openapi-generator-cli');
   mkdirSync(wrapperDir, { recursive: true });
   writeFileSync(join(wrapperDir, 'main.js'), wrapper, { mode: 0o755 });

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,25 +11,21 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { APIKeyInfo } from './apikey-info';
+import { type APIKeyInfo } from './apikey-info';
 
 /**
  *
- * @export
  * @interface APIKeyViewerContext
  */
 export interface APIKeyViewerContext {
   /**
    *
    * @type {string}
-   * @memberof APIKeyViewerContext
    */
   type: APIKeyViewerContextTypeEnum;
   /**
    *
    * @type {APIKeyInfo}
-   * @memberof APIKeyViewerContext
    */
   api_key: APIKeyInfo;
 }

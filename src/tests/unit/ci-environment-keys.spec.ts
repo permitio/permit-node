@@ -59,7 +59,7 @@ process.stdout.write(method === 'POST' ? '{"id":"local-env-id"}\\n201' : '204');
   );
   const env = {
     ...process.env,
-    PATH: cwd + delimiter + process.env.PATH,
+    PATH: cwd + delimiter + process.env['PATH'],
     PROJECT_ID: 'local-project',
     PROJECT_API_KEY: 'local-token',
     GITHUB_OUTPUT: join(cwd, 'outputs'),
@@ -69,6 +69,7 @@ process.stdout.write(method === 'POST' ? '{"id":"local-env-id"}\\n201' : '204');
   const lanes = [...workflow.matchAll(/- node: '([^']+)'\n +node-version: '([^']+)'/g)];
   expect(lanes.length).toBeGreaterThan(0);
   for (const [, label, version] of lanes) {
+    assert(label !== undefined && version !== undefined);
     const result = spawnSync(
       'bash',
       ['-euo', 'pipefail', '-c', stepScript('Provision temp Permit env')],

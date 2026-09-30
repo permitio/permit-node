@@ -1,8 +1,8 @@
 import pino from 'pino';
 
-import { IPermitClient } from '../../index';
-import { cleanUp, createTestClient, expectNotFound } from '../fixtures';
-import { waitForCheck } from '../helpers/wait-for';
+import { type IPermitClient } from '#src/index';
+import { cleanUp, createTestClient, expectNotFound } from '#src/tests/fixtures';
+import { waitForCheck } from '#src/tests/helpers/wait-for';
 
 let permit: IPermitClient;
 let logger: pino.Logger;

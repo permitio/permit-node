@@ -1,12 +1,12 @@
-import { PermitApiError } from '../../../api/base';
-import { TenantCreate, TenantUpdate } from '../../../api/tenants';
-import { Permit } from '../../../index';
+import { PermitApiError } from '#src/api/base';
+import { type TenantCreate, type TenantUpdate } from '#src/api/tenants';
+import { Permit } from '#src/index';
 import {
   createMockPermit,
   MOCK_API_ORIGIN,
   MOCK_PDP_ORIGIN,
-  MockTransport,
-} from '../../helpers/mock-api';
+  type MockTransport,
+} from '#src/tests/helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // tenants URL is scoped under `/v2/facts/{proj}/{env}/tenants`. Tenants is a

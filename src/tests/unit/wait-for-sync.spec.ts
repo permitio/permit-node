@@ -1,6 +1,6 @@
-import { InternalAxiosRequestConfig } from 'axios';
+import { type InternalAxiosRequestConfig } from 'axios';
 
-import { Permit } from '../../index';
+import { Permit } from '#src/index';
 
 // Neither address is an SDK default, so a request sent to one of them used the configured value.
 const PDP_URL = 'http://pdp.test:7000';

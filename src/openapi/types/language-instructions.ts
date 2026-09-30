@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,31 +11,26 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
 import { ProgrammingLanguage } from './programming-language';
 
 /**
  *
- * @export
  * @interface LanguageInstructions
  */
 export interface LanguageInstructions {
   /**
    *
    * @type {ProgrammingLanguage}
-   * @memberof LanguageInstructions
    */
   language: ProgrammingLanguage;
   /**
    *
    * @type {string}
-   * @memberof LanguageInstructions
    */
   label: string;
   /**
    *
    * @type {string}
-   * @memberof LanguageInstructions
    */
   instructions: string;
 }

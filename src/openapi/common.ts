@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,20 +10,18 @@
  * Do not edit the class manually.
  */
 
+import { type AxiosInstance, type AxiosResponse } from 'axios';
+import { RequiredError, type RequestArgs } from './base';
 import { Configuration } from './configuration';
-import { RequiredError, RequestArgs } from './base';
-import { AxiosInstance, AxiosResponse } from 'axios';
 
 /**
  *
- * @export
  */
 export const DUMMY_BASE_URL = 'https://example.com';
 
 /**
  *
  * @throws {RequiredError}
- * @export
  */
 export const assertParamExists = function (
   functionName: string,
@@ -42,7 +38,6 @@ export const assertParamExists = function (
 
 /**
  *
- * @export
  */
 export const setApiKeyToObject = async function (
   object: any,
@@ -60,7 +55,6 @@ export const setApiKeyToObject = async function (
 
 /**
  *
- * @export
  */
 export const setBasicAuthToObject = function (object: any, configuration?: Configuration) {
   if (configuration && (configuration.username || configuration.password)) {
@@ -70,7 +64,6 @@ export const setBasicAuthToObject = function (object: any, configuration?: Confi
 
 /**
  *
- * @export
  */
 export const setBearerAuthToObject = async function (object: any, configuration?: Configuration) {
   if (configuration && configuration.accessToken) {
@@ -84,7 +77,6 @@ export const setBearerAuthToObject = async function (object: any, configuration?
 
 /**
  *
- * @export
  */
 export const setOAuthToObject = async function (
   object: any,
@@ -129,7 +121,6 @@ function setFlattenedQueryParams(
 
 /**
  *
- * @export
  */
 export const setSearchParams = function (url: URL, ...objects: any[]) {
   const searchParams = new URLSearchParams(url.search);
@@ -139,7 +130,6 @@ export const setSearchParams = function (url: URL, ...objects: any[]) {
 
 /**
  *
- * @export
  */
 export const serializeDataIfNeeded = function (
   value: any,
@@ -156,7 +146,6 @@ export const serializeDataIfNeeded = function (
 
 /**
  *
- * @export
  */
 export const toPathString = function (url: URL) {
   return url.pathname + url.search + url.hash;
@@ -164,7 +153,6 @@ export const toPathString = function (url: URL) {
 
 /**
  *
- * @export
  */
 export const createRequestFunction = function (
   axiosArgs: RequestArgs,
@@ -175,7 +163,7 @@ export const createRequestFunction = function (
   return <T = unknown, R = AxiosResponse<T>>(
     axios: AxiosInstance = globalAxios,
     basePath: string = BASE_PATH,
-  ) => {
+  ): ReturnType<typeof globalAxios.request<T, R>> => {
     const axiosRequestArgs = {
       ...axiosArgs.options,
       url: (configuration?.basePath || basePath) + axiosArgs.url,

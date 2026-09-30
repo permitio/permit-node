@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,31 +11,26 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { ActivityLogEventRead } from './activity-log-event-read';
+import { type ActivityLogEventRead } from './activity-log-event-read';
 
 /**
  *
- * @export
  * @interface PaginatedResultActivityLogEventRead
  */
 export interface PaginatedResultActivityLogEventRead {
   /**
    * List of Activity Log Events
    * @type {Array<ActivityLogEventRead>}
-   * @memberof PaginatedResultActivityLogEventRead
    */
   data: Array<ActivityLogEventRead>;
   /**
    *
    * @type {number}
-   * @memberof PaginatedResultActivityLogEventRead
    */
   total_count: number;
   /**
    *
    * @type {number}
-   * @memberof PaginatedResultActivityLogEventRead
    */
   page_count?: number;
 }

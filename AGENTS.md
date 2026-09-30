@@ -1,0 +1,40 @@
+# Working on the Permit Node SDK
+
+Use Node 22.13+ in the 22.x line or Node 24, and the exact pnpm version in `package.json`.
+Run `pnpm verify` before proposing a change. This runs the pinned prek checks, builds both
+published entry points, and runs local unit, module-import, and tooling tests.
+
+## Source and types
+
+- Authored TypeScript uses ESM and `#src/` imports. Tooling tests use `#scripts/` imports.
+- Keep every strict compiler option enabled. Do not use `skipLibCheck`, blanket exclusions,
+  or assertions to conceal unsupported public types.
+- esbuild bundles CJS and ESM; TypeScript 7 emits declarations. The declaration build resolves
+  source aliases to portable paths. Preserve the existing package entry points.
+- `tools/compiler` explicitly contains TypeScript 6's maintained compiler API for TypeDoc and
+  AST tooling. It does not check or emit the SDK build.
+- Use Oxlint with the TypeScript, import, and unicorn plugins and Oxfmt's 100-column format.
+- New source tests should be colocated `*.test.ts` files. Existing grouped suites remain in
+  `src/tests`; add focused regressions there when changing an existing tested behavior.
+- Document non-trivial public APIs with parameters, return values, and relevant failure cases.
+
+## Generated source
+
+Do not rebaseline generated API shapes as part of tooling changes. The generation script runs
+`normalize:openapi`, which applies compiler-directed type imports and compatibility annotations,
+then formats the result. Keep the normalization tests and public declaration checks passing.
+The pinned fixture guard checks generator behavior independently; `pnpm check:codegen` needs Java.
+
+## Dependencies and hooks
+
+Run `pnpm audit --audit-level=moderate` before changing dependencies. Pin exact direct versions,
+keep the 24-hour release delay, and leave install scripts disabled. Audit findings require a
+named owner and follow-up; do not add overrides or ignore advisory IDs to hide them.
+
+Run `pnpm hooks:install` for each checkout. It installs the pinned prek version into that
+checkout's Git directory and sets only its worktree hook path. Never unset the common
+`core.hooksPath`: another worktree may still use it. Hook dependencies are the exact tools in
+the pnpm lockfile; Dependabot groups their updates with a seven-day cooldown.
+
+Run tests against local fixtures on this computer. Backend integration and e2e commands require
+explicit authorization and suitable credentials; `pnpm verify` never invokes them.

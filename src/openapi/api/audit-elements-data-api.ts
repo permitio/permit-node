@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,31 +10,20 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PaginatedResultAuditLog } from '../types';
+import { Configuration } from '../configuration';
+import { type PaginatedResultAuditLog } from '../types';
 /**
  * AuditElementsDataApi - axios parameter creator
- * @export
  */
 export const AuditElementsDataApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -117,7 +104,6 @@ export const AuditElementsDataApiAxiosParamCreator = function (configuration?: C
 
 /**
  * AuditElementsDataApi - functional programming interface
- * @export
  */
 export const AuditElementsDataApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = AuditElementsDataApiAxiosParamCreator(configuration);
@@ -161,7 +147,6 @@ export const AuditElementsDataApiFp = function (configuration?: Configuration) {
 
 /**
  * AuditElementsDataApi - factory interface
- * @export
  */
 export const AuditElementsDataApiFactory = function (
   configuration?: Configuration,
@@ -200,56 +185,48 @@ export const AuditElementsDataApiFactory = function (
 
 /**
  * Request parameters for elementsListAuditLogs operation in AuditElementsDataApi.
- * @export
  * @interface AuditElementsDataApiElementsListAuditLogsRequest
  */
 export interface AuditElementsDataApiElementsListAuditLogsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof AuditElementsDataApiElementsListAuditLogs
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof AuditElementsDataApiElementsListAuditLogs
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof AuditElementsDataApiElementsListAuditLogs
    */
   readonly elementsConfigId: string;
 
   /**
    * Text search for the email field
    * @type {string}
-   * @memberof AuditElementsDataApiElementsListAuditLogs
    */
   readonly search?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof AuditElementsDataApiElementsListAuditLogs
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof AuditElementsDataApiElementsListAuditLogs
    */
   readonly perPage?: number;
 }
 
 /**
  * AuditElementsDataApi - object-oriented interface
- * @export
  * @class AuditElementsDataApi
  * @extends {BaseAPI}
  */
@@ -260,7 +237,6 @@ export class AuditElementsDataApi extends BaseAPI {
    * @param {AuditElementsDataApiElementsListAuditLogsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof AuditElementsDataApi
    */
   public elementsListAuditLogs(
     requestParameters: AuditElementsDataApiElementsListAuditLogsRequest,

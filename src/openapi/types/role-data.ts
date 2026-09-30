@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,14 +12,12 @@
 
 /**
  *
- * @export
  * @interface RoleData
  */
 export interface RoleData {
   /**
    *
    * @type {{ [key: string]: Array<string>; }}
-   * @memberof RoleData
    */
   grants?: { [key: string]: Array<string> };
 }

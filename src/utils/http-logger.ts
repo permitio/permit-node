@@ -1,4 +1,4 @@
-import { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { type AxiosInstance, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import pino from 'pino';
 
 export class AxiosLoggingInterceptor {

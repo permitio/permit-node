@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,43 +10,29 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PaginatedResultUserRead } from '../types';
-// @ts-ignore
-import { RoleAssignmentRead } from '../types';
-// @ts-ignore
-import { UserCreate } from '../types';
-// @ts-ignore
-import { UserRead } from '../types';
-// @ts-ignore
-import { UserRoleCreate } from '../types';
-// @ts-ignore
-import { UserRoleRemove } from '../types';
-// @ts-ignore
-import { UserUpdate } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type PaginatedResultUserRead,
+  type RoleAssignmentRead,
+  type UserCreate,
+  type UserRead,
+  type UserRoleCreate,
+  type UserRoleRemove,
+  type UserUpdate,
+} from '../types';
 /**
  * UsersApi - axios parameter creator
- * @export
  */
 export const UsersApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -550,7 +534,6 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
 
 /**
  * UsersApi - functional programming interface
- * @export
  */
 export const UsersApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = UsersApiAxiosParamCreator(configuration);
@@ -767,7 +750,6 @@ export const UsersApiFp = function (configuration?: Configuration) {
 
 /**
  * UsersApi - factory interface
- * @export
  */
 export const UsersApiFactory = function (
   configuration?: Configuration,
@@ -937,280 +919,240 @@ export const UsersApiFactory = function (
 
 /**
  * Request parameters for assignRoleToUser operation in UsersApi.
- * @export
  * @interface UsersApiAssignRoleToUserRequest
  */
 export interface UsersApiAssignRoleToUserRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiAssignRoleToUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiAssignRoleToUser
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiAssignRoleToUser
    */
   readonly userId: string;
 
   /**
    *
    * @type {UserRoleCreate}
-   * @memberof UsersApiAssignRoleToUser
    */
   readonly userRoleCreate: UserRoleCreate;
 }
 
 /**
  * Request parameters for createUser operation in UsersApi.
- * @export
  * @interface UsersApiCreateUserRequest
  */
 export interface UsersApiCreateUserRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiCreateUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiCreateUser
    */
   readonly envId: string;
 
   /**
    *
    * @type {UserCreate}
-   * @memberof UsersApiCreateUser
    */
   readonly userCreate: UserCreate;
 }
 
 /**
  * Request parameters for deleteUser operation in UsersApi.
- * @export
  * @interface UsersApiDeleteUserRequest
  */
 export interface UsersApiDeleteUserRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiDeleteUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiDeleteUser
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiDeleteUser
    */
   readonly userId: string;
 }
 
 /**
  * Request parameters for getUser operation in UsersApi.
- * @export
  * @interface UsersApiGetUserRequest
  */
 export interface UsersApiGetUserRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiGetUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiGetUser
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiGetUser
    */
   readonly userId: string;
 }
 
 /**
  * Request parameters for listUsers operation in UsersApi.
- * @export
  * @interface UsersApiListUsersRequest
  */
 export interface UsersApiListUsersRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiListUsers
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiListUsers
    */
   readonly envId: string;
 
   /**
    * Text search for the email field
    * @type {string}
-   * @memberof UsersApiListUsers
    */
   readonly search?: string;
 
   /**
    * Match users with a specific role
    * @type {string}
-   * @memberof UsersApiListUsers
    */
   readonly role?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof UsersApiListUsers
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof UsersApiListUsers
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for replaceUser operation in UsersApi.
- * @export
  * @interface UsersApiReplaceUserRequest
  */
 export interface UsersApiReplaceUserRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiReplaceUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiReplaceUser
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiReplaceUser
    */
   readonly userId: string;
 
   /**
    *
    * @type {UserCreate}
-   * @memberof UsersApiReplaceUser
    */
   readonly userCreate: UserCreate;
 }
 
 /**
  * Request parameters for unassignRoleFromUser operation in UsersApi.
- * @export
  * @interface UsersApiUnassignRoleFromUserRequest
  */
 export interface UsersApiUnassignRoleFromUserRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiUnassignRoleFromUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiUnassignRoleFromUser
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiUnassignRoleFromUser
    */
   readonly userId: string;
 
   /**
    *
    * @type {UserRoleRemove}
-   * @memberof UsersApiUnassignRoleFromUser
    */
   readonly userRoleRemove: UserRoleRemove;
 }
 
 /**
  * Request parameters for updateUser operation in UsersApi.
- * @export
  * @interface UsersApiUpdateUserRequest
  */
 export interface UsersApiUpdateUserRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiUpdateUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiUpdateUser
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof UsersApiUpdateUser
    */
   readonly userId: string;
 
   /**
    *
    * @type {UserUpdate}
-   * @memberof UsersApiUpdateUser
    */
   readonly userUpdate: UserUpdate;
 }
 
 /**
  * UsersApi - object-oriented interface
- * @export
  * @class UsersApi
  * @extends {BaseAPI}
  */
@@ -1221,7 +1163,6 @@ export class UsersApi extends BaseAPI {
    * @param {UsersApiAssignRoleToUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UsersApi
    */
   public assignRoleToUser(
     requestParameters: UsersApiAssignRoleToUserRequest,
@@ -1244,7 +1185,6 @@ export class UsersApi extends BaseAPI {
    * @param {UsersApiCreateUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UsersApi
    */
   public createUser(requestParameters: UsersApiCreateUserRequest, options?: AxiosRequestConfig) {
     return UsersApiFp(this.configuration)
@@ -1263,7 +1203,6 @@ export class UsersApi extends BaseAPI {
    * @param {UsersApiDeleteUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UsersApi
    */
   public deleteUser(requestParameters: UsersApiDeleteUserRequest, options?: AxiosRequestConfig) {
     return UsersApiFp(this.configuration)
@@ -1282,7 +1221,6 @@ export class UsersApi extends BaseAPI {
    * @param {UsersApiGetUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UsersApi
    */
   public getUser(requestParameters: UsersApiGetUserRequest, options?: AxiosRequestConfig) {
     return UsersApiFp(this.configuration)
@@ -1296,7 +1234,6 @@ export class UsersApi extends BaseAPI {
    * @param {UsersApiListUsersRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UsersApi
    */
   public listUsers(requestParameters: UsersApiListUsersRequest, options?: AxiosRequestConfig) {
     return UsersApiFp(this.configuration)
@@ -1318,7 +1255,6 @@ export class UsersApi extends BaseAPI {
    * @param {UsersApiReplaceUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UsersApi
    */
   public replaceUser(requestParameters: UsersApiReplaceUserRequest, options?: AxiosRequestConfig) {
     return UsersApiFp(this.configuration)
@@ -1338,7 +1274,6 @@ export class UsersApi extends BaseAPI {
    * @param {UsersApiUnassignRoleFromUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UsersApi
    */
   public unassignRoleFromUser(
     requestParameters: UsersApiUnassignRoleFromUserRequest,
@@ -1361,7 +1296,6 @@ export class UsersApi extends BaseAPI {
    * @param {UsersApiUpdateUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof UsersApi
    */
   public updateUser(requestParameters: UsersApiUpdateUserRequest, options?: AxiosRequestConfig) {
     return UsersApiFp(this.configuration)

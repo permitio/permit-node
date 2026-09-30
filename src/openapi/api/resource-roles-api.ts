@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,39 +10,27 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { AddRolePermissions } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { RemoveRolePermissions } from '../types';
-// @ts-ignore
-import { ResourceRoleCreate } from '../types';
-// @ts-ignore
-import { ResourceRoleRead } from '../types';
-// @ts-ignore
-import { ResourceRoleUpdate } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type AddRolePermissions,
+  type RemoveRolePermissions,
+  type ResourceRoleCreate,
+  type ResourceRoleRead,
+  type ResourceRoleUpdate,
+} from '../types';
 /**
  * ResourceRolesApi - axios parameter creator
- * @export
  */
 export const ResourceRolesApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -515,7 +501,6 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
 
 /**
  * ResourceRolesApi - functional programming interface
- * @export
  */
 export const ResourceRolesApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ResourceRolesApiAxiosParamCreator(configuration);
@@ -721,7 +706,6 @@ export const ResourceRolesApiFp = function (configuration?: Configuration) {
 
 /**
  * ResourceRolesApi - factory interface
- * @export
  */
 export const ResourceRolesApiFactory = function (
   configuration?: Configuration,
@@ -904,280 +888,240 @@ export const ResourceRolesApiFactory = function (
 
 /**
  * Request parameters for assignPermissionsToResourceRole operation in ResourceRolesApi.
- * @export
  * @interface ResourceRolesApiAssignPermissionsToResourceRoleRequest
  */
 export interface ResourceRolesApiAssignPermissionsToResourceRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiAssignPermissionsToResourceRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiAssignPermissionsToResourceRole
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiAssignPermissionsToResourceRole
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiAssignPermissionsToResourceRole
    */
   readonly roleId: string;
 
   /**
    *
    * @type {AddRolePermissions}
-   * @memberof ResourceRolesApiAssignPermissionsToResourceRole
    */
   readonly addRolePermissions: AddRolePermissions;
 }
 
 /**
  * Request parameters for createResourceRole operation in ResourceRolesApi.
- * @export
  * @interface ResourceRolesApiCreateResourceRoleRequest
  */
 export interface ResourceRolesApiCreateResourceRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiCreateResourceRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiCreateResourceRole
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiCreateResourceRole
    */
   readonly resourceId: string;
 
   /**
    *
    * @type {ResourceRoleCreate}
-   * @memberof ResourceRolesApiCreateResourceRole
    */
   readonly resourceRoleCreate: ResourceRoleCreate;
 }
 
 /**
  * Request parameters for deleteResourceRole operation in ResourceRolesApi.
- * @export
  * @interface ResourceRolesApiDeleteResourceRoleRequest
  */
 export interface ResourceRolesApiDeleteResourceRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiDeleteResourceRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiDeleteResourceRole
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiDeleteResourceRole
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiDeleteResourceRole
    */
   readonly roleId: string;
 }
 
 /**
  * Request parameters for getResourceRole operation in ResourceRolesApi.
- * @export
  * @interface ResourceRolesApiGetResourceRoleRequest
  */
 export interface ResourceRolesApiGetResourceRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiGetResourceRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiGetResourceRole
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiGetResourceRole
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiGetResourceRole
    */
   readonly roleId: string;
 }
 
 /**
  * Request parameters for listResourceRoles operation in ResourceRolesApi.
- * @export
  * @interface ResourceRolesApiListResourceRolesRequest
  */
 export interface ResourceRolesApiListResourceRolesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiListResourceRoles
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiListResourceRoles
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiListResourceRoles
    */
   readonly resourceId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof ResourceRolesApiListResourceRoles
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof ResourceRolesApiListResourceRoles
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for removePermissionsFromResourceRole operation in ResourceRolesApi.
- * @export
  * @interface ResourceRolesApiRemovePermissionsFromResourceRoleRequest
  */
 export interface ResourceRolesApiRemovePermissionsFromResourceRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiRemovePermissionsFromResourceRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiRemovePermissionsFromResourceRole
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiRemovePermissionsFromResourceRole
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiRemovePermissionsFromResourceRole
    */
   readonly roleId: string;
 
   /**
    *
    * @type {RemoveRolePermissions}
-   * @memberof ResourceRolesApiRemovePermissionsFromResourceRole
    */
   readonly removeRolePermissions: RemoveRolePermissions;
 }
 
 /**
  * Request parameters for updateResourceRole operation in ResourceRolesApi.
- * @export
  * @interface ResourceRolesApiUpdateResourceRoleRequest
  */
 export interface ResourceRolesApiUpdateResourceRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiUpdateResourceRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiUpdateResourceRole
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiUpdateResourceRole
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceRolesApiUpdateResourceRole
    */
   readonly roleId: string;
 
   /**
    *
    * @type {ResourceRoleUpdate}
-   * @memberof ResourceRolesApiUpdateResourceRole
    */
   readonly resourceRoleUpdate: ResourceRoleUpdate;
 }
 
 /**
  * ResourceRolesApi - object-oriented interface
- * @export
  * @class ResourceRolesApi
  * @extends {BaseAPI}
  */
@@ -1188,7 +1132,6 @@ export class ResourceRolesApi extends BaseAPI {
    * @param {ResourceRolesApiAssignPermissionsToResourceRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceRolesApi
    */
   public assignPermissionsToResourceRole(
     requestParameters: ResourceRolesApiAssignPermissionsToResourceRoleRequest,
@@ -1212,7 +1155,6 @@ export class ResourceRolesApi extends BaseAPI {
    * @param {ResourceRolesApiCreateResourceRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceRolesApi
    */
   public createResourceRole(
     requestParameters: ResourceRolesApiCreateResourceRoleRequest,
@@ -1235,7 +1177,6 @@ export class ResourceRolesApi extends BaseAPI {
    * @param {ResourceRolesApiDeleteResourceRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceRolesApi
    */
   public deleteResourceRole(
     requestParameters: ResourceRolesApiDeleteResourceRoleRequest,
@@ -1258,7 +1199,6 @@ export class ResourceRolesApi extends BaseAPI {
    * @param {ResourceRolesApiGetResourceRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceRolesApi
    */
   public getResourceRole(
     requestParameters: ResourceRolesApiGetResourceRoleRequest,
@@ -1281,7 +1221,6 @@ export class ResourceRolesApi extends BaseAPI {
    * @param {ResourceRolesApiListResourceRolesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceRolesApi
    */
   public listResourceRoles(
     requestParameters: ResourceRolesApiListResourceRolesRequest,
@@ -1305,7 +1244,6 @@ export class ResourceRolesApi extends BaseAPI {
    * @param {ResourceRolesApiRemovePermissionsFromResourceRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceRolesApi
    */
   public removePermissionsFromResourceRole(
     requestParameters: ResourceRolesApiRemovePermissionsFromResourceRoleRequest,
@@ -1329,7 +1267,6 @@ export class ResourceRolesApi extends BaseAPI {
    * @param {ResourceRolesApiUpdateResourceRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceRolesApi
    */
   public updateResourceRole(
     requestParameters: ResourceRolesApiUpdateResourceRoleRequest,

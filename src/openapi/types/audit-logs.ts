@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,30 +10,26 @@
  * Do not edit the class manually.
  */
 
-import { OPADecisionLog } from './opadecision-log';
+import { type OPADecisionLog } from './opadecision-log';
 
 /**
  *
- * @export
  * @interface AuditLogs
  */
 export interface AuditLogs {
   /**
    *
    * @type {Array<OPADecisionLog>}
-   * @memberof AuditLogs
    */
   data: Array<OPADecisionLog>;
   /**
    *
    * @type {number}
-   * @memberof AuditLogs
    */
   count_filtered: number;
   /**
    *
    * @type {number}
-   * @memberof AuditLogs
    */
   page_count?: number;
 }

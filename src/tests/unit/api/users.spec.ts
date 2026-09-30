@@ -1,12 +1,12 @@
-import { PermitApiError } from '../../../api/base';
+import { PermitApiError } from '#src/api/base';
 import {
-  RoleAssignmentCreate,
-  RoleAssignmentRemove,
-  UserCreate,
-  UserUpdate,
-} from '../../../api/users';
-import { Permit } from '../../../index';
-import { createMockPermit, MOCK_PDP_ORIGIN, MockTransport } from '../../helpers/mock-api';
+  type RoleAssignmentCreate,
+  type RoleAssignmentRemove,
+  type UserCreate,
+  type UserUpdate,
+} from '#src/api/users';
+import { Permit } from '#src/index';
+import { createMockPermit, MOCK_PDP_ORIGIN, type MockTransport } from '#src/tests/helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // users URL is scoped under `/v2/facts/{proj}/{env}/users`.

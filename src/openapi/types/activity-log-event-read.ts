@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,97 +11,81 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { ActivityDetails } from './activity-details';
+import { type ActivityDetails } from './activity-details';
 
 /**
  *
- * @export
  * @interface ActivityLogEventRead
  */
 export interface ActivityLogEventRead {
   /**
    *
    * @type {string}
-   * @memberof ActivityLogEventRead
    */
   id: string;
   /**
    *
    * @type {string}
-   * @memberof ActivityLogEventRead
    */
   timestamp: string;
   /**
    *
    * @type {string}
-   * @memberof ActivityLogEventRead
    */
   activity_id?: string;
   /**
    *
    * @type {string}
-   * @memberof ActivityLogEventRead
    */
   activity_description?: string;
   /**
    *
    * @type {{ [key: string]: ActivityDetails; }}
-   * @memberof ActivityLogEventRead
    */
   activity_details?: { [key: string]: ActivityDetails };
   /**
    *
    * @type {string}
-   * @memberof ActivityLogEventRead
    */
   client_ip: string;
   /**
    *
    * @type {string}
-   * @memberof ActivityLogEventRead
    */
   actor_type: string;
   /**
    *
    * @type {string}
-   * @memberof ActivityLogEventRead
    */
   actor_id: string;
   /**
    *
    * @type {string}
-   * @memberof ActivityLogEventRead
    */
   actor_display_name?: string;
   /**
    *
    * @type {string}
-   * @memberof ActivityLogEventRead
    */
   org_id?: string;
   /**
    *
    * @type {string}
-   * @memberof ActivityLogEventRead
    */
   project_key?: string;
   /**
    *
    * @type {string}
-   * @memberof ActivityLogEventRead
    */
   project_id?: string;
   /**
    *
    * @type {string}
-   * @memberof ActivityLogEventRead
    */
   env_key?: string;
   /**
    *
    * @type {string}
-   * @memberof ActivityLogEventRead
    */
   env_id?: string;
 }

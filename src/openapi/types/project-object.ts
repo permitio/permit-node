@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,43 +11,35 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { ProjectObj } from './project-obj';
 
 /**
  *
- * @export
  * @interface ProjectObject
  */
 export interface ProjectObject {
   /**
    *
    * @type {string}
-   * @memberof ProjectObject
    */
   id: string;
   /**
    *
    * @type {string}
-   * @memberof ProjectObject
    */
   key: string;
   /**
    *
    * @type {string}
-   * @memberof ProjectObject
    */
   name?: string;
   /**
    *
    * @type {string}
-   * @memberof ProjectObject
    */
   created_at: string;
   /**
    *
    * @type {string}
-   * @memberof ProjectObject
    */
   updated_at: string;
 }

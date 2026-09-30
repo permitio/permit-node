@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,34 +11,28 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { DerivedRoleRuleRead } from './derived-role-rule-read';
+import { type DerivedRoleRuleRead } from './derived-role-rule-read';
 // May contain unused imports in some cases
-// @ts-ignore
-import { When } from './when';
+import { type When } from './when';
 
 /**
  *
- * @export
  * @interface DerivedRoleBlockRead
  */
 export interface DerivedRoleBlockRead {
   /**
    *
    * @type {When}
-   * @memberof DerivedRoleBlockRead
    */
   when?: When;
   /**
    * The unique id of the derived_role
    * @type {string}
-   * @memberof DerivedRoleBlockRead
    */
   id: string;
   /**
    * the rules of the derived role
    * @type {Array<DerivedRoleRuleRead>}
-   * @memberof DerivedRoleBlockRead
    */
   users_with_role?: Array<DerivedRoleRuleRead>;
 }

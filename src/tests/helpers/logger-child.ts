@@ -3,13 +3,13 @@ import { deepStrictEqual, strictEqual } from 'assert';
 import axios from 'axios';
 import pino from 'pino';
 
-import { Permit, PermitConnectionError, PermitPDPStatusError } from '../../index';
+import { Permit, PermitConnectionError, PermitPDPStatusError } from '#src/index';
 
-import { TEST_TOKEN } from './pdp-test-server';
+import { TEST_TOKEN } from '#src/tests/helpers/pdp-test-server';
 
 async function main(): Promise<void> {
   const mode = process.argv[2];
-  if (!['default', 'json', 'env', 'pretty', 'env-pretty'].includes(mode)) {
+  if (mode === undefined || !['default', 'json', 'env', 'pretty', 'env-pretty'].includes(mode)) {
     throw new Error('Expected a supported logger mode');
   }
   const pdp = process.argv[3];

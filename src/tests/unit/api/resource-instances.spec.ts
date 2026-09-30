@@ -1,12 +1,15 @@
-import { PermitApiError } from '../../../api/base';
-import { ResourceInstanceCreate, ResourceInstanceUpdate } from '../../../api/resource-instances';
-import { Permit } from '../../../index';
+import { PermitApiError } from '#src/api/base';
+import {
+  type ResourceInstanceCreate,
+  type ResourceInstanceUpdate,
+} from '#src/api/resource-instances';
+import { Permit } from '#src/index';
 import {
   createMockPermit,
   MOCK_API_ORIGIN,
   MOCK_PDP_ORIGIN,
-  MockTransport,
-} from '../../helpers/mock-api';
+  type MockTransport,
+} from '#src/tests/helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // resource-instance URL is scoped under `/v2/facts/{proj}/{env}/resource_instances`.

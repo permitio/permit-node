@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,31 +11,26 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { ConditionSetRead } from './condition-set-read';
+import { type ConditionSetRead } from './condition-set-read';
 
 /**
  *
- * @export
  * @interface PaginatedResultConditionSetRead
  */
 export interface PaginatedResultConditionSetRead {
   /**
    * List of Condition Sets
    * @type {Array<ConditionSetRead>}
-   * @memberof PaginatedResultConditionSetRead
    */
   data: Array<ConditionSetRead>;
   /**
    *
    * @type {number}
-   * @memberof PaginatedResultConditionSetRead
    */
   total_count: number;
   /**
    *
    * @type {number}
-   * @memberof PaginatedResultConditionSetRead
    */
   page_count?: number;
 }

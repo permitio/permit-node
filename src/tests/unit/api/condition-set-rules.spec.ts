@@ -1,7 +1,10 @@
-import { PermitApiError } from '../../../api/base';
-import { ConditionSetRuleCreate, ConditionSetRuleRemove } from '../../../api/condition-set-rules';
-import { Permit } from '../../../index';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import { PermitApiError } from '#src/api/base';
+import {
+  type ConditionSetRuleCreate,
+  type ConditionSetRuleRemove,
+} from '#src/api/condition-set-rules';
+import { Permit } from '#src/index';
+import { createMockPermit, type MockTransport } from '#src/tests/helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // set-rules URL is scoped under `/v2/facts/{proj}/{env}/set_rules`.
@@ -70,6 +73,13 @@ describe('ConditionSetRulesApi (unit)', () => {
       permission: 'document:read',
       resource_set: 'confidential-docs',
     };
+
+    it('rejects an empty success response instead of returning an absent rule', async () => {
+      rest.resolveWith([]);
+      await expect(permit.api.conditionSetRules.create(rule)).rejects.toThrow(
+        'Creating a condition set rule returned no rule',
+      );
+    });
 
     it('POSTs the rule body to the collection and returns the created rule', async () => {
       // assignSetPermissions returns an array; the SDK unwraps `.data[0]`.

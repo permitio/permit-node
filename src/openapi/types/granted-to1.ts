@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,18 +11,13 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { DerivedRoleBlockEdit } from './derived-role-block-edit';
+import { type DerivedRoleBlockEdit } from './derived-role-block-edit';
 // May contain unused imports in some cases
-// @ts-ignore
-import { DerivedRoleRuleCreate } from './derived-role-rule-create';
+
 // May contain unused imports in some cases
-// @ts-ignore
-import { When } from './when';
 
 /**
  * @type GrantedTo1
  * Derived role that inherit will be applied on this role
- * @export
  */
 export type GrantedTo1 = DerivedRoleBlockEdit;

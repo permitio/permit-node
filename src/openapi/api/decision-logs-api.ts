@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,31 +10,20 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PaginatedResultOPADecisionLog } from '../types';
+import { Configuration } from '../configuration';
+import { type PaginatedResultOPADecisionLog } from '../types';
 /**
  * DecisionLogsApi - axios parameter creator
- * @export
  */
 export const DecisionLogsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -140,7 +127,6 @@ export const DecisionLogsApiAxiosParamCreator = function (configuration?: Config
 
 /**
  * DecisionLogsApi - functional programming interface
- * @export
  */
 export const DecisionLogsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = DecisionLogsApiAxiosParamCreator(configuration);
@@ -196,7 +182,6 @@ export const DecisionLogsApiFp = function (configuration?: Configuration) {
 
 /**
  * DecisionLogsApi - factory interface
- * @export
  */
 export const DecisionLogsApiFactory = function (
   configuration?: Configuration,
@@ -255,84 +240,72 @@ export const DecisionLogsApiFactory = function (
 
 /**
  * Request parameters for listPdpDecisionLogs operation in DecisionLogsApi.
- * @export
  * @interface DecisionLogsApiListPdpDecisionLogsRequest
  */
 export interface DecisionLogsApiListPdpDecisionLogsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly envId: string;
 
   /**
    * The unique id of the pdp
    * @type {string}
-   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly pdpId: string;
 
   /**
    * List of user IDs to filter by
    * @type {Array<string>}
-   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly users?: Array<string>;
 
   /**
    * Filter by approved decisions
    * @type {boolean}
-   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly approved?: boolean;
 
   /**
    * Filter by resources
    * @type {Array<string>}
-   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly resources?: Array<string>;
 
   /**
    * Filter by timestamp from
    * @type {number}
-   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly timestampFrom?: number;
 
   /**
    * Filter by timestamp to
    * @type {number}
-   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly timestampTo?: number;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof DecisionLogsApiListPdpDecisionLogs
    */
   readonly perPage?: number;
 }
 
 /**
  * DecisionLogsApi - object-oriented interface
- * @export
  * @class DecisionLogsApi
  * @extends {BaseAPI}
  */
@@ -343,7 +316,6 @@ export class DecisionLogsApi extends BaseAPI {
    * @param {DecisionLogsApiListPdpDecisionLogsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof DecisionLogsApi
    */
   public listPdpDecisionLogs(
     requestParameters: DecisionLogsApiListPdpDecisionLogsRequest,

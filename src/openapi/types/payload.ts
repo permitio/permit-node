@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,21 +11,16 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { EnvironmentRegeneration } from './environment-regeneration';
+import { type EnvironmentRegeneration } from './environment-regeneration';
 // May contain unused imports in some cases
-// @ts-ignore
-import { FullRegeneration } from './full-regeneration';
+import { type FullRegeneration } from './full-regeneration';
 // May contain unused imports in some cases
-// @ts-ignore
-import { OrganizationRegeneration } from './organization-regeneration';
+import { type OrganizationRegeneration } from './organization-regeneration';
 // May contain unused imports in some cases
-// @ts-ignore
-import { ProjectRegeneration } from './project-regeneration';
+import { type ProjectRegeneration } from './project-regeneration';
 
 /**
  * @type Payload
- * @export
  */
 export type Payload =
   | ({ scope: 'environment' } & EnvironmentRegeneration)

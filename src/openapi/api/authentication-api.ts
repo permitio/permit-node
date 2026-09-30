@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,41 +10,28 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { AuthnMeRead } from '../types';
-// @ts-ignore
-import { DevLogin } from '../types';
-// @ts-ignore
-import { EmbeddedLoginRequestOutput } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { LoginResult } from '../types';
-// @ts-ignore
-import { UserFELoginRequestInput } from '../types';
-// @ts-ignore
-import { UserLoginRequestInput } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type AuthnMeRead,
+  type DevLogin,
+  type EmbeddedLoginRequestOutput,
+  type LoginResult,
+  type UserFELoginRequestInput,
+  type UserLoginRequestInput,
+} from '../types';
 /**
  * AuthenticationApi - axios parameter creator
- * @export
  */
 export const AuthenticationApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -425,7 +410,6 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
 
 /**
  * AuthenticationApi - functional programming interface
- * @export
  */
 export const AuthenticationApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = AuthenticationApiAxiosParamCreator(configuration);
@@ -568,7 +552,6 @@ export const AuthenticationApiFp = function (configuration?: Configuration) {
 
 /**
  * AuthenticationApi - factory interface
- * @export
  */
 export const AuthenticationApiFactory = function (
   configuration?: Configuration,
@@ -683,98 +666,84 @@ export const AuthenticationApiFactory = function (
 
 /**
  * Request parameters for devLogin operation in AuthenticationApi.
- * @export
  * @interface AuthenticationApiDevLoginRequest
  */
 export interface AuthenticationApiDevLoginRequest {
   /**
    *
    * @type {DevLogin}
-   * @memberof AuthenticationApiDevLogin
    */
   readonly devLogin: DevLogin;
 }
 
 /**
  * Request parameters for elementsFeLoginAs operation in AuthenticationApi.
- * @export
  * @interface AuthenticationApiElementsFeLoginAsRequest
  */
 export interface AuthenticationApiElementsFeLoginAsRequest {
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof AuthenticationApiElementsFeLoginAs
    */
   readonly envId: string;
 
   /**
    *
    * @type {UserFELoginRequestInput}
-   * @memberof AuthenticationApiElementsFeLoginAs
    */
   readonly userFELoginRequestInput: UserFELoginRequestInput;
 }
 
 /**
  * Request parameters for elementsLoginAs operation in AuthenticationApi.
- * @export
  * @interface AuthenticationApiElementsLoginAsRequest
  */
 export interface AuthenticationApiElementsLoginAsRequest {
   /**
    *
    * @type {UserLoginRequestInput}
-   * @memberof AuthenticationApiElementsLoginAs
    */
   readonly userLoginRequestInput: UserLoginRequestInput;
 }
 
 /**
  * Request parameters for login operation in AuthenticationApi.
- * @export
  * @interface AuthenticationApiLoginRequest
  */
 export interface AuthenticationApiLoginRequest {
   /**
    * An optional invite code to an existing organization. If the invite code is provided and is valid, the member will gain access to that organization.
    * @type {string}
-   * @memberof AuthenticationApiLogin
    */
   readonly inviteCode?: string;
 }
 
 /**
  * Request parameters for loginElements operation in AuthenticationApi.
- * @export
  * @interface AuthenticationApiLoginElementsRequest
  */
 export interface AuthenticationApiLoginElementsRequest {
   /**
    *
    * @type {string}
-   * @memberof AuthenticationApiLoginElements
    */
   readonly token: string;
 }
 
 /**
  * Request parameters for switchOrganization operation in AuthenticationApi.
- * @export
  * @interface AuthenticationApiSwitchOrganizationRequest
  */
 export interface AuthenticationApiSwitchOrganizationRequest {
   /**
    * the organization id the user wishes to switch to as the active org on the session
    * @type {string}
-   * @memberof AuthenticationApiSwitchOrganization
    */
   readonly orgId: string;
 }
 
 /**
  * AuthenticationApi - object-oriented interface
- * @export
  * @class AuthenticationApi
  * @extends {BaseAPI}
  */
@@ -785,7 +754,6 @@ export class AuthenticationApi extends BaseAPI {
    * @param {AuthenticationApiDevLoginRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof AuthenticationApi
    */
   public devLogin(
     requestParameters: AuthenticationApiDevLoginRequest,
@@ -802,7 +770,6 @@ export class AuthenticationApi extends BaseAPI {
    * @param {AuthenticationApiElementsFeLoginAsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof AuthenticationApi
    */
   public elementsFeLoginAs(
     requestParameters: AuthenticationApiElementsFeLoginAsRequest,
@@ -823,7 +790,6 @@ export class AuthenticationApi extends BaseAPI {
    * @param {AuthenticationApiElementsLoginAsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof AuthenticationApi
    */
   public elementsLoginAs(
     requestParameters: AuthenticationApiElementsLoginAsRequest,
@@ -840,7 +806,6 @@ export class AuthenticationApi extends BaseAPI {
    * @param {AuthenticationApiLoginRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof AuthenticationApi
    */
   public login(
     requestParameters: AuthenticationApiLoginRequest = {},
@@ -857,7 +822,6 @@ export class AuthenticationApi extends BaseAPI {
    * @param {AuthenticationApiLoginElementsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof AuthenticationApi
    */
   public loginElements(
     requestParameters: AuthenticationApiLoginElementsRequest,
@@ -873,7 +837,6 @@ export class AuthenticationApi extends BaseAPI {
    * @summary Logout Get
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof AuthenticationApi
    */
   public logoutGet(options?: AxiosRequestConfig) {
     return AuthenticationApiFp(this.configuration)
@@ -886,7 +849,6 @@ export class AuthenticationApi extends BaseAPI {
    * @summary Logout Post
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof AuthenticationApi
    */
   public logoutPost(options?: AxiosRequestConfig) {
     return AuthenticationApiFp(this.configuration)
@@ -899,7 +861,6 @@ export class AuthenticationApi extends BaseAPI {
    * @summary Me
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof AuthenticationApi
    */
   public me(options?: AxiosRequestConfig) {
     return AuthenticationApiFp(this.configuration)
@@ -913,7 +874,6 @@ export class AuthenticationApi extends BaseAPI {
    * @param {AuthenticationApiSwitchOrganizationRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof AuthenticationApi
    */
   public switchOrganization(
     requestParameters: AuthenticationApiSwitchOrganizationRequest,

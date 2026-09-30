@@ -1,17 +1,21 @@
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 import {
   ResourceRelationsApi as AutogenResourceRelationsApi,
-  RelationCreate,
-  RelationRead,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+  type RelationCreate,
+  type RelationRead,
+} from '#src/openapi/index';
+import { BASE_PATH } from '#src/openapi/base';
 
-import { BasePermitApi, IPagination, PermitApiError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ApiContext, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { BasePermitApi, type IPagination } from '#src/api/base';
+// oxlint-disable-next-line no-unused-vars -- Type imports resolve public TSDoc error/context links.
+import type { PermitApiError } from '#src/api/base';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
+// oxlint-disable-next-line no-unused-vars -- Type imports resolve public TSDoc error/context links.
+import type { ApiContext, PermitContextError } from '#src/api/context';
 
-export { RelationCreate, RelationRead } from '../openapi';
+export { type RelationCreate, type RelationRead } from '#src/openapi/index';
 
 export interface IListRelations extends IPagination {
   resourceKey: string;

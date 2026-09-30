@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,15 +11,12 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { Payload } from './payload';
+
 // May contain unused imports in some cases
-// @ts-ignore
-import { PolicySynchronizerRegeneration } from './policy-synchronizer-regeneration';
+import { type PolicySynchronizerRegeneration } from './policy-synchronizer-regeneration';
 
 /**
  * @type Message
  * Message containing the scope of regeneration and the id
- * @export
  */
 export type Message = PolicySynchronizerRegeneration;

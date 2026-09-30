@@ -1,8 +1,11 @@
-import { PermitApiError } from '../../../api/base';
-import { ResourceAttributeCreate, ResourceAttributeUpdate } from '../../../api/resource-attributes';
-import { Permit } from '../../../index';
-import { AttributeType } from '../../../openapi';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import { PermitApiError } from '#src/api/base';
+import {
+  type ResourceAttributeCreate,
+  type ResourceAttributeUpdate,
+} from '#src/api/resource-attributes';
+import { Permit } from '#src/index';
+import { AttributeType } from '#src/openapi/index';
+import { createMockPermit, type MockTransport } from '#src/tests/helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // attributes URL is nested under `/v2/schema/{proj}/{env}/resources/{resourceKey}/attributes`.

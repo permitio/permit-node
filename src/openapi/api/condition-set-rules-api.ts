@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,35 +10,26 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { ConditionSetRuleCreate } from '../types';
-// @ts-ignore
-import { ConditionSetRuleRead } from '../types';
-// @ts-ignore
-import { ConditionSetRuleRemove } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type ConditionSetRuleCreate,
+  type ConditionSetRuleRead,
+  type ConditionSetRuleRemove,
+} from '../types';
+
 /**
  * ConditionSetRulesApi - axios parameter creator
- * @export
  */
 export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -245,7 +234,6 @@ export const ConditionSetRulesApiAxiosParamCreator = function (configuration?: C
 
 /**
  * ConditionSetRulesApi - functional programming interface
- * @export
  */
 export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ConditionSetRulesApiAxiosParamCreator(configuration);
@@ -340,7 +328,6 @@ export const ConditionSetRulesApiFp = function (configuration?: Configuration) {
 
 /**
  * ConditionSetRulesApi - factory interface
- * @export
  */
 export const ConditionSetRulesApiFactory = function (
   configuration?: Configuration,
@@ -419,119 +406,102 @@ export const ConditionSetRulesApiFactory = function (
 
 /**
  * Request parameters for assignSetPermissions operation in ConditionSetRulesApi.
- * @export
  * @interface ConditionSetRulesApiAssignSetPermissionsRequest
  */
 export interface ConditionSetRulesApiAssignSetPermissionsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetRulesApiAssignSetPermissions
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetRulesApiAssignSetPermissions
    */
   readonly envId: string;
 
   /**
    *
    * @type {ConditionSetRuleCreate}
-   * @memberof ConditionSetRulesApiAssignSetPermissions
    */
   readonly conditionSetRuleCreate: ConditionSetRuleCreate;
 }
 
 /**
  * Request parameters for listSetPermissions operation in ConditionSetRulesApi.
- * @export
  * @interface ConditionSetRulesApiListSetPermissionsRequest
  */
 export interface ConditionSetRulesApiListSetPermissionsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetRulesApiListSetPermissions
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetRulesApiListSetPermissions
    */
   readonly envId: string;
 
   /**
    * optional user set filter, will only return rules where the permission is granted to this user set
    * @type {string}
-   * @memberof ConditionSetRulesApiListSetPermissions
    */
   readonly userSet?: string;
 
   /**
    * optional permission filter, will only return condition set rules granting this permission
    * @type {string}
-   * @memberof ConditionSetRulesApiListSetPermissions
    */
   readonly permission?: string;
 
   /**
    * optional resource set filter, will only return rules where the permission is granted on this resource set
    * @type {string}
-   * @memberof ConditionSetRulesApiListSetPermissions
    */
   readonly resourceSet?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof ConditionSetRulesApiListSetPermissions
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof ConditionSetRulesApiListSetPermissions
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for unassignSetPermissions operation in ConditionSetRulesApi.
- * @export
  * @interface ConditionSetRulesApiUnassignSetPermissionsRequest
  */
 export interface ConditionSetRulesApiUnassignSetPermissionsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetRulesApiUnassignSetPermissions
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ConditionSetRulesApiUnassignSetPermissions
    */
   readonly envId: string;
 
   /**
    *
    * @type {ConditionSetRuleRemove}
-   * @memberof ConditionSetRulesApiUnassignSetPermissions
    */
   readonly conditionSetRuleRemove: ConditionSetRuleRemove;
 }
 
 /**
  * ConditionSetRulesApi - object-oriented interface
- * @export
  * @class ConditionSetRulesApi
  * @extends {BaseAPI}
  */
@@ -542,7 +512,6 @@ export class ConditionSetRulesApi extends BaseAPI {
    * @param {ConditionSetRulesApiAssignSetPermissionsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ConditionSetRulesApi
    */
   public assignSetPermissions(
     requestParameters: ConditionSetRulesApiAssignSetPermissionsRequest,
@@ -564,7 +533,6 @@ export class ConditionSetRulesApi extends BaseAPI {
    * @param {ConditionSetRulesApiListSetPermissionsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ConditionSetRulesApi
    */
   public listSetPermissions(
     requestParameters: ConditionSetRulesApiListSetPermissionsRequest,
@@ -590,7 +558,6 @@ export class ConditionSetRulesApi extends BaseAPI {
    * @param {ConditionSetRulesApiUnassignSetPermissionsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ConditionSetRulesApi
    */
   public unassignSetPermissions(
     requestParameters: ConditionSetRulesApiUnassignSetPermissionsRequest,

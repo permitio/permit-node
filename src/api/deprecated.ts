@@ -1,44 +1,45 @@
-import axios, { AxiosResponse } from 'axios';
-import { Logger } from 'pino';
+import axios, { type AxiosResponse } from 'axios';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 import {
-  ConditionSetCreate,
-  ConditionSetRead,
-  ConditionSetRuleCreate,
-  ConditionSetRuleRead,
-  ConditionSetRuleRemove,
+  type ConditionSetCreate,
+  type ConditionSetRead,
+  type ConditionSetRuleCreate,
+  type ConditionSetRuleRead,
+  type ConditionSetRuleRemove,
   ConditionSetRulesApi,
   ConditionSetsApi,
   ConditionSetType,
-  ConditionSetUpdate,
-  ResourceCreate,
-  ResourceRead,
+  type ConditionSetUpdate,
+  type ResourceCreate,
+  type ResourceRead,
   ResourcesApi,
-  ResourceUpdate,
-  RoleAssignmentCreate,
-  RoleAssignmentRead,
-  RoleAssignmentRemove,
+  type ResourceUpdate,
+  type RoleAssignmentCreate,
+  type RoleAssignmentRead,
+  type RoleAssignmentRemove,
   RoleAssignmentsApi,
-  RoleCreate,
-  RoleRead,
+  type RoleCreate,
+  type RoleRead,
   RolesApi,
-  RoleUpdate,
-  TenantCreate,
-  TenantRead,
+  type RoleUpdate,
+  type TenantCreate,
+  type TenantRead,
   TenantsApi,
-  TenantUpdate,
-  UserCreate,
-  UserRead,
+  type TenantUpdate,
+  type UserCreate,
+  type UserRead,
   UsersApi,
-  UserUpdate,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { BasePermitApi, PermitApiError, redactAxiosError } from './base';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { ApiContext, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context';
+  type UserUpdate,
+} from '#src/openapi/index';
+import { BASE_PATH } from '#src/openapi/base';
+import { BasePermitApi, redactAxiosError } from '#src/api/base';
+// oxlint-disable-next-line no-unused-vars -- Type imports resolve public TSDoc error/context links.
+import type { PermitApiError } from '#src/api/base';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
+// oxlint-disable-next-line no-unused-vars -- Type imports resolve public TSDoc error/context links.
+import type { ApiContext, PermitContextError } from '#src/api/context';
 
 /**
  * This interface contains *read actions* that goes outside
@@ -221,7 +222,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
       const response = await this._conditionSets.listConditionSets({
         ...this.config.apiContext.environmentContext,
         type: type,
-        page: page,
+        ...(page !== undefined && { page }),
         perPage: perPage,
       });
 
@@ -258,7 +259,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     try {
       const response = await this._conditionSetRules.listSetPermissions({
         ...this.config.apiContext.environmentContext,
-        page: page,
+        ...(page !== undefined && { page }),
         perPage: perPage,
       });
 
@@ -350,7 +351,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
     try {
       const response = await this._tenants.listTenants({
         ...this.config.apiContext.environmentContext,
-        page: page,
+        ...(page !== undefined && { page }),
       });
       this.logger.debug(`[${response.status}] permit.api.listTenants(${page ?? ''})`);
       return response.data;
@@ -412,7 +413,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
       const response = await this._roleAssignments.listRoleAssignments({
         ...this.config.apiContext.environmentContext,
         user: user,
-        tenant: tenant,
+        ...(tenant !== undefined && { tenant }),
       });
       this.logger.debug(
         `[${response.status}] permit.api.getAssignedRoles(${user}, ${tenant ?? 'all tenants'})`,
@@ -1046,7 +1047,7 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
 
   /**
    * Removes a condition set rule (i.e: unassigns permission from a userset to act on a resourceset).
-   * @param conditionSetRuleId - The ID or key of the condition set rule to remove.
+   * @param conditionSetRule - The permission assignment to remove.
    * @returns A promise that resolves when the condition set rule is deleted.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.

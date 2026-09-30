@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,37 +10,27 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError, PaginatedResultResourceRead } from '../types';
-// @ts-ignore
-import { ResourceCreate } from '../types';
-// @ts-ignore
-import { ResourceRead } from '../types';
-// @ts-ignore
-import { ResourceReplace } from '../types';
-// @ts-ignore
-import { ResourceUpdate } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type PaginatedResultResourceRead,
+  type ResourceCreate,
+  type ResourceRead,
+  type ResourceReplace,
+  type ResourceUpdate,
+} from '../types';
 /**
  * ResourcesApi - axios parameter creator
- * @export
  */
 export const ResourcesApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -416,7 +404,6 @@ export const ResourcesApiAxiosParamCreator = function (configuration?: Configura
 
 /**
  * ResourcesApi - functional programming interface
- * @export
  */
 export const ResourcesApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ResourcesApiAxiosParamCreator(configuration);
@@ -584,7 +571,6 @@ export const ResourcesApiFp = function (configuration?: Configuration) {
 
 /**
  * ResourcesApi - factory interface
- * @export
  */
 export const ResourcesApiFactory = function (
   configuration?: Configuration,
@@ -722,133 +708,114 @@ export const ResourcesApiFactory = function (
 
 /**
  * Request parameters for createResource operation in ResourcesApi.
- * @export
  * @interface ResourcesApiCreateResourceRequest
  */
 export interface ResourcesApiCreateResourceRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourcesApiCreateResource
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourcesApiCreateResource
    */
   readonly envId: string;
 
   /**
    *
    * @type {ResourceCreate}
-   * @memberof ResourcesApiCreateResource
    */
   readonly resourceCreate: ResourceCreate;
 }
 
 /**
  * Request parameters for deleteResource operation in ResourcesApi.
- * @export
  * @interface ResourcesApiDeleteResourceRequest
  */
 export interface ResourcesApiDeleteResourceRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourcesApiDeleteResource
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourcesApiDeleteResource
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourcesApiDeleteResource
    */
   readonly resourceId: string;
 }
 
 /**
  * Request parameters for getResource operation in ResourcesApi.
- * @export
  * @interface ResourcesApiGetResourceRequest
  */
 export interface ResourcesApiGetResourceRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourcesApiGetResource
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourcesApiGetResource
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourcesApiGetResource
    */
   readonly resourceId: string;
 }
 
 /**
  * Request parameters for listResources operation in ResourcesApi.
- * @export
  * @interface ResourcesApiListResourcesRequest
  */
 export interface ResourcesApiListResourcesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourcesApiListResources
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourcesApiListResources
    */
   readonly envId: string;
 
   /**
    * Whether to include or exclude built-in resources, default is False
    * @type {boolean}
-   * @memberof ResourcesApiListResources
    */
   readonly includeBuiltIn?: boolean;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof ResourcesApiListResources
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof ResourcesApiListResources
    */
   readonly perPage?: number;
 
   /**
    * Include total count in response
    * @type {boolean}
-   * @memberof RolesApiListRoles
    * @default false
    */
   readonly includeTotalCount?: boolean;
@@ -856,77 +823,66 @@ export interface ResourcesApiListResourcesRequest {
 
 /**
  * Request parameters for replaceResource operation in ResourcesApi.
- * @export
  * @interface ResourcesApiReplaceResourceRequest
  */
 export interface ResourcesApiReplaceResourceRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourcesApiReplaceResource
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourcesApiReplaceResource
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourcesApiReplaceResource
    */
   readonly resourceId: string;
 
   /**
    *
    * @type {ResourceReplace}
-   * @memberof ResourcesApiReplaceResource
    */
   readonly resourceReplace: ResourceReplace;
 }
 
 /**
  * Request parameters for updateResource operation in ResourcesApi.
- * @export
  * @interface ResourcesApiUpdateResourceRequest
  */
 export interface ResourcesApiUpdateResourceRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourcesApiUpdateResource
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourcesApiUpdateResource
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourcesApiUpdateResource
    */
   readonly resourceId: string;
 
   /**
    *
    * @type {ResourceUpdate}
-   * @memberof ResourcesApiUpdateResource
    */
   readonly resourceUpdate: ResourceUpdate;
 }
 
 /**
  * ResourcesApi - object-oriented interface
- * @export
  * @class ResourcesApi
  * @extends {BaseAPI}
  */
@@ -937,7 +893,6 @@ export class ResourcesApi extends BaseAPI {
    * @param {ResourcesApiCreateResourceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourcesApi
    */
   public createResource(
     requestParameters: ResourcesApiCreateResourceRequest,
@@ -959,7 +914,6 @@ export class ResourcesApi extends BaseAPI {
    * @param {ResourcesApiDeleteResourceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourcesApi
    */
   public deleteResource(
     requestParameters: ResourcesApiDeleteResourceRequest,
@@ -981,7 +935,6 @@ export class ResourcesApi extends BaseAPI {
    * @param {ResourcesApiGetResourceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourcesApi
    */
   public getResource(
     requestParameters: ResourcesApiGetResourceRequest,
@@ -1003,7 +956,6 @@ export class ResourcesApi extends BaseAPI {
    * @param {ResourcesApiListResourcesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourcesApi
    */
   public listResources(
     requestParameters: ResourcesApiListResourcesRequest,
@@ -1028,7 +980,6 @@ export class ResourcesApi extends BaseAPI {
    * @param {ResourcesApiReplaceResourceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourcesApi
    */
   public replaceResource(
     requestParameters: ResourcesApiReplaceResourceRequest,
@@ -1051,7 +1002,6 @@ export class ResourcesApi extends BaseAPI {
    * @param {ResourcesApiUpdateResourceRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourcesApi
    */
   public updateResource(
     requestParameters: ResourcesApiUpdateResourceRequest,

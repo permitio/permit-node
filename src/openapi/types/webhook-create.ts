@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,20 +12,17 @@
 
 /**
  *
- * @export
  * @interface WebhookCreate
  */
 export interface WebhookCreate {
   /**
    * The url to POST the webhook to
    * @type {string}
-   * @memberof WebhookCreate
    */
   url: string;
   /**
    * An optional bearer token to use to authenticate the request
    * @type {string}
-   * @memberof WebhookCreate
    */
   bearer_token?: string;
 }

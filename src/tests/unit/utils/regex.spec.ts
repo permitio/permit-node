@@ -1,4 +1,4 @@
-import { escapeRegex, matchAll } from '../../../utils/regex';
+import { escapeRegex, matchAll } from '#src/utils/regex';
 
 describe('escapeRegex (unit)', () => {
   it('escapes every regex metacharacter', () => {

@@ -24,14 +24,12 @@ Install pnpm with `npm install --global --ignore-scripts pnpm@12.8.1`. Then run:
 ```sh
 pnpm audit --audit-level=moderate
 pnpm install --frozen-lockfile
-pnpm build
-pnpm lint
-pnpm test
-pnpm test:codegen
+pnpm hooks:install
+pnpm verify
 ```
 
-Installs disable lifecycle scripts, so builds and hook setup are explicit. To enable the
-existing Git hook locally, run `pnpm exec husky install`. New dependency versions must be
+Installs disable lifecycle scripts, so builds and hook setup are explicit. Run `pnpm hooks:install`
+to install prek for the current checkout without changing sibling worktree hooks. New dependency versions must be
 at least 24 hours old; direct dependencies are saved with exact versions.
 
 `pnpm test` runs the unit and module-import suites without a Permit backend.
@@ -42,7 +40,7 @@ regenerates the fixture and requires Java.
 
 1. Update the version in `package.json`
 2. Execute `pnpm run build`
-3. Execute `pnpm docs ; git add docs/ ; git commit -m "update tsdoc"` to update the auto generated docs
+3. Execute `pnpm run docs ; git add docs/ ; git commit -m "update tsdoc"` to update the auto generated docs
 4. Execute `pnpm publish --access public`
 
 ## Retry Configuration
@@ -77,9 +75,9 @@ const permitCustom = new Permit({
   token: 'your-api-key',
   retry: {
     maxRetries: 5,
-    retryDelay: 500,        // Initial delay in ms
-    backoffMultiplier: 2,   // Exponential backoff multiplier
-    maxDelay: 30000,        // Maximum delay cap
+    retryDelay: 500, // Initial delay in ms
+    backoffMultiplier: 2, // Exponential backoff multiplier
+    maxDelay: 30000, // Maximum delay cap
   },
 });
 

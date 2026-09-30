@@ -3,11 +3,11 @@ import {
   PermitConnectionError,
   PermitPDPStatusError,
   RETRYABLE_STATUS_CODES,
-} from '../../index';
+} from '#src/index';
 
 export interface WaitForOptions<T> {
   /** How long to keep starting attempts, in milliseconds. Defaults to 30 seconds. */
-  timeoutMs?: number;
+  timeoutMs?: number | undefined;
   /** Pause between attempts, in milliseconds, cut short at the deadline. Defaults to 1 second. */
   intervalMs?: number;
   /** How long one attempt may run before it fails, in milliseconds. Defaults to 10 seconds. */

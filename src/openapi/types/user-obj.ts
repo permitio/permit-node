@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,62 +12,52 @@
 
 /**
  *
- * @export
  * @interface UserObj
  */
 export interface UserObj {
   /**
    *
    * @type {string}
-   * @memberof UserObj
    */
   id: string;
   /**
    *
    * @type {string}
-   * @memberof UserObj
    */
   key: string;
   /**
    *
    * @type {string}
-   * @memberof UserObj
    */
   email?: string;
   /**
    *
    * @type {string}
-   * @memberof UserObj
    */
   first_name?: string;
   /**
    *
    * @type {string}
-   * @memberof UserObj
    */
   last_name?: string;
   /**
    *
    * @type {object}
-   * @memberof UserObj
    */
   attributes?: object;
   /**
    *
    * @type {Array<string>}
-   * @memberof UserObj
    */
   assigned_roles?: Array<string>;
   /**
    *
    * @type {string}
-   * @memberof UserObj
    */
   created_at: string;
   /**
    *
    * @type {string}
-   * @memberof UserObj
    */
   updated_at: string;
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,116 +12,97 @@
 
 /**
  *
- * @export
  * @interface AuditLog
  */
 export interface AuditLog {
   /**
    *
    * @type {string}
-   * @memberof AuditLog
    */
   id: string;
   /**
    *
    * @type {any}
-   * @memberof AuditLog
    */
   input?: any;
   /**
    *
    * @type {any}
-   * @memberof AuditLog
    */
   result?: any;
   /**
    *
    * @type {any}
-   * @memberof AuditLog
    */
   context?: any;
   /**
    *
    * @type {string}
-   * @memberof AuditLog
    */
   action?: string;
   /**
    *
    * @type {string}
-   * @memberof AuditLog
    */
   timestamp: string;
   /**
    *
    * @type {string}
-   * @memberof AuditLog
    */
   query?: string;
   /**
    *
    * @type {string}
-   * @memberof AuditLog
    */
   user_key?: string;
   /**
    *
    * @type {string}
-   * @memberof AuditLog
    */
   user_email?: string;
   /**
    *
    * @type {string}
-   * @memberof AuditLog
    */
   user_name?: string;
   /**
    *
    * @type {string}
-   * @memberof AuditLog
    */
   resource_type?: string;
   /**
    *
    * @type {string}
-   * @memberof AuditLog
    */
   tenant?: string;
   /**
    *
    * @type {boolean}
-   * @memberof AuditLog
    */
   decision?: boolean;
   /**
    *
    * @type {string}
-   * @memberof AuditLog
    */
   reason?: string;
   /**
    *
    * @type {string}
-   * @memberof AuditLog
    */
   pdp_config_id: string;
   /**
    *
    * @type {string}
-   * @memberof AuditLog
    */
   env_id: string;
   /**
    *
    * @type {string}
-   * @memberof AuditLog
    */
   project_id: string;
   /**
    *
    * @type {string}
-   * @memberof AuditLog
    */
   org_id: string;
 }

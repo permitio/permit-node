@@ -1,9 +1,9 @@
-import globalAxios, { AxiosInstance } from 'axios';
+import globalAxios, { type AxiosInstance } from 'axios';
 import _ from 'lodash';
 
-import { ApiContext } from './api/context';
-import { IRetryConfig } from './utils/retry';
-import { RecursivePartial } from './utils/types';
+import { ApiContext } from '#src/api/context';
+import { type IRetryConfig } from '#src/utils/retry';
+import { type RecursivePartial } from '#src/utils/types';
 
 export type FactsSyncTimeoutPolicy = 'ignore' | 'fail';
 
@@ -142,7 +142,7 @@ export interface IPermitConfig {
  * pretty output: `true`, an unset variable and unrecognized values all keep the JSON default.
  */
 function logJsonFromEnv(): boolean {
-  return process.env.PERMIT_LOG_JSON?.trim().toLowerCase() !== 'false';
+  return process.env['PERMIT_LOG_JSON']?.trim().toLowerCase() !== 'false';
 }
 
 /**

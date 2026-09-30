@@ -1,6 +1,6 @@
-import { PermitApiError } from '../../../api/base';
-import { Permit } from '../../../index';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import { PermitApiError } from '#src/api/base';
+import { Permit } from '#src/index';
+import { createMockPermit, type MockTransport } from '#src/tests/helpers/mock-api';
 
 // elementsLoginAs has no scope segment: it posts to a fixed auth endpoint and
 // (unlike the schema/facts modules) is not gated on the SDK api context.

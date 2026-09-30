@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,20 +12,17 @@
 
 /**
  *
- * @export
  * @interface ActionBlock
  */
 export interface ActionBlock {
   /**
    * a more descriptive name for the action
    * @type {string}
-   * @memberof ActionBlock
    */
   name?: string;
   /**
    * optional description string explaining what this action represents in your system
    * @type {string}
-   * @memberof ActionBlock
    */
   description?: string;
 }

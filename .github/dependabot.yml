@@ -12,7 +12,7 @@ updates:
     groups:
       github-actions:
         patterns:
-          - "*"
+          - '*'
   - package-ecosystem: npm
     directory: /
     schedule:
@@ -23,8 +23,8 @@ updates:
       runtime-dependencies:
         dependency-type: production
         patterns:
-          - "*"
+          - '*'
       development-dependencies:
         dependency-type: development
         patterns:
-          - "*"
+          - '*'

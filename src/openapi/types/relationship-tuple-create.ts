@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,32 +12,27 @@
 
 /**
  *
- * @export
  * @interface RelationshipTupleCreate
  */
 export interface RelationshipTupleCreate {
   /**
    * the resource instance assigned the new relation (accepts either the resource instance id or resource_key:resource_instance_key)
    * @type {string}
-   * @memberof RelationshipTupleCreate
    */
   subject: string;
   /**
    * the relation to assign between the subject and object
    * @type {string}
-   * @memberof RelationshipTupleCreate
    */
   relation: string;
   /**
    * the resource instance on which the new relation is assigned (accepts either the resource instance id or resource_key:resource_instance_key)
    * @type {string}
-   * @memberof RelationshipTupleCreate
    */
   object: string;
   /**
    * The tenant the subject and object belong to, if the resource instances don\'t exist yet, the tenant is required to create them. otherwise it is ignored
    * @type {string}
-   * @memberof RelationshipTupleCreate
    */
   tenant?: string;
 }

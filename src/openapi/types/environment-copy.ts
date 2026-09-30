@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,34 +11,28 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { Scope } from './scope';
+import { type Scope } from './scope';
 // May contain unused imports in some cases
-// @ts-ignore
-import { TargetEnv } from './target-env';
+import { type TargetEnv } from './target-env';
 
 /**
  *
- * @export
  * @interface EnvironmentCopy
  */
 export interface EnvironmentCopy {
   /**
    *
    * @type {TargetEnv}
-   * @memberof EnvironmentCopy
    */
   target_env: TargetEnv;
   /**
    * Action to take when detecting a conflict when copying. Only applies to copying into an existing environment
    * @type {string}
-   * @memberof EnvironmentCopy
    */
   conflict_strategy?: EnvironmentCopyConflictStrategyEnum;
   /**
    *
    * @type {Scope}
-   * @memberof EnvironmentCopy
    */
   scope?: Scope;
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,35 +10,20 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { AuditLogSortKey } from '../types';
-// @ts-ignore
-import { DetailedAuditLog } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PaginatedResultAuditLog } from '../types';
+import { Configuration } from '../configuration';
+import { AuditLogSortKey, type DetailedAuditLog, type PaginatedResultAuditLog } from '../types';
 /**
  * AuditLogsApi - axios parameter creator
- * @export
  */
 export const AuditLogsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -216,7 +199,6 @@ export const AuditLogsApiAxiosParamCreator = function (configuration?: Configura
 
 /**
  * AuditLogsApi - functional programming interface
- * @export
  */
 export const AuditLogsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = AuditLogsApiAxiosParamCreator(configuration);
@@ -304,7 +286,6 @@ export const AuditLogsApiFp = function (configuration?: Configuration) {
 
 /**
  * AuditLogsApi - factory interface
- * @export
  */
 export const AuditLogsApiFactory = function (
   configuration?: Configuration,
@@ -391,133 +372,114 @@ export const AuditLogsApiFactory = function (
 
 /**
  * Request parameters for getDetailedAuditLog operation in AuditLogsApi.
- * @export
  * @interface AuditLogsApiGetDetailedAuditLogRequest
  */
 export interface AuditLogsApiGetDetailedAuditLogRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof AuditLogsApiGetDetailedAuditLog
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof AuditLogsApiGetDetailedAuditLog
    */
   readonly envId: string;
 
   /**
    * The unique id of the audit log
    * @type {string}
-   * @memberof AuditLogsApiGetDetailedAuditLog
    */
   readonly logId: string;
 }
 
 /**
  * Request parameters for listAuditLogs operation in AuditLogsApi.
- * @export
  * @interface AuditLogsApiListAuditLogsRequest
  */
 export interface AuditLogsApiListAuditLogsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof AuditLogsApiListAuditLogs
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof AuditLogsApiListAuditLogs
    */
   readonly envId: string;
 
   /**
    * Filter by pdp config id
    * @type {string}
-   * @memberof AuditLogsApiListAuditLogs
    */
   readonly pdpId?: string;
 
   /**
    * List of user keys or emails to filter by
    * @type {Array<string>}
-   * @memberof AuditLogsApiListAuditLogs
    */
   readonly users?: Array<string>;
 
   /**
    * Filter by decision result
    * @type {boolean}
-   * @memberof AuditLogsApiListAuditLogs
    */
   readonly decision?: boolean;
 
   /**
    * Filter by resources
    * @type {Array<string>}
-   * @memberof AuditLogsApiListAuditLogs
    */
   readonly resources?: Array<string>;
 
   /**
    * Filter by tenant
    * @type {string}
-   * @memberof AuditLogsApiListAuditLogs
    */
   readonly tenant?: string;
 
   /**
    * Filter by action
    * @type {string}
-   * @memberof AuditLogsApiListAuditLogs
    */
   readonly action?: string;
 
   /**
    * Filter by timestamp from
    * @type {number}
-   * @memberof AuditLogsApiListAuditLogs
    */
   readonly timestampFrom?: number;
 
   /**
    * Filter by timestamp to
    * @type {number}
-   * @memberof AuditLogsApiListAuditLogs
    */
   readonly timestampTo?: number;
 
   /**
    * Sort by column
    * @type {AuditLogSortKey}
-   * @memberof AuditLogsApiListAuditLogs
    */
   readonly sortBy?: AuditLogSortKey;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof AuditLogsApiListAuditLogs
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof AuditLogsApiListAuditLogs
    */
   readonly perPage?: number;
 }
 
 /**
  * AuditLogsApi - object-oriented interface
- * @export
  * @class AuditLogsApi
  * @extends {BaseAPI}
  */
@@ -528,7 +490,6 @@ export class AuditLogsApi extends BaseAPI {
    * @param {AuditLogsApiGetDetailedAuditLogRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof AuditLogsApi
    */
   public getDetailedAuditLog(
     requestParameters: AuditLogsApiGetDetailedAuditLogRequest,
@@ -550,7 +511,6 @@ export class AuditLogsApi extends BaseAPI {
    * @param {AuditLogsApiListAuditLogsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof AuditLogsApi
    */
   public listAuditLogs(
     requestParameters: AuditLogsApiListAuditLogsRequest,

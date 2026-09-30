@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,24 +11,17 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { EnvironmentCopyScope } from './environment-copy-scope';
+import { type EnvironmentCopyScope } from './environment-copy-scope';
 // May contain unused imports in some cases
-// @ts-ignore
-import { ResourceSets } from './resource-sets';
+
 // May contain unused imports in some cases
-// @ts-ignore
-import { Resources } from './resources';
+
 // May contain unused imports in some cases
-// @ts-ignore
-import { Roles } from './roles';
+
 // May contain unused imports in some cases
-// @ts-ignore
-import { UserSets } from './user-sets';
 
 /**
  * @type Scope
  * Filters to include and exclude copied objects
- * @export
  */
 export type Scope = EnvironmentCopyScope;

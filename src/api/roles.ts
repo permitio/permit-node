@@ -1,25 +1,30 @@
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 import {
   RolesApi as AutogenRolesApi,
-  PaginatedResultRoleRead,
-  RoleCreate,
-  RoleRead,
-  RoleUpdate,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+  type PaginatedResultRoleRead,
+  type RoleCreate,
+  type RoleRead,
+  type RoleUpdate,
+} from '#src/openapi/index';
+import { BASE_PATH } from '#src/openapi/base';
 
-import { BasePermitApi, IPaginationExtended, ReturnPaginationType } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BasePermitApi, type IPaginationExtended, type ReturnPaginationType } from '#src/api/base';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
-export { RoleCreate, RoleRead, RoleUpdate, PaginatedResultRoleRead } from '../openapi';
+export {
+  type RoleCreate,
+  type RoleRead,
+  type RoleUpdate,
+  type PaginatedResultRoleRead,
+} from '#src/openapi/index';
 
 export interface IRolesApi {
   /**
    * Retrieves a list of roles.
    *
-   * @param pagination The pagination options, @see {@link IPaginationExtended}
+   * Accepts optional pagination settings; see {@link IPaginationExtended}.
    * @returns A promise that resolves to an array of roles.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
@@ -136,7 +141,7 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
   /**
    * Retrieves a list of roles.
    *
-   * @param pagination The pagination options, @see {@link IPaginationExtended}
+   * Accepts optional pagination settings; see {@link IPaginationExtended}.
    * @returns A promise that resolves to an array of roles.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
@@ -157,7 +162,7 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
           ...this.config.apiContext.environmentContext,
           page,
           perPage,
-          includeTotalCount,
+          ...(includeTotalCount !== undefined && { includeTotalCount }),
         })
       ).data;
     } catch (err) {

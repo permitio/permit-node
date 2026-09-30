@@ -1,9 +1,9 @@
 import pino from 'pino';
 
-import { IPermitClient, IResource } from '../..';
-import { RoleAssignmentCreate } from '../../openapi';
-import { cleanUp, createTestClient, expectNotFound } from '../fixtures';
-import { waitFor } from '../helpers/wait-for';
+import { type IPermitClient, type IResource } from '#src/index';
+import { type RoleAssignmentCreate } from '#src/openapi/index';
+import { cleanUp, createTestClient, expectNotFound } from '#src/tests/fixtures';
+import { waitFor } from '#src/tests/helpers/wait-for';
 
 let permit: IPermitClient;
 let logger: pino.Logger;
@@ -197,7 +197,7 @@ const cocacolaTenant = {
 };
 const tenantsToCreate = [permitTenant, cocacolaTenant];
 
-const relationships = [
+const relationships: [string, string, string, string][] = [
   // finance folder contains 2 documents
   [`${folder.key}:finance`, 'parent', `${document.key}:budget23`, permitTenant.key],
   [`${folder.key}:finance`, 'parent', `${document.key}:june-expenses`, permitTenant.key],
@@ -598,7 +598,7 @@ for (const { name, assignments, assertions } of assignmentsAndAssertions) {
     // also waits for the previous step's unassignments to reach the PDP.
     await waitFor(
       () => Promise.all(assertions.map((a) => permit.check(a.user, a.action, a.resource_instance))),
-      (results) => results.every((allowed, index) => allowed === assertions[index].result),
+      (results) => results.every((allowed, index) => allowed === assertions[index]?.result),
       {
         timeoutMs: STEP_TIMEOUT_MS,
         message: 'some checks kept returning the wrong result',

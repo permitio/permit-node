@@ -1,13 +1,13 @@
 import pino from 'pino';
 
-import { IPermitClient } from '../../index';
-import { UserRead } from '../../openapi';
-import { cleanUp, createTestClient, expectNotFound } from '../fixtures';
-import { waitFor, waitForCheck } from '../helpers/wait-for';
+import { type IPermitClient } from '#src/index';
+import { type UserRead } from '#src/openapi/index';
+import { cleanUp, createTestClient, expectNotFound } from '#src/tests/fixtures';
+import { waitFor, waitForCheck } from '#src/tests/helpers/wait-for';
 
 // Direct-OPA (`useOpa`) checks need the PDP's OPA port (8181) reachable on the PDP_URL host.
 // They run in their own test, which is reported as skipped unless PERMIT_RUN_OPA_E2E=true.
-const RUN_OPA_E2E = process.env.PERMIT_RUN_OPA_E2E === 'true';
+const RUN_OPA_E2E = process.env['PERMIT_RUN_OPA_E2E'] === 'true';
 
 // Keys unique to this run, so entities left by another spec or an earlier run can't change the
 // results, and the assertions below look only at what this spec created.
@@ -284,9 +284,9 @@ it('Permission check e2e test', async () => {
   const assignedRoles = await permit.api.users.getAssignedRoles({ user: user.key });
 
   expect(assignedRoles).toHaveLength(1);
-  expect(assignedRoles[0].user_id).toBe(user.id);
-  expect(assignedRoles[0].role_id).toBe(admin.id);
-  expect(assignedRoles[0].tenant_id).toBe(tenant.id);
+  expect(assignedRoles[0]?.user_id).toBe(user.id);
+  expect(assignedRoles[0]?.role_id).toBe(admin.id);
+  expect(assignedRoles[0]?.tenant_id).toBe(tenant.id);
 
   // The previously negative check becomes positive once the role swap has propagated.
   logger.info('testing previously negative permission check, should now be positive');

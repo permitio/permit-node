@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,37 +10,26 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PaginatedResultUserRead } from '../types';
-// @ts-ignore
-import { TenantCreate } from '../types';
-// @ts-ignore
-import { TenantRead } from '../types';
-// @ts-ignore
-import { TenantUpdate } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type PaginatedResultUserRead,
+  type TenantCreate,
+  type TenantRead,
+  type TenantUpdate,
+} from '../types';
 /**
  * TenantsApi - axios parameter creator
- * @export
  */
 export const TenantsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -481,7 +468,6 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
 
 /**
  * TenantsApi - functional programming interface
- * @export
  */
 export const TenantsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = TenantsApiAxiosParamCreator(configuration);
@@ -678,7 +664,6 @@ export const TenantsApiFp = function (configuration?: Configuration) {
 
 /**
  * TenantsApi - factory interface
- * @export
  */
 export const TenantsApiFactory = function (
   configuration?: Configuration,
@@ -841,259 +826,222 @@ export const TenantsApiFactory = function (
 
 /**
  * Request parameters for createTenant operation in TenantsApi.
- * @export
  * @interface TenantsApiCreateTenantRequest
  */
 export interface TenantsApiCreateTenantRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiCreateTenant
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiCreateTenant
    */
   readonly envId: string;
 
   /**
    *
    * @type {TenantCreate}
-   * @memberof TenantsApiCreateTenant
    */
   readonly tenantCreate: TenantCreate;
 }
 
 /**
  * Request parameters for deleteTenant operation in TenantsApi.
- * @export
  * @interface TenantsApiDeleteTenantRequest
  */
 export interface TenantsApiDeleteTenantRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiDeleteTenant
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiDeleteTenant
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiDeleteTenant
    */
   readonly tenantId: string;
 }
 
 /**
  * Request parameters for deleteTenantUser operation in TenantsApi.
- * @export
  * @interface TenantsApiDeleteTenantUserRequest
  */
 export interface TenantsApiDeleteTenantUserRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiDeleteTenantUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiDeleteTenantUser
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiDeleteTenantUser
    */
   readonly tenantId: string;
 
   /**
    * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiDeleteTenantUser
    */
   readonly userId: string;
 }
 
 /**
  * Request parameters for getTenant operation in TenantsApi.
- * @export
  * @interface TenantsApiGetTenantRequest
  */
 export interface TenantsApiGetTenantRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiGetTenant
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiGetTenant
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiGetTenant
    */
   readonly tenantId: string;
 }
 
 /**
  * Request parameters for listTenantUsers operation in TenantsApi.
- * @export
  * @interface TenantsApiListTenantUsersRequest
  */
 export interface TenantsApiListTenantUsersRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiListTenantUsers
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiListTenantUsers
    */
   readonly tenantId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiListTenantUsers
    */
   readonly envId: string;
 
   /**
    * Text search for the email field
    * @type {string}
-   * @memberof TenantsApiListTenantUsers
    */
   readonly search?: string;
 
   /**
    * Match users with a specific role
    * @type {string}
-   * @memberof TenantsApiListTenantUsers
    */
   readonly role?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof TenantsApiListTenantUsers
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof TenantsApiListTenantUsers
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for listTenants operation in TenantsApi.
- * @export
  * @interface TenantsApiListTenantsRequest
  */
 export interface TenantsApiListTenantsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiListTenants
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiListTenants
    */
   readonly envId: string;
 
   /**
    * Text search for the tenant name or key
    * @type {string}
-   * @memberof TenantsApiListTenants
    */
   readonly search?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof TenantsApiListTenants
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof TenantsApiListTenants
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateTenant operation in TenantsApi.
- * @export
  * @interface TenantsApiUpdateTenantRequest
  */
 export interface TenantsApiUpdateTenantRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiUpdateTenant
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiUpdateTenant
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof TenantsApiUpdateTenant
    */
   readonly tenantId: string;
 
   /**
    *
    * @type {TenantUpdate}
-   * @memberof TenantsApiUpdateTenant
    */
   readonly tenantUpdate: TenantUpdate;
 }
 
 /**
  * TenantsApi - object-oriented interface
- * @export
  * @class TenantsApi
  * @extends {BaseAPI}
  */
@@ -1104,7 +1052,6 @@ export class TenantsApi extends BaseAPI {
    * @param {TenantsApiCreateTenantRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
    */
   public createTenant(
     requestParameters: TenantsApiCreateTenantRequest,
@@ -1126,7 +1073,6 @@ export class TenantsApi extends BaseAPI {
    * @param {TenantsApiDeleteTenantRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
    */
   public deleteTenant(
     requestParameters: TenantsApiDeleteTenantRequest,
@@ -1148,7 +1094,6 @@ export class TenantsApi extends BaseAPI {
    * @param {TenantsApiDeleteTenantUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
    */
   public deleteTenantUser(
     requestParameters: TenantsApiDeleteTenantUserRequest,
@@ -1171,7 +1116,6 @@ export class TenantsApi extends BaseAPI {
    * @param {TenantsApiGetTenantRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
    */
   public getTenant(requestParameters: TenantsApiGetTenantRequest, options?: AxiosRequestConfig) {
     return TenantsApiFp(this.configuration)
@@ -1190,7 +1134,6 @@ export class TenantsApi extends BaseAPI {
    * @param {TenantsApiListTenantUsersRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
    */
   public listTenantUsers(
     requestParameters: TenantsApiListTenantUsersRequest,
@@ -1216,7 +1159,6 @@ export class TenantsApi extends BaseAPI {
    * @param {TenantsApiListTenantsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
    */
   public listTenants(
     requestParameters: TenantsApiListTenantsRequest,
@@ -1240,7 +1182,6 @@ export class TenantsApi extends BaseAPI {
    * @param {TenantsApiUpdateTenantRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof TenantsApi
    */
   public updateTenant(
     requestParameters: TenantsApiUpdateTenantRequest,

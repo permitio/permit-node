@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,35 +10,25 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { ResourceAttributeCreate } from '../types';
-// @ts-ignore
-import { ResourceAttributeRead } from '../types';
-// @ts-ignore
-import { ResourceAttributeUpdate } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type ResourceAttributeCreate,
+  type ResourceAttributeRead,
+  type ResourceAttributeUpdate,
+} from '../types';
 /**
  * ResourceAttributesApi - axios parameter creator
- * @export
  */
 export const ResourceAttributesApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -386,7 +374,6 @@ export const ResourceAttributesApiAxiosParamCreator = function (configuration?: 
 
 /**
  * ResourceAttributesApi - functional programming interface
- * @export
  */
 export const ResourceAttributesApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ResourceAttributesApiAxiosParamCreator(configuration);
@@ -540,7 +527,6 @@ export const ResourceAttributesApiFp = function (configuration?: Configuration) 
 
 /**
  * ResourceAttributesApi - factory interface
- * @export
  */
 export const ResourceAttributesApiFactory = function (
   configuration?: Configuration,
@@ -674,210 +660,180 @@ export const ResourceAttributesApiFactory = function (
 
 /**
  * Request parameters for createResourceAttribute operation in ResourceAttributesApi.
- * @export
  * @interface ResourceAttributesApiCreateResourceAttributeRequest
  */
 export interface ResourceAttributesApiCreateResourceAttributeRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiCreateResourceAttribute
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiCreateResourceAttribute
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiCreateResourceAttribute
    */
   readonly resourceId: string;
 
   /**
    *
    * @type {ResourceAttributeCreate}
-   * @memberof ResourceAttributesApiCreateResourceAttribute
    */
   readonly resourceAttributeCreate: ResourceAttributeCreate;
 }
 
 /**
  * Request parameters for deleteResourceAttribute operation in ResourceAttributesApi.
- * @export
  * @interface ResourceAttributesApiDeleteResourceAttributeRequest
  */
 export interface ResourceAttributesApiDeleteResourceAttributeRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiDeleteResourceAttribute
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiDeleteResourceAttribute
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiDeleteResourceAttribute
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiDeleteResourceAttribute
    */
   readonly attributeId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof ResourceAttributesApiDeleteResourceAttribute
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof ResourceAttributesApiDeleteResourceAttribute
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for getResourceAttribute operation in ResourceAttributesApi.
- * @export
  * @interface ResourceAttributesApiGetResourceAttributeRequest
  */
 export interface ResourceAttributesApiGetResourceAttributeRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiGetResourceAttribute
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiGetResourceAttribute
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiGetResourceAttribute
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiGetResourceAttribute
    */
   readonly attributeId: string;
 }
 
 /**
  * Request parameters for listResourceAttributes operation in ResourceAttributesApi.
- * @export
  * @interface ResourceAttributesApiListResourceAttributesRequest
  */
 export interface ResourceAttributesApiListResourceAttributesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiListResourceAttributes
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiListResourceAttributes
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiListResourceAttributes
    */
   readonly resourceId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof ResourceAttributesApiListResourceAttributes
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof ResourceAttributesApiListResourceAttributes
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateResourceAttribute operation in ResourceAttributesApi.
- * @export
  * @interface ResourceAttributesApiUpdateResourceAttributeRequest
  */
 export interface ResourceAttributesApiUpdateResourceAttributeRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiUpdateResourceAttribute
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiUpdateResourceAttribute
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiUpdateResourceAttribute
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceAttributesApiUpdateResourceAttribute
    */
   readonly attributeId: string;
 
   /**
    *
    * @type {ResourceAttributeUpdate}
-   * @memberof ResourceAttributesApiUpdateResourceAttribute
    */
   readonly resourceAttributeUpdate: ResourceAttributeUpdate;
 }
 
 /**
  * ResourceAttributesApi - object-oriented interface
- * @export
  * @class ResourceAttributesApi
  * @extends {BaseAPI}
  */
@@ -888,7 +844,6 @@ export class ResourceAttributesApi extends BaseAPI {
    * @param {ResourceAttributesApiCreateResourceAttributeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceAttributesApi
    */
   public createResourceAttribute(
     requestParameters: ResourceAttributesApiCreateResourceAttributeRequest,
@@ -911,7 +866,6 @@ export class ResourceAttributesApi extends BaseAPI {
    * @param {ResourceAttributesApiDeleteResourceAttributeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceAttributesApi
    */
   public deleteResourceAttribute(
     requestParameters: ResourceAttributesApiDeleteResourceAttributeRequest,
@@ -936,7 +890,6 @@ export class ResourceAttributesApi extends BaseAPI {
    * @param {ResourceAttributesApiGetResourceAttributeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceAttributesApi
    */
   public getResourceAttribute(
     requestParameters: ResourceAttributesApiGetResourceAttributeRequest,
@@ -959,7 +912,6 @@ export class ResourceAttributesApi extends BaseAPI {
    * @param {ResourceAttributesApiListResourceAttributesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceAttributesApi
    */
   public listResourceAttributes(
     requestParameters: ResourceAttributesApiListResourceAttributesRequest,
@@ -983,7 +935,6 @@ export class ResourceAttributesApi extends BaseAPI {
    * @param {ResourceAttributesApiUpdateResourceAttributeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceAttributesApi
    */
   public updateResourceAttribute(
     requestParameters: ResourceAttributesApiUpdateResourceAttributeRequest,

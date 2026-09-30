@@ -1,12 +1,12 @@
-import { PermitApiError } from '../../../api/base';
-import { ResourceRoleCreate, ResourceRoleUpdate } from '../../../api/resource-roles';
-import { Permit } from '../../../index';
+import { PermitApiError } from '#src/api/base';
+import { type ResourceRoleCreate, type ResourceRoleUpdate } from '#src/api/resource-roles';
+import { Permit } from '#src/index';
 import {
-  DerivedRoleRuleCreate,
-  DerivedRoleRuleDelete,
-  PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
-} from '../../../openapi';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+  type DerivedRoleRuleCreate,
+  type DerivedRoleRuleDelete,
+  type PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
+} from '#src/openapi/index';
+import { createMockPermit, type MockTransport } from '#src/tests/helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // resource-role URL is scoped under

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,32 +12,27 @@
 
 /**
  *
- * @export
  * @interface ProjectUpdate
  */
 export interface ProjectUpdate {
   /**
    * The name of the project
    * @type {string}
-   * @memberof ProjectUpdate
    */
   name?: string;
   /**
    * a longer description outlining the project objectives
    * @type {string}
-   * @memberof ProjectUpdate
    */
   description?: string;
   /**
    * the settings for this project
    * @type {object}
-   * @memberof ProjectUpdate
    */
   settings?: object;
   /**
    * the id of the policy repo to use for this project
    * @type {string}
-   * @memberof ProjectUpdate
    */
   active_policy_repo_id?: string;
 }

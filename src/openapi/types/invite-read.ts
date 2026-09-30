@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,70 +11,58 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
 import { InviteStatus } from './invite-status';
 // May contain unused imports in some cases
-// @ts-ignore
 import { MemberAccessLevel } from './member-access-level';
 
 /**
  *
- * @export
  * @interface InviteRead
  */
 export interface InviteRead {
   /**
    * Unique id of the invite
    * @type {string}
-   * @memberof InviteRead
    */
   member_id?: string;
   /**
    * The invited member\'s email address
    * @type {string}
-   * @memberof InviteRead
    */
   email: string;
   /**
    * The role the member will be assigned with
    * @type {MemberAccessLevel}
-   * @memberof InviteRead
    */
   role?: MemberAccessLevel;
   /**
    * Unique id of the invite
    * @type {string}
-   * @memberof InviteRead
    */
   id: string;
   /**
    * Unique id of the organization that the invite belongs to.
    * @type {string}
-   * @memberof InviteRead
    */
   organization_id: string;
   /**
    * The invite code that is sent to the member\'s email
    * @type {string}
-   * @memberof InviteRead
    */
   invite_code: string;
   /**
    * Date and time when the invite was created (ISO_8601 format).
    * @type {string}
-   * @memberof InviteRead
    */
   created_at: string;
   /**
    * The status of the invite (pending, failed, etc)
    * @type {InviteStatus}
-   * @memberof InviteRead
    */
   status: InviteStatus;
   /**
    * if failed, the reason the invitation failed
    * @type {string}
-   * @memberof InviteRead
    */
   failed_reason?: string;
 }

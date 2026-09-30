@@ -1,17 +1,22 @@
 import axios, {
   AxiosError,
   AxiosHeaders,
-  AxiosHeaderValue,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
+  type AxiosHeaderValue,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
 } from 'axios';
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { FactsSyncTimeoutPolicy, IPermitConfig } from '../config';
-import { APIKeysApi, Configuration } from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+import { type FactsSyncTimeoutPolicy, type IPermitConfig } from '#src/config';
+import { APIKeysApi, Configuration } from '#src/openapi/index';
+import { BASE_PATH } from '#src/openapi/base';
 
-import { API_ACCESS_LEVELS, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context';
+import {
+  API_ACCESS_LEVELS,
+  ApiContextLevel,
+  ApiKeyLevel,
+  PermitContextError,
+} from '#src/api/context';
 
 const REDACTED = '[REDACTED]';
 
@@ -43,7 +48,15 @@ function redactHeaders(
 function redactRequestConfig(config: InternalAxiosRequestConfig): InternalAxiosRequestConfig {
   const { method, baseURL, url, params, data, timeout } = config;
   const headers = redactHeaders(config.headers, (name) => SAFE_REQUEST_HEADERS.has(name));
-  return { method, baseURL, url, params, data, timeout, headers };
+  return {
+    ...(method !== undefined && { method }),
+    ...(baseURL !== undefined && { baseURL }),
+    ...(url !== undefined && { url }),
+    params,
+    data,
+    ...(timeout !== undefined && { timeout }),
+    headers,
+  };
 }
 
 /**
@@ -61,7 +74,7 @@ export function redactAxiosError<E>(error: E): E {
     return error;
   }
   const config = error.config && redactRequestConfig(error.config);
-  error.config = config;
+  if (config !== undefined) error.config = config;
   error.request = undefined;
   if (error.response) {
     error.response = {
@@ -76,10 +89,10 @@ export function redactAxiosError<E>(error: E): E {
 }
 
 interface FormattedAxiosError<T> {
-  code?: string;
+  code?: string | undefined;
   message: string;
-  error?: T;
-  status?: number;
+  error?: T | undefined;
+  status?: number | undefined;
 }
 export class PermitApiError<T> extends Error {
   public originalError: AxiosError<T>;
@@ -155,8 +168,11 @@ export abstract class BasePermitApi {
   protected openapiClientConfig: Configuration;
   private scopeApi: APIKeysApi;
 
-  constructor(protected config: IPermitConfig, protected logger: Logger) {
-    const version = process.env.npm_package_version ?? 'unknown';
+  constructor(
+    protected config: IPermitConfig,
+    protected logger: Logger,
+  ) {
+    const version = process.env['npm_package_version'] ?? 'unknown';
     this.openapiClientConfig = new Configuration({
       basePath: `${this.config.apiUrl}`,
       accessToken: this.config.token,
@@ -312,7 +328,10 @@ export interface IWaitForSync {
 }
 
 export abstract class BaseFactsPermitAPI extends BasePermitApi implements IWaitForSync {
-  constructor(protected config: IPermitConfig, protected logger: Logger) {
+  constructor(
+    protected override config: IPermitConfig,
+    protected override logger: Logger,
+  ) {
     super(config, logger);
     if (config.proxyFactsViaPdp) {
       this.openapiClientConfig = new Configuration({

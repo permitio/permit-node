@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,55 +11,46 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { OpalCommonSchemasDataDataSourceConfig } from './opal-common-schemas-data-data-source-config';
+import { type OpalCommonSchemasDataDataSourceConfig } from './opal-common-schemas-data-data-source-config';
 
 /**
  *
- * @export
  * @interface ScopeConfigRead
  */
 export interface ScopeConfigRead {
   /**
    *
    * @type {OpalCommonSchemasDataDataSourceConfig}
-   * @memberof ScopeConfigRead
    */
   data?: OpalCommonSchemasDataDataSourceConfig;
   /**
    * Unique id of the ScopeConfig
    * @type {string}
-   * @memberof ScopeConfigRead
    */
   id: string;
   /**
    * Unique id of the organization that the ScopeConfig belongs to.
    * @type {string}
-   * @memberof ScopeConfigRead
    */
   organization_id: string;
   /**
    * Unique id of the project that the ScopeConfig belongs to.
    * @type {string}
-   * @memberof ScopeConfigRead
    */
   project_id: string;
   /**
    * Unique id of the environment that the ScopeConfig belongs to.
    * @type {string}
-   * @memberof ScopeConfigRead
    */
   environment_id: string;
   /**
    * Date and time when the ScopeConfig was created (ISO_8601 format).
    * @type {string}
-   * @memberof ScopeConfigRead
    */
   created_at: string;
   /**
    * Date and time when the ScopeConfig was last updated/modified (ISO_8601 format).
    * @type {string}
-   * @memberof ScopeConfigRead
    */
   updated_at: string;
 }

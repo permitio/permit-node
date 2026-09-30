@@ -1,4 +1,4 @@
-import { createServer, IncomingHttpHeaders } from 'node:http';
+import { createServer, type IncomingHttpHeaders } from 'node:http';
 import { Socket } from 'node:net';
 
 export const TEST_TOKEN = 'permit-test-token-do-not-log';
@@ -27,18 +27,18 @@ interface TestPdp {
 export async function startPdp(reply?: PdpReply): Promise<TestPdp> {
   // Vitest runs each test file in its own worker; keep loopback traffic off inherited proxies.
   const proxyExclusions = [
-    process.env.npm_config_no_proxy,
-    process.env.no_proxy,
-    process.env.NO_PROXY,
+    process.env['npm_config_no_proxy'],
+    process.env['no_proxy'],
+    process.env['NO_PROXY'],
     '127.0.0.1',
   ]
     .filter(Boolean)
     .join(',')
     .split(',');
   const noProxy = [...new Set(proxyExclusions)].join(',');
-  process.env.npm_config_no_proxy = noProxy;
-  process.env.no_proxy = noProxy;
-  process.env.NO_PROXY = noProxy;
+  process.env['npm_config_no_proxy'] = noProxy;
+  process.env['no_proxy'] = noProxy;
+  process.env['NO_PROXY'] = noProxy;
 
   const requests: CapturedRequest[] = [];
   const sockets = new Set<Socket>();
@@ -106,7 +106,7 @@ export async function startPdp(reply?: PdpReply): Promise<TestPdp> {
 /** Asserts the exact SDK HTTP contract and JSON payload received by the PDP. */
 export function assertPdpRequest(
   request: CapturedRequest | undefined,
-  expected: { path: string; body: unknown; sdk?: string },
+  expected: { path: string; body: unknown; sdk?: string | undefined },
 ): void {
   assert(request, 'The PDP did not receive the expected HTTP request');
   expect(request.body).toStrictEqual(expected.body);
@@ -114,7 +114,7 @@ export function assertPdpRequest(
   expect(request.path).toBe(expected.path);
   expect(request.headers.authorization).toBe(`Bearer ${TEST_TOKEN}`);
   expect(request.headers['x-permit-sdk-version']).toBe(
-    `node:${process.env.npm_package_version ?? 'unknown'}`,
+    `node:${process.env['npm_package_version'] ?? 'unknown'}`,
   );
   expect(request.headers['x-permit-sdk-language']).toBe(expected.sdk);
   expect(request.headers['content-type']).toBe('application/json');

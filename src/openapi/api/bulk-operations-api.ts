@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,43 +10,27 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { ResourceInstanceCreateBulkOperation } from '../types';
-// @ts-ignore
-import { ResourceInstanceDeleteBulkOperation } from '../types';
-// @ts-ignore
-import { TenantCreateBulkOperation } from '../types';
-// @ts-ignore
-import { TenantDeleteBulkOperation } from '../types';
-// @ts-ignore
-import { UserCreateBulkOperation } from '../types';
-// @ts-ignore
-import { UserDeleteBulkOperation } from '../types';
-// @ts-ignore
-import { UserReplaceBulkOperation } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type ResourceInstanceCreateBulkOperation,
+  type ResourceInstanceDeleteBulkOperation,
+  type UserCreateBulkOperation,
+  type UserDeleteBulkOperation,
+  type UserReplaceBulkOperation,
+} from '../types';
 /**
  * BulkOperationsApi - axios parameter creator
- * @export
  */
 export const BulkOperationsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -478,7 +460,6 @@ export const BulkOperationsApiAxiosParamCreator = function (configuration?: Conf
 
 /**
  * BulkOperationsApi - functional programming interface
- * @export
  */
 export const BulkOperationsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = BulkOperationsApiAxiosParamCreator(configuration);
@@ -664,7 +645,6 @@ export const BulkOperationsApiFp = function (configuration?: Configuration) {
 
 /**
  * BulkOperationsApi - factory interface
- * @export
  */
 export const BulkOperationsApiFactory = function (
   configuration?: Configuration,
@@ -811,203 +791,174 @@ export const BulkOperationsApiFactory = function (
 
 /**
  * Request parameters for bulkCreateTenants operation in BulkOperationsApi.
- * @export
  * @interface BulkOperationsApiBulkCreateTenantsRequest
  */
 export interface BulkOperationsApiBulkCreateTenantsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof BulkOperationsApiBulkCreateTenants
    */
   readonly projId: any;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof BulkOperationsApiBulkCreateTenants
    */
   readonly envId: any;
 
   /**
    *
    * @type {{ [key: string]: any; }}
-   * @memberof BulkOperationsApiBulkCreateTenants
    */
   readonly requestBody: { [key: string]: any };
 }
 
 /**
  * Request parameters for bulkCreateUsers operation in BulkOperationsApi.
- * @export
  * @interface BulkOperationsApiBulkCreateUsersRequest
  */
 export interface BulkOperationsApiBulkCreateUsersRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof BulkOperationsApiBulkCreateUsers
    */
   readonly projId: any;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof BulkOperationsApiBulkCreateUsers
    */
   readonly envId: any;
 
   /**
    *
    * @type {UserCreateBulkOperation}
-   * @memberof BulkOperationsApiBulkCreateUsers
    */
   readonly userCreateBulkOperations: UserCreateBulkOperation;
 }
 
 /**
  * Request parameters for bulkDeleteResourceInstances operation in BulkOperationsApi.
- * @export
  * @interface BulkOperationsApiBulkDeleteResourceInstancesRequest
  */
 export interface BulkOperationsApiBulkDeleteResourceInstancesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof BulkOperationsApiBulkDeleteResourceInstances
    */
   readonly projId: any;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof BulkOperationsApiBulkDeleteResourceInstances
    */
   readonly envId: any;
 
   /**
    *
    * @type {ResourceInstanceDeleteBulkOperation}
-   * @memberof BulkOperationsApiBulkDeleteResourceInstances
    */
   readonly resourceInstanceDeleteBulkOperation: ResourceInstanceDeleteBulkOperation;
 }
 
 /**
  * Request parameters for bulkDeleteTenants operation in BulkOperationsApi.
- * @export
  * @interface BulkOperationsApiBulkDeleteTenantsRequest
  */
 export interface BulkOperationsApiBulkDeleteTenantsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof BulkOperationsApiBulkDeleteTenants
    */
   readonly projId: any;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof BulkOperationsApiBulkDeleteTenants
    */
   readonly envId: any;
 
   /**
    *
    * @type {{ [key: string]: any; }}
-   * @memberof BulkOperationsApiBulkDeleteTenants
    */
   readonly requestBody: { [key: string]: any };
 }
 
 /**
  * Request parameters for bulkDeleteUsers operation in BulkOperationsApi.
- * @export
  * @interface BulkOperationsApiBulkDeleteUsersRequest
  */
 export interface BulkOperationsApiBulkDeleteUsersRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof BulkOperationsApiBulkDeleteUsers
    */
   readonly projId: any;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof BulkOperationsApiBulkDeleteUsers
    */
   readonly envId: any;
 
   /**
    *
    * @type {UserDeleteBulkOperation}
-   * @memberof BulkOperationsApiBulkDeleteUsers
    */
   readonly userDeleteBulkOperation: UserDeleteBulkOperation;
 }
 
 /**
  * Request parameters for bulkReplaceResourceInstances operation in BulkOperationsApi.
- * @export
  * @interface BulkOperationsApiBulkReplaceResourceInstancesRequest
  */
 export interface BulkOperationsApiBulkReplaceResourceInstancesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof BulkOperationsApiBulkReplaceResourceInstances
    */
   readonly projId: any;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof BulkOperationsApiBulkReplaceResourceInstances
    */
   readonly envId: any;
 
   /**
    *
    * @type {ResourceInstanceCreateBulkOperation}
-   * @memberof BulkOperationsApiBulkReplaceResourceInstances
    */
   readonly resourceInstanceCreateBulkOperation: ResourceInstanceCreateBulkOperation;
 }
 
 /**
  * Request parameters for bulkReplaceUsers operation in BulkOperationsApi.
- * @export
  * @interface BulkOperationsApiBulkReplaceUsersRequest
  */
 export interface BulkOperationsApiBulkReplaceUsersRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof BulkOperationsApiBulkReplaceUsers
    */
   readonly projId: any;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {any}
-   * @memberof BulkOperationsApiBulkReplaceUsers
    */
   readonly envId: any;
 
   /**
    *
    * @type {UserReplaceBulkOperation}
-   * @memberof BulkOperationsApiBulkReplaceUsers
    */
   readonly userReplaceBulkOperation: UserReplaceBulkOperation;
 }
 
 /**
  * BulkOperationsApi - object-oriented interface
- * @export
  * @class BulkOperationsApi
  * @extends {BaseAPI}
  */
@@ -1018,7 +969,6 @@ export class BulkOperationsApi extends BaseAPI {
    * @param {BulkOpertionsApiBulkCreateTenantsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof BulkOperationsApi
    */
   public bulkCreateTenants(
     requestParameters: BulkOperationsApiBulkCreateTenantsRequest,
@@ -1040,7 +990,6 @@ export class BulkOperationsApi extends BaseAPI {
    * @param {BulkOperationsApiBulkCreateUsersRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof BulkOperationsApi
    */
   public bulkCreateUsers(
     requestParameters: BulkOperationsApiBulkCreateUsersRequest,
@@ -1062,7 +1011,6 @@ export class BulkOperationsApi extends BaseAPI {
    * @param {BulkOperationsApiBulkDeleteResourceInstancesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof BulkOperationsApi
    */
   public bulkDeleteResourceInstances(
     requestParameters: BulkOperationsApiBulkDeleteResourceInstancesRequest,
@@ -1084,7 +1032,6 @@ export class BulkOperationsApi extends BaseAPI {
    * @param {BulkOperationsApiBulkDeleteTenantsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof BulkOperationsApi
    */
   public bulkDeleteTenants(
     requestParameters: BulkOperationsApiBulkDeleteTenantsRequest,
@@ -1106,7 +1053,6 @@ export class BulkOperationsApi extends BaseAPI {
    * @param {BulkOperationsApiBulkDeleteUsersRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof BulkOperationsApi
    */
   public async bulkDeleteUsers(
     requestParameters: BulkOperationsApiBulkDeleteUsersRequest,
@@ -1127,7 +1073,6 @@ export class BulkOperationsApi extends BaseAPI {
    * @param {BulkOperationsApiBulkReplaceResourceInstancesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof BulkOperationsApi
    */
   public bulkReplaceResourceInstances(
     requestParameters: BulkOperationsApiBulkReplaceResourceInstancesRequest,
@@ -1149,7 +1094,6 @@ export class BulkOperationsApi extends BaseAPI {
    * @param {BulkOperationsApiBulkReplaceUsersRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof BulkOperationsApi
    */
   public bulkReplaceUsers(
     requestParameters: BulkOperationsApiBulkReplaceUsersRequest,

@@ -7,7 +7,6 @@
  */
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -150,8 +149,13 @@ function assertComplete(out, pin, modelDir) {
   return { typesDir, files };
 }
 
-function assertTypes(typesDir, files) {
-  const ts = createRequire(import.meta.url)('typescript');
+async function assertTypes(typesDir, files) {
+  let ts;
+  try {
+    ({ default: ts } = await import('@permitio/compiler-tools'));
+  } catch (cause) {
+    throw new Error('Compiler API dependency unavailable; run pnpm install first.', { cause });
+  }
   function containsAny(node) {
     if (!node) return false;
     if (node.kind === ts.SyntaxKind.AnyKeyword) return true;
@@ -237,7 +241,7 @@ try {
     );
   }
   const { typesDir, files } = assertComplete(out, pin, modelDir);
-  assertTypes(typesDir, files);
+  await assertTypes(typesDir, files);
   console.log(
     `codegen guard OK - generator ${pin}; ${files.length} models checked for unexpected any; ` +
       `${Object.keys(EXPECTED).length} property shapes verified`,

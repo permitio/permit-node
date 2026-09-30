@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,35 +10,25 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { ResourceActionGroupCreate } from '../types';
-// @ts-ignore
-import { ResourceActionGroupRead } from '../types';
-// @ts-ignore
-import { ResourceActionGroupUpdate } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type ResourceActionGroupCreate,
+  type ResourceActionGroupRead,
+  type ResourceActionGroupUpdate,
+} from '../types';
 /**
  * ResourceActionGroupsApi - axios parameter creator
- * @export
  */
 export const ResourceActionGroupsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -374,7 +362,6 @@ export const ResourceActionGroupsApiAxiosParamCreator = function (configuration?
 
 /**
  * ResourceActionGroupsApi - functional programming interface
- * @export
  */
 export const ResourceActionGroupsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ResourceActionGroupsApiAxiosParamCreator(configuration);
@@ -528,7 +515,6 @@ export const ResourceActionGroupsApiFp = function (configuration?: Configuration
 
 /**
  * ResourceActionGroupsApi - factory interface
- * @export
  */
 export const ResourceActionGroupsApiFactory = function (
   configuration?: Configuration,
@@ -658,196 +644,168 @@ export const ResourceActionGroupsApiFactory = function (
 
 /**
  * Request parameters for createResourceActionGroup operation in ResourceActionGroupsApi.
- * @export
  * @interface ResourceActionGroupsApiCreateResourceActionGroupRequest
  */
 export interface ResourceActionGroupsApiCreateResourceActionGroupRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiCreateResourceActionGroup
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiCreateResourceActionGroup
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiCreateResourceActionGroup
    */
   readonly resourceId: string;
 
   /**
    *
    * @type {ResourceActionGroupCreate}
-   * @memberof ResourceActionGroupsApiCreateResourceActionGroup
    */
   readonly resourceActionGroupCreate: ResourceActionGroupCreate;
 }
 
 /**
  * Request parameters for deleteResourceActionGroup operation in ResourceActionGroupsApi.
- * @export
  * @interface ResourceActionGroupsApiDeleteResourceActionGroupRequest
  */
 export interface ResourceActionGroupsApiDeleteResourceActionGroupRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiDeleteResourceActionGroup
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiDeleteResourceActionGroup
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiDeleteResourceActionGroup
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the action group, or the URL-friendly key of the action group (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiDeleteResourceActionGroup
    */
   readonly actionGroupId: string;
 }
 
 /**
  * Request parameters for getResourceActionGroup operation in ResourceActionGroupsApi.
- * @export
  * @interface ResourceActionGroupsApiGetResourceActionGroupRequest
  */
 export interface ResourceActionGroupsApiGetResourceActionGroupRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiGetResourceActionGroup
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiGetResourceActionGroup
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiGetResourceActionGroup
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the action group, or the URL-friendly key of the action group (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiGetResourceActionGroup
    */
   readonly actionGroupId: string;
 }
 
 /**
  * Request parameters for listResourceActionGroups operation in ResourceActionGroupsApi.
- * @export
  * @interface ResourceActionGroupsApiListResourceActionGroupsRequest
  */
 export interface ResourceActionGroupsApiListResourceActionGroupsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiListResourceActionGroups
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiListResourceActionGroups
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiListResourceActionGroups
    */
   readonly resourceId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
    * @type {number}
-   * @memberof ResourceActionGroupsApiListResourceActionGroups
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
    * @type {number}
-   * @memberof ResourceActionGroupsApiListResourceActionGroups
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateResourceActionGroup operation in ResourceActionGroupsApi.
- * @export
  * @interface ResourceActionGroupsApiUpdateResourceActionGroupRequest
  */
 export interface ResourceActionGroupsApiUpdateResourceActionGroupRequest {
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiUpdateResourceActionGroup
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the action group, or the URL-friendly key of the action group (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiUpdateResourceActionGroup
    */
   readonly actionGroupId: string;
 
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiUpdateResourceActionGroup
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ResourceActionGroupsApiUpdateResourceActionGroup
    */
   readonly envId: string;
 
   /**
    *
    * @type {ResourceActionGroupUpdate}
-   * @memberof ResourceActionGroupsApiUpdateResourceActionGroup
    */
   readonly resourceActionGroupUpdate: ResourceActionGroupUpdate;
 }
 
 /**
  * ResourceActionGroupsApi - object-oriented interface
- * @export
  * @class ResourceActionGroupsApi
  * @extends {BaseAPI}
  */
@@ -858,7 +816,6 @@ export class ResourceActionGroupsApi extends BaseAPI {
    * @param {ResourceActionGroupsApiCreateResourceActionGroupRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceActionGroupsApi
    */
   public createResourceActionGroup(
     requestParameters: ResourceActionGroupsApiCreateResourceActionGroupRequest,
@@ -881,7 +838,6 @@ export class ResourceActionGroupsApi extends BaseAPI {
    * @param {ResourceActionGroupsApiDeleteResourceActionGroupRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceActionGroupsApi
    */
   public deleteResourceActionGroup(
     requestParameters: ResourceActionGroupsApiDeleteResourceActionGroupRequest,
@@ -904,7 +860,6 @@ export class ResourceActionGroupsApi extends BaseAPI {
    * @param {ResourceActionGroupsApiGetResourceActionGroupRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceActionGroupsApi
    */
   public getResourceActionGroup(
     requestParameters: ResourceActionGroupsApiGetResourceActionGroupRequest,
@@ -927,7 +882,6 @@ export class ResourceActionGroupsApi extends BaseAPI {
    * @param {ResourceActionGroupsApiListResourceActionGroupsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceActionGroupsApi
    */
   public listResourceActionGroups(
     requestParameters: ResourceActionGroupsApiListResourceActionGroupsRequest,
@@ -951,7 +905,6 @@ export class ResourceActionGroupsApi extends BaseAPI {
    * @param {ResourceActionGroupsApiUpdateResourceActionGroupRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ResourceActionGroupsApi
    */
   public updateResourceActionGroup(
     requestParameters: ResourceActionGroupsApiUpdateResourceActionGroupRequest,

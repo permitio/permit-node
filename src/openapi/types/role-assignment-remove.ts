@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,32 +12,27 @@
 
 /**
  *
- * @export
  * @interface RoleAssignmentRemove
  */
 export interface RoleAssignmentRemove {
   /**
    * the role that will be unassigned (accepts either the role id or the role key)
    * @type {string}
-   * @memberof RoleAssignmentRemove
    */
   role: string;
   /**
    * the tenant the role is associated with (accepts either the tenant id or the tenant key)
    * @type {string}
-   * @memberof RoleAssignmentRemove
    */
   tenant?: string;
   /**
    * the resource instance the role is associated with (accepts either the resource instance id or key using this format resource_type:resource_instance)
    * @type {string}
-   * @memberof RoleAssignmentRemove
    */
   resource_instance?: string;
   /**
    * the user the role will be unassigned from (accepts either the user id or the user key)
    * @type {string}
-   * @memberof RoleAssignmentRemove
    */
   user: string;
 }

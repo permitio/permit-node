@@ -1,9 +1,9 @@
 import { inspect } from 'node:util';
 
-import { Permit, PermitConnectionError, PermitPDPStatusError } from '../../../index';
-import { CheckConfig } from '../../../utils/context';
-import { assertPdpRequest, startPdp, TEST_TOKEN } from '../../helpers/pdp-test-server';
-import { rejectionOf } from '../../helpers/rejection';
+import { Permit, PermitConnectionError, PermitPDPStatusError } from '#src/index';
+import { type CheckConfig } from '#src/utils/context';
+import { assertPdpRequest, startPdp, TEST_TOKEN } from '#src/tests/helpers/pdp-test-server';
+import { rejectionOf } from '#src/tests/helpers/rejection';
 
 const user = {
   key: 'user-1',
@@ -22,7 +22,7 @@ const operations: {
   path: string;
   body: unknown;
   denied: unknown;
-  sdk?: string;
+  sdk?: string | undefined;
   perCallErrors: boolean;
   malformedBodies: unknown[];
   call: (permit: Permit, config?: CheckConfig) => Promise<unknown>;

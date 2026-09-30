@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,31 +11,26 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { LocationInner } from './location-inner';
+import { type LocationInner } from './location-inner';
 
 /**
  *
- * @export
  * @interface ValidationError
  */
 export interface ValidationError {
   /**
    *
    * @type {Array<LocationInner>}
-   * @memberof ValidationError
    */
   loc: Array<LocationInner>;
   /**
    *
    * @type {string}
-   * @memberof ValidationError
    */
   msg: string;
   /**
    *
    * @type {string}
-   * @memberof ValidationError
    */
   type: string;
 }

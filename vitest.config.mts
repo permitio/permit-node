@@ -1,7 +1,11 @@
-import { defineConfig, TestProjectInlineConfiguration, TestUserConfig } from 'vitest/config';
+import { fileURLToPath } from 'node:url';
 
-// Explicit types give these objects excess-property checks: TypeScript 4.9 cannot resolve the
-// Vite types behind defineConfig, so its argument is not checked on its own.
+import {
+  defineConfig,
+  type TestProjectInlineConfiguration,
+  type TestUserConfig,
+} from 'vitest/config';
+
 type ProjectOptions = NonNullable<TestProjectInlineConfiguration['test']>;
 
 // The integration and e2e suites share one Permit environment. A project with `isolate: true`,
@@ -22,8 +26,14 @@ const serialBackend: ProjectOptions = {
 };
 
 const projects: TestProjectInlineConfiguration[] = [
-  { test: { name: 'codegen', include: ['scripts/check-codegen.spec.mjs'] } },
-  { test: { name: 'unit', globals: true, include: ['src/tests/unit/**/*.spec.ts'] } },
+  { test: { name: 'codegen', include: ['scripts/check-codegen.spec.mjs', 'scripts/*.test.mjs'] } },
+  {
+    test: {
+      name: 'unit',
+      globals: true,
+      include: ['src/tests/unit/**/*.spec.ts', 'src/**/*.test.ts'],
+    },
+  },
   {
     test: {
       name: 'module-imports',
@@ -39,7 +49,15 @@ const projects: TestProjectInlineConfiguration[] = [
 
 // Inline projects don't inherit root test options, so only run-wide settings belong here.
 const test: TestUserConfig = {
-  projects,
+  projects: projects.map((project) => ({
+    ...project,
+    resolve: {
+      alias: {
+        '#src': fileURLToPath(new URL('./src', import.meta.url)),
+        '#scripts': fileURLToPath(new URL('./scripts', import.meta.url)),
+      },
+    },
+  })),
   coverage: {
     provider: 'v8',
     include: ['src/utils/retry.ts', 'src/utils/retry-interceptor.ts'],

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,12 +11,10 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { JwksObj } from './jwks-obj';
+import { type JwksObj } from './jwks-obj';
 
 /**
  * @type Jwks
  * jwks for element frontend only login
- * @export
  */
 export type Jwks = JwksObj;

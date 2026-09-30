@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,15 +11,11 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { EnvironmentCopyTarget } from './environment-copy-target';
+import { type EnvironmentCopyTarget } from './environment-copy-target';
 // May contain unused imports in some cases
-// @ts-ignore
-import { New } from './new';
 
 /**
  * @type TargetEnv
  * If copying a new environment, the environment configuration. If copying to an existing environment, the environment identifier
- * @export
  */
 export type TargetEnv = EnvironmentCopyTarget;

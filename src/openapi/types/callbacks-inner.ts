@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,7 +12,6 @@
 
 /**
  *
- * @export
  * @interface CallbacksInner
  */
 export interface CallbacksInner {}

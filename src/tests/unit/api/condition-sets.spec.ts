@@ -1,7 +1,7 @@
-import { PermitApiError } from '../../../api/base';
-import { ConditionSetCreate, ConditionSetUpdate } from '../../../api/condition-sets';
-import { Permit } from '../../../index';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import { PermitApiError } from '#src/api/base';
+import { type ConditionSetCreate, type ConditionSetUpdate } from '#src/api/condition-sets';
+import { Permit } from '#src/index';
+import { createMockPermit, type MockTransport } from '#src/tests/helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // condition-sets URL is scoped under `/v2/schema/{proj}/{env}/condition_sets`.

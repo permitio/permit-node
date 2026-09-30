@@ -4,11 +4,11 @@ import {
   assertLogs,
   buildLoggerChild,
   captureLogs,
-  LoggerChild,
-  LogMode,
-  PdpOperation,
-} from '../helpers/logger-test-process';
-import { assertPdpRequest, startPdp } from '../helpers/pdp-test-server';
+  type LoggerChild,
+  type LogMode,
+  type PdpOperation,
+} from '#src/tests/helpers/logger-test-process';
+import { assertPdpRequest, startPdp } from '#src/tests/helpers/pdp-test-server';
 
 interface FailingPdp {
   url: string;

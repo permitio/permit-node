@@ -1,8 +1,8 @@
 import pino from 'pino';
 
-import { ConfigFactory } from '../../../config';
-import { Enforcer } from '../../../enforcement/enforcer';
-import { assertPdpRequest, startPdp, TEST_TOKEN } from '../../helpers/pdp-test-server';
+import { ConfigFactory } from '#src/config';
+import { Enforcer } from '#src/enforcement/enforcer';
+import { assertPdpRequest, startPdp, TEST_TOKEN } from '#src/tests/helpers/pdp-test-server';
 
 describe('bulkCheck context (unit)', () => {
   it('PER-16492: bulk context uses check over method over global', async () => {

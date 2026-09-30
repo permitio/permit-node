@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,62 +12,52 @@
 
 /**
  *
- * @export
  * @interface MemberInfo
  */
 export interface MemberInfo {
   /**
    *
    * @type {string}
-   * @memberof MemberInfo
    */
   member_id: string;
   /**
    *
    * @type {string}
-   * @memberof MemberInfo
    */
   login_expires: string;
   /**
    *
    * @type {string}
-   * @memberof MemberInfo
    */
   email: string;
   /**
    *
    * @type {string}
-   * @memberof MemberInfo
    */
   name?: string;
   /**
    *
    * @type {string}
-   * @memberof MemberInfo
    */
   given_name?: string;
   /**
    *
    * @type {string}
-   * @memberof MemberInfo
    */
   family_name?: string;
   /**
    *
    * @type {boolean}
-   * @memberof MemberInfo
    */
   is_superuser: boolean;
   /**
    *
    * @type {boolean}
-   * @memberof MemberInfo
    */
   is_onboarding: boolean;
   /**
    *
    * @type {object}
-   * @memberof MemberInfo
    */
   settings: object;
 }

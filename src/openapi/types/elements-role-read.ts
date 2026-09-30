@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,94 +11,78 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
 import { ElementsPermissionLevel } from './elements-permission-level';
 // May contain unused imports in some cases
-// @ts-ignore
-import { GrantedTo } from './granted-to';
+import { type GrantedTo } from './granted-to';
 
 /**
  *
- * @export
  * @interface ElementsRoleRead
  */
 export interface ElementsRoleRead {
   /**
    * The name of the role
    * @type {string}
-   * @memberof ElementsRoleRead
    */
   name: string;
   /**
    * optional description string explaining what this role represents, or what permissions are granted to it.
    * @type {string}
-   * @memberof ElementsRoleRead
    */
   description?: string;
   /**
    * list of action keys that define what actions this resource role is permitted to do
    * @type {Array<string>}
-   * @memberof ElementsRoleRead
    */
   permissions?: Array<string>;
   /**
    * optional dictionary of key-value pairs that can be used to store arbitrary metadata about this role. This metadata can be used to filter role using query parameters with attr_ prefix, currently supports only \'equals\' operator
    * @type {object}
-   * @memberof ElementsRoleRead
    */
   attributes?: object;
   /**
    *
    * @type {GrantedTo}
-   * @memberof ElementsRoleRead
    */
   granted_to?: GrantedTo;
   /**
    * A URL-friendly name of the role (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the role.
    * @type {string}
-   * @memberof ElementsRoleRead
    */
   key: string;
   /**
    * Unique id of the role
    * @type {string}
-   * @memberof ElementsRoleRead
    */
   id: string;
   /**
    * Unique id of the organization that the role belongs to.
    * @type {string}
-   * @memberof ElementsRoleRead
    */
   organization_id: string;
   /**
    * Unique id of the project that the role belongs to.
    * @type {string}
-   * @memberof ElementsRoleRead
    */
   project_id: string;
   /**
    * Unique id of the environment that the role belongs to.
    * @type {string}
-   * @memberof ElementsRoleRead
    */
   environment_id: string;
   /**
    * Date and time when the role was created (ISO_8601 format).
    * @type {string}
-   * @memberof ElementsRoleRead
    */
   created_at: string;
   /**
    * Date and time when the role was last updated/modified (ISO_8601 format).
    * @type {string}
-   * @memberof ElementsRoleRead
    */
   updated_at: string;
   /**
    *
    * @type {ElementsPermissionLevel}
-   * @memberof ElementsRoleRead
    */
   permission_level: ElementsPermissionLevel;
 }

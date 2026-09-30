@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,12 +11,10 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { EnvironmentCopyScopeFilters } from './environment-copy-scope-filters';
+import { type EnvironmentCopyScopeFilters } from './environment-copy-scope-filters';
 
 /**
  * @type Roles
  * Roles to copy
- * @export
  */
 export type Roles = EnvironmentCopyScopeFilters;

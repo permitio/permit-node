@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,37 +10,26 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import globalAxios, { type AxiosInstance, type AxiosPromise, type AxiosRequestConfig } from 'axios';
+import { BASE_PATH, BaseAPI, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { DerivedRoleRuleCreate } from '../types';
-// @ts-ignore
-import { DerivedRoleRuleDelete } from '../types';
-// @ts-ignore
-import { DerivedRoleRuleRead } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings } from '../types';
+import { Configuration } from '../configuration';
+import {
+  type DerivedRoleRuleCreate,
+  type DerivedRoleRuleDelete,
+  type DerivedRoleRuleRead,
+  type PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings,
+} from '../types';
 /**
  * ImplicitGrantsApi - axios parameter creator
- * @export
  */
 export const ImplicitGrantsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -265,7 +252,6 @@ export const ImplicitGrantsApiAxiosParamCreator = function (configuration?: Conf
 
 /**
  * ImplicitGrantsApi - functional programming interface
- * @export
  */
 export const ImplicitGrantsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ImplicitGrantsApiAxiosParamCreator(configuration);
@@ -367,7 +353,6 @@ export const ImplicitGrantsApiFp = function (configuration?: Configuration) {
 
 /**
  * ImplicitGrantsApi - factory interface
- * @export
  */
 export const ImplicitGrantsApiFactory = function (
   configuration?: Configuration,
@@ -457,133 +442,114 @@ export const ImplicitGrantsApiFactory = function (
 
 /**
  * Request parameters for createImplicitGrant operation in ImplicitGrantsApi.
- * @export
  * @interface ImplicitGrantsApiCreateImplicitGrantRequest
  */
 export interface ImplicitGrantsApiCreateImplicitGrantRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ImplicitGrantsApiCreateImplicitGrant
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ImplicitGrantsApiCreateImplicitGrant
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ImplicitGrantsApiCreateImplicitGrant
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ImplicitGrantsApiCreateImplicitGrant
    */
   readonly roleId: string;
 
   /**
    *
    * @type {DerivedRoleRuleCreate}
-   * @memberof ImplicitGrantsApiCreateImplicitGrant
    */
   readonly derivedRoleRuleCreate: DerivedRoleRuleCreate;
 }
 
 /**
  * Request parameters for deleteImplicitGrant operation in ImplicitGrantsApi.
- * @export
  * @interface ImplicitGrantsApiDeleteImplicitGrantRequest
  */
 export interface ImplicitGrantsApiDeleteImplicitGrantRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ImplicitGrantsApiDeleteImplicitGrant
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ImplicitGrantsApiDeleteImplicitGrant
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ImplicitGrantsApiDeleteImplicitGrant
    */
   readonly roleId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ImplicitGrantsApiDeleteImplicitGrant
    */
   readonly resourceId: string;
 
   /**
    *
    * @type {DerivedRoleRuleDelete}
-   * @memberof ImplicitGrantsApiDeleteImplicitGrant
    */
   readonly derivedRoleRuleDelete: DerivedRoleRuleDelete;
 }
 
 /**
  * Request parameters for updateImplicitGrantsConditions operation in ImplicitGrantsApi.
- * @export
  * @interface ImplicitGrantsApiUpdateImplicitGrantsConditionsRequest
  */
 export interface ImplicitGrantsApiUpdateImplicitGrantsConditionsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ImplicitGrantsApiUpdateImplicitGrantsConditions
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ImplicitGrantsApiUpdateImplicitGrantsConditions
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ImplicitGrantsApiUpdateImplicitGrantsConditions
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
    * @type {string}
-   * @memberof ImplicitGrantsApiUpdateImplicitGrantsConditions
    */
   readonly roleId: string;
 
   /**
    *
    * @type {PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings}
-   * @memberof ImplicitGrantsApiUpdateImplicitGrantsConditions
    */
   readonly permitBackendSchemasSchemaDerivedRoleDerivedRoleSettings: PermitBackendSchemasSchemaDerivedRoleDerivedRoleSettings;
 }
 
 /**
  * ImplicitGrantsApi - object-oriented interface
- * @export
  * @class ImplicitGrantsApi
  * @extends {BaseAPI}
  */
@@ -594,7 +560,6 @@ export class ImplicitGrantsApi extends BaseAPI {
    * @param {ImplicitGrantsApiCreateImplicitGrantRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ImplicitGrantsApi
    */
   public createImplicitGrant(
     requestParameters: ImplicitGrantsApiCreateImplicitGrantRequest,
@@ -618,7 +583,6 @@ export class ImplicitGrantsApi extends BaseAPI {
    * @param {ImplicitGrantsApiDeleteImplicitGrantRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ImplicitGrantsApi
    */
   public deleteImplicitGrant(
     requestParameters: ImplicitGrantsApiDeleteImplicitGrantRequest,
@@ -642,7 +606,6 @@ export class ImplicitGrantsApi extends BaseAPI {
    * @param {ImplicitGrantsApiUpdateImplicitGrantsConditionsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ImplicitGrantsApi
    */
   public updateImplicitGrantsConditions(
     requestParameters: ImplicitGrantsApiUpdateImplicitGrantsConditionsRequest,

@@ -1,6 +1,6 @@
-import { IPermitClient } from '../../index';
-import { cleanUp, createTestClient } from '../fixtures';
-import { waitFor } from '../helpers/wait-for';
+import { type IPermitClient } from '#src/index';
+import { cleanUp, createTestClient } from '#src/tests/fixtures';
+import { waitFor } from '#src/tests/helpers/wait-for';
 
 let permit: IPermitClient;
 
@@ -46,8 +46,9 @@ it('List users with pagination over the scoped subset', async () => {
 
 it('List users searching a single full key returns one user', async () => {
   const oneKey = USER_KEYS[0];
+  assert(oneKey !== undefined);
   const users = await permit.api.users.list({ search: oneKey });
   expect(users.total_count).toBe(1);
   expect(users.data.length).toBe(1);
-  expect(users.data[0].key).toBe(oneKey);
+  expect(users.data[0]?.key).toBe(oneKey);
 });

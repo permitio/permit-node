@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,14 +12,12 @@
 
 /**
  *
- * @export
  * @interface ElementsUserRoleCreate
  */
 export interface ElementsUserRoleCreate {
   /**
    * the role that will be assigned (accepts either the role id or the role key)
    * @type {string}
-   * @memberof ElementsUserRoleCreate
    */
   role: string;
 }

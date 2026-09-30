@@ -1,8 +1,8 @@
-import { PermitApiError } from '../../../api/base';
-import { ResourceActionGroupCreate } from '../../../api/resource-action-groups';
-import { Permit } from '../../../index';
-import { ResourceActionGroupUpdate } from '../../../openapi';
-import { createMockPermit, MockTransport } from '../../helpers/mock-api';
+import { PermitApiError } from '#src/api/base';
+import { type ResourceActionGroupCreate } from '#src/api/resource-action-groups';
+import { Permit } from '#src/index';
+import { type ResourceActionGroupUpdate } from '#src/openapi/index';
+import { createMockPermit, type MockTransport } from '#src/tests/helpers/mock-api';
 
 // The mock seeds an environment-level context with these defaults, so every
 // action-group URL is nested under

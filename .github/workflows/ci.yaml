@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   # Run on every PR regardless of base branch so stacked PRs get CI too.
   pull_request:
 
@@ -55,10 +55,8 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --ignore-scripts
-      - name: Run linting
-        run: pnpm lint
-      - name: Build project
-        run: pnpm build
+      - name: Verify tooling, build and local tests
+        run: pnpm verify
 
   test:
     name: test (${{ matrix.node }})

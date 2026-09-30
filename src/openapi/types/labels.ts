@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,20 +12,17 @@
 
 /**
  *
- * @export
  * @interface Labels
  */
 export interface Labels {
   /**
    *
    * @type {string}
-   * @memberof Labels
    */
   id: string;
   /**
    *
    * @type {string}
-   * @memberof Labels
    */
   version: string;
 }

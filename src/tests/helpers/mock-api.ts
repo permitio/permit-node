@@ -1,6 +1,11 @@
-import { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import {
+  AxiosError,
+  type AxiosInstance,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
+} from 'axios';
 
-import { Permit } from '../../index';
+import { Permit } from '#src/index';
 
 /**
  * A single HTTP request captured by a {@link MockTransport} adapter.

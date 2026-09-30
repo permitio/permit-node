@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,26 +12,22 @@
 
 /**
  *
- * @export
  * @interface DerivedRoleRuleDelete
  */
 export interface DerivedRoleRuleDelete {
   /**
    * the role key that needs to exist on the related resource (from the relation)
    * @type {string}
-   * @memberof DerivedRoleRuleDelete
    */
   role: string;
   /**
    * the resource key that needs to exist on the related role (from the relation)
    * @type {string}
-   * @memberof DerivedRoleRuleDelete
    */
   on_resource: string;
   /**
    * the relation key that needs to exist between the resource and the related resource
    * @type {string}
-   * @memberof DerivedRoleRuleDelete
    */
   linked_by_relation: string;
 }

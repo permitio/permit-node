@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,32 +12,27 @@
 
 /**
  *
- * @export
  * @interface UserUpdate
  */
 export interface UserUpdate {
   /**
    * The email of the user. If synced, will be unique inside the environment.
    * @type {string}
-   * @memberof UserUpdate
    */
   email?: string;
   /**
    * First name of the user.
    * @type {string}
-   * @memberof UserUpdate
    */
   first_name?: string;
   /**
    * Last name of the user.
    * @type {string}
-   * @memberof UserUpdate
    */
   last_name?: string;
   /**
    * Arbitrary user attributes that will be used to enforce attribute-based access control policies.
    * @type {object}
-   * @memberof UserUpdate
    */
   attributes?: object;
 }

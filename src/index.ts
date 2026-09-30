@@ -1,33 +1,37 @@
 // For Default export
 import pino from 'pino';
 
-import { ApiClient, IPermitApi } from './api/api-client';
-import { ElementsClient, IPermitElementsApi } from './api/elements';
-import { ConfigFactory, IPermitConfig } from './config';
-import { Enforcer, IEnforcer } from './enforcement/enforcer';
+import { ApiClient, type IPermitApi } from '#src/api/api-client';
+import { ElementsClient, type IPermitElementsApi } from '#src/api/elements';
+import { ConfigFactory, type IPermitConfig } from '#src/config';
+import { Enforcer, type IEnforcer } from '#src/enforcement/enforcer';
 import {
-  ICheckQuery,
-  IResource,
-  IUser,
-  IUserPermissions,
-  TenantDetails,
-} from './enforcement/interfaces';
-import { LoggerFactory } from './logger';
-import { CheckConfig, Context } from './utils/context';
-import { AxiosLoggingInterceptor } from './utils/http-logger';
-import { resolveRetryConfig } from './utils/retry';
-import { AxiosRetryInterceptor } from './utils/retry-interceptor';
-import { RecursivePartial } from './utils/types';
+  type ICheckQuery,
+  type IResource,
+  type IUser,
+  type IUserPermissions,
+  type TenantDetails,
+} from '#src/enforcement/interfaces';
+import { LoggerFactory } from '#src/logger';
+import { type CheckConfig, type Context } from '#src/utils/context';
+import { AxiosLoggingInterceptor } from '#src/utils/http-logger';
+import { resolveRetryConfig } from '#src/utils/retry';
+import { AxiosRetryInterceptor } from '#src/utils/retry-interceptor';
+import { type RecursivePartial } from '#src/utils/types';
 
 // exported interfaces
-export * from './api';
-export { IPermitConfig } from './config';
-export { IUser, IAction, IResource } from './enforcement/interfaces';
-export { PermitConnectionError, PermitError, PermitPDPStatusError } from './enforcement/enforcer';
-export { Context, ContextTransform } from './utils/context';
-export { ApiContext, PermitContextError, ApiKeyLevel } from './api/context';
-export { PermitApiError } from './api/base';
-export { IRetryConfig, RetryConditionFn, RETRYABLE_STATUS_CODES } from './utils/retry';
+export * from '#src/api/index';
+export { type IPermitConfig } from '#src/config';
+export { type IUser, type IAction, type IResource } from '#src/enforcement/interfaces';
+export {
+  PermitConnectionError,
+  PermitError,
+  PermitPDPStatusError,
+} from '#src/enforcement/enforcer';
+export { type Context, type ContextTransform } from '#src/utils/context';
+export { ApiContext, PermitContextError, ApiKeyLevel } from '#src/api/context';
+export { PermitApiError } from '#src/api/base';
+export { type IRetryConfig, type RetryConditionFn, RETRYABLE_STATUS_CODES } from '#src/utils/retry';
 
 export interface IPermitClient extends IEnforcer {
   /**

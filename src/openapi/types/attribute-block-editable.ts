@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,25 +11,21 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
 import { AttributeType } from './attribute-type';
 
 /**
  *
- * @export
  * @interface AttributeBlockEditable
  */
 export interface AttributeBlockEditable {
   /**
    * The type of the attribute, we currently support: `bool`, `number` (ints, floats), `time` (a timestamp), `string`, and `json`.
    * @type {AttributeType}
-   * @memberof AttributeBlockEditable
    */
   type: AttributeType;
   /**
    * optional description string explaining what data this attribute will store
    * @type {string}
-   * @memberof AttributeBlockEditable
    */
   description?: string;
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,25 +11,21 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
 import { AttributeType } from './attribute-type';
 
 /**
  *
- * @export
  * @interface ResourceAttributes
  */
 export interface ResourceAttributes {
   /**
    *
    * @type {AttributeType}
-   * @memberof ResourceAttributes
    */
   type: AttributeType;
   /**
    *
    * @type {string}
-   * @memberof ResourceAttributes
    */
   key: string;
 }

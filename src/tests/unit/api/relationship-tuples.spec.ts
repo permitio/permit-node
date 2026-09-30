@@ -1,7 +1,10 @@
-import { PermitApiError } from '../../../api/base';
-import { RelationshipTupleCreate, RelationshipTupleDelete } from '../../../api/relationship-tuples';
-import { Permit } from '../../../index';
-import { createMockPermit, MOCK_PDP_ORIGIN, MockTransport } from '../../helpers/mock-api';
+import { PermitApiError } from '#src/api/base';
+import {
+  type RelationshipTupleCreate,
+  type RelationshipTupleDelete,
+} from '#src/api/relationship-tuples';
+import { Permit } from '#src/index';
+import { createMockPermit, MOCK_PDP_ORIGIN, type MockTransport } from '#src/tests/helpers/mock-api';
 
 // Facts modules dispatch on the REST transport; the env-scoped default context
 // places every tuple URL under `/v2/facts/{proj}/{env}/relationship_tuples`.

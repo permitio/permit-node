@@ -1,18 +1,22 @@
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 import {
   ResourceInstancesApi as AutogenResourceInstancesApi,
-  ResourceInstanceCreate,
-  ResourceInstanceRead,
-  ResourceInstanceUpdate,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+  type ResourceInstanceCreate,
+  type ResourceInstanceRead,
+  type ResourceInstanceUpdate,
+} from '#src/openapi/index';
+import { BASE_PATH } from '#src/openapi/base';
 
-import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BaseFactsPermitAPI, type IPagination, type IWaitForSync } from '#src/api/base';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
-export { ResourceInstanceCreate, ResourceInstanceRead, ResourceInstanceUpdate } from '../openapi';
+export {
+  type ResourceInstanceCreate,
+  type ResourceInstanceRead,
+  type ResourceInstanceUpdate,
+} from '#src/openapi/index';
 
 export interface IListResourceInstanceUsers extends IPagination {
   instanceKey: string;

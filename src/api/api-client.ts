@@ -1,25 +1,28 @@
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 
-import { ConditionSetRulesApi, IConditionSetRulesApi } from './condition-set-rules';
-import { ConditionSetsApi, IConditionSetsApi } from './condition-sets';
-import { ApiContextLevel, ApiKeyLevel } from './context';
-import { DeprecatedApiClient, IDeprecatedPermitApi } from './deprecated';
-import { EnvironmentsApi, IEnvironmentsApi } from './environments';
-import { IProjectsApi, ProjectsApi } from './projects';
-import { IRelationshipTuplesApi, RelationshipTuplesApi } from './relationship-tuples';
-import { IResourceActionGroupsApi, ResourceActionGroupsApi } from './resource-action-groups';
-import { IResourceActionsApi, ResourceActionsApi } from './resource-actions';
-import { IResourceAttributesApi, ResourceAttributesApi } from './resource-attributes';
-import { IResourceInstancesApi, ResourceInstancesApi } from './resource-instances';
-import { IResourceRelationsApi, ResourceRelationsApi } from './resource-relations';
-import { IResourceRolesApi, ResourceRolesApi } from './resource-roles';
-import { IResourcesApi, ResourcesApi } from './resources';
-import { IRoleAssignmentsApi, RoleAssignmentsApi } from './role-assignments';
-import { IRolesApi, RolesApi } from './roles';
-import { ITenantsApi, TenantsApi } from './tenants';
-import { IUsersApi, UsersApi } from './users';
+import { ConditionSetRulesApi, type IConditionSetRulesApi } from '#src/api/condition-set-rules';
+import { ConditionSetsApi, type IConditionSetsApi } from '#src/api/condition-sets';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
+import { DeprecatedApiClient, type IDeprecatedPermitApi } from '#src/api/deprecated';
+import { EnvironmentsApi, type IEnvironmentsApi } from '#src/api/environments';
+import { type IProjectsApi, ProjectsApi } from '#src/api/projects';
+import { type IRelationshipTuplesApi, RelationshipTuplesApi } from '#src/api/relationship-tuples';
+import {
+  type IResourceActionGroupsApi,
+  ResourceActionGroupsApi,
+} from '#src/api/resource-action-groups';
+import { type IResourceActionsApi, ResourceActionsApi } from '#src/api/resource-actions';
+import { type IResourceAttributesApi, ResourceAttributesApi } from '#src/api/resource-attributes';
+import { type IResourceInstancesApi, ResourceInstancesApi } from '#src/api/resource-instances';
+import { type IResourceRelationsApi, ResourceRelationsApi } from '#src/api/resource-relations';
+import { type IResourceRolesApi, ResourceRolesApi } from '#src/api/resource-roles';
+import { type IResourcesApi, ResourcesApi } from '#src/api/resources';
+import { type IRoleAssignmentsApi, RoleAssignmentsApi } from '#src/api/role-assignments';
+import { type IRolesApi, RolesApi } from '#src/api/roles';
+import { type ITenantsApi, TenantsApi } from '#src/api/tenants';
+import { type IUsersApi, UsersApi } from '#src/api/users';
 
 export interface IPermitApi extends IDeprecatedPermitApi {
   /**
