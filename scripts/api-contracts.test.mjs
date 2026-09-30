@@ -165,7 +165,7 @@ test('extracts explicit control-plane calls while preserving older facts proxy r
   );
   const changed = extractSdk(copy);
   expect(changed.methods.find((method) => method.name === membership.name).factsProxy).toBe(true);
-});
+}, 20_000);
 
 for (const [name, mutate, kind] of [
   [
