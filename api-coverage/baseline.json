@@ -2,7 +2,7 @@
   "scope": "Reviewed Node AST evidence, not a shared target",
   "sdk": {
     "authoredClassShapes": {
-      "src/api/api-client.ts:ApiClient": "53897a9a5f2ca39aff3acb7cb539c506283804ac450925b69e6463153d13cc60",
+      "src/api/api-client.ts:ApiClient": "b9e9bd5d5224446967ec251a3e20bf3606335229afdc09950a2b88a474cac882",
       "src/api/base.ts:BaseFactsPermitAPI": "d54abe08baf1c3cf60b7c2dcc6de5daa886d258067988490df118b6f042e7c40",
       "src/api/base.ts:BasePermitApi": "c226bd3d4f364e0484706683e1073a21ac6fa201749ffa2903dae4ed1d6d0239",
       "src/api/base.ts:PermitApiError": "6aa8dbec715101edd3fe8b7835cc023149bf80f041964aa6f18783d1daa47f9a",
@@ -14,6 +14,7 @@
       "src/api/deprecated.ts:DeprecatedApiClient": "136242f5dc531552b76706db32653e95a62f90b107a1a10a8a3bc1cb1fdd058a",
       "src/api/elements.ts:ElementsClient": "28b2c12fed9a0c22c3f340213dc0f5de0c750827e99eafff67ee7850a622c822",
       "src/api/environments.ts:EnvironmentsApi": "e9cbc89b391cf15cb41034d3d6de045aae1672aa1d13a20e405afc9e9f515cae",
+      "src/api/groups.ts:GroupsApi": "d971dc683695b0d5c5eea026e26f8aee661397231b5aab6d37eb1fef865ae2cc",
       "src/api/projects.ts:ProjectsApi": "6160a88ca2873cb03fdbbf74aa80af386412ecf951a9d55ecc208f391c0f38e1",
       "src/api/relationship-tuples.ts:RelationshipTuplesApi": "6f113243e6d2a379b43734887c3a82e8f63d31382427d8f8ecf65bef8d885826",
       "src/api/resource-action-groups.ts:ResourceActionGroupsApi": "8cb11d18e3a92d70b411e8c32f705494dea95fcef42b4f3c45c7eb3c7a4449bc",
@@ -47,6 +48,7 @@
           "ensureAccessLevel(requiredAccessLevel: ApiKeyLevel): Promise<void>;",
           "ensureContext(requiredContext: ApiContextLevel): Promise<void>;",
           "environments: IEnvironmentsApi;",
+          "groups: IGroupsApi;",
           "projects: IProjectsApi;",
           "relationshipTuples: IRelationshipTuplesApi;",
           "resourceActions: IResourceActionsApi;",
@@ -253,6 +255,25 @@
         "extends": [" extends IPagination"],
         "kind": "interface",
         "members": ["projectKey: string;"]
+      },
+      "src/api/groups.ts:IGroupsApi": {
+        "extends": [],
+        "kind": "interface",
+        "members": [
+          "assignRole(groupKeyOrId: string, assignment: GroupAddRole): Promise<GroupRead>;",
+          "assignUser(groupKeyOrId: string, userKeyOrId: string, assignment: GroupAssignUser): Promise<GroupRead>;",
+          "create(group: GroupCreate): Promise<GroupRead>;",
+          "delete(groupKeyOrId: string): Promise<void>;",
+          "get(groupKeyOrId: string): Promise<GroupReadSchema>;",
+          "list(params?: IListGroups): Promise<PaginatedResultGroupReadSchema>;",
+          "removeRole(groupKeyOrId: string, assignment: GroupAddRole): Promise<void>;",
+          "removeUser(groupKeyOrId: string, userKeyOrId: string, assignment: GroupAssignUser): Promise<void>;"
+        ]
+      },
+      "src/api/groups.ts:IListGroups": {
+        "extends": [" extends IPagination"],
+        "kind": "interface",
+        "members": ["resource?: string;", "search?: string;", "tenant?: string;"]
       },
       "src/api/projects.ts:IProjectsApi": {
         "extends": [],
@@ -20866,6 +20887,14 @@
       "src/api/environments.ts:EnvironmentsApi.getStats": "229276989397998a57aa326fe39b77419955a1e219ec8d4c3c854847e4825f19",
       "src/api/environments.ts:EnvironmentsApi.list": "e4c2966344c73da509933e552f34e80d56036dba85339a6382338911c9e63d44",
       "src/api/environments.ts:EnvironmentsApi.update": "ca53dce1644f9d25819c009a4d195991bdde1b864fe934cdcb5e2125240853c5",
+      "src/api/groups.ts:GroupsApi.assignRole": "4699e6a2e173a84d023d6d6b35fd5a4fc79c2099314d2e1c2296813c87713b03",
+      "src/api/groups.ts:GroupsApi.assignUser": "0ae2d94d4975c4a617c24626ca6e686c11bfd0d8b90982626dc59b44ab459588",
+      "src/api/groups.ts:GroupsApi.create": "53e869985f197804f878ad0fc59a4a3d08c39b49e0080fc6f35e33c5c246083e",
+      "src/api/groups.ts:GroupsApi.delete": "157cdca04570dc57018dc39b857b4cbe3d6934539954cc0a63eb8d67b026e5e5",
+      "src/api/groups.ts:GroupsApi.get": "560af1158e7de6f47b9614dd95bd90008f2409fd98fe6d1093bbb87cafebcf1d",
+      "src/api/groups.ts:GroupsApi.list": "90edb2587388c936b70c4f08cfe756d0e63dc130ff658bea7f0247d984fecab3",
+      "src/api/groups.ts:GroupsApi.removeRole": "967397c1d2dbc236d242b3652723294a6b46e8b399dfb25f9ea6e47bca8c90c5",
+      "src/api/groups.ts:GroupsApi.removeUser": "2789785bec9e7639814f6cda00c87c6c30d79494927d71a5f9aeafa98827077f",
       "src/api/projects.ts:ProjectsApi.create": "e12da966e3bcfbc3bcc5f85eba44a431fe576530be64bb794df647a343f9f3d8",
       "src/api/projects.ts:ProjectsApi.delete": "b26013dff0f6e535ed825f7ecddf6014349ca6fad09adba56c44c4054fde4848",
       "src/api/projects.ts:ProjectsApi.get": "643d3d9e8924bc89d6fa54aaf55f91b45c4c2cd0e18c772fcb01d8e810e551d9",
@@ -21011,7 +21040,7 @@
       "src/utils/diagnostics.ts:.redactPrivateValues": "2845c5c8ab8d26308fec121a6d98fca804194dabbac636eb4dd41a1cd2eef259"
     },
     "initializationShapes": {
-      "src/api/api-client.ts:ApiClient.constructor": "7ff2371d6f32fe1ffd5232aa9213842e98ab5c7abe3fe9e040a3805a85bcb9ee",
+      "src/api/api-client.ts:ApiClient.constructor": "feb72bdd0a00c0573e80f3982dc993049bfc02f6abee99bdba06e761ac72abcd",
       "src/api/base.ts:BaseFactsPermitAPI.constructor": "6e36d36e49b99ff53949668d767e5dc630e0f849e693aa48b8b6d75ecdaacad1",
       "src/api/base.ts:BasePermitApi.constructor": "7c4a19909cf67f1c91b5086d603edae3a11f9f8599babb2f7f0418e9c1473353",
       "src/api/base.ts:PermitApiError.constructor": "2ca0da89f1fe278121953aab7b5adf980a90905b1dfde38c413a0191b56f9436",
@@ -21026,6 +21055,7 @@
       "src/api/deprecated.ts:DeprecatedApiClient.constructor": "3696e58aaffdad1378f526b0d1ded906dc7f6449b6e2f4ef5518d4d285463bbd",
       "src/api/elements.ts:ElementsClient.constructor": "cd8ddb0a63855e3a5629ce08ef6af0dc5b2ebab73475bbdb02bd268040d3e91e",
       "src/api/environments.ts:EnvironmentsApi.constructor": "146ac7603e7e33db85e1410da47a387f1cf27b6c6f6878b04d7d8cc4e861bf9f",
+      "src/api/groups.ts:GroupsApi.constructor": "e09bac9a6d0ce4d7d8ee8180ee5346ecab40197aa50a2d78d8852b8ca8344d95",
       "src/api/projects.ts:ProjectsApi.constructor": "b45a7ef29f86ff5ae56ed928934ce538ac06a36ac6b32c689ec1a66b3faa2156",
       "src/api/relationship-tuples.ts:RelationshipTuplesApi.constructor": "1e1626dedea31a96e9532bbdc52ed92c2101e4fc228a46265c9d8bdc6fd1e3c4",
       "src/api/resource-action-groups.ts:ResourceActionGroupsApi.constructor": "46e8644f311c6f9951ffe60cf6336ea948fc6bdd4b0773befa0a46045cb1b3b2",
@@ -22597,6 +22627,298 @@
             }
           ],
           "returns": "Promise<UserRead>"
+        }
+      },
+      "permit.api.groups.assignRole": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(groupKeyOrId: string, assignment: GroupAddRole): Promise<GroupRead>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "GroupsApi.assignRoleToGroup",
+            "method": "POST",
+            "path": "/v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/roles",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "groupKeyOrId",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "assignment",
+              "optional": false,
+              "type": "GroupAddRole"
+            }
+          ],
+          "returns": "Promise<GroupRead>"
+        }
+      },
+      "permit.api.groups.assignUser": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(groupKeyOrId: string, userKeyOrId: string, assignment: GroupAssignUser): Promise<GroupRead>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "GroupsApi.assignUserToGroup",
+            "method": "PUT",
+            "path": "/v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/users/{user_id}",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "groupKeyOrId",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "userKeyOrId",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "assignment",
+              "optional": false,
+              "type": "GroupAssignUser"
+            }
+          ],
+          "returns": "Promise<GroupRead>"
+        }
+      },
+      "permit.api.groups.create": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(group: GroupCreate): Promise<GroupRead>"],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "GroupsApi.createGroup",
+            "method": "POST",
+            "path": "/v2/schema/{proj_id}/{env_id}/groups",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "group",
+              "optional": false,
+              "type": "GroupCreate"
+            }
+          ],
+          "returns": "Promise<GroupRead>"
+        }
+      },
+      "permit.api.groups.delete": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(groupKeyOrId: string): Promise<void>"],
+        "routes": [
+          {
+            "generatedMethod": "GroupsApi.deleteGroup",
+            "method": "DELETE",
+            "path": "/v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}",
+            "supporting": false
+          },
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "groupKeyOrId",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "Promise<void>"
+        }
+      },
+      "permit.api.groups.get": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(groupKeyOrId: string): Promise<GroupReadSchema>"],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "GroupsApi.getDirectGroup",
+            "method": "GET",
+            "path": "/v2/schema/{proj_id}/{env_id}/groups/direct/{group_instance_key}",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "groupKeyOrId",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "Promise<GroupReadSchema>"
+        }
+      },
+      "permit.api.groups.list": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(params?: IListGroups | undefined): Promise<PaginatedResultGroupReadSchema>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "GroupsApi.listDirectGroup",
+            "method": "GET",
+            "path": "/v2/schema/{proj_id}/{env_id}/groups/direct",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": "{}",
+              "name": "params",
+              "optional": true,
+              "type": "IListGroups"
+            }
+          ],
+          "returns": "Promise<PaginatedResultGroupReadSchema>"
+        }
+      },
+      "permit.api.groups.removeRole": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(groupKeyOrId: string, assignment: GroupAddRole): Promise<void>"],
+        "routes": [
+          {
+            "generatedMethod": "GroupsApi.removeRoleFromGroup",
+            "method": "DELETE",
+            "path": "/v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/roles",
+            "supporting": false
+          },
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "groupKeyOrId",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "assignment",
+              "optional": false,
+              "type": "GroupAddRole"
+            }
+          ],
+          "returns": "Promise<void>"
+        }
+      },
+      "permit.api.groups.removeUser": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(groupKeyOrId: string, userKeyOrId: string, assignment: GroupAssignUser): Promise<void>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "GroupsApi.removeUserFromGroup",
+            "method": "DELETE",
+            "path": "/v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/users/{user_id}",
+            "supporting": false
+          },
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "groupKeyOrId",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "userKeyOrId",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "assignment",
+              "optional": false,
+              "type": "GroupAssignUser"
+            }
+          ],
+          "returns": "Promise<void>"
         }
       },
       "permit.api.listConditionSets": {

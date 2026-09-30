@@ -7,6 +7,7 @@ import { ConditionSetsApi, type IConditionSetsApi } from '#src/api/condition-set
 import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 import { DeprecatedApiClient, type IDeprecatedPermitApi } from '#src/api/deprecated';
 import { EnvironmentsApi, type IEnvironmentsApi } from '#src/api/environments';
+import { GroupsApi, type IGroupsApi } from '#src/api/groups';
 import { type IProjectsApi, ProjectsApi } from '#src/api/projects';
 import { type IRelationshipTuplesApi, RelationshipTuplesApi } from '#src/api/relationship-tuples';
 import {
@@ -25,6 +26,9 @@ import { type ITenantsApi, TenantsApi } from '#src/api/tenants';
 import { type IUsersApi, UsersApi } from '#src/api/users';
 
 export interface IPermitApi extends IDeprecatedPermitApi {
+  /** API for managing groups, user membership, and resource role grants. */
+  groups: IGroupsApi;
+
   /**
    * API for managing condition set rules.
    * @see {@link https://api.permit.io/v2/redoc#tag/Condition-Set-Rules}
@@ -138,6 +142,9 @@ export interface IPermitApi extends IDeprecatedPermitApi {
 }
 
 export class ApiClient extends DeprecatedApiClient implements IPermitApi {
+  /** API for managing groups, user membership, and resource role grants. */
+  public readonly groups: IGroupsApi;
+
   /**
    * API for managing condition set rules.
    * @see {@link https://api.permit.io/v2/redoc#tag/Condition-Set-Rules}
@@ -242,6 +249,7 @@ export class ApiClient extends DeprecatedApiClient implements IPermitApi {
    */
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
+    this.groups = new GroupsApi(config, logger);
     this.conditionSetRules = new ConditionSetRulesApi(config, logger);
     this.conditionSets = new ConditionSetsApi(config, logger);
     this.projects = new ProjectsApi(config, logger);

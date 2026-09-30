@@ -227,9 +227,9 @@
       "lifecycle": "GA"
     },
     "control-plane DELETE /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/assign_group": {
-      "action": "add",
+      "action": "defer",
       "owner": "PER-16566",
-      "reason": "Approved Groups work includes direct reads and group/user/role membership; contract and key/id issues must be verified.",
+      "reason": "Group-to-group membership is P2 for a later 3.x release in PER-16337 and is explicitly outside the eight GA core operations approved for PER-16566.",
       "source": "https://linear.app/permit/issue/PER-16566",
       "lifecycle": "GA"
     },
@@ -1816,9 +1816,9 @@
       "lifecycle": "GA"
     },
     "control-plane PUT /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/assign_group": {
-      "action": "add",
+      "action": "defer",
       "owner": "PER-16566",
-      "reason": "Approved Groups work includes direct reads and group/user/role membership; contract and key/id issues must be verified.",
+      "reason": "Group-to-group membership is P2 for a later 3.x release in PER-16337 and is explicitly outside the eight GA core operations approved for PER-16566.",
       "source": "https://linear.app/permit/issue/PER-16566",
       "lifecycle": "GA"
     },

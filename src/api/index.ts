@@ -3,6 +3,7 @@ export * from '#src/api/condition-set-rules';
 export * from '#src/api/condition-sets';
 export * from '#src/api/deprecated';
 export * from '#src/api/environments';
+export * from '#src/api/groups';
 export * from '#src/api/projects';
 export * from '#src/api/resource-action-groups';
 export * from '#src/api/resource-actions';

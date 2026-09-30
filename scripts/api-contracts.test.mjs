@@ -57,7 +57,7 @@ test('accounts for complete source denominators while leaving parity and backend
   expect(report.sharedTarget.status).toBe('UNAVAILABLE');
   expect(report.realBackend.status).toBe('NOT_MEASURED');
   expect(report.operations).toHaveLength(307);
-  expect(report.counts.publicHttpMethods).toBe(159);
+  expect(report.counts.publicHttpMethods).toBe(167);
   expect(report.operations.filter((op) => op.source === 'control-plane')).toHaveLength(263);
   expect(report.operations.filter((op) => op.source === 'pdp-container')).toHaveLength(34);
   expect(report.operations.filter((op) => op.source === 'pdp-cloud')).toHaveLength(10);
@@ -73,6 +73,38 @@ test('accounts for complete source denominators while leaving parity and backend
       .routes.map((r) => r.target)
       .sort(),
   ).toEqual(['opa', 'pdp']);
+});
+
+test('exposes eight GA core Groups operations while preserving deferred and deprecated rows', () => {
+  const report = coverageReport(evidence());
+  const groups = report.operations.filter(
+    (operation) => operation.source === 'control-plane' && operation.tags.includes('Groups'),
+  );
+  expect(groups).toHaveLength(16);
+  const exposed = groups.filter((operation) => operation.coverage === 'exposed');
+  expect(exposed).toHaveLength(8);
+  expect(exposed.every((operation) => operation.lifecycle === 'GA')).toBe(true);
+  expect(
+    exposed.flatMap((operation) => operation.methods.map((method) => method.name)).sort(),
+  ).toEqual([
+    'permit.api.groups.assignRole',
+    'permit.api.groups.assignUser',
+    'permit.api.groups.create',
+    'permit.api.groups.delete',
+    'permit.api.groups.get',
+    'permit.api.groups.list',
+    'permit.api.groups.removeRole',
+    'permit.api.groups.removeUser',
+  ]);
+  const groupMembership = groups.filter((operation) => operation.path.endsWith('/assign_group'));
+  expect(groupMembership).toHaveLength(2);
+  for (const operation of groupMembership) {
+    expect(operation.decision.action).toBe('defer');
+    expect(operation.methods).toEqual([]);
+  }
+  expect(groups.filter((operation) => operation.lifecycle === 'EAP')).toHaveLength(4);
+  expect(groups.filter((operation) => operation.lifecycle === 'deprecated')).toHaveLength(2);
+  expect(groups.filter((operation) => operation.coverage !== 'exposed')).toHaveLength(8);
 });
 
 for (const [name, mutate, kind] of [

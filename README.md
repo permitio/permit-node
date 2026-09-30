@@ -237,6 +237,49 @@ With `throwOnError: false`, failures, including an invalid resource string, retu
 `checkAllTenants`. The first three methods also accept per-call error-policy overrides;
 `checkAllTenants` uses the SDK setting.
 
+## Groups
+
+`permit.api.groups` supports the eight GA core operations: `create`, `delete`, `list`, `get`,
+`assignUser`, `removeUser`, `assignRole`, and `removeRole`. `list` and `get` use the direct Groups
+endpoints. Pass a qualified resource:instance key (such as `team:support`) or an internal group
+instance ID to identify a group.
+
+Create and assignment calls return `GroupRead`, which contains the group and membership fields.
+Direct reads return `GroupReadSchema`, which also contains `id`. `list` always returns the full
+`PaginatedResultGroupReadSchema` envelope: `data`, `total_count`, and optional `page_count`.
+It accepts `tenant`, `resource`, `search`, `page`, and `perPage`; pagination defaults to page 1
+with 100 rows per page.
+
+```typescript
+// The group resource type, user, tenant, target resource instance, and role already exist.
+const groupKey = 'team:support';
+await permit.api.groups.create({
+  group_resource_type_key: 'team',
+  group_instance_key: 'support',
+  group_tenant: 'east',
+});
+await permit.api.groups.assignUser(groupKey, 'alice', { tenant: 'east' });
+
+const grant = {
+  role: 'reader',
+  resource: 'document',
+  resource_instance: 'quarterly-report',
+  tenant: 'east',
+};
+await permit.api.groups.assignRole(groupKey, grant);
+const page = await permit.api.groups.list({ tenant: 'east', page: 1, perPage: 20 });
+console.log(page.data, page.total_count);
+
+await permit.api.groups.removeRole(groupKey, grant);
+await permit.api.groups.removeUser(groupKey, 'alice', { tenant: 'east' });
+await permit.api.groups.delete(groupKey);
+```
+
+Group role grants apply through ReBAC relationships and role derivation. Members inherit the
+granted resource role; revoking the grant or removing membership removes that inheritance after
+policy and facts synchronization. Both adding and removing a user require the tenant JSON body.
+Role assignment and removal require `role`, `resource`, `resource_instance`, and `tenant`.
+
 ## Documentation
 
 [Read the documentation at Permit.io website](https://docs.permit.io/sdk/nodejs/quickstart-nodejs#add-the-sdk-to-your-js-code)
