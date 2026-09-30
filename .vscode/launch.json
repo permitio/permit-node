@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     // Debugs the *.spec.ts file open in the editor. Vitest picks the project from the file's
-    // path. The module-imports specs load build/, so run `yarn build` before debugging them.
+    // path. The module-imports specs load build/, so run `pnpm build` before debugging them.
     {
       "type": "node",
       "request": "launch",

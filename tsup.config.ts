@@ -16,5 +16,5 @@ export default defineConfig({
   sourcemap: false,
   clean: true,
   outDir: 'build',
-  target: 'node16',
+  target: 'node22',
 });

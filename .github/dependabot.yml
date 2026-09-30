@@ -13,3 +13,18 @@ updates:
       github-actions:
         patterns:
           - "*"
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      runtime-dependencies:
+        dependency-type: production
+        patterns:
+          - "*"
+      development-dependencies:
+        dependency-type: development
+        patterns:
+          - "*"

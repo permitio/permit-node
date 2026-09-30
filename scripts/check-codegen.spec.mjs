@@ -125,7 +125,7 @@ test('invokes the Node entry point without requiring a platform-specific bin shi
 
 for (const [label, file, pattern] of [
   ['fixture', 'src/tests/codegen/fixtures/openapi-3.1.0.json', /fixture.*not found/i],
-  ['wrapper', 'node_modules/@openapitools/openapi-generator-cli/main.js', /yarn install/],
+  ['wrapper', 'node_modules/@openapitools/openapi-generator-cli/main.js', /pnpm install/],
   ['pin', 'openapitools.json', /openapitools.json/],
 ]) {
   test(`reports a missing ${label} without blaming generator compatibility`, () => {
@@ -300,11 +300,11 @@ test('rejects a missing model directory after reported completion', () => {
   fails(dir, /Incomplete generation/);
 });
 
-test('reports yarn install when all node dependencies are missing', () => {
+test('reports pnpm install when all node dependencies are missing', () => {
   const dir = setup();
   rmSync(join(dir, 'node_modules'), { recursive: true });
   const result = run(dir);
   expect(result.status).toBe(1);
-  expect(result.output).toMatch(/yarn install/);
+  expect(result.output).toMatch(/pnpm install/);
   expect(result.output).not.toMatch(/ERR_MODULE_NOT_FOUND/);
 });

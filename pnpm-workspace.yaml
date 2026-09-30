@@ -1,0 +1,7 @@
+engineStrict: true
+ignoreScripts: true
+minimumReleaseAge: 1440
+pmOnFail: error
+savePrefix: ""
+# Preserve explicit peer ownership when importing the Yarn dependency graph.
+autoInstallPeers: false

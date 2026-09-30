@@ -26,14 +26,21 @@ jobs:
     env:
       # registry-url makes setup-node write an .npmrc that reads
       # ${NODE_AUTH_TOKEN}. setup-node v7 no longer exports a placeholder for it,
-      # and yarn 1 stops with "Failed to replace env in config" when the
-      # variable is undefined. Publishing gets its token from Trusted Publishing.
+      # and an empty placeholder keeps registry configuration valid during install.
+      # Publishing gets its token from Trusted Publishing.
       NODE_AUTH_TOKEN: ''
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
 
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -48,20 +55,20 @@ jobs:
       # to install from, hence the adhoc-packages exception.
       - name: Upgrade npm for Trusted Publishing
         timeout-minutes: 5
-        run: npm install -g npm@12 && npm --version # zizmor: ignore[adhoc-packages]
+        run: npm install -g --ignore-scripts npm@12 && npm --version # zizmor: ignore[adhoc-packages]
 
       # --ignore-scripts: dependency install scripts must not run in a job that
-      # can publish. yarn test builds the package.
+      # can publish. pnpm test builds the package.
       - name: Install dependencies
         timeout-minutes: 5
-        run: yarn install --frozen-lockfile --ignore-scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       # Build, then the unit and module-import tests. The integration and e2e
       # suites need a provisioned environment and PDP, and run in the CI
       # workflow's backend job.
       - name: Run tests
         timeout-minutes: 10
-        run: yarn test
+        run: pnpm test
 
       - name: Bump version at package.json
         env:

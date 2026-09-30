@@ -213,7 +213,7 @@ try {
     throw new Error('The codegen fixture must declare OpenAPI 3.1.0; do not downgrade its header.');
   }
   if (!existsSync(WRAPPER)) {
-    throw new Error(`openapi-generator-cli not found at ${WRAPPER}; run yarn install first.`);
+    throw new Error(`openapi-generator-cli not found at ${WRAPPER}; run pnpm install first.`);
   }
   const pin = readJson(join(ROOT, 'openapitools.json'))['generator-cli']?.version;
   if (typeof pin !== 'string' || !/^\d+\.\d+\.\d+$/.test(pin)) {

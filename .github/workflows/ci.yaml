@@ -40,31 +40,44 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 22
-          cache: 'yarn'
+          node-version: '22.13.0'
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Run linting
-        run: yarn lint
+        run: pnpm lint
       - name: Build project
-        run: yarn build
+        run: pnpm build
 
   test:
+    name: test (${{ matrix.node }})
     needs: lint-and-build
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        # Keep in sync with NODE_VERSIONS in the cleanup job.
-        node-version: [22, 24]
+        # Keep node labels in sync with NODE_LABELS in the cleanup job.
+        include:
+          - node: '22'
+            node-version: '22.13.0'
+          - node: '24'
+            node-version: '24.0.0'
     env:
       # Known before the env is created, so the cleanup job can delete it by
       # key even when this job is cancelled while creating it.
-      ENV_KEY: node-sdk-ci-${{ github.run_id }}-${{ github.run_attempt }}-n${{ matrix.node-version }}
+      ENV_KEY: node-sdk-ci-${{ github.run_id }}-${{ github.run_attempt }}-n${{ matrix.node }}
     steps:
       # Fail instead of reporting green on the unit and module-import tests alone.
       - name: Require backend secret on same-repo runs
@@ -150,22 +163,30 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
 
       # --ignore-scripts: this job holds the env API key, so dependency install
       # scripts and the prepare script do not run. The test scripts build.
       - name: Install dependencies
         timeout-minutes: 5
-        run: yarn install --frozen-lockfile --ignore-scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       # Builds, then runs the tests that need no backend. No API key is set.
       - name: Run unit and module-import tests
         timeout-minutes: 10
-        run: yarn test
+        run: pnpm test
 
       # ---------- Backend tests ----------
       - name: Wait for PDP to be ready
@@ -186,7 +207,7 @@ jobs:
           # is skipped, with the reason in the report, while this secret is
           # unset, because the env key above is scoped to one environment.
           PROJECT_PDP_API_KEY: ${{ secrets.PROJECT_PDP_API_KEY }}
-        run: yarn test:integration
+        run: pnpm test:integration
 
       - name: Run e2e tests
         if: env.RUN_BACKEND == 'true'
@@ -199,7 +220,7 @@ jobs:
           # published on 127.0.0.1 only, so PDP checks would hit ECONNREFUSED.
           PDP_URL: http://127.0.0.1:7766
           PERMIT_RUN_OPA_E2E: 'true'
-        run: yarn test:e2e
+        run: pnpm test:e2e
 
       # Dump PDP diagnostics whenever the backend path fails. The SDK reports
       # PDP connection errors with no HTTP response, so the PDP side is otherwise
@@ -233,8 +254,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     env:
-      # Keep in sync with the test job's node-version matrix.
-      NODE_VERSIONS: 22 24
+      # Keep in sync with the test job's node labels.
+      NODE_LABELS: 22 24
     steps:
       # A 404 means the env was never created or is already gone. Any other
       # failure is reported as a warning, since the env then needs manual removal.
@@ -244,8 +265,8 @@ jobs:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
           ENV_KEY_PREFIX: node-sdk-ci-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
-          for node_version in $NODE_VERSIONS; do
-            env_key="${ENV_KEY_PREFIX}-n${node_version}"
+          for node_label in $NODE_LABELS; do
+            env_key="${ENV_KEY_PREFIX}-n${node_label}"
             status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 --retry 3 -X DELETE \
               "https://api.permit.io/v2/projects/${PROJECT_ID}/envs/${env_key}" \
               -H "Authorization: Bearer ${PROJECT_API_KEY}") || status=000
@@ -268,11 +289,19 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+
       - name: Setup Node.js
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 22
-          cache: 'yarn'
+          node-version: '22.13.0'
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Setup Java (required by openapi-generator-cli)
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
@@ -281,10 +310,10 @@ jobs:
           java-version: '17'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --ignore-scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Test codegen guard failure paths
-        run: yarn test:codegen
+        run: pnpm test:codegen
 
       - name: Codegen type-shape guard
-        run: yarn check:codegen
+        run: pnpm check:codegen

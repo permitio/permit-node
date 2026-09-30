@@ -4,18 +4,46 @@
 
 Node.js client library for the Permit.io full-stack permissions platform.
 
+## Supported runtimes
+
+Node.js 22.13.0 or newer in the 22.x line, and Node.js 24.x are supported.
+CI tests the minimum versions, 22.13.0 and 24.0.0. The package provides both
+CommonJS (`require`) and ES module (`import`) entry points.
+
 ## Installation
 
 ```
 npm install permitio
 ```
 
+## Development
+
+Use the Node version in `.nvmrc` and pnpm 12.8.1, pinned in `package.json`.
+Install pnpm with `npm install --global --ignore-scripts pnpm@12.8.1`. Then run:
+
+```sh
+pnpm audit --audit-level=moderate
+pnpm install --frozen-lockfile
+pnpm build
+pnpm lint
+pnpm test
+pnpm test:codegen
+```
+
+Installs disable lifecycle scripts, so builds and hook setup are explicit. To enable the
+existing Git hook locally, run `pnpm exec husky install`. New dependency versions must be
+at least 24 hours old; direct dependencies are saved with exact versions.
+
+`pnpm test` runs the unit and module-import suites without a Permit backend.
+`pnpm test:codegen` tests the generator guard without Java; `pnpm check:codegen` also
+regenerates the fixture and requires Java.
+
 ## Release
 
 1. Update the version in `package.json`
-2. Execute `yarn run build`
-3. Execute `yarn docs ; git add docs/ ; git commit -m "update tsdoc"` to update the auto generated docs
-4. Execute `yarn publish --access public`
+2. Execute `pnpm run build`
+3. Execute `pnpm docs ; git add docs/ ; git commit -m "update tsdoc"` to update the auto generated docs
+4. Execute `pnpm publish --access public`
 
 ## Retry Configuration
 

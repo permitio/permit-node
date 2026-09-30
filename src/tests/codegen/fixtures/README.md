@@ -10,7 +10,7 @@ nullable type arrays, `anyOf` with `null`, nullable references and nullable arra
 The guard checks their generated property types as well as role inheritance and
 scalar canaries. The fixture must retain its `3.1.0` header.
 
-Run `yarn test:codegen` for Java-free Vitest regression tests and `yarn check:codegen`
+Run `pnpm test:codegen` for Java-free Vitest regression tests and `pnpm check:codegen`
 for generation (Java 11+ required). The guard reads the generator version from
 `openapitools.json` and the options from `generate-openapi-client` in `package.json`.
 It rejects new options it cannot reproduce. Temporary output is removed after each run.
@@ -47,6 +47,6 @@ To refresh the API snapshot intentionally:
    the capture date here.
 4. Review schema changes and any changes to the exact free-form property list in
    `scripts/check-codegen.mjs`; do not exempt new degradation just to pass the guard.
-5. Run `yarn test:codegen` and `yarn check:codegen`. Check that generator 6.2.1
+5. Run `pnpm test:codegen` and `pnpm check:codegen`. Check that generator 6.2.1
    still fails in an isolated checkout. Do not regenerate `src/openapi/` as part
    of refreshing this fixture.

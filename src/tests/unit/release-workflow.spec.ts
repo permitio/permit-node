@@ -48,8 +48,8 @@ function fixture() {
     },
   };
   writeFileSync(join(cwd, 'package.json'), JSON.stringify(pkg, null, 2) + '\n');
-  const lockfile = readFileSync(join(root, 'yarn.lock'), 'utf8');
-  writeFileSync(join(cwd, 'yarn.lock'), lockfile);
+  const lockfile = readFileSync(join(root, 'pnpm-lock.yaml'), 'utf8');
+  writeFileSync(join(cwd, 'pnpm-lock.yaml'), lockfile);
   const env = {
     ...process.env,
     NODE_PATH: join(root, 'node_modules'),
@@ -81,7 +81,7 @@ function fixture() {
     assertUnchangedState() {
       expect(existsSync(join(cwd, 'lifecycle-ran'))).toBe(false);
       expect(existsSync(join(cwd, 'package-lock.json'))).toBe(false);
-      expect(readFileSync(join(cwd, 'yarn.lock'), 'utf8')).toBe(lockfile);
+      expect(readFileSync(join(cwd, 'pnpm-lock.yaml'), 'utf8')).toBe(lockfile);
       expect(readFileSync(join(cwd, '.git/HEAD'), 'utf8')).toBe(gitHead);
       expect(readdirSync(join(cwd, '.git/refs/heads'))).toStrictEqual([]);
       expect(readdirSync(join(cwd, '.git/refs/tags'))).toStrictEqual([]);
