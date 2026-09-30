@@ -120,7 +120,11 @@ async function dispatch(
         `Sending HTTP request: ${method} ${requestUrl}`,
       );
       try {
-        const response = await options.caller.request(forward);
+        // Plain headers let a caller's other Axios module instance merge its live defaults.
+        const response = await options.caller.request({
+          ...forward,
+          headers: { ...forward.headers },
+        });
         const status = diagnosticStatus(response.status);
         options.logger.debug(
           {

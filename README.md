@@ -115,11 +115,13 @@ arbitrary caller interceptors or adapters are not interrupted by an SDK wall-clo
 
 A supplied `axiosInstance` serves REST and Elements; `opaAxiosInstance` serves OPA. The SDK keeps
 these caller instances unchanged and delegates every attempt through their live adapters,
-transforms and interceptors. Two SDK instances can share a client while retaining separate
-routes, Bearer tokens, logging and SDK retry policies. SDK requests explicitly allow their configured
-absolute URLs even when the caller default `allowAbsoluteUrls` is false, so a caller base URL cannot
-prefix or reroute an SDK destination. Direct caller requests retain that caller restriction and remain
-usable and acquire no SDK retries. Default Basic credentials cannot replace an explicit
+transforms and interceptors, including when the SDK and supplied Axios client use different
+CommonJS/ESM entry points. Caller default headers remain live on every attempt. Two SDK instances
+can share a client while retaining separate routes, Bearer tokens, logging and SDK retry policies.
+SDK requests explicitly allow their configured absolute URLs even when the caller default
+`allowAbsoluteUrls` is false, so a caller base URL cannot prefix or reroute an SDK destination.
+Direct caller requests retain that caller restriction and remain usable and acquire no SDK retries.
+Default Basic credentials cannot replace an explicit
 SDK Bearer token. Intentional caller hooks can still rewrite request configuration, including
 headers and transforms; caller-owned retry or redirect behavior remains the caller's responsibility.
 For 3.0, the SDK serializes enforcement request bodies before dispatch so legal JSON dictionary

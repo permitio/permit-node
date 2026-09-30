@@ -33,6 +33,23 @@ function owned(caller: ReturnType<typeof axios.create>, retry: IRetryConfig = po
 }
 afterEach(() => vi.restoreAllMocks());
 
+test('explicit suppressed headers override caller defaults without changing the caller', async () => {
+  const seen: InternalAxiosRequestConfig[] = [];
+  const caller = axios.create({
+    headers: { common: { 'X-Disabled': 'default', 'X-Empty': 'default' } },
+    adapter: async (config) => {
+      seen.push(config);
+      return success(config);
+    },
+  });
+  await owned(caller).get('/sdk', { headers: { 'X-Disabled': false, 'X-Empty': null } });
+  await caller.get('/direct');
+  expect(seen[0]?.headers.get('X-Disabled')).toBe(false);
+  expect(seen[0]?.headers.get('X-Empty')).toBeNull();
+  expect(seen[1]?.headers.get('X-Disabled')).toBe('default');
+  expect(seen[1]?.headers.get('X-Empty')).toBe('default');
+});
+
 test('preserves live caller defaults, transforms and intentional interceptors once per attempt', async () => {
   const events: string[] = [];
   const caller = axios.create({
