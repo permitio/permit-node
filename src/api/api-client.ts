@@ -5,7 +5,7 @@ import { type IPermitConfig } from '#src/config';
 import { ConditionSetRulesApi, type IConditionSetRulesApi } from '#src/api/condition-set-rules';
 import { ConditionSetsApi, type IConditionSetsApi } from '#src/api/condition-sets';
 import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
-import { DeprecatedApiClient, type IDeprecatedPermitApi } from '#src/api/deprecated';
+import { BasePermitApi } from '#src/api/base';
 import { EnvironmentsApi, type IEnvironmentsApi } from '#src/api/environments';
 import { GroupsApi, type IGroupsApi } from '#src/api/groups';
 import { type IPdpsApi, PdpsApi } from '#src/api/pdps';
@@ -26,7 +26,7 @@ import { type IRolesApi, RolesApi } from '#src/api/roles';
 import { type ITenantsApi, TenantsApi } from '#src/api/tenants';
 import { type IUsersApi, UsersApi } from '#src/api/users';
 
-export interface IPermitApi extends IDeprecatedPermitApi {
+export interface IPermitApi {
   /** API for managing groups, user membership, and resource role grants. */
   groups: IGroupsApi;
 
@@ -145,7 +145,7 @@ export interface IPermitApi extends IDeprecatedPermitApi {
   ensureContext(requiredContext: ApiContextLevel): Promise<void>;
 }
 
-export class ApiClient extends DeprecatedApiClient implements IPermitApi {
+export class ApiClient extends BasePermitApi implements IPermitApi {
   /** API for managing groups, user membership, and resource role grants. */
   public readonly groups: IGroupsApi;
 

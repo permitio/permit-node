@@ -813,16 +813,4 @@ export class Enforcer implements IEnforcer {
       ...(key !== undefined && { key }),
     };
   }
-
-  public getMethods(): IEnforcer {
-    return {
-      check: this.check.bind(this),
-      bulkCheck: this.bulkCheck.bind(this),
-      getUserPermissions: this.getUserPermissions.bind(this),
-      getAuthorizedUsers: this.getAuthorizedUsers.bind(this),
-      getUserTenants: this.getUserTenants.bind(this),
-      filterObjects: this.filterObjects.bind(this),
-      checkAllTenants: this.checkAllTenants.bind(this),
-    };
-  }
 }

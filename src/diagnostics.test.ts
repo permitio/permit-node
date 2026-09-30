@@ -518,28 +518,23 @@ describe('PER-16565: safe diagnostics at public boundaries', () => {
     }
   }
 
-  for (const legacy of [true, false]) {
-    for (const status of [PRIVATE, NUMBER, 200]) {
-      it(`logs safe resolved ${legacy ? 'legacy' : 'modern'} statuses (${typeof status})`, async () => {
-        const body = { key: 'user-1', attributes: { note: PRIVATE } };
-        const { permit, lines } = fixture({
-          apiContext: initializedContext(),
-          axiosInstance: axios.create({
-            adapter: async (config) => {
-              const response = { config, status: 200, statusText: 'OK', headers: {}, data: body };
-              Reflect.set(response, 'status', status);
-              return response;
-            },
-          }),
-        });
-        const result = await (legacy
-          ? permit.api.getUser('user-1')
-          : permit.api.users.get('user-1'));
-        expect(result).toEqual(body);
-        assertSafe(lines);
-        if (status === 200) expect(lines.join('')).toContain('200');
+  for (const status of [PRIVATE, NUMBER, 200]) {
+    it(`logs safe resolved REST statuses (${typeof status})`, async () => {
+      const body = { key: 'user-1', attributes: { note: PRIVATE } };
+      const { permit, lines } = fixture({
+        apiContext: initializedContext(),
+        axiosInstance: axios.create({
+          adapter: async (config) => {
+            const response = { config, status: 200, statusText: 'OK', headers: {}, data: body };
+            Reflect.set(response, 'status', status);
+            return response;
+          },
+        }),
       });
-    }
+      expect(await permit.api.users.get('user-1')).toEqual(body);
+      assertSafe(lines);
+      if (status === 200) expect(lines.join('')).toContain('200');
+    });
   }
 
   for (const [kind, credential, spelling] of [

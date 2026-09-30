@@ -349,11 +349,6 @@ export class ApiContext {
     return stateOf(this).scope?.level ?? ApiKeyLevel.WAIT_FOR_INIT;
   }
 
-  /** @deprecated Use permittedAccessLevel. */
-  public get level(): ApiKeyLevel {
-    return this.permittedAccessLevel;
-  }
-
   /** Returns the current context level. */
   public get contextLevel(): ApiContextLevel {
     return stateOf(this).selection.level;
@@ -469,7 +464,6 @@ export function snapshotApiContext(source: ApiContext): ApiContext {
     }
     const properties = [
       'permittedAccessLevel',
-      'level',
       'contextLevel',
       'organization',
       'project',

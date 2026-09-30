@@ -1,184 +1,302 @@
-<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>permitio</title><meta name="description" content="Documentation for permitio"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/search.js" id="tsd-search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
-<div class="tsd-toolbar-contents container">
-<div class="table-cell" id="tsd-search" data-base=".">
-<div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
-<div class="field">
-<div id="tsd-toolbar-links"></div></div>
-<ul class="results">
-<li class="state loading">Preparing search index...</li>
-<li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">permitio</a></div>
-<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
+<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>permitio</title><meta name="description" content="Documentation for permitio"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script><script async src="assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="index.html" class="title">permitio</a>
+<div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
+<ul role="listbox" id="tsd-search-results"></ul>
+<div id="tsd-search-status" aria-live="polite" aria-atomic="true">
+<div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></header>
 <div class="container container-main">
 <div class="col-content">
 <div class="tsd-page-title">
-<h2>permitio</h2></div>
-<div class="tsd-panel tsd-typography"><p><img src="imgs/Node.png" alt="Node.png"></p>
-<a id="md:permitio-client-for-nodejs" class="tsd-anchor"></a><h1><a href="#md:permitio-client-for-nodejs">Permit.io client for Node.js</a></h1><p>Node.js client library for the Permit.io full-stack permissions platform.</p>
-<a id="md:installation" class="tsd-anchor"></a><h2><a href="#md:installation">Installation</a></h2><pre><code><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-0">install</span><span class="hl-1"> </span><span class="hl-0">permitio</span>
+<h1>permitio</h1></div>
+<div class="tsd-panel tsd-typography"><p><img src="media/Node.png" alt="Node.png"></p>
+<h1 id="permitio-client-for-nodejs" class="tsd-anchor-link"><a href="http://Permit.io">Permit.io</a> client for Node.js<a href="#permitio-client-for-nodejs" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1>
+<p>Node.js client library for the <a href="http://Permit.io">Permit.io</a> full-stack permissions platform.</p>
+<h2 id="supported-runtimes" class="tsd-anchor-link">Supported runtimes<a href="#supported-runtimes" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>Node.js 22.13.0 or newer in the 22.x line, and Node.js 24.x are supported.
+CI tests the minimum versions, 22.13.0 and 24.0.0. The package provides both
+CommonJS (<code>require</code>) and ES module (<code>import</code>) entry points.</p>
+<h2 id="installation" class="tsd-anchor-link">Installation<a href="#installation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<pre><code><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-0">install</span><span class="hl-1"> </span><span class="hl-0">permitio</span>
 </code><button>Copy</button></pre>
-<a id="md:release" class="tsd-anchor"></a><h2><a href="#md:release">Release</a></h2><ol>
-<li>Update the version in <code>package.json</code></li>
-<li>Execute <code>yarn run build</code></li>
-<li>Execute <code>yarn docs ; git add docs/ ; git commit -m &quot;update tsdoc&quot;</code> to update the auto generated docs</li>
-<li>Execute <code>yarn publish --access public</code></li>
-</ol>
-<a id="md:documentation" class="tsd-anchor"></a><h2><a href="#md:documentation">Documentation</a></h2><p><a href="https://docs.permit.io/sdk/nodejs/quickstart-nodejs#add-the-sdk-to-your-js-code">Read the documentation at Permit.io website</a></p>
-<a id="md:api-reference" class="tsd-anchor"></a><h2><a href="#md:api-reference">API Reference</a></h2><p><a href="https://permitio.github.io/permit-node/classes/Permit.html">Check out the tsdoc reference here.</a></p>
+
+<p>See the <a href="media/MIGRATION.md">3.0 migration guide</a> for grouped API replacements and removed exports.</p>
+<h2 id="development" class="tsd-anchor-link">Development<a href="#development" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>Use the Node version in <code>.nvmrc</code> and pnpm 12.8.1, pinned in <code>package.json</code>.
+Install pnpm with <code>npm install --global --ignore-scripts pnpm@12.8.1</code>. Then run:</p>
+<pre><code class="sh"><span class="hl-2">pnpm</span><span class="hl-1"> </span><span class="hl-3">audit</span><span class="hl-1"> </span><span class="hl-4">--audit-level=moderate</span><br/><span class="hl-2">pnpm</span><span class="hl-1"> </span><span class="hl-3">install</span><span class="hl-1"> </span><span class="hl-4">--frozen-lockfile</span><br/><span class="hl-2">pnpm</span><span class="hl-1"> </span><span class="hl-3">hooks:install</span><br/><span class="hl-2">pnpm</span><span class="hl-1"> </span><span class="hl-3">verify</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Installs disable lifecycle scripts, so builds and hook setup are explicit. Run <code>pnpm hooks:install</code>
+to install prek for the current checkout without changing sibling worktree hooks. New dependency versions must be
+at least 24 hours old; direct dependencies are saved with exact versions.</p>
+<p><code>pnpm test</code> runs the unit and module-import suites without a Permit backend.
+<code>pnpm test:codegen</code> tests the generator guard without Java; <code>pnpm check:codegen</code> also
+regenerates the fixture and requires Java 17. <code>pnpm check:openapi</code> regenerates the reviewed
+production snapshot twice and verifies committed output. See <a href="media/README.md">OpenAPI generation</a>
+and its <a href="media/MIGRATION-1.md">migration inventory</a>.</p>
+<p>Test commands save native Vitest reports and execution summaries in <code>.test-results/</code>. The gate
+requires collected files and executed tests in every selected suite, and rejects unexpected skips.
+Backend commands exit with <code>UNAVAILABLE</code> and a nonzero status when <code>PDP_API_KEY</code> is absent.
+Absent optional organization/project keys and disabled direct OPA checks are named <code>UNAVAILABLE</code>
+limitations; a supplied key with the wrong scope fails. The known ABAC decision test remains
+<code>BLOCKED</code> by PER-16553. A run with these limitations reports <code>PARTIAL</code>, with passed execution counted
+separately. CI runs backend checks against the cloud control plane and a pinned local PDP; fork and
+Dependabot runs explicitly report unavailable backend coverage.</p>
+<p><code>pnpm coverage</code> measures all authored runtime TypeScript, including API wrappers, enforcement,
+configuration and utilities. Generated OpenAPI clients and test files are excluded. Text, HTML,
+LCOV and JSON summaries are saved in <code>coverage/</code>; this measured scope has no percentage threshold.</p>
+<h2 id="release" class="tsd-anchor-link">Release<a href="#release" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>Releases use the <code>Release permit Node SDK</code> GitHub workflow after maintainer approval. The workflow
+validates the literal release tag, verifies dependency security on both supported Node floors,
+builds and tests the SDK, then scans and publishes the same tarball through npm Trusted Publishing.
+Dependency installation, packing, and publication disable lifecycle scripts. Failed or incomplete
+security scans block publication. Release candidates use the <code>rc</code> distribution tag.</p>
+<p>See <a href="media/CONTRIBUTING.md#dependency-security">Contributing</a> for local scan commands and reports.</p>
+<h2 id="constructor-configuration" class="tsd-anchor-link">Constructor Configuration<a href="#constructor-configuration" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>The constructor accepts <code>IPermitOptions</code>. Omitted values use environment variables and SDK
+defaults. A nonempty token is required after <code>PERMIT_API_KEY</code> fallback; tokens are opaque strings
+and cannot contain whitespace or control characters. PDP and REST URLs must be absolute HTTP(S)
+URLs. Invalid settings throw before the SDK creates a logger or transport, with errors that omit
+caller values.</p>
+<p>In 3.0, <code>permit.config</code> settings and their SDK-owned nested objects are frozen. Configure tokens,
+URLs, logging, tenancy and retry settings at construction time. Supplied Axios instances and
+retry callbacks remain caller-owned and live; their defaults, interceptors and mutable callback
+state can still change.</p>
+<p>A supplied <code>apiContext</code> is copied into an independent SDK-owned context, preserving its initial
+permissions and selection. It no longer retains the supplied object's identity. Make later
+context changes through <code>permit.config.apiContext</code>. Concurrent first REST calls share one scope
+lookup per SDK. A failed initial lookup rejects its waiting calls and allows a later retry. Invalid
+hierarchical scope replies are rejected atomically, and late replies preserve explicit context
+changes.</p>
+<h2 id="retry-configuration" class="tsd-anchor-link">Retry Configuration<a href="#retry-configuration" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>The SDK includes built-in retry support for transient failures. Retries are <strong>opt-in</strong>:
+they are <strong>off</strong> unless you pass a <code>retry</code> config (or <code>retry: { enabled: true }</code>).</p>
+<p>When enabled, the defaults are:</p>
+<ul>
+<li><strong>3 retries</strong> (up to 4 total attempts) with exponential backoff</li>
+<li>Retries on recognized transient network errors and status codes: <code>408</code>, <code>429</code>, <code>500</code>, <code>502</code>, <code>503</code>, <code>504</code></li>
+<li>Respects <code>Retry-After</code> headers for rate limiting (429)</li>
+</ul>
+<p><code>maxRetries</code> is the number of retries <em>after</em> the initial request, so the default of <code>3</code> means up to 4 total requests.</p>
+<blockquote>
+<p><strong>Behavioral note</strong></p>
+<ul>
+<li>Retries are opt-in — providing a <code>retry</code> config object turns them on; omitting it (or passing <code>retry: false</code>) leaves them off.</li>
+<li>When enabled, PDP/OPA calls additionally retry <code>POST</code> because authorization queries are idempotent.</li>
+<li>SDK retries never repeat REST <code>POST</code> or <code>PATCH</code>, even when listed in <code>retryMethods</code>. The default idempotent methods remain <code>GET</code>, <code>HEAD</code>, <code>OPTIONS</code>, <code>PUT</code> and <code>DELETE</code>.</li>
+<li>Cancellation and invalid request configuration are never retried, even with a custom predicate. Unclassified response-less errors are not retried by the default predicate.</li>
+</ul>
+</blockquote>
+<p>Retry options are checked when the SDK is constructed. Counts must be nonnegative safe integers;
+delays must be finite milliseconds from 0 through 2,147,483,647; the backoff multiplier must be
+finite and at least 1. Retry predicates must return a boolean. Invalid configuration fails with
+an actionable error instead of silently accepting a malformed policy.</p>
+<p>For 3.0, failed attempts and backoff consume <strong>one Axios timeout budget</strong>. Each retry gets the
+remaining timeout, and a delay that exhausts the budget prevents another attempt. The SDK <code>timeout</code>
+option applies to PDP/OPA; REST and Elements use the supplied Axios instance's timeout. A timeout
+of 0 disables the deadline; omitted SDK timeouts preserve caller defaults. This changes the earlier
+behavior that reset the full timeout for every retry. Axios adapters must honor the timeout;
+arbitrary caller interceptors or adapters are not interrupted by an SDK wall-clock deadline.</p>
+<p>A supplied <code>axiosInstance</code> serves REST and Elements; <code>opaAxiosInstance</code> serves OPA. The SDK keeps
+these caller instances unchanged and delegates every attempt through their live adapters,
+transforms and interceptors, including when the SDK and supplied Axios client use different
+CommonJS/ESM entry points. Caller default headers remain live on every attempt. Two SDK instances
+can share a client while retaining separate routes, Bearer tokens, logging and SDK retry policies.
+SDK requests explicitly allow their configured absolute URLs even when the caller default
+<code>allowAbsoluteUrls</code> is false, so a caller base URL cannot prefix or reroute an SDK destination.
+Direct caller requests retain that caller restriction and remain usable and acquire no SDK retries.
+Default Basic credentials cannot replace an explicit
+SDK Bearer token. Intentional caller hooks can still rewrite request configuration, including
+headers and transforms; caller-owned retry or redirect behavior remains the caller's responsibility.
+For 3.0, the SDK serializes enforcement request bodies before dispatch so legal JSON dictionary
+keys such as <code>__proto__</code> and <code>constructor</code> survive Axios merging. A supplied OPA request
+interceptor or transform receives <strong>JSON text</strong>, including the <code>{ input: ... }</code> envelope.
+To edit it, parse the text, update the parsed object, and return serialized JSON. Earlier hooks
+that expected a raw object must be updated. Direct caller requests retain their own data shape.
+Circular references and unsupported JSON values raise a contextual <code>PermitError</code> before HTTP;
+explicit non-throwing authorization mode retains its deny result. The raw serialization exception
+and input are omitted from diagnostics.</p>
+<p>PDP requests use a separate internal transport. There are no SDK registrations on supplied
+instances to dispose of.</p>
+<h3 id="customizing-retry-behavior" class="tsd-anchor-link">Customizing Retry Behavior<a href="#customizing-retry-behavior" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<pre><code class="typescript"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">Permit</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-3">&#39;permitio&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-6">// Retries are off by default (opt-in)</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">permitDefault</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-2">Permit</span><span class="hl-1">({ </span><span class="hl-0">token:</span><span class="hl-1"> </span><span class="hl-3">&#39;your-api-key&#39;</span><span class="hl-1"> });</span><br/><br/><span class="hl-6">// Enable with custom retry configuration</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">permitCustom</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-2">Permit</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-0">token:</span><span class="hl-1"> </span><span class="hl-3">&#39;your-api-key&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">retry:</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">maxRetries:</span><span class="hl-1"> </span><span class="hl-8">5</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-0">retryDelay:</span><span class="hl-1"> </span><span class="hl-8">500</span><span class="hl-1">, </span><span class="hl-6">// Initial delay in ms</span><br/><span class="hl-1">    </span><span class="hl-0">backoffMultiplier:</span><span class="hl-1"> </span><span class="hl-8">2</span><span class="hl-1">, </span><span class="hl-6">// Exponential backoff multiplier</span><br/><span class="hl-1">    </span><span class="hl-0">maxDelay:</span><span class="hl-1"> </span><span class="hl-8">30000</span><span class="hl-1">, </span><span class="hl-6">// Maximum delay cap</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">});</span><br/><br/><span class="hl-6">// Explicitly disable retry</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">permitNoRetry</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-2">Permit</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-0">token:</span><span class="hl-1"> </span><span class="hl-3">&#39;your-api-key&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">retry:</span><span class="hl-1"> </span><span class="hl-4">false</span><span class="hl-1">,</span><br/><span class="hl-1">});</span><br/><br/><span class="hl-6">// Different config for PDP vs REST API</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">permitPdp</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-2">Permit</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-0">token:</span><span class="hl-1"> </span><span class="hl-3">&#39;your-api-key&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">retry:</span><span class="hl-1"> { </span><span class="hl-0">maxRetries:</span><span class="hl-1"> </span><span class="hl-8">3</span><span class="hl-1"> },</span><br/><span class="hl-1">  </span><span class="hl-0">pdpRetry:</span><span class="hl-1"> { </span><span class="hl-0">maxRetries:</span><span class="hl-1"> </span><span class="hl-8">5</span><span class="hl-1"> },</span><br/><span class="hl-1">});</span>
+</code><button type="button">Copy</button></pre>
+
+<h2 id="logging-and-errors" class="tsd-anchor-link">Logging and errors<a href="#logging-and-errors" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p><code>log.level</code> controls the SDK's log level (default: <code>warn</code>). Set it to <code>debug</code> to include HTTP
+request and response diagnostics, or <code>silent</code> to disable SDK logs. <code>PERMIT_LOG_LEVEL</code> supplies
+the default when <code>log.level</code> is omitted.</p>
+<p>Logs are JSON lines by default. Set <code>log.json: false</code> for pretty text. When <code>log.json</code> is
+omitted, <code>PERMIT_LOG_JSON</code> supplies the default: <code>false</code> selects pretty text, while <code>true</code>, an
+unset variable, or any other value keeps JSON lines. The variable ignores letter case and
+surrounding whitespace. An explicit <code>log.json</code> setting always overrides the environment variable.
+Pretty output uses an in-process stream without worker threads. SDK initialization logs do not
+include the API key or serialized configuration.</p>
+<pre><code class="typescript"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">Permit</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-3">&#39;permitio&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">permit</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-2">Permit</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-0">token:</span><span class="hl-1"> </span><span class="hl-0">process</span><span class="hl-1">.</span><span class="hl-0">env</span><span class="hl-1">.</span><span class="hl-7">PERMIT_API_KEY</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">log:</span><span class="hl-1"> { </span><span class="hl-0">level:</span><span class="hl-1"> </span><span class="hl-3">&#39;debug&#39;</span><span class="hl-1">, </span><span class="hl-0">json:</span><span class="hl-1"> </span><span class="hl-4">false</span><span class="hl-1"> },</span><br/><span class="hl-1">});</span>
+</code><button type="button">Copy</button></pre>
+
+<p>With the default <code>throwOnError: true</code>, a PDP response with an unexpected status code, or a <code>200</code>
+response with a body the SDK cannot read, throws <code>PermitPDPStatusError</code>, a subclass of
+<code>PermitConnectionError</code>. It carries the HTTP <code>statusCode</code> and a bounded, sanitized <code>responseBody</code>.
+Transport failures, such as refused connections or timeouts, throw <code>PermitConnectionError</code> with
+a safe <code>cause</code> and transport <code>code</code> when available. Match errors with <code>instanceof</code>,
+not their <code>name</code> or message, and check the more specific status error first:</p>
+<pre><code class="typescript"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">PermitConnectionError</span><span class="hl-1">, </span><span class="hl-0">PermitPDPStatusError</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-3">&#39;permitio&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-5">try</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-2">check</span><span class="hl-1">(</span><span class="hl-3">&#39;user-1&#39;</span><span class="hl-1">, </span><span class="hl-3">&#39;read&#39;</span><span class="hl-1">, </span><span class="hl-3">&#39;document:one&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">} </span><span class="hl-5">catch</span><span class="hl-1"> (</span><span class="hl-0">error</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-5">if</span><span class="hl-1"> (</span><span class="hl-0">error</span><span class="hl-1"> </span><span class="hl-4">instanceof</span><span class="hl-1"> </span><span class="hl-9">PermitPDPStatusError</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-2">error</span><span class="hl-1">(</span><span class="hl-3">&#39;PDP HTTP status:&#39;</span><span class="hl-1">, </span><span class="hl-0">error</span><span class="hl-1">.</span><span class="hl-0">statusCode</span><span class="hl-1">);</span><br/><span class="hl-1">  } </span><span class="hl-5">else</span><span class="hl-1"> </span><span class="hl-5">if</span><span class="hl-1"> (</span><span class="hl-0">error</span><span class="hl-1"> </span><span class="hl-4">instanceof</span><span class="hl-1"> </span><span class="hl-9">PermitConnectionError</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-2">error</span><span class="hl-1">(</span><span class="hl-3">&#39;PDP connection failed&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">  } </span><span class="hl-5">else</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-5">throw</span><span class="hl-1"> </span><span class="hl-0">error</span><span class="hl-1">;</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<p>REST failures throw named <code>PermitApiError</code> errors.
+The SDK accepts <code>message</code>, <code>detail</code> (including validation-error arrays), and text error bodies;
+missing descriptions fall back to the HTTP status or transport failure. <code>status</code>, <code>code</code> and a
+detached safe <code>cause</code> retain failure metadata. API-key scope failures use <code>PermitContextError</code>
+with the same safe metadata.</p>
+<p>These are deliberate 3.0 error-property changes. <code>PermitApiError.originalError</code> is a detached Axios
+snapshot; <code>response.data</code> and <code>formattedAxiosError.error</code> have type <code>unknown</code> after redaction.
+<code>PermitApiError</code> no longer takes a response-body type parameter; narrow the sanitized data before use.
+<code>request</code> is always undefined. Snapshots omit request bodies, parameters, socket objects, hooks,
+original stacks and raw causes. Response diagnostics keep only <code>message</code>, <code>detail</code>, <code>msg</code>,
+<code>error_code</code>, <code>code</code> and <code>errors</code>; nested values, item counts and text lengths are bounded.
+Request header values remain redacted except known protocol/SDK headers. Response header values
+are redacted except content type, content length and retry timing. Credential URL components
+(user information, query values and fragments) are removed. Known request credentials and private
+values are scrubbed from error descriptions; oversized or deeply nested requests cause descriptions
+to be redacted. Failures from caller adapters, interceptors and retry hooks follow the same rules;
+uninspectable primitive rejections use a useful operation fallback. Credentials and identity/permission
+attributes are omitted from JSON and pretty
+SDK logs, including successful authorization calls.</p>
+<p>These rules apply to <code>check</code>, <code>bulkCheck</code>, <code>getUserPermissions</code>, <code>checkAllTenants</code>,
+<code>getAuthorizedUsers</code>, <code>getUserTenants</code>, and <code>filterObjects</code>.
+PDP responses are validated before authorization data reaches the caller. Direct PDP responses
+and OPA <code>result</code> envelopes are supported. Decisions must be literal booleans; bulk results must
+contain exactly one decision for each requested position. An empty bulk request requires an empty
+result. Every all-tenant entry must have <code>allow: true</code> and a tenant with a string key; a denied or
+malformed entry invalidates the whole result. A legacy <code>result</code> boolean alongside <code>allow</code> is
+additive metadata and does not override the decision.</p>
+<p>Permission entries must contain string arrays when <code>permissions</code> or <code>roles</code> are supplied. Tenant
+and resource details require string keys, resources also require a string type, and supplied
+attributes must be objects. The SDK applies the PDP's documented defaults: missing permissions
+become <code>[]</code>, missing attributes become <code>{}</code>, and nullable optional roles/tenant/resource fields are
+omitted. Null permissions or attributes are invalid. Extra fields are retained. Dictionary identifiers
+such as <code>result</code>, <code>permissions</code>, and <code>__proto__</code> remain valid; a valid direct map takes precedence
+over interpreting it as an OPA envelope.</p>
+<p>These are deliberate next-major response contract changes: malformed responses that previously
+escaped as truthy values, incomplete bulk arrays, or unchecked permission/tenant objects now fail.
+<code>useOpa: true</code> is supported by <code>check()</code> only; bulk and permission calls reject it under the same
+error policy instead of ignoring it. Per-call <code>timeout: 0</code> disables the timeout.</p>
+<p>With <code>throwOnError: false</code>, failures, including an invalid resource string, return <code>false</code> for
+<code>check</code>, one <code>false</code> per input for <code>bulkCheck</code>, <code>{}</code> for <code>getUserPermissions</code>, and <code>[]</code> for
+<code>checkAllTenants</code>. The first three methods also accept per-call error-policy overrides;
+<code>checkAllTenants</code> uses the SDK setting.</p>
+<h2 id="pdp-discovery-and-object-filtering" class="tsd-anchor-link">PDP discovery and object filtering<a href="#pdp-discovery-and-object-filtering" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p><code>getUserPermissions(user, tenants?, resources?, resourceTypes?, config?)</code> accepts request context
+in its existing fifth argument: <code>{ context: { requestFlag: true }, timeout: 1000 }</code>. Request values
+override the internal global context. A general <code>CheckConfig</code> does not accept a context option;
+other methods receive context as their own argument.</p>
+<p><code>getAuthorizedUsers(action, resource, context?, config?)</code> queries <code>/authorized_users</code>, published
+by both container and cloud PDP contracts. It returns the complete <code>{ resource, tenant, users }</code>
+result, with each user's assignments retaining <code>user</code>, <code>tenant</code>, <code>resource</code>, and <code>role</code>. Legal
+own dictionary keys and additive response fields are preserved. Malformed results invalidate the
+whole response. A resource type or <code>type:key</code> string follows the same tenant defaults as <code>check</code>.</p>
+<p><code>getUserTenants(user, context?, config?)</code> queries <code>/user-tenants</code> on a compatible container PDP.
+It returns role-derived tenant details; membership without a relevant role does not establish a
+positive result. Missing tenant attributes default to <code>{}</code>. The cloud PDP contract does not publish
+this endpoint, and no cloud runtime support is claimed. HTTP 404 raises an actionable capability
+error regardless of <code>throwOnError</code>; it does not guess which PDP host is configured.</p>
+<p><code>filterObjects(user, action, objects, context?, config?)</code> performs one supported bulk check and
+returns the authorized original objects in input order, preserving duplicates, extra fields and
+object identity. Pass a dense readonly array of resources. Only <code>type</code>, <code>key</code>, <code>tenant</code>, and
+<code>attributes</code> are sent as resource fields; extra application fields remain on returned objects.
+Each object's optional <code>context</code> is sent as top-level check context with precedence global,
+then call, then object. A synchronous array snapshot keeps results aligned if the caller changes
+the array while the request is pending. Sparse or undefined slots reject before HTTP. Empty input
+returns <code>[]</code> without HTTP after validating options.</p>
+<pre><code class="typescript"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">permissions</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-2">getUserPermissions</span><span class="hl-1">(</span><span class="hl-3">&#39;alice&#39;</span><span class="hl-1">, </span><span class="hl-4">undefined</span><span class="hl-1">, </span><span class="hl-4">undefined</span><span class="hl-1">, </span><span class="hl-4">undefined</span><span class="hl-1">, {</span><br/><span class="hl-1">  </span><span class="hl-0">context:</span><span class="hl-1"> { </span><span class="hl-0">requestFlag:</span><span class="hl-1"> </span><span class="hl-4">true</span><span class="hl-1"> },</span><br/><span class="hl-1">});</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">authorized</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-2">getAuthorizedUsers</span><span class="hl-1">(</span><span class="hl-3">&#39;read&#39;</span><span class="hl-1">, </span><span class="hl-3">&#39;document:report&#39;</span><span class="hl-1">, {</span><br/><span class="hl-1">  </span><span class="hl-0">requestFlag:</span><span class="hl-1"> </span><span class="hl-4">true</span><span class="hl-1">,</span><br/><span class="hl-1">});</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">tenants</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-2">getUserTenants</span><span class="hl-1">(</span><span class="hl-3">&#39;alice&#39;</span><span class="hl-1">);</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">visible</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-2">filterObjects</span><span class="hl-1">(</span><span class="hl-3">&#39;alice&#39;</span><span class="hl-1">, </span><span class="hl-3">&#39;read&#39;</span><span class="hl-1">, [</span><br/><span class="hl-1">  { </span><span class="hl-0">type:</span><span class="hl-1"> </span><span class="hl-3">&#39;document&#39;</span><span class="hl-1">, </span><span class="hl-0">key:</span><span class="hl-1"> </span><span class="hl-3">&#39;report&#39;</span><span class="hl-1">, </span><span class="hl-0">title:</span><span class="hl-1"> </span><span class="hl-3">&#39;Report&#39;</span><span class="hl-1">, </span><span class="hl-0">context:</span><span class="hl-1"> { </span><span class="hl-0">requestFlag:</span><span class="hl-1"> </span><span class="hl-4">true</span><span class="hl-1"> } },</span><br/><span class="hl-1">]);</span>
+</code><button type="button">Copy</button></pre>
+
+<p>The new discovery and filtering methods reject <code>useOpa: true</code> regardless of the error policy,
+including an empty filtering call. Operational or malformed-response failures follow normal
+<code>throwOnError</code>: non-throwing mode returns <code>[]</code> for tenant discovery/filtering and a normalized empty
+<code>{ resource, tenant, users: {} }</code> for authorized users. No partial authorization data is returned.
+Existing permission-query and bulk OPA error policies remain unchanged. <code>checkAllTenants</code> is
+retained; future deprecation planning does not remove it here. URL checking and AuthZEN remain
+deferred. Internal context transforms are not activated by these methods.</p>
+<h2 id="groups" class="tsd-anchor-link">Groups<a href="#groups" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p><code>permit.api.groups</code> supports the eight GA core operations: <code>create</code>, <code>delete</code>, <code>list</code>, <code>get</code>,
+<code>assignUser</code>, <code>removeUser</code>, <code>assignRole</code>, and <code>removeRole</code>. <code>list</code> and <code>get</code> use the direct Groups
+endpoints. Pass a qualified resource:instance key (such as <code>team:support</code>) or an internal group
+instance ID to identify a group.</p>
+<p>Create and assignment calls return <code>GroupRead</code>, which contains the group and membership fields.
+Direct reads return <code>GroupReadSchema</code>, which also contains <code>id</code>. <code>list</code> always returns the full
+<code>PaginatedResultGroupReadSchema</code> envelope: <code>data</code>, <code>total_count</code>, and optional <code>page_count</code>.
+It accepts <code>tenant</code>, <code>resource</code>, <code>search</code>, <code>page</code>, and <code>perPage</code>; pagination defaults to page 1
+with 100 rows per page.</p>
+<pre><code class="typescript"><span class="hl-6">// The group resource type, user, tenant, target resource instance, and role already exist.</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">groupKey</span><span class="hl-1"> = </span><span class="hl-3">&#39;team:support&#39;</span><span class="hl-1">;</span><br/><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">groups</span><span class="hl-1">.</span><span class="hl-2">create</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-0">group_resource_type_key:</span><span class="hl-1"> </span><span class="hl-3">&#39;team&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">group_instance_key:</span><span class="hl-1"> </span><span class="hl-3">&#39;support&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">group_tenant:</span><span class="hl-1"> </span><span class="hl-3">&#39;east&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">});</span><br/><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">groups</span><span class="hl-1">.</span><span class="hl-2">assignUser</span><span class="hl-1">(</span><span class="hl-0">groupKey</span><span class="hl-1">, </span><span class="hl-3">&#39;alice&#39;</span><span class="hl-1">, { </span><span class="hl-0">tenant:</span><span class="hl-1"> </span><span class="hl-3">&#39;east&#39;</span><span class="hl-1"> });</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">grant</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-0">role:</span><span class="hl-1"> </span><span class="hl-3">&#39;reader&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">resource:</span><span class="hl-1"> </span><span class="hl-3">&#39;document&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">resource_instance:</span><span class="hl-1"> </span><span class="hl-3">&#39;quarterly-report&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">tenant:</span><span class="hl-1"> </span><span class="hl-3">&#39;east&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">};</span><br/><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">groups</span><span class="hl-1">.</span><span class="hl-2">assignRole</span><span class="hl-1">(</span><span class="hl-0">groupKey</span><span class="hl-1">, </span><span class="hl-0">grant</span><span class="hl-1">);</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">page</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">groups</span><span class="hl-1">.</span><span class="hl-2">list</span><span class="hl-1">({ </span><span class="hl-0">tenant:</span><span class="hl-1"> </span><span class="hl-3">&#39;east&#39;</span><span class="hl-1">, </span><span class="hl-0">page:</span><span class="hl-1"> </span><span class="hl-8">1</span><span class="hl-1">, </span><span class="hl-0">perPage:</span><span class="hl-1"> </span><span class="hl-8">20</span><span class="hl-1"> });</span><br/><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-2">log</span><span class="hl-1">(</span><span class="hl-0">page</span><span class="hl-1">.</span><span class="hl-0">data</span><span class="hl-1">, </span><span class="hl-0">page</span><span class="hl-1">.</span><span class="hl-0">total_count</span><span class="hl-1">);</span><br/><br/><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">groups</span><span class="hl-1">.</span><span class="hl-2">removeRole</span><span class="hl-1">(</span><span class="hl-0">groupKey</span><span class="hl-1">, </span><span class="hl-0">grant</span><span class="hl-1">);</span><br/><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">groups</span><span class="hl-1">.</span><span class="hl-2">removeUser</span><span class="hl-1">(</span><span class="hl-0">groupKey</span><span class="hl-1">, </span><span class="hl-3">&#39;alice&#39;</span><span class="hl-1">, { </span><span class="hl-0">tenant:</span><span class="hl-1"> </span><span class="hl-3">&#39;east&#39;</span><span class="hl-1"> });</span><br/><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">groups</span><span class="hl-1">.</span><span class="hl-2">delete</span><span class="hl-1">(</span><span class="hl-0">groupKey</span><span class="hl-1">);</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Group role grants apply through ReBAC relationships and role derivation. Members inherit the
+granted resource role; revoking the grant or removing membership removes that inheritance after
+policy and facts synchronization. Both adding and removing a user require the tenant JSON body.
+Role assignment and removal require <code>role</code>, <code>resource</code>, <code>resource_instance</code>, and <code>tenant</code>.</p>
+<h2 id="tenant-membership-detailed-lists-and-pdp-refresh" class="tsd-anchor-link">Tenant membership, detailed lists, and PDP refresh<a href="#tenant-membership-detailed-lists-and-pdp-refresh" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p><code>permit.api.tenants.addUser(tenantKeyOrId, userData)</code> creates a new user and associates it
+with an existing tenant. Pass <code>UserCreate</code> data with a <code>key</code>; no role assignment is required.
+The backend rejects an already-existing user. This method always uses the control-plane API,
+even with <code>proxyFactsViaPdp</code> or <code>waitForSync</code>; its response does not guarantee PDP synchronization.</p>
+<pre><code class="typescript"><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">tenants</span><span class="hl-1">.</span><span class="hl-2">addUser</span><span class="hl-1">(</span><span class="hl-3">&#39;east&#39;</span><span class="hl-1">, { </span><span class="hl-0">key:</span><span class="hl-1"> </span><span class="hl-3">&#39;new-user&#39;</span><span class="hl-1"> });</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">tuples</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">relationshipTuples</span><span class="hl-1">.</span><span class="hl-2">listDetailed</span><span class="hl-1">({ </span><span class="hl-0">tenant:</span><span class="hl-1"> </span><span class="hl-3">&#39;east&#39;</span><span class="hl-1"> });</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">instances</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">resourceInstances</span><span class="hl-1">.</span><span class="hl-2">listDetailed</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-0">tenant:</span><span class="hl-1"> </span><span class="hl-3">&#39;east&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">resource:</span><span class="hl-1"> </span><span class="hl-3">&#39;document&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">search:</span><span class="hl-1"> [</span><span class="hl-3">&#39;report&#39;</span><span class="hl-1">],</span><br/><span class="hl-1">  </span><span class="hl-0">page:</span><span class="hl-1"> </span><span class="hl-8">1</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">perPage:</span><span class="hl-1"> </span><span class="hl-8">20</span><span class="hl-1">,</span><br/><span class="hl-1">});</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">assignments</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">roleAssignments</span><span class="hl-1">.</span><span class="hl-2">listDetailed</span><span class="hl-1">({ </span><span class="hl-0">user:</span><span class="hl-1"> </span><span class="hl-3">&#39;new-user&#39;</span><span class="hl-1"> });</span><br/><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-2">log</span><span class="hl-1">(</span><span class="hl-0">tuples</span><span class="hl-1">.</span><span class="hl-0">data</span><span class="hl-1">, </span><span class="hl-0">instances</span><span class="hl-1">.</span><span class="hl-0">total_count</span><span class="hl-1">, </span><span class="hl-0">assignments</span><span class="hl-1">.</span><span class="hl-0">page_count</span><span class="hl-1">);</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">refresh</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">pdps</span><span class="hl-1">.</span><span class="hl-2">refresh</span><span class="hl-1">({ </span><span class="hl-0">reason:</span><span class="hl-1"> </span><span class="hl-3">&#39;Reload external data&#39;</span><span class="hl-1"> });</span><br/><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-2">log</span><span class="hl-1">(</span><span class="hl-0">refresh</span><span class="hl-1">.</span><span class="hl-0">update_id</span><span class="hl-1">, </span><span class="hl-0">refresh</span><span class="hl-1">.</span><span class="hl-0">pdp_ids</span><span class="hl-1">);</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Each <code>listDetailed</code> uses the dedicated control-plane <code>/detailed</code> endpoint, even when facts
+proxying or <code>waitForSync</code> is enabled, and returns its full paginated
+envelope, including nested details, <code>total_count</code>, and optional <code>page_count</code>. Pagination defaults
+to page 1 with 100 rows. Relationship filters accept <code>tenant</code>, <code>subject</code>, <code>relation</code>, <code>object</code>,
+<code>objectType</code>, and <code>subjectType</code>. Instance filters accept <code>tenant</code>, <code>resource</code>, and <code>search</code> terms.
+Assignment filters accept <code>user</code>, <code>role</code>, <code>tenant</code>, <code>resource</code>, and <code>resourceInstance</code>.
+Dedicated detailed lists have no <code>detailed</code> or <code>includeTotalCount</code> switches. The existing
+<code>roleAssignments.list</code> retains its query behavior; dynamic flags return the corresponding
+array/envelope and base/detailed type unions.</p>
+<p><code>permit.api.pdps.refresh</code> requests a data refresh for all PDP configurations in the selected
+environment through the control plane. It requires an API key with update access to those
+configurations and accepts an optional <code>reason</code>. The returned update ID and PDP IDs acknowledge
+the request; they do not signal completion. Environment refresh does not accept <code>shard_id</code>.
+Individual-PDP refresh remains deferred. All five methods require a selected environment and
+an environment-level API key or broader access.</p>
+<h2 id="documentation" class="tsd-anchor-link">Documentation<a href="#documentation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p><a href="https://docs.permit.io/sdk/nodejs/quickstart-nodejs#add-the-sdk-to-your-js-code">Read the documentation at Permit.io website</a></p>
+<h2 id="api-reference" class="tsd-anchor-link">API Reference<a href="#api-reference" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p><a href="https://permitio.github.io/permit-node/classes/Permit.html">Check out the tsdoc reference here.</a></p>
 </div></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
-<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
-<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)" id="icon-chevronDown"></path></svg>Settings</h3></summary>
+<details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>Settings</h3></summary>
 <div class="tsd-accordion-details">
-<div class="tsd-filter-visibility">
-<h4 class="uppercase">Member Visibility</h4><form>
+<div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span>
 <ul id="tsd-filter-options">
 <li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
-<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div>
-<div class="tsd-theme-toggle">
-<h4 class="uppercase">Theme</h4><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
-<details open class="tsd-index-accordion tsd-page-navigation"><summary class="tsd-accordion-summary">
-<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg>On This Page</h3></summary>
-<div class="tsd-accordion-details">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div>
+<div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>On This Page</h3></summary>
+<div class="tsd-accordion-details"><a href="#permitio-client-for-nodejs"><span>Permit.io client for <wbr/>Node.js</span></a>
 <ul>
+<li><a href="#supported-runtimes"><span>Supported runtimes</span></a></li>
+<li><a href="#installation"><span>Installation</span></a></li>
+<li><a href="#development"><span>Development</span></a></li>
+<li><a href="#release"><span>Release</span></a></li>
+<li><a href="#constructor-configuration"><span>Constructor <wbr/>Configuration</span></a></li>
+<li><a href="#retry-configuration"><span>Retry <wbr/>Configuration</span></a></li>
 <li>
 <ul>
-<li><a href="#md:permitio-client-for-nodejs"><span>Permit.io client for <wbr/>Node.js</span></a></li>
-<li>
-<ul>
-<li><a href="#md:installation"><span>Installation</span></a></li>
-<li><a href="#md:release"><span>Release</span></a></li>
-<li><a href="#md:documentation"><span>Documentation</span></a></li>
-<li><a href="#md:api-reference"><span>API <wbr/>Reference</span></a></li></ul></li></ul></li></ul></div></details></div>
+<li><a href="#customizing-retry-behavior"><span>Customizing <wbr/>Retry <wbr/>Behavior</span></a></li></ul></li>
+<li><a href="#logging-and-errors"><span>Logging and errors</span></a></li>
+<li><a href="#pdp-discovery-and-object-filtering"><span>PDP discovery and object filtering</span></a></li>
+<li><a href="#groups"><span>Groups</span></a></li>
+<li><a href="#tenant-membership-detailed-lists-and-pdp-refresh"><span>Tenant membership, detailed lists, and <wbr/>PDP refresh</span></a></li>
+<li><a href="#documentation"><span>Documentation</span></a></li>
+<li><a href="#api-reference"><span>API <wbr/>Reference</span></a></li></ul></div></details></div>
 <div class="site-menu">
-<nav class="tsd-navigation"><a href="modules.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-4"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-namespace)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.33 16V7.24H10.77L13.446 14.74C13.43 14.54 13.41 14.296 13.386 14.008C13.37 13.712 13.354 13.404 13.338 13.084C13.33 12.756 13.326 12.448 13.326 12.16V7.24H14.37V16H12.93L10.266 8.5C10.282 8.692 10.298 8.936 10.314 9.232C10.33 9.52 10.342 9.828 10.35 10.156C10.366 10.476 10.374 10.784 10.374 11.08V16H9.33Z" fill="var(--color-text)"></path></g></svg><span>permitio</span></a>
-<ul class="tsd-small-nested-navigation">
-<li><a href="enums/APIKeyOwnerType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-8"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-enum)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.45 16V7.24H14.49V8.224H10.518V10.936H14.07V11.908H10.518V15.016H14.49V16H9.45Z" fill="var(--color-text)"></path></g></svg><span>APIKey<wbr/>Owner<wbr/>Type</span></a></li>
-<li><a href="enums/ApiKeyLevel.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg><span>Api<wbr/>Key<wbr/>Level</span></a></li>
-<li><a href="enums/AttributeType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg><span>Attribute<wbr/>Type</span></a></li>
-<li><a href="enums/ConditionSetType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg><span>Condition<wbr/>Set<wbr/>Type</span></a></li>
-<li><a href="enums/ElementsApiErrors.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg><span>Elements<wbr/>Api<wbr/>Errors</span></a></li>
-<li><a href="enums/MemberAccessLevel.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg><span>Member<wbr/>Access<wbr/>Level</span></a></li>
-<li><a href="enums/MemberAccessObj.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg><span>Member<wbr/>Access<wbr/>Obj</span></a></li>
-<li><a href="classes/ApiClient.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-128"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)"></path></g></svg><span>Api<wbr/>Client</span></a></li>
-<li><a href="classes/ApiContext.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Api<wbr/>Context</span></a></li>
-<li><a href="classes/ConditionSetRulesApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Condition<wbr/>Set<wbr/>Rules<wbr/>Api</span></a></li>
-<li><a href="classes/ConditionSetsApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Condition<wbr/>Sets<wbr/>Api</span></a></li>
-<li><a href="classes/DeprecatedApiClient.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Deprecated<wbr/>Api<wbr/>Client</span></a></li>
-<li><a href="classes/ElementsClient.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Elements<wbr/>Client</span></a></li>
-<li><a href="classes/EnvironmentsApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Environments<wbr/>Api</span></a></li>
-<li><a href="classes/Permit.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Permit</span></a></li>
-<li><a href="classes/PermitApiError.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Permit<wbr/>Api<wbr/>Error</span></a></li>
-<li><a href="classes/PermitConnectionError.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Permit<wbr/>Connection<wbr/>Error</span></a></li>
-<li><a href="classes/PermitContextError.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Permit<wbr/>Context<wbr/>Error</span></a></li>
-<li><a href="classes/PermitError.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Permit<wbr/>Error</span></a></li>
-<li><a href="classes/PermitPDPStatusError.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>PermitPDPStatus<wbr/>Error</span></a></li>
-<li><a href="classes/ProjectsApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Projects<wbr/>Api</span></a></li>
-<li><a href="classes/ResourceActionGroupsApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Resource<wbr/>Action<wbr/>Groups<wbr/>Api</span></a></li>
-<li><a href="classes/ResourceActionsApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Resource<wbr/>Actions<wbr/>Api</span></a></li>
-<li><a href="classes/ResourceAttributesApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Resource<wbr/>Attributes<wbr/>Api</span></a></li>
-<li><a href="classes/ResourcesApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Resources<wbr/>Api</span></a></li>
-<li><a href="classes/RoleAssignmentsApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Role<wbr/>Assignments<wbr/>Api</span></a></li>
-<li><a href="classes/RolesApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Roles<wbr/>Api</span></a></li>
-<li><a href="classes/TenantsApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Tenants<wbr/>Api</span></a></li>
-<li><a href="classes/UsersApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Users<wbr/>Api</span></a></li>
-<li><a href="interfaces/APIKeyRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-256"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-interface)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.51 16V15.016H11.298V8.224H9.51V7.24H14.19V8.224H12.402V15.016H14.19V16H9.51Z" fill="var(--color-text)"></path></g></svg><span>APIKey<wbr/>Read</span></a></li>
-<li><a href="interfaces/ActionBlockEditable.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Action<wbr/>Block<wbr/>Editable</span></a></li>
-<li><a href="interfaces/ActionBlockRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Action<wbr/>Block<wbr/>Read</span></a></li>
-<li><a href="interfaces/AttributeBlockEditable.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Attribute<wbr/>Block<wbr/>Editable</span></a></li>
-<li><a href="interfaces/AttributeBlockRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Attribute<wbr/>Block<wbr/>Read</span></a></li>
-<li><a href="interfaces/BulkRoleAssignmentReport.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Bulk<wbr/>Role<wbr/>Assignment<wbr/>Report</span></a></li>
-<li><a href="interfaces/BulkRoleUnAssignmentReport.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Bulk<wbr/>Role<wbr/>Un<wbr/>Assignment<wbr/>Report</span></a></li>
-<li><a href="interfaces/ConditionSetCreate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Condition<wbr/>Set<wbr/>Create</span></a></li>
-<li><a href="interfaces/ConditionSetRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Condition<wbr/>Set<wbr/>Read</span></a></li>
-<li><a href="interfaces/ConditionSetRuleCreate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Condition<wbr/>Set<wbr/>Rule<wbr/>Create</span></a></li>
-<li><a href="interfaces/ConditionSetRuleRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Condition<wbr/>Set<wbr/>Rule<wbr/>Read</span></a></li>
-<li><a href="interfaces/ConditionSetRuleRemove.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Condition<wbr/>Set<wbr/>Rule<wbr/>Remove</span></a></li>
-<li><a href="interfaces/ConditionSetUpdate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Condition<wbr/>Set<wbr/>Update</span></a></li>
-<li><a href="interfaces/Context.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Context</span></a></li>
-<li><a href="interfaces/ContextTransform.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Context<wbr/>Transform</span></a></li>
-<li><a href="interfaces/EmbeddedLoginRequestOutputWithContent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Embedded<wbr/>Login<wbr/>Request<wbr/>Output<wbr/>With<wbr/>Content</span></a></li>
-<li><a href="interfaces/EnvironmentCopy.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Environment<wbr/>Copy</span></a></li>
-<li><a href="interfaces/EnvironmentCopyScope.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Environment<wbr/>Copy<wbr/>Scope</span></a></li>
-<li><a href="interfaces/EnvironmentCopyScopeFilters.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Environment<wbr/>Copy<wbr/>Scope<wbr/>Filters</span></a></li>
-<li><a href="interfaces/EnvironmentCopyTarget.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Environment<wbr/>Copy<wbr/>Target</span></a></li>
-<li><a href="interfaces/EnvironmentCreate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Environment<wbr/>Create</span></a></li>
-<li><a href="interfaces/EnvironmentRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Environment<wbr/>Read</span></a></li>
-<li><a href="interfaces/EnvironmentStats.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Environment<wbr/>Stats</span></a></li>
-<li><a href="interfaces/EnvironmentUpdate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Environment<wbr/>Update</span></a></li>
-<li><a href="interfaces/IConditionSetRulesApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>ICondition<wbr/>Set<wbr/>Rules<wbr/>Api</span></a></li>
-<li><a href="interfaces/IConditionSetsApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>ICondition<wbr/>Sets<wbr/>Api</span></a></li>
-<li><a href="interfaces/ICreateOrUpdateUserResult.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>ICreate<wbr/>Or<wbr/>Update<wbr/>User<wbr/>Result</span></a></li>
-<li><a href="interfaces/IDeprecatedPermitApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IDeprecated<wbr/>Permit<wbr/>Api</span></a></li>
-<li><a href="interfaces/IDeprecatedReadApis.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IDeprecated<wbr/>Read<wbr/>Apis</span></a></li>
-<li><a href="interfaces/IDeprecatedWriteApis.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IDeprecated<wbr/>Write<wbr/>Apis</span></a></li>
-<li><a href="interfaces/IEnvironmentsApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IEnvironments<wbr/>Api</span></a></li>
-<li><a href="interfaces/IGetUserRoles.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IGet<wbr/>User<wbr/>Roles</span></a></li>
-<li><a href="interfaces/IListActionGroups.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IList<wbr/>Action<wbr/>Groups</span></a></li>
-<li><a href="interfaces/IListActions.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IList<wbr/>Actions</span></a></li>
-<li><a href="interfaces/IListAttributes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IList<wbr/>Attributes</span></a></li>
-<li><a href="interfaces/IListConditionSetRules.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IList<wbr/>Condition<wbr/>Set<wbr/>Rules</span></a></li>
-<li><a href="interfaces/IListEnvironments.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IList<wbr/>Environments</span></a></li>
-<li><a href="interfaces/IListResourceUsers.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IList<wbr/>Resource<wbr/>Users</span></a></li>
-<li><a href="interfaces/IListRoleAssignments.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IList<wbr/>Role<wbr/>Assignments</span></a></li>
-<li><a href="interfaces/IListTenantUsers.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IList<wbr/>Tenant<wbr/>Users</span></a></li>
-<li><a href="interfaces/IListTenantsParams.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IList<wbr/>Tenants<wbr/>Params</span></a></li>
-<li><a href="interfaces/IPagination.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IPagination</span></a></li>
-<li><a href="interfaces/IPermitApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IPermit<wbr/>Api</span></a></li>
-<li><a href="interfaces/IPermitClient.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IPermit<wbr/>Client</span></a></li>
-<li><a href="interfaces/IPermitConfig.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IPermit<wbr/>Config</span></a></li>
-<li><a href="interfaces/IPermitElementsApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IPermit<wbr/>Elements<wbr/>Api</span></a></li>
-<li><a href="interfaces/IProjectsApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IProjects<wbr/>Api</span></a></li>
-<li><a href="interfaces/IResource.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IResource</span></a></li>
-<li><a href="interfaces/IResourceActionGroupsApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IResource<wbr/>Action<wbr/>Groups<wbr/>Api</span></a></li>
-<li><a href="interfaces/IResourceActionsApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IResource<wbr/>Actions<wbr/>Api</span></a></li>
-<li><a href="interfaces/IResourceAttributesApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IResource<wbr/>Attributes<wbr/>Api</span></a></li>
-<li><a href="interfaces/IResourcesApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IResources<wbr/>Api</span></a></li>
-<li><a href="interfaces/IRoleAssignmentsApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IRole<wbr/>Assignments<wbr/>Api</span></a></li>
-<li><a href="interfaces/IRolesApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IRoles<wbr/>Api</span></a></li>
-<li><a href="interfaces/ITenantsApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>ITenants<wbr/>Api</span></a></li>
-<li><a href="interfaces/IUser.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IUser</span></a></li>
-<li><a href="interfaces/IUsersApi.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IUsers<wbr/>Api</span></a></li>
-<li><a href="interfaces/IUsersListParams.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IUsers<wbr/>List<wbr/>Params</span></a></li>
-<li><a href="interfaces/OrgMemberRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Org<wbr/>Member<wbr/>Read</span></a></li>
-<li><a href="interfaces/PaginatedResultUserRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Paginated<wbr/>Result<wbr/>User<wbr/>Read</span></a></li>
-<li><a href="interfaces/ParentId.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Parent<wbr/>Id</span></a></li>
-<li><a href="interfaces/ProjectCreate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Project<wbr/>Create</span></a></li>
-<li><a href="interfaces/ProjectRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Project<wbr/>Read</span></a></li>
-<li><a href="interfaces/ProjectUpdate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Project<wbr/>Update</span></a></li>
-<li><a href="interfaces/ResourceActionCreate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Resource<wbr/>Action<wbr/>Create</span></a></li>
-<li><a href="interfaces/ResourceActionGroupCreate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Resource<wbr/>Action<wbr/>Group<wbr/>Create</span></a></li>
-<li><a href="interfaces/ResourceActionGroupRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Resource<wbr/>Action<wbr/>Group<wbr/>Read</span></a></li>
-<li><a href="interfaces/ResourceActionRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Resource<wbr/>Action<wbr/>Read</span></a></li>
-<li><a href="interfaces/ResourceActionUpdate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Resource<wbr/>Action<wbr/>Update</span></a></li>
-<li><a href="interfaces/ResourceAttributeCreate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Resource<wbr/>Attribute<wbr/>Create</span></a></li>
-<li><a href="interfaces/ResourceAttributeRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Resource<wbr/>Attribute<wbr/>Read</span></a></li>
-<li><a href="interfaces/ResourceAttributeUpdate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Resource<wbr/>Attribute<wbr/>Update</span></a></li>
-<li><a href="interfaces/ResourceCreate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Resource<wbr/>Create</span></a></li>
-<li><a href="interfaces/ResourceId.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Resource<wbr/>Id</span></a></li>
-<li><a href="interfaces/ResourceRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Resource<wbr/>Read</span></a></li>
-<li><a href="interfaces/ResourceReplace.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Resource<wbr/>Replace</span></a></li>
-<li><a href="interfaces/ResourceUpdate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Resource<wbr/>Update</span></a></li>
-<li><a href="interfaces/RoleAssignmentCreate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Role<wbr/>Assignment<wbr/>Create</span></a></li>
-<li><a href="interfaces/RoleAssignmentRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Role<wbr/>Assignment<wbr/>Read</span></a></li>
-<li><a href="interfaces/RoleAssignmentRemove.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Role<wbr/>Assignment<wbr/>Remove</span></a></li>
-<li><a href="interfaces/RoleCreate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Role<wbr/>Create</span></a></li>
-<li><a href="interfaces/RoleRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Role<wbr/>Read</span></a></li>
-<li><a href="interfaces/RoleUpdate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Role<wbr/>Update</span></a></li>
-<li><a href="interfaces/Statistics.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Statistics</span></a></li>
-<li><a href="interfaces/TenantCreate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Tenant<wbr/>Create</span></a></li>
-<li><a href="interfaces/TenantRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Tenant<wbr/>Read</span></a></li>
-<li><a href="interfaces/TenantUpdate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Tenant<wbr/>Update</span></a></li>
-<li><a href="interfaces/UserCreate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>User<wbr/>Create</span></a></li>
-<li><a href="interfaces/UserInTenant.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>User<wbr/>In<wbr/>Tenant</span></a></li>
-<li><a href="interfaces/UserRead.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>User<wbr/>Read</span></a></li>
-<li><a href="interfaces/UserRole.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>User<wbr/>Role</span></a></li>
-<li><a href="interfaces/UserUpdate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>User<wbr/>Update</span></a></li>
-<li><a href="interfaces/loginAsSchema.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>login<wbr/>As<wbr/>Schema</span></a></li>
-<li><a href="types/EnvironmentCopyConflictStrategyEnum.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-4194304"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-type-alias)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z" fill="var(--color-text)"></path></g></svg><span>Environment<wbr/>Copy<wbr/>Conflict<wbr/>Strategy<wbr/>Enum</span></a></li>
-<li><a href="types/IAction.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>IAction</span></a></li>
-<li><a href="variables/EnvironmentCopyConflictStrategyEnum-1.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-32"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-variable)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.106 16L8.85 7.24H9.966L11.454 13.192C11.558 13.608 11.646 13.996 11.718 14.356C11.79 14.708 11.842 14.976 11.874 15.16C11.906 14.976 11.954 14.708 12.018 14.356C12.09 13.996 12.178 13.608 12.282 13.192L13.758 7.24H14.85L12.582 16H11.106Z" fill="var(--color-text)"></path></g></svg><span>Environment<wbr/>Copy<wbr/>Conflict<wbr/>Strategy<wbr/>Enum</span></a></li></ul></nav></div></div></div>
-<div class="tsd-generator">
-<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
+<nav class="tsd-navigation"><a href="modules.html">permitio</a>
+<ul class="tsd-small-nested-navigation" id="tsd-nav-container">
+<li>Loading...</li></ul></nav></div></div></div><footer>
+<p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer>
 <div class="overlay"></div></body></html>

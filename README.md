@@ -16,6 +16,8 @@ CommonJS (`require`) and ES module (`import`) entry points.
 npm install permitio
 ```
 
+See the [3.0 migration guide](MIGRATION.md) for grouped API replacements and removed exports.
+
 ## Development
 
 Use the Node version in `.nvmrc` and pnpm 12.8.1, pinned in `package.json`.
@@ -214,7 +216,7 @@ try {
 }
 ```
 
-REST failures, including retained deprecated methods, throw named `PermitApiError` errors.
+REST failures throw named `PermitApiError` errors.
 The SDK accepts `message`, `detail` (including validation-error arrays), and text error bodies;
 missing descriptions fall back to the HTTP status or transport failure. `status`, `code` and a
 detached safe `cause` retain failure metadata. API-key scope failures use `PermitContextError`

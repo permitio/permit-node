@@ -145,19 +145,6 @@ describe('REST API errors (unit)', () => {
       expect(serialized.originalError.status).toBe(status);
       expect(serialized.originalError.config.method).toBe('get');
     });
-
-    const deprecatedError = `a ${status} error from a deprecated REST method`;
-    it(`PER-16544: ${deprecatedError} does not expose the API key`, async () => {
-      const permit = createPermit(await startApi({ status, body }));
-      const error = await rejectionOf(permit.api.getUser('user-1'));
-      expect(error).toBeInstanceOf(PermitApiError);
-      assert(error instanceof PermitApiError);
-      assertNoSecrets(error);
-      expect(error.response?.status).toBe(status);
-      expect(error.response?.data).toStrictEqual(body);
-      expect(error.originalError.config?.method).toBe('get');
-      expect(pathOf(error.originalError.config?.url)).toBe(USER_PATH);
-    });
   }
 
   it('PER-16544: a REST transport error does not expose the API key', async () => {

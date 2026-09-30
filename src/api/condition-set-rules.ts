@@ -26,16 +26,16 @@ export interface IListConditionSetRules extends IPagination {
   /**
    * the key of the userset, if used only rules matching that userset will be fetched.
    */
-  userSetKey: string;
+  userSetKey?: string;
   /**
    * the key of the permission, formatted as <resource>:<action>.
    * if used only rules granting that permission will be fetched.
    */
-  permissionKey: string;
+  permissionKey?: string;
   /**
    * the key of the resourceset, if used only rules matching that resourceset will be fetched.
    */
-  resourceSetKey: string;
+  resourceSetKey?: string;
 }
 
 /**
@@ -50,7 +50,7 @@ export interface IConditionSetRulesApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  list(params: IListConditionSetRules): Promise<ConditionSetRuleRead[]>;
+  list(params?: IListConditionSetRules): Promise<ConditionSetRuleRead[]>;
 
   /**
    * Creates a new condition set rule.
@@ -98,17 +98,17 @@ export class ConditionSetRulesApi extends BasePermitApi implements IConditionSet
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async list(params: IListConditionSetRules): Promise<ConditionSetRuleRead[]> {
+  public async list(params?: IListConditionSetRules): Promise<ConditionSetRuleRead[]> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
-    const { userSetKey, permissionKey, resourceSetKey, page = 1, perPage = 100 } = params;
+    const { userSetKey, permissionKey, resourceSetKey, page = 1, perPage = 100 } = params ?? {};
     try {
       return (
         await this.setRules.listSetPermissions({
           ...this.config.apiContext.environmentContext,
-          userSet: userSetKey,
-          permission: permissionKey,
-          resourceSet: resourceSetKey,
+          ...(userSetKey !== undefined && { userSet: userSetKey }),
+          ...(permissionKey !== undefined && { permission: permissionKey }),
+          ...(resourceSetKey !== undefined && { resourceSet: resourceSetKey }),
           page,
           perPage,
         })

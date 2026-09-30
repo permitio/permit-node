@@ -284,5 +284,5 @@ test('context setters enforce permissions and keep the previous selection on rej
   expect(context.environment).toBeNull();
   context.setOrganizationLevelContext('org');
   expect(context.project).toBeNull();
-  expect(context.level).toBe(context.permittedAccessLevel);
+  expect(context.permittedAccessLevel).toBe(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
 });

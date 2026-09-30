@@ -6,6 +6,7 @@ import {
   type ConditionSetCreate,
   type ConditionSetRead,
   type ConditionSetUpdate,
+  type ConditionSetType,
 } from '#src/openapi/index';
 import { BASE_PATH } from '#src/openapi/base';
 
@@ -22,16 +23,22 @@ export {
   type ConditionSetUpdate,
 } from '#src/openapi/index';
 
+/** Filters and pagination for condition-set listing. */
+export interface IListConditionSets extends IPagination {
+  /** Return only user sets or resource sets; omitted means both kinds. */
+  type?: ConditionSetType;
+}
+
 export interface IConditionSetsApi {
   /**
    * Retrieves a list of condition sets.
    *
-   * @param pagination The pagination options, @see {@link IPagination}
+   * @param params - Optional type filter and pagination, @see {@link IListConditionSets}
    * @returns A promise that resolves to an array of condition sets.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  list(pagination?: IPagination): Promise<ConditionSetRead[]>;
+  list(params?: IListConditionSets): Promise<ConditionSetRead[]>;
 
   /**
    * Retrieves a condition set by its key.
@@ -120,19 +127,20 @@ export class ConditionSetsApi extends BasePermitApi implements IConditionSetsApi
   /**
    * Retrieves a list of condition sets.
    *
-   * @param pagination The pagination options, @see {@link IPagination}
+   * @param params - Optional type filter and pagination, @see {@link IListConditionSets}
    * @returns A promise that resolves to an array of condition sets.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async list(pagination?: IPagination): Promise<ConditionSetRead[]> {
-    const { page = 1, perPage = 100 } = pagination ?? {};
+  public async list(params?: IListConditionSets): Promise<ConditionSetRead[]> {
+    const { type, page = 1, perPage = 100 } = params ?? {};
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = (
         await this.conditionSets.listConditionSets({
           ...this.config.apiContext.environmentContext,
+          ...(type !== undefined && { type }),
           page,
           perPage,
         })

@@ -556,9 +556,7 @@ export function extractSdk(root) {
       const dispatches = routes.filter((route) => !route.supporting);
       const entry = {
         name: `${prefix}.${name}`,
-        deprecated:
-          method.parent.name.text === 'DeprecatedApiClient' ||
-          ts.getJSDocDeprecatedTag(method) !== undefined,
+        deprecated: ts.getJSDocDeprecatedTag(method) !== undefined,
         signature: signature(method, checker),
         publicSignatures: type
           .getCallSignatures()

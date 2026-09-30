@@ -36,11 +36,7 @@ export {
   PermitError,
   PermitPDPStatusError,
 } from '#src/enforcement/enforcer';
-export {
-  type Context,
-  type ContextTransform,
-  type GetUserPermissionsConfig,
-} from '#src/utils/context';
+export { type Context, type GetUserPermissionsConfig } from '#src/utils/context';
 export { ApiContext, PermitContextError, ApiKeyLevel } from '#src/api/context';
 export { PermitApiError } from '#src/api/base';
 export { type IRetryConfig, type RetryConditionFn, RETRYABLE_STATUS_CODES } from '#src/utils/retry';

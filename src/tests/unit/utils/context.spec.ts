@@ -53,38 +53,4 @@ describe('ContextStore (unit)', () => {
       expect(derived).not.toBe(query);
     });
   });
-
-  describe('registerTransform / transform', () => {
-    it('applies registered transforms in registration order', () => {
-      store.registerTransform((ctx) => ({ ...ctx, order: [...(ctx['order'] ?? []), 1] }));
-      store.registerTransform((ctx) => ({ ...ctx, order: [...(ctx['order'] ?? []), 2] }));
-
-      expect(store.transform({})).toEqual({ order: [1, 2] });
-    });
-
-    it('feeds each transform the output of the previous one', () => {
-      store.registerTransform((ctx) => ({ ...ctx, x: 1 }));
-      store.registerTransform((ctx) => ({ ...ctx, y: ctx['x'] + 1 }));
-
-      expect(store.transform({})).toEqual({ x: 1, y: 2 });
-    });
-
-    it('returns a copy of the initial context when no transforms are registered', () => {
-      const initial: Context = { a: 1 };
-
-      const result = store.transform(initial);
-
-      expect(result).toEqual({ a: 1 });
-      expect(result).not.toBe(initial);
-    });
-
-    it('does not mutate the initial context passed to transform', () => {
-      const initial: Context = { a: 1 };
-      store.registerTransform((ctx) => ({ ...ctx, b: 2 }));
-
-      store.transform(initial);
-
-      expect(initial).toEqual({ a: 1 });
-    });
-  });
 });

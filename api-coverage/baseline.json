@@ -2,19 +2,19 @@
   "scope": "Reviewed Node AST evidence, not a shared target",
   "sdk": {
     "authoredClassShapes": {
-      "src/api/api-client.ts:ApiClient": "74c161370555a19b3353d24c8b0d2ea3b347e332d22522350dc1e07b27d3b775",
+      "src/api/api-client.ts:ApiClient": "bd4f65f6442109fdc855ced0dab8368b21e528b91bc5c338f2fd97635d4ecba1",
       "src/api/base.ts:BaseFactsPermitAPI": "d54abe08baf1c3cf60b7c2dcc6de5daa886d258067988490df118b6f042e7c40",
       "src/api/base.ts:BasePermitApi": "c226bd3d4f364e0484706683e1073a21ac6fa201749ffa2903dae4ed1d6d0239",
       "src/api/base.ts:PermitApiError": "6aa8dbec715101edd3fe8b7835cc023149bf80f041964aa6f18783d1daa47f9a",
-      "src/api/condition-set-rules.ts:ConditionSetRulesApi": "563bf373b2e2172af153d97b26381b9194f7c7725fc2b5dca5bc7db292cb1de3",
-      "src/api/condition-sets.ts:ConditionSetsApi": "765c3a4d7b620b2eaacfb4844396cc736d79c7c277cf001e7b6355cd0d18a518",
-      "src/api/context.ts:ApiContext": "d0216876b55e5a0b6cb708113507f53e3f8bdcc7f4b675e8a25597637c4e9c32",
+      "src/api/condition-set-rules.ts:ConditionSetRulesApi": "4cc9ae3de9b9fa0cb6e4f781479330b9bd279f615202af4abe8adb8db47ea76e",
+      "src/api/condition-sets.ts:ConditionSetsApi": "b1c3e6d605536a286a0b5b4051d90e08d4f91dc99886073f3300d5eac42524d2",
+      "src/api/context.ts:ApiContext": "6615adc35376c7368fc46e864ee3dcee30bdea3771470fe16e7e7fc21e560c1a",
       "src/api/context.ts:PermitContextChangeError": "15512e4e2f0e61c047c9b8ce2f2ea571b355649ffcb8e7849952f5a361191c40",
       "src/api/context.ts:PermitContextError": "bd676798f4c3b1eae37b00bd62c9116792f7db977899800e9d8dda4c0568b6ee",
-      "src/api/deprecated.ts:DeprecatedApiClient": "136242f5dc531552b76706db32653e95a62f90b107a1a10a8a3bc1cb1fdd058a",
       "src/api/elements.ts:ElementsClient": "28b2c12fed9a0c22c3f340213dc0f5de0c750827e99eafff67ee7850a622c822",
       "src/api/environments.ts:EnvironmentsApi": "e9cbc89b391cf15cb41034d3d6de045aae1672aa1d13a20e405afc9e9f515cae",
       "src/api/groups.ts:GroupsApi": "d971dc683695b0d5c5eea026e26f8aee661397231b5aab6d37eb1fef865ae2cc",
+      "src/api/pdps.ts:PdpsApi": "017e9bcd53ea41fc029b18c453cbf349c731613c9a994f236cb4029e5a1ae4b4",
       "src/api/projects.ts:ProjectsApi": "6160a88ca2873cb03fdbbf74aa80af386412ecf951a9d55ecc208f391c0f38e1",
       "src/api/relationship-tuples.ts:RelationshipTuplesApi": "d00e5554087790967f936173301c40375b73bfe31e178ab12eb760b4a7fc104d",
       "src/api/resource-action-groups.ts:ResourceActionGroupsApi": "8cb11d18e3a92d70b411e8c32f705494dea95fcef42b4f3c45c7eb3c7a4449bc",
@@ -29,18 +29,17 @@
       "src/api/tenants.ts:TenantsApi": "e4eac91e4bda02007f602cda0264a03ccf192f38593c7e94efc26e228d638e95",
       "src/api/users.ts:UsersApi": "4873322e964985928eba4ec3a4e4156870021fe8df7d78eabd51b965bba02590",
       "src/config.ts:ConfigFactory": "5dc5eeecb95886e850dae6c76c83ab96ac7c3f3661cee616d47e8e9f5dde4be4",
-      "src/enforcement/enforcer.ts:Enforcer": "e28263d8d0524865cbe7cc44a716d9b2bd64758f390ceca1a2e91fdc23532083",
+      "src/enforcement/enforcer.ts:Enforcer": "c94d57cc39709aa00c81bd6aaede74a943ff3af54f96c4586d363644bb73dff2",
       "src/enforcement/enforcer.ts:PermitConnectionError": "86cd79f9aa748daf1d8324a63993215e2aa1d7b7a05fdb71229666d5ad98dffb",
       "src/enforcement/enforcer.ts:PermitError": "93daac3739a0e4feefad07b32fd3817ddfd0682880874c0783c9ffd8d528e8c9",
       "src/enforcement/enforcer.ts:PermitPDPStatusError": "25fff480295bb4b4afaca85625891e5ea3e98c8767a68333a2a246f3a4acd82a",
       "src/index.ts:Permit": "d4df300273e2b47ac939cb68e3a4796ab4604b84b1b1fc6da75c81df8fcee791",
       "src/logger.ts:LoggerFactory": "ac4bd9886641019a5aa3fb64bfe2d4baac7b8904c854afcbcda48af87fb35974",
-      "src/utils/context.ts:ContextStore": "cc2bd712204599d5662ec76c578a5ce78b62c8817d28062413e667d26d7d8753",
-      "src/api/pdps.ts:PdpsApi": "017e9bcd53ea41fc029b18c453cbf349c731613c9a994f236cb4029e5a1ae4b4"
+      "src/utils/context.ts:ContextStore": "0a94c1379b87bea55588ee5624ef329a97befe0e32988588dce84847798c2d09"
     },
     "authoredShapes": {
       "src/api/api-client.ts:IPermitApi": {
-        "extends": [" extends IDeprecatedPermitApi"],
+        "extends": [],
         "kind": "interface",
         "members": [
           "actionGroups: IResourceActionGroupsApi;",
@@ -108,13 +107,13 @@
         "members": [
           "create(rule: ConditionSetRuleCreate): Promise<ConditionSetRuleRead>;",
           "delete(rule: ConditionSetRuleRemove): Promise<void>;",
-          "list(params: IListConditionSetRules): Promise<ConditionSetRuleRead[]>;"
+          "list(params?: IListConditionSetRules): Promise<ConditionSetRuleRead[]>;"
         ]
       },
       "src/api/condition-set-rules.ts:IListConditionSetRules": {
         "extends": [" extends IPagination"],
         "kind": "interface",
-        "members": ["permissionKey: string;", "resourceSetKey: string;", "userSetKey: string;"]
+        "members": ["permissionKey?: string;", "resourceSetKey?: string;", "userSetKey?: string;"]
       },
       "src/api/condition-sets.ts:IConditionSetsApi": {
         "extends": [],
@@ -125,9 +124,14 @@
           "get(conditionSetKey: string): Promise<ConditionSetRead>;",
           "getById(conditionSetId: string): Promise<ConditionSetRead>;",
           "getByKey(conditionSetKey: string): Promise<ConditionSetRead>;",
-          "list(pagination?: IPagination): Promise<ConditionSetRead[]>;",
+          "list(params?: IListConditionSets): Promise<ConditionSetRead[]>;",
           "update(conditionSetKey: string, conditionSetData: ConditionSetUpdate): Promise<ConditionSetRead>;"
         ]
+      },
+      "src/api/condition-sets.ts:IListConditionSets": {
+        "extends": [" extends IPagination"],
+        "kind": "interface",
+        "members": ["type?: ConditionSetType;"]
       },
       "src/api/context.ts:ApiContextLevel": {
         "kind": "enum",
@@ -164,52 +168,6 @@
       "src/api/context.ts:Selection": {
         "kind": "type",
         "type": "{\n    level: ApiContextLevel.WAIT_FOR_INIT;\n    organization: null;\n    project: null;\n    environment: null;\n} | {\n    level: ApiContextLevel.ORGANIZATION;\n    organization: string;\n    project: null;\n    environment: null;\n} | {\n    level: ApiContextLevel.PROJECT;\n    organization: string;\n    project: string;\n    environment: null;\n} | {\n    level: ApiContextLevel.ENVIRONMENT;\n    organization: string;\n    project: string;\n    environment: string;\n}"
-      },
-      "src/api/deprecated.ts:IDeprecatedPermitApi": {
-        "extends": [" extends IDeprecatedReadApis, IDeprecatedWriteApis"],
-        "kind": "interface",
-        "members": []
-      },
-      "src/api/deprecated.ts:IDeprecatedReadApis": {
-        "extends": [],
-        "kind": "interface",
-        "members": [
-          "getAssignedRoles(user: string, tenant?: string): Promise<RoleAssignmentRead[]>;",
-          "getRole(roleId: string): Promise<RoleRead>;",
-          "getTenant(tenantId: string): Promise<TenantRead>;",
-          "getUser(userId: string): Promise<UserRead>;",
-          "listConditionSets(type: string, page: number, per_page: number): Promise<ConditionSetRead[]>;",
-          "listConditionSetsRules(page: number, per_page: number): Promise<ConditionSetRuleRead[]>;",
-          "listRoles(): Promise<RoleRead[]>;",
-          "listUsers(): Promise<UserRead[]>;"
-        ]
-      },
-      "src/api/deprecated.ts:IDeprecatedWriteApis": {
-        "extends": [],
-        "kind": "interface",
-        "members": [
-          "assignConditionSetRule(conditionSetRule: ConditionSetRuleCreate): Promise<ConditionSetRuleRead[]>;",
-          "assignRole(assignedRole: RoleAssignmentCreate): Promise<RoleAssignmentRead>;",
-          "createConditionSet(conditionSet: ConditionSetCreate): Promise<ConditionSetRead>;",
-          "createResource(resource: ResourceCreate): Promise<ResourceRead>;",
-          "createRole(role: RoleCreate): Promise<RoleRead>;",
-          "createTenant(tenant: TenantCreate): Promise<TenantRead>;",
-          "createUser(user: UserCreate): Promise<UserRead>;",
-          "deleteConditionSet(conditionSetId: string): Promise<AxiosResponse<void>>;",
-          "deleteResource(resourceId: string): Promise<AxiosResponse<void>>;",
-          "deleteRole(roleId: string): Promise<AxiosResponse<void>>;",
-          "deleteTenant(tenantId: string): Promise<AxiosResponse<void>>;",
-          "deleteUser(userId: string): Promise<AxiosResponse<void>>;",
-          "listTenants(page?: number): Promise<TenantRead[]>;",
-          "syncUser(user: UserCreate): Promise<UserRead>;",
-          "unassignConditionSetRule(conditionSetRule: ConditionSetRuleRemove): Promise<AxiosResponse<void>>;",
-          "unassignRole(removedRole: RoleAssignmentRemove): Promise<AxiosResponse<RoleAssignmentRead>>;",
-          "updateConditionSet(conditionSetId: string, conditionSet: ConditionSetUpdate): Promise<ConditionSetRead>;",
-          "updateResource(resourceId: string, resource: ResourceUpdate): Promise<ResourceRead>;",
-          "updateRole(roleId: string, role: RoleUpdate): Promise<RoleRead>;",
-          "updateTenant(tenantId: string, tenant: TenantUpdate): Promise<TenantRead>;",
-          "updateUser(userId: string, user: UserUpdate): Promise<UserRead>;"
-        ]
       },
       "src/api/elements.ts:ElementsApiErrors": {
         "kind": "enum",
@@ -276,6 +234,17 @@
         "extends": [" extends IPagination"],
         "kind": "interface",
         "members": ["resource?: string;", "search?: string;", "tenant?: string;"]
+      },
+      "src/api/pdps.ts:IEnvironmentPdpDataRefreshRequest": {
+        "kind": "type",
+        "type": "Pick<PDPDataRefreshRequest, 'reason'>"
+      },
+      "src/api/pdps.ts:IPdpsApi": {
+        "extends": [],
+        "kind": "interface",
+        "members": [
+          "refresh(request?: IEnvironmentPdpDataRefreshRequest): Promise<PDPDataRefreshResponse>;"
+        ]
       },
       "src/api/projects.ts:IProjectsApi": {
         "extends": [],
@@ -367,6 +336,11 @@
           "list(params: IListAttributes): Promise<ResourceAttributeRead[]>;",
           "update(resourceKey: string, attributeKey: string, attributeData: ResourceAttributeUpdate): Promise<ResourceAttributeRead>;"
         ]
+      },
+      "src/api/resource-instances.ts:IListResourceInstanceDetailedParams": {
+        "extends": [" extends IListResourceInstanceParams"],
+        "kind": "interface",
+        "members": ["search?: string[];"]
       },
       "src/api/resource-instances.ts:IListResourceInstanceParams": {
         "extends": [" extends IPagination"],
@@ -481,6 +455,10 @@
       "src/api/role-assignments.ts:ReturnListRoleAssignments": {
         "kind": "type",
         "type": "T extends unknown ? RoleAssignmentListResult<'detailed' extends keyof T ? T['detailed'] : false, 'includeTotalCount' extends keyof T ? T['includeTotalCount'] : false> : never"
+      },
+      "src/api/role-assignments.ts:RoleAssignmentListResult": {
+        "kind": "type",
+        "type": "Details extends true ? Counts extends true ? PaginatedResultRoleAssignmentDetailedRead : RoleAssignmentDetailedRead[] : Counts extends true ? PaginatedResultRoleAssignmentRead : RoleAssignmentRead[]"
       },
       "src/api/roles.ts:IRolesApi": {
         "extends": [],
@@ -680,6 +658,27 @@
         "kind": "type",
         "type": "string"
       },
+      "src/enforcement/interfaces.ts:IAuthorizedUserAssignment": {
+        "extends": [],
+        "kind": "interface",
+        "members": [
+          "[id: string]: unknown;",
+          "resource: string;",
+          "role: string;",
+          "tenant: string;",
+          "user: string;"
+        ]
+      },
+      "src/enforcement/interfaces.ts:IAuthorizedUsersResult": {
+        "extends": [],
+        "kind": "interface",
+        "members": [
+          "[id: string]: unknown;",
+          "resource: string;",
+          "tenant: string;",
+          "users: Record<string, IAuthorizedUserAssignment[]>;"
+        ]
+      },
       "src/enforcement/interfaces.ts:ICheckInput": {
         "extends": [],
         "kind": "interface",
@@ -704,6 +703,11 @@
           "resource: IResource | string;",
           "user: IUser | string;"
         ]
+      },
+      "src/enforcement/interfaces.ts:IFilterObject": {
+        "extends": [" extends IResource"],
+        "kind": "interface",
+        "members": ["context?: Context;"]
       },
       "src/enforcement/interfaces.ts:IGetUserPermissionsInput": {
         "extends": [],
@@ -798,10 +802,19 @@
         "kind": "interface",
         "members": ["[id: string]: any;"]
       },
-      "src/utils/context.ts:ContextTransform": {
+      "src/utils/context.ts:GetUserPermissionsConfig": {
+        "extends": [" extends CheckConfig"],
+        "kind": "interface",
+        "members": ["context?: Context;"]
+      },
+      "src/utils/diagnostics.ts:CollectedSecrets": {
         "extends": [],
         "kind": "interface",
-        "members": ["(context: Context): Context;"]
+        "members": ["complete: boolean;", "values: string[];"]
+      },
+      "src/utils/diagnostics.ts:SecretContext": {
+        "kind": "type",
+        "type": "readonly string[] | CollectedSecrets"
       },
       "src/utils/dict.ts:Dict": {
         "kind": "type",
@@ -817,11 +830,6 @@
           "name: string;",
           "retry: IResolvedRetryConfig;"
         ]
-      },
-      "src/utils/regex.ts:RegexMatch": {
-        "extends": [],
-        "kind": "interface",
-        "members": ["end: number;", "groups: string[];", "length: number;", "start: number;"]
       },
       "src/utils/retry.ts:IResolvedRetryConfig": {
         "extends": [],
@@ -854,66 +862,6 @@
       "src/utils/retry.ts:RetryConditionFn": {
         "kind": "type",
         "type": "(error: AxiosError) => boolean"
-      },
-      "src/utils/diagnostics.ts:CollectedSecrets": {
-        "extends": [],
-        "kind": "interface",
-        "members": ["complete: boolean;", "values: string[];"]
-      },
-      "src/utils/diagnostics.ts:SecretContext": {
-        "kind": "type",
-        "type": "readonly string[] | CollectedSecrets"
-      },
-      "src/api/pdps.ts:IEnvironmentPdpDataRefreshRequest": {
-        "kind": "type",
-        "type": "Pick<PDPDataRefreshRequest, 'reason'>"
-      },
-      "src/api/pdps.ts:IPdpsApi": {
-        "extends": [],
-        "kind": "interface",
-        "members": [
-          "refresh(request?: IEnvironmentPdpDataRefreshRequest): Promise<PDPDataRefreshResponse>;"
-        ]
-      },
-      "src/api/resource-instances.ts:IListResourceInstanceDetailedParams": {
-        "extends": [" extends IListResourceInstanceParams"],
-        "kind": "interface",
-        "members": ["search?: string[];"]
-      },
-      "src/api/role-assignments.ts:RoleAssignmentListResult": {
-        "kind": "type",
-        "type": "Details extends true ? Counts extends true ? PaginatedResultRoleAssignmentDetailedRead : RoleAssignmentDetailedRead[] : Counts extends true ? PaginatedResultRoleAssignmentRead : RoleAssignmentRead[]"
-      },
-      "src/enforcement/interfaces.ts:IAuthorizedUserAssignment": {
-        "extends": [],
-        "kind": "interface",
-        "members": [
-          "[id: string]: unknown;",
-          "resource: string;",
-          "role: string;",
-          "tenant: string;",
-          "user: string;"
-        ]
-      },
-      "src/enforcement/interfaces.ts:IAuthorizedUsersResult": {
-        "extends": [],
-        "kind": "interface",
-        "members": [
-          "[id: string]: unknown;",
-          "resource: string;",
-          "tenant: string;",
-          "users: Record<string, IAuthorizedUserAssignment[]>;"
-        ]
-      },
-      "src/enforcement/interfaces.ts:IFilterObject": {
-        "extends": [" extends IResource"],
-        "kind": "interface",
-        "members": ["context?: Context;"]
-      },
-      "src/utils/context.ts:GetUserPermissionsConfig": {
-        "extends": [" extends CheckConfig"],
-        "kind": "interface",
-        "members": ["context?: Context;"]
       }
     },
     "functionShapes": {
@@ -1035,7 +983,7 @@
         }
       },
       "src/api/context.ts:snapshotApiContext": {
-        "implementationSha256": "b1077fdcd25c8cd777a6aa49bfa1cb690775467074de83eed02b60945b554649",
+        "implementationSha256": "9ae84fab15fd536e2d49226091ebe1ddfbdff76f5046206f99428824132961bf",
         "signature": {
           "generics": [],
           "parameters": [
@@ -1395,6 +1343,21 @@
           "returns": "TenantDetails[]"
         }
       },
+      "src/enforcement/responses.ts:parseAuthorizedUsersResponse": {
+        "implementationSha256": "36351955abe299a5b88949e9b16be0a5dab108310f5b74c726cb28a6040fd51a",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            }
+          ],
+          "returns": "IAuthorizedUsersResult"
+        }
+      },
       "src/enforcement/responses.ts:parseBulkResponse": {
         "implementationSha256": "cda5acb1ab33f6db718593e4cfc858fbfe4ee013d14f74e5c2463b910e32c397",
         "signature": {
@@ -1444,6 +1407,21 @@
             }
           ],
           "returns": "IUserPermissions"
+        }
+      },
+      "src/enforcement/responses.ts:parseUserTenantsResponse": {
+        "implementationSha256": "aec2cb606825f30e55aa71e346565e9f58f0768e4d99f4ce8c80bea010b0dcb2",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            }
+          ],
+          "returns": "TenantDetails[]"
         }
       },
       "src/enforcement/responses.ts:readPermissionEntry": {
@@ -1497,40 +1475,294 @@
           "returns": "void"
         }
       },
-      "src/utils/dict.ts:dictZip": {
-        "implementationSha256": "4d3de1bd621303aa74eadfba23965b6a563a5b6cd9d6e090809b4c0b48618b55",
+      "src/utils/diagnostics.ts:diagnosticAxiosError": {
+        "implementationSha256": "faae394b2cdc3fbf64b49106e18bc0fc14d8edec1945f1cea5b12286a870d653",
         "signature": {
           "generics": [],
           "parameters": [
             {
               "initializer": null,
-              "name": "keys",
+              "name": "error",
               "optional": false,
-              "type": "string[]"
+              "type": "AxiosError<unknown>"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "AxiosError<unknown>"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticBody": {
+        "implementationSha256": "e14d466663d594af902ce3106c6a7dae9f00b75d8188be7554e9f48d93118dca",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "unknown"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticCause": {
+        "implementationSha256": "f4fe59d8a58ca8c250c732f3656329cc05000f67215b03fe6017a3bdd1fcbb73",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "error",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "Error"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticErrorSecrets": {
+        "implementationSha256": "def85ea25a87d3cdf3cbb7a89a18d3d10e5e2d10402df96b174b5e675682cced",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "error",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "CollectedSecrets"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticMessage": {
+        "implementationSha256": "1b3bd02600d26ff373547ddaa66741f0186ecb49ec042d7e853ff3bf1753d8f8",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "error",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "string"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticMetadata": {
+        "implementationSha256": "dd245b592303a29ab7f1cc2684e2574ea121d204ccfcc5fd9fae4c54fec42aaa",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "error",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "{\n    status?: number;\n    code?: string;\n}"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticRequestSecrets": {
+        "implementationSha256": "82c47ab499f4b55e1ba93a3875b782e9af7f251ed7e1322d0007dc457aa396fe",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "error",
+              "optional": false,
+              "type": "Pick<AxiosError<unknown>, 'config' | 'response'>"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "CollectedSecrets"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticSecrets": {
+        "implementationSha256": "af87d299326eee2ccc09ea5e9bae9549572d977e87a6ff3abff9768ebea5c96b",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            }
+          ],
+          "returns": "CollectedSecrets"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticStatus": {
+        "implementationSha256": "a124b1f64f55603367e6fd0e076e2816cfbaa5a6e01acc2cba011ca9892c4070",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            }
+          ],
+          "returns": "number | undefined"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticText": {
+        "implementationSha256": "4e96845c31c905a092ce1b4d421cb1fc94b96a9bc53d9e794539293c9d5be87a",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "string"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticUrl": {
+        "implementationSha256": "b6a39dab0a13569c114669065d606957a6071e7fe838334fc4e0116c7525c7bf",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "string | undefined"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "string | undefined"
+        }
+      },
+      "src/utils/diagnostics.ts:mergeDiagnosticSecrets": {
+        "implementationSha256": "a70768620528bf45ed0f078ddf902ded7016eeba76e87bc6dd1c8811e9bdb43e",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "left",
+              "optional": false,
+              "type": "SecretContext"
             },
             {
               "initializer": null,
-              "name": "values",
+              "name": "right",
               "optional": false,
-              "type": "string[]"
+              "type": "SecretContext"
             }
           ],
-          "returns": "Record<string, string> | undefined"
+          "returns": "CollectedSecrets"
         }
       },
-      "src/utils/dict.ts:isDict": {
-        "implementationSha256": "07a370f64ccc01d47ed270856b9699ef987bc9cc92493d044445bab8f64cd2c9",
+      "src/utils/diagnostics.ts:recordDiagnosticSecrets": {
+        "implementationSha256": "3cb8505fa4fd2bb1c018a5face549836db9748d12cd5ede3c3568dcef45d4e92",
         "signature": {
           "generics": [],
           "parameters": [
             {
               "initializer": null,
-              "name": "val",
+              "name": "error",
               "optional": false,
-              "type": "any"
+              "type": "unknown"
+            },
+            {
+              "initializer": null,
+              "name": "secrets",
+              "optional": false,
+              "type": "SecretContext"
             }
           ],
-          "returns": "val is Dict"
+          "returns": "void"
+        }
+      },
+      "src/utils/diagnostics.ts:redactPrivateValues": {
+        "implementationSha256": "28bd84300e3299f34e9537e4509f9367b52448e9a2a1abb1430742480997af71",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "secrets",
+              "optional": false,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "string"
+        }
+      },
+      "src/utils/diagnostics.ts:sharedFailurePrivacy": {
+        "implementationSha256": "a47039cbbf747ed6dd8acb66e246a8877a85745293cca54216a6bb55096a96ee",
+        "signature": {
+          "generics": [],
+          "parameters": [],
+          "returns": "WeakMap<object, CollectedSecrets>"
         }
       },
       "src/utils/http-transport.ts:createOwnedTransport": {
@@ -1603,57 +1835,6 @@
             }
           ],
           "returns": "Promise<void>"
-        }
-      },
-      "src/utils/regex.ts:escapeRegex": {
-        "implementationSha256": "0b7482e4184183f3821997786874e7db2c3f9b172ca2aedfefd9471ddc77ecd1",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "s",
-              "optional": false,
-              "type": "string"
-            }
-          ],
-          "returns": "string"
-        }
-      },
-      "src/utils/regex.ts:makeRegexGlobal": {
-        "implementationSha256": "756639c099d4fa6940fc895328108ea80e5011585162d220f2ea43ca8ffce5d9",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "re",
-              "optional": false,
-              "type": "RegExp"
-            }
-          ],
-          "returns": "RegExp"
-        }
-      },
-      "src/utils/regex.ts:matchAll": {
-        "implementationSha256": "11bff7a266b14c3715ba33397867584e842edba7067a0247f2421457a19ebaa8",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "re",
-              "optional": false,
-              "type": "RegExp"
-            },
-            {
-              "initializer": null,
-              "name": "str",
-              "optional": false,
-              "type": "string"
-            }
-          ],
-          "returns": "RegexMatch[]"
         }
       },
       "src/utils/retry.ts:calculateRetryDelay": {
@@ -1756,326 +1937,6 @@
             }
           ],
           "returns": "void"
-        }
-      },
-      "src/utils/diagnostics.ts:diagnosticAxiosError": {
-        "implementationSha256": "faae394b2cdc3fbf64b49106e18bc0fc14d8edec1945f1cea5b12286a870d653",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "error",
-              "optional": false,
-              "type": "AxiosError<unknown>"
-            },
-            {
-              "initializer": "[]",
-              "name": "secrets",
-              "optional": true,
-              "type": "SecretContext"
-            }
-          ],
-          "returns": "AxiosError<unknown>"
-        }
-      },
-      "src/utils/diagnostics.ts:diagnosticBody": {
-        "implementationSha256": "e14d466663d594af902ce3106c6a7dae9f00b75d8188be7554e9f48d93118dca",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "value",
-              "optional": false,
-              "type": "unknown"
-            },
-            {
-              "initializer": "[]",
-              "name": "secrets",
-              "optional": true,
-              "type": "SecretContext"
-            }
-          ],
-          "returns": "unknown"
-        }
-      },
-      "src/utils/diagnostics.ts:diagnosticCause": {
-        "implementationSha256": "f4fe59d8a58ca8c250c732f3656329cc05000f67215b03fe6017a3bdd1fcbb73",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "error",
-              "optional": false,
-              "type": "unknown"
-            },
-            {
-              "initializer": "[]",
-              "name": "secrets",
-              "optional": true,
-              "type": "SecretContext"
-            }
-          ],
-          "returns": "Error"
-        }
-      },
-      "src/utils/diagnostics.ts:diagnosticMessage": {
-        "implementationSha256": "1b3bd02600d26ff373547ddaa66741f0186ecb49ec042d7e853ff3bf1753d8f8",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "error",
-              "optional": false,
-              "type": "unknown"
-            },
-            {
-              "initializer": "[]",
-              "name": "secrets",
-              "optional": true,
-              "type": "SecretContext"
-            }
-          ],
-          "returns": "string"
-        }
-      },
-      "src/utils/diagnostics.ts:diagnosticMetadata": {
-        "implementationSha256": "dd245b592303a29ab7f1cc2684e2574ea121d204ccfcc5fd9fae4c54fec42aaa",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "error",
-              "optional": false,
-              "type": "unknown"
-            },
-            {
-              "initializer": "[]",
-              "name": "secrets",
-              "optional": true,
-              "type": "SecretContext"
-            }
-          ],
-          "returns": "{\n    status?: number;\n    code?: string;\n}"
-        }
-      },
-      "src/utils/diagnostics.ts:diagnosticRequestSecrets": {
-        "implementationSha256": "82c47ab499f4b55e1ba93a3875b782e9af7f251ed7e1322d0007dc457aa396fe",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "error",
-              "optional": false,
-              "type": "Pick<AxiosError<unknown>, 'config' | 'response'>"
-            },
-            {
-              "initializer": "[]",
-              "name": "secrets",
-              "optional": true,
-              "type": "SecretContext"
-            }
-          ],
-          "returns": "CollectedSecrets"
-        }
-      },
-      "src/utils/diagnostics.ts:diagnosticSecrets": {
-        "implementationSha256": "af87d299326eee2ccc09ea5e9bae9549572d977e87a6ff3abff9768ebea5c96b",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "value",
-              "optional": false,
-              "type": "unknown"
-            }
-          ],
-          "returns": "CollectedSecrets"
-        }
-      },
-      "src/utils/diagnostics.ts:diagnosticText": {
-        "implementationSha256": "4e96845c31c905a092ce1b4d421cb1fc94b96a9bc53d9e794539293c9d5be87a",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "value",
-              "optional": false,
-              "type": "string"
-            },
-            {
-              "initializer": "[]",
-              "name": "secrets",
-              "optional": true,
-              "type": "SecretContext"
-            }
-          ],
-          "returns": "string"
-        }
-      },
-      "src/utils/diagnostics.ts:diagnosticUrl": {
-        "implementationSha256": "b6a39dab0a13569c114669065d606957a6071e7fe838334fc4e0116c7525c7bf",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "value",
-              "optional": false,
-              "type": "string | undefined"
-            },
-            {
-              "initializer": "[]",
-              "name": "secrets",
-              "optional": true,
-              "type": "SecretContext"
-            }
-          ],
-          "returns": "string | undefined"
-        }
-      },
-      "src/utils/diagnostics.ts:diagnosticErrorSecrets": {
-        "implementationSha256": "def85ea25a87d3cdf3cbb7a89a18d3d10e5e2d10402df96b174b5e675682cced",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "error",
-              "optional": false,
-              "type": "unknown"
-            },
-            {
-              "initializer": "[]",
-              "name": "secrets",
-              "optional": true,
-              "type": "SecretContext"
-            }
-          ],
-          "returns": "CollectedSecrets"
-        }
-      },
-      "src/utils/diagnostics.ts:diagnosticStatus": {
-        "implementationSha256": "a124b1f64f55603367e6fd0e076e2816cfbaa5a6e01acc2cba011ca9892c4070",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "value",
-              "optional": false,
-              "type": "unknown"
-            }
-          ],
-          "returns": "number | undefined"
-        }
-      },
-      "src/utils/diagnostics.ts:mergeDiagnosticSecrets": {
-        "implementationSha256": "a70768620528bf45ed0f078ddf902ded7016eeba76e87bc6dd1c8811e9bdb43e",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "left",
-              "optional": false,
-              "type": "SecretContext"
-            },
-            {
-              "initializer": null,
-              "name": "right",
-              "optional": false,
-              "type": "SecretContext"
-            }
-          ],
-          "returns": "CollectedSecrets"
-        }
-      },
-      "src/utils/diagnostics.ts:recordDiagnosticSecrets": {
-        "implementationSha256": "3cb8505fa4fd2bb1c018a5face549836db9748d12cd5ede3c3568dcef45d4e92",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "error",
-              "optional": false,
-              "type": "unknown"
-            },
-            {
-              "initializer": null,
-              "name": "secrets",
-              "optional": false,
-              "type": "SecretContext"
-            }
-          ],
-          "returns": "void"
-        }
-      },
-      "src/utils/diagnostics.ts:redactPrivateValues": {
-        "implementationSha256": "28bd84300e3299f34e9537e4509f9367b52448e9a2a1abb1430742480997af71",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "value",
-              "optional": false,
-              "type": "string"
-            },
-            {
-              "initializer": null,
-              "name": "secrets",
-              "optional": false,
-              "type": "SecretContext"
-            }
-          ],
-          "returns": "string"
-        }
-      },
-      "src/utils/diagnostics.ts:sharedFailurePrivacy": {
-        "implementationSha256": "a47039cbbf747ed6dd8acb66e246a8877a85745293cca54216a6bb55096a96ee",
-        "signature": {
-          "generics": [],
-          "parameters": [],
-          "returns": "WeakMap<object, CollectedSecrets>"
-        }
-      },
-      "src/enforcement/responses.ts:parseAuthorizedUsersResponse": {
-        "implementationSha256": "36351955abe299a5b88949e9b16be0a5dab108310f5b74c726cb28a6040fd51a",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "value",
-              "optional": false,
-              "type": "unknown"
-            }
-          ],
-          "returns": "IAuthorizedUsersResult"
-        }
-      },
-      "src/enforcement/responses.ts:parseUserTenantsResponse": {
-        "implementationSha256": "aec2cb606825f30e55aa71e346565e9f58f0768e4d99f4ce8c80bea010b0dcb2",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "value",
-              "optional": false,
-              "type": "unknown"
-            }
-          ],
-          "returns": "TenantDetails[]"
         }
       }
     },
@@ -20920,48 +20781,19 @@
       "src/api/base.ts:BasePermitApi.setContextFromApiKey": "9e0cc84d2162182c6c42f755630089f40fdecc38eedc9b6a3bd547ec348df444",
       "src/api/condition-set-rules.ts:ConditionSetRulesApi.create": "53b02a01d173d53c35606e2ce84bd2cb39ed93e14235f877f8b94466e6eb13f0",
       "src/api/condition-set-rules.ts:ConditionSetRulesApi.delete": "9960408bab5c7e0df21d584b9e5c386ccdde20e023fda2447b03a05c783d9f8f",
-      "src/api/condition-set-rules.ts:ConditionSetRulesApi.list": "d69fe805c90b53696340f180d3eed93aba222308ac6d04baedee104e6df8fc3f",
+      "src/api/condition-set-rules.ts:ConditionSetRulesApi.list": "714fc9487f2353aeb378e8347eea03b92dd3ea3532d28d276023c659c115fa4c",
       "src/api/condition-sets.ts:ConditionSetsApi.create": "634a995b6efb97e29b6cc5e3a5eff466cdd923cbb592041a865ecbd7a5f3aa5d",
       "src/api/condition-sets.ts:ConditionSetsApi.delete": "5916376dad102a0cfacaf642170696efa7fedc0f47a64c1aceea6236ba63a224",
       "src/api/condition-sets.ts:ConditionSetsApi.get": "009ed146683135ab82254146049d85e59321f8e846f6bd6ff19cc7e972a3fc68",
       "src/api/condition-sets.ts:ConditionSetsApi.getById": "dcbcd00110908b5a00ce0bdb6e7023e88e3af17d245c35f892782464c8453d32",
       "src/api/condition-sets.ts:ConditionSetsApi.getByKey": "91635673a69169b2fd6f10d0a7be607ab8a11a533de2a980bb4c6c6101ba9de0",
-      "src/api/condition-sets.ts:ConditionSetsApi.list": "3ff8238c2ef401b765e0e4baa25dcc106582a7c5764de13e9abccb65bbdeeef0",
+      "src/api/condition-sets.ts:ConditionSetsApi.list": "8f7efa7e7777e77f7ccf37b33f445ff2bfc7f1e566a89644a65693862bb0e021",
       "src/api/condition-sets.ts:ConditionSetsApi.update": "415779433421771ac33aa62bf046eaaeda535114945d66ce59baeb436025cf2e",
       "src/api/context.ts:.defaultSelection": "ab80fdb9caa873e95c125e14288fe9e0dd3b1b9d54a21a555709c227685e1b52",
       "src/api/context.ts:.identifier": "e57a1a001d56c8488d75f0bf7e71faccf3af76a301dd98d5bce7d909f31ab40f",
       "src/api/context.ts:.initializeApiContext": "f153e4b03e6d90c30d797c4dcafe51b94d62382d5e30d8f2b304891134c7b7a7",
       "src/api/context.ts:.parseScope": "457f59b9729498d92b5019b11f4d5fa48409479799a117a53b1847c7007c9326",
       "src/api/context.ts:.stateOf": "4711b172517c99a05d4919f90d475b9139ff2c0ba62a12cbbee06e47c91f2a84",
-      "src/api/deprecated.ts:DeprecatedApiClient.assignConditionSetRule": "988eb89da5ad9bb78085522c6f173760d6752b0d537bf830f49bad03ccb52cf9",
-      "src/api/deprecated.ts:DeprecatedApiClient.assignRole": "bba038e3833d81326fcf0f4f71bde54f933ae52e73c11255f319d7eb6feb8aea",
-      "src/api/deprecated.ts:DeprecatedApiClient.createConditionSet": "c3af1fb7887215cdbe955dd848c8ef8ee72e767123d57f223bd7620a449b4d20",
-      "src/api/deprecated.ts:DeprecatedApiClient.createResource": "73c43249aa1f5284cd225e5af4f1486b1f213b93ef170a519b4f09f938a82c4f",
-      "src/api/deprecated.ts:DeprecatedApiClient.createRole": "091723c02460bd8d7ccb528940ebea5c0e4e6b7ac0c454a37118089d3c0411be",
-      "src/api/deprecated.ts:DeprecatedApiClient.createTenant": "e89cbd42b39f127759fafe94f8f4f473a82eca077957c8efa7257412d54444f0",
-      "src/api/deprecated.ts:DeprecatedApiClient.createUser": "725259de38207f97240f4b34efbd80ea79f169af6bbd87599087689fafff72d3",
-      "src/api/deprecated.ts:DeprecatedApiClient.deleteConditionSet": "86c1bd8cc57426a052d76efbee777bbb0c0d31c45185c379f217ce430b56a978",
-      "src/api/deprecated.ts:DeprecatedApiClient.deleteResource": "937773bb15e405a0a3f126b6a93f7eb9482202c5a2fca8e570f615222795d7ac",
-      "src/api/deprecated.ts:DeprecatedApiClient.deleteRole": "ba49e861ded711043497ebe70700a613629841dab9ede7f2e54139a8553a982e",
-      "src/api/deprecated.ts:DeprecatedApiClient.deleteTenant": "f59021cd7485e306139746e1a432eb443b3594a03f6f87176d1ab641b09332cc",
-      "src/api/deprecated.ts:DeprecatedApiClient.deleteUser": "7d7cf75e99b97ac2ece7a459d4ed296ba1ab4054d41bb41546ffb96a2b9a93c1",
-      "src/api/deprecated.ts:DeprecatedApiClient.getAssignedRoles": "fb6e95f5bf6a4ff6eac3996bb9f99a387f17819f11b73c99dd45c058b44700a2",
-      "src/api/deprecated.ts:DeprecatedApiClient.getRole": "acd0df6d090aaf87b7a2d78d95eaad3c268534bc6479a14adb89068a1937f0c9",
-      "src/api/deprecated.ts:DeprecatedApiClient.getTenant": "41ed0c41e8e2e29818e3423a00eb0be22a1875f243e58b35fb9a822473f036bb",
-      "src/api/deprecated.ts:DeprecatedApiClient.getUser": "3a2904d7c1e548b7870e9fb36d46942b7fc24da87b9590e22da3bbfae3487c9e",
-      "src/api/deprecated.ts:DeprecatedApiClient.listConditionSets": "fc9ce1b7560539169c98d5e06f9d7c3b27f83901f26c9bc621881ffee4e35ca3",
-      "src/api/deprecated.ts:DeprecatedApiClient.listConditionSetsRules": "46cb8921afafc10ca7664e05088c39e250463d5c3825c55b75b7e5cc292eee3e",
-      "src/api/deprecated.ts:DeprecatedApiClient.listRoles": "0f30e2548191fd64c22f8d0667b3ed7ceddea9499a5304a09c35668929d4cfac",
-      "src/api/deprecated.ts:DeprecatedApiClient.listTenants": "44185d838d48761c62ba7ba11464a7c407b7601b6d014785ac9dcad4579984c9",
-      "src/api/deprecated.ts:DeprecatedApiClient.listUsers": "8e32033fdd777acbcceed23ef2d8352c4af8fdeec4ae3a7bd717aeef070abcb3",
-      "src/api/deprecated.ts:DeprecatedApiClient.syncUser": "d77eb1a1d95c6d0ef5ece6d0361ac8adef95556ffd1ab5873d02473e1d4b2d69",
-      "src/api/deprecated.ts:DeprecatedApiClient.unassignConditionSetRule": "3d725bd7cb77f2e9ad0c07170296757a24662ec9beb8a08d8c5fa2bb2efb96da",
-      "src/api/deprecated.ts:DeprecatedApiClient.unassignRole": "3aacfa4eddd3d371f757a25eec5040c5c66cb2446b0c9a5c28b09714595c258c",
-      "src/api/deprecated.ts:DeprecatedApiClient.updateConditionSet": "2217fccc6dd20d79babafb317229e376d6d95f9ab1d726b1df41d1a2d3ffdeb9",
-      "src/api/deprecated.ts:DeprecatedApiClient.updateResource": "0a6bf3e748fa7663b118182ae444e1c9172add0ac769bf46f2ddf3b01f740e6a",
-      "src/api/deprecated.ts:DeprecatedApiClient.updateRole": "c8bd59bffa8c50b8f78bd8ebd73c3438c0b6d2902dc8f22e93f88b4ae744711f",
-      "src/api/deprecated.ts:DeprecatedApiClient.updateTenant": "94e21ac98072f4053803f343485c115723c469529b61c409846fb5f4429d403d",
-      "src/api/deprecated.ts:DeprecatedApiClient.updateUser": "c251283e972fe27a39ec79c2f65848b53c5eb391a73adbf1f98fb7c61b065498",
       "src/api/elements.ts:ElementsClient.loginAs": "3efbdf39bab053e511dfd2fde512c431310ed675fd7ded69a1a9888258d2852d",
       "src/api/environments.ts:EnvironmentsApi.copy": "6519b8d09579eac752575c60f0a19b69190980012371e711dcc1e45ce8b97d98",
       "src/api/environments.ts:EnvironmentsApi.create": "b64b4374a61662177122ddc9d4474692e54cecf608e45ff46d59df8be2201589",
@@ -20981,6 +20813,7 @@
       "src/api/groups.ts:GroupsApi.list": "90edb2587388c936b70c4f08cfe756d0e63dc130ff658bea7f0247d984fecab3",
       "src/api/groups.ts:GroupsApi.removeRole": "967397c1d2dbc236d242b3652723294a6b46e8b399dfb25f9ea6e47bca8c90c5",
       "src/api/groups.ts:GroupsApi.removeUser": "2789785bec9e7639814f6cda00c87c6c30d79494927d71a5f9aeafa98827077f",
+      "src/api/pdps.ts:PdpsApi.refresh": "a5c232311113da170c1c905875e1a43f1c4bd7c5ca4fb06bccfe8ee3a6bc4315",
       "src/api/projects.ts:ProjectsApi.create": "e12da966e3bcfbc3bcc5f85eba44a431fe576530be64bb794df647a343f9f3d8",
       "src/api/projects.ts:ProjectsApi.delete": "b26013dff0f6e535ed825f7ecddf6014349ca6fad09adba56c44c4054fde4848",
       "src/api/projects.ts:ProjectsApi.get": "643d3d9e8924bc89d6fa54aaf55f91b45c4c2cd0e18c772fcb01d8e810e551d9",
@@ -20993,6 +20826,7 @@
       "src/api/relationship-tuples.ts:RelationshipTuplesApi.create": "55e771b38c0fe9f1f7d1da723f71e5e1cd35df8c7ddc854dc56f6a911f9414d7",
       "src/api/relationship-tuples.ts:RelationshipTuplesApi.delete": "393f12ebc32d57c34156326cd4db2cec45cc29657c706a8f6b557465251a50c5",
       "src/api/relationship-tuples.ts:RelationshipTuplesApi.list": "8c16dc57c39a3846cb6640d2b5ebc81928e3b08fb76f6e8d3e4e73960c02af71",
+      "src/api/relationship-tuples.ts:RelationshipTuplesApi.listDetailed": "4e845baceee7a2a0ff3fc96e661fd572039fcde7a6d358161390dfdc2e25e833",
       "src/api/resource-action-groups.ts:ResourceActionGroupsApi.create": "7d936f3c1589adda9ef3606270c6f1767db8553d03fee20c18a8ca088b7f6d15",
       "src/api/resource-action-groups.ts:ResourceActionGroupsApi.delete": "d40fd5a06bd47ae221867787d5574c5d4dde8840183ba13058b051b7b812aeb6",
       "src/api/resource-action-groups.ts:ResourceActionGroupsApi.get": "bb3d4e0ef0fbd1da6a3e8b033378e4afff50fd2f712ded5d11729b8eada66214",
@@ -21020,6 +20854,7 @@
       "src/api/resource-instances.ts:ResourceInstancesApi.getById": "929aca07ebb8421d64af58b0f8125b307eb0195bbeaec981055948cff3d0d731",
       "src/api/resource-instances.ts:ResourceInstancesApi.getByKey": "cf84bac00575877108fd9ab3df0596606b18d691365598401a0850aee509bad6",
       "src/api/resource-instances.ts:ResourceInstancesApi.list": "0f3af3e6e3ebf0d9588c92e1e77e3dd37664a592c033866788a2c85d31a1bdd3",
+      "src/api/resource-instances.ts:ResourceInstancesApi.listDetailed": "a200450130a691d8f078cf59102d957891967c0865adc29644a3c3f96b914a4c",
       "src/api/resource-instances.ts:ResourceInstancesApi.update": "002d5db4756e34c1b5ed5d4ad7b96d7632b3c5efb88f14b2c6b6b3140cd262bd",
       "src/api/resource-relations.ts:ResourceRelationsApi.create": "89de09c7ab730db2e3dfae909a2f8e1c4b3f3145cfe62b003e6b76c572663678",
       "src/api/resource-relations.ts:ResourceRelationsApi.delete": "dd4e8f220230055dcd2eb1a79af4c156ed0b311fce52d3a474af11ef3ce55d64",
@@ -21051,6 +20886,7 @@
       "src/api/role-assignments.ts:RoleAssignmentsApi.bulkAssign": "fe4039a39735432a2ffe80630090c04f9472d946685d86bcfec80ea06d2534b8",
       "src/api/role-assignments.ts:RoleAssignmentsApi.bulkUnassign": "47b78d6cdcc164315138e66964b494efb1fc0be7995418f4be9a29e03201dfaf",
       "src/api/role-assignments.ts:RoleAssignmentsApi.list": "88d878a038a159f39d2693f70b73af073ba4f266fce31d21414e1585eeda4f06",
+      "src/api/role-assignments.ts:RoleAssignmentsApi.listDetailed": "a11f1f0341d774ff45a0bf4de145a57ac2d659504f1341fb164d306919b0f47a",
       "src/api/role-assignments.ts:RoleAssignmentsApi.unassign": "29397e52cb1adb12448dba63f958577df8d2045ea3d0c866308871a6116978e0",
       "src/api/roles.ts:RolesApi.assignPermissions": "6808f3d8d599f608b4fdb7584b81a6e177d7d257a5d418299a4a11067d3c85bc",
       "src/api/roles.ts:RolesApi.create": "4b2190be260277358718a0b627b2ce1c98db970ba29121d287e34cb1d56d9947",
@@ -21061,6 +20897,7 @@
       "src/api/roles.ts:RolesApi.list": "d3ad168ffff67101fe58667a2a23689630af511c163ef07981db047cdd5638ff",
       "src/api/roles.ts:RolesApi.removePermissions": "620a066bd6eb73957e9cde8d07320f504be9b603e9096c0cb0a1a160b817f244",
       "src/api/roles.ts:RolesApi.update": "7dd573d9a6cf9900ed189b42b367dbf99c22942c7900ad977b2a8096ee105c6e",
+      "src/api/tenants.ts:TenantsApi.addUser": "610cc96a8cca1920ce04d814a0efa4d4cd9ed1163fd2abff4e06637725826b65",
       "src/api/tenants.ts:TenantsApi.create": "1e337185404234f4e28a888db72c2eb35ffcbb7c641d37937a8a3b7c5a5c83f1",
       "src/api/tenants.ts:TenantsApi.delete": "9a59f2662ab337d53ee430f75cee589600fb8c39d31877f02143748f4ff5dd30",
       "src/api/tenants.ts:TenantsApi.deleteTenantUser": "fa3905b051f461c3d23033e8cf9e922a41075d1d9b57560c975f59c924b300df",
@@ -21092,52 +20929,47 @@
       "src/enforcement/enforcer.ts:Enforcer.checkAllTenants": "aade4c8b413526c58d096401f27bb1b5ad34901ab9c4ff55896cf00eca4e8aee",
       "src/enforcement/enforcer.ts:Enforcer.checkAllTenantsWithExceptions": "13d4497c3bf0269461a6ada2160503cf5110d72b6ed5336ef7120a70a0a2016f",
       "src/enforcement/enforcer.ts:Enforcer.checkWithExceptions": "4ddb948f534525d6cac7e8575d9851f3e27d44b4e8e289e707665d84040381c8",
+      "src/enforcement/enforcer.ts:Enforcer.filterObjects": "285f705d1fdee426fd673ce214362ddeccf6f04e75fb4f7e8e4d96c106cdc98d",
+      "src/enforcement/enforcer.ts:Enforcer.getAuthorizedUsers": "db7b2035003c51858f61300726d007521efa459eaf8ca3c10e0e0781d8165a92",
+      "src/enforcement/enforcer.ts:Enforcer.getAuthorizedUsersWithExceptions": "a5d75fbda4e7fadcefa14a9a20793bcceb6c83153c357560bf328389392c4de5",
       "src/enforcement/enforcer.ts:Enforcer.getUserPermissions": "8486e109b4f2866f7f33948a26951520e5edb2e36ec547540ed27e11f8aa3e36",
       "src/enforcement/enforcer.ts:Enforcer.getUserPermissionsWithExceptions": "b088d13931a7c1cd2ea8e275a38f781708af5896ef02d50f90e38ab01b681959",
+      "src/enforcement/enforcer.ts:Enforcer.getUserTenants": "3e94f803def7e980bbc686cb3eb3391f274c9e61f2b3ab5f99c36a8f2526897f",
+      "src/enforcement/enforcer.ts:Enforcer.getUserTenantsWithExceptions": "d5cdf4d301aba94dc14de9502aea88bfe74caaec0570ce1d4afbf536c9227c9a",
       "src/enforcement/enforcer.ts:Enforcer.handlePDPError": "f131004953b9e0d9f2f0dd2b1e34bbdb3f2616bc1ede2572f1dae228f191073e",
       "src/enforcement/enforcer.ts:Enforcer.normalizeResource": "01287f313beea5f524091e1f6462e791cc06224b846aa0ce026bbfd5b7fd2a40",
       "src/enforcement/enforcer.ts:Enforcer.parsePdpResponse": "d695d7623e025411e93099861e180269dc692911469b815e5ccd9b2fd3bfc487",
       "src/enforcement/enforcer.ts:Enforcer.pdpStatusError": "63a83a2d6f9c65bbe13680a79b71b9eb03ceb74f9a18185705b7d5671c395cb1",
       "src/enforcement/enforcer.ts:Enforcer.resourceFromString": "bedfdd6f1cbbdddd3d36a37b68a7478aa88774614a7185c87e909374431c3c56",
+      "src/enforcement/enforcer.ts:Enforcer.serializeInput": "ef1bbe63a7be82da81078edd3c35a3e70b9df21fac896512398a399cb0a0e86f",
       "src/enforcement/responses.ts:.decisionEnvelope": "6102ee1ffde5f29db96bfcc06678ff799cd30d20b4e6a7ff341b03356e520d2c",
       "src/enforcement/responses.ts:.isRecord": "0cb132a41683f4fccd5a1b31dd4e808fc6892dcd2792d6776a4e2cce9fda60bf",
       "src/enforcement/responses.ts:.parseBulkResponse": "7728a06debe7bd59d1cd82f82d34d6cde3433f3bde7e6d3a6224e7ef15eb3deb",
       "src/index.ts:Permit.bulkCheck": "f01262c79c16daaab9de2fcbf0d0877bbbe51539a800011631bde13af6b479b2",
       "src/index.ts:Permit.check": "5e33e78fc4f7cdbc61985edeb49407c06b1e9456aae74d3fdc1fa4a31c8e249d",
       "src/index.ts:Permit.checkAllTenants": "5c0d483d3923ba989988d38630f60352b279cc8d11301bb99983b4a8a99186c3",
+      "src/index.ts:Permit.filterObjects": "40a1dced3ad7041b12a88dddbe97131313eab52164b60698799ce17a591e7b8c",
+      "src/index.ts:Permit.getAuthorizedUsers": "b02e7d92f880af4f933f70d73f1eaa356a513b566f1ffbebb07c91090b0daf03",
       "src/index.ts:Permit.getUserPermissions": "561f30ed436101ac0cc9ed0a564ecda55aae4acb218849179b69d73cca5ebc4a",
+      "src/index.ts:Permit.getUserTenants": "7afb862bc0123cd6e54c5e4c265ddd93d0212bfa146e80ce54f2cafdbd0e3669",
       "src/utils/context.ts:ContextStore.getDerivedContext": "f01adc283f3dc4a6c1fa5457f4a2044d7b22572f36640ef4ea22eb8bede62760",
       "src/utils/diagnostics.ts:.collect": "9bfdaac8b88e391f04c4478dee31d3138e8c47dc860dd04ba831e923be02e2c0",
       "src/utils/diagnostics.ts:.collectOmitted": "4cfbfafc34cbffbaff050f8861861ad0f1c45784661c05c1906e9a2c636bdce3",
       "src/utils/diagnostics.ts:.diagnosticAxiosError": "0eb0ad7f6e1f31661e05ac0295981b5861536adb057c961540f146e82eb45588",
       "src/utils/diagnostics.ts:.diagnosticBody": "44984199ef80a5c8a767a805e744f3f4c752cd8938eb22cf21ad14483a53d34d",
       "src/utils/diagnostics.ts:.diagnosticCause": "bb5795dc71ec4a4b6901868286cf502e4daeae04f3f5a3af93b1934c174b7770",
+      "src/utils/diagnostics.ts:.diagnosticErrorSecrets": "3cc5649307ba8c3570816716d09bbc012201cebeeb19f4b1aed33eebc535dd55",
       "src/utils/diagnostics.ts:.diagnosticMessage": "e57beb1ed6d83714325aae856052a18fc2bdff7c0b2a05d3d7c14c41935cbe36",
       "src/utils/diagnostics.ts:.diagnosticMetadata": "b9dbdd375488d63ebaf91388344d9c843fd4dd0f90c9eb7672490814c2c89679",
       "src/utils/diagnostics.ts:.diagnosticRequestSecrets": "ae3383a8090edaeefe8075bb76944d5468ed5a4bc1f16bbf2d733e321019565a",
       "src/utils/diagnostics.ts:.diagnosticSecrets": "2c21e19d4fad24aa01ac7dfcdfbb4ceb2a4dc69eac0136450748ca67de35568b",
+      "src/utils/diagnostics.ts:.diagnosticStatus": "97b6f29383823549b819c45a4e304ec8f082d191f13c695f2cb489333c680122",
       "src/utils/diagnostics.ts:.diagnosticText": "1a57977142ac798fda682db0f80a55c6c95adafbab651491abea4669f3a16092",
       "src/utils/diagnostics.ts:.diagnosticUrl": "78d8cf425e1b44fa3a56ce2e68e303ed30eb6e701070898090d540fdebff02e7",
-      "src/utils/diagnostics.ts:.message": "bbf7417c49d38fc88c0da86cd23c7d7f32c88bc7d4aba7b8b10fada989deefb0",
-      "src/utils/diagnostics.ts:.visit": "91387e5c3a03951500f9ecd0b20705eba1ea04b60c3a9c078de951e27f30becb",
-      "src/utils/diagnostics.ts:.diagnosticErrorSecrets": "3cc5649307ba8c3570816716d09bbc012201cebeeb19f4b1aed33eebc535dd55",
-      "src/utils/diagnostics.ts:.diagnosticStatus": "97b6f29383823549b819c45a4e304ec8f082d191f13c695f2cb489333c680122",
       "src/utils/diagnostics.ts:.mergeDiagnosticSecrets": "d4baa0c988a992fee9f6c35b91ed0a53cff4105b1d7acc1c6465643cc3596e81",
+      "src/utils/diagnostics.ts:.message": "bbf7417c49d38fc88c0da86cd23c7d7f32c88bc7d4aba7b8b10fada989deefb0",
       "src/utils/diagnostics.ts:.redactPrivateValues": "2845c5c8ab8d26308fec121a6d98fca804194dabbac636eb4dd41a1cd2eef259",
-      "src/api/pdps.ts:PdpsApi.refresh": "a5c232311113da170c1c905875e1a43f1c4bd7c5ca4fb06bccfe8ee3a6bc4315",
-      "src/api/relationship-tuples.ts:RelationshipTuplesApi.listDetailed": "4e845baceee7a2a0ff3fc96e661fd572039fcde7a6d358161390dfdc2e25e833",
-      "src/api/resource-instances.ts:ResourceInstancesApi.listDetailed": "a200450130a691d8f078cf59102d957891967c0865adc29644a3c3f96b914a4c",
-      "src/api/role-assignments.ts:RoleAssignmentsApi.listDetailed": "a11f1f0341d774ff45a0bf4de145a57ac2d659504f1341fb164d306919b0f47a",
-      "src/api/tenants.ts:TenantsApi.addUser": "610cc96a8cca1920ce04d814a0efa4d4cd9ed1163fd2abff4e06637725826b65",
-      "src/enforcement/enforcer.ts:Enforcer.filterObjects": "285f705d1fdee426fd673ce214362ddeccf6f04e75fb4f7e8e4d96c106cdc98d",
-      "src/enforcement/enforcer.ts:Enforcer.getAuthorizedUsers": "db7b2035003c51858f61300726d007521efa459eaf8ca3c10e0e0781d8165a92",
-      "src/enforcement/enforcer.ts:Enforcer.getAuthorizedUsersWithExceptions": "a5d75fbda4e7fadcefa14a9a20793bcceb6c83153c357560bf328389392c4de5",
-      "src/enforcement/enforcer.ts:Enforcer.getUserTenants": "3e94f803def7e980bbc686cb3eb3391f274c9e61f2b3ab5f99c36a8f2526897f",
-      "src/enforcement/enforcer.ts:Enforcer.getUserTenantsWithExceptions": "d5cdf4d301aba94dc14de9502aea88bfe74caaec0570ce1d4afbf536c9227c9a",
-      "src/enforcement/enforcer.ts:Enforcer.serializeInput": "ef1bbe63a7be82da81078edd3c35a3e70b9df21fac896512398a399cb0a0e86f",
-      "src/index.ts:Permit.filterObjects": "40a1dced3ad7041b12a88dddbe97131313eab52164b60698799ce17a591e7b8c",
-      "src/index.ts:Permit.getAuthorizedUsers": "b02e7d92f880af4f933f70d73f1eaa356a513b566f1ffbebb07c91090b0daf03",
-      "src/index.ts:Permit.getUserTenants": "7afb862bc0123cd6e54c5e4c265ddd93d0212bfa146e80ce54f2cafdbd0e3669"
+      "src/utils/diagnostics.ts:.visit": "91387e5c3a03951500f9ecd0b20705eba1ea04b60c3a9c078de951e27f30becb"
     },
     "initializationShapes": {
       "src/api/api-client.ts:ApiClient.constructor": "2d367a87e169558716b15a7fa2f5224f295db02982e5ef0c30dd0376a1325178",
@@ -21152,10 +20984,10 @@
       "src/api/context.ts:PermitContextError.constructor": "a706dcced4af88547845dde252e43c3a615254d6789d05b01eb606f05c8a46d6",
       "src/api/context.ts:contextSnapshotKey": "b262fad27c623a907f6d94c663100e84620052a8f407d907b91d0b42ef143a58",
       "src/api/context.ts:contextStates": "2821f80bb3678f5a2d01ce1cd7dce9377d9d2bdf7c8a6c8f8982f6fb17b90aa5",
-      "src/api/deprecated.ts:DeprecatedApiClient.constructor": "3696e58aaffdad1378f526b0d1ded906dc7f6449b6e2f4ef5518d4d285463bbd",
       "src/api/elements.ts:ElementsClient.constructor": "cd8ddb0a63855e3a5629ce08ef6af0dc5b2ebab73475bbdb02bd268040d3e91e",
       "src/api/environments.ts:EnvironmentsApi.constructor": "146ac7603e7e33db85e1410da47a387f1cf27b6c6f6878b04d7d8cc4e861bf9f",
       "src/api/groups.ts:GroupsApi.constructor": "e09bac9a6d0ce4d7d8ee8180ee5346ecab40197aa50a2d78d8852b8ca8344d95",
+      "src/api/pdps.ts:PdpsApi.constructor": "36d4fbcd74f7a7bdbabd64ddd3120c972aeb022350161fcd7dbdf6b71bc24515",
       "src/api/projects.ts:ProjectsApi.constructor": "b45a7ef29f86ff5ae56ed928934ce538ac06a36ac6b32c689ec1a66b3faa2156",
       "src/api/relationship-tuples.ts:RelationshipTuplesApi.constructor": "8ba333e5f23a9048a00198da14d8db7b739a8ad959c3dc9e8488ba8814d53c8d",
       "src/api/resource-action-groups.ts:ResourceActionGroupsApi.constructor": "46e8644f311c6f9951ffe60cf6336ea948fc6bdd4b0773befa0a46045cb1b3b2",
@@ -21176,14 +21008,6 @@
       "src/enforcement/enforcer.ts:RESOURCE_DELIMITER": "84621939eae999affeb1c6c48d23371c99a953b6c56aa67ebd94e3b541a3cfd1",
       "src/index.ts:Permit.constructor": "50052de96c1d823858b5560c18c8f87e9fcddd9c8ce2b23fb1a37c179b01e626",
       "src/utils/context.ts:ContextStore.baseContext": "e55a3d84c22b3b144eb4ab9b68731dd74c2e3e92b54db022740dfdcfd3c5cd96",
-      "src/utils/context.ts:ContextStore.transforms": "18dc1ac26ebfbe260624f4303177b4cafdcd1586682c5227da84acf27010261c",
-      "src/utils/retry.ts:DEFAULT_RETRY_CONFIG": "a124e39640a8af9b5972e0913062592cd4e8c5b4d370c343476c0f43fef9e4ac",
-      "src/utils/retry.ts:DEFAULT_RETRY_METHODS": "493ceb034dd8e692cfd6136eb9d1ef03f4195b1354581c363782866f7e32ec86",
-      "src/utils/retry.ts:RETRYABLE_STATUS_CODES": "37cecf83a25d09b0bdab97d5d6901aab85f871cf9ada5fe25a76f3bf6b8424f8",
-      "src/utils/retry.ts:httpMethods": "cf801f911dbcd4d7e2853f05305e186b097e789a3c14440623c13047ec72a00b",
-      "src/utils/retry.ts:maximumTimerDelay": "4947b585ee731c61bd9a008ba1016e23c06be3ad1aa5770f561ab23aab338e66",
-      "src/utils/retry.ts:permanentErrorCodes": "ce4cccfdfe51f554290c473da0979da371faa4bdc8f4b10dbee66c878d759ced",
-      "src/utils/retry.ts:transientNetworkCodes": "2cdb83120b7946d946f283ace219d13f1001bd369c5062fa8bf7032f9c8bee1c",
       "src/utils/diagnostics.ts:BODY_FIELDS": "8533027b452b98b0291789bf46f339c6f5859afb5ac9677d9972407b2cc19a15",
       "src/utils/diagnostics.ts:MAX_ITEMS": "398841861d5adf4b8d8506135b8c3a6c12f0d8c0eae339acda51987a25e19973",
       "src/utils/diagnostics.ts:MAX_TEXT": "d2b99e5d79584fb70f0ff4109296d92e10dd1cf4f0239bcb02221d2977d81ec4",
@@ -21192,7 +21016,13 @@
       "src/utils/diagnostics.ts:RESPONSE_HEADERS": "b3505ed26eade60624be8c3291885d7cc37cf4afb297e257cdf98bb526ae2b05",
       "src/utils/diagnostics.ts:failurePrivacy": "68f72d0f4506fc0e6571c58e563f506403dd27896e8f9a8963f90d4abc4f1464",
       "src/utils/diagnostics.ts:failurePrivacyKey": "98c132a2ec6bf02f3b491cbc63f995da0b4783423b00c31b883e3886c24cdc0c",
-      "src/api/pdps.ts:PdpsApi.constructor": "36d4fbcd74f7a7bdbabd64ddd3120c972aeb022350161fcd7dbdf6b71bc24515"
+      "src/utils/retry.ts:DEFAULT_RETRY_CONFIG": "a124e39640a8af9b5972e0913062592cd4e8c5b4d370c343476c0f43fef9e4ac",
+      "src/utils/retry.ts:DEFAULT_RETRY_METHODS": "493ceb034dd8e692cfd6136eb9d1ef03f4195b1354581c363782866f7e32ec86",
+      "src/utils/retry.ts:RETRYABLE_STATUS_CODES": "37cecf83a25d09b0bdab97d5d6901aab85f871cf9ada5fe25a76f3bf6b8424f8",
+      "src/utils/retry.ts:httpMethods": "cf801f911dbcd4d7e2853f05305e186b097e789a3c14440623c13047ec72a00b",
+      "src/utils/retry.ts:maximumTimerDelay": "4947b585ee731c61bd9a008ba1016e23c06be3ad1aa5770f561ab23aab338e66",
+      "src/utils/retry.ts:permanentErrorCodes": "ce4cccfdfe51f554290c473da0979da371faa4bdc8f4b10dbee66c878d759ced",
+      "src/utils/retry.ts:transientNetworkCodes": "2cdb83120b7946d946f283ace219d13f1001bd369c5062fa8bf7032f9c8bee1c"
     },
     "methods": {
       "permit.api.actionGroups.create": {
@@ -21464,70 +21294,6 @@
           "returns": "Promise<ResourceActionGroupRead>"
         }
       },
-      "permit.api.assignConditionSetRule": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": [
-          "(conditionSetRule: ConditionSetRuleCreate): Promise<ConditionSetRuleRead[]>"
-        ],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "ConditionSetRulesApi.assignSetPermissions",
-            "method": "POST",
-            "path": "/v2/facts/{proj_id}/{env_id}/set_rules",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "conditionSetRule",
-              "optional": false,
-              "type": "ConditionSetRuleCreate"
-            }
-          ],
-          "returns": "Promise<ConditionSetRuleRead[]>"
-        }
-      },
-      "permit.api.assignRole": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(assignedRole: RoleAssignmentCreate): Promise<RoleAssignmentRead>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "RoleAssignmentsApi.assignRole",
-            "method": "POST",
-            "path": "/v2/facts/{proj_id}/{env_id}/role_assignments",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "assignedRole",
-              "optional": false,
-              "type": "RoleAssignmentCreate"
-            }
-          ],
-          "returns": "Promise<RoleAssignmentRead>"
-        }
-      },
       "permit.api.conditionSetRules.create": {
         "deprecated": false,
         "factsProxy": false,
@@ -21593,7 +21359,9 @@
       "permit.api.conditionSetRules.list": {
         "deprecated": false,
         "factsProxy": false,
-        "publicSignatures": ["(params: IListConditionSetRules): Promise<ConditionSetRuleRead[]>"],
+        "publicSignatures": [
+          "(params?: IListConditionSetRules | undefined): Promise<ConditionSetRuleRead[]>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -21614,7 +21382,7 @@
             {
               "initializer": null,
               "name": "params",
-              "optional": false,
+              "optional": true,
               "type": "IListConditionSetRules"
             }
           ],
@@ -21779,7 +21547,9 @@
       "permit.api.conditionSets.list": {
         "deprecated": false,
         "factsProxy": false,
-        "publicSignatures": ["(pagination?: IPagination | undefined): Promise<ConditionSetRead[]>"],
+        "publicSignatures": [
+          "(params?: IListConditionSets | undefined): Promise<ConditionSetRead[]>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -21799,9 +21569,9 @@
           "parameters": [
             {
               "initializer": null,
-              "name": "pagination",
+              "name": "params",
               "optional": true,
-              "type": "IPagination"
+              "type": "IListConditionSets"
             }
           ],
           "returns": "Promise<ConditionSetRead[]>"
@@ -21844,318 +21614,6 @@
             }
           ],
           "returns": "Promise<ConditionSetRead>"
-        }
-      },
-      "permit.api.createConditionSet": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(conditionSet: ConditionSetCreate): Promise<ConditionSetRead>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "ConditionSetsApi.createConditionSet",
-            "method": "POST",
-            "path": "/v2/schema/{proj_id}/{env_id}/condition_sets",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "conditionSet",
-              "optional": false,
-              "type": "ConditionSetCreate"
-            }
-          ],
-          "returns": "Promise<ConditionSetRead>"
-        }
-      },
-      "permit.api.createResource": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(resource: ResourceCreate): Promise<ResourceRead>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "ResourcesApi.createResource",
-            "method": "POST",
-            "path": "/v2/schema/{proj_id}/{env_id}/resources",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "resource",
-              "optional": false,
-              "type": "ResourceCreate"
-            }
-          ],
-          "returns": "Promise<ResourceRead>"
-        }
-      },
-      "permit.api.createRole": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(role: RoleCreate): Promise<RoleRead>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "RolesApi.createRole",
-            "method": "POST",
-            "path": "/v2/schema/{proj_id}/{env_id}/roles",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "role",
-              "optional": false,
-              "type": "RoleCreate"
-            }
-          ],
-          "returns": "Promise<RoleRead>"
-        }
-      },
-      "permit.api.createTenant": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(tenant: TenantCreate): Promise<TenantRead>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "TenantsApi.createTenant",
-            "method": "POST",
-            "path": "/v2/facts/{proj_id}/{env_id}/tenants",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "tenant",
-              "optional": false,
-              "type": "TenantCreate"
-            }
-          ],
-          "returns": "Promise<TenantRead>"
-        }
-      },
-      "permit.api.createUser": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(user: UserCreate): Promise<UserRead>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "UsersApi.createUser",
-            "method": "POST",
-            "path": "/v2/facts/{proj_id}/{env_id}/users",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "user",
-              "optional": false,
-              "type": "UserCreate"
-            }
-          ],
-          "returns": "Promise<UserRead>"
-        }
-      },
-      "permit.api.deleteConditionSet": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": [
-          "(conditionSetId: string): Promise<AxiosResponse<void, any, {}, any>>"
-        ],
-        "routes": [
-          {
-            "generatedMethod": "ConditionSetsApi.deleteConditionSet",
-            "method": "DELETE",
-            "path": "/v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}",
-            "supporting": false
-          },
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "conditionSetId",
-              "optional": false,
-              "type": "string"
-            }
-          ],
-          "returns": "Promise<AxiosResponse<void>>"
-        }
-      },
-      "permit.api.deleteResource": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(resourceId: string): Promise<AxiosResponse<void, any, {}, any>>"],
-        "routes": [
-          {
-            "generatedMethod": "ResourcesApi.deleteResource",
-            "method": "DELETE",
-            "path": "/v2/schema/{proj_id}/{env_id}/resources/{resource_id}",
-            "supporting": false
-          },
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "resourceId",
-              "optional": false,
-              "type": "string"
-            }
-          ],
-          "returns": "Promise<AxiosResponse<void>>"
-        }
-      },
-      "permit.api.deleteRole": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(roleId: string): Promise<AxiosResponse<void, any, {}, any>>"],
-        "routes": [
-          {
-            "generatedMethod": "RolesApi.deleteRole",
-            "method": "DELETE",
-            "path": "/v2/schema/{proj_id}/{env_id}/roles/{role_id}",
-            "supporting": false
-          },
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "roleId",
-              "optional": false,
-              "type": "string"
-            }
-          ],
-          "returns": "Promise<AxiosResponse<void>>"
-        }
-      },
-      "permit.api.deleteTenant": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(tenantId: string): Promise<AxiosResponse<void, any, {}, any>>"],
-        "routes": [
-          {
-            "generatedMethod": "TenantsApi.deleteTenant",
-            "method": "DELETE",
-            "path": "/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}",
-            "supporting": false
-          },
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "tenantId",
-              "optional": false,
-              "type": "string"
-            }
-          ],
-          "returns": "Promise<AxiosResponse<void>>"
-        }
-      },
-      "permit.api.deleteUser": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(userId: string): Promise<AxiosResponse<void, any, {}, any>>"],
-        "routes": [
-          {
-            "generatedMethod": "UsersApi.deleteUser",
-            "method": "DELETE",
-            "path": "/v2/facts/{proj_id}/{env_id}/users/{user_id}",
-            "supporting": false
-          },
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "userId",
-              "optional": false,
-              "type": "string"
-            }
-          ],
-          "returns": "Promise<AxiosResponse<void>>"
         }
       },
       "permit.api.ensureAccessLevel": {
@@ -22598,138 +22056,6 @@
           "returns": "Promise<EnvironmentRead>"
         }
       },
-      "permit.api.getAssignedRoles": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": [
-          "(user: string, tenant?: string | undefined): Promise<RoleAssignmentRead[]>"
-        ],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "RoleAssignmentsApi.listRoleAssignments",
-            "method": "GET",
-            "path": "/v2/facts/{proj_id}/{env_id}/role_assignments",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "user",
-              "optional": false,
-              "type": "string"
-            },
-            {
-              "initializer": null,
-              "name": "tenant",
-              "optional": true,
-              "type": "string"
-            }
-          ],
-          "returns": "Promise<RoleAssignmentRead[]>"
-        }
-      },
-      "permit.api.getRole": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(roleId: string): Promise<RoleRead>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "RolesApi.getRole",
-            "method": "GET",
-            "path": "/v2/schema/{proj_id}/{env_id}/roles/{role_id}",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "roleId",
-              "optional": false,
-              "type": "string"
-            }
-          ],
-          "returns": "Promise<RoleRead>"
-        }
-      },
-      "permit.api.getTenant": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(tenantId: string): Promise<TenantRead>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "TenantsApi.getTenant",
-            "method": "GET",
-            "path": "/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "tenantId",
-              "optional": false,
-              "type": "string"
-            }
-          ],
-          "returns": "Promise<TenantRead>"
-        }
-      },
-      "permit.api.getUser": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(userId: string): Promise<UserRead>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "UsersApi.getUser",
-            "method": "GET",
-            "path": "/v2/facts/{proj_id}/{env_id}/users/{user_id}",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "userId",
-              "optional": false,
-              "type": "string"
-            }
-          ],
-          "returns": "Promise<UserRead>"
-        }
-      },
       "permit.api.groups.assignRole": {
         "deprecated": false,
         "factsProxy": false,
@@ -23022,11 +22348,11 @@
           "returns": "Promise<void>"
         }
       },
-      "permit.api.listConditionSets": {
-        "deprecated": true,
+      "permit.api.pdps.refresh": {
+        "deprecated": false,
         "factsProxy": false,
         "publicSignatures": [
-          "(type: string, page: number, per_page: number): Promise<ConditionSetRead[]>"
+          "(request?: IEnvironmentPdpDataRefreshRequest | undefined): Promise<PDPDataRefreshResponse>"
         ],
         "routes": [
           {
@@ -23036,9 +22362,9 @@
             "supporting": true
           },
           {
-            "generatedMethod": "ConditionSetsApi.listConditionSets",
-            "method": "GET",
-            "path": "/v2/schema/{proj_id}/{env_id}/condition_sets",
+            "generatedMethod": "PolicyDecisionPointsApi.refreshEnvironmentPdpData",
+            "method": "POST",
+            "path": "/v2/pdps/{proj_id}/{env_id}/configs/refresh",
             "supporting": false
           }
         ],
@@ -23047,140 +22373,12 @@
           "parameters": [
             {
               "initializer": null,
-              "name": "type",
-              "optional": false,
-              "type": "ConditionSetType"
-            },
-            {
-              "initializer": null,
-              "name": "page",
-              "optional": false,
-              "type": "number"
-            },
-            {
-              "initializer": null,
-              "name": "perPage",
-              "optional": false,
-              "type": "number"
-            }
-          ],
-          "returns": "Promise<ConditionSetRead[]>"
-        }
-      },
-      "permit.api.listConditionSetsRules": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(page: number, per_page: number): Promise<ConditionSetRuleRead[]>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "ConditionSetRulesApi.listSetPermissions",
-            "method": "GET",
-            "path": "/v2/facts/{proj_id}/{env_id}/set_rules",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "page",
-              "optional": false,
-              "type": "number"
-            },
-            {
-              "initializer": null,
-              "name": "perPage",
-              "optional": false,
-              "type": "number"
-            }
-          ],
-          "returns": "Promise<ConditionSetRuleRead[]>"
-        }
-      },
-      "permit.api.listRoles": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(): Promise<RoleRead[]>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "RolesApi.listRoles",
-            "method": "GET",
-            "path": "/v2/schema/{proj_id}/{env_id}/roles",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [],
-          "returns": "Promise<RoleRead[]>"
-        }
-      },
-      "permit.api.listTenants": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(page?: number | undefined): Promise<TenantRead[]>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "TenantsApi.listTenants",
-            "method": "GET",
-            "path": "/v2/facts/{proj_id}/{env_id}/tenants",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "page",
+              "name": "request",
               "optional": true,
-              "type": "number"
+              "type": "IEnvironmentPdpDataRefreshRequest"
             }
           ],
-          "returns": "Promise<TenantRead[]>"
-        }
-      },
-      "permit.api.listUsers": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(): Promise<UserRead[]>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "UsersApi.listUsers",
-            "method": "GET",
-            "path": "/v2/facts/{proj_id}/{env_id}/users",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [],
-          "returns": "Promise<UserRead[]>"
+          "returns": "Promise<PDPDataRefreshResponse>"
         }
       },
       "permit.api.projects.create": {
@@ -23561,6 +22759,39 @@
             }
           ],
           "returns": "Promise<RelationshipTupleRead[]>"
+        }
+      },
+      "permit.api.relationshipTuples.listDetailed": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(params?: IListRelationshipTuples | undefined): Promise<PaginatedResultRelationshipTupleDetailedRead>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "RelationshipTuplesApi.listRelationshipTuplesDetailed",
+            "method": "GET",
+            "path": "/v2/facts/{proj_id}/{env_id}/relationship_tuples/detailed",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": "{}",
+              "name": "{ page = 1, perPage = 100, ...params }",
+              "optional": true,
+              "type": "IListRelationshipTuples"
+            }
+          ],
+          "returns": "Promise<PaginatedResultRelationshipTupleDetailedRead>"
         }
       },
       "permit.api.relationshipTuples.waitForSync": {
@@ -24313,6 +23544,39 @@
             }
           ],
           "returns": "Promise<ResourceInstanceRead[]>"
+        }
+      },
+      "permit.api.resourceInstances.listDetailed": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(params?: IListResourceInstanceDetailedParams | undefined): Promise<PaginatedResultResourceInstanceDetailedRead>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "ResourceInstancesApi.listResourceInstancesDetailed",
+            "method": "GET",
+            "path": "/v2/facts/{proj_id}/{env_id}/resource_instances/detailed",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": "{}",
+              "name": "params",
+              "optional": true,
+              "type": "IListResourceInstanceDetailedParams"
+            }
+          ],
+          "returns": "Promise<PaginatedResultResourceInstanceDetailedRead>"
         }
       },
       "permit.api.resourceInstances.update": {
@@ -25483,6 +24747,39 @@
           "returns": "Promise<Array<RoleAssignmentRead> | Array<RoleAssignmentDetailedRead> | PaginatedResultRoleAssignmentRead | PaginatedResultRoleAssignmentDetailedRead>"
         }
       },
+      "permit.api.roleAssignments.listDetailed": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(params?: IListRoleAssignmentsDetailed | undefined): Promise<PaginatedResultRoleAssignmentDetailedRead>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "RoleAssignmentsApi.listRoleAssignmentsDetailed",
+            "method": "GET",
+            "path": "/v2/facts/{proj_id}/{env_id}/role_assignments/detailed",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": "{}",
+              "name": "{ user, tenant, role, resource, resourceInstance, page = 1, perPage = 100, }",
+              "optional": true,
+              "type": "IListRoleAssignmentsDetailed"
+            }
+          ],
+          "returns": "Promise<PaginatedResultRoleAssignmentDetailedRead>"
+        }
+      },
       "permit.api.roleAssignments.unassign": {
         "deprecated": false,
         "factsProxy": true,
@@ -25840,10 +25137,10 @@
           "returns": "Promise<RoleRead>"
         }
       },
-      "permit.api.syncUser": {
-        "deprecated": true,
+      "permit.api.tenants.addUser": {
+        "deprecated": false,
         "factsProxy": false,
-        "publicSignatures": ["(user: UserCreate): Promise<UserRead>"],
+        "publicSignatures": ["(tenantKey: string, userData: UserCreate): Promise<UserRead>"],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -25852,9 +25149,9 @@
             "supporting": true
           },
           {
-            "generatedMethod": "UsersApi.replaceUser",
-            "method": "PUT",
-            "path": "/v2/facts/{proj_id}/{env_id}/users/{user_id}",
+            "generatedMethod": "TenantsApi.addUserToTenant",
+            "method": "POST",
+            "path": "/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users",
             "supporting": false
           }
         ],
@@ -25863,7 +25160,13 @@
           "parameters": [
             {
               "initializer": null,
-              "name": "user",
+              "name": "tenantKey",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "userData",
               "optional": false,
               "type": "UserCreate"
             }
@@ -26186,261 +25489,6 @@
             }
           ],
           "returns": "this"
-        }
-      },
-      "permit.api.unassignConditionSetRule": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": [
-          "(conditionSetRule: ConditionSetRuleRemove): Promise<AxiosResponse<void, any, {}, any>>"
-        ],
-        "routes": [
-          {
-            "generatedMethod": "ConditionSetRulesApi.unassignSetPermissions",
-            "method": "DELETE",
-            "path": "/v2/facts/{proj_id}/{env_id}/set_rules",
-            "supporting": false
-          },
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "conditionSetRule",
-              "optional": false,
-              "type": "ConditionSetRuleRemove"
-            }
-          ],
-          "returns": "Promise<AxiosResponse<void>>"
-        }
-      },
-      "permit.api.unassignRole": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": [
-          "(removedRole: RoleAssignmentRemove): Promise<AxiosResponse<RoleAssignmentRead, any, {}, any>>"
-        ],
-        "routes": [
-          {
-            "generatedMethod": "RoleAssignmentsApi.unassignRole",
-            "method": "DELETE",
-            "path": "/v2/facts/{proj_id}/{env_id}/role_assignments",
-            "supporting": false
-          },
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "removedRole",
-              "optional": false,
-              "type": "RoleAssignmentRemove"
-            }
-          ],
-          "returns": "Promise<AxiosResponse<RoleAssignmentRead>>"
-        }
-      },
-      "permit.api.updateConditionSet": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": [
-          "(conditionSetId: string, conditionSet: ConditionSetUpdate): Promise<ConditionSetRead>"
-        ],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "ConditionSetsApi.updateConditionSet",
-            "method": "PATCH",
-            "path": "/v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "conditionSetId",
-              "optional": false,
-              "type": "string"
-            },
-            {
-              "initializer": null,
-              "name": "conditionSet",
-              "optional": false,
-              "type": "ConditionSetUpdate"
-            }
-          ],
-          "returns": "Promise<ConditionSetRead>"
-        }
-      },
-      "permit.api.updateResource": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": [
-          "(resourceId: string, resource: ResourceUpdate): Promise<ResourceRead>"
-        ],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "ResourcesApi.updateResource",
-            "method": "PATCH",
-            "path": "/v2/schema/{proj_id}/{env_id}/resources/{resource_id}",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "resourceId",
-              "optional": false,
-              "type": "string"
-            },
-            {
-              "initializer": null,
-              "name": "resource",
-              "optional": false,
-              "type": "ResourceUpdate"
-            }
-          ],
-          "returns": "Promise<ResourceRead>"
-        }
-      },
-      "permit.api.updateRole": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(roleId: string, role: RoleUpdate): Promise<RoleRead>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "RolesApi.updateRole",
-            "method": "PATCH",
-            "path": "/v2/schema/{proj_id}/{env_id}/roles/{role_id}",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "roleId",
-              "optional": false,
-              "type": "string"
-            },
-            {
-              "initializer": null,
-              "name": "role",
-              "optional": false,
-              "type": "RoleUpdate"
-            }
-          ],
-          "returns": "Promise<RoleRead>"
-        }
-      },
-      "permit.api.updateTenant": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(tenantId: string, tenant: TenantUpdate): Promise<TenantRead>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "TenantsApi.updateTenant",
-            "method": "PATCH",
-            "path": "/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "tenantId",
-              "optional": false,
-              "type": "string"
-            },
-            {
-              "initializer": null,
-              "name": "tenant",
-              "optional": false,
-              "type": "TenantUpdate"
-            }
-          ],
-          "returns": "Promise<TenantRead>"
-        }
-      },
-      "permit.api.updateUser": {
-        "deprecated": true,
-        "factsProxy": false,
-        "publicSignatures": ["(userId: string, user: UserUpdate): Promise<UserRead>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "UsersApi.updateUser",
-            "method": "PATCH",
-            "path": "/v2/facts/{proj_id}/{env_id}/users/{user_id}",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "userId",
-              "optional": false,
-              "type": "string"
-            },
-            {
-              "initializer": null,
-              "name": "user",
-              "optional": false,
-              "type": "UserUpdate"
-            }
-          ],
-          "returns": "Promise<UserRead>"
         }
       },
       "permit.api.users.assignRole": {
@@ -27099,228 +26147,6 @@
           "returns": "Promise<EmbeddedLoginRequestOutputWithContent>"
         }
       },
-      "permit.getUserPermissions": {
-        "deprecated": false,
-        "factsProxy": false,
-        "publicSignatures": [
-          "(user: string | IUser, tenants?: string[] | undefined, resources?: string[] | undefined, resource_types?: string[] | undefined, config?: GetUserPermissionsConfig | undefined): Promise<IUserPermissions>"
-        ],
-        "routes": [
-          {
-            "body": "input",
-            "conditions": {},
-            "method": "POST",
-            "path": "/user-permissions",
-            "response": ["unknown"],
-            "target": "pdp"
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "user",
-              "optional": false,
-              "type": "IUser | string"
-            },
-            {
-              "initializer": null,
-              "name": "tenants",
-              "optional": true,
-              "type": "string[]"
-            },
-            {
-              "initializer": null,
-              "name": "resources",
-              "optional": true,
-              "type": "string[]"
-            },
-            {
-              "initializer": null,
-              "name": "resource_types",
-              "optional": true,
-              "type": "string[]"
-            },
-            {
-              "initializer": null,
-              "name": "config",
-              "optional": true,
-              "type": "GetUserPermissionsConfig"
-            }
-          ],
-          "returns": "Promise<IUserPermissions>"
-        }
-      },
-      "permit.api.pdps.refresh": {
-        "deprecated": false,
-        "factsProxy": false,
-        "publicSignatures": [
-          "(request?: IEnvironmentPdpDataRefreshRequest | undefined): Promise<PDPDataRefreshResponse>"
-        ],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "PolicyDecisionPointsApi.refreshEnvironmentPdpData",
-            "method": "POST",
-            "path": "/v2/pdps/{proj_id}/{env_id}/configs/refresh",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "request",
-              "optional": true,
-              "type": "IEnvironmentPdpDataRefreshRequest"
-            }
-          ],
-          "returns": "Promise<PDPDataRefreshResponse>"
-        }
-      },
-      "permit.api.relationshipTuples.listDetailed": {
-        "deprecated": false,
-        "factsProxy": false,
-        "publicSignatures": [
-          "(params?: IListRelationshipTuples | undefined): Promise<PaginatedResultRelationshipTupleDetailedRead>"
-        ],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "RelationshipTuplesApi.listRelationshipTuplesDetailed",
-            "method": "GET",
-            "path": "/v2/facts/{proj_id}/{env_id}/relationship_tuples/detailed",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": "{}",
-              "name": "{ page = 1, perPage = 100, ...params }",
-              "optional": true,
-              "type": "IListRelationshipTuples"
-            }
-          ],
-          "returns": "Promise<PaginatedResultRelationshipTupleDetailedRead>"
-        }
-      },
-      "permit.api.resourceInstances.listDetailed": {
-        "deprecated": false,
-        "factsProxy": false,
-        "publicSignatures": [
-          "(params?: IListResourceInstanceDetailedParams | undefined): Promise<PaginatedResultResourceInstanceDetailedRead>"
-        ],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "ResourceInstancesApi.listResourceInstancesDetailed",
-            "method": "GET",
-            "path": "/v2/facts/{proj_id}/{env_id}/resource_instances/detailed",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": "{}",
-              "name": "params",
-              "optional": true,
-              "type": "IListResourceInstanceDetailedParams"
-            }
-          ],
-          "returns": "Promise<PaginatedResultResourceInstanceDetailedRead>"
-        }
-      },
-      "permit.api.roleAssignments.listDetailed": {
-        "deprecated": false,
-        "factsProxy": false,
-        "publicSignatures": [
-          "(params?: IListRoleAssignmentsDetailed | undefined): Promise<PaginatedResultRoleAssignmentDetailedRead>"
-        ],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "RoleAssignmentsApi.listRoleAssignmentsDetailed",
-            "method": "GET",
-            "path": "/v2/facts/{proj_id}/{env_id}/role_assignments/detailed",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": "{}",
-              "name": "{ user, tenant, role, resource, resourceInstance, page = 1, perPage = 100, }",
-              "optional": true,
-              "type": "IListRoleAssignmentsDetailed"
-            }
-          ],
-          "returns": "Promise<PaginatedResultRoleAssignmentDetailedRead>"
-        }
-      },
-      "permit.api.tenants.addUser": {
-        "deprecated": false,
-        "factsProxy": false,
-        "publicSignatures": ["(tenantKey: string, userData: UserCreate): Promise<UserRead>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "TenantsApi.addUserToTenant",
-            "method": "POST",
-            "path": "/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "tenantKey",
-              "optional": false,
-              "type": "string"
-            },
-            {
-              "initializer": null,
-              "name": "userData",
-              "optional": false,
-              "type": "UserCreate"
-            }
-          ],
-          "returns": "Promise<UserRead>"
-        }
-      },
       "permit.filterObjects": {
         "deprecated": false,
         "factsProxy": false,
@@ -27419,6 +26245,59 @@
             }
           ],
           "returns": "Promise<IAuthorizedUsersResult>"
+        }
+      },
+      "permit.getUserPermissions": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(user: string | IUser, tenants?: string[] | undefined, resources?: string[] | undefined, resource_types?: string[] | undefined, config?: GetUserPermissionsConfig | undefined): Promise<IUserPermissions>"
+        ],
+        "routes": [
+          {
+            "body": "input",
+            "conditions": {},
+            "method": "POST",
+            "path": "/user-permissions",
+            "response": ["unknown"],
+            "target": "pdp"
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "user",
+              "optional": false,
+              "type": "IUser | string"
+            },
+            {
+              "initializer": null,
+              "name": "tenants",
+              "optional": true,
+              "type": "string[]"
+            },
+            {
+              "initializer": null,
+              "name": "resources",
+              "optional": true,
+              "type": "string[]"
+            },
+            {
+              "initializer": null,
+              "name": "resource_types",
+              "optional": true,
+              "type": "string[]"
+            },
+            {
+              "initializer": null,
+              "name": "config",
+              "optional": true,
+              "type": "GetUserPermissionsConfig"
+            }
+          ],
+          "returns": "Promise<IUserPermissions>"
         }
       },
       "permit.getUserTenants": {
@@ -30867,11 +29746,11 @@
       "BasePermitApi.basePath": "`${this.config.apiUrl}`",
       "Enforcer.client": "`${this.config.pdp}/`",
       "Enforcer.opaClient": "buildOpaBaseUrl(this.config.pdp)",
-      "opaBaseUrl": "{\n    let opaBaseUrl: URL;\n    try {\n        opaBaseUrl = new URL(pdp);\n    }\n    catch {\n        throw new PermitError('Invalid PDP URL in the \"pdp\" option: expected an absolute http(s) URL, ' +\n            'e.g. \"http://localhost:7766\".');\n    }\n    opaBaseUrl.port = '8181';\n    opaBaseUrl.pathname = `${opaBaseUrl.pathname}v1/data/permit/`;\n    return opaBaseUrl.toString();\n}",
-      "TenantsApi.basePath": "this.config.apiUrl",
       "RelationshipTuplesApi.basePath": "this.config.apiUrl",
       "ResourceInstancesApi.basePath": "this.config.apiUrl",
-      "RoleAssignmentsApi.basePath": "this.config.apiUrl"
+      "RoleAssignmentsApi.basePath": "this.config.apiUrl",
+      "TenantsApi.basePath": "this.config.apiUrl",
+      "opaBaseUrl": "{\n    let opaBaseUrl: URL;\n    try {\n        opaBaseUrl = new URL(pdp);\n    }\n    catch {\n        throw new PermitError('Invalid PDP URL in the \"pdp\" option: expected an absolute http(s) URL, ' +\n            'e.g. \"http://localhost:7766\".');\n    }\n    opaBaseUrl.port = '8181';\n    opaBaseUrl.pathname = `${opaBaseUrl.pathname}v1/data/permit/`;\n    return opaBaseUrl.toString();\n}"
     }
   },
   "provenance": {

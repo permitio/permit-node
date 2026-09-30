@@ -15,6 +15,7 @@
     "!build/tests/**",
     "CHANGELOG.md",
     "LICENSE",
+    "MIGRATION.md",
     "README.md"
   ],
   "type": "commonjs",
