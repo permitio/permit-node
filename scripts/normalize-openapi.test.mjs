@@ -3,6 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSyn
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import ts from '@permitio/compiler-tools';
 import { expect, onTestFinished, test } from 'vitest';
 
 import { normalizeOpenApi } from '#scripts/normalize-openapi.mjs';
@@ -38,16 +39,23 @@ function fixture() {
   return root;
 }
 
-test('normalizes generated imports, stored optional fields and Axios declarations idempotently', () => {
-  const root = fixture();
-  writeFileSync(
-    join(root, 'src/openapi/model.ts'),
-    'export interface Model { key: string }\nexport interface Unused { unused: number }',
-  );
-  const file = join(root, 'src/openapi/api.ts');
-  writeFileSync(
-    file,
-    `/* eslint-disable */
+test.each([false, true])(
+  'normalizes generated source idempotently on a case-sensitive=%s filesystem',
+  (caseSensitive) => {
+    const original = ts.sys.useCaseSensitiveFileNames;
+    ts.sys.useCaseSensitiveFileNames = caseSensitive;
+    onTestFinished(() => {
+      ts.sys.useCaseSensitiveFileNames = original;
+    });
+    const root = fixture();
+    writeFileSync(
+      join(root, 'src/openapi/model.ts'),
+      'export interface Model { key: string }\nexport interface Unused { unused: number }',
+    );
+    const file = join(root, 'src/openapi/api.ts');
+    writeFileSync(
+      file,
+      `/* eslint-disable */
 // @ts-ignore
 import { Model, Unused } from './model';
 import { AxiosInstance, AxiosResponse } from 'axios';
@@ -68,26 +76,27 @@ export const createRequestFunction = function (globalAxios: AxiosInstance) {
     return axios.request<T, R>({ url: '/fixture' });
   };
 };`,
-  );
-  normalizeOpenApi(root);
-  const normalized = readFileSync(file, 'utf8');
-  expect(normalized).not.toContain('eslint-disable');
-  expect(normalized).not.toContain('@ts-ignore');
-  expect(normalized).not.toContain('Unused');
-  expect(normalized).not.toContain('@export');
-  expect(normalized).not.toContain('@memberof');
-  const result = spawnSync(
-    process.execPath,
-    [join(process.cwd(), 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.build.json'],
-    { cwd: root, encoding: 'utf8' },
-  );
-  expect(result.status, result.stdout + result.stderr).toBe(0);
-  const declaration = readFileSync(join(root, 'build/api.d.ts'), 'utf8');
-  expect(declaration).toContain('read(model: Model): Model');
-  expect(declaration).toContain('ReturnType<typeof globalAxios.request<T, R>>');
-  normalizeOpenApi(root);
-  expect(readFileSync(file, 'utf8')).toBe(normalized);
-});
+    );
+    normalizeOpenApi(root);
+    const normalized = readFileSync(file, 'utf8');
+    expect(normalized).not.toContain('eslint-disable');
+    expect(normalized).not.toContain('@ts-ignore');
+    expect(normalized).not.toContain('Unused');
+    expect(normalized).not.toContain('@export');
+    expect(normalized).not.toContain('@memberof');
+    const result = spawnSync(
+      process.execPath,
+      [join(process.cwd(), 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.build.json'],
+      { cwd: root, encoding: 'utf8' },
+    );
+    expect(result.status, result.stdout + result.stderr).toBe(0);
+    const declaration = readFileSync(join(root, 'build/api.d.ts'), 'utf8');
+    expect(declaration).toContain('read(model: Model): Model');
+    expect(declaration).toContain('ReturnType<typeof globalAxios.request<T, R>>');
+    normalizeOpenApi(root);
+    expect(readFileSync(file, 'utf8')).toBe(normalized);
+  },
+);
 
 test('reports a missing compiler configuration', () => {
   const root = fixture();

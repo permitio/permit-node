@@ -35,6 +35,7 @@ export function normalizeOpenApi(root = process.cwd()) {
   }
   const host = {
     ...ts.sys,
+    useCaseSensitiveFileNames: () => ts.sys.useCaseSensitiveFileNames,
     getCompilationSettings: () => parsed.options,
     getScriptFileNames: () => parsed.fileNames,
     getScriptVersion: () => '0',
