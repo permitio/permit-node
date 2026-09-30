@@ -38,6 +38,19 @@ regenerates the fixture and requires Java 17. `pnpm check:openapi` regenerates t
 production snapshot twice and verifies committed output. See [OpenAPI generation](openapi/README.md)
 and its [migration inventory](openapi/MIGRATION.md).
 
+Test commands save native Vitest reports and execution summaries in `.test-results/`. The gate
+requires collected files and executed tests in every selected suite, and rejects unexpected skips.
+Backend commands exit with `UNAVAILABLE` and a nonzero status when `PDP_API_KEY` is absent.
+Absent optional organization/project keys and disabled direct OPA checks are named `UNAVAILABLE`
+limitations; a supplied key with the wrong scope fails. The known ABAC decision test remains
+`BLOCKED` by PER-16553. A run with these limitations reports `PARTIAL`, with passed execution counted
+separately. CI runs backend checks against the cloud control plane and a pinned local PDP; fork and
+Dependabot runs explicitly report unavailable backend coverage.
+
+`pnpm coverage` measures all authored runtime TypeScript, including API wrappers, enforcement,
+configuration and utilities. Generated OpenAPI clients and test files are excluded. Text, HTML,
+LCOV and JSON summaries are saved in `coverage/`; this measured scope has no percentage threshold.
+
 ## Release
 
 Releases use the `Release permit Node SDK` GitHub workflow after maintainer approval. The workflow

@@ -43,8 +43,7 @@ export interface CapturedRequest {
  * the responses those requests resolve/reject with.
  *
  * Queued responses are consumed FIFO: each request shifts the next queued entry.
- * When the queue is empty a request resolves with `200 {}` so simple
- * "did the SDK dispatch the right request?" assertions need no setup.
+ * An unqueued request rejects, so unexpected traffic cannot look like success.
  */
 export interface MockTransport {
   /** Every request captured so far, in dispatch order. */
@@ -210,12 +209,17 @@ function installAdapter(instance: AxiosInstance): MockTransport {
   ): Promise<AxiosResponse> => {
     transport.capture(toCaptured(instance, config));
     const queued = transport.next();
-    if (queued && queued.kind === 'reject') {
+    if (!queued) {
+      throw new Error(
+        `Unqueued mock request: ${config.method?.toUpperCase()} ${transport.last?.path}`,
+      );
+    }
+    if (queued.kind === 'reject') {
       throw synthAxiosError(queued.status, queued.data, config);
     }
     return {
-      data: queued?.data ?? {},
-      status: queued?.status ?? 200,
+      data: queued.data,
+      status: queued.status,
       statusText: 'OK',
       headers: {},
       config,
@@ -262,7 +266,8 @@ function seedContext(
  *
  * Notes for spec authors:
  * - Responses are FIFO. Queue one `resolveWith`/`rejectWith` per request the SDK
- *   will make; an unqueued request resolves with `200 {}`.
+ *   will make; an unqueued request rejects. Explicit null bodies stay null, while
+ *   omitted/undefined resolveWith bodies deliberately use the default `{}`.
  * - `path` is the exact pathname, so assert it with `toBe`. `origin` shows
  *   whether a facts request went to the REST API or to the PDP.
  * - `params` values are strings (parsed from the URL query), e.g. `page: '1'`.
@@ -292,6 +297,7 @@ export function createMockPermit(opts: MockPermitOptions = {}): MockPermit {
     apiUrl: MOCK_API_ORIGIN,
     proxyFactsViaPdp,
     multiTenancy: { useDefaultTenantIfEmpty },
+    log: { level: 'silent' },
   });
 
   const enforcer = (

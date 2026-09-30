@@ -49,7 +49,9 @@ test('tenant waitForSync clones cannot imply waiting for unsynchronized membersh
 test('new-user membership follows the selected environment after changing context', async () => {
   const { permit, rest } = createMockPermit({ contextLevel: 'organization' });
   permit.config.apiContext.setEnvironmentLevelContext('org', 'selected-project', 'selected-env');
-  await permit.api.tenants.addUser('east', { key: 'alice' });
+  const result = { key: 'alice', id: 'user-id', tenants: ['east'] };
+  rest.resolveWith(result);
+  expect(await permit.api.tenants.addUser('east', { key: 'alice' })).toEqual(result);
   expect(rest.last?.path).toBe('/v2/facts/selected-project/selected-env/tenants/east/users');
 });
 

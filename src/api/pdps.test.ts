@@ -46,7 +46,8 @@ test('refresh allows the optional body to be omitted and preserves an empty reas
 test('refresh follows the selected environment under an organization key', async () => {
   const { permit, rest } = createMockPermit({ contextLevel: 'organization' });
   permit.config.apiContext.setEnvironmentLevelContext('org', 'selected-project', 'selected-env');
-  await permit.api.pdps.refresh();
+  rest.resolveWith(acknowledgement);
+  expect(await permit.api.pdps.refresh()).toEqual(acknowledgement);
   expect(rest.last?.path).toBe('/v2/pdps/selected-project/selected-env/configs/refresh');
 });
 

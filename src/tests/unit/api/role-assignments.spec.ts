@@ -178,6 +178,7 @@ describe('RoleAssignmentsApi (unit)', () => {
     it('sends X-Wait-Timeout to the PDP host from the returned client only', async () => {
       const proxied = createMockPermit({ proxyFactsViaPdp: true });
 
+      proxied.rest.resolveWith(assignment);
       await proxied.permit.api.roleAssignments.waitForSync(10).assign(assignment);
 
       // The proxied facts client still dispatches on the REST transport, but the
@@ -187,6 +188,7 @@ describe('RoleAssignmentsApi (unit)', () => {
       expect(proxied.rest.last?.path).toBe(COLLECTION);
       expect(proxied.rest.last?.headers.get('X-Wait-Timeout')).toBe('10');
 
+      proxied.rest.resolveWith(assignment);
       await proxied.permit.api.roleAssignments.assign(assignment);
 
       expect(proxied.rest.last?.origin).toBe(MOCK_PDP_ORIGIN);
@@ -195,6 +197,7 @@ describe('RoleAssignmentsApi (unit)', () => {
 
     it('is a no-op without proxyFactsViaPdp (returns self, no wait header)', async () => {
       const synced = permit.api.roleAssignments.waitForSync(0);
+      rest.resolveWith(assignment);
       await synced.assign(assignment);
 
       expect(synced).toBe(permit.api.roleAssignments);

@@ -34,7 +34,9 @@ and TypeDoc. The SDK has no runtime dependency on that workspace.
 
 ## Tests
 
-Use `pnpm test:unit` for focused unit work and `pnpm test:module-imports` for the built entry points.
+Use `pnpm exec vitest run --project unit path/to/file.test.ts` for focused unit work.
+`pnpm test:unit` runs the complete unit project with the execution report gate;
+`pnpm test:module-imports` checks the built entry points.
 Add new source tests beside the code as `*.test.ts`; existing grouped `src/tests` suites can be
 extended in place. Mock external boundaries and test malformed input and failures. Demonstrate
 that a representative regression fails when its fix is removed.
@@ -49,6 +51,13 @@ historical fixture or change API shapes merely to make a tooling check pass.
 
 `test:integration` and `test:e2e` use a Permit backend. Run them locally only with explicit
 authorization. The standard verification command uses local fixtures only.
+
+Gated commands write native JSON and execution summaries to `.test-results/`. They reject missing
+files, empty/all-skipped suites and unreasoned skips. Missing `PDP_API_KEY` reports `UNAVAILABLE`
+and exits 2 before backend tests start. Optional organization/project credentials may be absent,
+but supplied keys with the wrong scope fail. Named optional gaps and the existing PER-16553 ABAC
+block appear separately from executed tests as a `PARTIAL` result. `pnpm coverage` reports every
+authored runtime module, excluding generated clients and tests, without a percentage threshold.
 
 ## API operation and shape evidence
 

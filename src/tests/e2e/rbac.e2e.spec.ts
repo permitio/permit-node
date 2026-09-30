@@ -295,16 +295,24 @@ it('Permission check e2e test', async () => {
 
 // Uses the state the test above leaves behind: elon holds the admin role and james the viewer
 // role in the tenant, and syncedElon holds elon's synced user object.
-it.skipIf(!RUN_OPA_E2E)('useOpa checks go to OPA directly (PERMIT_RUN_OPA_E2E=true)', async () => {
-  if (!syncedElon) {
-    throw new Error('the permission check test did not sync elon, so this test cannot run');
-  }
-  const useOpa = { useOpa: true };
-  const secretDocument = { ...documentInTenant, attributes: { secret: true } };
-  await waitForCheck(() => permit.check(JAMES, 'read', secretDocument), true);
+it.skipIf(!RUN_OPA_E2E)(
+  'useOpa checks go to OPA directly (PERMIT_RUN_OPA_E2E=true)',
+  {
+    meta: {
+      coverageUnavailable: 'PERMIT_RUN_OPA_E2E is not true; direct OPA coverage unavailable',
+    },
+  },
+  async () => {
+    if (!syncedElon) {
+      throw new Error('the permission check test did not sync elon, so this test cannot run');
+    }
+    const useOpa = { useOpa: true };
+    const secretDocument = { ...documentInTenant, attributes: { secret: true } };
+    await waitForCheck(() => permit.check(JAMES, 'read', secretDocument), true);
 
-  expect(await permit.check(JAMES, 'read', secretDocument, {}, useOpa)).toBe(true);
-  expect(await permit.check(JAMES, 'create', secretDocument, {}, useOpa)).toBe(false);
-  expect(await permit.check(syncedElon, 'create', documentInTenant, {}, useOpa)).toBe(true);
-  expect(await permit.check(ELON, 'control the usa', secretDocument, {}, useOpa)).toBe(false);
-});
+    expect(await permit.check(JAMES, 'read', secretDocument, {}, useOpa)).toBe(true);
+    expect(await permit.check(JAMES, 'create', secretDocument, {}, useOpa)).toBe(false);
+    expect(await permit.check(syncedElon, 'create', documentInTenant, {}, useOpa)).toBe(true);
+    expect(await permit.check(ELON, 'control the usa', secretDocument, {}, useOpa)).toBe(false);
+  },
+);

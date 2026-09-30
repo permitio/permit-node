@@ -86,8 +86,13 @@ jobs:
       - name: Require backend secret on same-repo runs
         if: env.BACKEND_REQUIRED == 'true' && env.RUN_BACKEND != 'true'
         run: |
-          echo "::error::PROJECT_API_KEY is not set for a same-repo run, so integration and e2e tests would not run." >&2
+          echo "::error::UNAVAILABLE: PROJECT_API_KEY is not set for a same-repo run; integration and e2e tests cannot run." >&2
           exit 1
+
+      - name: Report unavailable backend coverage on untrusted runs
+        if: env.BACKEND_REQUIRED != 'true' && env.RUN_BACKEND != 'true'
+        run: |
+          echo "::notice::UNAVAILABLE: integration and e2e coverage require PROJECT_API_KEY; no backend tests execute on this run."
 
       # ---------- Backend setup ----------
       # PROJECT_API_KEY is used only in the next two steps. They run before
@@ -206,6 +211,7 @@ jobs:
         env:
           PDP_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
           PERMIT_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
+          API_TIER: prod
           # The project-level environment test needs a project-scoped key. It
           # is skipped, with the reason in the report, while this secret is
           # unset, because the env key above is scoped to one environment.

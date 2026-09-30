@@ -9,11 +9,10 @@ import {
   type EnvironmentRead,
   Permit,
   PermitApiError,
-  PermitContextError,
   type ProjectCreate,
   type ProjectRead,
 } from '#src/index';
-import { cleanUp, createTestClient, handleApiError, isApiStatus } from '#src/tests/fixtures';
+import { cleanUp, createTestClient, expectNotFound, handleApiError } from '#src/tests/fixtures';
 
 let logger: pino.Logger;
 
@@ -24,19 +23,22 @@ beforeAll(() => {
   ({ logger } = createTestClient());
 });
 
-// The org-level test reuses one project across runs, creating it when it is missing. The
-// environments are unique to this run, so runs sharing the project never see each other's.
 // CI's Node legs start together on separate runners, where pid and start time can match.
 const RUN_ID = `${process.pid}-${Date.now()}-${randomUUID().slice(0, 8)}`;
-const TEST_PROJECT: ProjectCreate = { key: 'test-node-proj', name: 'New Node Project' };
+const TEST_PROJECT: ProjectCreate = {
+  key: `node-proj-${RUN_ID}`,
+  name: `Node Project ${RUN_ID}`,
+};
 const CREATED_ENVIRONMENTS: EnvironmentCreate[] = [
   { key: `node-env-${RUN_ID}`, name: `Node Env ${RUN_ID}` },
   { key: `node-env-2-${RUN_ID}`, name: `Node Env 2 ${RUN_ID}` },
 ];
 const CREATED_KEYS = CREATED_ENVIRONMENTS.map((env) => env.key);
+const orgKey = process.env['ORG_PDP_API_KEY'];
+const projectKey = process.env['PROJECT_PDP_API_KEY'];
 
 const permitWithOrgLevelApiKey = new Permit({
-  token: process.env['ORG_PDP_API_KEY'] || process.env['PDP_API_KEY'] || '',
+  token: orgKey?.trim() ? orgKey : process.env['PDP_API_KEY'] || '',
   pdp: process.env['PDP_URL'] || 'http://localhost:7766',
   apiUrl: process.env['PDP_CONTROL_PLANE'] || 'https://api.permit.io',
   log: {
@@ -45,7 +47,7 @@ const permitWithOrgLevelApiKey = new Permit({
 });
 
 const permitWithProjectLevelApiKey = new Permit({
-  token: process.env['PROJECT_PDP_API_KEY'] || process.env['PDP_API_KEY'] || '',
+  token: projectKey?.trim() ? projectKey : process.env['PDP_API_KEY'] || '',
   pdp: process.env['PDP_URL'] || 'http://localhost:7766',
   apiUrl: process.env['PDP_CONTROL_PLANE'] || 'https://api.permit.io',
   log: {
@@ -59,6 +61,8 @@ function deleteCreatedEnvironments(client: Permit, projectKey: string): Promise<
   for (const key of CREATED_KEYS) {
     steps[`environment ${key} in project ${projectKey}`] = () =>
       client.api.environments.delete(projectKey, key);
+    steps[`verify environment ${key} absent`] = () =>
+      expectNotFound(client.api.environments.get(projectKey, key), `environment ${key}`);
   }
   return cleanUp(steps);
 }
@@ -72,18 +76,6 @@ async function describeApiErrors(run: () => Promise<void>): Promise<void> {
       handleApiError(error, 'Got API Error', logger);
     }
     throw error;
-  }
-}
-
-async function getOrCreateProject(client: Permit, project: ProjectCreate): Promise<ProjectRead> {
-  try {
-    return await client.api.projects.create(project);
-  } catch (error) {
-    if (!isApiStatus(error, 409)) {
-      throw error;
-    }
-    logger.info(`project ${project.key} already exists, reading it`);
-    return await client.api.projects.get(project.key);
   }
 }
 
@@ -109,8 +101,8 @@ async function expectCreatedEnvironmentsListed(client: Permit, projectKey: strin
 }
 
 /**
- * Skips the current test when the client's API key is scoped below `level`. A failure to read
- * the key's scope, such as a network or authentication error, still fails the test.
+ * Reports unavailable coverage when an optional key is absent. A supplied key must have the
+ * requested scope; authentication, network and incorrect-scope errors fail the test.
  */
 async function skipUnlessKeyLevel(
   ctx: TestContext,
@@ -118,15 +110,12 @@ async function skipUnlessKeyLevel(
   level: ApiKeyLevel,
   keyVariable: string,
 ): Promise<void> {
-  try {
-    await client.api.ensureAccessLevel(level);
-  } catch (error) {
-    const scopeKnown = client.config.apiContext.permittedAccessLevel !== ApiKeyLevel.WAIT_FOR_INIT;
-    if (error instanceof PermitContextError && scopeKnown) {
-      ctx.skip(`requires ${level} in ${keyVariable}`);
-    }
-    throw error;
+  if (!process.env[keyVariable]?.trim()) {
+    const reason = `${keyVariable} is not set; ${level} coverage unavailable`;
+    ctx.task.meta.coverageUnavailable = reason;
+    ctx.skip(reason);
   }
+  await client.api.ensureAccessLevel(level);
 }
 
 it('environment creation with org level api key', async (ctx) => {
@@ -138,8 +127,15 @@ it('environment creation with org level api key', async (ctx) => {
   );
 
   await describeApiErrors(async () => {
-    logger.info(`getting or creating project: ${TEST_PROJECT.key}`);
-    const project = await getOrCreateProject(client, TEST_PROJECT);
+    ctx.onTestFinished(() =>
+      cleanUp({
+        [`project ${TEST_PROJECT.key}`]: () => client.api.projects.delete(TEST_PROJECT.key),
+        [`verify project ${TEST_PROJECT.key} absent`]: () =>
+          expectNotFound(client.api.projects.get(TEST_PROJECT.key), `project ${TEST_PROJECT.key}`),
+      }),
+    );
+    logger.info(`creating project: ${TEST_PROJECT.key}`);
+    const project = await client.api.projects.create(TEST_PROJECT);
     expect(project.key).toBe(TEST_PROJECT.key);
     expect(project.name).toBe(TEST_PROJECT.name);
     expect(project.description ?? undefined).toBe(TEST_PROJECT.description);

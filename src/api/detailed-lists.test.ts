@@ -4,6 +4,8 @@ import { PermitContextError } from '#src/api/context';
 import { type Permit } from '#src/index';
 import { createMockPermit, MOCK_API_ORIGIN } from '#src/tests/helpers/mock-api';
 
+const emptyPage = { data: [], total_count: 0, page_count: 0 };
+
 const cases = [
   {
     name: 'relationship tuples',
@@ -125,7 +127,8 @@ for (const { name, route, call, filtered, query, item } of cases) {
 
   test(`${name} stay on the control plane when facts proxying is enabled`, async () => {
     const { permit, rest } = createMockPermit({ proxyFactsViaPdp: true });
-    await call(permit);
+    rest.resolveWith(emptyPage);
+    expect(await call(permit)).toEqual(emptyPage);
     expect(rest.last?.origin).toBe(MOCK_API_ORIGIN);
     expect(rest.last?.headers.has('X-Wait-Timeout')).toBe(false);
     expect(rest.last?.headers.has('X-Timeout-Policy')).toBe(false);
@@ -148,6 +151,7 @@ for (const { name, route, call, filtered, query, item } of cases) {
 
 test('detailed resource-instance search uses repeated terms rather than a joined scalar', async () => {
   const { permit, rest } = createMockPermit({ proxyFactsViaPdp: true });
+  rest.resolveWith(emptyPage);
   await permit.api.resourceInstances.listDetailed({ search: ['report & annual', 'budget/east'] });
   const query = new URL(rest.last?.url ?? '', 'http://fixture.invalid').searchParams;
   expect(query.getAll('search')).toEqual(['report & annual', 'budget/east']);
@@ -155,6 +159,7 @@ test('detailed resource-instance search uses repeated terms rather than a joined
 
 test('detailed filters retain empty strings and explicit numeric pagination', async () => {
   const { permit, rest } = createMockPermit();
+  rest.resolveWith(emptyPage);
   await permit.api.relationshipTuples.listDetailed({
     tenant: '',
     subject: '',
@@ -175,6 +180,7 @@ test('detailed filters retain empty strings and explicit numeric pagination', as
     page: '0',
     per_page: '0',
   });
+  rest.resolveWith(emptyPage);
   await permit.api.resourceInstances.listDetailed({
     tenant: '',
     resource: '',
@@ -189,6 +195,7 @@ test('detailed filters retain empty strings and explicit numeric pagination', as
     page: '0',
     per_page: '0',
   });
+  rest.resolveWith(emptyPage);
   await permit.api.roleAssignments.listDetailed({
     tenant: '',
     user: '',
@@ -242,10 +249,13 @@ test('new detailed reads honor selected scope and ignore synchronization headers
     'selected / project',
     'selected environment',
   );
+  rest.resolveWith(emptyPage);
   await permit.api.relationshipTuples.waitForSync(null, 'fail').listDetailed();
+  rest.resolveWith(emptyPage);
   await permit.api.resourceInstances
     .waitForSync(7, 'fail')
     .listDetailed({ search: ['annual report', 'east/budget'] });
+  rest.resolveWith(emptyPage);
   await permit.api.roleAssignments.waitForSync(7, 'ignore').listDetailed();
   expect(rest.requests.map((request) => request.path)).toEqual([
     '/v2/facts/selected%20%2F%20project/selected%20environment/relationship_tuples/detailed',

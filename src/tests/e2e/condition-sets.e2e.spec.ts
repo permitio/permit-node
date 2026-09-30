@@ -144,22 +144,30 @@ it('ABAC condition sets, rule and users are set up', async () => {
 });
 
 // New condition sets' policy doesn't reliably reach the PDP (PER-16553); remove .skip once fixed.
-it.skip('ABAC decisions (pending PER-16553)', async () => {
-  // Positive ABAC check: the matching user reads a confidential document. It is polled until
-  // the previous test's writes have propagated from the control plane to the PDP. Condition sets
-  // compile to new policy (rego), which takes longer to take effect than plain role/fact
-  // propagation, so allow a wider budget.
-  logger.info('positive ABAC check: matching user reads a confidential document');
-  await waitForCheck(() => permit.check(MATCHING_USER_KEY, ACTION, confidentialResource), true, {
-    timeoutMs: 180_000,
-  });
+it.skip(
+  'ABAC decisions (pending PER-16553)',
+  {
+    meta: {
+      coverageUnavailable: 'PER-16553: condition-set policy does not reliably reach the PDP',
+    },
+  },
+  async () => {
+    // Positive ABAC check: the matching user reads a confidential document. It is polled until
+    // the previous test's writes have propagated from the control plane to the PDP. Condition sets
+    // compile to new policy (rego), which takes longer to take effect than plain role/fact
+    // propagation, so allow a wider budget.
+    logger.info('positive ABAC check: matching user reads a confidential document');
+    await waitForCheck(() => permit.check(MATCHING_USER_KEY, ACTION, confidentialResource), true, {
+      timeoutMs: 180_000,
+    });
 
-  // The policy is in place now, so each half of the rule can be checked on its own.
-  logger.info('negative ABAC check: non-matching user is denied');
-  expect(await permit.check(OTHER_USER_KEY, ACTION, confidentialResource)).toBe(false);
+    // The policy is in place now, so each half of the rule can be checked on its own.
+    logger.info('negative ABAC check: non-matching user is denied');
+    expect(await permit.check(OTHER_USER_KEY, ACTION, confidentialResource)).toBe(false);
 
-  logger.info('negative ABAC check: matching user is denied a document that is not confidential');
-  const publicResource = { ...documentInTenant, attributes: { confidential: false } };
-  expect(await permit.check(MATCHING_USER_KEY, ACTION, publicResource)).toBe(false);
-  expect(await permit.check(MATCHING_USER_KEY, ACTION, documentInTenant)).toBe(false);
-});
+    logger.info('negative ABAC check: matching user is denied a document that is not confidential');
+    const publicResource = { ...documentInTenant, attributes: { confidential: false } };
+    expect(await permit.check(MATCHING_USER_KEY, ACTION, publicResource)).toBe(false);
+    expect(await permit.check(MATCHING_USER_KEY, ACTION, documentInTenant)).toBe(false);
+  },
+);

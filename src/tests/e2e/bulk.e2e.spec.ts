@@ -1,7 +1,9 @@
+import { randomUUID } from 'node:crypto';
+
 import pino from 'pino';
 
 import { type IPermitClient } from '#src/index';
-import { cleanUp, createTestClient } from '#src/tests/fixtures';
+import { cleanUp, createTestClient, expectNotFound } from '#src/tests/fixtures';
 import { waitFor } from '#src/tests/helpers/wait-for';
 
 let permit: IPermitClient;
@@ -9,7 +11,7 @@ let logger: pino.Logger;
 
 // Keys unique to this run, so entities left by another spec or an earlier run can't collide
 // with the ones created here.
-const RUN_ID = `${process.pid}_${Date.now()}`;
+const RUN_ID = `${process.pid}_${Date.now()}_${randomUUID().slice(0, 8)}`;
 const unique = (key: string) => `bulk_${key}_${RUN_ID}`;
 
 const BULK_USER_1 = unique('user_maya_test_1');
@@ -49,9 +51,15 @@ afterAll(async () => {
   const steps: Record<string, () => Promise<unknown>> = {};
   for (const key of CREATED_USER_KEYS) {
     steps[`user ${key}`] = () => permit.api.users.delete(key);
+    steps[`verify user ${key} absent`] = () =>
+      expectNotFound(permit.api.users.get(key), `user ${key}`);
   }
   steps[`resource ${DOCS_RESOURCE}`] = () => permit.api.resources.delete(DOCS_RESOURCE);
   steps[`resource ${FOLDERS_RESOURCE}`] = () => permit.api.resources.delete(FOLDERS_RESOURCE);
+  steps[`verify resource ${DOCS_RESOURCE} absent`] = () =>
+    expectNotFound(permit.api.resources.get(DOCS_RESOURCE), `resource ${DOCS_RESOURCE}`);
+  steps[`verify resource ${FOLDERS_RESOURCE} absent`] = () =>
+    expectNotFound(permit.api.resources.get(FOLDERS_RESOURCE), `resource ${FOLDERS_RESOURCE}`);
   await cleanUp(steps);
 });
 
@@ -70,15 +78,40 @@ it('Bulk relationship tuples test', async () => {
       tenant: 'default',
     },
   ];
+  for (const [resource, key] of [
+    [FOLDERS_RESOURCE, 'pdf'],
+    [FOLDERS_RESOURCE, 'png'],
+    [DOCS_RESOURCE, 'tasks'],
+    [DOCS_RESOURCE, 'files'],
+  ] as const) {
+    await permit.api.resourceInstances.create({ resource, key, tenant: 'default' });
+  }
   logger.info('Tuples: ' + JSON.stringify(tuples));
-  const result = await permit.api.relationshipTuples.bulkRelationshipTuples(tuples);
-  expect(result).toBeDefined();
+  await permit.api.relationshipTuples.bulkRelationshipTuples(tuples);
+  for (const tuple of tuples) {
+    const persisted = await waitFor(
+      () => permit.api.relationshipTuples.list(tuple),
+      (list) => list.length === 1,
+      { timeoutMs: 60_000, message: 'bulk-created tuple not yet persisted' },
+    );
+    expect(persisted).toHaveLength(1);
+    expect(persisted[0]).toMatchObject(tuple);
+    expect(persisted[0]?.id).toEqual(expect.any(String));
+  }
 });
 
 it('Bulk users test', async () => {
   const users = [{ key: BULK_USER_1 }, { key: BULK_USER_2 }];
   logger.info('users: ' + JSON.stringify(users));
   await permit.api.users.bulkUserCreate(users);
+  for (const user of users) {
+    const persisted = await waitFor(
+      () => permit.api.users.list({ search: user.key }),
+      (list) => list.data.some((item) => item.key === user.key),
+      { timeoutMs: 60_000, message: 'bulk-created user not yet persisted' },
+    );
+    expect(persisted.data.find((item) => item.key === user.key)).toMatchObject(user);
+  }
 });
 
 it('Bulk users replace test', async () => {
@@ -88,6 +121,15 @@ it('Bulk users replace test', async () => {
   ];
   logger.info('users: ' + JSON.stringify(users));
   await permit.api.users.bulkUserReplace(users);
+  for (const user of users) {
+    const persisted = await waitFor(
+      () => permit.api.users.list({ search: user.key }),
+      (list) =>
+        list.data.some((item) => item.key === user.key && item.first_name === user.first_name),
+      { timeoutMs: 60_000, message: 'bulk-replaced user fields not yet persisted' },
+    );
+    expect(persisted.data.find((item) => item.key === user.key)).toMatchObject(user);
+  }
 });
 
 it('Bulk users delete test', async () => {

@@ -60,8 +60,9 @@ const test: TestUserConfig = {
   })),
   coverage: {
     provider: 'v8',
-    include: ['src/utils/retry.ts', 'src/utils/http-transport.ts'],
-    reporter: ['text', 'html', 'lcov'],
+    include: ['src/**/*.ts'],
+    exclude: ['src/openapi/**', 'src/tests/**', 'src/**/*.test.ts'],
+    reporter: ['text', 'html', 'lcov', 'json-summary'],
   },
 };
 
