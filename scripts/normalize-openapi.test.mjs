@@ -97,6 +97,8 @@ export const createRequestFunction = function (globalAxios: AxiosInstance) {
     normalizeOpenApi(root);
     expect(readFileSync(file, 'utf8')).toBe(normalized);
   },
+  // Two compiler-backed normalization passes and a compiler subprocess share the CI runner.
+  30_000,
 );
 
 test('reports a missing compiler configuration', () => {
