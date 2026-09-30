@@ -1,4 +1,4 @@
-import axios, { type AxiosResponse } from 'axios';
+import { type AxiosResponse } from 'axios';
 import { type Logger } from 'pino';
 
 import { type IPermitConfig } from '#src/config';
@@ -34,7 +34,8 @@ import {
   type UserUpdate,
 } from '#src/openapi/index';
 import { BASE_PATH } from '#src/openapi/base';
-import { BasePermitApi, redactAxiosError } from '#src/api/base';
+import { diagnosticStatus } from '#src/utils/diagnostics';
+import { BasePermitApi } from '#src/api/base';
 // oxlint-disable-next-line no-unused-vars -- Type imports resolve public TSDoc error/context links.
 import type { PermitApiError } from '#src/api/base';
 import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
@@ -156,17 +157,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...this.config.apiContext.environmentContext,
       });
 
-      this.logger.debug(`[${response.status}] permit.api.listUsers()`);
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.listUsers()');
       return response.data.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.getUser(), err: ${JSON.stringify(
-            err?.response?.data,
-          )}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -186,17 +180,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...this.config.apiContext.environmentContext,
       })) as AxiosResponse<RoleRead[]>;
 
-      this.logger.debug(`[${response.status}] permit.api.listRoles()`);
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.listRoles()');
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.listRoles(), err: ${JSON.stringify(
-            err?.response?.data,
-          )}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -226,17 +213,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         perPage: perPage,
       });
 
-      this.logger.debug(`[${response.status}] permit.api.listRoles()`);
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.listRoles()');
       return Array.isArray(response.data) ? response.data : response.data.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.listRoles(), err: ${JSON.stringify(
-            err?.response?.data,
-          )}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -263,17 +243,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         perPage: perPage,
       });
 
-      this.logger.debug(`[${response.status}] permit.api.listRoles()`);
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.listRoles()');
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.listRoles(), err: ${JSON.stringify(
-            err?.response?.data,
-          )}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -293,17 +266,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...this.config.apiContext.environmentContext,
         userId: userId,
       });
-      this.logger.debug(`[${response.status}] permit.api.getUser(${userId})`);
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.getUser()');
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.getUser(${userId}), err: ${JSON.stringify(
-            err?.response?.data,
-          )}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -323,17 +289,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...this.config.apiContext.environmentContext,
         tenantId: tenantId,
       });
-      this.logger.debug(`[${response.status}] permit.api.getTenant(${tenantId})`);
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.getTenant()');
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.getTenant(${tenantId}), err: ${JSON.stringify(
-            err?.response?.data,
-          )}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -353,17 +312,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...this.config.apiContext.environmentContext,
         ...(page !== undefined && { page }),
       });
-      this.logger.debug(`[${response.status}] permit.api.listTenants(${page ?? ''})`);
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.listTenants()');
       return Array.isArray(response.data) ? response.data : response.data.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.listTenants(${page ?? ''}), err: ${JSON.stringify(
-            err?.response?.data,
-          )}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -383,17 +335,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...this.config.apiContext.environmentContext,
         roleId: roleId,
       });
-      this.logger.debug(`[${response.status}] permit.api.getRole(${roleId})`);
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.getRole()');
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.getRole(${roleId}), err: ${JSON.stringify(
-            err?.response?.data,
-          )}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -416,18 +361,12 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...(tenant !== undefined && { tenant: [tenant] }),
       });
       this.logger.debug(
-        `[${response.status}] permit.api.getAssignedRoles(${user}, ${tenant ?? 'all tenants'})`,
+        { status: diagnosticStatus(response.status) },
+        'permit.api.getAssignedRoles()',
       );
       return response.data as RoleAssignmentRead[];
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.getAssignedRoles(${user}, ${
-            tenant ?? 'all tenants'
-          }), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -448,18 +387,12 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         resourceCreate: resource,
       });
       this.logger.debug(
-        `[${response.status}] permit.api.createResource(${JSON.stringify(resource)})`,
+        { status: diagnosticStatus(response.status) },
+        'permit.api.createResource()',
       );
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.createResource(${JSON.stringify(
-            resource,
-          )}), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -482,20 +415,12 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         resourceUpdate: resource,
       });
       this.logger.debug(
-        `[${response.status}] permit.api.updateResource(${resourceId}, ${JSON.stringify(
-          resource,
-        )})`,
+        { status: diagnosticStatus(response.status) },
+        'permit.api.updateResource()',
       );
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.updateResource(${resourceId}, ${JSON.stringify(
-            resource,
-          )}), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -515,17 +440,13 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...this.config.apiContext.environmentContext,
         resourceId: resourceId,
       });
-      this.logger.debug(`[${response.status}] permit.api.deleteResource(${resourceId})`);
+      this.logger.debug(
+        { status: diagnosticStatus(response.status) },
+        'permit.api.deleteResource()',
+      );
       return response;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${
-            err?.response?.status
-          }] permit.api.deleteResource(${resourceId}), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -545,17 +466,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...this.config.apiContext.environmentContext,
         userCreate: user,
       });
-      this.logger.debug(`[${response.status}] permit.api.createUser(${JSON.stringify(user)})`);
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.createUser()');
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.createUser(${JSON.stringify(
-            user,
-          )}), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -576,17 +490,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         userId: user.key,
         userCreate: user,
       });
-      this.logger.debug(`[${response.status}] permit.api.syncUser(${JSON.stringify(user)})`);
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.syncUser()');
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.syncUser(${JSON.stringify(
-            user,
-          )}), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -608,17 +515,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         userId,
         userUpdate: user,
       });
-      this.logger.debug(`[${response.status}] permit.api.updateUser(${JSON.stringify(user)})`);
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.updateUser()');
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.updateUser(${JSON.stringify(
-            user,
-          )}), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -638,17 +538,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...this.config.apiContext.environmentContext,
         userId: userId, // user id or key
       });
-      this.logger.debug(`[${response.status}] permit.api.deleteUser(${userId})`);
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.deleteUser()');
       return response;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.deleteUser(${userId}), err: ${JSON.stringify(
-            err?.response?.data,
-          )}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -668,17 +561,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...this.config.apiContext.environmentContext,
         tenantCreate: tenant,
       });
-      this.logger.debug(`[${response.status}] permit.api.createTenant(${JSON.stringify(tenant)})`);
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.createTenant()');
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.createTenant(${JSON.stringify(
-            tenant,
-          )}), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -700,19 +586,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         tenantId: tenantId,
         tenantUpdate: tenant,
       });
-      this.logger.debug(
-        `[${response.status}] permit.api.updateTenant(${tenantId}, ${JSON.stringify(tenant)})`,
-      );
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.updateTenant()');
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.updateTenant(${tenantId}, ${JSON.stringify(
-            tenant,
-          )}), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -732,17 +609,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...this.config.apiContext.environmentContext,
         tenantId: tenantId,
       });
-      this.logger.debug(`[${response.status}] permit.api.deleteTenant(${tenantId})`);
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.deleteTenant()');
       return response;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.deleteTenant(${tenantId}), err: ${JSON.stringify(
-            err?.response?.data,
-          )}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -762,17 +632,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...this.config.apiContext.environmentContext,
         roleCreate: role,
       });
-      this.logger.debug(`[${response.status}] permit.api.createRole(${JSON.stringify(role)})`);
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.createRole()');
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.createRole(${JSON.stringify(
-            role,
-          )}), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -794,19 +657,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         roleId: roleId,
         roleUpdate: role,
       });
-      this.logger.debug(
-        `[${response.status}] permit.api.updateRole(${roleId}, ${JSON.stringify(role)})`,
-      );
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.updateRole()');
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.updateRole(${roleId}, ${JSON.stringify(
-            role,
-          )}), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -826,17 +680,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...this.config.apiContext.environmentContext,
         roleId: roleId,
       });
-      this.logger.debug(`[${response.status}] permit.api.deleteRole(${roleId})`);
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.deleteRole()');
       return response;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.deleteRole(${roleId}), err: ${JSON.stringify(
-            err?.response?.data,
-          )}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -856,19 +703,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...this.config.apiContext.environmentContext,
         roleAssignmentCreate: assignedRole,
       });
-      this.logger.debug(
-        `[${response.status}] permit.api.assignRole(${JSON.stringify(assignedRole)})`,
-      );
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.assignRole()');
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.assignRole(${JSON.stringify(
-            assignedRole,
-          )}), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -890,19 +728,10 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...this.config.apiContext.environmentContext,
         roleAssignmentRemove: removedRole,
       });
-      this.logger.debug(
-        `[${response.status}] permit.api.unassignRole(${JSON.stringify(removedRole)})`,
-      );
+      this.logger.debug({ status: diagnosticStatus(response.status) }, 'permit.api.unassignRole()');
       return response;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.unassignRole(${JSON.stringify(
-            removedRole,
-          )}), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -923,18 +752,12 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         conditionSetCreate: conditionSet,
       });
       this.logger.debug(
-        `[${response.status}] permit.api.createConditionSet(${JSON.stringify(conditionSet)})`,
+        { status: diagnosticStatus(response.status) },
+        'permit.api.createConditionSet()',
       );
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.createConditionSet(${JSON.stringify(
-            conditionSet,
-          )}), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -960,22 +783,12 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         conditionSetUpdate: conditionSet,
       });
       this.logger.debug(
-        `[${response.status}] permit.api.updateConditionSet(${conditionSetId}, ${JSON.stringify(
-          conditionSet,
-        )})`,
+        { status: diagnosticStatus(response.status) },
+        'permit.api.updateConditionSet()',
       );
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${
-            err?.response?.status
-          }] permit.api.updateConditionSet(${conditionSetId}, ${JSON.stringify(
-            conditionSet,
-          )}), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -995,19 +808,13 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         ...this.config.apiContext.environmentContext,
         conditionSetId: conditionSetId,
       });
-      this.logger.debug(`[${response.status}] permit.api.deleteConditionSet(${conditionSetId})`);
+      this.logger.debug(
+        { status: diagnosticStatus(response.status) },
+        'permit.api.deleteConditionSet()',
+      );
       return response;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${
-            err?.response?.status
-          }] permit.api.deleteConditionSet(${conditionSetId}), err: ${JSON.stringify(
-            err?.response?.data,
-          )}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -1030,20 +837,12 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         conditionSetRuleCreate: conditionSetRule,
       });
       this.logger.debug(
-        `[${response.status}] permit.api.createConditionSetRule(${JSON.stringify(
-          conditionSetRule,
-        )})`,
+        { status: diagnosticStatus(response.status) },
+        'permit.api.createConditionSetRule()',
       );
       return response.data;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.createConditionSetRule(${JSON.stringify(
-            conditionSetRule,
-          )}), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 
@@ -1066,20 +865,12 @@ export class DeprecatedApiClient extends BasePermitApi implements IDeprecatedPer
         conditionSetRuleRemove: conditionSetRule,
       });
       this.logger.debug(
-        `[${response.status}] permit.api.deleteConditionSetRule(${JSON.stringify(
-          conditionSetRule,
-        )})`,
+        { status: diagnosticStatus(response.status) },
+        'permit.api.deleteConditionSetRule()',
       );
       return response;
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.deleteConditionSetRule(${JSON.stringify(
-            conditionSetRule,
-          )}), err: ${JSON.stringify(err?.response?.data)}`,
-        );
-      }
-      throw redactAxiosError(err);
+      this.handleApiError(err);
     }
   }
 

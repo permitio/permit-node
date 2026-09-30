@@ -169,9 +169,9 @@ const permit = new Permit({
 
 With the default `throwOnError: true`, a PDP response with an unexpected status code, or a `200`
 response with a body the SDK cannot read, throws `PermitPDPStatusError`, a subclass of
-`PermitConnectionError`. It carries the HTTP `statusCode` and `responseBody`, the raw body the
-PDP returned (parsed JSON, or text when the body is not JSON). Transport failures, such as
-refused connections or timeouts, throw `PermitConnectionError`. Match errors with `instanceof`,
+`PermitConnectionError`. It carries the HTTP `statusCode` and a bounded, sanitized `responseBody`.
+Transport failures, such as refused connections or timeouts, throw `PermitConnectionError` with
+a safe `cause` and transport `code` when available. Match errors with `instanceof`,
 not their `name` or message, and check the more specific status error first:
 
 ```typescript
@@ -189,6 +189,27 @@ try {
   }
 }
 ```
+
+REST failures, including retained deprecated methods, throw named `PermitApiError` errors.
+The SDK accepts `message`, `detail` (including validation-error arrays), and text error bodies;
+missing descriptions fall back to the HTTP status or transport failure. `status`, `code` and a
+detached safe `cause` retain failure metadata. API-key scope failures use `PermitContextError`
+with the same safe metadata.
+
+These are deliberate 3.0 error-property changes. `PermitApiError.originalError` is a detached Axios
+snapshot; `response.data` and `formattedAxiosError.error` have type `unknown` after redaction.
+`PermitApiError` no longer takes a response-body type parameter; narrow the sanitized data before use.
+`request` is always undefined. Snapshots omit request bodies, parameters, socket objects, hooks,
+original stacks and raw causes. Response diagnostics keep only `message`, `detail`, `msg`,
+`error_code`, `code` and `errors`; nested values, item counts and text lengths are bounded.
+Request header values remain redacted except known protocol/SDK headers. Response header values
+are redacted except content type, content length and retry timing. Credential URL components
+(user information, query values and fragments) are removed. Known request credentials and private
+values are scrubbed from error descriptions; oversized or deeply nested requests cause descriptions
+to be redacted. Failures from caller adapters, interceptors and retry hooks follow the same rules;
+uninspectable primitive rejections use a useful operation fallback. Credentials and identity/permission
+attributes are omitted from JSON and pretty
+SDK logs, including successful authorization calls.
 
 These rules apply to `check`, `bulkCheck`, `getUserPermissions`, and `checkAllTenants`.
 PDP responses are validated before authorization data reaches the caller. Direct PDP responses

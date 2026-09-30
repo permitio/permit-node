@@ -1,15 +1,19 @@
-import axios, {
-  AxiosError,
-  AxiosHeaders,
-  type AxiosHeaderValue,
-  type AxiosResponse,
-  type InternalAxiosRequestConfig,
-} from 'axios';
+import axios, { type AxiosError, type AxiosResponse } from 'axios';
 import { type Logger } from 'pino';
 
 import { type FactsSyncTimeoutPolicy, type IPermitConfig } from '#src/config';
 import { APIKeysApi, Configuration } from '#src/openapi/index';
 import { BASE_PATH } from '#src/openapi/base';
+
+import {
+  diagnosticAxiosError,
+  diagnosticCause,
+  diagnosticErrorSecrets,
+  diagnosticMessage,
+  diagnosticMetadata,
+  diagnosticRequestSecrets,
+  diagnosticText,
+} from '#src/utils/diagnostics';
 
 import {
   API_ACCESS_LEVELS,
@@ -19,113 +23,50 @@ import {
   PermitContextError,
 } from '#src/api/context';
 
-const REDACTED = '[REDACTED]';
-
-// Request headers that carry no credentials. Every other request header value is redacted,
-// including custom headers set on a caller-provided axiosInstance.
-const SAFE_REQUEST_HEADERS = new Set([
-  'accept',
-  'accept-encoding',
-  'content-length',
-  'content-type',
-  'user-agent',
-  'x-permit-sdk-version',
-  'x-timeout-policy',
-  'x-wait-timeout',
-]);
-
-/** Copies headers, replacing the value of every header that `keep` rejects. */
-function redactHeaders(
-  headers: Record<string, AxiosHeaderValue | undefined>,
-  keep: (lowerCaseName: string) => boolean,
-): AxiosHeaders {
-  const redacted = new AxiosHeaders();
-  for (const [name, value] of Object.entries(headers)) {
-    redacted.set(name, keep(name.toLowerCase()) ? value : REDACTED);
-  }
-  return redacted;
-}
-
-function redactRequestConfig(config: InternalAxiosRequestConfig): InternalAxiosRequestConfig {
-  const { method, baseURL, url, params, data, timeout } = config;
-  const headers = redactHeaders(config.headers, (name) => SAFE_REQUEST_HEADERS.has(name));
-  return {
-    ...(method !== undefined && { method }),
-    ...(baseURL !== undefined && { baseURL }),
-    ...(url !== undefined && { url }),
-    params,
-    data,
-    ...(timeout !== undefined && { timeout }),
-    headers,
-  };
-}
-
-/**
- * Removes credentials from an Axios error in place, so that logging or serializing it cannot
- * leak the API key. Keeps the method, URL, params, request body, status and response body.
- * Redacts the values of request headers that are not known to be safe and of the response
- * Set-Cookie header, and drops the underlying request objects, whose raw header block contains
- * the Authorization header. Errors other than Axios errors are returned unchanged.
- *
- * @param error - The error thrown by an Axios request.
- * @returns The same error.
- */
-export function redactAxiosError<E>(error: E): E {
-  if (!axios.isAxiosError(error)) {
-    return error;
-  }
-  const config = error.config && redactRequestConfig(error.config);
-  if (config !== undefined) error.config = config;
-  error.request = undefined;
-  if (error.response) {
-    error.response = {
-      status: error.response.status,
-      statusText: error.response.statusText,
-      headers: redactHeaders(error.response.headers, (name) => name !== 'set-cookie'),
-      data: error.response.data,
-      config: config ?? redactRequestConfig(error.response.config),
-    };
-  }
-  return error;
-}
-
-interface FormattedAxiosError<T> {
+interface FormattedAxiosError {
   code?: string | undefined;
   message: string;
-  error?: T | undefined;
+  error?: unknown;
   status?: number | undefined;
 }
-export class PermitApiError<T> extends Error {
-  public originalError: AxiosError<T>;
+export class PermitApiError extends Error {
+  public readonly originalError: AxiosError<unknown>;
+  public readonly status: number | undefined;
+  public readonly code: string | undefined;
 
   /**
-   * @param message - The error message.
-   * @param originalError - The failed Axios request error. Its credentials, such as the
-   * Authorization header, are removed in place before it is stored.
+   * Creates a named REST failure from a detached, bounded request-error snapshot.
+   *
+   * @param message - Description of the failure, sanitized against request credentials and data.
+   * @param originalError - Failed Axios request. Its raw response body is not retained after redaction.
    */
-  constructor(message: string, originalError: AxiosError<T>) {
-    super(message);
-    this.originalError = redactAxiosError(originalError);
+  constructor(message: string, originalError: AxiosError<unknown>) {
+    const snapshot = diagnosticAxiosError(originalError);
+    super(diagnosticText(message || snapshot.message, diagnosticRequestSecrets(originalError)), {
+      cause: diagnosticCause(snapshot),
+    });
+    this.name = 'PermitApiError';
+    this.originalError = snapshot;
+    this.status = snapshot.status;
+    this.code = snapshot.code;
   }
 
-  public get formattedAxiosError(): FormattedAxiosError<T> {
+  public get formattedAxiosError(): FormattedAxiosError {
     return {
-      code: this.originalError.code,
+      code: this.code,
       message: this.message,
       error: this.originalError.response?.data,
-      status: this.originalError.status,
+      status: this.status,
     };
   }
 
-  /**
-   * Undefined: the underlying request object is not kept, because its raw header block contains
-   * the API key. `originalError.config` holds the request method and URL.
-   */
-  public get request(): any {
-    return this.originalError.request;
+  /** Underlying socket/request objects are never retained on public errors. */
+  public get request(): undefined {
+    return undefined;
   }
 
-  public get response(): AxiosResponse<T> | undefined {
+  /** Bounded response diagnostics; private fields are omitted and the resulting body is unknown. */
+  public get response(): AxiosResponse<unknown> | undefined {
     return this.originalError.response;
   }
 }
@@ -196,11 +137,18 @@ export abstract class BasePermitApi {
         const response = await this.scopeApi.getApiKeyScope();
         return response.data;
       } catch (error) {
-        const cause = redactAxiosError(error);
-        throw new PermitContextError(
-          'Could not fetch the API key scope; retry after checking connectivity and API key access.',
+        const cause = axios.isAxiosError<unknown>(error)
+          ? diagnosticAxiosError(error, [this.config.token])
+          : diagnosticCause(error, [this.config.token]);
+        const failure = new PermitContextError(
+          `Could not fetch the API key scope: ${cause.message} Check connectivity and API key access.`,
           { cause },
         );
+        this.logger.error(
+          { err: failure, operation: 'getApiKeyScope' },
+          'permit.api.getApiKeyScope() failed',
+        );
+        throw failure;
       }
     });
   }
@@ -261,20 +209,15 @@ export abstract class BasePermitApi {
   }
 
   protected handleApiError(err: unknown): never {
-    if (axios.isAxiosError(err)) {
-      // this is an http response with an error status code
-      const logMessage = `Got error status code: ${err.response?.status}, err: ${JSON.stringify(
-        err?.response?.data,
-      )}`;
-      const apiMessage = err.response?.data.message;
-      // log this to the SDK logger
-      this.logger.error(logMessage);
-      // and throw a permit error exception
-      throw new PermitApiError(apiMessage, err);
-    } else {
-      // unexpected error, just throw
-      throw err;
-    }
+    const privacy = diagnosticErrorSecrets(err, [this.config.token]);
+    const metadata = diagnosticMetadata(err, privacy);
+    const snapshot = axios.isAxiosError<unknown>(err)
+      ? diagnosticAxiosError(err, [this.config.token])
+      : new axios.AxiosError(diagnosticMessage(err, privacy), metadata.code);
+    if (metadata.status !== undefined) snapshot.status = metadata.status;
+    const failure = new PermitApiError(snapshot.message, snapshot);
+    this.logger.error({ err: failure, operation: 'REST' }, 'Permit REST API request failed');
+    throw failure;
   }
 }
 

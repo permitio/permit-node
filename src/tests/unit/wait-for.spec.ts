@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 /** A REST error as the SDK raises it; no status means the request got no response. */
-function apiError(status?: number): PermitApiError<unknown> {
+function apiError(status?: number): PermitApiError {
   const config = { headers: new AxiosHeaders() };
   const response =
     status === undefined ? undefined : { status, statusText: '', headers: {}, config, data: {} };

@@ -37,11 +37,7 @@ export function createTestClient(opts: CreateTestClientOptions = {}): TestClient
  * Logs and throws an error that names the failed request and the API's reply, with the
  * original error as its `cause`.
  */
-export function handleApiError(
-  error: PermitApiError<unknown>,
-  message: string,
-  logger: pino.Logger,
-): never {
+export function handleApiError(error: PermitApiError, message: string, logger: pino.Logger): never {
   const request = error.originalError.config;
   const target = `${request?.method?.toUpperCase() ?? 'request'} ${request?.url ?? '(no URL)'}`;
   const outcome = error.response

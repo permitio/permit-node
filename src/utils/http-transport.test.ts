@@ -351,7 +351,7 @@ test('isolates SDK logging without intercepting the caller direct request', asyn
     name: 'second',
   });
   await first.get('/sdk');
-  expect(firstLog.mock.calls.map((call) => call[0])).toEqual([
+  expect(firstLog.mock.calls.map((call) => call[1])).toEqual([
     'Sending HTTP request: GET /sdk',
     'Received HTTP response: GET /sdk, status: 200',
   ]);

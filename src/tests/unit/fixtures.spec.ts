@@ -5,7 +5,7 @@ import { PermitApiError } from '#src/index';
 import { cleanUp, expectNotFound, handleApiError, ignoreNotFound } from '#src/tests/fixtures';
 
 /** A REST error as the SDK raises it; no status means the request got no response. */
-function apiError(status?: number, data: unknown = { message: 'failed' }): PermitApiError<unknown> {
+function apiError(status?: number, data: unknown = { message: 'failed' }): PermitApiError {
   const config = {
     method: 'delete',
     url: 'https://api.test/v2/facts/users/u1',

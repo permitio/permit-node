@@ -4,14 +4,14 @@
     "authoredClassShapes": {
       "src/api/api-client.ts:ApiClient": "53897a9a5f2ca39aff3acb7cb539c506283804ac450925b69e6463153d13cc60",
       "src/api/base.ts:BaseFactsPermitAPI": "d54abe08baf1c3cf60b7c2dcc6de5daa886d258067988490df118b6f042e7c40",
-      "src/api/base.ts:BasePermitApi": "0ccbabf1a102597de3ff834dc4676dd561314534adfb2dcafb3b016cb837e2af",
-      "src/api/base.ts:PermitApiError": "5c9efa016b919cbd06132100d5bde3485736221bdd08233ba9cec1410d7c819e",
+      "src/api/base.ts:BasePermitApi": "c226bd3d4f364e0484706683e1073a21ac6fa201749ffa2903dae4ed1d6d0239",
+      "src/api/base.ts:PermitApiError": "6aa8dbec715101edd3fe8b7835cc023149bf80f041964aa6f18783d1daa47f9a",
       "src/api/condition-set-rules.ts:ConditionSetRulesApi": "563bf373b2e2172af153d97b26381b9194f7c7725fc2b5dca5bc7db292cb1de3",
       "src/api/condition-sets.ts:ConditionSetsApi": "765c3a4d7b620b2eaacfb4844396cc736d79c7c277cf001e7b6355cd0d18a518",
       "src/api/context.ts:ApiContext": "d0216876b55e5a0b6cb708113507f53e3f8bdcc7f4b675e8a25597637c4e9c32",
-      "src/api/context.ts:PermitContextChangeError": "c120ad694312a70140dab082ef0f09747f17f82bc29dec6f99f4b42893f2bd57",
-      "src/api/context.ts:PermitContextError": "3c860da1e66d6e2b8bca58a3836bdcb48b02484678f52cf0927876fe01a43cb8",
-      "src/api/deprecated.ts:DeprecatedApiClient": "6e222900c6f620491c171589967125e42f3bc9a326dba0d8769c5f3c91a94fd0",
+      "src/api/context.ts:PermitContextChangeError": "15512e4e2f0e61c047c9b8ce2f2ea571b355649ffcb8e7849952f5a361191c40",
+      "src/api/context.ts:PermitContextError": "bd676798f4c3b1eae37b00bd62c9116792f7db977899800e9d8dda4c0568b6ee",
+      "src/api/deprecated.ts:DeprecatedApiClient": "136242f5dc531552b76706db32653e95a62f90b107a1a10a8a3bc1cb1fdd058a",
       "src/api/elements.ts:ElementsClient": "28b2c12fed9a0c22c3f340213dc0f5de0c750827e99eafff67ee7850a622c822",
       "src/api/environments.ts:EnvironmentsApi": "e9cbc89b391cf15cb41034d3d6de045aae1672aa1d13a20e405afc9e9f515cae",
       "src/api/projects.ts:ProjectsApi": "6160a88ca2873cb03fdbbf74aa80af386412ecf951a9d55ecc208f391c0f38e1",
@@ -28,12 +28,12 @@
       "src/api/tenants.ts:TenantsApi": "978b7a88e00d28f9ffceacfc51c31fed3005f68a8a3ac04a06c94e20b450c9c9",
       "src/api/users.ts:UsersApi": "4873322e964985928eba4ec3a4e4156870021fe8df7d78eabd51b965bba02590",
       "src/config.ts:ConfigFactory": "5dc5eeecb95886e850dae6c76c83ab96ac7c3f3661cee616d47e8e9f5dde4be4",
-      "src/enforcement/enforcer.ts:Enforcer": "172af01b55613e1966fb0d31e27c2d2e36a15f0333e7e525cc89ee74fde16ed1",
-      "src/enforcement/enforcer.ts:PermitConnectionError": "4436ea68a128004dfebfb7553aa29e5e12a78806069bdc791a96e55071cfa227",
-      "src/enforcement/enforcer.ts:PermitError": "2e807340ef6424a4c40d7609ea925baa9b64c91f543db2132217a51646270bdd",
-      "src/enforcement/enforcer.ts:PermitPDPStatusError": "a1b9c351d5a2e1b5dd225d6aef626bf1b93c3f4a49275190c8b201f275b7045e",
+      "src/enforcement/enforcer.ts:Enforcer": "877ef533c58d8c2edff70b4952edb3e7aa10cb94a86c3da1b76b3f0895d0bce5",
+      "src/enforcement/enforcer.ts:PermitConnectionError": "86cd79f9aa748daf1d8324a63993215e2aa1d7b7a05fdb71229666d5ad98dffb",
+      "src/enforcement/enforcer.ts:PermitError": "93daac3739a0e4feefad07b32fd3817ddfd0682880874c0783c9ffd8d528e8c9",
+      "src/enforcement/enforcer.ts:PermitPDPStatusError": "25fff480295bb4b4afaca85625891e5ea3e98c8767a68333a2a246f3a4acd82a",
       "src/index.ts:Permit": "408e5d85b2467712ec9c1b49216aed71b8563a359373212b1f4d390130c7bd67",
-      "src/logger.ts:LoggerFactory": "0df4a89a8e7564c508ae19fc674363efdb9453beeaf4ae72fdb14ae537da99a6",
+      "src/logger.ts:LoggerFactory": "ac4bd9886641019a5aa3fb64bfe2d4baac7b8904c854afcbcda48af87fb35974",
       "src/utils/context.ts:ContextStore": "1c28fa6cab436af789cd1f8cb17fd81e7d132dc3fb177d0397b1dab84481a331"
     },
     "authoredShapes": {
@@ -66,7 +66,7 @@
         "kind": "interface",
         "members": [
           "code?: string | undefined;",
-          "error?: T | undefined;",
+          "error?: unknown;",
           "message: string;",
           "status?: number | undefined;"
         ]
@@ -828,60 +828,18 @@
       "src/utils/retry.ts:RetryConditionFn": {
         "kind": "type",
         "type": "(error: AxiosError) => boolean"
+      },
+      "src/utils/diagnostics.ts:CollectedSecrets": {
+        "extends": [],
+        "kind": "interface",
+        "members": ["complete: boolean;", "values: string[];"]
+      },
+      "src/utils/diagnostics.ts:SecretContext": {
+        "kind": "type",
+        "type": "readonly string[] | CollectedSecrets"
       }
     },
     "functionShapes": {
-      "src/api/base.ts:redactAxiosError": {
-        "implementationSha256": "d1eee452a96e566beb3abf6515750a4de1a1fd54c1b2a826742793c8fc5d70c8",
-        "signature": {
-          "generics": ["E"],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "error",
-              "optional": false,
-              "type": "E"
-            }
-          ],
-          "returns": "E"
-        }
-      },
-      "src/api/base.ts:redactHeaders": {
-        "implementationSha256": "10f702b93e68ac589564679394c45aa9e94744d6233b6028a5b76430aba6acb1",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "headers",
-              "optional": false,
-              "type": "Record<string, AxiosHeaderValue | undefined>"
-            },
-            {
-              "initializer": null,
-              "name": "keep",
-              "optional": false,
-              "type": "(lowerCaseName: string) => boolean"
-            }
-          ],
-          "returns": "AxiosHeaders"
-        }
-      },
-      "src/api/base.ts:redactRequestConfig": {
-        "implementationSha256": "31e96ef790ba1877e5cf14e698df11d2a015e97f642efa9b13b6419e99acd1a0",
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "config",
-              "optional": false,
-              "type": "InternalAxiosRequestConfig"
-            }
-          ],
-          "returns": "InternalAxiosRequestConfig"
-        }
-      },
       "src/api/context.ts:defaultSelection": {
         "implementationSha256": "dd72bbae285c4b6cf4837997c32987ef46328b8042d70f05911dbdd38c3af56f",
         "signature": {
@@ -1442,7 +1400,7 @@
         }
       },
       "src/logger.ts:prettyConsoleLog": {
-        "implementationSha256": "7a8abf971d61f18363f41a8da69bece034fb008d4850eb0b2ccb1602d8e3f7fb",
+        "implementationSha256": "4211d3f691db2ee155595c836ca78e3555f20c3d2483cde3212df94ae660b966",
         "signature": {
           "generics": [],
           "parameters": [
@@ -1456,7 +1414,7 @@
               "initializer": null,
               "name": "data",
               "optional": false,
-              "type": "any"
+              "type": "unknown"
             }
           ],
           "returns": "void"
@@ -1514,7 +1472,7 @@
         }
       },
       "src/utils/http-transport.ts:dispatch": {
-        "implementationSha256": "6d48be3eeb2c60ed3a627b47365e4698770db57038d3e699d7663a9a83ecaee7",
+        "implementationSha256": "e980f409fb3f4aea4262fce8f86e806165b034422ff23d2be9107d0e5874887a",
         "signature": {
           "generics": [],
           "parameters": [
@@ -1721,6 +1679,296 @@
             }
           ],
           "returns": "void"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticAxiosError": {
+        "implementationSha256": "faae394b2cdc3fbf64b49106e18bc0fc14d8edec1945f1cea5b12286a870d653",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "error",
+              "optional": false,
+              "type": "AxiosError<unknown>"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "AxiosError<unknown>"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticBody": {
+        "implementationSha256": "e14d466663d594af902ce3106c6a7dae9f00b75d8188be7554e9f48d93118dca",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "unknown"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticCause": {
+        "implementationSha256": "f4fe59d8a58ca8c250c732f3656329cc05000f67215b03fe6017a3bdd1fcbb73",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "error",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "Error"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticMessage": {
+        "implementationSha256": "1b3bd02600d26ff373547ddaa66741f0186ecb49ec042d7e853ff3bf1753d8f8",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "error",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "string"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticMetadata": {
+        "implementationSha256": "dd245b592303a29ab7f1cc2684e2574ea121d204ccfcc5fd9fae4c54fec42aaa",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "error",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "{\n    status?: number;\n    code?: string;\n}"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticRequestSecrets": {
+        "implementationSha256": "82c47ab499f4b55e1ba93a3875b782e9af7f251ed7e1322d0007dc457aa396fe",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "error",
+              "optional": false,
+              "type": "Pick<AxiosError<unknown>, 'config' | 'response'>"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "CollectedSecrets"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticSecrets": {
+        "implementationSha256": "af87d299326eee2ccc09ea5e9bae9549572d977e87a6ff3abff9768ebea5c96b",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            }
+          ],
+          "returns": "CollectedSecrets"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticText": {
+        "implementationSha256": "4e96845c31c905a092ce1b4d421cb1fc94b96a9bc53d9e794539293c9d5be87a",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "string"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticUrl": {
+        "implementationSha256": "b6a39dab0a13569c114669065d606957a6071e7fe838334fc4e0116c7525c7bf",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "string | undefined"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "string | undefined"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticErrorSecrets": {
+        "implementationSha256": "def85ea25a87d3cdf3cbb7a89a18d3d10e5e2d10402df96b174b5e675682cced",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "error",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": "[]",
+              "name": "secrets",
+              "optional": true,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "CollectedSecrets"
+        }
+      },
+      "src/utils/diagnostics.ts:diagnosticStatus": {
+        "implementationSha256": "a124b1f64f55603367e6fd0e076e2816cfbaa5a6e01acc2cba011ca9892c4070",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            }
+          ],
+          "returns": "number | undefined"
+        }
+      },
+      "src/utils/diagnostics.ts:mergeDiagnosticSecrets": {
+        "implementationSha256": "a70768620528bf45ed0f078ddf902ded7016eeba76e87bc6dd1c8811e9bdb43e",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "left",
+              "optional": false,
+              "type": "SecretContext"
+            },
+            {
+              "initializer": null,
+              "name": "right",
+              "optional": false,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "CollectedSecrets"
+        }
+      },
+      "src/utils/diagnostics.ts:recordDiagnosticSecrets": {
+        "implementationSha256": "3cb8505fa4fd2bb1c018a5face549836db9748d12cd5ede3c3568dcef45d4e92",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "error",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": null,
+              "name": "secrets",
+              "optional": false,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "void"
+        }
+      },
+      "src/utils/diagnostics.ts:redactPrivateValues": {
+        "implementationSha256": "28bd84300e3299f34e9537e4509f9367b52448e9a2a1abb1430742480997af71",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "secrets",
+              "optional": false,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "string"
+        }
+      },
+      "src/utils/diagnostics.ts:sharedFailurePrivacy": {
+        "implementationSha256": "a47039cbbf747ed6dd8acb66e246a8877a85745293cca54216a6bb55096a96ee",
+        "signature": {
+          "generics": [],
+          "parameters": [],
+          "returns": "WeakMap<object, CollectedSecrets>"
         }
       }
     },
@@ -20557,15 +20805,12 @@
       "src/openapi/index.ts": "98471e02cfe26a2700ae09063879ca6cd10204f31fd06c85ffbc8b665d357330"
     },
     "implementationShapes": {
-      "src/api/base.ts:.redactAxiosError": "99d11d12cc5ba4bf03ce88cea0c7c89f0f30329d446dce69bc8e8394305f65e8",
-      "src/api/base.ts:.redactHeaders": "c48474a116ebd0921c65075b28a26bd7af62a02f8280f870cb03180aead364b0",
-      "src/api/base.ts:.redactRequestConfig": "66447dfbc08600bda30c2df67e6ec15a024c16a64971883094647f28fdefbd33",
       "src/api/base.ts:BaseFactsPermitAPI.clone": "3b46132f3c954b259f0d3cbabd8ae38817c138bd74aeb5d79989f741b0f5bd8b",
       "src/api/base.ts:BaseFactsPermitAPI.waitForSync": "4f08c3142f6705f377fc984d78458f5fd80c2fc4b7fb797bbe825f1e56513c40",
       "src/api/base.ts:BasePermitApi.ensureAccessLevel": "7b0488016a2275b9add93fc8baafa74ddff925a21fcdd9d0595c5bca1c9a39ff",
       "src/api/base.ts:BasePermitApi.ensureContext": "2465fd5a22bccde88c89dfcc89e7ae34fb49320a0ca4f8d72f99a3005242e24f",
-      "src/api/base.ts:BasePermitApi.handleApiError": "09ee9dbbd4d44d13d6ed9044698c1b4da123b622a900edeb13585cc17e6039c3",
-      "src/api/base.ts:BasePermitApi.setContextFromApiKey": "66b472772a9c46b50d55e28deffb872e515b025bb652f6c2b6932a77199ef1a5",
+      "src/api/base.ts:BasePermitApi.handleApiError": "58501b704693ecae08925b33b916da536a247e34f9c221f1f5108fe53fbeccc2",
+      "src/api/base.ts:BasePermitApi.setContextFromApiKey": "9e0cc84d2162182c6c42f755630089f40fdecc38eedc9b6a3bd547ec348df444",
       "src/api/condition-set-rules.ts:ConditionSetRulesApi.create": "53b02a01d173d53c35606e2ce84bd2cb39ed93e14235f877f8b94466e6eb13f0",
       "src/api/condition-set-rules.ts:ConditionSetRulesApi.delete": "9960408bab5c7e0df21d584b9e5c386ccdde20e023fda2447b03a05c783d9f8f",
       "src/api/condition-set-rules.ts:ConditionSetRulesApi.list": "d69fe805c90b53696340f180d3eed93aba222308ac6d04baedee104e6df8fc3f",
@@ -20581,35 +20826,35 @@
       "src/api/context.ts:.initializeApiContext": "f153e4b03e6d90c30d797c4dcafe51b94d62382d5e30d8f2b304891134c7b7a7",
       "src/api/context.ts:.parseScope": "457f59b9729498d92b5019b11f4d5fa48409479799a117a53b1847c7007c9326",
       "src/api/context.ts:.stateOf": "4711b172517c99a05d4919f90d475b9139ff2c0ba62a12cbbee06e47c91f2a84",
-      "src/api/deprecated.ts:DeprecatedApiClient.assignConditionSetRule": "6a8d32f2407814ff46a3c3d7c6174a85fa0e8db72cacaa4182a9b6c306b0a758",
-      "src/api/deprecated.ts:DeprecatedApiClient.assignRole": "3cb2056563f8798cd735753bc35900c2630f29f1f20ca5ad9e1c4bcd01138aed",
-      "src/api/deprecated.ts:DeprecatedApiClient.createConditionSet": "df8511d87aae64676c25ce4b597e43a372652f4af37736e1af929c3bcf3de375",
-      "src/api/deprecated.ts:DeprecatedApiClient.createResource": "fbc054f3ddfb661d296a4a0fb76f11b596d54c41015e1b5b5aab1ec1ccf13b3a",
-      "src/api/deprecated.ts:DeprecatedApiClient.createRole": "c15b2692bd84802e9ab1ff9fbf5b5907d1aed3d680521a6ac5851b510b6b4ab6",
-      "src/api/deprecated.ts:DeprecatedApiClient.createTenant": "3d2715adc0b3bc918637e52559acb79384a72e5bd333f896e0ba1b64ea423735",
-      "src/api/deprecated.ts:DeprecatedApiClient.createUser": "b0493b5b0664b7be786a3eecd069c703b1817280250686b16c8f930a5c444ac6",
-      "src/api/deprecated.ts:DeprecatedApiClient.deleteConditionSet": "91e8afb75fb93c36467bdaa417397c7cc20091ec9183a8e4679cb6a3dba1246c",
-      "src/api/deprecated.ts:DeprecatedApiClient.deleteResource": "5f5ec819d80f5f5c8cf40ad50ab98a63f46d1e5ed624c64abc10efb068bbe1c8",
-      "src/api/deprecated.ts:DeprecatedApiClient.deleteRole": "b2a8b7b2a8a5735f6ca4b379f804cb6aa52a59c2d4368bbb8c159242f5249272",
-      "src/api/deprecated.ts:DeprecatedApiClient.deleteTenant": "6f6e6142c949d5f2579cd89f548abdba109aca581aaed1e3ce9e6a599e6cfcae",
-      "src/api/deprecated.ts:DeprecatedApiClient.deleteUser": "7a70ca8f0240e52733ee48cf60d02fb9603138fed580fdd7c31da737f0b67448",
-      "src/api/deprecated.ts:DeprecatedApiClient.getAssignedRoles": "2cebd57c1676c0b5cda59fed5cc936c1995cecef2b83d12fd9365bf0a0f262eb",
-      "src/api/deprecated.ts:DeprecatedApiClient.getRole": "c2e27c17a0b67936765b38aa28dc085de2049f4b0ef2d05bdcbb7ae424c376b1",
-      "src/api/deprecated.ts:DeprecatedApiClient.getTenant": "7ab24d7361815f1d1a6eb0cfbc5139e890c75b414efce85b6c7f02af00eee8e2",
-      "src/api/deprecated.ts:DeprecatedApiClient.getUser": "94b5863960424c0ed7149f492d1780f8745c907e27747085260b254fbe5fb3ec",
-      "src/api/deprecated.ts:DeprecatedApiClient.listConditionSets": "01d4c6b6e32a0ccdc98d5b1f8f4f42e3f60fd057b5ca5a892c4393921f00a25c",
-      "src/api/deprecated.ts:DeprecatedApiClient.listConditionSetsRules": "1b63cdcd266173a252c2bd2e152e6de8bad15f375c1f46b720bd1b44b6aea577",
-      "src/api/deprecated.ts:DeprecatedApiClient.listRoles": "0a455127d66f582a126744d6ff28fe4999649d04e30b7e4c426b0465ebd6cc92",
-      "src/api/deprecated.ts:DeprecatedApiClient.listTenants": "063f3a175c9c7b694720060cc019511749e7c6d5c27fc3417342b73b4866ed86",
-      "src/api/deprecated.ts:DeprecatedApiClient.listUsers": "5c4b02f65e7d5edfee84d4cee8867e3070c93bc31084b20ecbb002b531731f71",
-      "src/api/deprecated.ts:DeprecatedApiClient.syncUser": "d7b97d6baa6c8f5ef213040f47950f6bbfca9b7ae29ffa2dbfc9e8ecd080b9c2",
-      "src/api/deprecated.ts:DeprecatedApiClient.unassignConditionSetRule": "e2f39fc63287f96977081a2afd9df37919de6e702e373c28ba004fc02d56e275",
-      "src/api/deprecated.ts:DeprecatedApiClient.unassignRole": "c660f250ac74c9652c85e3b484ca7dbf344d257b2cf758ffdab0ca261ac62ac9",
-      "src/api/deprecated.ts:DeprecatedApiClient.updateConditionSet": "7d0761656bb67c059bfd4351c09d5a875df2527cc03f2226b639ac356eeaaddf",
-      "src/api/deprecated.ts:DeprecatedApiClient.updateResource": "fc14844fb4ba63b903aafc8992e010e79b8eac569ac16dbb01680f0694b65577",
-      "src/api/deprecated.ts:DeprecatedApiClient.updateRole": "1837947b78dcd408bcdc1efa596f731cf062f551a92a16747c28535a0d8ff77c",
-      "src/api/deprecated.ts:DeprecatedApiClient.updateTenant": "d6ed5410f9ec1dbfacfd5f2686f92d49121ff3ec596bc777de9f9e24818d5829",
-      "src/api/deprecated.ts:DeprecatedApiClient.updateUser": "8c925cfcdb4207819b21a0646a8505e2a1bd836f0ac2359f50a7e5f59694c3da",
+      "src/api/deprecated.ts:DeprecatedApiClient.assignConditionSetRule": "988eb89da5ad9bb78085522c6f173760d6752b0d537bf830f49bad03ccb52cf9",
+      "src/api/deprecated.ts:DeprecatedApiClient.assignRole": "bba038e3833d81326fcf0f4f71bde54f933ae52e73c11255f319d7eb6feb8aea",
+      "src/api/deprecated.ts:DeprecatedApiClient.createConditionSet": "c3af1fb7887215cdbe955dd848c8ef8ee72e767123d57f223bd7620a449b4d20",
+      "src/api/deprecated.ts:DeprecatedApiClient.createResource": "73c43249aa1f5284cd225e5af4f1486b1f213b93ef170a519b4f09f938a82c4f",
+      "src/api/deprecated.ts:DeprecatedApiClient.createRole": "091723c02460bd8d7ccb528940ebea5c0e4e6b7ac0c454a37118089d3c0411be",
+      "src/api/deprecated.ts:DeprecatedApiClient.createTenant": "e89cbd42b39f127759fafe94f8f4f473a82eca077957c8efa7257412d54444f0",
+      "src/api/deprecated.ts:DeprecatedApiClient.createUser": "725259de38207f97240f4b34efbd80ea79f169af6bbd87599087689fafff72d3",
+      "src/api/deprecated.ts:DeprecatedApiClient.deleteConditionSet": "86c1bd8cc57426a052d76efbee777bbb0c0d31c45185c379f217ce430b56a978",
+      "src/api/deprecated.ts:DeprecatedApiClient.deleteResource": "937773bb15e405a0a3f126b6a93f7eb9482202c5a2fca8e570f615222795d7ac",
+      "src/api/deprecated.ts:DeprecatedApiClient.deleteRole": "ba49e861ded711043497ebe70700a613629841dab9ede7f2e54139a8553a982e",
+      "src/api/deprecated.ts:DeprecatedApiClient.deleteTenant": "f59021cd7485e306139746e1a432eb443b3594a03f6f87176d1ab641b09332cc",
+      "src/api/deprecated.ts:DeprecatedApiClient.deleteUser": "7d7cf75e99b97ac2ece7a459d4ed296ba1ab4054d41bb41546ffb96a2b9a93c1",
+      "src/api/deprecated.ts:DeprecatedApiClient.getAssignedRoles": "fb6e95f5bf6a4ff6eac3996bb9f99a387f17819f11b73c99dd45c058b44700a2",
+      "src/api/deprecated.ts:DeprecatedApiClient.getRole": "acd0df6d090aaf87b7a2d78d95eaad3c268534bc6479a14adb89068a1937f0c9",
+      "src/api/deprecated.ts:DeprecatedApiClient.getTenant": "41ed0c41e8e2e29818e3423a00eb0be22a1875f243e58b35fb9a822473f036bb",
+      "src/api/deprecated.ts:DeprecatedApiClient.getUser": "3a2904d7c1e548b7870e9fb36d46942b7fc24da87b9590e22da3bbfae3487c9e",
+      "src/api/deprecated.ts:DeprecatedApiClient.listConditionSets": "fc9ce1b7560539169c98d5e06f9d7c3b27f83901f26c9bc621881ffee4e35ca3",
+      "src/api/deprecated.ts:DeprecatedApiClient.listConditionSetsRules": "46cb8921afafc10ca7664e05088c39e250463d5c3825c55b75b7e5cc292eee3e",
+      "src/api/deprecated.ts:DeprecatedApiClient.listRoles": "0f30e2548191fd64c22f8d0667b3ed7ceddea9499a5304a09c35668929d4cfac",
+      "src/api/deprecated.ts:DeprecatedApiClient.listTenants": "44185d838d48761c62ba7ba11464a7c407b7601b6d014785ac9dcad4579984c9",
+      "src/api/deprecated.ts:DeprecatedApiClient.listUsers": "8e32033fdd777acbcceed23ef2d8352c4af8fdeec4ae3a7bd717aeef070abcb3",
+      "src/api/deprecated.ts:DeprecatedApiClient.syncUser": "d77eb1a1d95c6d0ef5ece6d0361ac8adef95556ffd1ab5873d02473e1d4b2d69",
+      "src/api/deprecated.ts:DeprecatedApiClient.unassignConditionSetRule": "3d725bd7cb77f2e9ad0c07170296757a24662ec9beb8a08d8c5fa2bb2efb96da",
+      "src/api/deprecated.ts:DeprecatedApiClient.unassignRole": "3aacfa4eddd3d371f757a25eec5040c5c66cb2446b0c9a5c28b09714595c258c",
+      "src/api/deprecated.ts:DeprecatedApiClient.updateConditionSet": "2217fccc6dd20d79babafb317229e376d6d95f9ab1d726b1df41d1a2d3ffdeb9",
+      "src/api/deprecated.ts:DeprecatedApiClient.updateResource": "0a6bf3e748fa7663b118182ae444e1c9172add0ac769bf46f2ddf3b01f740e6a",
+      "src/api/deprecated.ts:DeprecatedApiClient.updateRole": "c8bd59bffa8c50b8f78bd8ebd73c3438c0b6d2902dc8f22e93f88b4ae744711f",
+      "src/api/deprecated.ts:DeprecatedApiClient.updateTenant": "94e21ac98072f4053803f343485c115723c469529b61c409846fb5f4429d403d",
+      "src/api/deprecated.ts:DeprecatedApiClient.updateUser": "c251283e972fe27a39ec79c2f65848b53c5eb391a73adbf1f98fb7c61b065498",
       "src/api/elements.ts:ElementsClient.loginAs": "3efbdf39bab053e511dfd2fde512c431310ed675fd7ded69a1a9888258d2852d",
       "src/api/environments.ts:EnvironmentsApi.copy": "6519b8d09579eac752575c60f0a19b69190980012371e711dcc1e45ce8b97d98",
       "src/api/environments.ts:EnvironmentsApi.create": "b64b4374a61662177122ddc9d4474692e54cecf608e45ff46d59df8be2201589",
@@ -20726,22 +20971,19 @@
       "src/api/users.ts:UsersApi.update": "771dd22ad5206a43202a9cc5171d0082b1a6526361723248e7c4f733532dd389",
       "src/enforcement/enforcer.ts:.isString": "6809b400b07b7344d876bfa38d90a150c171ad47969b53e4014dd01a607b81e4",
       "src/enforcement/enforcer.ts:Enforcer.buildCheckInput": "0efb94d0ecaf599f8f17da7a6e205414703e1a99c74dc87f616de239b849a4c5",
-      "src/enforcement/enforcer.ts:Enforcer.bulkCheck": "17f1821736df92adcdac5ae639147e285600e0f552cbb6713817e969e8188b8f",
-      "src/enforcement/enforcer.ts:Enforcer.bulkCheckWithExceptions": "69ca54181e094ee56c0aab23700e83b20f923c8e2d8e1ca4ec85b8f8f2eb7089",
-      "src/enforcement/enforcer.ts:Enforcer.check": "b86f664ecdf774442bc190e2bd3d877e19c990b72efc5a05bd58407c97774541",
-      "src/enforcement/enforcer.ts:Enforcer.checkAllTenants": "1b6a09eb422f1bb9faf1e77a76f1f87f8061b5951b6fc75e4b4bd94997abc0a0",
-      "src/enforcement/enforcer.ts:Enforcer.checkAllTenantsWithExceptions": "ef8cb09f7f3c6e55c3e8b9055ec14ee1e0bc459ac6be08710cfc96eadfae4f63",
-      "src/enforcement/enforcer.ts:Enforcer.checkInputRepr": "521fc21f389a0508207605240557e61694ad24ad6ab01435222535a74065ba80",
-      "src/enforcement/enforcer.ts:Enforcer.checkWithExceptions": "cea439e2d5c6f7b62496a7345f268ea4a208bec12e00f469b951924defd8ea7f",
-      "src/enforcement/enforcer.ts:Enforcer.getUserPermissions": "7d0029fabd10762255bcb6daf73d1dc6e30d9e12ce943b3fcb078c2af212ecf3",
-      "src/enforcement/enforcer.ts:Enforcer.getUserPermissionsWithExceptions": "08e875b538ed835971447a961f2452e70c2b4de4fc755d19f326a9c8c4ab798c",
-      "src/enforcement/enforcer.ts:Enforcer.handlePDPError": "820acc87048bd8e594a0db3f512befa43d13b60fa0d471fc7c67905925c1d7f2",
+      "src/enforcement/enforcer.ts:Enforcer.bulkCheck": "4f6aa0b3ea11aa46b60f46bf87454e822bf07b6072f65d4b5e2ae1f353f5cdf6",
+      "src/enforcement/enforcer.ts:Enforcer.bulkCheckWithExceptions": "74e073353ce677e8608923576f5bb147b9102338e2b3e8aa4f4108f792df4d67",
+      "src/enforcement/enforcer.ts:Enforcer.check": "fe2aadd9ee38992788a98629a092000ef302c6a1e37025395447804ee499af39",
+      "src/enforcement/enforcer.ts:Enforcer.checkAllTenants": "aade4c8b413526c58d096401f27bb1b5ad34901ab9c4ff55896cf00eca4e8aee",
+      "src/enforcement/enforcer.ts:Enforcer.checkAllTenantsWithExceptions": "a4e546e92201477a41d6744e59eb5a8a678d0c2eb0e9e12ce1d80a34f3ec6c07",
+      "src/enforcement/enforcer.ts:Enforcer.checkWithExceptions": "1f6e4ee1810071ad0773c73cac438d2c73ac27afaa1488f3b3c3bdc6524dc0f1",
+      "src/enforcement/enforcer.ts:Enforcer.getUserPermissions": "fa2e108a9b18a7b9ce72315b02fc6eefa7a20985563c5434fe383b62cd0c607a",
+      "src/enforcement/enforcer.ts:Enforcer.getUserPermissionsWithExceptions": "4a5efe7f0ff8fc94d18b05e6461fa48428fbe72843bfbb92940dfa15ea1bad91",
+      "src/enforcement/enforcer.ts:Enforcer.handlePDPError": "f131004953b9e0d9f2f0dd2b1e34bbdb3f2616bc1ede2572f1dae228f191073e",
       "src/enforcement/enforcer.ts:Enforcer.normalizeResource": "ae6862007b1553652822758b489e0b87d62fe07516118a05824810e23f3bddae",
-      "src/enforcement/enforcer.ts:Enforcer.parsePdpResponse": "4afee943a2b95515c638e23f08f1e0d143c12fee57ecb92e49d59db03dd4e1c1",
-      "src/enforcement/enforcer.ts:Enforcer.pdpStatusError": "efe518c2fc519364c5374c7a6282691a98b6dff6d30d42bcbecdeda032dde62a",
-      "src/enforcement/enforcer.ts:Enforcer.resourceFromString": "616d6486a477f48e3e63686c714a64b300c81302d8a972fe8468d74dcb353d67",
-      "src/enforcement/enforcer.ts:Enforcer.resourceRepr": "c2af46cb182b900f62038bc2181a6ff778ce429ec73ceb28437a4033ec895dcc",
-      "src/enforcement/enforcer.ts:Enforcer.userRepr": "8c1c1865ba0364acd8b371a03934e3e6346c5d7798c491c7deff225499254a42",
+      "src/enforcement/enforcer.ts:Enforcer.parsePdpResponse": "d695d7623e025411e93099861e180269dc692911469b815e5ccd9b2fd3bfc487",
+      "src/enforcement/enforcer.ts:Enforcer.pdpStatusError": "b707b995e5a6cc3352371bea6a34e19290762f3037fe5ea17c1c15a611126b2a",
+      "src/enforcement/enforcer.ts:Enforcer.resourceFromString": "bedfdd6f1cbbdddd3d36a37b68a7478aa88774614a7185c87e909374431c3c56",
       "src/enforcement/responses.ts:.decisionEnvelope": "6102ee1ffde5f29db96bfcc06678ff799cd30d20b4e6a7ff341b03356e520d2c",
       "src/enforcement/responses.ts:.isRecord": "0cb132a41683f4fccd5a1b31dd4e808fc6892dcd2792d6776a4e2cce9fda60bf",
       "src/enforcement/responses.ts:.parseBulkResponse": "7728a06debe7bd59d1cd82f82d34d6cde3433f3bde7e6d3a6224e7ef15eb3deb",
@@ -20749,21 +20991,36 @@
       "src/index.ts:Permit.check": "5e33e78fc4f7cdbc61985edeb49407c06b1e9456aae74d3fdc1fa4a31c8e249d",
       "src/index.ts:Permit.checkAllTenants": "5c0d483d3923ba989988d38630f60352b279cc8d11301bb99983b4a8a99186c3",
       "src/index.ts:Permit.getUserPermissions": "6ef63f68f9b7f43b7a0d73e305c0df296e7f351a7f72d24fe3d8f76bf20cecc8",
-      "src/utils/context.ts:ContextStore.getDerivedContext": "1abeb7f537972ec95b9a642ebf2f158d4112bd39a80a8e478695631e40762bac"
+      "src/utils/context.ts:ContextStore.getDerivedContext": "1abeb7f537972ec95b9a642ebf2f158d4112bd39a80a8e478695631e40762bac",
+      "src/utils/diagnostics.ts:.collect": "9bfdaac8b88e391f04c4478dee31d3138e8c47dc860dd04ba831e923be02e2c0",
+      "src/utils/diagnostics.ts:.collectOmitted": "4cfbfafc34cbffbaff050f8861861ad0f1c45784661c05c1906e9a2c636bdce3",
+      "src/utils/diagnostics.ts:.diagnosticAxiosError": "0eb0ad7f6e1f31661e05ac0295981b5861536adb057c961540f146e82eb45588",
+      "src/utils/diagnostics.ts:.diagnosticBody": "44984199ef80a5c8a767a805e744f3f4c752cd8938eb22cf21ad14483a53d34d",
+      "src/utils/diagnostics.ts:.diagnosticCause": "bb5795dc71ec4a4b6901868286cf502e4daeae04f3f5a3af93b1934c174b7770",
+      "src/utils/diagnostics.ts:.diagnosticMessage": "e57beb1ed6d83714325aae856052a18fc2bdff7c0b2a05d3d7c14c41935cbe36",
+      "src/utils/diagnostics.ts:.diagnosticMetadata": "b9dbdd375488d63ebaf91388344d9c843fd4dd0f90c9eb7672490814c2c89679",
+      "src/utils/diagnostics.ts:.diagnosticRequestSecrets": "ae3383a8090edaeefe8075bb76944d5468ed5a4bc1f16bbf2d733e321019565a",
+      "src/utils/diagnostics.ts:.diagnosticSecrets": "2c21e19d4fad24aa01ac7dfcdfbb4ceb2a4dc69eac0136450748ca67de35568b",
+      "src/utils/diagnostics.ts:.diagnosticText": "1a57977142ac798fda682db0f80a55c6c95adafbab651491abea4669f3a16092",
+      "src/utils/diagnostics.ts:.diagnosticUrl": "78d8cf425e1b44fa3a56ce2e68e303ed30eb6e701070898090d540fdebff02e7",
+      "src/utils/diagnostics.ts:.message": "bbf7417c49d38fc88c0da86cd23c7d7f32c88bc7d4aba7b8b10fada989deefb0",
+      "src/utils/diagnostics.ts:.visit": "91387e5c3a03951500f9ecd0b20705eba1ea04b60c3a9c078de951e27f30becb",
+      "src/utils/diagnostics.ts:.diagnosticErrorSecrets": "3cc5649307ba8c3570816716d09bbc012201cebeeb19f4b1aed33eebc535dd55",
+      "src/utils/diagnostics.ts:.diagnosticStatus": "97b6f29383823549b819c45a4e304ec8f082d191f13c695f2cb489333c680122",
+      "src/utils/diagnostics.ts:.mergeDiagnosticSecrets": "d4baa0c988a992fee9f6c35b91ed0a53cff4105b1d7acc1c6465643cc3596e81",
+      "src/utils/diagnostics.ts:.redactPrivateValues": "2845c5c8ab8d26308fec121a6d98fca804194dabbac636eb4dd41a1cd2eef259"
     },
     "initializationShapes": {
       "src/api/api-client.ts:ApiClient.constructor": "7ff2371d6f32fe1ffd5232aa9213842e98ab5c7abe3fe9e040a3805a85bcb9ee",
       "src/api/base.ts:BaseFactsPermitAPI.constructor": "6e36d36e49b99ff53949668d767e5dc630e0f849e693aa48b8b6d75ecdaacad1",
       "src/api/base.ts:BasePermitApi.constructor": "7c4a19909cf67f1c91b5086d603edae3a11f9f8599babb2f7f0418e9c1473353",
-      "src/api/base.ts:PermitApiError.constructor": "0309b92c638f508fb5f2554f158868117b0ea29855eba67b52508b10ecc87e74",
-      "src/api/base.ts:REDACTED": "cbc83d74db05dc5da1d6bdfb77e4df00b57567f6272844f3f5efe0b7afd50d73",
-      "src/api/base.ts:SAFE_REQUEST_HEADERS": "2805e93e13957f8467732873a87faeaf4256129fd98016a01627700fb60a8484",
+      "src/api/base.ts:PermitApiError.constructor": "2ca0da89f1fe278121953aab7b5adf980a90905b1dfde38c413a0191b56f9436",
       "src/api/condition-set-rules.ts:ConditionSetRulesApi.constructor": "f00624544d62ec2c914a3bb190f6b07cd27306c96e3a4866d6e34dab7f86c759",
       "src/api/condition-sets.ts:ConditionSetsApi.constructor": "0f2d9665eda7fba31431d66eb565dbfe8156ef5afe695f3d2274e0aa26a37bdb",
       "src/api/context.ts:API_ACCESS_LEVELS": "252537edf5df47179c48b09090b7e517bfb580e1aa61a9f2575f7c36353b8083",
       "src/api/context.ts:ApiContext.constructor": "0c1f27842955389007952d2436efa52f52cc501f4941d2135deca70b9eba6276",
-      "src/api/context.ts:PermitContextChangeError.constructor": "8f8fe55accc1dac7ac48cd558fd9e388fb53b63e8439d532886792f8e91e22a5",
-      "src/api/context.ts:PermitContextError.constructor": "8f8fe55accc1dac7ac48cd558fd9e388fb53b63e8439d532886792f8e91e22a5",
+      "src/api/context.ts:PermitContextChangeError.constructor": "d0e25c04f783cf14e7619f87fc30393763ec61d95a65face17526c17884e7839",
+      "src/api/context.ts:PermitContextError.constructor": "a706dcced4af88547845dde252e43c3a615254d6789d05b01eb606f05c8a46d6",
       "src/api/context.ts:contextSnapshotKey": "b262fad27c623a907f6d94c663100e84620052a8f407d907b91d0b42ef143a58",
       "src/api/context.ts:contextStates": "2821f80bb3678f5a2d01ce1cd7dce9377d9d2bdf7c8a6c8f8982f6fb17b90aa5",
       "src/api/deprecated.ts:DeprecatedApiClient.constructor": "3696e58aaffdad1378f526b0d1ded906dc7f6449b6e2f4ef5518d4d285463bbd",
@@ -20783,9 +21040,9 @@
       "src/api/tenants.ts:TenantsApi.constructor": "96523707d9000da9684d07a184c403aae94ade746ecbe6fb220711e750c3b332",
       "src/api/users.ts:UsersApi.constructor": "c3f53ff93453caac14ceb493c097cdf551654434a54b8c4ebea2ed01db1d620f",
       "src/enforcement/enforcer.ts:Enforcer.constructor": "c061950b57df51721ae75d0599581a771771e9124f64c6bb39ccccd743ada33f",
-      "src/enforcement/enforcer.ts:PermitConnectionError.constructor": "3e614a3405ec83bf71001352c6ef3e89042e3ecdf45cd32cb8149d029d8c9756",
-      "src/enforcement/enforcer.ts:PermitError.constructor": "af7a578ddde15be83f1874292dc6dd50e71b656ff3dcdbc13fe85b6f5f020d82",
-      "src/enforcement/enforcer.ts:PermitPDPStatusError.constructor": "db9087ada7c466bc4b53c71a1b654b99c04c4177a6e04efea40696035fd07135",
+      "src/enforcement/enforcer.ts:PermitConnectionError.constructor": "b281f839d10bd89f178407d6e5d76256d0bd614f4655d75632ef416d4e269042",
+      "src/enforcement/enforcer.ts:PermitError.constructor": "a8d51a5d6e781bfaf7dfadcafcd82b022e184ae22cb292b7f348b17813484b39",
+      "src/enforcement/enforcer.ts:PermitPDPStatusError.constructor": "ce81b6aa208ad9ce0f3d6a6f4387135ac18dcd04f718163f6d119f990058f54f",
       "src/enforcement/enforcer.ts:RESOURCE_DELIMITER": "84621939eae999affeb1c6c48d23371c99a953b6c56aa67ebd94e3b541a3cfd1",
       "src/index.ts:Permit.constructor": "50052de96c1d823858b5560c18c8f87e9fcddd9c8ce2b23fb1a37c179b01e626",
       "src/utils/context.ts:ContextStore.baseContext": "e55a3d84c22b3b144eb4ab9b68731dd74c2e3e92b54db022740dfdcfd3c5cd96",
@@ -20796,7 +21053,15 @@
       "src/utils/retry.ts:httpMethods": "cf801f911dbcd4d7e2853f05305e186b097e789a3c14440623c13047ec72a00b",
       "src/utils/retry.ts:maximumTimerDelay": "4947b585ee731c61bd9a008ba1016e23c06be3ad1aa5770f561ab23aab338e66",
       "src/utils/retry.ts:permanentErrorCodes": "ce4cccfdfe51f554290c473da0979da371faa4bdc8f4b10dbee66c878d759ced",
-      "src/utils/retry.ts:transientNetworkCodes": "2cdb83120b7946d946f283ace219d13f1001bd369c5062fa8bf7032f9c8bee1c"
+      "src/utils/retry.ts:transientNetworkCodes": "2cdb83120b7946d946f283ace219d13f1001bd369c5062fa8bf7032f9c8bee1c",
+      "src/utils/diagnostics.ts:BODY_FIELDS": "8533027b452b98b0291789bf46f339c6f5859afb5ac9677d9972407b2cc19a15",
+      "src/utils/diagnostics.ts:MAX_ITEMS": "398841861d5adf4b8d8506135b8c3a6c12f0d8c0eae339acda51987a25e19973",
+      "src/utils/diagnostics.ts:MAX_TEXT": "d2b99e5d79584fb70f0ff4109296d92e10dd1cf4f0239bcb02221d2977d81ec4",
+      "src/utils/diagnostics.ts:REDACTED": "cbc83d74db05dc5da1d6bdfb77e4df00b57567f6272844f3f5efe0b7afd50d73",
+      "src/utils/diagnostics.ts:REQUEST_HEADERS": "e9b84eec43ed1026803dc038026ea5403c5359e1dfce03b6c26b865fa308c6b6",
+      "src/utils/diagnostics.ts:RESPONSE_HEADERS": "b3505ed26eade60624be8c3291885d7cc37cf4afb297e257cdf98bb526ae2b05",
+      "src/utils/diagnostics.ts:failurePrivacy": "68f72d0f4506fc0e6571c58e563f506403dd27896e8f9a8963f90d4abc4f1464",
+      "src/utils/diagnostics.ts:failurePrivacyKey": "98c132a2ec6bf02f3b491cbc63f995da0b4783423b00c31b883e3886c24cdc0c"
     },
     "methods": {
       "permit.api.actionGroups.create": {

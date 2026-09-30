@@ -137,7 +137,7 @@ describe('REST API errors (unit)', () => {
       // Pino and JSON.stringify render the nested Axios error through its toJSON(), which has the
       // status and request config but not the response body.
       const logged = (JSON.parse(pinoLine(error)) as { err: SerializedApiError }).err;
-      expect(logged.message).toBe(body.message);
+      expect(logged.message).toContain(body.message);
       expect(logged.originalError.status).toBe(status);
       expect(logged.originalError.config.method).toBe('get');
       expect(pathOf(logged.originalError.config.url)).toBe(USER_PATH);
@@ -150,13 +150,13 @@ describe('REST API errors (unit)', () => {
     it(`PER-16544: ${deprecatedError} does not expose the API key`, async () => {
       const permit = createPermit(await startApi({ status, body }));
       const error = await rejectionOf(permit.api.getUser('user-1'));
-      expect(axios.isAxiosError(error)).toBe(true);
-      assert(axios.isAxiosError(error));
+      expect(error).toBeInstanceOf(PermitApiError);
+      assert(error instanceof PermitApiError);
       assertNoSecrets(error);
       expect(error.response?.status).toBe(status);
       expect(error.response?.data).toStrictEqual(body);
-      expect(error.config?.method).toBe('get');
-      expect(pathOf(error.config?.url)).toBe(USER_PATH);
+      expect(error.originalError.config?.method).toBe('get');
+      expect(pathOf(error.originalError.config?.url)).toBe(USER_PATH);
     });
   }
 

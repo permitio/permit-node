@@ -74,13 +74,14 @@ describe('Enforcer (unit)', () => {
       expect(pdp.last?.data).not.toHaveProperty('resource.key');
     });
 
-    it('throws `invalid resource string` for >2 colon parts and never dispatches', async () => {
+    it('rejects resource strings with >2 colon parts without echoing input or dispatching', async () => {
       pdp.resolveWith({ allow: true });
 
       const error = await permit.check('alice', 'read', 'a:b:c').catch((err) => err);
 
       expect(error).toBeInstanceOf(Error);
-      expect(error.message).toContain('invalid resource string');
+      expect(error.message).toBe('Invalid resource string: expected a resource type or type:key.');
+      expect(error.message).not.toContain('a:b:c');
       expect(pdp.requests.length).toBe(0);
     });
   });

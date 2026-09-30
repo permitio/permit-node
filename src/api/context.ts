@@ -1,3 +1,10 @@
+import {
+  diagnosticCause,
+  diagnosticErrorSecrets,
+  diagnosticMetadata,
+  diagnosticText,
+} from '#src/utils/diagnostics';
+
 /**
  * The `ApiKeyLevel` enum represents the access level of a Permit API Key.
  */
@@ -65,9 +72,17 @@ export enum ApiContextLevel {
  * If the context is missing some data required for a method - the API call will fail.
  */
 export class PermitContextError extends Error {
+  public readonly status: number | undefined;
+  public readonly code: string | undefined;
+
   constructor(message: string, options?: ErrorOptions) {
-    super(message, options);
-    this.name = new.target.name;
+    const privacy = diagnosticErrorSecrets(options?.cause);
+    const cause = options?.cause === undefined ? undefined : diagnosticCause(options.cause);
+    super(diagnosticText(message, privacy), cause === undefined ? undefined : { cause });
+    this.name = 'PermitContextError';
+    const metadata = diagnosticMetadata(cause);
+    this.status = metadata.status;
+    this.code = metadata.code;
   }
 }
 
@@ -77,9 +92,17 @@ export class PermitContextError extends Error {
  * such API calls will result in 401). Instead, the SDK throws this exception.
  */
 export class PermitContextChangeError extends Error {
+  public readonly status: number | undefined;
+  public readonly code: string | undefined;
+
   constructor(message: string, options?: ErrorOptions) {
-    super(message, options);
-    this.name = new.target.name;
+    const privacy = diagnosticErrorSecrets(options?.cause);
+    const cause = options?.cause === undefined ? undefined : diagnosticCause(options.cause);
+    super(diagnosticText(message, privacy), cause === undefined ? undefined : { cause });
+    this.name = 'PermitContextChangeError';
+    const metadata = diagnosticMetadata(cause);
+    this.status = metadata.status;
+    this.code = metadata.code;
   }
 }
 

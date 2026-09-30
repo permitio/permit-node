@@ -139,13 +139,13 @@ describe('DeprecatedApiClient (unit)', () => {
   });
 
   describe('error propagation', () => {
-    it('re-throws the raw AxiosError instead of mapping it to PermitApiError', async () => {
+    it('maps legacy REST failures to named safe PermitApiError', async () => {
       rest.rejectWith(404, { message: 'not found' });
 
       const error = await permit.api.getUser('missing').catch((err) => err);
 
-      expect(error.isAxiosError).toBe(true);
-      expect(error).not.toBeInstanceOf(PermitApiError);
+      expect(error).toBeInstanceOf(PermitApiError);
+      expect(error.name).toBe('PermitApiError');
       expect(error.response?.status).toBe(404);
     });
   });

@@ -10,6 +10,14 @@ import axios, {
 import { type Logger } from 'pino';
 
 import {
+  diagnosticRequestSecrets,
+  diagnosticSecrets,
+  diagnosticStatus,
+  diagnosticUrl,
+  recordDiagnosticSecrets,
+} from '#src/utils/diagnostics';
+
+import {
   calculateRetryDelay,
   isNonRetryableError,
   type IResolvedRetryConfig,
@@ -84,70 +92,96 @@ async function dispatch(
   ) {
     throw new TypeError('Invalid HTTP timeout: expected milliseconds between 0 and 2147483647.');
   }
+  const callerSecrets = diagnosticSecrets(options.caller.defaults.headers);
+  const privacy = diagnosticRequestSecrets({ config: forward }, callerSecrets);
+  const requestUrl = diagnosticUrl(forward.url, privacy) ?? '';
   const started = performance.now();
   const method = (forward.method ?? 'GET').toUpperCase();
   const retry = options.retry;
   const canRetry = retry.enabled && retry.retryMethods.includes(method);
   let retries = 0;
   let cancellationConfig = forward;
-  while (true) {
-    throwIfCancelled(forward);
-    throwIfCancelled(cancellationConfig);
-    // Axios applies default Basic auth after merging headers. Keep the SDK's explicit Bearer
-    // token authoritative without touching caller defaults; caller hooks may still replace transforms.
-    const transforms = options.caller.defaults.transformRequest;
-    forward.transformRequest = [
-      ...(Array.isArray(transforms) ? transforms : transforms ? [transforms] : []),
-      function clearDefaultBasicAuth(this: InternalAxiosRequestConfig, data: unknown): unknown {
-        delete this.auth;
-        return data;
-      },
-    ];
-    options.logger.debug(`Sending HTTP request: ${method} ${forward.url}`);
-    try {
-      const response = await options.caller.request(forward);
-      options.logger.debug(
-        `Received HTTP response: ${method} ${forward.url}, status: ${response.status}`,
-      );
-      return response;
-    } catch (error) {
+  try {
+    while (true) {
       throwIfCancelled(forward);
-      if (isAxiosError(error) && error.config) cancellationConfig = error.config;
       throwIfCancelled(cancellationConfig);
-      if (
-        !canRetry ||
-        retries >= retry.maxRetries ||
-        !isAxiosError(error) ||
-        !retry.retryMethods.includes((error.config?.method ?? method).toUpperCase()) ||
-        isNonRetryableError(error)
-      )
-        throw error;
-      const decision = retry.retryCondition(error);
-      if (typeof decision !== 'boolean') {
-        throw new TypeError('Invalid retry.retryCondition result: expected a boolean.', {
-          cause: error,
-        });
-      }
-      if (!decision) throw error;
-      const retryAfter = Object.entries(error.response?.headers ?? {}).find(
-        ([name]) => name.toLowerCase() === 'retry-after',
-      )?.[1];
-      const delay = calculateRetryDelay(retries, retry, retryAfter);
-      if (timeout !== undefined && timeout > 0 && performance.now() - started + delay >= timeout)
-        throw error;
-      retries += 1;
-      options.logger.warn(
-        `[${options.name}] Request failed (${error.response?.status ?? 'network error'}), ` +
-          `retry ${retries}/${retry.maxRetries}: ${method} ${forward.url}`,
+      // Axios applies default Basic auth after merging headers. Keep the SDK's explicit Bearer
+      // token authoritative without touching caller defaults; caller hooks may still replace transforms.
+      const transforms = options.caller.defaults.transformRequest;
+      forward.transformRequest = [
+        ...(Array.isArray(transforms) ? transforms : transforms ? [transforms] : []),
+        function clearDefaultBasicAuth(this: InternalAxiosRequestConfig, data: unknown): unknown {
+          delete this.auth;
+          return data;
+        },
+      ];
+      options.logger.debug(
+        { transport: options.name, method, url: requestUrl },
+        `Sending HTTP request: ${method} ${requestUrl}`,
       );
-      await waitForRetry(delay, [forward, cancellationConfig]);
-      throwIfCancelled(cancellationConfig);
-      if (timeout !== undefined && timeout > 0) {
-        const remaining = timeout - (performance.now() - started);
-        if (remaining <= 0) throw error;
-        forward.timeout = remaining;
+      try {
+        const response = await options.caller.request(forward);
+        const status = diagnosticStatus(response.status);
+        options.logger.debug(
+          {
+            transport: options.name,
+            method,
+            url: requestUrl,
+            status,
+          },
+          `Received HTTP response: ${method} ${requestUrl}, status: ${status ?? 'unknown'}`,
+        );
+        return response;
+      } catch (error) {
+        throwIfCancelled(forward);
+        if (isAxiosError(error) && error.config) cancellationConfig = error.config;
+        throwIfCancelled(cancellationConfig);
+        if (
+          !canRetry ||
+          retries >= retry.maxRetries ||
+          !isAxiosError(error) ||
+          !retry.retryMethods.includes((error.config?.method ?? method).toUpperCase()) ||
+          isNonRetryableError(error)
+        )
+          throw error;
+        const decision = retry.retryCondition(error);
+        if (typeof decision !== 'boolean') {
+          throw new TypeError('Invalid retry.retryCondition result: expected a boolean.', {
+            cause: error,
+          });
+        }
+        if (!decision) throw error;
+        const retryAfter = Object.entries(error.response?.headers ?? {}).find(
+          ([name]) => name.toLowerCase() === 'retry-after',
+        )?.[1];
+        const delay = calculateRetryDelay(retries, retry, retryAfter);
+        if (timeout !== undefined && timeout > 0 && performance.now() - started + delay >= timeout)
+          throw error;
+        retries += 1;
+        const status = diagnosticStatus(error.response?.status);
+        options.logger.warn(
+          {
+            transport: options.name,
+            method,
+            url: requestUrl,
+            retry: retries,
+            status,
+          },
+          `[${options.name}] Request failed (${status ?? 'network error'}), ` +
+            `retry ${retries}/${retry.maxRetries}: ${method} ${requestUrl}`,
+        );
+        await waitForRetry(delay, [forward, cancellationConfig]);
+        throwIfCancelled(cancellationConfig);
+        if (timeout !== undefined && timeout > 0) {
+          const remaining = timeout - (performance.now() - started);
+          if (remaining <= 0) throw error;
+          forward.timeout = remaining;
+        }
       }
     }
+  } catch (error) {
+    recordDiagnosticSecrets(error, privacy);
+    throw error;
   }
 }
 

@@ -239,7 +239,6 @@ for (const operation of operations) {
         await expect(operation.call(strict)).rejects.toMatchObject({
           name: 'PermitPDPStatusError',
           statusCode: 200,
-          responseBody: body,
         });
         expect(await operation.call(failClosed)).toStrictEqual(operation.denied);
         if (operation.perCallErrors) {

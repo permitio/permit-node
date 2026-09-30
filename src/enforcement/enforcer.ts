@@ -1,9 +1,19 @@
-import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
+import axios, { AxiosError, type AxiosInstance, type AxiosResponse } from 'axios';
 import { type Logger } from 'pino';
 
 import { type IPermitConfig } from '#src/config';
 import { type CheckConfig, type Context, ContextStore } from '#src/utils/context';
 import { createOwnedTransport } from '#src/utils/http-transport';
+import {
+  diagnosticAxiosError,
+  diagnosticBody,
+  diagnosticCause,
+  diagnosticErrorSecrets,
+  diagnosticMetadata,
+  diagnosticStatus,
+  diagnosticText,
+  diagnosticUrl,
+} from '#src/utils/diagnostics';
 import { resolveRetryConfig } from '#src/utils/retry';
 
 import {
@@ -31,34 +41,47 @@ function isString(x: unknown): x is string {
 }
 
 export class PermitError extends Error {
-  constructor(message: string) {
-    super(message);
+  constructor(message: string, options?: ErrorOptions) {
+    const privacy = diagnosticErrorSecrets(options?.cause);
+    const cause = options?.cause === undefined ? undefined : diagnosticCause(options.cause);
+    super(diagnosticText(message, privacy), cause === undefined ? undefined : { cause });
     this.name = 'PermitError';
   }
 }
 
 export class PermitConnectionError extends PermitError {
-  constructor(message: string) {
-    super(message);
+  public readonly code: string | undefined;
+
+  constructor(message: string, options?: ErrorOptions) {
+    super(message, options);
     this.name = 'PermitConnectionError';
+    this.code = diagnosticMetadata(this.cause).code;
   }
 }
 
 export class PermitPDPStatusError extends PermitConnectionError {
+  public readonly responseBody: unknown;
+  public readonly statusCode?: number;
+
   /**
    * Creates an error for an unexpected HTTP status code or response body from the PDP.
    *
    * @param message - Description of the failed operation.
    * @param statusCode - HTTP status code, supplied for errors raised by the SDK.
-   * @param responseBody - Raw response body returned by the PDP.
+   * @param responseBody - Body reduced to bounded error-description fields.
+   * @param options - Optional cause; only safe message, status and code metadata are retained.
    */
   constructor(
     message: string,
-    public readonly statusCode?: number,
-    public readonly responseBody?: unknown,
+    statusCode?: number,
+    responseBody?: unknown,
+    options?: ErrorOptions,
   ) {
-    super(message);
+    super(message, options);
     this.name = 'PermitPDPStatusError';
+    const status = diagnosticStatus(statusCode);
+    if (status !== undefined) this.statusCode = status;
+    this.responseBody = diagnosticBody(responseBody, diagnosticErrorSecrets(options?.cause));
   }
 }
 
@@ -225,7 +248,10 @@ export class Enforcer implements IEnforcer {
       if (shouldThrow) {
         throw err;
       } else {
-        this.logger.error(err);
+        this.logger.error(
+          { err: diagnosticCause(err, [this.config.token]) },
+          'Permit authorization failed',
+        );
         return {};
       }
     });
@@ -257,7 +283,7 @@ export class Enforcer implements IEnforcer {
       })
       .then((response) => {
         if (response.status !== 200) {
-          throw this.pdpStatusError('getUserPermissions', response.status, response.data);
+          throw this.pdpStatusError('getUserPermissions', response);
         }
         const permissions = this.parsePdpResponse(
           'getUserPermissions',
@@ -265,15 +291,13 @@ export class Enforcer implements IEnforcer {
           parsePermissionsResponse,
         );
         this.logger.info(
-          `permit.getUserPermissions(${Enforcer.userRepr(input.user)}) = ${JSON.stringify(
-            permissions,
-          )}`,
+          { operation: 'getUserPermissions' },
+          'permit.getUserPermissions() succeeded',
         );
         return permissions;
       })
       .catch((error: unknown) => {
-        const errorMessage = `Error in permit.getUserPermissions(${Enforcer.userRepr(input.user)})`;
-        return this.handlePDPError(error, 'getUserPermissions', errorMessage);
+        return this.handlePDPError(error, 'getUserPermissions');
       });
   }
 
@@ -289,7 +313,10 @@ export class Enforcer implements IEnforcer {
       if (shouldThrow) {
         throw err;
       } else {
-        this.logger.error(err);
+        this.logger.error(
+          { err: diagnosticCause(err, [this.config.token]) },
+          'Permit authorization failed',
+        );
         return Array.from({ length: checkCount }, () => false);
       }
     });
@@ -314,12 +341,6 @@ export class Enforcer implements IEnforcer {
       resource: normalizedResource,
       context: queryContext,
     };
-  }
-
-  private checkInputRepr(checkInput: ICheckInput): string {
-    return `${Enforcer.userRepr(checkInput.user)}, ${checkInput.action}, ${Enforcer.resourceRepr(
-      checkInput.resource,
-    )}`;
   }
 
   private async bulkCheckWithExceptions(
@@ -352,21 +373,19 @@ export class Enforcer implements IEnforcer {
       })
       .then((response) => {
         if (response.status !== 200) {
-          throw this.pdpStatusError('bulkCheck', response.status, response.data);
+          throw this.pdpStatusError('bulkCheck', response);
         }
         const decisions = this.parsePdpResponse('bulkCheck', response, (data) =>
           parseBulkResponse(data, inputs.length),
         );
         this.logger.info(
-          `permit.bulkCheck(${inputs.map((input) => this.checkInputRepr(input))}) = ${decisions}`,
+          { operation: 'bulkCheck', count: inputs.length },
+          'permit.bulkCheck() succeeded',
         );
         return decisions;
       })
       .catch((error: unknown) => {
-        const errorMessage = `Error in permit.bulkCheck(${inputs.map((input) =>
-          this.checkInputRepr(input),
-        )})`;
-        return this.handlePDPError(error, 'bulkCheck', errorMessage);
+        return this.handlePDPError(error, 'bulkCheck');
       });
   }
 
@@ -382,7 +401,10 @@ export class Enforcer implements IEnforcer {
         if (this.config.throwOnError) {
           throw err;
         } else {
-          this.logger.error(err);
+          this.logger.error(
+            { err: diagnosticCause(err, [this.config.token]) },
+            'Permit authorization failed',
+          );
           return [];
         }
       },
@@ -417,13 +439,12 @@ export class Enforcer implements IEnforcer {
       })
       .then((response) => {
         if (response.status !== 200) {
-          throw this.pdpStatusError('checkAllTenants', response.status, response.data);
+          throw this.pdpStatusError('checkAllTenants', response);
         }
         return this.parsePdpResponse('checkAllTenants', response, parseAllTenantsResponse);
       })
       .catch((error: unknown) => {
-        const errorMessage = `Error in permit.checkAllTenants(${this.checkInputRepr(input)})`;
-        return this.handlePDPError(error, 'checkAllTenants', errorMessage);
+        return this.handlePDPError(error, 'checkAllTenants');
       });
   }
 
@@ -440,7 +461,10 @@ export class Enforcer implements IEnforcer {
       if (shouldThrow) {
         throw err;
       } else {
-        this.logger.error(err);
+        this.logger.error(
+          { err: diagnosticCause(err, [this.config.token]) },
+          'Permit authorization failed',
+        );
         return false;
       }
     });
@@ -470,31 +494,40 @@ export class Enforcer implements IEnforcer {
       })
       .then((response) => {
         if (response.status !== 200) {
-          throw this.pdpStatusError('check', response.status, response.data);
+          throw this.pdpStatusError('check', response);
         }
         const decision = this.parsePdpResponse('check', response, parseCheckResponse);
 
-        this.logger.info(`permit.check(${this.checkInputRepr(checkInput)}) = ${decision}`);
+        this.logger.info({ operation: 'check', decision }, 'permit.check() succeeded');
         return decision;
       })
       .catch((error: unknown) => {
-        const errorMessage = `Error in permit.check(${this.checkInputRepr(checkInput)})`;
-        return this.handlePDPError(error, 'check', errorMessage);
+        return this.handlePDPError(error, 'check');
       });
   }
 
   private pdpStatusError(
     method: string,
-    statusCode: number,
-    responseBody: unknown,
+    response: AxiosResponse<unknown>,
+    malformedBody = false,
+    source?: AxiosError<unknown>,
   ): PermitPDPStatusError {
-    return new PermitPDPStatusError(
-      `Permit.${method}() got an unexpected status code: ${statusCode}, ` +
+    const status = diagnosticStatus(response.status);
+    const statusLabel = status ?? 'unknown';
+    const message = malformedBody
+      ? `Permit.${method}() got an unexpected response body from the PDP ` +
+        `(status ${statusLabel}), please check that the SDK's pdp URL points to a Permit ` +
+        'PDP. Read more about setting up the PDP at https://docs.permit.io'
+      : `Permit.${method}() got an unexpected status code: ${statusLabel}, ` +
         'please check your SDK init and make sure the PDP sidecar is configured correctly. ' +
-        'Read more about setting up the PDP at https://docs.permit.io',
-      statusCode,
-      responseBody,
+        'Read more about setting up the PDP at https://docs.permit.io';
+    const snapshot = diagnosticAxiosError(
+      source ?? new AxiosError(message, undefined, response.config, undefined, response),
+      [this.config.token],
     );
+    return new PermitPDPStatusError(message, status, snapshot.response?.data, {
+      cause: snapshot,
+    });
   }
 
   /**
@@ -509,35 +542,30 @@ export class Enforcer implements IEnforcer {
     try {
       return parse(response.data);
     } catch {
-      throw new PermitPDPStatusError(
-        `Permit.${method}() got an unexpected response body from the PDP ` +
-          `(status ${response.status}), please check that the SDK's pdp URL points to a Permit ` +
-          'PDP. Read more about setting up the PDP at https://docs.permit.io',
-        response.status,
-        response.data,
-      );
+      throw this.pdpStatusError(method, response, true);
     }
   }
 
-  private handlePDPError(error: unknown, method: string, errorMessage: string): never {
+  private handlePDPError(error: unknown, method: string): never {
+    let failure: PermitConnectionError;
     if (error instanceof PermitPDPStatusError) {
-      this.logger.error(`${errorMessage}\n${error}`);
-      throw error;
+      failure = error;
+    } else if (axios.isAxiosError<unknown>(error) && error.response) {
+      failure = this.pdpStatusError(method, error.response, false, error);
+    } else {
+      const privacy = diagnosticErrorSecrets(error, [this.config.token]);
+      const cause = axios.isAxiosError<unknown>(error)
+        ? diagnosticAxiosError(error, [this.config.token])
+        : diagnosticCause(error, [this.config.token]);
+      failure = new PermitConnectionError(
+        `Permit SDK got error: ${cause.message} and cannot connect to the PDP. ` +
+          `Check your configuration and make sure the PDP is running at ${diagnosticUrl(this.config.pdp, privacy)} ` +
+          'and accepting requests. Read more about setting up the PDP at https://docs.permit.io',
+        { cause },
+      );
     }
-
-    if (axios.isAxiosError<unknown>(error) && error.response) {
-      const { status, data } = error.response;
-      this.logger.error(`[${status}] ${errorMessage}, err: ${JSON.stringify(data)}`);
-      throw this.pdpStatusError(method, status, data);
-    }
-
-    const message = error instanceof Error ? error.message : String(error);
-    this.logger.error(`${errorMessage}\n${message}`);
-    throw new PermitConnectionError(
-      `Permit SDK got error: ${message} and cannot connect to the PDP. ` +
-        `Please check your configuration and make sure the PDP is running at ${this.config.pdp} ` +
-        'and accepting requests. Read more about setting up the PDP at https://docs.permit.io',
-    );
+    this.logger.error({ err: failure, operation: method }, `permit.${method}() failed`);
+    throw failure;
   }
 
   // TODO: remove this eventually, once we decide on finalized structure of AuthzQuery
@@ -552,31 +580,11 @@ export class Enforcer implements IEnforcer {
     return normalizedResource;
   }
 
-  private static userRepr(user: IUser): string {
-    if (user.attributes || user.email) {
-      return JSON.stringify(user);
-    }
-    return user.key;
-  }
-
-  private static resourceRepr(resource: IResource): string {
-    if (resource.attributes && resource.attributes['length'] > 0) {
-      return JSON.stringify(resource);
-    }
-
-    let resourceRepr = '';
-    if (resource.tenant) {
-      resourceRepr += `${resource.tenant}/`;
-    }
-    resourceRepr += `${resource.type}:${resource.key ?? '*'}`;
-    return resourceRepr;
-  }
-
   private static resourceFromString(resource: string): IResource {
     const parts = resource.split(RESOURCE_DELIMITER);
     const [type, key] = parts;
     if (type === undefined || parts.length > 2) {
-      throw Error(`permit.check() got invalid resource string: '${resource}'`);
+      throw new PermitError('Invalid resource string: expected a resource type or type:key.');
     }
     return {
       type,

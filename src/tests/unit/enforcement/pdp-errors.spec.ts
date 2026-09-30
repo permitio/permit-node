@@ -224,7 +224,8 @@ describe('PDP error classification (unit)', () => {
         log: { level: 'silent' },
       };
       const error = await rejectionOf(operation.call(new Permit(options)));
-      expect(error.message).toContain(invalidResource);
+      expect(error.message).toContain('expected a resource type or type:key');
+      expect(error.message).not.toContain(invalidResource);
       const failClosed = new Permit({ ...options, throwOnError: false });
       expect(await operation.call(failClosed)).toStrictEqual(operation.denied);
       expect(pdp.requests).toHaveLength(0);
