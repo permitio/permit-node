@@ -3,7 +3,7 @@ import pino from 'pino';
 
 import { ApiClient, type IPermitApi } from '#src/api/api-client';
 import { ElementsClient, type IPermitElementsApi } from '#src/api/elements';
-import { ConfigFactory, type IPermitConfig } from '#src/config';
+import { ConfigFactory, type IPermitConfig, type IPermitOptions } from '#src/config';
 import { Enforcer, type IEnforcer } from '#src/enforcement/enforcer';
 import {
   type ICheckQuery,
@@ -16,11 +16,10 @@ import { LoggerFactory } from '#src/logger';
 import { type CheckConfig, type Context } from '#src/utils/context';
 import { createOwnedTransport } from '#src/utils/http-transport';
 import { resolveRetryConfig } from '#src/utils/retry';
-import { type RecursivePartial } from '#src/utils/types';
 
 // exported interfaces
 export * from '#src/api/index';
-export { type IPermitConfig } from '#src/config';
+export { type IPermitConfig, type IPermitOptions } from '#src/config';
 export { type IUser, type IAction, type IResource } from '#src/enforcement/interfaces';
 export {
   PermitConnectionError,
@@ -37,7 +36,7 @@ export interface IPermitClient extends IEnforcer {
    * Access the SDK configuration using this property.
    * Once the SDK is initialized, the configuration is read-only.
    */
-  config: IPermitConfig;
+  readonly config: IPermitConfig;
 
   /**
    * Access the Permit REST API using this property.
@@ -52,7 +51,7 @@ export interface IPermitClient extends IEnforcer {
 
 /**
  * The `Permit` class represents the main entry point for interacting with the Permit.io SDK.
- * The SDK constructor expects an object implementing the {@link IPermitConfig} interface.
+ * The SDK constructor expects {@link IPermitOptions}; effective settings are validated and frozen.
  *
  * Example usage:
  *
@@ -140,9 +139,11 @@ export class Permit implements IPermitClient {
    * Constructs a new instance of the {@link Permit} class with the specified configuration.
    *
    * @param config - The configuration for the Permit SDK.
+   * @throws TypeError When effective constructor options are invalid.
    */
-  constructor(config: RecursivePartial<IPermitConfig>) {
+  constructor(config: IPermitOptions) {
     this.config = ConfigFactory.build(config);
+    Object.defineProperty(this, 'config', { writable: false, configurable: false });
     this.logger = LoggerFactory.createLogger(this.config);
     const resolvedRetryConfig = resolveRetryConfig(this.config.retry);
     const restConfig = {

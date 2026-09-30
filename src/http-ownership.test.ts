@@ -4,8 +4,7 @@ import axios, { type AxiosInstance } from 'axios';
 import { expect, onTestFinished, test, vi } from 'vitest';
 
 import { Permit } from '#src/index';
-import { type IPermitConfig } from '#src/config';
-import { type RecursivePartial } from '#src/utils/types';
+import { type IPermitOptions } from '#src/config';
 
 interface WireRequest {
   method: string | undefined;
@@ -42,7 +41,7 @@ async function wire(status = 200) {
   assert(address && typeof address !== 'string');
   return { url: `http://127.0.0.1:${address.port}`, calls };
 }
-function permit(caller: AxiosInstance, config: RecursivePartial<IPermitConfig>) {
+function permit(caller: AxiosInstance, config: IPermitOptions) {
   const client = new Permit({
     axiosInstance: caller,
     token: 'sdk',

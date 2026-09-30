@@ -103,7 +103,7 @@ describe('Enforcer (unit)', () => {
     });
 
     it('does not inject a tenant when useDefaultTenantIfEmpty is off', async () => {
-      permit.config.multiTenancy.useDefaultTenantIfEmpty = false;
+      ({ permit, pdp } = createMockPermit({ useDefaultTenantIfEmpty: false }));
       pdp.resolveWith({ allow: true });
 
       await permit.check('alice', 'read', { type: 'doc' });

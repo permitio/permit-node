@@ -21,6 +21,7 @@ describe('ConfigFactory (unit)', () => {
       saved[key] = process.env[key];
       delete process.env[key];
     }
+    process.env['PERMIT_API_KEY'] = 'unit-env-key';
   });
 
   afterEach(() => {
@@ -36,6 +37,7 @@ describe('ConfigFactory (unit)', () => {
 
   describe('defaults', () => {
     it('returns the documented defaults when no env vars are set', () => {
+      delete process.env['PERMIT_API_KEY'];
       const config = ConfigFactory.defaults();
 
       expect(config.token).toBe('');
@@ -76,7 +78,7 @@ describe('ConfigFactory (unit)', () => {
     it('returns the defaults when given an empty partial', () => {
       const config = ConfigFactory.build({});
 
-      expect(config.token).toBe('');
+      expect(config.token).toBe('unit-env-key');
       expect(config.pdp).toBe('http://localhost:7766');
       expect(config.log).toEqual({ level: 'warn', label: 'Permit.io', json: true });
     });

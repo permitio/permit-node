@@ -76,7 +76,7 @@ export interface IRetryConfig {
    * REST POST/PATCH are never retried by the SDK, even if listed. PDP/OPA authorization
    * POST requests are idempotent and are added to their separate retry policy.
    */
-  retryMethods?: string[];
+  retryMethods?: readonly string[];
 }
 
 /**

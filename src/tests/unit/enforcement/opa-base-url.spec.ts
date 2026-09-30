@@ -97,7 +97,11 @@ describe('Permit with a configured PDP URL', () => {
     const error = errorThrownBy(
       () => new Permit({ token: 'test-token', pdp: 'http://pdp-user:pdp-secret@localhost:bad' }),
     );
-    expect(error).toBeInstanceOf(PermitError);
+    expect(error).toBeInstanceOf(TypeError);
+    expect(error).toHaveProperty(
+      'message',
+      expect.stringMatching(/Invalid pdp:.*absolute http\(s\) URL/),
+    );
     // Serialize the way the SDK's pino logger would, so enumerable error fields are covered too.
     expect(JSON.stringify(pino.stdSerializers.err(error as Error))).not.toContain('pdp-secret');
   });

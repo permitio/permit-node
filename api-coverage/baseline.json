@@ -4,13 +4,13 @@
     "authoredClassShapes": {
       "src/api/api-client.ts:ApiClient": "53897a9a5f2ca39aff3acb7cb539c506283804ac450925b69e6463153d13cc60",
       "src/api/base.ts:BaseFactsPermitAPI": "d54abe08baf1c3cf60b7c2dcc6de5daa886d258067988490df118b6f042e7c40",
-      "src/api/base.ts:BasePermitApi": "ca7b2a43b878dd415df6d8ebab1a4533e331711acb0b0d6c653956293f182cd1",
+      "src/api/base.ts:BasePermitApi": "0ccbabf1a102597de3ff834dc4676dd561314534adfb2dcafb3b016cb837e2af",
       "src/api/base.ts:PermitApiError": "5c9efa016b919cbd06132100d5bde3485736221bdd08233ba9cec1410d7c819e",
       "src/api/condition-set-rules.ts:ConditionSetRulesApi": "563bf373b2e2172af153d97b26381b9194f7c7725fc2b5dca5bc7db292cb1de3",
       "src/api/condition-sets.ts:ConditionSetsApi": "765c3a4d7b620b2eaacfb4844396cc736d79c7c277cf001e7b6355cd0d18a518",
-      "src/api/context.ts:ApiContext": "6ecc9902bc88e0bd994e7f21194413ee69afa9794dbb636c6d1cda438b650549",
-      "src/api/context.ts:PermitContextChangeError": "2bb901f12315aa7dca501df4838efbdf800cb27ac5508a0f163bf74492a72a04",
-      "src/api/context.ts:PermitContextError": "c7523e9aa1a975e4a5fd398afefd9d432a7202f90279172913421ab3ac1f61b0",
+      "src/api/context.ts:ApiContext": "d0216876b55e5a0b6cb708113507f53e3f8bdcc7f4b675e8a25597637c4e9c32",
+      "src/api/context.ts:PermitContextChangeError": "c120ad694312a70140dab082ef0f09747f17f82bc29dec6f99f4b42893f2bd57",
+      "src/api/context.ts:PermitContextError": "3c860da1e66d6e2b8bca58a3836bdcb48b02484678f52cf0927876fe01a43cb8",
       "src/api/deprecated.ts:DeprecatedApiClient": "6e222900c6f620491c171589967125e42f3bc9a326dba0d8769c5f3c91a94fd0",
       "src/api/elements.ts:ElementsClient": "28b2c12fed9a0c22c3f340213dc0f5de0c750827e99eafff67ee7850a622c822",
       "src/api/environments.ts:EnvironmentsApi": "e9cbc89b391cf15cb41034d3d6de045aae1672aa1d13a20e405afc9e9f515cae",
@@ -27,12 +27,12 @@
       "src/api/roles.ts:RolesApi": "dc48457df60c94a7d4904cd0c5b0dd5be99f3a9905588c273de90e952ac07362",
       "src/api/tenants.ts:TenantsApi": "978b7a88e00d28f9ffceacfc51c31fed3005f68a8a3ac04a06c94e20b450c9c9",
       "src/api/users.ts:UsersApi": "4873322e964985928eba4ec3a4e4156870021fe8df7d78eabd51b965bba02590",
-      "src/config.ts:ConfigFactory": "94628fdfe2b721ad342897863ab40a344171d70edc118a125bef831a547a7545",
+      "src/config.ts:ConfigFactory": "5dc5eeecb95886e850dae6c76c83ab96ac7c3f3661cee616d47e8e9f5dde4be4",
       "src/enforcement/enforcer.ts:Enforcer": "172af01b55613e1966fb0d31e27c2d2e36a15f0333e7e525cc89ee74fde16ed1",
       "src/enforcement/enforcer.ts:PermitConnectionError": "4436ea68a128004dfebfb7553aa29e5e12a78806069bdc791a96e55071cfa227",
       "src/enforcement/enforcer.ts:PermitError": "2e807340ef6424a4c40d7609ea925baa9b64c91f543db2132217a51646270bdd",
       "src/enforcement/enforcer.ts:PermitPDPStatusError": "a1b9c351d5a2e1b5dd225d6aef626bf1b93c3f4a49275190c8b201f275b7045e",
-      "src/index.ts:Permit": "c6fa5f1096570ac5cd0f2bbf4b1011b02b28abcde996f67283ccca65d9671660",
+      "src/index.ts:Permit": "408e5d85b2467712ec9c1b49216aed71b8563a359373212b1f4d390130c7bd67",
       "src/logger.ts:LoggerFactory": "0df4a89a8e7564c508ae19fc674363efdb9453beeaf4ae72fdb14ae537da99a6",
       "src/utils/context.ts:ContextStore": "1c28fa6cab436af789cd1f8cb17fd81e7d132dc3fb177d0397b1dab84481a331"
     },
@@ -137,6 +137,29 @@
           "PROJECT_LEVEL_API_KEY = 'PROJECT_LEVEL_API_KEY'",
           "ENVIRONMENT_LEVEL_API_KEY = 'ENVIRONMENT_LEVEL_API_KEY'"
         ]
+      },
+      "src/api/context.ts:ContextSnapshot": {
+        "extends": [],
+        "kind": "interface",
+        "members": ["readonly scope: Scope | null;", "readonly selection: Selection;"]
+      },
+      "src/api/context.ts:ContextState": {
+        "extends": [],
+        "kind": "interface",
+        "members": [
+          "initialization: Promise<void> | undefined;",
+          "revision: number;",
+          "scope: Scope | null;",
+          "selection: Selection;"
+        ]
+      },
+      "src/api/context.ts:Scope": {
+        "kind": "type",
+        "type": "{\n    level: ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY;\n    organization: string;\n    project: null;\n    environment: null;\n} | {\n    level: ApiKeyLevel.PROJECT_LEVEL_API_KEY;\n    organization: string;\n    project: string;\n    environment: null;\n} | {\n    level: ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY;\n    organization: string;\n    project: string;\n    environment: string;\n}"
+      },
+      "src/api/context.ts:Selection": {
+        "kind": "type",
+        "type": "{\n    level: ApiContextLevel.WAIT_FOR_INIT;\n    organization: null;\n    project: null;\n    environment: null;\n} | {\n    level: ApiContextLevel.ORGANIZATION;\n    organization: string;\n    project: null;\n    environment: null;\n} | {\n    level: ApiContextLevel.PROJECT;\n    organization: string;\n    project: string;\n    environment: null;\n} | {\n    level: ApiContextLevel.ENVIRONMENT;\n    organization: string;\n    project: string;\n    environment: string;\n}"
       },
       "src/api/deprecated.ts:IDeprecatedPermitApi": {
         "extends": [" extends IDeprecatedReadApis, IDeprecatedWriteApis"],
@@ -554,21 +577,42 @@
         "extends": [],
         "kind": "interface",
         "members": [
-          "apiContext: ApiContext;",
-          "apiUrl: string;",
-          "axiosInstance: AxiosInstance;",
-          "factsSyncTimeout: number | null;",
-          "factsSyncTimeoutPolicy: FactsSyncTimeoutPolicy | null;",
-          "log: ILoggerConfig;",
-          "multiTenancy: IMultiTenancyConfig;",
-          "opaAxiosInstance?: AxiosInstance;",
-          "pdp: string;",
-          "pdpRetry?: IRetryConfig | false;",
-          "proxyFactsViaPdp: boolean;",
-          "retry?: IRetryConfig | false;",
-          "throwOnError: boolean | undefined;",
-          "timeout: number | undefined;",
-          "token: string;"
+          "readonly apiContext: ApiContext;",
+          "readonly apiUrl: string;",
+          "readonly axiosInstance: AxiosInstance;",
+          "readonly factsSyncTimeout: number | null;",
+          "readonly factsSyncTimeoutPolicy: FactsSyncTimeoutPolicy | null;",
+          "readonly log: Readonly<ILoggerConfig>;",
+          "readonly multiTenancy: Readonly<IMultiTenancyConfig>;",
+          "readonly opaAxiosInstance?: AxiosInstance;",
+          "readonly pdp: string;",
+          "readonly pdpRetry?: Readonly<IRetryConfig> | false;",
+          "readonly proxyFactsViaPdp: boolean;",
+          "readonly retry?: Readonly<IRetryConfig> | false;",
+          "readonly throwOnError: boolean | undefined;",
+          "readonly timeout: number | undefined;",
+          "readonly token: string;"
+        ]
+      },
+      "src/config.ts:IPermitOptions": {
+        "extends": [],
+        "kind": "interface",
+        "members": [
+          "apiContext?: ApiContext | undefined;",
+          "apiUrl?: string | undefined;",
+          "axiosInstance?: AxiosInstance | undefined;",
+          "factsSyncTimeout?: number | null | undefined;",
+          "factsSyncTimeoutPolicy?: FactsSyncTimeoutPolicy | null | undefined;",
+          "log?: Partial<ILoggerConfig> | undefined;",
+          "multiTenancy?: Partial<IMultiTenancyConfig> | undefined;",
+          "opaAxiosInstance?: AxiosInstance | undefined;",
+          "pdp?: string | undefined;",
+          "pdpRetry?: IRetryConfig | false | undefined;",
+          "proxyFactsViaPdp?: boolean | undefined;",
+          "retry?: IRetryConfig | false | undefined;",
+          "throwOnError?: boolean | undefined;",
+          "timeout?: number | undefined;",
+          "token?: string | undefined;"
         ]
       },
       "src/enforcement/enforcer.ts:IEnforcer": {
@@ -712,7 +756,11 @@
       "src/index.ts:IPermitClient": {
         "extends": [" extends IEnforcer"],
         "kind": "interface",
-        "members": ["api: IPermitApi;", "config: IPermitConfig;", "elements: IPermitElementsApi;"]
+        "members": [
+          "api: IPermitApi;",
+          "elements: IPermitElementsApi;",
+          "readonly config: IPermitConfig;"
+        ]
       },
       "src/utils/context.ts:CheckConfig": {
         "extends": [],
@@ -774,16 +822,12 @@
           "respectRetryAfter?: boolean;",
           "retryCondition?: RetryConditionFn;",
           "retryDelay?: number;",
-          "retryMethods?: string[];"
+          "retryMethods?: readonly string[];"
         ]
       },
       "src/utils/retry.ts:RetryConditionFn": {
         "kind": "type",
         "type": "(error: AxiosError) => boolean"
-      },
-      "src/utils/types.ts:RecursivePartial": {
-        "kind": "type",
-        "type": "{\n    [P in keyof T]?: RecursivePartial<T[P]>;\n}"
       }
     },
     "functionShapes": {
@@ -838,12 +882,341 @@
           "returns": "InternalAxiosRequestConfig"
         }
       },
+      "src/api/context.ts:defaultSelection": {
+        "implementationSha256": "dd72bbae285c4b6cf4837997c32987ef46328b8042d70f05911dbdd38c3af56f",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "scope",
+              "optional": false,
+              "type": "Scope"
+            }
+          ],
+          "returns": "Selection"
+        }
+      },
+      "src/api/context.ts:identifier": {
+        "implementationSha256": "02c81be28a42bf9656413a1478b2f38019941b1d13733a6332c215ab27bc1b40",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": null,
+              "name": "field",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "string"
+        }
+      },
+      "src/api/context.ts:initializeApiContext": {
+        "implementationSha256": "6ff85d52bb1aa5b57e9a3f4c97bc39da6a6f35ba8055ed90b076165f76f5b953",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "context",
+              "optional": false,
+              "type": "ApiContext"
+            },
+            {
+              "initializer": null,
+              "name": "load",
+              "optional": false,
+              "type": "() => Promise<unknown>"
+            }
+          ],
+          "returns": "Promise<void>"
+        }
+      },
+      "src/api/context.ts:parseContextSnapshot": {
+        "implementationSha256": "5f46417ed61ed4825475e4a3898eeda75afde26f2ccc46a71bad8a616b9562ec",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            }
+          ],
+          "returns": "ContextSnapshot"
+        }
+      },
+      "src/api/context.ts:parseScope": {
+        "implementationSha256": "843072c023f90492b241e47176825ab666f667f6781f298c24fc12928daaa9b6",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            }
+          ],
+          "returns": "Scope"
+        }
+      },
+      "src/api/context.ts:parseSelection": {
+        "implementationSha256": "e2b9fd5aa2fe5b715d9d841cc98650df2d94924c6d20584f2f868ff66129a2ad",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            }
+          ],
+          "returns": "Selection"
+        }
+      },
+      "src/api/context.ts:readApiContextSnapshot": {
+        "implementationSha256": "485855472db118a82233957ed4c6d21ba68194a7dfb0d755da6bfb0b303a9c74",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "this",
+              "optional": false,
+              "type": "ApiContext"
+            }
+          ],
+          "returns": "ContextSnapshot"
+        }
+      },
+      "src/api/context.ts:snapshotApiContext": {
+        "implementationSha256": "b1077fdcd25c8cd777a6aa49bfa1cb690775467074de83eed02b60945b554649",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "source",
+              "optional": false,
+              "type": "ApiContext"
+            }
+          ],
+          "returns": "ApiContext"
+        }
+      },
+      "src/api/context.ts:stateOf": {
+        "implementationSha256": "ca997d8d1871cc0201c32fef38ae8972dbbc58204aa38eed54e590e47b4dd744",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "context",
+              "optional": false,
+              "type": "ApiContext"
+            }
+          ],
+          "returns": "ContextState"
+        }
+      },
+      "src/api/context.ts:verifySelection": {
+        "implementationSha256": "2223bea143d3a5c16d400e32917a6edf8373f7951e3b941e3cacc403a719ce64",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "scope",
+              "optional": false,
+              "type": "Scope | null"
+            },
+            {
+              "initializer": null,
+              "name": "selection",
+              "optional": false,
+              "type": "Selection"
+            }
+          ],
+          "returns": "void"
+        }
+      },
+      "src/config.ts:axiosOption": {
+        "implementationSha256": "603c3f0138a0cb8ec084349dc528410f6dd8cef9641d603ca2945a5343678ed3",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": null,
+              "name": "name",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "void"
+        }
+      },
+      "src/config.ts:booleanOption": {
+        "implementationSha256": "7194b97162eeea36254d39ef8cc60f3215492797c7c297653510fd4cabe306b4",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": null,
+              "name": "name",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "void"
+        }
+      },
+      "src/config.ts:defaultSettings": {
+        "implementationSha256": "72975b47e1df7ee1ba549b876711307b5fb55f7011ed2814a31245a10e7d5339",
+        "signature": {
+          "generics": [],
+          "parameters": [],
+          "returns": "{ token: string; pdp: string; apiUrl: string; log: { level: string; label: string; json: boolean; }; multiTenancy: { defaultTenant: string; useDefaultTenantIfEmpty: boolean; }; timeout: undefined; throwOnError: boolean; proxyFactsViaPdp: boolean; factsSyncTimeout: null; factsSyncTimeoutPolicy: null; }"
+        }
+      },
       "src/config.ts:logJsonFromEnv": {
         "implementationSha256": "2a1e21c34028374c7e22151b9be6f93be86a1053bbdb9d96b90c70c7f4e3f506",
         "signature": {
           "generics": [],
           "parameters": [],
           "returns": "boolean"
+        }
+      },
+      "src/config.ts:nonnegativeOption": {
+        "implementationSha256": "8c407a5018b5715924db55cf773567b87f94b02a81bcb229e6bea7b8ce91865d",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": null,
+              "name": "name",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": "Number.MAX_VALUE",
+              "name": "maximum",
+              "optional": true,
+              "type": "(inferred)"
+            }
+          ],
+          "returns": "void"
+        }
+      },
+      "src/config.ts:objectOption": {
+        "implementationSha256": "6121a968970967f72e47c384eb0a76745caf754029a2bb585ab33064a5efd8f7",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": null,
+              "name": "name",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "void"
+        }
+      },
+      "src/config.ts:snapshotRetry": {
+        "implementationSha256": "db72d6789040d2f86f96aed2e267c635bd6b341f0f0ee7f4b7ea45c1f21c905f",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "IRetryConfig | false | undefined"
+            }
+          ],
+          "returns": "Readonly<IRetryConfig> | false | undefined"
+        }
+      },
+      "src/config.ts:stringOption": {
+        "implementationSha256": "d8b98c53ac614074dd1091dca7e2b909e986b28c2e3d3b34d5969dc7df60dd06",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": null,
+              "name": "name",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "nonempty",
+              "optional": false,
+              "type": "boolean"
+            }
+          ],
+          "returns": "void"
+        }
+      },
+      "src/config.ts:urlOption": {
+        "implementationSha256": "a137eb771d8fabb0d7836edcf5bd366fbeeb5db4f8e373c046031efb32eb03dc",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "name",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "void"
         }
       },
       "src/enforcement/enforcer.ts:buildOpaBaseUrl": {
@@ -20192,7 +20565,7 @@
       "src/api/base.ts:BasePermitApi.ensureAccessLevel": "7b0488016a2275b9add93fc8baafa74ddff925a21fcdd9d0595c5bca1c9a39ff",
       "src/api/base.ts:BasePermitApi.ensureContext": "2465fd5a22bccde88c89dfcc89e7ae34fb49320a0ca4f8d72f99a3005242e24f",
       "src/api/base.ts:BasePermitApi.handleApiError": "09ee9dbbd4d44d13d6ed9044698c1b4da123b622a900edeb13585cc17e6039c3",
-      "src/api/base.ts:BasePermitApi.setContextFromApiKey": "b5216f8ddb355857e4677f0ec96613eb56be95997900277aebde840d2a17d69d",
+      "src/api/base.ts:BasePermitApi.setContextFromApiKey": "66b472772a9c46b50d55e28deffb872e515b025bb652f6c2b6932a77199ef1a5",
       "src/api/condition-set-rules.ts:ConditionSetRulesApi.create": "53b02a01d173d53c35606e2ce84bd2cb39ed93e14235f877f8b94466e6eb13f0",
       "src/api/condition-set-rules.ts:ConditionSetRulesApi.delete": "9960408bab5c7e0df21d584b9e5c386ccdde20e023fda2447b03a05c783d9f8f",
       "src/api/condition-set-rules.ts:ConditionSetRulesApi.list": "d69fe805c90b53696340f180d3eed93aba222308ac6d04baedee104e6df8fc3f",
@@ -20203,13 +20576,11 @@
       "src/api/condition-sets.ts:ConditionSetsApi.getByKey": "91635673a69169b2fd6f10d0a7be607ab8a11a533de2a980bb4c6c6101ba9de0",
       "src/api/condition-sets.ts:ConditionSetsApi.list": "3ff8238c2ef401b765e0e4baa25dcc106582a7c5764de13e9abccb65bbdeeef0",
       "src/api/condition-sets.ts:ConditionSetsApi.update": "415779433421771ac33aa62bf046eaaeda535114945d66ce59baeb436025cf2e",
-      "src/api/context.ts:ApiContext._saveApiKeyAccessibleScope": "8ad0d3c435aa179ab58c9efd5bb20a188df35a9309419f5b7cc0dab72da50a89",
-      "src/api/context.ts:ApiContext.setEnvironmentLevelContext": "deaf275bad3afa6aadb555656aeb0aede3de2876811d1975d0713ffbddf8cdc0",
-      "src/api/context.ts:ApiContext.setOrganizationLevelContext": "28922d01664de7bd807b1bb493afc278aa268ef17f05db9dbb2b2c2dcb39caa4",
-      "src/api/context.ts:ApiContext.setProjectLevelContext": "19c3289bdd63c1b61249bc6a70aa5b67689f9bdb71ce4e67fc62c68586c94069",
-      "src/api/context.ts:ApiContext.verifyCanAccessEnvironment": "3aca1ed079cd4ae3f7cc0654398b2ebb3e829699c9dd538dd6b7ac92c95713dd",
-      "src/api/context.ts:ApiContext.verifyCanAccessOrg": "e2952b10b847f8f7a678749b0d7ce905886d96ae4dc83494a374eca5eb8e156e",
-      "src/api/context.ts:ApiContext.verifyCanAccessProject": "4dd6031cced34b8c90fdc825dceaae09a4143257600b61fd5d225b68c19fe5bc",
+      "src/api/context.ts:.defaultSelection": "ab80fdb9caa873e95c125e14288fe9e0dd3b1b9d54a21a555709c227685e1b52",
+      "src/api/context.ts:.identifier": "e57a1a001d56c8488d75f0bf7e71faccf3af76a301dd98d5bce7d909f31ab40f",
+      "src/api/context.ts:.initializeApiContext": "f153e4b03e6d90c30d797c4dcafe51b94d62382d5e30d8f2b304891134c7b7a7",
+      "src/api/context.ts:.parseScope": "457f59b9729498d92b5019b11f4d5fa48409479799a117a53b1847c7007c9326",
+      "src/api/context.ts:.stateOf": "4711b172517c99a05d4919f90d475b9139ff2c0ba62a12cbbee06e47c91f2a84",
       "src/api/deprecated.ts:DeprecatedApiClient.assignConditionSetRule": "6a8d32f2407814ff46a3c3d7c6174a85fa0e8db72cacaa4182a9b6c306b0a758",
       "src/api/deprecated.ts:DeprecatedApiClient.assignRole": "3cb2056563f8798cd735753bc35900c2630f29f1f20ca5ad9e1c4bcd01138aed",
       "src/api/deprecated.ts:DeprecatedApiClient.createConditionSet": "df8511d87aae64676c25ce4b597e43a372652f4af37736e1af929c3bcf3de375",
@@ -20390,9 +20761,11 @@
       "src/api/condition-set-rules.ts:ConditionSetRulesApi.constructor": "f00624544d62ec2c914a3bb190f6b07cd27306c96e3a4866d6e34dab7f86c759",
       "src/api/condition-sets.ts:ConditionSetsApi.constructor": "0f2d9665eda7fba31431d66eb565dbfe8156ef5afe695f3d2274e0aa26a37bdb",
       "src/api/context.ts:API_ACCESS_LEVELS": "252537edf5df47179c48b09090b7e517bfb580e1aa61a9f2575f7c36353b8083",
-      "src/api/context.ts:ApiContext.constructor": "67b83ec4cfcb64a142c4c6155470cbaba30c4bf3a5120a4349eeff75a654899d",
-      "src/api/context.ts:PermitContextChangeError.constructor": "65c285e42648a9ebd39021427a29f752e265d5beebc2d02c14a7472a486bb127",
-      "src/api/context.ts:PermitContextError.constructor": "65c285e42648a9ebd39021427a29f752e265d5beebc2d02c14a7472a486bb127",
+      "src/api/context.ts:ApiContext.constructor": "0c1f27842955389007952d2436efa52f52cc501f4941d2135deca70b9eba6276",
+      "src/api/context.ts:PermitContextChangeError.constructor": "8f8fe55accc1dac7ac48cd558fd9e388fb53b63e8439d532886792f8e91e22a5",
+      "src/api/context.ts:PermitContextError.constructor": "8f8fe55accc1dac7ac48cd558fd9e388fb53b63e8439d532886792f8e91e22a5",
+      "src/api/context.ts:contextSnapshotKey": "b262fad27c623a907f6d94c663100e84620052a8f407d907b91d0b42ef143a58",
+      "src/api/context.ts:contextStates": "2821f80bb3678f5a2d01ce1cd7dce9377d9d2bdf7c8a6c8f8982f6fb17b90aa5",
       "src/api/deprecated.ts:DeprecatedApiClient.constructor": "3696e58aaffdad1378f526b0d1ded906dc7f6449b6e2f4ef5518d4d285463bbd",
       "src/api/elements.ts:ElementsClient.constructor": "cd8ddb0a63855e3a5629ce08ef6af0dc5b2ebab73475bbdb02bd268040d3e91e",
       "src/api/environments.ts:EnvironmentsApi.constructor": "146ac7603e7e33db85e1410da47a387f1cf27b6c6f6878b04d7d8cc4e861bf9f",
@@ -20414,7 +20787,7 @@
       "src/enforcement/enforcer.ts:PermitError.constructor": "af7a578ddde15be83f1874292dc6dd50e71b656ff3dcdbc13fe85b6f5f020d82",
       "src/enforcement/enforcer.ts:PermitPDPStatusError.constructor": "db9087ada7c466bc4b53c71a1b654b99c04c4177a6e04efea40696035fd07135",
       "src/enforcement/enforcer.ts:RESOURCE_DELIMITER": "84621939eae999affeb1c6c48d23371c99a953b6c56aa67ebd94e3b541a3cfd1",
-      "src/index.ts:Permit.constructor": "b6301b8640c58ccca371786a6733976a7102e6d5aa77cf99af4b6c99962832a8",
+      "src/index.ts:Permit.constructor": "50052de96c1d823858b5560c18c8f87e9fcddd9c8ce2b23fb1a37c179b01e626",
       "src/utils/context.ts:ContextStore.baseContext": "e55a3d84c22b3b144eb4ab9b68731dd74c2e3e92b54db022740dfdcfd3c5cd96",
       "src/utils/context.ts:ContextStore.transforms": "18dc1ac26ebfbe260624f4303177b4cafdcd1586682c5227da84acf27010261c",
       "src/utils/retry.ts:DEFAULT_RETRY_CONFIG": "a124e39640a8af9b5972e0913062592cd4e8c5b4d370c343476c0f43fef9e4ac",

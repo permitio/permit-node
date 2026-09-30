@@ -216,7 +216,7 @@ for (const [name, file, before, after, pathPart] of [
     'src/config.ts',
     "'https://api.permit.io'",
     "'https://changed.invalid'",
-    '/authoredClassShapes/src~1config.ts:ConfigFactory',
+    '/functionShapes/src~1config.ts:defaultSettings',
   ],
   [
     'shared generated request destination',

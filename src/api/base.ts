@@ -15,6 +15,7 @@ import {
   API_ACCESS_LEVELS,
   ApiContextLevel,
   ApiKeyLevel,
+  initializeApiContext,
   PermitContextError,
 } from '#src/api/context';
 
@@ -189,57 +190,19 @@ export abstract class BasePermitApi {
    * Sets the API context and permitted access level based on the API key scope.
    */
   private async setContextFromApiKey(): Promise<void> {
-    try {
-      this.logger.debug('Fetching api key scope');
-      const response = await this.scopeApi.getApiKeyScope();
-
-      if (response.data.organization_id !== undefined && response.data.organization_id !== null) {
-        this.config.apiContext._saveApiKeyAccessibleScope(
-          response.data.organization_id,
-          response.data.project_id,
-          response.data.environment_id,
-        );
-
-        if (response.data.project_id !== undefined && response.data.project_id !== null) {
-          if (response.data.environment_id !== undefined && response.data.environment_id !== null) {
-            // set environment level context
-            this.logger.debug(`setting: environment-level api context`);
-            this.config.apiContext.setEnvironmentLevelContext(
-              response.data.organization_id,
-              response.data.project_id,
-              response.data.environment_id,
-            );
-            return;
-          }
-
-          // set project level context
-          this.logger.debug(`setting: project-level api context`);
-          this.config.apiContext.setProjectLevelContext(
-            response.data.organization_id,
-            response.data.project_id,
-          );
-          return;
-        }
-
-        // set org level context
-        this.logger.debug(`setting: organization-level api context`);
-        this.config.apiContext.setOrganizationLevelContext(response.data.organization_id);
-        return;
-      }
-
-      throw new PermitContextError('could not set api context level');
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        this.logger.error(
-          `[${err?.response?.status}] permit.api.getApiKeyScope(), err: ${JSON.stringify(
-            err?.response?.data,
-          )}`,
+    return initializeApiContext(this.config.apiContext, async () => {
+      try {
+        this.logger.debug('Fetching api key scope');
+        const response = await this.scopeApi.getApiKeyScope();
+        return response.data;
+      } catch (error) {
+        const cause = redactAxiosError(error);
+        throw new PermitContextError(
+          'Could not fetch the API key scope; retry after checking connectivity and API key access.',
+          { cause },
         );
       }
-      throw new PermitContextError(
-        'could not fetch the api key scope in order to set the api context level',
-      );
-    }
+    });
   }
 
   /**

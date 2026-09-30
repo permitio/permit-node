@@ -78,6 +78,8 @@ export interface MockPermitOptions {
   contextLevel?: 'environment' | 'project' | 'organization';
   /** The API token passed to the SDK. Defaults to `'test-token'`. */
   token?: string;
+  /** Whether to add the default tenant to resources without one. Defaults to true. */
+  useDefaultTenantIfEmpty?: boolean;
 }
 
 /** The result of {@link createMockPermit}. */
@@ -281,6 +283,7 @@ export function createMockPermit(opts: MockPermitOptions = {}): MockPermit {
     environment = 'env',
     contextLevel = 'environment',
     token = 'test-token',
+    useDefaultTenantIfEmpty = true,
   } = opts;
 
   const permit = new Permit({
@@ -288,6 +291,7 @@ export function createMockPermit(opts: MockPermitOptions = {}): MockPermit {
     pdp: MOCK_PDP_ORIGIN,
     apiUrl: MOCK_API_ORIGIN,
     proxyFactsViaPdp,
+    multiTenancy: { useDefaultTenantIfEmpty },
   });
 
   const enforcer = (

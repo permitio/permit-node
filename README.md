@@ -48,6 +48,26 @@ security scans block publication. Release candidates use the `rc` distribution t
 
 See [Contributing](.github/CONTRIBUTING.md#dependency-security) for local scan commands and reports.
 
+## Constructor Configuration
+
+The constructor accepts `IPermitOptions`. Omitted values use environment variables and SDK
+defaults. A nonempty token is required after `PERMIT_API_KEY` fallback; tokens are opaque strings
+and cannot contain whitespace or control characters. PDP and REST URLs must be absolute HTTP(S)
+URLs. Invalid settings throw before the SDK creates a logger or transport, with errors that omit
+caller values.
+
+In 3.0, `permit.config` settings and their SDK-owned nested objects are frozen. Configure tokens,
+URLs, logging, tenancy and retry settings at construction time. Supplied Axios instances and
+retry callbacks remain caller-owned and live; their defaults, interceptors and mutable callback
+state can still change.
+
+A supplied `apiContext` is copied into an independent SDK-owned context, preserving its initial
+permissions and selection. It no longer retains the supplied object's identity. Make later
+context changes through `permit.config.apiContext`. Concurrent first REST calls share one scope
+lookup per SDK. A failed initial lookup rejects its waiting calls and allows a later retry. Invalid
+hierarchical scope replies are rejected atomically, and late replies preserve explicit context
+changes.
+
 ## Retry Configuration
 
 The SDK includes built-in retry support for transient failures. Retries are **opt-in**:
@@ -86,7 +106,7 @@ transforms and interceptors. Two SDK instances can share a client while retainin
 routes, Bearer tokens, logging and SDK retry policies. SDK requests explicitly allow their configured
 absolute URLs even when the caller default `allowAbsoluteUrls` is false, so a caller base URL cannot
 prefix or reroute an SDK destination. Direct caller requests retain that caller restriction and remain
-usable and does not acquire SDK retries. Default Basic credentials cannot replace an explicit
+usable and acquire no SDK retries. Default Basic credentials cannot replace an explicit
 SDK Bearer token. Intentional caller hooks can still rewrite request configuration, including
 headers and transforms; caller-owned retry or redirect behavior remains the caller's responsibility.
 PDP requests use a separate internal transport. There are no SDK registrations on supplied
