@@ -114,6 +114,32 @@ jobs:
       - name: Run required check
         run: pnpm lint:types
 
+  docs:
+    name: SDK public reference
+    needs: preinstall-security
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          package-manager-cache: false
+      - name: Install locked tools without lifecycle scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Build and validate the actual public reference
+        run: pnpm run docs -- --out .test-results/reference
+
   unit:
     name: SDK unit and tooling (${{ matrix.node }})
     needs: preinstall-security
@@ -211,7 +237,7 @@ jobs:
 
   build-candidate:
     name: SDK versioned archive
-    needs: [lint, types, unit, workflow-validation, codegen-guard]
+    needs: [lint, types, docs, unit, workflow-validation, codegen-guard]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     outputs:
@@ -347,6 +373,7 @@ jobs:
       [
         lint,
         types,
+        docs,
         unit,
         workflow-validation,
         codegen-guard,

@@ -5,6 +5,7 @@ const stages = {
   candidate: [
     'lint',
     'types',
+    'docs',
     'unit',
     'workflow-validation',
     'codegen-guard',

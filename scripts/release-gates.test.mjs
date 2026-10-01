@@ -9,6 +9,7 @@ import { publicationBlockers } from '#scripts/check-publication-readiness.mjs';
 const names = [
   'lint',
   'types',
+  'docs',
   'unit',
   'workflow-validation',
   'codegen-guard',
@@ -17,6 +18,27 @@ const names = [
   'dependency-security',
 ];
 const good = () => Object.fromEntries(names.map((name) => [name, { result: 'success' }]));
+
+test('actual candidate dependencies require docs before archive and aggregate success', () => {
+  const workflow = readFileSync('.github/workflows/release-candidate.yaml', 'utf8');
+  const ready = workflow.slice(workflow.indexOf('  candidate-ready:'));
+  const dependencies = ready
+    .match(/needs:\s*\[([^\]]+)\]/)[1]
+    .split(',')
+    .map((name) => name.trim())
+    .filter(Boolean);
+  const results = Object.fromEntries(dependencies.map((name) => [name, { result: 'success' }]));
+  expect(() => checkGateResults(results, 'candidate')).not.toThrow();
+  results['docs'] = { result: 'skipped' };
+  expect(() => checkGateResults(results, 'candidate')).toThrow('docs');
+  const build = workflow.slice(workflow.indexOf('  build-candidate:'));
+  expect(
+    build
+      .match(/needs:\s*\[([^\]]+)\]/)[1]
+      .split(',')
+      .map((name) => name.trim()),
+  ).toContain('docs');
+});
 
 test('quality can pass while publication acceptance remains unavailable', () => {
   expect(() => checkGateResults(good(), 'candidate')).not.toThrow();
