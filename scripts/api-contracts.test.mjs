@@ -57,7 +57,7 @@ test('accounts for complete source denominators while leaving parity and backend
   expect(report.sharedTarget.status).toBe('UNAVAILABLE');
   expect(report.realBackend.status).toBe('NOT_MEASURED');
   expect(report.operations).toHaveLength(307);
-  expect(report.counts.publicHttpMethods).toBe(146);
+  expect(report.counts.publicHttpMethods).toBe(152);
   expect(report.operations.filter((op) => op.source === 'control-plane')).toHaveLength(263);
   expect(report.operations.filter((op) => op.source === 'pdp-container')).toHaveLength(34);
   expect(report.operations.filter((op) => op.source === 'pdp-cloud')).toHaveLength(10);
@@ -73,6 +73,28 @@ test('accounts for complete source denominators while leaving parity and backend
       .routes.map((r) => r.target)
       .sort(),
   ).toEqual(['opa', 'pdp']);
+});
+
+test('exposes six direct invite operations without changing the source denominator', () => {
+  const report = coverageReport(evidence());
+  const names = ['approve', 'create', 'delete', 'get', 'list', 'update'];
+  const methods = sdk.methods.filter((method) => method.name.startsWith('permit.api.userInvites.'));
+  expect(methods.map((method) => method.name)).toEqual(
+    names.map((name) => `permit.api.userInvites.${name}`),
+  );
+  expect(methods.every((method) => !method.factsProxy && !method.deprecated)).toBe(true);
+  const operations = report.operations.filter(
+    (operation) => operation.source === 'control-plane' && operation.path.includes('/user_invites'),
+  );
+  expect(operations).toHaveLength(6);
+  for (const operation of operations) {
+    expect(operation.coverage).toBe('exposed');
+    expect(operation.methods).toHaveLength(1);
+    expect(operation.decision).toMatchObject({ action: 'add', owner: 'PER-12882' });
+  }
+  expect(report.operations).toHaveLength(307);
+  expect(report.counts.generatedMethods).toBe(266);
+  expect(report.counts.generatedModels).toBe(408);
 });
 
 test('exposes reviewed PDP discovery and filter composition without changing source denominators', () => {

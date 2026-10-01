@@ -2216,6 +2216,166 @@
       "level": "wire",
       "methodNames": ["permit.api.ensureAccessLevel", "permit.api.ensureContext"],
       "operationKeys": ["control-plane GET /v2/api-key/scope"]
+    },
+    {
+      "id": "wire.api.userInvites.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites"]
+    },
+    {
+      "id": "wire.api.userInvites.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites"]
+    },
+    {
+      "id": "api.user-invites.list",
+      "level": "api",
+      "methodNames": ["permit.api.userInvites.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites"]
+    },
+    {
+      "id": "wire.api.userInvites.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites"]
+    },
+    {
+      "id": "wire.api.userInvites.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites"]
+    },
+    {
+      "id": "api.user-invites.create",
+      "level": "api",
+      "methodNames": ["permit.api.userInvites.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites"]
+    },
+    {
+      "id": "wire.api.userInvites.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.get"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userInvites.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.get"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "api.user-invites.get",
+      "level": "api",
+      "methodNames": ["permit.api.userInvites.get"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userInvites.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userInvites.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "api.user-invites.update",
+      "level": "api",
+      "methodNames": ["permit.api.userInvites.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userInvites.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userInvites.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "api.user-invites.delete",
+      "level": "api",
+      "methodNames": ["permit.api.userInvites.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userInvites.approve.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.approve"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}/approve"
+      ]
+    },
+    {
+      "id": "wire.api.userInvites.approve.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.approve"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}/approve"
+      ]
+    },
+    {
+      "id": "api.user-invites.approve",
+      "level": "api",
+      "methodNames": ["permit.api.userInvites.approve"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}/approve"
+      ]
+    },
+    {
+      "id": "api.user-invites.approval-refusals",
+      "level": "api",
+      "methodNames": ["permit.api.userInvites.approve"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}/approve"
+      ]
+    },
+    {
+      "id": "api.user-invites.access",
+      "level": "api",
+      "methodNames": [
+        "permit.api.userInvites.list",
+        "permit.api.userInvites.create",
+        "permit.api.userInvites.get",
+        "permit.api.userInvites.update",
+        "permit.api.userInvites.delete",
+        "permit.api.userInvites.approve"
+      ],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites",
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites",
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}",
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}",
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}",
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}/approve"
+      ]
     }
   ],
   "abCaseIds": [
@@ -2387,7 +2547,11 @@
     "release.wire.grouped.esm",
     "release.wire.grouped.commonjs",
     "release.package.grouped.esm",
-    "release.package.grouped.commonjs"
+    "release.package.grouped.commonjs",
+    "wire.user-invites.esm",
+    "wire.user-invites.commonjs",
+    "api.user-invites-lifecycle",
+    "api.user-invites-refusals"
   ],
   "runIds": [
     "candidate.local.node22.13.0",

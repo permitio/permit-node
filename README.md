@@ -358,6 +358,54 @@ console.log(users.total_count, users.data[0]?.associated_tenants);
 appear in each associated tenant's `resource_instance_roles`, with `resource`,
 `resource_instance` and `role` fields. Both flag values retain the same paginated result.
 
+## User invites
+
+`permit.api.userInvites` manages API-key facts invites through `create`, `list`, `get`,
+`update`, `delete` and `approve`. Calls use the selected environment on `apiUrl`, including
+when `proxyFactsViaPdp` is enabled. These methods store and approve facts; they do not send
+invitation mail and have no `waitForSync()` method or PDP synchronization guarantee.
+
+```typescript
+const invite = await permit.api.userInvites.create({
+  key: null,
+  status: 'pending',
+  email: 'invitee@example.com',
+  first_name: null,
+  last_name: null,
+  role_id: role.id,
+  tenant_id: tenant.id,
+  resource_instance_id: null,
+});
+const page = await permit.api.userInvites.list({ tenant: tenant.key, page: 1, perPage: 20 });
+const user = await permit.api.userInvites.approve(invite.id, {
+  email: invite.email,
+  key: 'approved-user',
+  attributes: null,
+});
+console.log(page.total_count, user.key);
+```
+
+Creation and update require every editable field, including the four nullable fields shown
+above. `update` requires this full body despite using PATCH. Use internal UUIDs for `role_id`,
+`tenant_id` and a non-null `resource_instance_id`; null selects a tenant role invite. Setting
+`status` alone does not grant membership or roles. `get`, `update`, `delete` and `approve` use
+the invite's internal ID, without user-key lookup.
+
+`list` accepts role and tenant keys or IDs, text `search`, `page` and `perPage`. It returns the
+complete `PaginatedResultElementsUserInviteRead` page, preserving nullable fields and counts.
+`page_count`, when present, is the number of rows on the current page. The SDK's list defaults
+are page 1 and perPage 100. `UserInviteStatus` exposes the `pending` and `approved` values.
+
+Approval requires the matching email, final user key and nullable `attributes`. It creates or
+reuses the user, adds tenant membership and grants the invite's role. It returns
+`UserInviteApprovalRead`, whose optional names and attributes can be null. An optional attribute
+type argument is a caller assertion of the response shape, without validation or write inference;
+approval does not guarantee replacing an existing user's profile attributes. HTTP 400 approval
+refusals retain safe status, transport code and route details with generic guidance; remote text
+and response bodies are omitted because they can contain another invite's stored email.
+Other failures use the existing API diagnostics. Deleting an invite resolves to undefined and
+does not revoke membership or roles created by approval.
+
 ## Tenant lists and totals
 
 `permit.api.tenants.list()` returns a tenant array. Pass `includeTotalCount: true` to keep the

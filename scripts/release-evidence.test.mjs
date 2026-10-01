@@ -483,7 +483,10 @@ test('requires mapping for every method and retained operation without erasing g
 
 test('extracts all actual SDK/source entries with case-independent hashing', async () => {
   const result = await expectedReleaseInventory(resolve(import.meta.dirname, '..'));
-  expect(result.inventory.methods).toHaveLength(151);
+  expect(result.inventory.methods).toHaveLength(157);
+  expect(
+    result.inventory.methods.filter((method) => method.name.startsWith('permit.api.userInvites.')),
+  ).toHaveLength(6);
   expect(result.inventory.operations).toHaveLength(307);
   expect(result.inventorySha256).toBe(digest(canonicalReleaseInventory(result.inventory)));
   const changed = structuredClone(result.inventory);
@@ -595,6 +598,6 @@ test('the committed plan preserves missing source-addition proof', async () => {
   );
   expect(report.incomplete).toContain('Missing local candidate cell: Node 24.21.0/current.');
   expect(report.incomplete.some((message) => message.startsWith('Missing case '))).toBe(true);
-  expect(evidence.inventory.methods).toHaveLength(151);
+  expect(evidence.inventory.methods).toHaveLength(157);
   expect(evidence.inventory.operations).toHaveLength(307);
 }, 20_000);

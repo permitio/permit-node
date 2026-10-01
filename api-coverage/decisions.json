@@ -115,10 +115,10 @@
       "lifecycle": "GA"
     },
     "control-plane DELETE /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}": {
-      "action": "undecided",
-      "owner": "PER-16345",
-      "reason": "No adopted shared decision or approved Node feature owner resolves this omission.",
-      "source": "https://linear.app/permit/issue/PER-16345",
+      "action": "add",
+      "owner": "PER-12882",
+      "reason": "Approved API-key facts invite operation; direct selected-environment routing, required nullable DTOs and no mail-delivery or PDP synchronization promise.",
+      "source": "https://linear.app/permit/issue/PER-12882",
       "lifecycle": "GA"
     },
     "control-plane DELETE /v2/facts/{proj_id}/{env_id}/users/{user_id}": {
@@ -619,17 +619,17 @@
       "lifecycle": "GA"
     },
     "control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites": {
-      "action": "undecided",
-      "owner": "PER-16345",
-      "reason": "No adopted shared decision or approved Node feature owner resolves this omission.",
-      "source": "https://linear.app/permit/issue/PER-16345",
+      "action": "add",
+      "owner": "PER-12882",
+      "reason": "Approved API-key facts invite operation; direct selected-environment routing, required nullable DTOs and no mail-delivery or PDP synchronization promise.",
+      "source": "https://linear.app/permit/issue/PER-12882",
       "lifecycle": "GA"
     },
     "control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}": {
-      "action": "undecided",
-      "owner": "PER-16345",
-      "reason": "No adopted shared decision or approved Node feature owner resolves this omission.",
-      "source": "https://linear.app/permit/issue/PER-16345",
+      "action": "add",
+      "owner": "PER-12882",
+      "reason": "Approved API-key facts invite operation; direct selected-environment routing, required nullable DTOs and no mail-delivery or PDP synchronization promise.",
+      "source": "https://linear.app/permit/issue/PER-12882",
       "lifecycle": "GA"
     },
     "control-plane GET /v2/facts/{proj_id}/{env_id}/users": {
@@ -1166,9 +1166,9 @@
     },
     "control-plane PATCH /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}": {
       "action": "add",
-      "owner": "PER-16345",
-      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "owner": "PER-12882",
+      "reason": "Approved API-key facts invite operation; direct selected-environment routing, required nullable DTOs and no mail-delivery or PDP synchronization promise.",
+      "source": "https://linear.app/permit/issue/PER-12882",
       "lifecycle": "GA"
     },
     "control-plane PATCH /v2/facts/{proj_id}/{env_id}/users/{user_id}": {
@@ -1445,17 +1445,17 @@
       "lifecycle": "GA"
     },
     "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites": {
-      "action": "undecided",
-      "owner": "PER-16345",
-      "reason": "No adopted shared decision or approved Node feature owner resolves this omission.",
-      "source": "https://linear.app/permit/issue/PER-16345",
+      "action": "add",
+      "owner": "PER-12882",
+      "reason": "Approved API-key facts invite operation; direct selected-environment routing, required nullable DTOs and no mail-delivery or PDP synchronization promise.",
+      "source": "https://linear.app/permit/issue/PER-12882",
       "lifecycle": "GA"
     },
     "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}/approve": {
-      "action": "undecided",
-      "owner": "PER-16345",
-      "reason": "No adopted shared decision or approved Node feature owner resolves this omission.",
-      "source": "https://linear.app/permit/issue/PER-16345",
+      "action": "add",
+      "owner": "PER-12882",
+      "reason": "Approved API-key facts invite operation; direct selected-environment routing, required nullable DTOs and no mail-delivery or PDP synchronization promise.",
+      "source": "https://linear.app/permit/issue/PER-12882",
       "lifecycle": "GA"
     },
     "control-plane POST /v2/facts/{proj_id}/{env_id}/users": {

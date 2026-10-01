@@ -101,7 +101,7 @@ Inventory hashing uses the existing `digest` canonicalization in `scripts/api-co
 recursive object-key sorting and UTF-8 JSON serialization. The input contains sorted method names
 and operations sorted by `source + " " + method + " " + path`; each operation includes only source,
 method, path, and reviewed decision. Case links are excluded from this hash and checked separately.
-All 151 current methods and all 307 reviewed published operations remain visible. The extractor,
+All 157 current methods and all 307 reviewed published operations remain visible. The extractor,
 not these documented counts, is authoritative after future reviewed changes.
 
 ## Proof levels and matrix

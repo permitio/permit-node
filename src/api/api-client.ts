@@ -25,8 +25,12 @@ import { type IRoleAssignmentsApi, RoleAssignmentsApi } from '#src/api/role-assi
 import { type IRolesApi, RolesApi } from '#src/api/roles';
 import { type ITenantsApi, TenantsApi } from '#src/api/tenants';
 import { type IUsersApi, UsersApi } from '#src/api/users';
+import { type IUserInvitesApi, UserInvitesApi } from '#src/api/user-invites';
 
 export interface IPermitApi {
+  /** Direct API for stored user invites and their approval; no mail delivery or PDP sync. */
+  userInvites: IUserInvitesApi;
+
   /** API for managing groups, user membership, and resource role grants. */
   groups: IGroupsApi;
 
@@ -146,6 +150,9 @@ export interface IPermitApi {
 }
 
 export class ApiClient extends BasePermitApi implements IPermitApi {
+  /** Direct API for stored user invites and their approval; no mail delivery or PDP sync. */
+  public readonly userInvites: IUserInvitesApi;
+
   /** API for managing groups, user membership, and resource role grants. */
   public readonly groups: IGroupsApi;
 
@@ -256,6 +263,7 @@ export class ApiClient extends BasePermitApi implements IPermitApi {
    */
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
+    this.userInvites = new UserInvitesApi(config, logger);
     this.groups = new GroupsApi(config, logger);
     this.pdps = new PdpsApi(config, logger);
     this.conditionSetRules = new ConditionSetRulesApi(config, logger);
