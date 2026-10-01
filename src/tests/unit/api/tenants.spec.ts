@@ -37,6 +37,106 @@ describe('TenantsApi (unit)', () => {
       // so page/per_page are absent when the caller omits them.
       expect(rest.last?.params).not.toHaveProperty('page');
       expect(rest.last?.params).not.toHaveProperty('per_page');
+      expect(rest.last?.params).not.toHaveProperty('include_total_count');
+    });
+
+    it.each([true, false])('forwards explicit count=%s with immutable filters', async (count) => {
+      interface Attributes {
+        region: string | null;
+      }
+      const rows = [{ key: 'east', attributes: { region: null }, additive: { kept: true } }];
+      const page = { data: rows, total_count: 17, page_count: 1, cursor: 'next-page' };
+      const options = Object.freeze({
+        includeTotalCount: count,
+        search: 'east &/é',
+        page: 2,
+        perPage: 5,
+      });
+      const before = { ...options };
+      rest.resolveWith(count ? page : rows);
+
+      expect(await permit.api.tenants.list<Attributes>(options)).toEqual(count ? page : rows);
+      expect(options).toEqual(before);
+      expect(rest.requests).toHaveLength(1);
+      expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(COLLECTION);
+      expect(rest.last?.params).toEqual({
+        search: 'east &/é',
+        include_total_count: String(count),
+        page: '2',
+        per_page: '5',
+      });
+    });
+
+    it('preserves empty counted pages and optional metadata without invented values', async () => {
+      for (const page of [
+        { data: [], total_count: 11, page_count: 0, additive: { kept: true } },
+        { data: [], total_count: 0 },
+      ]) {
+        rest.resolveWith(page);
+        expect(await permit.api.tenants.list({ includeTotalCount: true })).toEqual(page);
+        expect(rest.last?.params).toEqual({ include_total_count: 'true' });
+      }
+      expect(rest.requests).toHaveLength(2);
+    });
+
+    it('keeps legacy flattening for omitted and false flags', async () => {
+      const rows = [{ key: 'east' }];
+      for (const options of [undefined, { includeTotalCount: false }] as const) {
+        rest.resolveWith({ data: rows, total_count: 19, page_count: 1 });
+        expect(await permit.api.tenants.list(options)).toEqual(rows);
+        expect(rest.last?.params).toEqual(options ? { include_total_count: 'false' } : {});
+      }
+      expect(rest.requests).toHaveLength(2);
+    });
+
+    it('does not wrap unexpected counted responses or synthesize missing counts', async () => {
+      for (const body of [[{ key: 'east' }], { data: [], additive: 'retained' }]) {
+        rest.resolveWith(body);
+        expect(await permit.api.tenants.list({ includeTotalCount: true })).toEqual(body);
+      }
+      expect(rest.requests).toHaveLength(2);
+    });
+
+    it('captures one option snapshot for dispatch and result selection', async () => {
+      const options = { includeTotalCount: true, search: 'east', page: 2, perPage: 5 };
+      const page = { data: [{ key: 'east' }], total_count: 11, page_count: 1 };
+      rest.resolveWith(page);
+      const pending = permit.api.tenants.list(options);
+      options.includeTotalCount = false;
+      options.search = 'changed';
+      options.page = 9;
+      expect(await pending).toEqual(page);
+      expect(rest.last?.params).toEqual({
+        include_total_count: 'true',
+        search: 'east',
+        page: '2',
+        per_page: '5',
+      });
+      expect(options).toEqual({ includeTotalCount: false, search: 'changed', page: 9, perPage: 5 });
+    });
+
+    it('retains counted results on synchronization clones using facts proxy', async () => {
+      const proxied = createMockPermit({ proxyFactsViaPdp: true });
+      const page = { data: [{ key: 'east' }], total_count: 3, page_count: 1 };
+      const original = proxied.permit.api.tenants;
+      const synced = original.waitForSync(10);
+      proxied.rest.resolveWith(page);
+      expect(await synced.list({ includeTotalCount: true })).toEqual(page);
+      expect(proxied.rest.last?.origin).toBe(MOCK_PDP_ORIGIN);
+      expect(proxied.rest.last?.path).toBe(COLLECTION);
+      expect(proxied.rest.last?.params).toEqual({ include_total_count: 'true' });
+      expect(synced).not.toBe(original);
+      expect(proxied.rest.requests).toHaveLength(1);
+    });
+
+    it('propagates counted-list errors without a partial page or retry', async () => {
+      rest.rejectWith(422, { detail: 'invalid pagination' });
+      await expect(
+        permit.api.tenants.list({ includeTotalCount: true, page: 0 }),
+      ).rejects.toMatchObject({ name: 'PermitApiError', status: 422 });
+      expect(rest.requests).toHaveLength(1);
+      expect(rest.last?.params).toEqual({ include_total_count: 'true', page: '0' });
     });
 
     it('forwards search, page and perPage as wire params', async () => {

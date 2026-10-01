@@ -4,6 +4,7 @@ import {
   type ICreateOrUpdateUserResult,
   type PaginatedResultResourceInstanceDetailedRead,
   type PaginatedResultUserRead,
+  type PaginatedResultTenantRead,
   type ResourceInstanceDetailedRead,
   type ResourceInstanceRead,
   type TenantRead,
@@ -12,6 +13,7 @@ import {
 import {
   type PaginatedResultResourceInstanceDetailedRead as GeneratedDetailedPage,
   type PaginatedResultUserRead as GeneratedUserPage,
+  type PaginatedResultTenantRead as GeneratedTenantPage,
   type ResourceInstanceDetailedRead as GeneratedDetailed,
   type ResourceInstanceRead as GeneratedInstance,
   type TenantRead as GeneratedTenant,
@@ -33,6 +35,7 @@ it('default read models remain bidirectionally compatible with generated contrac
   expectTypeOf<ResourceInstanceRead>().toEqualTypeOf<GeneratedInstance>();
   expectTypeOf<ResourceInstanceDetailedRead>().toEqualTypeOf<GeneratedDetailed>();
   expectTypeOf<PaginatedResultUserRead>().toEqualTypeOf<GeneratedUserPage>();
+  expectTypeOf<PaginatedResultTenantRead>().toEqualTypeOf<GeneratedTenantPage>();
   expectTypeOf<DefaultDetailedPage>().toEqualTypeOf<GeneratedDetailedPage>();
   expectTypeOf<ICreateOrUpdateUserResult>().toEqualTypeOf<{
     user: GeneratedUser;
@@ -52,6 +55,9 @@ it('default read models remain bidirectionally compatible with generated contrac
   expectTypeOf<
     PaginatedResultResourceInstanceDetailedRead<Attributes>['data'][number]['attributes']
   >().toEqualTypeOf<Attributes | undefined>();
+  expectTypeOf<PaginatedResultTenantRead<Attributes>['data'][number]['attributes']>().toEqualTypeOf<
+    Attributes | undefined
+  >();
   expectTypeOf<ICreateOrUpdateUserResult<Attributes>['user']['attributes']>().toEqualTypeOf<
     Attributes | undefined
   >();

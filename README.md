@@ -356,6 +356,31 @@ console.log(users.total_count, users.data[0]?.associated_tenants);
 appear in each associated tenant's `resource_instance_roles`, with `resource`,
 `resource_instance` and `role` fields. Both flag values retain the same paginated result.
 
+## Tenant lists and totals
+
+`permit.api.tenants.list()` returns a tenant array. Pass `includeTotalCount: true` to keep the
+complete API page, including `data`, `total_count` and optional `page_count`. False or omitted
+flags preserve the array result. Search, page and perPage are forwarded without new defaults.
+
+```typescript
+interface TenantAttributes {
+  region: string;
+}
+
+const tenants = await permit.api.tenants.list<TenantAttributes>();
+const page = await permit.api.tenants.list<TenantAttributes>({
+  includeTotalCount: true,
+  search: 'east',
+  page: 1,
+  perPage: 20,
+});
+console.log(tenants[0]?.attributes?.region, page.total_count, page.data);
+```
+
+A dynamic or optional boolean flag produces a union of the array and page types; narrow with
+`Array.isArray(result)` before reading page metadata. The attribute type is optional and remains
+a caller assertion of server data. `waitForSync()` clones support the same flag and types.
+
 ## Attribute types
 
 User, tenant and resource-instance reads accept an optional per-call attribute type. The default

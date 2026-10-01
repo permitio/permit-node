@@ -26,7 +26,7 @@
       "src/api/resources.ts:ResourcesApi": "3c35f246b7fa105b504d69d77ae1e57228c934b8b6ddc7488eed378ca2f56145",
       "src/api/role-assignments.ts:RoleAssignmentsApi": "48903ae8fa791d37fd53fd3402388a36b34dc0d60a21b53e9cb4e99dbdf18618",
       "src/api/roles.ts:RolesApi": "dc48457df60c94a7d4904cd0c5b0dd5be99f3a9905588c273de90e952ac07362",
-      "src/api/tenants.ts:TenantsApi": "345d10373943a802614b9c8a9264857ea53eff0472fe8527542469d087ab7b1f",
+      "src/api/tenants.ts:TenantsApi": "0d1b4b8ebd111804a89aa027043091ea95d5d8c2c3011aac016d3057e7c3d9bf",
       "src/api/users.ts:UsersApi": "a777e0965c966b00d2fe916374b924251aa75c406c6dec78f21830b6d79f4e2a",
       "src/config.ts:ConfigFactory": "5dc5eeecb95886e850dae6c76c83ab96ac7c3f3661cee616d47e8e9f5dde4be4",
       "src/enforcement/enforcer.ts:Enforcer": "c94d57cc39709aa00c81bd6aaede74a943ff3af54f96c4586d363644bb73dff2",
@@ -484,7 +484,7 @@
       "src/api/tenants.ts:IListTenantsParams": {
         "extends": [" extends IPagination"],
         "kind": "interface",
-        "members": ["search?: string;"]
+        "members": ["includeTotalCount?: boolean;", "search?: string;"]
       },
       "src/api/tenants.ts:ITenantsApi": {
         "extends": [" extends IWaitForSync"],
@@ -497,7 +497,9 @@
           "get<Attributes extends object = object>(tenantKey: string): Promise<TenantRead<Attributes>>;",
           "getById<Attributes extends object = object>(tenantId: string): Promise<TenantRead<Attributes>>;",
           "getByKey<Attributes extends object = object>(tenantKey: string): Promise<TenantRead<Attributes>>;",
-          "list<Attributes extends object = object>(params?: IListTenantsParams): Promise<TenantRead<Attributes>[]>;",
+          "list<Attributes extends object = object>(params: IListTenantsParams & {\n    includeTotalCount: true;\n}): Promise<PaginatedResultTenantRead<Attributes>>;",
+          "list<Attributes extends object = object>(params?: IListTenantsParams & {\n    includeTotalCount?: false;\n}): Promise<TenantRead<Attributes>[]>;",
+          "list<Attributes extends object = object>(params?: IListTenantsParams): Promise<TenantRead<Attributes>[] | PaginatedResultTenantRead<Attributes>>;",
           "listTenantUsers<Attributes extends object = object>(params: IListTenantUsers): Promise<PaginatedResultUserRead<Attributes>>;",
           "update<Attributes extends object = object>(tenantKey: string, tenantData: TenantUpdate): Promise<TenantRead<Attributes>>;"
         ]
@@ -897,6 +899,11 @@
         "extends": [" extends GeneratedUserRead"],
         "kind": "interface",
         "members": ["attributes?: Attributes;"]
+      },
+      "src/api/tenants.ts:PaginatedResultTenantRead": {
+        "extends": [" extends GeneratedPaginatedResultTenantRead"],
+        "kind": "interface",
+        "members": ["data: TenantRead<Attributes>[];"]
       }
     },
     "functionShapes": {
@@ -20939,7 +20946,7 @@
       "src/api/tenants.ts:TenantsApi.get": "dbe6a53fefc4119a694869f154ea32ca1dc21dcb0247ab32594ec4efdc998be1",
       "src/api/tenants.ts:TenantsApi.getById": "eb5535113531bbd7e116607840e3876da89654290262105b4bd3b5847a45f4de",
       "src/api/tenants.ts:TenantsApi.getByKey": "7be9cebc6011a2c544a2c84653b33bda71b30c2b4f014cacc83f51add60e6658",
-      "src/api/tenants.ts:TenantsApi.list": "7ced347c58a90d98575411cc1082dcbe301b67faaaf8171c92c389aa48dec16f",
+      "src/api/tenants.ts:TenantsApi.list": "d73563fa6af5fa334a3ca279858d3ef1be75f93c59e3602f61709858a6bd936d",
       "src/api/tenants.ts:TenantsApi.listTenantUsers": "b8d46dd85f47691c41684a7348a5012bf2269f23d34142defa38d2ca61be6d38",
       "src/api/tenants.ts:TenantsApi.update": "227c4505187e9a97ebfb47c0dd668f7865d97b673f9814c11159d8db3772fecb",
       "src/api/users.ts:UsersApi.assignRole": "c5f25fbc4d157e56149a554b98127d83b3cce7c6f13b7da8ca0302cd4b59ef0d",
@@ -25421,7 +25428,9 @@
         "deprecated": false,
         "factsProxy": true,
         "publicSignatures": [
-          "<Attributes extends object = object>(params?: IListTenantsParams | undefined): Promise<TenantRead<Attributes>[]>"
+          "<Attributes extends object = object>(params: IListTenantsParams & { includeTotalCount: true; }): Promise<PaginatedResultTenantRead<Attributes>>",
+          "<Attributes extends object = object>(params?: (IListTenantsParams & { includeTotalCount?: false; }) | undefined): Promise<TenantRead<Attributes>[]>",
+          "<Attributes extends object = object>(params?: IListTenantsParams | undefined): Promise<TenantRead<Attributes>[] | PaginatedResultTenantRead<Attributes>>"
         ],
         "routes": [
           {
@@ -25447,7 +25456,7 @@
               "type": "IListTenantsParams"
             }
           ],
-          "returns": "Promise<TenantRead<Attributes>[]>"
+          "returns": "Promise<TenantRead<Attributes>[] | PaginatedResultTenantRead<Attributes>>"
         }
       },
       "permit.api.tenants.listTenantUsers": {

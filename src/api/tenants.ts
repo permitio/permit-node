@@ -7,6 +7,7 @@ import {
   type UserCreate,
   type TenantCreate,
   type TenantRead as GeneratedTenantRead,
+  type PaginatedResultTenantRead as GeneratedPaginatedResultTenantRead,
   type TenantUpdate,
 } from '#src/openapi/index';
 import { BASE_PATH } from '#src/openapi/base';
@@ -25,6 +26,13 @@ export interface TenantRead<Attributes extends object = object> extends Generate
   attributes?: Attributes;
 }
 
+/** The full tenant page with the selected attribute shape on every returned tenant. */
+export interface PaginatedResultTenantRead<
+  Attributes extends object = object,
+> extends GeneratedPaginatedResultTenantRead {
+  data: TenantRead<Attributes>[];
+}
+
 export interface IListTenantUsers extends IPagination {
   tenantKey: string;
   search?: string;
@@ -33,6 +41,11 @@ export interface IListTenantUsers extends IPagination {
 
 export interface IListTenantsParams extends IPagination {
   search?: string;
+  /**
+   * Returns the full page with total_count when true; otherwise returns tenant rows.
+   * Omission preserves the API's false default and the SDK's array result.
+   */
+  includeTotalCount?: boolean;
 }
 
 export interface ITenantsApi extends IWaitForSync {
@@ -40,13 +53,20 @@ export interface ITenantsApi extends IWaitForSync {
    * Retrieves a list of tenants.
    *
    * @param params Filtering and pagination options, @see {@link IListTenantsParams}
-   * @returns A promise that resolves to an array of tenants.
+   * @returns Tenant rows by default, or the complete page when includeTotalCount is true.
+   * Dynamic or optional boolean flags retain the union of both result shapes.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   list<Attributes extends object = object>(
-    params?: IListTenantsParams,
+    params: IListTenantsParams & { includeTotalCount: true },
+  ): Promise<PaginatedResultTenantRead<Attributes>>;
+  list<Attributes extends object = object>(
+    params?: IListTenantsParams & { includeTotalCount?: false },
   ): Promise<TenantRead<Attributes>[]>;
+  list<Attributes extends object = object>(
+    params?: IListTenantsParams,
+  ): Promise<TenantRead<Attributes>[] | PaginatedResultTenantRead<Attributes>>;
 
   /**
    * Retrieves a list of users for a given tenant.
@@ -195,22 +215,36 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
    * Retrieves a list of tenants.
    *
    * @param params Filtering and pagination options, @see {@link IListTenantsParams}
-   * @returns A promise that resolves to an array of tenants.
+   * @returns Tenant rows by default, or the complete page when includeTotalCount is true.
+   * Dynamic or optional boolean flags retain the union of both result shapes.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
+  public list<Attributes extends object = object>(
+    params: IListTenantsParams & { includeTotalCount: true },
+  ): Promise<PaginatedResultTenantRead<Attributes>>;
+  public list<Attributes extends object = object>(
+    params?: IListTenantsParams & { includeTotalCount?: false },
+  ): Promise<TenantRead<Attributes>[]>;
+  public list<Attributes extends object = object>(
+    params?: IListTenantsParams,
+  ): Promise<TenantRead<Attributes>[] | PaginatedResultTenantRead<Attributes>>;
   public async list<Attributes extends object = object>(
     params?: IListTenantsParams,
-  ): Promise<TenantRead<Attributes>[]> {
+  ): Promise<TenantRead<Attributes>[] | PaginatedResultTenantRead<Attributes>> {
+    const options = { ...params };
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = (
         await this.tenants.listTenants({
-          ...params,
+          ...options,
           ...this.config.apiContext.environmentContext,
         })
       ).data;
+      if (options.includeTotalCount === true) {
+        return response as PaginatedResultTenantRead<Attributes>;
+      }
       return (Array.isArray(response) ? response : response.data) as TenantRead<Attributes>[];
     } catch (err) {
       this.handleApiError(err);
