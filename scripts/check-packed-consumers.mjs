@@ -17,12 +17,12 @@ import ts from '@permitio/compiler-tools';
 import { inspectReleaseArchive, validatePackageSurface } from '#scripts/release-artifact.mjs';
 import { evaluateTestReport } from '#scripts/test-report.mjs';
 
-function checked(command, args, { cwd, env = process.env } = {}) {
+function checked(command, args, { cwd, env = process.env, timeout = 120_000 } = {}) {
   const result = spawnSync(command, args, {
     cwd,
     env,
     encoding: 'utf8',
-    timeout: 120_000,
+    timeout,
     maxBuffer: 8 * 1024 * 1024,
   });
   if (result.error || result.status !== 0 || result.signal) {
@@ -56,7 +56,11 @@ export function checkPackedConsumers({ root = process.cwd(), artifact, sha256 })
       join(consumer, 'pnpm-workspace.yaml'),
       'packages: []\nignoreScripts: true\nminimumReleaseAge: 1440\nautoInstallPeers: false\n',
     );
-    checked('pnpm', ['install', '--offline', '--ignore-scripts'], { cwd: consumer });
+    checked('pnpm', ['install', '--lockfile-only', '--no-frozen-lockfile', '--ignore-scripts'], {
+      cwd: consumer,
+    });
+    checked('pnpm', ['audit', '--audit-level=moderate'], { cwd: consumer });
+    checked('pnpm', ['install', '--frozen-lockfile', '--ignore-scripts'], { cwd: consumer });
     const packageRoot = realpathSync(join(consumer, 'node_modules/permitio'));
     if (packageRoot.startsWith(realpathSync(root) + sep))
       throw new Error('Consumer resolved the working tree instead of the supplied archive.');
@@ -173,7 +177,11 @@ console.log('PACKED_LOADERS_PASS');
         '--reporter=json',
         `--outputFile=${native}`,
       ],
-      { cwd: root, env: { ...process.env, PERMIT_PACKED_ARTIFACT: artifact } },
+      {
+        cwd: root,
+        env: { ...process.env, PERMIT_PACKED_ARTIFACT: artifact },
+        timeout: 360_000,
+      },
     );
     const migration = evaluateTestReport(JSON.parse(readFileSync(native, 'utf8')), {
       root,

@@ -16,6 +16,13 @@ then validates generated contracts, workflows, packed consumers and dependency s
 Use `pnpm fix` for lint fixes and formatting, then rerun `pnpm verify`.
 Hooks check files without rewriting them.
 
+Packed-customer fixture preparation resolves and audits an isolated dependency lock before a
+frozen installation with scripts disabled. It may fetch packages and registry audit data, so a
+fresh checkout does not depend on a developer's pnpm metadata cache. The copied migration skill
+uses its shipped compiler lock without re-resolving it. SDK behavior tests use local fixtures;
+package preparation does not contact Permit services. Cold dependency setup has a separate bounded
+setup budget; behavioral assertions and failure/skip gates remain unchanged.
+
 The hook installer enables Git's per-worktree configuration and installs prek into the current
 checkout's own Git directory. It leaves the shared hook path and sibling worktrees unchanged.
 Tool versions are pinned in the pnpm lockfile; Dependabot groups updates with a seven-day delay.

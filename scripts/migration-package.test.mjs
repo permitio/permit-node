@@ -18,7 +18,7 @@ let skill;
 let artifact;
 
 function command(executable, args, cwd) {
-  const result = spawnSync(executable, args, { cwd, encoding: 'utf8', timeout: 30_000 });
+  const result = spawnSync(executable, args, { cwd, encoding: 'utf8', timeout: 120_000 });
   if (result.error || result.status !== 0) {
     throw new Error(
       `Migration fixture ${executable} ${args[0]} failed: ` +
@@ -47,9 +47,15 @@ beforeAll(async () => {
   );
   await writeFile(
     join(consumer, 'pnpm-workspace.yaml'),
-    'packages: []\nignoreScripts: true\nautoInstallPeers: false\n',
+    'packages: []\nignoreScripts: true\nminimumReleaseAge: 1440\nautoInstallPeers: false\n',
   );
-  command('pnpm', ['install', '--offline', '--ignore-scripts'], consumer);
+  command(
+    'pnpm',
+    ['install', '--lockfile-only', '--no-frozen-lockfile', '--ignore-scripts'],
+    consumer,
+  );
+  command('pnpm', ['audit', '--audit-level=moderate'], consumer);
+  command('pnpm', ['install', '--frozen-lockfile', '--ignore-scripts'], consumer);
   await cp(join(fixtures, 'after', 'consumer.mts'), join(consumer, 'consumer.mts'));
   await cp(join(fixtures, 'after', 'consumer.cts'), join(consumer, 'consumer.cts'));
   await cp(join(fixtures, 'types.mts'), join(consumer, 'types.mts'));
@@ -85,8 +91,9 @@ beforeAll(async () => {
   skill = join(directory, 'copied-skill');
   await cp(packedSkill, skill, { recursive: true });
   await cp(join(skill, 'compiler-lock.yaml'), join(skill, 'pnpm-lock.yaml'));
-  command('pnpm', ['install', '--offline', '--frozen-lockfile', '--ignore-scripts'], skill);
-}, 40_000);
+  command('pnpm', ['audit', '--audit-level=moderate'], skill);
+  command('pnpm', ['install', '--frozen-lockfile', '--ignore-scripts'], skill);
+}, 300_000);
 
 afterAll(async () => {
   if (directory) await rm(directory, { recursive: true });
