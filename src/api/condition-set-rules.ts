@@ -28,8 +28,8 @@ export interface IListConditionSetRules extends IPagination {
    */
   userSetKey?: string;
   /**
-   * the key of the permission, formatted as <resource>:<action>.
-   * if used only rules granting that permission will be fetched.
+   * The action key or ID used to filter rule permissions, for example `write`.
+   * Rule create/read permissions use `resource:action`; this GET filter uses the action.
    */
   permissionKey?: string;
   /**

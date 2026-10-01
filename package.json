@@ -16,7 +16,13 @@
     "CHANGELOG.md",
     "LICENSE",
     "MIGRATION.md",
-    "README.md"
+    "README.md",
+    "skills/permit-node-3-migration/SKILL.md",
+    "skills/permit-node-3-migration/references/**",
+    "skills/permit-node-3-migration/scripts/**",
+    "skills/permit-node-3-migration/package.json",
+    "skills/permit-node-3-migration/compiler-lock.yaml",
+    "skills/permit-node-3-migration/pnpm-workspace.yaml"
   ],
   "type": "commonjs",
   "main": "build/index.js",

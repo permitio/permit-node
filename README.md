@@ -1,5 +1,7 @@
 ![Node.png](imgs/Node.png)
 
+Preparing for 3.0? Read the [2.x-to-3.0 migration guide](MIGRATION.md) and customer agent skill.
+
 # Permit.io client for Node.js
 
 Node.js client library for the Permit.io full-stack permissions platform.

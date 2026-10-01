@@ -157,7 +157,7 @@ export interface IEnforcer {
     config?: CheckConfig,
   ): Promise<IAuthorizedUsersResult>;
 
-  /** Queries container PDP tenant membership; an unavailable endpoint always rejects. */
+  /** Queries container PDP role-derived tenants; an unavailable endpoint always rejects. */
   getUserTenants(
     user: IUser | string,
     context?: Context,
