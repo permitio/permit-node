@@ -2,6 +2,7 @@ import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } f
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
+import ts from '@permitio/compiler-tools';
 import { expect, onTestFinished, test } from 'vitest';
 
 import { loadReviewedOpenApi, prepareOpenApi, validateSource } from '#scripts/openapi-source.mjs';
@@ -164,3 +165,114 @@ for (const [file, mutate, pattern] of [
     expect(() => loadReviewedOpenApi(path)).toThrow(pattern);
   });
 }
+
+const reviewedDescriptions = [
+  [
+    'data_generator_lib__schemas__schema_opal_data__DerivationSettings',
+    'superseded_by_direct_role',
+    'If True, the derived role is superseded by a direct role.\n' +
+      'Meaning role derivation is not considered if the user has a direct role.',
+  ],
+  ['ElementsUserInviteApprove', 'email', 'The email of the user that is being invited'],
+  ...['GroupAssignment', 'GroupCreate', 'GroupReadSchema'].map((model) => [
+    model,
+    'group_instance_key',
+    'Either the unique id of the resource instance that the group belongs to, or the\n' +
+      'URL-friendly key of the <resource_key:resource_instance_key> (i.e: file:my_file)',
+  ]),
+  [
+    'PaginatedResult_RelationshipTupleDetailedRead_',
+    'data',
+    'List of Detailed Relationship Tuples',
+  ],
+  ['PaginatedResult_ResourceInstanceDetailedRead_', 'data', 'List of Detailed Resource Instances'],
+  [
+    'TenantBlockRead',
+    'attributes',
+    'Arbitrary tenant attributes that will be used to enforce\n' +
+      'attribute-based access control policies.',
+  ],
+];
+
+test('preserves unique UUID arrays while correcting exactly eight descriptions', () => {
+  const original = structuredClone(source);
+  const prepared = prepareOpenApi(source, supplement);
+  expect(source).toEqual(original);
+  const tenants = prepared.components.schemas.MonthlyUsage.properties.monthly_tenants;
+  expect(tenants).toEqual({
+    items: { type: 'string', format: 'uuid' },
+    type: 'array',
+    uniqueItems: true,
+    title: 'Monthly Tenants',
+    default: [],
+  });
+  for (const [model, property, expected] of reviewedDescriptions) {
+    expect(prepared.components.schemas[model].properties[property].description).toBe(expected);
+    const unchanged = structuredClone(prepared.components.schemas[model]);
+    unchanged.properties[property].description =
+      source.components.schemas[model].properties[property].description;
+    expect(unchanged).toEqual(source.components.schemas[model]);
+  }
+});
+
+test.each(reviewedDescriptions)('rejects stale reviewed %s.%s description', (model, property) => {
+  const changed = structuredClone(source);
+  changed.components.schemas[model].properties[property].description += ' changed upstream';
+  expect(() => prepareOpenApi(changed, supplement)).toThrow(/description is stale/);
+});
+
+test('preserves wrapped reviewed descriptions in generated property JSDoc', () => {
+  for (const [model, property, expected] of reviewedDescriptions) {
+    if (!expected.includes('\n')) continue;
+    const filename =
+      model === 'data_generator_lib__schemas__schema_opal_data__DerivationSettings'
+        ? 'data-generator-lib-schemas-schema-opal-data-derivation-settings'
+        : model.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`).slice(1);
+    const file = join(root, 'src/openapi/types', filename + '.ts');
+    const parsed = ts.createSourceFile(
+      file,
+      readFileSync(file, 'utf8'),
+      ts.ScriptTarget.Latest,
+      true,
+    );
+    const declaration = parsed.statements.find(ts.isInterfaceDeclaration);
+    const member = declaration?.members.find((node) => node.name?.getText(parsed) === property);
+    expect(member).toBeDefined();
+    const comments = ts.getJSDocCommentsAndTags(member);
+    expect(comments).toHaveLength(1);
+    expect(comments[0].comment).toBe(expected);
+    for (const line of comments[0].getText(parsed).split('\n')) {
+      expect(line.length).toBeLessThanOrEqual(100);
+    }
+  }
+});
+
+test.each([
+  ['uniqueItems', false],
+  ['default', ['unexpected']],
+  ['items', { type: 'string' }],
+])('rejects changed monthly_tenants %s before generation', (field, value) => {
+  const changed = structuredClone(source);
+  changed.components.schemas.MonthlyUsage.properties.monthly_tenants[field] = value;
+  expect(() => prepareOpenApi(changed, supplement)).toThrow(/monthly_tenants is stale/);
+});
+
+test.each(['model', 'property'])(
+  'rejects a removed corrected description %s with its source location',
+  (missing) => {
+    const changed = structuredClone(source);
+    if (missing === 'model') delete changed.components.schemas.GroupAssignment;
+    else delete changed.components.schemas.GroupAssignment.properties.group_instance_key;
+    expect(() => prepareOpenApi(changed, supplement)).toThrow(
+      /GroupAssignment\/group_instance_key\/description is stale/,
+    );
+  },
+);
+
+test('rejects a removed monthly usage model with its source location', () => {
+  const changed = structuredClone(source);
+  delete changed.components.schemas.MonthlyUsage;
+  expect(() => prepareOpenApi(changed, supplement)).toThrow(
+    /MonthlyUsage.*monthly_tenants is stale/,
+  );
+});

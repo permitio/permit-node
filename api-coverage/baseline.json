@@ -27810,7 +27810,7 @@
         "members": [
           "mau?: number;",
           "month?: number;",
-          "monthly_tenants?: Set<string>;",
+          "monthly_tenants?: Array<string>;",
           "tenants?: number;",
           "year?: number;"
         ]

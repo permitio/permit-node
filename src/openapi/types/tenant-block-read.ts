@@ -24,7 +24,8 @@ export interface TenantBlockRead {
    */
   description?: string;
   /**
-   * Arbitraty tenant attributes that will be used to enforce attribute-based access control policies.
+   * Arbitrary tenant attributes that will be used to enforce
+   * attribute-based access control policies.
    */
   attributes?: object;
 }

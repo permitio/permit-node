@@ -26,6 +26,7 @@ const FREE_FORM = new Set([
   'raw-data1.ts:context',
 ]);
 const EXPECTED = {
+  'monthly-usage.ts:monthly_tenants': 'Array<string>',
   'role-create.ts:key': 'string',
   'role-create.ts:extends': 'Array<string>',
   'resource-role-create.ts:extends': 'Array<string>',

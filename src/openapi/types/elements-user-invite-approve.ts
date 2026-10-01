@@ -12,7 +12,7 @@
 
 export interface ElementsUserInviteApprove {
   /**
-   * The email of the user that being invited
+   * The email of the user that is being invited
    */
   email: string;
   /**

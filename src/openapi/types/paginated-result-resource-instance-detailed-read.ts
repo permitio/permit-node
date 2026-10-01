@@ -15,7 +15,7 @@ import type { ResourceInstanceDetailedRead } from './resource-instance-detailed-
 
 export interface PaginatedResultResourceInstanceDetailedRead {
   /**
-   * List of Resource Instance Detaileds
+   * List of Detailed Resource Instances
    */
   data: Array<ResourceInstanceDetailedRead>;
   total_count: number;

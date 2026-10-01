@@ -32,6 +32,11 @@ for (const [file, source, pattern] of [
     'export interface ResponseListRoles { data: Array<RoleRead>; total_count: number; }',
     /expected union/,
   ],
+  [
+    'monthly-usage.ts',
+    'export interface MonthlyUsage { monthly_tenants?: Set<string>; }',
+    /monthly-usage.ts:monthly_tenants: expected Array<string>, got Set<string>/,
+  ],
   ['data.ts', 'export type Data = any;', /data.ts.*any/],
 ]) {
   test(`rejects the previous generator degradation in ${file}`, async () => {

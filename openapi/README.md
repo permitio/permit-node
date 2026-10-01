@@ -64,6 +64,20 @@ instance default. Actual-request tests cover scope discovery, REST facts and pro
 The Axios request helper retains `ReturnType<typeof globalAxios.request<T, R>>`, removing the
 upstream generic Promise assertion so declarations preserve Axios's actual response type.
 
+The checked `typeMappings` setting maps the generator's `set` representation to `Array`.
+`MonthlyUsage.monthly_tenants` is a JSON array; Axios does not construct a JavaScript `Set`.
+The prepared source keeps the captured UUID item schema, `uniqueItems: true` and empty default.
+The compiler shape guard rejects a regenerated `Set<string>` declaration. This generated model
+is shipped as a declaration; it is not a supported root export or high-level organizations API.
+
+Preparation also corrects exactly eight checked descriptions: data-generator derived-role settings,
+invite approval, GroupAssignment/GroupCreate/GroupReadSchema, detailed relationship-tuple and
+resource-instance pages, and TenantBlockRead. It checks each original string before replacing it,
+fails on upstream drift and leaves other model descriptions unchanged.
+The pinned generator flattens description newlines. A checked output repair restores the five
+long corrected property comments before formatting and type checks. It requires one exact
+generated occurrence for each property and leaves other comments and schema metadata unchanged.
+
 The only accepted generator diagnostics are its OpenAPI 3.1 beta notice, the known tuple-name
 warning, and its safe `Object` to `ModelObject` rename. Each has a specific comment in the runner;
 all other warnings and every error fail generation. Completion metadata, syntax checks, model

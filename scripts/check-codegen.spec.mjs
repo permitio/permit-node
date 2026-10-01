@@ -20,7 +20,43 @@ import { expect, onTestFinished, test } from 'vitest';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const generatorConfig = JSON.parse(readFileSync(join(root, 'openapi/generator.json'), 'utf8'));
+const groupDescription =
+  'Either the unique id of the resource instance that the group belongs to, or the ' +
+  'URL-friendly key of the <resource_key:resource_instance_key> (i.e: file:my_file)';
+const correctedComments = Object.fromEntries(
+  [
+    [
+      'data-generator-lib-schemas-schema-opal-data-derivation-settings',
+      'superseded_by_direct_role',
+      'boolean',
+      'If True, the derived role is superseded by a direct role. Meaning role derivation is ' +
+        'not considered if the user has a direct role.',
+    ],
+    ...['group-assignment', 'group-create', 'group-read-schema'].map((file) => [
+      file,
+      'group_instance_key',
+      'string',
+      groupDescription,
+    ]),
+    [
+      'tenant-block-read',
+      'attributes',
+      'object',
+      'Arbitrary tenant attributes that will be used to enforce attribute-based ' +
+        'access control policies.',
+    ],
+  ].map(([file, property, type, description]) => [
+    file + '.ts',
+    `export interface Model {
+    /**
+     * ${description}
+     */
+    '${property}'?: ${type};
+}`,
+  ]),
+);
 const cleanTypes = {
+  ...correctedComments,
   'callbacks-inner.ts': 'export type CallbacksInner = Array<any> | string;',
   'role-create.ts': "export interface RoleCreate { 'key': string; 'extends'?: Array<string>; }",
   'resource-role-create.ts': "export interface ResourceRoleCreate { 'extends'?: Array<string>; }",
@@ -28,6 +64,7 @@ const cleanTypes = {
   'tenant-obj.ts': "export interface TenantObj { 'id': string; }",
   'user-obj.ts': "export interface UserObj { 'id': string; }",
   'action-obj.ts': "export interface ActionObj { 'id': string; }",
+  'monthly-usage.ts': "export interface MonthlyUsage { 'monthly_tenants'?: Array<string>; }",
   'codegen-probe.ts': `export interface CodegenProbe {
     'nullable_string'?: string | null;
     'nullable_any_of'?: string | null;
@@ -222,6 +259,14 @@ test('rejects lost OpenAPI 3.1 nullability', () => {
     'codegen-probe.ts': cleanTypes['codegen-probe.ts'].replace('string | null', 'string'),
   };
   fails(setup({ types }), /nullable_string/);
+});
+
+test('rejects Set output for the monthly tenants JSON array', () => {
+  const types = {
+    ...cleanTypes,
+    'monthly-usage.ts': "export interface MonthlyUsage { 'monthly_tenants'?: Set<string>; }",
+  };
+  fails(setup({ types }), /monthly-usage\.ts:monthly_tenants: expected Array<string>/);
 });
 
 test('allows nested free-form dictionaries and comments mentioning index signatures', () => {

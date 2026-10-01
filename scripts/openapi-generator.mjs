@@ -17,9 +17,12 @@ export function generatorOptions(root) {
   const config = JSON.parse(readFileSync(path, 'utf8'));
   if (config.generatorName !== 'typescript-axios')
     throw new Error('Expected typescript-axios generator.');
-  const allowed = ['generatorName', 'additionalProperties', 'globalProperties'];
+  const allowed = ['generatorName', 'additionalProperties', 'globalProperties', 'typeMappings'];
   if (Object.keys(config).some((key) => !allowed.includes(key)))
     throw new Error('Unsupported generator configuration option.');
+  if (config.typeMappings?.set !== 'Array' || Object.keys(config.typeMappings).length !== 1) {
+    throw new Error('Generator typeMappings must preserve unique JSON arrays with set: Array.');
+  }
   for (const key of ['apiPackage', 'modelPackage']) {
     if (!/^[a-z][a-z0-9-]*$/i.test(config.additionalProperties?.[key] ?? '')) {
       throw new Error(`Generator ${key} must be a single directory name.`);
@@ -111,6 +114,45 @@ export function repairRequestReturnType(output) {
   writeFileSync(file, text);
 }
 
+/**
+ * Restores five reviewed comment wraps flattened by the pinned generator.
+ *
+ * @param output - Completed generator output directory.
+ * @param modelDirectory - Checked model directory from the shared generator configuration.
+ * @param input - Prepared schema containing the five exact multiline descriptions.
+ * @throws If a source description or its single generated property occurrence changes.
+ */
+export function repairPropertyDescriptions(output, modelDirectory, input) {
+  const spec = JSON.parse(readFileSync(input, 'utf8'));
+  for (const [model, property, filename] of [
+    [
+      'data_generator_lib__schemas__schema_opal_data__DerivationSettings',
+      'superseded_by_direct_role',
+      'data-generator-lib-schemas-schema-opal-data-derivation-settings',
+    ],
+    ...['GroupAssignment', 'GroupCreate', 'GroupReadSchema'].map((model) => [
+      model,
+      'group_instance_key',
+      model.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`).slice(1),
+    ]),
+    ['TenantBlockRead', 'attributes', 'tenant-block-read'],
+  ]) {
+    const description = spec.components?.schemas?.[model]?.properties?.[property]?.description;
+    if (typeof description !== 'string' || !description.includes('\n')) {
+      throw new Error(`Checked comment source for ${model}.${property} changed; review it.`);
+    }
+    const file = join(output, modelDirectory, filename + '.ts');
+    const text = readFileSync(file, 'utf8');
+    const suffix = `\n     */\n    '${property}'`;
+    const original = '     * ' + description.replaceAll('\n', ' ') + suffix;
+    if (text.split(original).length !== 2) {
+      throw new Error(`Generated comment for ${model}.${property} changed; review the repair.`);
+    }
+    const wrapped = '     * ' + description.split('\n').join('\n     * ') + suffix;
+    writeFileSync(file, text.replace(original, wrapped));
+  }
+}
+
 /** Downloads a missing pinned JAR and verifies its reviewed digest before any Java execution. */
 export async function verifyGeneratorArtifact(root) {
   const provenance = JSON.parse(readFileSync(join(root, 'openapi/provenance.json'), 'utf8'));
@@ -199,5 +241,6 @@ export async function generateOpenApi({ root, input, output }) {
   repairCallbackTuple(output, config.additionalProperties.modelPackage);
   repairRequestRouting(output);
   repairRequestReturnType(output);
+  repairPropertyDescriptions(output, config.additionalProperties.modelPackage, input);
   return manifest;
 }

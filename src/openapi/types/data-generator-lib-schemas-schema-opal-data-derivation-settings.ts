@@ -15,7 +15,8 @@
  */
 export interface DataGeneratorLibSchemasSchemaOpalDataDerivationSettings {
   /**
-   * If True, the derived role is superseded by a direct role.meaning role derivation is not considered if the user has a direct role.
+   * If True, the derived role is superseded by a direct role.
+   * Meaning role derivation is not considered if the user has a direct role.
    */
   superseded_by_direct_role?: boolean;
 }

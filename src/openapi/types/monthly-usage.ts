@@ -13,7 +13,7 @@
 export interface MonthlyUsage {
   mau?: number;
   tenants?: number;
-  monthly_tenants?: Set<string>;
+  monthly_tenants?: Array<string>;
   month?: number;
   year?: number;
 }

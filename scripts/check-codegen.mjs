@@ -24,7 +24,8 @@ try {
   const files = readdirSync(types).filter((file) => file.endsWith('.ts'));
   await assertModelShapes(types, files, { fixture: true });
   console.log(
-    `codegen guard OK - generator ${pin}; ${files.length} models checked for unexpected any; 11 property shapes verified`,
+    `codegen guard OK - generator ${pin}; ${files.length} models checked for unexpected any; ` +
+      '12 property shapes verified',
   );
 } catch (error) {
   console.error(`codegen guard FAILED (generator ${pin}):\n${error.message}`);

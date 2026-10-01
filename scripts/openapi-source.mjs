@@ -137,6 +137,73 @@ export function prepareOpenApi(source, supplement) {
     secret.anyOf[2].type = 'string';
   }
 
+  requireShape(
+    spec.components.schemas.MonthlyUsage?.properties?.monthly_tenants,
+    {
+      items: { type: 'string', format: 'uuid' },
+      type: 'array',
+      uniqueItems: true,
+      title: 'Monthly Tenants',
+      default: [],
+    },
+    '/components/schemas/MonthlyUsage/properties/monthly_tenants',
+  );
+
+  const groupDescription =
+    'Either the unique id of the resource instance that that the group belongs to, or the ' +
+    'URL-friendly key of the <resource_key:resource_instance_key> (i.e: file:my_file)';
+  for (const [model, property, original, replacement] of [
+    [
+      'data_generator_lib__schemas__schema_opal_data__DerivationSettings',
+      'superseded_by_direct_role',
+      'If True, the derived role is superseded by a direct role.meaning role derivation is ' +
+        'not considered if the user has a direct role.',
+      'If True, the derived role is superseded by a direct role.\n' +
+        'Meaning role derivation is not considered if the user has a direct role.',
+    ],
+    [
+      'ElementsUserInviteApprove',
+      'email',
+      'The email of the user that being invited',
+      'The email of the user that is being invited',
+    ],
+    ...['GroupAssignment', 'GroupCreate', 'GroupReadSchema'].map((model) => [
+      model,
+      'group_instance_key',
+      groupDescription,
+      'Either the unique id of the resource instance that the group belongs to, or the\n' +
+        'URL-friendly key of the <resource_key:resource_instance_key> (i.e: file:my_file)',
+    ]),
+    [
+      'PaginatedResult_RelationshipTupleDetailedRead_',
+      'data',
+      'List of Relationship Tuple Detaileds',
+      'List of Detailed Relationship Tuples',
+    ],
+    [
+      'PaginatedResult_ResourceInstanceDetailedRead_',
+      'data',
+      'List of Resource Instance Detaileds',
+      'List of Detailed Resource Instances',
+    ],
+    [
+      'TenantBlockRead',
+      'attributes',
+      'Arbitraty tenant attributes that will be used to enforce attribute-based ' +
+        'access control policies.',
+      'Arbitrary tenant attributes that will be used to enforce\n' +
+        'attribute-based access control policies.',
+    ],
+  ]) {
+    const field = spec.components.schemas[model]?.properties?.[property];
+    requireShape(
+      field?.description,
+      original,
+      `/components/schemas/${model}/${property}/description`,
+    );
+    field.description = replacement;
+  }
+
   if (supplement) {
     for (const [path, operation] of Object.entries(supplement.paths)) {
       if (spec.paths[path])

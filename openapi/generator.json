@@ -11,5 +11,8 @@
     "modelDocs": "false",
     "apiTests": "false",
     "modelTests": "false"
+  },
+  "typeMappings": {
+    "set": "Array"
   }
 }

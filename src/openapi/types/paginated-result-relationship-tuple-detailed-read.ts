@@ -15,7 +15,7 @@ import type { RelationshipTupleDetailedRead } from './relationship-tuple-detaile
 
 export interface PaginatedResultRelationshipTupleDetailedRead {
   /**
-   * List of Relationship Tuple Detaileds
+   * List of Detailed Relationship Tuples
    */
   data: Array<RelationshipTupleDetailedRead>;
   total_count: number;

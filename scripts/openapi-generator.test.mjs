@@ -5,7 +5,11 @@ import { join } from 'node:path';
 
 import { expect, onTestFinished, test, vi } from 'vitest';
 
-import { verifyGeneratorArtifact } from '#scripts/openapi-generator.mjs';
+import {
+  generatorOptions,
+  repairPropertyDescriptions,
+  verifyGeneratorArtifact,
+} from '#scripts/openapi-generator.mjs';
 
 function fixture() {
   const root = mkdtempSync(join(tmpdir(), 'permit-jar-'));
@@ -81,3 +85,85 @@ test('rejects changed pin provenance before download', async () => {
   await expect(verifyGeneratorArtifact(root)).rejects.toThrow(/pin and reviewed artifact/);
   expect(download).not.toHaveBeenCalled();
 });
+
+const reviewedConfig = JSON.parse(
+  readFileSync(new URL('../openapi/generator.json', import.meta.url), 'utf8'),
+);
+
+test('uses the checked JSON-array mapping in the shared generation configuration', () => {
+  const { root } = fixture();
+  writeFileSync(join(root, 'openapi/generator.json'), JSON.stringify(reviewedConfig));
+  expect(generatorOptions(root).typeMappings).toEqual({ set: 'Array' });
+});
+
+test.each([undefined, null, { set: 'Set' }, { set: 'Array', array: 'Set' }])(
+  'rejects missing or unreviewed JSON-array mappings: %j',
+  (typeMappings) => {
+    const { root } = fixture();
+    writeFileSync(
+      join(root, 'openapi/generator.json'),
+      JSON.stringify({ ...reviewedConfig, typeMappings }),
+    );
+    expect(() => generatorOptions(root)).toThrow('preserve unique JSON arrays');
+  },
+);
+
+const wrappedProperties = [
+  [
+    'data_generator_lib__schemas__schema_opal_data__DerivationSettings',
+    'superseded_by_direct_role',
+    'data-generator-lib-schemas-schema-opal-data-derivation-settings',
+  ],
+  ['GroupAssignment', 'group_instance_key', 'group-assignment'],
+  ['GroupCreate', 'group_instance_key', 'group-create'],
+  ['GroupReadSchema', 'group_instance_key', 'group-read-schema'],
+  ['TenantBlockRead', 'attributes', 'tenant-block-read'],
+];
+
+function commentFixture() {
+  const { root } = fixture();
+  const models = join(root, 'types');
+  mkdirSync(models);
+  const schemas = {};
+  for (const [model, property, filename] of wrappedProperties) {
+    schemas[model] = { properties: { [property]: { description: 'First line.\nSecond line.' } } };
+    writeFileSync(
+      join(models, filename + '.ts'),
+      `/**\n     * First line. Second line.\n     */\n    '${property}'?: string;`,
+    );
+  }
+  const input = join(root, 'input.json');
+  writeFileSync(input, JSON.stringify({ components: { schemas } }));
+  return { root, models, input };
+}
+
+test('restores only checked property-comment lines without changing surrounding source', () => {
+  const { root, models, input } = commentFixture();
+  repairPropertyDescriptions(root, 'types', input);
+  for (const [, property, filename] of wrappedProperties) {
+    expect(readFileSync(join(models, filename + '.ts'), 'utf8')).toBe(
+      `/**\n     * First line.\n     * Second line.\n     */\n    '${property}'?: string;`,
+    );
+  }
+});
+
+test.each(wrappedProperties)(
+  'rejects missing, changed or duplicate %s comment source',
+  (model, property, filename) => {
+    for (const mode of ['missing', 'changed', 'duplicate']) {
+      const { root, models, input } = commentFixture();
+      const path = join(models, filename + '.ts');
+      const text = readFileSync(path, 'utf8');
+      const changed = mode === 'duplicate' ? text + text : text.replace('First line.', 'Changed.');
+      writeFileSync(path, changed);
+      if (mode === 'missing') {
+        const spec = JSON.parse(readFileSync(input, 'utf8'));
+        delete spec.components.schemas[model].properties[property].description;
+        writeFileSync(input, JSON.stringify(spec));
+      }
+      expect(() => repairPropertyDescriptions(root, 'types', input)).toThrow(
+        /comment.*changed; review/i,
+      );
+    }
+  },
+);
