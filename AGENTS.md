@@ -34,10 +34,11 @@ Run `pnpm audit --audit-level=moderate` before changing dependencies. Pin exact 
 keep the 24-hour release delay, and leave install scripts disabled. Audit findings require a
 named owner and follow-up; do not add overrides or ignore advisory IDs to hide them.
 
-Run `pnpm hooks:install` for each checkout. It installs the pinned prek version into that
-checkout's Git directory and sets only its worktree hook path. Never unset the common
-`core.hooksPath`: another worktree may still use it. Hook dependencies are the exact tools in
-the pnpm lockfile; Dependabot groups their updates with a seven-day cooldown.
+Run `pnpm hooks:install` for each checkout. It installs pinned prek under that checkout's
+Git directory at `permit-hooks/hooks`, then sets only its worktree hook path. Shared default
+and custom hook files stay intact, including when installing from the primary checkout.
+Never unset the common `core.hooksPath`: another worktree may still use it. Hook dependencies are
+the exact tools in the pnpm lockfile; Dependabot groups their updates with a seven-day cooldown.
 
 Run tests against local fixtures on this computer. Backend integration and e2e commands require
 explicit authorization and suitable credentials; `pnpm verify` never invokes them.

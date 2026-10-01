@@ -23,8 +23,10 @@ uses its shipped compiler lock without re-resolving it. SDK behavior tests use l
 package preparation does not contact Permit services. Cold dependency setup has a separate bounded
 setup budget; behavioral assertions and failure/skip gates remain unchanged.
 
-The hook installer enables Git's per-worktree configuration and installs prek into the current
-checkout's own Git directory. It leaves the shared hook path and sibling worktrees unchanged.
+The hook installer writes pinned prek shims under `permit-hooks/hooks` in the current checkout's
+Git directory, then enables Git's per-worktree configuration and selects that private hook path.
+Primary and linked checkouts preserve shared default/custom hook files and sibling configuration.
+A failed shim installation leaves the existing hook selection intact. Repeated installation is safe.
 Tool versions are pinned in the pnpm lockfile; Dependabot groups updates with a seven-day delay.
 For any future remote prek hooks, use frozen commit hashes and `pnpm exec prek update
 --cooldown-days 7 --freeze` when reviewing updates.
