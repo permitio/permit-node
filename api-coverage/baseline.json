@@ -1224,7 +1224,7 @@
         }
       },
       "src/config.ts:urlOption": {
-        "implementationSha256": "a137eb771d8fabb0d7836edcf5bd366fbeeb5db4f8e373c046031efb32eb03dc",
+        "implementationSha256": "97f9f431071975b07d421661b6247d200597c6b9fbf386a87849501e208b46ae",
         "signature": {
           "generics": [],
           "parameters": [

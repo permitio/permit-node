@@ -41,12 +41,12 @@ export interface IPermitConfig {
   readonly token: string;
 
   /**
-   * Configures the Policy Decision Point (PDP) address.
+   * Configures the absolute HTTP(S) PDP base URL, without query or fragment components.
    */
   readonly pdp: string;
 
   /**
-   * Configures the URL of the Permit REST API.
+   * Configures the absolute HTTP(S) REST base URL, without query or fragment components.
    */
   readonly apiUrl: string;
 
@@ -319,12 +319,20 @@ function nonnegativeOption(value: unknown, name: string, maximum = Number.MAX_VA
 function urlOption(value: string, name: string): void {
   try {
     const url = new URL(value);
-    if ((url.protocol === 'http:' || url.protocol === 'https:') && !/[\s\p{Cc}]/u.test(value))
+    if (
+      (url.protocol === 'http:' || url.protocol === 'https:') &&
+      !/[\s\p{Cc}]/u.test(value) &&
+      !value.includes('?') &&
+      !value.includes('#')
+    ) {
       return;
+    }
   } catch {
     // Report the option name without retaining an exception that may contain credentials.
   }
-  throw new TypeError(`Invalid ${name}: expected an absolute http(s) URL.`);
+  throw new TypeError(
+    `Invalid ${name}: expected an absolute http(s) URL without query or fragment components.`,
+  );
 }
 
 function axiosOption(value: unknown, name: string): void {

@@ -73,8 +73,10 @@ also require separate authorization.</p>
 <p>The constructor accepts <code>IPermitOptions</code>. Omitted values use environment variables and SDK
 defaults. A nonempty token is required after <code>PERMIT_API_KEY</code> fallback; tokens are opaque strings
 and cannot contain whitespace or control characters. PDP and REST URLs must be absolute HTTP(S)
-URLs. Invalid settings throw before the SDK creates a logger or transport, with errors that omit
-caller values.</p>
+URLs without literal query (<code>?</code>) or fragment (<code>#</code>) components, including empty delimiters.
+Path prefixes and encoded path characters such as <code>%3F</code> and <code>%23</code> remain supported. Omitted
+<code>pdp</code> and <code>apiUrl</code> use the existing <code>PERMIT_PDP_URL</code> and <code>PERMIT_API_URL</code> defaults. Invalid
+settings throw before the SDK creates a logger or transport, with errors that omit caller values.</p>
 <p>In 3.0, <code>permit.config</code> settings and their SDK-owned nested objects are frozen. Configure tokens,
 URLs, logging, tenancy and retry settings at construction time. Supplied Axios instances and
 retry callbacks remain caller-owned and live; their defaults, interceptors and mutable callback

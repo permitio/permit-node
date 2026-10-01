@@ -83,6 +83,68 @@ test.each(invalidOptions)('rejects %s before creating a logger or transport', (_
   expect(transport).not.toHaveBeenCalled();
 });
 
+const baseUrlOptions = ['apiUrl', 'pdp'] as const;
+const invalidBaseUrls = [
+  `http://user:${marker}@api.invalid?${marker}=1`,
+  `https://api.invalid/prefix#${marker}`,
+  'http://api.invalid?',
+  'http://api.invalid#',
+  'http://api.invalid/prefix/?',
+  'http://api.invalid/prefix/#',
+  'http://api.invalid/prefix?%23=encoded',
+  'http://api.invalid/prefix#%3Fencoded',
+];
+
+test.each(baseUrlOptions)('rejects query/fragment %s before logger and transport', (name) => {
+  const logger = vi.spyOn(LoggerFactory, 'createLogger');
+  const transport = vi.spyOn(axios, 'create');
+  for (const value of invalidBaseUrls) {
+    let failure: unknown;
+    try {
+      new Permit({ token: 'test-token', [name]: value });
+    } catch (error) {
+      failure = error;
+    }
+    expect(failure).toBeInstanceOf(TypeError);
+    expect(failure).toHaveProperty('message', expect.stringContaining(`Invalid ${name}:`));
+    expect(failure).toHaveProperty('message', expect.stringContaining('query or fragment'));
+    expect(inspect(failure)).not.toContain(marker);
+    expect(JSON.stringify(failure)).not.toContain(marker);
+    expect(failure).not.toHaveProperty('cause');
+  }
+  expect(logger).not.toHaveBeenCalled();
+  expect(transport).not.toHaveBeenCalled();
+});
+
+test.each(baseUrlOptions)('checks effective %s defaults and explicit overrides', (name) => {
+  const variable = name === 'pdp' ? 'PERMIT_PDP_URL' : 'PERMIT_API_URL';
+  vi.stubEnv('PERMIT_API_KEY', 'environment-key');
+  const logger = vi.spyOn(LoggerFactory, 'createLogger');
+  const transport = vi.spyOn(axios, 'create');
+  for (const value of invalidBaseUrls) {
+    vi.stubEnv(variable, value);
+    expect(() => new Permit({ [name]: undefined })).toThrow(`Invalid ${name}:`);
+  }
+  expect(logger).not.toHaveBeenCalled();
+  expect(transport).not.toHaveBeenCalled();
+  const valid = 'https://api.invalid/prefix/%3Fsegment/%23segment';
+  const permit = new Permit({ [name]: valid, log: { level: 'silent' } });
+  expect(permit.config[name]).toBe(valid);
+});
+
+test.each(baseUrlOptions)('preserves supported %s origins and encoded prefixes', (name) => {
+  for (const value of [
+    'http://localhost:7766',
+    'https://api.invalid:8443/prefix/',
+    'http://[::1]:7766/prefix/%3Fsegment/%23segment',
+    'https://api.invalid/prefix/%3fsegment/%23segment',
+    'https://api.invalid/prefix/%253F/%2523',
+  ]) {
+    const config = ConfigFactory.build({ token: 'test-token', [name]: value });
+    expect(config[name]).toBe(value);
+  }
+});
+
 test('requires a nonempty effective token and preserves opaque tokens and undefined fallback', () => {
   vi.stubEnv('PERMIT_API_KEY', 'environment-key');
   expect(ConfigFactory.build({ token: undefined }).token).toBe('environment-key');

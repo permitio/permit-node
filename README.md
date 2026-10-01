@@ -89,8 +89,10 @@ See [Contributing](.github/CONTRIBUTING.md#dependency-security) for scan command
 The constructor accepts `IPermitOptions`. Omitted values use environment variables and SDK
 defaults. A nonempty token is required after `PERMIT_API_KEY` fallback; tokens are opaque strings
 and cannot contain whitespace or control characters. PDP and REST URLs must be absolute HTTP(S)
-URLs. Invalid settings throw before the SDK creates a logger or transport, with errors that omit
-caller values.
+URLs without literal query (`?`) or fragment (`#`) components, including empty delimiters.
+Path prefixes and encoded path characters such as `%3F` and `%23` remain supported. Omitted
+`pdp` and `apiUrl` use the existing `PERMIT_PDP_URL` and `PERMIT_API_URL` defaults. Invalid
+settings throw before the SDK creates a logger or transport, with errors that omit caller values.
 
 In 3.0, `permit.config` settings and their SDK-owned nested objects are frozen. Configure tokens,
 URLs, logging, tenancy and retry settings at construction time. Supplied Axios instances and

@@ -123,8 +123,12 @@ permission's persisted representation with the GET action filter. Use full typed
 
 Use `IPermitOptions` for constructor input. Supply a nonempty token without whitespace/control
 characters, after `PERMIT_API_KEY` fallback, and absolute HTTP(S) `pdp`/`apiUrl` URLs. Validate
-deployment variables before construction. Logger levels, booleans, timeout and retry values are
-checked. Invalid effective options throw `TypeError` before HTTP, without echoing credentials.
+deployment variables before construction. Base URLs cannot contain literal query (`?`) or
+fragment (`#`) components, even empty trailing delimiters. Remove those components rather than
+expecting the SDK to strip them. Existing path prefixes and encoded path characters such as
+`%3F` and `%23` remain supported, including existing environment URL defaults. Logger levels,
+booleans, timeout and retry values are checked. Invalid effective options throw `TypeError`
+before HTTP, without echoing credentials.
 Use complete instances from `axios.create()` and a genuine current-version `ApiContext`, rather
 than partial mock objects. Explicit `undefined` is permitted for constructor options.
 
