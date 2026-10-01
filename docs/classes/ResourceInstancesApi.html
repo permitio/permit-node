@@ -13,7 +13,7 @@
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>The ResourceInstancesApi class provides methods for interacting with Permit ResourceInstances.</p>
 </div></section>
-<section class="tsd-panel tsd-hierarchy" data-refl="551">
+<section class="tsd-panel tsd-hierarchy" data-refl="593">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><span class="tsd-signature-type">BaseFactsPermitAPI</span>
@@ -24,7 +24,7 @@
 <ul class="tsd-hierarchy">
 <li><a href="../interfaces/IResourceInstancesApi.html" class="tsd-signature-type tsd-kind-interface">IResourceInstancesApi</a></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in src/api/resource-instances.ts:130</li></ul></aside>
+<li>Defined in src/api/resource-instances.ts:161</li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -71,7 +71,7 @@
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">ResourceInstancesApi</a></h4><aside class="tsd-sources">
 <p>Overrides BaseFactsPermitAPI.constructor</p>
 <ul>
-<li>Defined in src/api/resource-instances.ts:139</li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in src/api/resource-instances.ts:170</li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -79,17 +79,21 @@
 <h3 class="tsd-anchor-link" id="create"><span>create</span><a href="#create" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="create-1"><span class="tsd-kind-call-signature">create</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">instanceData</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/ResourceInstanceCreate.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceCreate</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#create-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="create-1"><span class="tsd-kind-call-signature">create</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#createattributes">Attributes</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">instanceData</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/ResourceInstanceCreate.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceCreate</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#createattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#create-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Creates a new instance.</p>
 </div>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="createattributes"><span class="tsd-kind-type-parameter">Attributes</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> = <span class="tsd-signature-type">object</span></span></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">instanceData</span>: <a href="../interfaces/ResourceInstanceCreate.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceCreate</a></span>
 <div class="tsd-comment tsd-typography"><p>The data for the new instance.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the created instance.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#createattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the created instance.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-throws">
@@ -100,7 +104,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IResourceInstancesApi.html">IResourceInstancesApi</a>.<a href="../interfaces/IResourceInstancesApi.html#create">create</a></p>
 <ul>
-<li>Defined in src/api/resource-instances.ts:271</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/resource-instances.ts:312</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="delete"><span>delete</span><a href="#delete" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -126,7 +130,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IResourceInstancesApi.html">IResourceInstancesApi</a>.<a href="../interfaces/IResourceInstancesApi.html#delete">delete</a></p>
 <ul>
-<li>Defined in src/api/resource-instances.ts:322</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/resource-instances.ts:365</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="ensureaccesslevel"><span>ensure<wbr/>Access<wbr/>Level</span><a href="#ensureaccesslevel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -176,17 +180,21 @@ Note that this check is not foolproof, and the API may still throw 401.</p>
 <h3 class="tsd-anchor-link" id="get"><span>get</span><a href="#get" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="get-1"><span class="tsd-kind-call-signature">get</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">instanceKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#get-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="get-1"><span class="tsd-kind-call-signature">get</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getattributes">Attributes</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">instanceKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#get-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Retrieves a instance by its key.</p>
 </div>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="getattributes"><span class="tsd-kind-type-parameter">Attributes</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> = <span class="tsd-signature-type">object</span></span></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">instanceKey</span>: <span class="tsd-signature-type">string</span></span>
 <div class="tsd-comment tsd-typography"><p>The key of the resource instance.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the resource instance.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the resource instance.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-throws">
@@ -197,23 +205,27 @@ Note that this check is not foolproof, and the API may still throw 401.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IResourceInstancesApi.html">IResourceInstancesApi</a>.<a href="../interfaces/IResourceInstancesApi.html#get">get</a></p>
 <ul>
-<li>Defined in src/api/resource-instances.ts:222</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/resource-instances.ts:257</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbyid"><span>get<wbr/>By<wbr/>Id</span><a href="#getbyid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="getbyid-1"><span class="tsd-kind-call-signature">getById</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">instanceId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#getbyid-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="getbyid-1"><span class="tsd-kind-call-signature">getById</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getbyidattributes">Attributes</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">instanceId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getbyidattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#getbyid-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Retrieves a instance by its ID.
 Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="getbyidattributes"><span class="tsd-kind-type-parameter">Attributes</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> = <span class="tsd-signature-type">object</span></span></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">instanceId</span>: <span class="tsd-signature-type">string</span></span>
 <div class="tsd-comment tsd-typography"><p>The ID of the resource instance.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the resource instance.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getbyidattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the resource instance.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-throws">
@@ -224,23 +236,27 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IResourceInstancesApi.html">IResourceInstancesApi</a>.<a href="../interfaces/IResourceInstancesApi.html#getbyid">getById</a></p>
 <ul>
-<li>Defined in src/api/resource-instances.ts:259</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/resource-instances.ts:298</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbykey"><span>get<wbr/>By<wbr/>Key</span><a href="#getbykey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="getbykey-1"><span class="tsd-kind-call-signature">getByKey</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">instanceKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#getbykey-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="getbykey-1"><span class="tsd-kind-call-signature">getByKey</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getbykeyattributes">Attributes</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">instanceKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getbykeyattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#getbykey-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Retrieves a instance by its key.
 Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="getbykeyattributes"><span class="tsd-kind-type-parameter">Attributes</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> = <span class="tsd-signature-type">object</span></span></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">instanceKey</span>: <span class="tsd-signature-type">string</span></span>
 <div class="tsd-comment tsd-typography"><p>The key of the resource instance.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the resource instance.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getbykeyattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the resource instance.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-throws">
@@ -251,22 +267,26 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IResourceInstancesApi.html">IResourceInstancesApi</a>.<a href="../interfaces/IResourceInstancesApi.html#getbykey">getByKey</a></p>
 <ul>
-<li>Defined in src/api/resource-instances.ts:246</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/resource-instances.ts:283</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="list"><span>list</span><a href="#list" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="list-1"><span class="tsd-kind-call-signature">list</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">params</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/IListResourceInstanceParams.html" class="tsd-signature-type tsd-kind-interface">IListResourceInstanceParams</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#list-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="list-1"><span class="tsd-kind-call-signature">list</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#listattributes">Attributes</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">params</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/IListResourceInstanceParams.html" class="tsd-signature-type tsd-kind-interface">IListResourceInstanceParams</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#listattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#list-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Retrieves a list of resource instances.</p>
 </div>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="listattributes"><span class="tsd-kind-type-parameter">Attributes</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> = <span class="tsd-signature-type">object</span></span></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">params</span>: <a href="../interfaces/IListResourceInstanceParams.html" class="tsd-signature-type tsd-kind-interface">IListResourceInstanceParams</a></span>
 <div class="tsd-comment tsd-typography"><p>Filtering and pagination options,</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to an array of resource instances.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#listattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to an array of resource instances.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-see">
@@ -280,23 +300,27 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IResourceInstancesApi.html">IResourceInstancesApi</a>.<a href="../interfaces/IResourceInstancesApi.html#list">list</a></p>
 <ul>
-<li>Defined in src/api/resource-instances.ts:198</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/resource-instances.ts:229</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="listdetailed"><span>list<wbr/>Detailed</span><a href="#listdetailed" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="listdetailed-1"><span class="tsd-kind-call-signature">listDetailed</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">params</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/IListResourceInstanceDetailedParams.html" class="tsd-signature-type tsd-kind-interface">IListResourceInstanceDetailedParams</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/PaginatedResultResourceInstanceDetailedRead.html" class="tsd-signature-type tsd-kind-interface">PaginatedResultResourceInstanceDetailedRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#listdetailed-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="listdetailed-1"><span class="tsd-kind-call-signature">listDetailed</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#listdetailedattributes">Attributes</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">params</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/IListResourceInstanceDetailedParams.html" class="tsd-signature-type tsd-kind-interface">IListResourceInstanceDetailedParams</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/PaginatedResultResourceInstanceDetailedRead.html" class="tsd-signature-type tsd-kind-interface">PaginatedResultResourceInstanceDetailedRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#listdetailedattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#listdetailed-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Lists resource instances with nested details through the dedicated endpoint.
 Uses the control plane even when facts proxying or waitForSync is enabled.</p>
 </div>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="listdetailedattributes"><span class="tsd-kind-type-parameter">Attributes</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> = <span class="tsd-signature-type">object</span></span></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">params</span>: <a href="../interfaces/IListResourceInstanceDetailedParams.html" class="tsd-signature-type tsd-kind-interface">IListResourceInstanceDetailedParams</a><span class="tsd-signature-symbol"> = {}</span></span>
 <div class="tsd-comment tsd-typography"><p>Filters and pagination. Pages start at 1; perPage defaults to 100.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/PaginatedResultResourceInstanceDetailedRead.html" class="tsd-signature-type tsd-kind-interface">PaginatedResultResourceInstanceDetailedRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>The complete detailed envelope, including data, total_count, and optional page_count.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/PaginatedResultResourceInstanceDetailedRead.html" class="tsd-signature-type tsd-kind-interface">PaginatedResultResourceInstanceDetailedRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#listdetailedattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>The complete detailed envelope, including data, total_count, and optional page_count.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-throws">
@@ -307,15 +331,19 @@ Uses the control plane even when facts proxying or waitForSync is enabled.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IResourceInstancesApi.html">IResourceInstancesApi</a>.<a href="../interfaces/IResourceInstancesApi.html#listdetailed">listDetailed</a></p>
 <ul>
-<li>Defined in src/api/resource-instances.ts:170</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/resource-instances.ts:201</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="update"><span>update</span><a href="#update" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="update-1"><span class="tsd-kind-call-signature">update</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">instanceKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">instanceData</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/ResourceInstanceUpdate.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceUpdate</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#update-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="update-1"><span class="tsd-kind-call-signature">update</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#updateattributes">Attributes</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">instanceKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">instanceData</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/ResourceInstanceUpdate.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceUpdate</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#updateattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#update-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Updates a instance.</p>
 </div>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="updateattributes"><span class="tsd-kind-type-parameter">Attributes</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> = <span class="tsd-signature-type">object</span></span></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
@@ -325,7 +353,7 @@ Uses the control plane even when facts proxying or waitForSync is enabled.</p>
 <li><span><span class="tsd-kind-parameter">instanceData</span>: <a href="../interfaces/ResourceInstanceUpdate.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceUpdate</a></span>
 <div class="tsd-comment tsd-typography"><p>The updated data for the resource instance.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the updated instance.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceInstanceRead.html" class="tsd-signature-type tsd-kind-interface">ResourceInstanceRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#updateattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the updated instance.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-throws">
@@ -336,7 +364,7 @@ Uses the control plane even when facts proxying or waitForSync is enabled.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IResourceInstancesApi.html">IResourceInstancesApi</a>.<a href="../interfaces/IResourceInstancesApi.html#update">update</a></p>
 <ul>
-<li>Defined in src/api/resource-instances.ts:295</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/resource-instances.ts:338</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="waitforsync"><span>wait<wbr/>For<wbr/>Sync</span><a href="#waitforsync" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">

@@ -356,6 +356,31 @@ console.log(users.total_count, users.data[0]?.associated_tenants);
 appear in each associated tenant's `resource_instance_roles`, with `resource`,
 `resource_instance` and `role` fields. Both flag values retain the same paginated result.
 
+## Attribute types
+
+User, tenant and resource-instance reads accept an optional per-call attribute type. The default
+is `object`, and `attributes` remains optional. This type describes the server data you expect;
+it does not validate responses or infer attributes from write requests.
+
+```typescript
+interface UserAttributes {
+  department: string;
+  note: string | null;
+}
+
+const user = await permit.api.users.get<UserAttributes>('alice');
+const users = await permit.api.users.list<UserAttributes>({ search: 'alice' });
+const synced = await permit.api.users.sync<UserAttributes>({ key: 'alice' });
+console.log(user.attributes?.department, users.data[0]?.attributes?.note, synced.created);
+```
+
+The type also flows through `getByKey`, `getById`, `create`, `update` and `waitForSync()` clones.
+Tenant `list`/read/create/update methods select tenant attributes; `addUser` and `listTenantUsers`
+select user attributes. Resource-instance `list`, `listDetailed` and read/create/update methods
+select instance attributes. Lists keep their existing array or paginated envelope, and sync keeps
+its `{ user, created }` result. `ResourceRead` describes resource schema definitions and has no
+attribute-data type parameter. Role assignment and other nested partial models are unchanged.
+
 ## Groups
 
 `permit.api.groups` supports the eight GA core operations: `create`, `delete`, `list`, `get`,

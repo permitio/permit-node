@@ -5,23 +5,25 @@ import {
   TenantsApi as AutogenTenantsApi,
   Configuration,
   type UserCreate,
-  type UserRead,
-  type PaginatedResultUserRead,
   type TenantCreate,
-  type TenantRead,
+  type TenantRead as GeneratedTenantRead,
   type TenantUpdate,
 } from '#src/openapi/index';
 import { BASE_PATH } from '#src/openapi/base';
+import type { UserRead, PaginatedResultUserRead } from '#src/api/users';
 
 import { BaseFactsPermitAPI, type IPagination, type IWaitForSync } from '#src/api/base';
 import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
-export {
-  type PaginatedResultUserRead,
-  type TenantCreate,
-  type TenantRead,
-  type TenantUpdate,
-} from '#src/openapi/index';
+export { type TenantCreate, type TenantUpdate } from '#src/openapi/index';
+
+export type { PaginatedResultUserRead } from '#src/api/users';
+
+/** A tenant response with an optional caller-declared attribute shape; no runtime validation. */
+export interface TenantRead<Attributes extends object = object> extends GeneratedTenantRead {
+  /** Attribute values retain the caller's declared shape when present. */
+  attributes?: Attributes;
+}
 
 export interface IListTenantUsers extends IPagination {
   tenantKey: string;
@@ -42,7 +44,9 @@ export interface ITenantsApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  list(params?: IListTenantsParams): Promise<TenantRead[]>;
+  list<Attributes extends object = object>(
+    params?: IListTenantsParams,
+  ): Promise<TenantRead<Attributes>[]>;
 
   /**
    * Retrieves a list of users for a given tenant.
@@ -52,7 +56,9 @@ export interface ITenantsApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  listTenantUsers(params: IListTenantUsers): Promise<PaginatedResultUserRead>;
+  listTenantUsers<Attributes extends object = object>(
+    params: IListTenantUsers,
+  ): Promise<PaginatedResultUserRead<Attributes>>;
 
   /**
    * Creates a new user and associates it with a tenant, without requiring a role assignment.
@@ -65,7 +71,10 @@ export interface ITenantsApi extends IWaitForSync {
    * or the API rejects the request.
    * @throws {@link PermitContextError} If the environment context or API key is insufficient.
    */
-  addUser(tenantKey: string, userData: UserCreate): Promise<UserRead>;
+  addUser<Attributes extends object = object>(
+    tenantKey: string,
+    userData: UserCreate,
+  ): Promise<UserRead<Attributes>>;
 
   /**
    * Retrieves a tenant by its key.
@@ -75,7 +84,7 @@ export interface ITenantsApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  get(tenantKey: string): Promise<TenantRead>;
+  get<Attributes extends object = object>(tenantKey: string): Promise<TenantRead<Attributes>>;
 
   /**
    * Retrieves a tenant by its key.
@@ -86,7 +95,7 @@ export interface ITenantsApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  getByKey(tenantKey: string): Promise<TenantRead>;
+  getByKey<Attributes extends object = object>(tenantKey: string): Promise<TenantRead<Attributes>>;
 
   /**
    * Retrieves a tenant by its ID.
@@ -97,7 +106,7 @@ export interface ITenantsApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  getById(tenantId: string): Promise<TenantRead>;
+  getById<Attributes extends object = object>(tenantId: string): Promise<TenantRead<Attributes>>;
 
   /**
    * Creates a new tenant.
@@ -107,7 +116,9 @@ export interface ITenantsApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  create(tenantData: TenantCreate): Promise<TenantRead>;
+  create<Attributes extends object = object>(
+    tenantData: TenantCreate,
+  ): Promise<TenantRead<Attributes>>;
 
   /**
    * Updates a tenant.
@@ -118,7 +129,10 @@ export interface ITenantsApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  update(tenantKey: string, tenantData: TenantUpdate): Promise<TenantRead>;
+  update<Attributes extends object = object>(
+    tenantKey: string,
+    tenantData: TenantUpdate,
+  ): Promise<TenantRead<Attributes>>;
 
   /**
    * Deletes a tenant.
@@ -185,7 +199,9 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async list(params?: IListTenantsParams): Promise<TenantRead[]> {
+  public async list<Attributes extends object = object>(
+    params?: IListTenantsParams,
+  ): Promise<TenantRead<Attributes>[]> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -195,7 +211,7 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
           ...this.config.apiContext.environmentContext,
         })
       ).data;
-      return Array.isArray(response) ? response : response.data;
+      return (Array.isArray(response) ? response : response.data) as TenantRead<Attributes>[];
     } catch (err) {
       this.handleApiError(err);
     }
@@ -212,7 +228,10 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
    * or the API rejects the request.
    * @throws {@link PermitContextError} If the environment context or API key is insufficient.
    */
-  public async addUser(tenantKey: string, userData: UserCreate): Promise<UserRead> {
+  public async addUser<Attributes extends object = object>(
+    tenantKey: string,
+    userData: UserCreate,
+  ): Promise<UserRead<Attributes>> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -222,7 +241,7 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
           tenantId: tenantKey,
           userCreate: userData,
         })
-      ).data;
+      ).data as UserRead<Attributes>;
     } catch (err) {
       this.handleApiError(err);
     }
@@ -236,10 +255,10 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async listTenantUsers({
+  public async listTenantUsers<Attributes extends object = object>({
     tenantKey,
     ...params
-  }: IListTenantUsers): Promise<PaginatedResultUserRead> {
+  }: IListTenantUsers): Promise<PaginatedResultUserRead<Attributes>> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -249,7 +268,7 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
           ...this.config.apiContext.environmentContext,
           tenantId: tenantKey,
         })
-      ).data;
+      ).data as PaginatedResultUserRead<Attributes>;
     } catch (err) {
       this.handleApiError(err);
     }
@@ -263,7 +282,9 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async get(tenantKey: string): Promise<TenantRead> {
+  public async get<Attributes extends object = object>(
+    tenantKey: string,
+  ): Promise<TenantRead<Attributes>> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -272,7 +293,7 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
           ...this.config.apiContext.environmentContext,
           tenantId: tenantKey,
         })
-      ).data;
+      ).data as TenantRead<Attributes>;
     } catch (err) {
       this.handleApiError(err);
     }
@@ -287,8 +308,10 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async getByKey(tenantKey: string): Promise<TenantRead> {
-    return await this.get(tenantKey);
+  public async getByKey<Attributes extends object = object>(
+    tenantKey: string,
+  ): Promise<TenantRead<Attributes>> {
+    return await this.get<Attributes>(tenantKey);
   }
 
   /**
@@ -300,8 +323,10 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async getById(tenantId: string): Promise<TenantRead> {
-    return await this.get(tenantId);
+  public async getById<Attributes extends object = object>(
+    tenantId: string,
+  ): Promise<TenantRead<Attributes>> {
+    return await this.get<Attributes>(tenantId);
   }
 
   /**
@@ -312,7 +337,9 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async create(tenantData: TenantCreate): Promise<TenantRead> {
+  public async create<Attributes extends object = object>(
+    tenantData: TenantCreate,
+  ): Promise<TenantRead<Attributes>> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -321,7 +348,7 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
           ...this.config.apiContext.environmentContext,
           tenantCreate: tenantData,
         })
-      ).data;
+      ).data as TenantRead<Attributes>;
     } catch (err) {
       this.handleApiError(err);
     }
@@ -336,7 +363,10 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async update(tenantKey: string, tenantData: TenantUpdate): Promise<TenantRead> {
+  public async update<Attributes extends object = object>(
+    tenantKey: string,
+    tenantData: TenantUpdate,
+  ): Promise<TenantRead<Attributes>> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -346,7 +376,7 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
           tenantId: tenantKey,
           tenantUpdate: tenantData,
         })
-      ).data;
+      ).data as TenantRead<Attributes>;
     } catch (err) {
       this.handleApiError(err);
     }

@@ -13,7 +13,7 @@
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>The TenantsApi class provides methods for interacting with Permit Tenants.</p>
 </div></section>
-<section class="tsd-panel tsd-hierarchy" data-refl="1188">
+<section class="tsd-panel tsd-hierarchy" data-refl="1258">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><span class="tsd-signature-type">BaseFactsPermitAPI</span>
@@ -24,7 +24,7 @@
 <ul class="tsd-hierarchy">
 <li><a href="../interfaces/ITenantsApi.html" class="tsd-signature-type tsd-kind-interface">ITenantsApi</a></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in src/api/tenants.ts:148</li></ul></aside>
+<li>Defined in src/api/tenants.ts:162</li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -73,7 +73,7 @@
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">TenantsApi</a></h4><aside class="tsd-sources">
 <p>Overrides BaseFactsPermitAPI.constructor</p>
 <ul>
-<li>Defined in src/api/tenants.ts:157</li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in src/api/tenants.ts:171</li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -81,12 +81,16 @@
 <h3 class="tsd-anchor-link" id="adduser"><span>add<wbr/>User</span><a href="#adduser" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="adduser-1"><span class="tsd-kind-call-signature">addUser</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tenantKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">userData</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/UserCreate.html" class="tsd-signature-type tsd-kind-interface">UserCreate</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/UserRead.html" class="tsd-signature-type tsd-kind-interface">UserRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#adduser-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="adduser-1"><span class="tsd-kind-call-signature">addUser</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#adduserattributes">Attributes</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">tenantKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">userData</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/UserCreate.html" class="tsd-signature-type tsd-kind-interface">UserCreate</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/UserRead.html" class="tsd-signature-type tsd-kind-interface">UserRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#adduserattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#adduser-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Creates a new user and associates it with a tenant, without requiring a role assignment.
 Uses the control-plane API even when facts proxying or waitForSync is enabled.
 The acknowledgement does not guarantee that the PDP has synchronized the membership.</p>
 </div>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="adduserattributes"><span class="tsd-kind-type-parameter">Attributes</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> = <span class="tsd-signature-type">object</span></span></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
@@ -96,7 +100,7 @@ The acknowledgement does not guarantee that the PDP has synchronized the members
 <li><span><span class="tsd-kind-parameter">userData</span>: <a href="../interfaces/UserCreate.html" class="tsd-signature-type tsd-kind-interface">UserCreate</a></span>
 <div class="tsd-comment tsd-typography"><p>New user data; role_assignments is optional.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/UserRead.html" class="tsd-signature-type tsd-kind-interface">UserRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>The created user, including its tenant membership.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/UserRead.html" class="tsd-signature-type tsd-kind-interface">UserRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#adduserattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>The created user, including its tenant membership.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-throws">
@@ -108,22 +112,26 @@ or the API rejects the request.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/ITenantsApi.html">ITenantsApi</a>.<a href="../interfaces/ITenantsApi.html#adduser">addUser</a></p>
 <ul>
-<li>Defined in src/api/tenants.ts:215</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/tenants.ts:231</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="create"><span>create</span><a href="#create" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="create-1"><span class="tsd-kind-call-signature">create</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tenantData</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/TenantCreate.html" class="tsd-signature-type tsd-kind-interface">TenantCreate</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#create-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="create-1"><span class="tsd-kind-call-signature">create</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#createattributes">Attributes</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">tenantData</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/TenantCreate.html" class="tsd-signature-type tsd-kind-interface">TenantCreate</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#createattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#create-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Creates a new tenant.</p>
 </div>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="createattributes"><span class="tsd-kind-type-parameter">Attributes</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> = <span class="tsd-signature-type">object</span></span></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">tenantData</span>: <a href="../interfaces/TenantCreate.html" class="tsd-signature-type tsd-kind-interface">TenantCreate</a></span>
 <div class="tsd-comment tsd-typography"><p>The data for the new tenant.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the created tenant.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#createattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the created tenant.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-throws">
@@ -134,7 +142,7 @@ or the API rejects the request.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/ITenantsApi.html">ITenantsApi</a>.<a href="../interfaces/ITenantsApi.html#create">create</a></p>
 <ul>
-<li>Defined in src/api/tenants.ts:315</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/tenants.ts:340</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="delete"><span>delete</span><a href="#delete" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -160,7 +168,7 @@ or the API rejects the request.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/ITenantsApi.html">ITenantsApi</a>.<a href="../interfaces/ITenantsApi.html#delete">delete</a></p>
 <ul>
-<li>Defined in src/api/tenants.ts:363</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/tenants.ts:393</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="deletetenantuser"><span>delete<wbr/>Tenant<wbr/>User</span><a href="#deletetenantuser" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -189,7 +197,7 @@ or the API rejects the request.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/ITenantsApi.html">ITenantsApi</a>.<a href="../interfaces/ITenantsApi.html#deletetenantuser">deleteTenantUser</a></p>
 <ul>
-<li>Defined in src/api/tenants.ts:385</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/tenants.ts:415</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="ensureaccesslevel"><span>ensure<wbr/>Access<wbr/>Level</span><a href="#ensureaccesslevel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -239,17 +247,21 @@ Note that this check is not foolproof, and the API may still throw 401.</p>
 <h3 class="tsd-anchor-link" id="get"><span>get</span><a href="#get" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="get-1"><span class="tsd-kind-call-signature">get</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tenantKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#get-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="get-1"><span class="tsd-kind-call-signature">get</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getattributes">Attributes</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">tenantKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#get-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Retrieves a tenant by its key.</p>
 </div>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="getattributes"><span class="tsd-kind-type-parameter">Attributes</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> = <span class="tsd-signature-type">object</span></span></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">tenantKey</span>: <span class="tsd-signature-type">string</span></span>
 <div class="tsd-comment tsd-typography"><p>The key of the tenant.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the tenant.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the tenant.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-throws">
@@ -260,23 +272,27 @@ Note that this check is not foolproof, and the API may still throw 401.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/ITenantsApi.html">ITenantsApi</a>.<a href="../interfaces/ITenantsApi.html#get">get</a></p>
 <ul>
-<li>Defined in src/api/tenants.ts:266</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/tenants.ts:285</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbyid"><span>get<wbr/>By<wbr/>Id</span><a href="#getbyid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="getbyid-1"><span class="tsd-kind-call-signature">getById</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tenantId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#getbyid-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="getbyid-1"><span class="tsd-kind-call-signature">getById</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getbyidattributes">Attributes</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">tenantId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getbyidattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#getbyid-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Retrieves a tenant by its ID.
 Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="getbyidattributes"><span class="tsd-kind-type-parameter">Attributes</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> = <span class="tsd-signature-type">object</span></span></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">tenantId</span>: <span class="tsd-signature-type">string</span></span>
 <div class="tsd-comment tsd-typography"><p>The ID of the tenant.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the tenant.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getbyidattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the tenant.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-throws">
@@ -287,23 +303,27 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/ITenantsApi.html">ITenantsApi</a>.<a href="../interfaces/ITenantsApi.html#getbyid">getById</a></p>
 <ul>
-<li>Defined in src/api/tenants.ts:303</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/tenants.ts:326</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbykey"><span>get<wbr/>By<wbr/>Key</span><a href="#getbykey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="getbykey-1"><span class="tsd-kind-call-signature">getByKey</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tenantKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#getbykey-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="getbykey-1"><span class="tsd-kind-call-signature">getByKey</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getbykeyattributes">Attributes</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">tenantKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getbykeyattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#getbykey-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Retrieves a tenant by its key.
 Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="getbykeyattributes"><span class="tsd-kind-type-parameter">Attributes</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> = <span class="tsd-signature-type">object</span></span></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">tenantKey</span>: <span class="tsd-signature-type">string</span></span>
 <div class="tsd-comment tsd-typography"><p>The key of the tenant.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the tenant.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#getbykeyattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the tenant.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-throws">
@@ -314,22 +334,26 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/ITenantsApi.html">ITenantsApi</a>.<a href="../interfaces/ITenantsApi.html#getbykey">getByKey</a></p>
 <ul>
-<li>Defined in src/api/tenants.ts:290</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/tenants.ts:311</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="list"><span>list</span><a href="#list" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="list-1"><span class="tsd-kind-call-signature">list</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">params</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/IListTenantsParams.html" class="tsd-signature-type tsd-kind-interface">IListTenantsParams</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#list-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="list-1"><span class="tsd-kind-call-signature">list</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#listattributes">Attributes</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">params</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/IListTenantsParams.html" class="tsd-signature-type tsd-kind-interface">IListTenantsParams</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#listattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#list-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Retrieves a list of tenants.</p>
 </div>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="listattributes"><span class="tsd-kind-type-parameter">Attributes</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> = <span class="tsd-signature-type">object</span></span></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">params</span>: <a href="../interfaces/IListTenantsParams.html" class="tsd-signature-type tsd-kind-interface">IListTenantsParams</a></span>
 <div class="tsd-comment tsd-typography"><p>Filtering and pagination options,</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to an array of tenants.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#listattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to an array of tenants.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-see">
@@ -343,22 +367,26 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/ITenantsApi.html">ITenantsApi</a>.<a href="../interfaces/ITenantsApi.html#list">list</a></p>
 <ul>
-<li>Defined in src/api/tenants.ts:188</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/tenants.ts:202</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="listtenantusers"><span>list<wbr/>Tenant<wbr/>Users</span><a href="#listtenantusers" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="listtenantusers-1"><span class="tsd-kind-call-signature">listTenantUsers</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">__namedParameters</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IListTenantUsers.html" class="tsd-signature-type tsd-kind-interface">IListTenantUsers</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/PaginatedResultUserRead.html" class="tsd-signature-type tsd-kind-interface">PaginatedResultUserRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#listtenantusers-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="listtenantusers-1"><span class="tsd-kind-call-signature">listTenantUsers</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#listtenantusersattributes">Attributes</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">__namedParameters</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IListTenantUsers.html" class="tsd-signature-type tsd-kind-interface">IListTenantUsers</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/PaginatedResultUserRead.html" class="tsd-signature-type tsd-kind-interface">PaginatedResultUserRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#listtenantusersattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#listtenantusers-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Retrieves a list of users for a given tenant.</p>
 </div>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="listtenantusersattributes"><span class="tsd-kind-type-parameter">Attributes</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> = <span class="tsd-signature-type">object</span></span></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">__namedParameters</span>: <a href="../interfaces/IListTenantUsers.html" class="tsd-signature-type tsd-kind-interface">IListTenantUsers</a></span>
 <div class="tsd-comment tsd-typography"><p>Tenant key, pagination, and filtering options.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/PaginatedResultUserRead.html" class="tsd-signature-type tsd-kind-interface">PaginatedResultUserRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to a PaginatedResultUserRead object containing the list of tenant users.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/PaginatedResultUserRead.html" class="tsd-signature-type tsd-kind-interface">PaginatedResultUserRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#listtenantusersattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to a PaginatedResultUserRead object containing the list of tenant users.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-throws">
@@ -369,15 +397,19 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/ITenantsApi.html">ITenantsApi</a>.<a href="../interfaces/ITenantsApi.html#listtenantusers">listTenantUsers</a></p>
 <ul>
-<li>Defined in src/api/tenants.ts:239</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/tenants.ts:258</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="update"><span>update</span><a href="#update" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="update-1"><span class="tsd-kind-call-signature">update</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">tenantKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">tenantData</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/TenantUpdate.html" class="tsd-signature-type tsd-kind-interface">TenantUpdate</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#update-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="update-1"><span class="tsd-kind-call-signature">update</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#updateattributes">Attributes</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">tenantKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">tenantData</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/TenantUpdate.html" class="tsd-signature-type tsd-kind-interface">TenantUpdate</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#updateattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#update-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Updates a tenant.</p>
 </div>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li><span id="updateattributes"><span class="tsd-kind-type-parameter">Attributes</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">object</span> = <span class="tsd-signature-type">object</span></span></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
@@ -387,7 +419,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 <li><span><span class="tsd-kind-parameter">tenantData</span>: <a href="../interfaces/TenantUpdate.html" class="tsd-signature-type tsd-kind-interface">TenantUpdate</a></span>
 <div class="tsd-comment tsd-typography"><p>The updated data for the tenant.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the updated tenant.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TenantRead.html" class="tsd-signature-type tsd-kind-interface">TenantRead</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#updateattributes">Attributes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to the updated tenant.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-throws">
@@ -398,7 +430,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/ITenantsApi.html">ITenantsApi</a>.<a href="../interfaces/ITenantsApi.html#update">update</a></p>
 <ul>
-<li>Defined in src/api/tenants.ts:339</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/tenants.ts:366</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="waitforsync"><span>wait<wbr/>For<wbr/>Sync</span><a href="#waitforsync" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">

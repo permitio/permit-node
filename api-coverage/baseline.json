@@ -20,14 +20,14 @@
       "src/api/resource-action-groups.ts:ResourceActionGroupsApi": "8cb11d18e3a92d70b411e8c32f705494dea95fcef42b4f3c45c7eb3c7a4449bc",
       "src/api/resource-actions.ts:ResourceActionsApi": "77cb8378b7803934e8e54aab9c6df3d012938bae4084e376df08b4d5a897604c",
       "src/api/resource-attributes.ts:ResourceAttributesApi": "c05611f87b6590869bd74c170c0895e9bf2bb804353b6dcfe06353371ef44587",
-      "src/api/resource-instances.ts:ResourceInstancesApi": "d04cb805d7fc8309d597bc6369ba9595e341ed884f89ac7b8d1d4736f3d35f61",
+      "src/api/resource-instances.ts:ResourceInstancesApi": "f739afcf7dbf4bd649ad0e8770446723374060fa23acef3f5d8287d5e3cd3e3f",
       "src/api/resource-relations.ts:ResourceRelationsApi": "7940cd5cbdd5444060ed34f7d68766f646a023e5c7487aad41589cd3ab1c5742",
       "src/api/resource-roles.ts:ResourceRolesApi": "d3e78d2175b02561645930a8a575795b2a8caaab9a212cf72675b8c135287701",
       "src/api/resources.ts:ResourcesApi": "3c35f246b7fa105b504d69d77ae1e57228c934b8b6ddc7488eed378ca2f56145",
       "src/api/role-assignments.ts:RoleAssignmentsApi": "48903ae8fa791d37fd53fd3402388a36b34dc0d60a21b53e9cb4e99dbdf18618",
       "src/api/roles.ts:RolesApi": "dc48457df60c94a7d4904cd0c5b0dd5be99f3a9905588c273de90e952ac07362",
-      "src/api/tenants.ts:TenantsApi": "e4eac91e4bda02007f602cda0264a03ccf192f38593c7e94efc26e228d638e95",
-      "src/api/users.ts:UsersApi": "4873322e964985928eba4ec3a4e4156870021fe8df7d78eabd51b965bba02590",
+      "src/api/tenants.ts:TenantsApi": "345d10373943a802614b9c8a9264857ea53eff0472fe8527542469d087ab7b1f",
+      "src/api/users.ts:UsersApi": "a777e0965c966b00d2fe916374b924251aa75c406c6dec78f21830b6d79f4e2a",
       "src/config.ts:ConfigFactory": "5dc5eeecb95886e850dae6c76c83ab96ac7c3f3661cee616d47e8e9f5dde4be4",
       "src/enforcement/enforcer.ts:Enforcer": "c94d57cc39709aa00c81bd6aaede74a943ff3af54f96c4586d363644bb73dff2",
       "src/enforcement/enforcer.ts:PermitConnectionError": "86cd79f9aa748daf1d8324a63993215e2aa1d7b7a05fdb71229666d5ad98dffb",
@@ -356,14 +356,14 @@
         "extends": [" extends IWaitForSync"],
         "kind": "interface",
         "members": [
-          "create(instanceData: ResourceInstanceCreate): Promise<ResourceInstanceRead>;",
+          "create<Attributes extends object = object>(instanceData: ResourceInstanceCreate): Promise<ResourceInstanceRead<Attributes>>;",
           "delete(instanceKey: string): Promise<void>;",
-          "get(instanceKey: string): Promise<ResourceInstanceRead>;",
-          "getById(instanceId: string): Promise<ResourceInstanceRead>;",
-          "getByKey(instanceKey: string): Promise<ResourceInstanceRead>;",
-          "list(params?: IListResourceInstanceParams): Promise<ResourceInstanceRead[]>;",
-          "listDetailed(params?: IListResourceInstanceDetailedParams): Promise<PaginatedResultResourceInstanceDetailedRead>;",
-          "update(instanceKey: string, instanceData: ResourceInstanceUpdate): Promise<ResourceInstanceRead>;"
+          "get<Attributes extends object = object>(instanceKey: string): Promise<ResourceInstanceRead<Attributes>>;",
+          "getById<Attributes extends object = object>(instanceId: string): Promise<ResourceInstanceRead<Attributes>>;",
+          "getByKey<Attributes extends object = object>(instanceKey: string): Promise<ResourceInstanceRead<Attributes>>;",
+          "list<Attributes extends object = object>(params?: IListResourceInstanceParams): Promise<ResourceInstanceRead<Attributes>[]>;",
+          "listDetailed<Attributes extends object = object>(params?: IListResourceInstanceDetailedParams): Promise<PaginatedResultResourceInstanceDetailedRead<Attributes>>;",
+          "update<Attributes extends object = object>(instanceKey: string, instanceData: ResourceInstanceUpdate): Promise<ResourceInstanceRead<Attributes>>;"
         ]
       },
       "src/api/resource-relations.ts:IListRelations": {
@@ -490,16 +490,16 @@
         "extends": [" extends IWaitForSync"],
         "kind": "interface",
         "members": [
-          "addUser(tenantKey: string, userData: UserCreate): Promise<UserRead>;",
-          "create(tenantData: TenantCreate): Promise<TenantRead>;",
+          "addUser<Attributes extends object = object>(tenantKey: string, userData: UserCreate): Promise<UserRead<Attributes>>;",
+          "create<Attributes extends object = object>(tenantData: TenantCreate): Promise<TenantRead<Attributes>>;",
           "delete(tenantKey: string): Promise<void>;",
           "deleteTenantUser(tenantKey: string, userKey: string): Promise<void>;",
-          "get(tenantKey: string): Promise<TenantRead>;",
-          "getById(tenantId: string): Promise<TenantRead>;",
-          "getByKey(tenantKey: string): Promise<TenantRead>;",
-          "list(params?: IListTenantsParams): Promise<TenantRead[]>;",
-          "listTenantUsers(params: IListTenantUsers): Promise<PaginatedResultUserRead>;",
-          "update(tenantKey: string, tenantData: TenantUpdate): Promise<TenantRead>;"
+          "get<Attributes extends object = object>(tenantKey: string): Promise<TenantRead<Attributes>>;",
+          "getById<Attributes extends object = object>(tenantId: string): Promise<TenantRead<Attributes>>;",
+          "getByKey<Attributes extends object = object>(tenantKey: string): Promise<TenantRead<Attributes>>;",
+          "list<Attributes extends object = object>(params?: IListTenantsParams): Promise<TenantRead<Attributes>[]>;",
+          "listTenantUsers<Attributes extends object = object>(params: IListTenantUsers): Promise<PaginatedResultUserRead<Attributes>>;",
+          "update<Attributes extends object = object>(tenantKey: string, tenantData: TenantUpdate): Promise<TenantRead<Attributes>>;"
         ]
       },
       "src/api/users.ts:IBaseGetUserRoles": {
@@ -517,7 +517,7 @@
       "src/api/users.ts:ICreateOrUpdateUserResult": {
         "extends": [],
         "kind": "interface",
-        "members": ["created: boolean;", "user: UserRead;"]
+        "members": ["created: boolean;", "user: UserRead<Attributes>;"]
       },
       "src/api/users.ts:IGetUserRoles": {
         "kind": "type",
@@ -539,16 +539,16 @@
           "bulkUserCreate(users: UserCreate[]): Promise<object>;",
           "bulkUserDelete(userKeys: string[]): Promise<object>;",
           "bulkUserReplace(users: UserCreate[]): Promise<object>;",
-          "create(userData: UserCreate): Promise<UserRead>;",
+          "create<Attributes extends object = object>(userData: UserCreate): Promise<UserRead<Attributes>>;",
           "delete(userKey: string): Promise<void>;",
-          "get(userKey: string): Promise<UserRead>;",
+          "get<Attributes extends object = object>(userKey: string): Promise<UserRead<Attributes>>;",
           "getAssignedRoles<T extends IGetUserRoles>(params: T): Promise<ReturnIGetUserRolesType<T>>;",
-          "getById(userId: string): Promise<UserRead>;",
-          "getByKey(userKey: string): Promise<UserRead>;",
-          "list(params?: IUsersListParams): Promise<PaginatedResultUserRead>;",
-          "sync(userData: UserCreate): Promise<ICreateOrUpdateUserResult>;",
+          "getById<Attributes extends object = object>(userId: string): Promise<UserRead<Attributes>>;",
+          "getByKey<Attributes extends object = object>(userKey: string): Promise<UserRead<Attributes>>;",
+          "list<Attributes extends object = object>(params?: IUsersListParams): Promise<PaginatedResultUserRead<Attributes>>;",
+          "sync<Attributes extends object = object>(userData: UserCreate): Promise<ICreateOrUpdateUserResult<Attributes>>;",
           "unassignRole(unassignment: RoleAssignmentRemove): Promise<void>;",
-          "update(userKey: string, userData: UserUpdate): Promise<UserRead>;"
+          "update<Attributes extends object = object>(userKey: string, userData: UserUpdate): Promise<UserRead<Attributes>>;"
         ]
       },
       "src/api/users.ts:IUsersListParams": {
@@ -867,6 +867,36 @@
       "src/utils/retry.ts:RetryConditionFn": {
         "kind": "type",
         "type": "(error: AxiosError) => boolean"
+      },
+      "src/api/resource-instances.ts:PaginatedResultResourceInstanceDetailedRead": {
+        "extends": [" extends GeneratedDetailedPage"],
+        "kind": "interface",
+        "members": ["data: ResourceInstanceDetailedRead<Attributes>[];"]
+      },
+      "src/api/resource-instances.ts:ResourceInstanceDetailedRead": {
+        "extends": [" extends GeneratedResourceInstanceDetailedRead"],
+        "kind": "interface",
+        "members": ["attributes?: Attributes;"]
+      },
+      "src/api/resource-instances.ts:ResourceInstanceRead": {
+        "extends": [" extends GeneratedResourceInstanceRead"],
+        "kind": "interface",
+        "members": ["attributes?: Attributes;"]
+      },
+      "src/api/tenants.ts:TenantRead": {
+        "extends": [" extends GeneratedTenantRead"],
+        "kind": "interface",
+        "members": ["attributes?: Attributes;"]
+      },
+      "src/api/users.ts:PaginatedResultUserRead": {
+        "extends": [" extends GeneratedPaginatedResultUserRead"],
+        "kind": "interface",
+        "members": ["data: UserRead<Attributes>[];"]
+      },
+      "src/api/users.ts:UserRead": {
+        "extends": [" extends GeneratedUserRead"],
+        "kind": "interface",
+        "members": ["attributes?: Attributes;"]
       }
     },
     "functionShapes": {
@@ -20853,14 +20883,14 @@
       "src/api/resource-attributes.ts:ResourceAttributesApi.getByKey": "27909f16d6162aadad8a39e0d58e1131b254f0bf75fde089cf0af0306f9036a1",
       "src/api/resource-attributes.ts:ResourceAttributesApi.list": "4f9f0cea3e90692aa0b6870397599920df89149dd2e500c15ba176698437e588",
       "src/api/resource-attributes.ts:ResourceAttributesApi.update": "cff60cdc6d3c3b638e9323c67b29a9c1140a9df9ccb037c298578802ca2267a3",
-      "src/api/resource-instances.ts:ResourceInstancesApi.create": "a05d10261db19ff9363c950acab0f751244e26065bab27beafa1530f6702d7f6",
+      "src/api/resource-instances.ts:ResourceInstancesApi.create": "7f8bf0777ec8444b91620f0c7bfb767962e6fca99fc35c892344c1cefaf4b1e3",
       "src/api/resource-instances.ts:ResourceInstancesApi.delete": "d204495555c2b70a8d85a95221fe331746b6f844068a5b29dd90a1b25dbba0cc",
-      "src/api/resource-instances.ts:ResourceInstancesApi.get": "3d56362911b3514b188bd42ebd5b6bfae54dc097235856d7b8cf9f6ecef4493d",
-      "src/api/resource-instances.ts:ResourceInstancesApi.getById": "929aca07ebb8421d64af58b0f8125b307eb0195bbeaec981055948cff3d0d731",
-      "src/api/resource-instances.ts:ResourceInstancesApi.getByKey": "cf84bac00575877108fd9ab3df0596606b18d691365598401a0850aee509bad6",
-      "src/api/resource-instances.ts:ResourceInstancesApi.list": "0f3af3e6e3ebf0d9588c92e1e77e3dd37664a592c033866788a2c85d31a1bdd3",
-      "src/api/resource-instances.ts:ResourceInstancesApi.listDetailed": "a200450130a691d8f078cf59102d957891967c0865adc29644a3c3f96b914a4c",
-      "src/api/resource-instances.ts:ResourceInstancesApi.update": "002d5db4756e34c1b5ed5d4ad7b96d7632b3c5efb88f14b2c6b6b3140cd262bd",
+      "src/api/resource-instances.ts:ResourceInstancesApi.get": "ac499824752e0af91597616a7b02a7699bd65c70c8dd38f194b12a1b24915177",
+      "src/api/resource-instances.ts:ResourceInstancesApi.getById": "98ec3006093dcad5008aaed9bf622b2f55415f090a6552638718b0571c1e3227",
+      "src/api/resource-instances.ts:ResourceInstancesApi.getByKey": "ee191491e083070238bd3a076acffc69f25815a0becb5ac19688d5b52c1b712a",
+      "src/api/resource-instances.ts:ResourceInstancesApi.list": "554efa93d8af1b4dbd41eb136f495430b37fefddeec18a20b04d1904f743b9e6",
+      "src/api/resource-instances.ts:ResourceInstancesApi.listDetailed": "751b263e706a811cc1ca40affbb8628d3be3d62dfcdf716e6689507172e594ac",
+      "src/api/resource-instances.ts:ResourceInstancesApi.update": "ac6c4da46ba29de478cc21196ecc28311c82a630050ed5ce49fff550c43dff77",
       "src/api/resource-relations.ts:ResourceRelationsApi.create": "89de09c7ab730db2e3dfae909a2f8e1c4b3f3145cfe62b003e6b76c572663678",
       "src/api/resource-relations.ts:ResourceRelationsApi.delete": "dd4e8f220230055dcd2eb1a79af4c156ed0b311fce52d3a474af11ef3ce55d64",
       "src/api/resource-relations.ts:ResourceRelationsApi.get": "d8931ab3bf4b8614e6e49077c126d7a95de2bc062c6ce1bd8439e7853788fda2",
@@ -20902,30 +20932,30 @@
       "src/api/roles.ts:RolesApi.list": "d3ad168ffff67101fe58667a2a23689630af511c163ef07981db047cdd5638ff",
       "src/api/roles.ts:RolesApi.removePermissions": "620a066bd6eb73957e9cde8d07320f504be9b603e9096c0cb0a1a160b817f244",
       "src/api/roles.ts:RolesApi.update": "7dd573d9a6cf9900ed189b42b367dbf99c22942c7900ad977b2a8096ee105c6e",
-      "src/api/tenants.ts:TenantsApi.addUser": "610cc96a8cca1920ce04d814a0efa4d4cd9ed1163fd2abff4e06637725826b65",
-      "src/api/tenants.ts:TenantsApi.create": "1e337185404234f4e28a888db72c2eb35ffcbb7c641d37937a8a3b7c5a5c83f1",
+      "src/api/tenants.ts:TenantsApi.addUser": "ecff88f623de612a8b3bd257fedce76712a45ad6ef89c8bca71f9e6a43aed937",
+      "src/api/tenants.ts:TenantsApi.create": "1cb4dff05b7f1f44f132931a171e1caefa9c27446d7a6195cb6d4cf178253ae3",
       "src/api/tenants.ts:TenantsApi.delete": "9a59f2662ab337d53ee430f75cee589600fb8c39d31877f02143748f4ff5dd30",
       "src/api/tenants.ts:TenantsApi.deleteTenantUser": "fa3905b051f461c3d23033e8cf9e922a41075d1d9b57560c975f59c924b300df",
-      "src/api/tenants.ts:TenantsApi.get": "c39fb156a1daa44bc739305c1766c6bee79b433e3fec70b788a7966d077796d8",
-      "src/api/tenants.ts:TenantsApi.getById": "11ae1a074083a90b9020235c00fbe0fb4555e4f2a60f509fa557f752e3d8b9fb",
-      "src/api/tenants.ts:TenantsApi.getByKey": "37ad71bc22e80109099e66b36c2c4798e84df352db0cfc8001c619ca4cd8c6fa",
-      "src/api/tenants.ts:TenantsApi.list": "e487e11e9315cf6684342670657e4bf81bdd1e69cfa11b35f0766ed47b075cb2",
-      "src/api/tenants.ts:TenantsApi.listTenantUsers": "625433cb5debe1819975839bd7ac9f7df4e6c671c614e974db439f07b559a3d9",
-      "src/api/tenants.ts:TenantsApi.update": "4777a31aa49cc16c655b33b4c1fc0652e3a4f489abf51b104f8e70dddd3d734e",
+      "src/api/tenants.ts:TenantsApi.get": "dbe6a53fefc4119a694869f154ea32ca1dc21dcb0247ab32594ec4efdc998be1",
+      "src/api/tenants.ts:TenantsApi.getById": "eb5535113531bbd7e116607840e3876da89654290262105b4bd3b5847a45f4de",
+      "src/api/tenants.ts:TenantsApi.getByKey": "7be9cebc6011a2c544a2c84653b33bda71b30c2b4f014cacc83f51add60e6658",
+      "src/api/tenants.ts:TenantsApi.list": "7ced347c58a90d98575411cc1082dcbe301b67faaaf8171c92c389aa48dec16f",
+      "src/api/tenants.ts:TenantsApi.listTenantUsers": "b8d46dd85f47691c41684a7348a5012bf2269f23d34142defa38d2ca61be6d38",
+      "src/api/tenants.ts:TenantsApi.update": "227c4505187e9a97ebfb47c0dd668f7865d97b673f9814c11159d8db3772fecb",
       "src/api/users.ts:UsersApi.assignRole": "c5f25fbc4d157e56149a554b98127d83b3cce7c6f13b7da8ca0302cd4b59ef0d",
       "src/api/users.ts:UsersApi.bulkUserCreate": "35c763b8cf33dadea4a7a1ca70eea387252f49704a3ca2c96d1342f8434bea2f",
       "src/api/users.ts:UsersApi.bulkUserDelete": "d3c10d77fdfd11f69e3aa33019d4adfbc471d14f8930bb845c56ffb6125b3063",
       "src/api/users.ts:UsersApi.bulkUserReplace": "d6616290b2817ea399e94e8077aac47a53d95c39a1658715bb7e3e15134ec642",
-      "src/api/users.ts:UsersApi.create": "5e06321c0381245d05330a634c7b479972889a053c7629ee585a82d33968cef1",
+      "src/api/users.ts:UsersApi.create": "cf38087aec68b84261b9ac946b4f6b8ca56500f3b991b87b5f6a630003aa19a1",
       "src/api/users.ts:UsersApi.delete": "c22fbda0d611e1be785fb8e2febeb21002f042464e65796b34ba84b3dea2423b",
-      "src/api/users.ts:UsersApi.get": "9695c39f37e696c20b30d7424f79c1688885561fea4f1e927b59462f475b6cb8",
+      "src/api/users.ts:UsersApi.get": "23add46b198325257d1dcd7ede788f4a045f7a1115114bcd9b56d637afcebfb5",
       "src/api/users.ts:UsersApi.getAssignedRoles": "187438aa7778392f767f54e884d19d2c7774a9351c321837f784547d839fa4a6",
-      "src/api/users.ts:UsersApi.getById": "e97cb0e52a329977618107533c6084c057d0609a887b8e07101fa08995d46ee9",
-      "src/api/users.ts:UsersApi.getByKey": "50df62c7910577cb034f61b473834524543aecf5ee2596ad73cfd9d06e047317",
-      "src/api/users.ts:UsersApi.list": "19d08048824b01eb09537852c816cfb325edf8be31f144d8ddcfad6121cc9152",
-      "src/api/users.ts:UsersApi.sync": "cbdfe5d9fda6e338580a623112f0e9489236ef1d3631985f1460c91d2fb57d2b",
+      "src/api/users.ts:UsersApi.getById": "89fea1104904f87ff35cf56726963288de0d4ea47b425454026140e0bca9dde6",
+      "src/api/users.ts:UsersApi.getByKey": "3a7c29764360f841ccea9f9845b8813b259404180f704615184cfc9daa22b3e2",
+      "src/api/users.ts:UsersApi.list": "ec3763c9a28333c92c620053bb25c890eefdf51609d4b2de03b412a6f90e67fc",
+      "src/api/users.ts:UsersApi.sync": "43059d47516ffa3f49e462687516356fdc5abac7cca71c6394e0e0896319da2f",
       "src/api/users.ts:UsersApi.unassignRole": "10c70ca8cf7256fdf92be249de1f35ff0ff246b75d5c44eb121026ff64f79814",
-      "src/api/users.ts:UsersApi.update": "771dd22ad5206a43202a9cc5171d0082b1a6526361723248e7c4f733532dd389",
+      "src/api/users.ts:UsersApi.update": "a14a9d18eaafdf987355da4699e9197ac1b608a931d84ef2faefdb07496153d2",
       "src/enforcement/enforcer.ts:.isString": "6809b400b07b7344d876bfa38d90a150c171ad47969b53e4014dd01a607b81e4",
       "src/enforcement/enforcer.ts:Enforcer.buildCheckInput": "0efb94d0ecaf599f8f17da7a6e205414703e1a99c74dc87f616de239b849a4c5",
       "src/enforcement/enforcer.ts:Enforcer.bulkCheck": "4f6aa0b3ea11aa46b60f46bf87454e822bf07b6072f65d4b5e2ae1f353f5cdf6",
@@ -23365,7 +23395,7 @@
         "deprecated": false,
         "factsProxy": true,
         "publicSignatures": [
-          "(instanceData: ResourceInstanceCreate): Promise<ResourceInstanceRead>"
+          "<Attributes extends object = object>(instanceData: ResourceInstanceCreate): Promise<ResourceInstanceRead<Attributes>>"
         ],
         "routes": [
           {
@@ -23382,7 +23412,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -23391,7 +23421,7 @@
               "type": "ResourceInstanceCreate"
             }
           ],
-          "returns": "Promise<ResourceInstanceRead>"
+          "returns": "Promise<ResourceInstanceRead<Attributes>>"
         }
       },
       "permit.api.resourceInstances.delete": {
@@ -23428,7 +23458,9 @@
       "permit.api.resourceInstances.get": {
         "deprecated": false,
         "factsProxy": true,
-        "publicSignatures": ["(instanceKey: string): Promise<ResourceInstanceRead>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(instanceKey: string): Promise<ResourceInstanceRead<Attributes>>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -23444,7 +23476,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -23453,13 +23485,15 @@
               "type": "string"
             }
           ],
-          "returns": "Promise<ResourceInstanceRead>"
+          "returns": "Promise<ResourceInstanceRead<Attributes>>"
         }
       },
       "permit.api.resourceInstances.getById": {
         "deprecated": false,
         "factsProxy": true,
-        "publicSignatures": ["(instanceId: string): Promise<ResourceInstanceRead>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(instanceId: string): Promise<ResourceInstanceRead<Attributes>>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -23475,7 +23509,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -23484,13 +23518,15 @@
               "type": "string"
             }
           ],
-          "returns": "Promise<ResourceInstanceRead>"
+          "returns": "Promise<ResourceInstanceRead<Attributes>>"
         }
       },
       "permit.api.resourceInstances.getByKey": {
         "deprecated": false,
         "factsProxy": true,
-        "publicSignatures": ["(instanceKey: string): Promise<ResourceInstanceRead>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(instanceKey: string): Promise<ResourceInstanceRead<Attributes>>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -23506,7 +23542,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -23515,14 +23551,14 @@
               "type": "string"
             }
           ],
-          "returns": "Promise<ResourceInstanceRead>"
+          "returns": "Promise<ResourceInstanceRead<Attributes>>"
         }
       },
       "permit.api.resourceInstances.list": {
         "deprecated": false,
         "factsProxy": true,
         "publicSignatures": [
-          "(params?: IListResourceInstanceParams | undefined): Promise<ResourceInstanceRead[]>"
+          "<Attributes extends object = object>(params?: IListResourceInstanceParams | undefined): Promise<ResourceInstanceRead<Attributes>[]>"
         ],
         "routes": [
           {
@@ -23539,7 +23575,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -23548,14 +23584,14 @@
               "type": "IListResourceInstanceParams"
             }
           ],
-          "returns": "Promise<ResourceInstanceRead[]>"
+          "returns": "Promise<ResourceInstanceRead<Attributes>[]>"
         }
       },
       "permit.api.resourceInstances.listDetailed": {
         "deprecated": false,
         "factsProxy": false,
         "publicSignatures": [
-          "(params?: IListResourceInstanceDetailedParams | undefined): Promise<PaginatedResultResourceInstanceDetailedRead>"
+          "<Attributes extends object = object>(params?: IListResourceInstanceDetailedParams | undefined): Promise<PaginatedResultResourceInstanceDetailedRead<Attributes>>"
         ],
         "routes": [
           {
@@ -23572,7 +23608,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": "{}",
@@ -23581,14 +23617,14 @@
               "type": "IListResourceInstanceDetailedParams"
             }
           ],
-          "returns": "Promise<PaginatedResultResourceInstanceDetailedRead>"
+          "returns": "Promise<PaginatedResultResourceInstanceDetailedRead<Attributes>>"
         }
       },
       "permit.api.resourceInstances.update": {
         "deprecated": false,
         "factsProxy": true,
         "publicSignatures": [
-          "(instanceKey: string, instanceData: ResourceInstanceUpdate): Promise<ResourceInstanceRead>"
+          "<Attributes extends object = object>(instanceKey: string, instanceData: ResourceInstanceUpdate): Promise<ResourceInstanceRead<Attributes>>"
         ],
         "routes": [
           {
@@ -23605,7 +23641,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -23620,7 +23656,7 @@
               "type": "ResourceInstanceUpdate"
             }
           ],
-          "returns": "Promise<ResourceInstanceRead>"
+          "returns": "Promise<ResourceInstanceRead<Attributes>>"
         }
       },
       "permit.api.resourceInstances.waitForSync": {
@@ -25145,7 +25181,9 @@
       "permit.api.tenants.addUser": {
         "deprecated": false,
         "factsProxy": false,
-        "publicSignatures": ["(tenantKey: string, userData: UserCreate): Promise<UserRead>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(tenantKey: string, userData: UserCreate): Promise<UserRead<Attributes>>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -25161,7 +25199,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -25176,13 +25214,15 @@
               "type": "UserCreate"
             }
           ],
-          "returns": "Promise<UserRead>"
+          "returns": "Promise<UserRead<Attributes>>"
         }
       },
       "permit.api.tenants.create": {
         "deprecated": false,
         "factsProxy": true,
-        "publicSignatures": ["(tenantData: TenantCreate): Promise<TenantRead>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(tenantData: TenantCreate): Promise<TenantRead<Attributes>>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -25198,7 +25238,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -25207,7 +25247,7 @@
               "type": "TenantCreate"
             }
           ],
-          "returns": "Promise<TenantRead>"
+          "returns": "Promise<TenantRead<Attributes>>"
         }
       },
       "permit.api.tenants.delete": {
@@ -25281,7 +25321,9 @@
       "permit.api.tenants.get": {
         "deprecated": false,
         "factsProxy": true,
-        "publicSignatures": ["(tenantKey: string): Promise<TenantRead>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(tenantKey: string): Promise<TenantRead<Attributes>>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -25297,7 +25339,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -25306,13 +25348,15 @@
               "type": "string"
             }
           ],
-          "returns": "Promise<TenantRead>"
+          "returns": "Promise<TenantRead<Attributes>>"
         }
       },
       "permit.api.tenants.getById": {
         "deprecated": false,
         "factsProxy": true,
-        "publicSignatures": ["(tenantId: string): Promise<TenantRead>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(tenantId: string): Promise<TenantRead<Attributes>>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -25328,7 +25372,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -25337,13 +25381,15 @@
               "type": "string"
             }
           ],
-          "returns": "Promise<TenantRead>"
+          "returns": "Promise<TenantRead<Attributes>>"
         }
       },
       "permit.api.tenants.getByKey": {
         "deprecated": false,
         "factsProxy": true,
-        "publicSignatures": ["(tenantKey: string): Promise<TenantRead>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(tenantKey: string): Promise<TenantRead<Attributes>>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -25359,7 +25405,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -25368,13 +25414,15 @@
               "type": "string"
             }
           ],
-          "returns": "Promise<TenantRead>"
+          "returns": "Promise<TenantRead<Attributes>>"
         }
       },
       "permit.api.tenants.list": {
         "deprecated": false,
         "factsProxy": true,
-        "publicSignatures": ["(params?: IListTenantsParams | undefined): Promise<TenantRead[]>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(params?: IListTenantsParams | undefined): Promise<TenantRead<Attributes>[]>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -25390,7 +25438,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -25399,13 +25447,15 @@
               "type": "IListTenantsParams"
             }
           ],
-          "returns": "Promise<TenantRead[]>"
+          "returns": "Promise<TenantRead<Attributes>[]>"
         }
       },
       "permit.api.tenants.listTenantUsers": {
         "deprecated": false,
         "factsProxy": true,
-        "publicSignatures": ["(params: IListTenantUsers): Promise<PaginatedResultUserRead>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(params: IListTenantUsers): Promise<PaginatedResultUserRead<Attributes>>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -25421,7 +25471,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -25430,13 +25480,15 @@
               "type": "IListTenantUsers"
             }
           ],
-          "returns": "Promise<PaginatedResultUserRead>"
+          "returns": "Promise<PaginatedResultUserRead<Attributes>>"
         }
       },
       "permit.api.tenants.update": {
         "deprecated": false,
         "factsProxy": true,
-        "publicSignatures": ["(tenantKey: string, tenantData: TenantUpdate): Promise<TenantRead>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(tenantKey: string, tenantData: TenantUpdate): Promise<TenantRead<Attributes>>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -25452,7 +25504,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -25467,7 +25519,7 @@
               "type": "TenantUpdate"
             }
           ],
-          "returns": "Promise<TenantRead>"
+          "returns": "Promise<TenantRead<Attributes>>"
         }
       },
       "permit.api.tenants.waitForSync": {
@@ -25623,7 +25675,9 @@
       "permit.api.users.create": {
         "deprecated": false,
         "factsProxy": true,
-        "publicSignatures": ["(userData: UserCreate): Promise<UserRead>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(userData: UserCreate): Promise<UserRead<Attributes>>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -25639,7 +25693,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -25648,7 +25702,7 @@
               "type": "UserCreate"
             }
           ],
-          "returns": "Promise<UserRead>"
+          "returns": "Promise<UserRead<Attributes>>"
         }
       },
       "permit.api.users.delete": {
@@ -25685,7 +25739,9 @@
       "permit.api.users.get": {
         "deprecated": false,
         "factsProxy": true,
-        "publicSignatures": ["(userKey: string): Promise<UserRead>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(userKey: string): Promise<UserRead<Attributes>>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -25701,7 +25757,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -25710,7 +25766,7 @@
               "type": "string"
             }
           ],
-          "returns": "Promise<UserRead>"
+          "returns": "Promise<UserRead<Attributes>>"
         }
       },
       "permit.api.users.getAssignedRoles": {
@@ -25749,7 +25805,9 @@
       "permit.api.users.getById": {
         "deprecated": false,
         "factsProxy": true,
-        "publicSignatures": ["(userId: string): Promise<UserRead>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(userId: string): Promise<UserRead<Attributes>>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -25765,7 +25823,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -25774,13 +25832,15 @@
               "type": "string"
             }
           ],
-          "returns": "Promise<UserRead>"
+          "returns": "Promise<UserRead<Attributes>>"
         }
       },
       "permit.api.users.getByKey": {
         "deprecated": false,
         "factsProxy": true,
-        "publicSignatures": ["(userKey: string): Promise<UserRead>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(userKey: string): Promise<UserRead<Attributes>>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -25796,7 +25856,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -25805,14 +25865,14 @@
               "type": "string"
             }
           ],
-          "returns": "Promise<UserRead>"
+          "returns": "Promise<UserRead<Attributes>>"
         }
       },
       "permit.api.users.list": {
         "deprecated": false,
         "factsProxy": true,
         "publicSignatures": [
-          "(params?: IUsersListParams | undefined): Promise<PaginatedResultUserRead>"
+          "<Attributes extends object = object>(params?: IUsersListParams | undefined): Promise<PaginatedResultUserRead<Attributes>>"
         ],
         "routes": [
           {
@@ -25829,7 +25889,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -25838,13 +25898,15 @@
               "type": "IUsersListParams"
             }
           ],
-          "returns": "Promise<PaginatedResultUserRead>"
+          "returns": "Promise<PaginatedResultUserRead<Attributes>>"
         }
       },
       "permit.api.users.sync": {
         "deprecated": false,
         "factsProxy": true,
-        "publicSignatures": ["(userData: UserCreate): Promise<ICreateOrUpdateUserResult>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(userData: UserCreate): Promise<ICreateOrUpdateUserResult<Attributes>>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -25860,7 +25922,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -25869,7 +25931,7 @@
               "type": "UserCreate"
             }
           ],
-          "returns": "Promise<ICreateOrUpdateUserResult>"
+          "returns": "Promise<ICreateOrUpdateUserResult<Attributes>>"
         }
       },
       "permit.api.users.unassignRole": {
@@ -25906,7 +25968,9 @@
       "permit.api.users.update": {
         "deprecated": false,
         "factsProxy": true,
-        "publicSignatures": ["(userKey: string, userData: UserUpdate): Promise<UserRead>"],
+        "publicSignatures": [
+          "<Attributes extends object = object>(userKey: string, userData: UserUpdate): Promise<UserRead<Attributes>>"
+        ],
         "routes": [
           {
             "generatedMethod": "APIKeysApi.getApiKeyScope",
@@ -25922,7 +25986,7 @@
           }
         ],
         "signature": {
-          "generics": [],
+          "generics": ["Attributes extends object = object"],
           "parameters": [
             {
               "initializer": null,
@@ -25937,7 +26001,7 @@
               "type": "UserUpdate"
             }
           ],
-          "returns": "Promise<UserRead>"
+          "returns": "Promise<UserRead<Attributes>>"
         }
       },
       "permit.api.users.waitForSync": {
