@@ -2,17 +2,26 @@ import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import semver from 'semver';
+function meetsStableFloor(version, floor) {
+  if (
+    typeof version !== 'string' ||
+    !/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/.test(
+      version,
+    )
+  )
+    return false;
+  const parts = version.split('+')[0].split('.').map(Number);
+  if (!parts.every(Number.isSafeInteger)) return false;
+  for (let index = 0; index < floor.length; index++) {
+    if (parts[index] !== floor[index]) return parts[index] > floor[index];
+  }
+  return true;
+}
 
 /** Rejects runtimes that cannot authenticate npm Trusted Publishing with OIDC. */
 export function checkPublishingRuntime({ node, npm }) {
   // https://docs.npmjs.com/trusted-publishers/ (verified 2026-09-30).
-  if (
-    !semver.valid(node) ||
-    !semver.gte(node, '22.14.0') ||
-    !semver.valid(npm) ||
-    !semver.gte(npm, '11.5.1')
-  ) {
+  if (!meetsStableFloor(node, [22, 14, 0]) || !meetsStableFloor(npm, [11, 5, 1])) {
     throw new Error(
       `Trusted Publishing needs Node >=22.14.0 and npm >=11.5.1; got Node ${node}, npm ${npm}.`,
     );

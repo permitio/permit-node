@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process';
-import { createHash } from 'node:crypto';
 import {
   lstatSync,
   mkdirSync,
@@ -14,6 +13,10 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { isDeepStrictEqual, parseArgs } from 'node:util';
+
+import { inspectReleaseArchive } from '#scripts/release-artifact.mjs';
+
+export { inspectReleaseArchive } from '#scripts/release-artifact.mjs';
 
 import {
   bytesSha256,
@@ -40,57 +43,6 @@ function boundedBytes(path, maximum) {
     'Input exceeds its size limit.',
   );
   return readFileSync(path);
-}
-
-/** Reads package metadata without extracting files or executing code from the archive. */
-export function inspectReleaseArchive(path) {
-  const archive = resolve(path);
-  const bytes = boundedBytes(archive, 64 * 1024 * 1024);
-  const names = checked('tar', ['-tzf', archive]).toString('utf8').trimEnd().split('\n');
-  const listing = checked('tar', ['-tvzf', archive]).toString('utf8').trimEnd().split('\n');
-  requireValid(
-    names.length === listing.length && names.length > 0,
-    'Archive listing is incomplete.',
-  );
-  const files = [];
-  for (let index = 0; index < names.length; index++) {
-    const name = names[index];
-    requireValid(
-      (['package', 'package/'].includes(name) || /^package\/[A-Za-z0-9_.@+/-]+$/.test(name)) &&
-        !name.split('/').some((part) => ['..', '.'].includes(part)),
-      'Archive has an unsafe member name.',
-    );
-    if (listing[index].startsWith('d')) {
-      requireValid(!name.includes('//'), 'Archive directory is not canonical.');
-    } else {
-      requireValid(
-        listing[index].startsWith('-') && !name.endsWith('/'),
-        'Archive contains a link or unsupported member type.',
-      );
-      files.push(name);
-    }
-  }
-  requireValid(new Set(names).size === names.length, 'Archive contains duplicate members.');
-  requireValid(files.includes('package/package.json'), 'Archive has no package manifest.');
-  const manifestBytes = checked(
-    'tar',
-    ['-xOzf', archive, 'package/package.json'],
-    undefined,
-    1024 * 1024,
-  );
-  const manifest = JSON.parse(manifestBytes.toString('utf8'));
-  requireValid(
-    manifest.name === 'permitio' && typeof manifest.version === 'string',
-    'Archive is not a versioned permitio package.',
-  );
-  return {
-    sha256: bytesSha256(bytes),
-    fileCount: files.length,
-    files,
-    manifest,
-    manifestBytes,
-    integrity: `sha512-${createHash('sha512').update(bytes).digest('base64')}`,
-  };
 }
 
 /** Rebuilds and packs clean source with pinned pnpm and disabled package lifecycle hooks. */

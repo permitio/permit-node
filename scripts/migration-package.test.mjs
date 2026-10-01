@@ -32,9 +32,12 @@ beforeAll(async () => {
   directory = await mkdtemp(join(tmpdir(), 'permit-migration-package-'));
   consumer = join(directory, 'consumer');
   await mkdir(consumer);
-  command('pnpm', ['pack', '--pack-destination', directory], repo);
+  const suppliedArtifact = process.env['PERMIT_PACKED_ARTIFACT'];
+  if (!suppliedArtifact) command('pnpm', ['pack', '--pack-destination', directory], repo);
   const sdkManifest = JSON.parse(await readFile(join(repo, 'package.json'), 'utf8'));
-  artifact = join(directory, `permitio-${sdkManifest.version}.tgz`);
+  artifact = suppliedArtifact
+    ? resolve(suppliedArtifact)
+    : join(directory, `permitio-${sdkManifest.version}.tgz`);
   await writeFile(
     join(consumer, 'package.json'),
     JSON.stringify({
@@ -182,6 +185,11 @@ describe('packed customer migration tooling', () => {
     expect(
       new Set([...docs[1].matchAll(/^- \*\*([A-Z]\d+)\*\*/gmu)].map((match) => match[1])),
     ).toEqual(new Set(headings));
+    const reference = await readFile(join(skill, 'references/changes.md'), 'utf8');
+    const link = /\[the customer migration skill\]\(([^)]+)\)/u.exec(reference);
+    expect(link).not.toBeNull();
+    const linkedSkill = await readFile(resolve(skill, 'references', link[1]), 'utf8');
+    expect(linkedSkill).toContain('# Permit Node SDK 3.0 migration');
     const { scan } = await import(pathToFileURL(join(skill, 'scripts/scan.mjs')).href);
     const report = await scan(join(fixtures, 'before'));
     for (const item of report.findings) expect(headings).toContain(item.id);

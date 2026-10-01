@@ -14,7 +14,7 @@ const keyPattern = new RegExp(schema.components.schemas.EnvironmentCreate.proper
 
 function stepScript(name: string): string {
   const step = workflow.split(`      - name: ${name}\n`)[1]?.split('\n      - name: ')[0];
-  const script = step?.split('        run: |\n')[1]?.split('\n  codegen-guard:')[0];
+  const script = step?.split('        run: |\n')[1]?.split(/\n  [a-z][a-z0-9-]*:\n/)[0];
   if (!script) {
     throw new Error(`Cannot find the run block for CI workflow step: ${name}`);
   }

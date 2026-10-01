@@ -1,7 +1,7 @@
-# Permit Node SDK 2.x to 3.0 change ledger
+# Migrating to Permit Node SDK 3.0
 
-This guide describes the upcoming 3.0 behavior. The reviewed pre-release package still identifies
-itself as 2.7.5; this document does not announce publication. Check the official release before
+This guide describes the upcoming 3.0 behavior. The reviewed candidate identifies itself as
+3.0.0 and remains unpublished. Check the official release before
 changing production requirements. Compare your actual installed 2.x version: some fixes were already
 present in recent 2.x source. Stable IDs below are shared with the scanner and release notes.
 
@@ -25,7 +25,7 @@ promise Node 23, 25, or all later majors. Check CI, containers, deployment provi
 ### C2 — Imports and modules
 
 Both native CommonJS and ES modules remain supported; there is no forced module conversion.
-Use `require('permitio')`, `import { Permit } from 'permitio'`, or the default root import.
+Use `require('permitio')` or `import { Permit } from 'permitio'`. Both loaders expose named exports.
 Root-only package exports already existed in 2.x. If you bypassed them with generated/internal file
 paths, review those imports: generated files and the physical runtime layout changed. Do not replace
 them with another internal path. The historical generated inventory lists removed declarations.
@@ -297,3 +297,45 @@ unsupported wrappers, escaped/broken symlinks or zero supported sources. Exclusi
 The scanner never executes target code, scripts, configuration modules or target dependencies.
 
 [inventory]: https://github.com/permitio/permit-node/blob/90b49a1878f0/openapi/MIGRATION.md
+
+## Complete migrated consumer
+
+Both entry styles are supported. Validate the effective token; this example performs only a read.
+The environment key selects its scope automatically. Broader keys need an allowed environment
+selection through `permit.config.apiContext` after scope initialization.
+
+```ts
+import { Permit, PermitApiError } from 'permitio';
+
+async function listUsers() {
+  const token = process.env['PERMIT_API_KEY'];
+  if (!token || /[\s\p{Cc}]/u.test(token)) {
+    throw new Error('Set PERMIT_API_KEY to a nonempty whitespace-free API key.');
+  }
+  const permit = new Permit({ token });
+  try {
+    const page = await permit.api.users.list({ page: 1, perPage: 20 });
+    return page.data;
+  } catch (error: unknown) {
+    if (error instanceof PermitApiError) {
+      console.error('Permit users read failed', { status: error.status, code: error.code });
+    }
+    throw error;
+  }
+}
+
+void listUsers();
+```
+
+For CommonJS, use `const { Permit, PermitApiError } = require('permitio')` and the same grouped
+calls. Strict CJS/ESM fixtures and private loopback tests validate the packed entries.
+
+## Migrate with an agent
+
+The package contains [the customer migration skill](../SKILL.md).
+Copy the whole `skills/permit-node-3-migration` directory from the package into your agent's skill
+directory. Install its locked compiler prerequisite with pnpm and lifecycle scripts disabled,
+as described in SKILL.md; then run its read-only scanner against the application directory.
+Review the stable IDs above alongside the scanner's findings and coverage limitations. The scanner
+does not perform edits, network calls or execute application code. A clean scan does not replace
+policy, transport, generated-type and real consumer verification.

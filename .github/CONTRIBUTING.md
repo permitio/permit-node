@@ -10,9 +10,11 @@ pnpm verify
 ```
 
 `verify` runs the frozen dependency check, Oxlint, Oxfmt, strict TypeScript, both module builds,
-all local unit, module-import, and tooling tests, and the reviewed API contract inventory. It requires no Permit credentials or Java.
-CI uses the same verification command. Use `pnpm fix` for lint fixes and formatting, then rerun
-`pnpm verify`. Hooks check files without rewriting them.
+all local unit, module-import, and tooling tests, and the reviewed API contract inventory.
+It requires no Permit credentials or Java. CI runs these checks in separate required jobs,
+then validates generated contracts, workflows, packed consumers and dependency security.
+Use `pnpm fix` for lint fixes and formatting, then rerun `pnpm verify`.
+Hooks check files without rewriting them.
 
 The hook installer enables Git's per-worktree configuration and installs prek into the current
 checkout's own Git directory. It leaves the shared hook path and sibling worktrees unchanged.
@@ -108,9 +110,10 @@ Do not add ignored advisory IDs, dependency overrides or scanner suppression fil
 CI requires these checks on Node 22.13 and 24.0. The weekly Monday workflow and manual dispatch
 publish GitHub summaries and downloadable evidence; repository maintainers review failed runs.
 Slack delivery requires a separately authorized destination and is not configured here.
-The release job also scans its final tarball immediately before publication with scripts disabled;
-it cannot publish if either scanner or consumer lane fails. npm Trusted Publishing requires
-Node >=22.14.0 and npm >=11.5.1; the release job validates the npm bundled with its Node 24 runner.
+The shared candidate security jobs scan the same versioned archive as the packed consumer jobs.
+Failed, skipped, cancelled or missing candidate gates prevent the publisher from running.
+npm Trusted Publishing requires Node >=22.14.0 and npm >=11.5.1; the release job validates
+the npm bundled with its Node 24 runner.
 The supported SDK Node floor remains 22.13.0.
 
 Dependabot groups runtime and tooling minor/patch updates, uses `increase`, and waits seven days
@@ -118,3 +121,41 @@ Dependabot groups runtime and tooling minor/patch updates, uses `increase`, and 
 pnpm 12 lock updates are not yet verified. Maintainers must review dependency update failures and
 apply compatible pinned updates manually until the bot supports this lockfile. The scheduled
 security gate does not depend on Dependabot and continues to scan all four trees.
+
+## Release gate rollout
+
+The `SDK required checks` aggregate requires the shared candidate, the explicit trusted/fork backend
+path and cleanup to succeed. Candidate gates require lint, strict types, unit/tooling tests,
+workflow checks, generated contracts, the versioned archive, both supported-floor packed consumers
+and dependency security. Fork and Dependabot runs report backend coverage as UNAVAILABLE and run
+local checks; same-repository backend runs fail when their required secret is missing. Failed
+cleanup attempts every owned environment deletion, then fails the aggregate rather than warning
+and reporting success.
+
+The publisher receives the archive from the same workflow run. Its SHA-256, metadata and committed
+source identity must match before npm executes. Publication acceptance is separate: SDK71 has no
+`releaseReady=true` contract while the shared target and Curtain Call remain unresolved. There is
+no dispatch flag or manual approval boolean that substitutes for those contracts.
+
+The following owner rollout is proposed, not applied. First observe a successful GitHub Actions
+check named exactly `SDK required checks` on the final PR commit, including a fork run and a
+trusted backend run. In active ruleset `main2` (24216899), add that exact context with GitHub
+Actions integration ID 15368 to `required_status_checks`; preserve every other field, including
+strict checks, no bypass actors, approval and thread-resolution requirements. Verify a
+missing/failing check blocks merge before relying on the setting. The 2026-10-01 read-only audit
+found the list empty; legacy branch-protection lookup returned 404 because the repository uses
+rulesets.
+
+After the acceptance blockers are resolved, propose production environment reviewers, prevent
+self-review, restrict deployment to the approved release tags, and create tag rules restricting
+creation, updates and deletion to the owner's release process. The same audit found no production
+protection rules/deployment policy and no tag rulesets. These settings require a separate concrete
+owner approval; retain existing branch rules and do not grant a bypass to get a release through.
+
+Before an authorized release, an npm package owner must verify the active Trusted Publisher binds
+`permitio/permit-node`, `node_sdk_publish.yaml` and `production`, with publication permission and
+appropriate account protection. Public registry provenance for 2.7.6 confirms that historical
+workflow identity, but does not prove the current trust configuration. Read-only `npm trust list`
+returned E401 in the audit; no authentication, ownership or publisher settings were changed.
+No credentials belong in the archive, validation evidence or workflow logs. Website reference
+publication remains separate from npm publication.

@@ -53,6 +53,10 @@ export function rewriteDeclarationAliases(directory) {
     }
   };
   visitDirectory(root);
+  if (existsSync(join(root, 'index.d.ts'))) {
+    // Canonical class declarations preserve nominal identity across the two loader entry points.
+    writeFileSync(join(root, 'index.d.mts'), "export * from './index.js';\n");
+  }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

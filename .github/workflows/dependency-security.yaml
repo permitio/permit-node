@@ -2,6 +2,13 @@ name: Dependency security
 
 on:
   workflow_call:
+    inputs:
+      artifact-name:
+        type: string
+        default: ''
+      artifact-sha256:
+        type: string
+        default: ''
   workflow_dispatch:
   schedule:
     - cron: '23 8 * * 1'
@@ -48,15 +55,43 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Build and pack the candidate
+        if: inputs.artifact-name == ''
         run: |
           pnpm build
           pnpm pack --out candidate.tgz --ignore-scripts
+      - name: Download the already validated candidate
+        if: inputs.artifact-name != ''
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: .test-results/release-candidate/
+      - name: Validate supplied candidate identity
+        if: inputs.artifact-name != ''
+        env:
+          EXPECTED_SHA256: ${{ inputs.artifact-sha256 }}
+        run: >-
+          node scripts/release-artifact.mjs --artifact .test-results/release-candidate/permitio.tgz
+          --identity .test-results/release-candidate/identity.json --sha256 "$EXPECTED_SHA256"
       - name: Audit locked and fresh consumer trees
-        run: node scripts/audit-dependencies.mjs --artifact candidate.tgz --out security-report
+        env:
+          CANDIDATE_ARTIFACT: >-
+            ${{ inputs.artifact-name != '' &&
+            '.test-results/release-candidate/permitio.tgz' || 'candidate.tgz' }}
+        run: >-
+          node scripts/audit-dependencies.mjs --artifact "$CANDIDATE_ARTIFACT"
+          --out security-report
+      - name: Validate supplied candidate after scans
+        if: inputs.artifact-name != ''
+        env:
+          EXPECTED_SHA256: ${{ inputs.artifact-sha256 }}
+        run: >-
+          node scripts/release-artifact.mjs --artifact .test-results/release-candidate/permitio.tgz
+          --identity .test-results/release-candidate/identity.json --sha256 "$EXPECTED_SHA256"
       - name: Report a scan that did not complete
         if: failure() || cancelled()
         run: |
-          echo 'Dependency security did not complete successfully; inspect the lane reports and failed steps.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Dependency security failed; inspect the lane reports and failed steps.' \
+            >> "$GITHUB_STEP_SUMMARY"
       - name: Save dependency security evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

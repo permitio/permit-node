@@ -9,8 +9,8 @@ description: >-
 # Permit Node SDK 3.0 migration
 
 Read `references/changes.md` before editing. Its stable IDs identify required migrations, semantic
-reviews, retained behavior and additions. This pre-release source still has package version 2.7.5;
-confirm the official 3.0 release before changing production requirements.
+reviews, retained behavior and additions. The candidate package identifies itself as 3.0.0 and
+remains unpublished; confirm the official release before changing production requirements.
 
 ## Establish scope
 

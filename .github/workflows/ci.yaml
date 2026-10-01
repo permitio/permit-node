@@ -32,40 +32,13 @@ env:
   PDP_IMAGE: permitio/pdp-v2:0.9.16@sha256:e3cf30794ec2d256636b4714641df46e51ee58a3f1f0d24c606e214e0bf8669a
 
 jobs:
-  dependency-security:
+  candidate:
     # Both forms use the caller's commit; actionlint 1.7.12 does not yet accept `$/`.
-    uses: ./.github/workflows/dependency-security.yaml # zizmor: ignore[self-repository]
-
-  lint-and-build:
-    needs: dependency-security
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Setup pnpm
-        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
-        env:
-          npm_config_ignore_scripts: 'true'
-        with:
-          run_install: false
-
-      - name: Setup Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: '22.13.0'
-          cache: 'pnpm'
-          cache-dependency-path: pnpm-lock.yaml
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts
-      - name: Verify tooling, build and local tests
-        run: pnpm verify
+    uses: ./.github/workflows/release-candidate.yaml # zizmor: ignore[self-repository]
 
   test:
     name: test (${{ matrix.node }})
-    needs: lint-and-build
+    needs: candidate
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
@@ -266,14 +239,15 @@ jobs:
       # Keep in sync with the test job's node labels.
       NODE_LABELS: 22 24
     steps:
-      # A 404 means the env was never created or is already gone. Any other
-      # failure is reported as a warning, since the env then needs manual removal.
+      # A 404 means the env was never created or is already gone. Attempt every
+      # owned deletion and fail the gate if any environment still needs removal.
       - name: Delete temp Permit envs
         if: env.RUN_BACKEND == 'true'
         env:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
           ENV_KEY_PREFIX: node-sdk-ci-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
+          failures=0
           for node_label in $NODE_LABELS; do
             env_key="${ENV_KEY_PREFIX}-n${node_label}"
             status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 --retry 3 -X DELETE \
@@ -282,51 +256,41 @@ jobs:
             case "$status" in
               2??) echo "Deleted temp env ${env_key}." ;;
               404) echo "Temp env ${env_key} does not exist; nothing to delete." ;;
-              *) echo "::warning::Temp env ${env_key} was not deleted (HTTP ${status}); delete it from project ${PROJECT_ID} manually." ;;
+              *)
+                echo "::error::Temp env ${env_key} was not deleted (HTTP ${status});" \
+                  "delete it from project ${PROJECT_ID} manually." >&2
+                failures=$((failures + 1))
+                ;;
             esac
           done
+          if [[ "$failures" -ne 0 ]]; then
+            exit 1
+          fi
 
-  codegen-guard:
-    needs: dependency-security
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    permissions:
-      contents: read
-
+  required-checks:
+    name: SDK required checks
+    needs: [candidate, test, cleanup]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
     steps:
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-
       - name: Setup pnpm
         uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
         env:
           npm_config_ignore_scripts: 'true'
         with:
           run_install: false
-
       - name: Setup Node.js
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22.13.0'
-          cache: 'pnpm'
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: Setup Java (required by openapi-generator-cli)
-        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts
-
-      - name: Test codegen guard failure paths
-        run: pnpm test:codegen
-
-      - name: Codegen type-shape guard
-        run: pnpm check:codegen
-
-      - name: Reviewed OpenAPI reproduction
-        run: pnpm check:openapi
+          package-manager-cache: false
+      - name: Require candidate and backend path checks
+        env:
+          GATE_STAGE: ci
+          GATE_RESULTS: ${{ toJSON(needs) }}
+        run: node scripts/check-release-gates.mjs

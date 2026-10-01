@@ -2,12 +2,13 @@
 
 ## Unreleased — 3.0
 
-These changes describe the upcoming major release; this source still has package version 2.7.5.
+These changes describe the unpublished 3.0.0 candidate; they do not announce a release.
 See [the migration guide](MIGRATION.md) for affected callers, actions and retained behavior.
 
 - **P1**: Upgrade the direct dependency and application lock after the 3.0 publication.
 - **C1**: Support Node `^22.13.0 || ^24.0.0`.
-- **C2**: Preserve root CommonJS/ESM imports; review changed internal generated paths.
+- **C2**: Preserve named CommonJS/ESM imports and loader-specific declarations;
+  review internal paths.
 - **C3**: Remove four unused transitive packages; direct consumers must declare them.
 - **A1**: Remove all 29 flat API methods in favor of grouped clients.
 - **A2**: Remove getMethods, five legacy exports, and ApiContext.level.

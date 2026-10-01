@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { isDeepStrictEqual } from 'node:util';
 
 import semver from 'semver';
+import { validateReviewedVersion } from '#scripts/check-release-tag.mjs';
 
 const tag = process.env['RELEASE_TAG'];
 const version = semver.valid(tag);
@@ -11,6 +12,11 @@ if (!version) {
   process.exitCode = 1;
 } else {
   const before = JSON.parse(readFileSync('package.json', 'utf8'));
+  validateReviewedVersion({
+    version: before.version,
+    tag,
+    prerelease: process.env['IS_PRERELEASE'],
+  });
   const result = spawnSync(
     'npm',
     ['version', tag, '--no-git-tag-version', '--allow-same-version', '--ignore-scripts'],

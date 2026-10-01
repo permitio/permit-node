@@ -6,7 +6,6 @@ on:
 
 permissions: {}
 
-# One run per release tag at a time, and a publish is never cancelled part-way.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.release.tag_name }}
   cancel-in-progress: false
@@ -16,109 +15,97 @@ defaults:
     shell: bash --noprofile --norc -euo pipefail {0}
 
 jobs:
-  dependency-security:
+  candidate:
     permissions:
       contents: read
     # Both forms use the caller's commit; actionlint 1.7.12 does not yet accept `$/`.
-    uses: ./.github/workflows/dependency-security.yaml # zizmor: ignore[self-repository]
+    uses: ./.github/workflows/release-candidate.yaml # zizmor: ignore[self-repository]
+    with:
+      release-tag: ${{ github.event.release.tag_name }}
+      prerelease: ${{ github.event.release.prerelease }}
 
-  publish_node_sdk:
-    needs: dependency-security
+  publication-acceptance:
+    name: Publication acceptance
+    needs: candidate
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
-    environment: production
+    timeout-minutes: 5
     permissions:
       contents: read
-      id-token: write # Required for npm Trusted Publishing (OIDC)
-    env:
-      # registry-url makes setup-node write an .npmrc that reads
-      # ${NODE_AUTH_TOKEN}. setup-node v7 no longer exports a placeholder for it,
-      # and an empty placeholder keeps registry configuration valid during install.
-      # Publishing gets its token from Trusted Publishing.
-      NODE_AUTH_TOKEN: ''
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-
       - name: Setup pnpm
         uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
         env:
           npm_config_ignore_scripts: 'true'
         with:
           run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          package-manager-cache: false
+      # SDK71 has no releaseReady=true state. Shared adoption and Curtain Call must
+      # provide their reviewed acceptance contract before publication can proceed.
+      - name: Require the unresolved shared release acceptance
+        run: node scripts/check-publication-readiness.mjs
 
+  publish_node_sdk:
+    needs: [candidate, publication-acceptance]
+    if: github.repository == 'permitio/permit-node'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    permissions:
+      contents: read
+      id-token: write # Required for npm Trusted Publishing (OIDC)
+    env:
+      NODE_AUTH_TOKEN: ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-          # This job can publish, so never restore a dependency cache into it.
           package-manager-cache: false
-
-      - name: Setup Trivy
-        uses: aquasecurity/setup-trivy@81e514348e19b6112ce2a7e3ecbafe19c1e1f567 # v0.3.1
-        with:
-          version: v0.74.0
-          cache: false
-
-      - name: Audit before installing dependencies
-        run: node scripts/audit-dependencies.mjs --locked-only --out security-preinstall
-
-      # --ignore-scripts: dependency install scripts must not run in a job that
-      # can publish. pnpm test builds the package.
-      - name: Install dependencies
-        timeout-minutes: 5
-        run: pnpm install --frozen-lockfile --ignore-scripts
-
+      - name: Require all publication dependencies
+        env:
+          GATE_STAGE: publication
+          GATE_RESULTS: ${{ toJSON(needs) }}
+        run: node scripts/check-release-gates.mjs
       - name: Verify bundled npm supports Trusted Publishing
         run: node scripts/check-publish-runtime.mjs
-
-      # Build, then the unit and module-import tests. The integration and e2e
-      # suites need a provisioned environment and PDP, and run in the CI
-      # workflow's backend job.
-      - name: Run tests
-        timeout-minutes: 10
-        run: pnpm test
-
-      - name: Bump version at package.json
+      - name: Download the exact tested and scanned archive
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-candidate
+          path: .test-results/release-candidate/
+      - name: Recheck archive hash, metadata and source identity
         env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: |
-          node scripts/set-release-version.mjs
-
-      - name: Pack the release candidate
-        run: |
-          pnpm pack --out release.tgz --ignore-scripts
-
+          EXPECTED_SHA256: ${{ needs.candidate.outputs.sha256 }}
+        run: >-
+          node scripts/release-artifact.mjs --artifact .test-results/release-candidate/permitio.tgz
+          --identity .test-results/release-candidate/identity.json --sha256 "$EXPECTED_SHA256"
       - name: Publish package to NPM
         timeout-minutes: 15
         env:
           IS_PRERELEASE: ${{ github.event.release.prerelease }}
         run: |
-          # A failed or incomplete scan exits before npm can publish.
-          node scripts/audit-dependencies.mjs --artifact release.tgz --out security-release
           if [[ "$IS_PRERELEASE" == "true" ]]; then
-            echo "Publishing as a release candidate (rc)..."
-            npm publish release.tgz --ignore-scripts --access public --tag rc
+            npm publish .test-results/release-candidate/permitio.tgz \
+              --ignore-scripts --access public --tag rc
+          elif [[ "$IS_PRERELEASE" == "false" ]]; then
+            npm publish .test-results/release-candidate/permitio.tgz \
+              --ignore-scripts --access public
           else
-            echo "Publishing as the latest release..."
-            npm publish release.tgz --ignore-scripts --access public
+            echo '::error::Release prerelease metadata is invalid.' >&2
+            exit 1
           fi
-        # No NPM_TOKEN needed — authenticated via npm Trusted Publishing (OIDC),
-        # which requires the job's `id-token: write` permission above plus a
-        # Trusted Publisher configured on npmjs.com:
-        #   permitio/permit-node -> Settings -> Trusted Publishers
-        #   (workflow: node_sdk_publish.yaml, environment: production)
-        # Provenance attestations are generated automatically.
-
-      - name: Save dependency security evidence
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: release-dependency-security
-          path: |
-            security-preinstall/
-            security-release/
-          if-no-files-found: error
+        # npm OIDC trust remains bound to permitio/permit-node,
+        # node_sdk_publish.yaml and production. No NPM_TOKEN is used.

@@ -57,13 +57,32 @@ LCOV and JSON summaries are saved in `coverage/`; this measured scope has no per
 
 ## Release
 
-Releases use the `Release permit Node SDK` GitHub workflow after maintainer approval. The workflow
-validates the literal release tag, verifies dependency security on both supported Node floors,
-builds and tests the SDK, then scans and publishes the same tarball through npm Trusted Publishing.
-Dependency installation, packing, and publication disable lifecycle scripts. Failed or incomplete
-security scans block publication. Release candidates use the `rc` distribution tag.
+The shared candidate workflow builds `permitio@3.0.0` from the committed version, validates the
+package metadata and file allowlist, and records its archive hash and source identity. Required
+quality checks cover lint, strict types, local unit/tooling tests, generated contracts, workflow
+security, and external packed ESM/CommonJS customers on Node 22.13.0 and 24.0.0. The customer
+fixtures also compile with TypeScript 6 and 7 under Node16, NodeNext and Bundler resolution.
+Both runtime entry points expose named exports; the ESM declaration facade preserves shared
+class identity with CommonJS. Dependency security scans the same archive on both Node floors.
 
-See [Contributing](.github/CONTRIBUTING.md#dependency-security) for local scan commands and reports.
+The release workflow normalizes semantic-version tags, including an optional `v` prefix, and
+requires the resulting version to match the reviewed package version.
+Its production job downloads and revalidates the tested/scanned archive, then uses npm Trusted
+Publishing with lifecycle scripts disabled. It does not build, change the version or repack.
+Release candidates use the `rc` distribution tag.
+
+**Publication is currently blocked.** SDK71's local release evidence has 13 unproved operations,
+its `releaseReady` remains false, and the shared target is unavailable (PER-16345).
+Shared acceptance and Curtain Call (PER-16561, PER-16574) must provide their reviewed acceptance
+contract before publication can proceed. Ordinary PR quality checks do not claim this external
+acceptance.
+
+Repository check, production approval, release tag and npm publisher settings require the separate
+owner rollout described in [Contributing](.github/CONTRIBUTING.md#release-gate-rollout). Workflow
+source alone does not configure those protections. Actual merge, tag creation and publication
+also require separate authorization.
+
+See [Contributing](.github/CONTRIBUTING.md#dependency-security) for scan commands and reports.
 
 ## Constructor Configuration
 

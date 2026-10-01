@@ -1,7 +1,7 @@
 # Migrating to Permit Node SDK 3.0
 
-This guide describes the upcoming 3.0 behavior. The reviewed pre-release package still identifies
-itself as 2.7.5; this document does not announce publication. Check the official release before
+This guide describes the upcoming 3.0 behavior. The reviewed candidate identifies itself as
+3.0.0 and remains unpublished. Check the official release before
 changing production requirements. Compare your actual installed 2.x version: some fixes were already
 present in recent 2.x source. Stable IDs below are shared with the scanner and release notes.
 
@@ -25,7 +25,7 @@ promise Node 23, 25, or all later majors. Check CI, containers, deployment provi
 ### C2 — Imports and modules
 
 Both native CommonJS and ES modules remain supported; there is no forced module conversion.
-Use `require('permitio')`, `import { Permit } from 'permitio'`, or the default root import.
+Use `require('permitio')` or `import { Permit } from 'permitio'`. Both loaders expose named exports.
 Root-only package exports already existed in 2.x. If you bypassed them with generated/internal file
 paths, review those imports: generated files and the physical runtime layout changed. Do not replace
 them with another internal path. The historical generated inventory lists removed declarations.

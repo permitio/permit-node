@@ -149,3 +149,38 @@ void create; void remove; void createUsers; void deleteUsers; void replaceUsers;
   );
   expect(result.status, result.stdout + result.stderr).toBe(0);
 });
+
+test('the ESM declaration entry shares private class identity with CommonJS', () => {
+  const root = fixture();
+  writeFileSync(
+    join(root, 'index.d.ts'),
+    'export declare class Context { private state; set(value: string): void; }',
+  );
+  rewriteDeclarationAliases(root);
+  writeFileSync(join(root, 'package.json'), JSON.stringify({ type: 'commonjs' }));
+  writeFileSync(
+    join(root, 'consumer.mts'),
+    `import { Context } from './index.mjs';
+import cjs = require('./index.js');
+const fromCommonjs: Context = new cjs.Context();
+const fromEsm: cjs.Context = new Context();
+void [fromCommonjs, fromEsm];`,
+  );
+  const result = spawnSync(
+    process.execPath,
+    [
+      join(process.cwd(), 'node_modules/typescript/bin/tsc'),
+      '--strict',
+      '--noEmit',
+      '--module',
+      'NodeNext',
+      '--types',
+      'node',
+      '--typeRoots',
+      join(process.cwd(), 'node_modules/@types'),
+      'consumer.mts',
+    ],
+    { cwd: root, encoding: 'utf8' },
+  );
+  expect(result.status, result.stdout + result.stderr).toBe(0);
+});
