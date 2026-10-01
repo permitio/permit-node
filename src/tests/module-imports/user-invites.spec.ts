@@ -122,6 +122,7 @@ declare const results: Results;
 void results;
 `;
 
+// Allow both sequential 30-second compiler limits plus fixture setup and cleanup.
 test('strict TS6 and TS7 consumers preserve required-nullable invite contracts', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'permit-invite-types-'));
   onTestFinished(() => rm(directory, { recursive: true, force: true }));
@@ -177,4 +178,4 @@ test('strict TS6 and TS7 consumers preserve required-nullable invite contracts',
     expect(stdout).toBe('');
     expect(stderr).toBe('');
   }
-});
+}, 65_000);
