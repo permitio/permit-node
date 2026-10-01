@@ -28,8 +28,8 @@ Install pnpm with <code>npm install --global --ignore-scripts pnpm@12.8.1</code>
 </code><button type="button">Copy</button></pre>
 
 <p>Installs disable lifecycle scripts, so builds and hook setup are explicit. Run <code>pnpm hooks:install</code>
-to install prek for the current checkout without changing sibling worktree hooks. New dependency versions must be
-at least 24 hours old; direct dependencies are saved with exact versions.</p>
+to install prek for the current checkout without changing sibling worktree hooks. New dependency
+versions must be at least 24 hours old; direct dependencies are saved with exact versions.</p>
 <p><code>pnpm test</code> runs the unit and module-import suites without a Permit backend.
 <code>pnpm test:codegen</code> tests the generator guard without Java; <code>pnpm check:codegen</code> also
 regenerates the fixture and requires Java 17. <code>pnpm check:openapi</code> regenerates the reviewed
@@ -65,10 +65,10 @@ Shared acceptance and Curtain Call (PER-16561, PER-16574) must provide their rev
 contract before publication can proceed. Ordinary PR quality checks do not claim this external
 acceptance.</p>
 <p>Repository check, production approval, release tag and npm publisher settings require the separate
-owner rollout described in <a href="media/CONTRIBUTING.md#release-gate-rollout">Contributing</a>. Workflow
+owner rollout described in <a href="media/CONTRIBUTING.md">Contributing</a>. Workflow
 source alone does not configure those protections. Actual merge, tag creation and publication
 also require separate authorization.</p>
-<p>See <a href="media/CONTRIBUTING.md#dependency-security">Contributing</a> for scan commands and reports.</p>
+<p>See <a href="media/CONTRIBUTING.md">Contributing</a> for scan commands and reports.</p>
 <h2 id="constructor-configuration" class="tsd-anchor-link">Constructor Configuration<a href="#constructor-configuration" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>The constructor accepts <code>IPermitOptions</code>. Omitted values use environment variables and SDK
 defaults. A nonempty token is required after <code>PERMIT_API_KEY</code> fallback; tokens are opaque strings
@@ -149,8 +149,12 @@ the default when <code>log.level</code> is omitted.</p>
 omitted, <code>PERMIT_LOG_JSON</code> supplies the default: <code>false</code> selects pretty text, while <code>true</code>, an
 unset variable, or any other value keeps JSON lines. The variable ignores letter case and
 surrounding whitespace. An explicit <code>log.json</code> setting always overrides the environment variable.
-Pretty output uses an in-process stream without worker threads. SDK initialization logs do not
-include the API key or serialized configuration.</p>
+This is a breaking logging change: explicit <code>log.json: false</code> produced JSON in 2.x and selects
+pretty text in 3.0. Update log parsers, or set <code>log.json: true</code> to retain JSON output.
+Pretty output uses an in-process synchronous stream without worker threads. Writes run on the
+calling thread, so blocked stdout can delay the application. Prefer the default JSON output for
+production log collection. SDK initialization logs do not include the API key or serialized
+configuration.</p>
 <pre><code class="typescript"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">Permit</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-3">&#39;permitio&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">permit</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-2">Permit</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-0">token:</span><span class="hl-1"> </span><span class="hl-0">process</span><span class="hl-1">.</span><span class="hl-0">env</span><span class="hl-1">.</span><span class="hl-7">PERMIT_API_KEY</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">log:</span><span class="hl-1"> { </span><span class="hl-0">level:</span><span class="hl-1"> </span><span class="hl-3">&#39;debug&#39;</span><span class="hl-1">, </span><span class="hl-0">json:</span><span class="hl-1"> </span><span class="hl-4">false</span><span class="hl-1"> },</span><br/><span class="hl-1">});</span>
 </code><button type="button">Copy</button></pre>
 
@@ -341,7 +345,13 @@ an environment-level API key or broader access.</p>
 <h2 id="documentation" class="tsd-anchor-link">Documentation<a href="#documentation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p><a href="https://docs.permit.io/sdk/nodejs/quickstart-nodejs#add-the-sdk-to-your-js-code">Read the documentation at Permit.io website</a></p>
 <h2 id="api-reference" class="tsd-anchor-link">API Reference<a href="#api-reference" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
-<p><a href="https://permitio.github.io/permit-node/classes/Permit.html">Check out the tsdoc reference here.</a></p>
+<p>The <a href="https://permitio.github.io/permit-node/classes/Permit.html">API reference</a> is hosted on
+GitHub Pages. For this unreleased candidate, run <code>pnpm run docs</code> and inspect the generated
+<code>docs/index.html</code>; building the reference does not publish it.</p>
+<p>Grouped interfaces and the named input/result/error contracts used by public methods are imported
+from <code>permitio</code>. This includes <code>IRelationshipTuplesApi</code>, <code>IResourceInstancesApi</code>,
+<code>IResourceRelationsApi</code> and <code>IResourceRolesApi</code>. The reference links these interfaces from
+<code>IPermitApi</code> and its navigation. Generated-only internal files are not a supported deep-import API.</p>
 </div></div>
 <div class="col-sidebar">
 <div class="page-menu">

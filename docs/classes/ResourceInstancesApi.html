@@ -158,14 +158,14 @@ Note that this check is not foolproof, and the API may still throw 401.</p>
 <h3 class="tsd-anchor-link" id="ensurecontext"><span>ensure<wbr/>Context</span><a href="#ensurecontext" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
 <li class="tsd-is-inherited">
-<div class="tsd-signature tsd-anchor-link" id="ensurecontext-1"><span class="tsd-kind-call-signature">ensureContext</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">requiredContext</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ApiContextLevel</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#ensurecontext-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="ensurecontext-1"><span class="tsd-kind-call-signature">ensureContext</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">requiredContext</span><span class="tsd-signature-symbol">:</span> <a href="../enums/ApiContextLevel.html" class="tsd-signature-type tsd-kind-enum">ApiContextLevel</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#ensurecontext-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Ensure that the API context matches the required endpoint context.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">requiredContext</span>: <span class="tsd-signature-type">ApiContextLevel</span></span>
+<li><span><span class="tsd-kind-parameter">requiredContext</span>: <a href="../enums/ApiContextLevel.html" class="tsd-signature-type tsd-kind-enum">ApiContextLevel</a></span>
 <div class="tsd-comment tsd-typography"><p>The required API context level for the endpoint.</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -369,7 +369,7 @@ Uses the control plane even when facts proxying or waitForSync is enabled.</p>
 <h3 class="tsd-anchor-link" id="waitforsync"><span>wait<wbr/>For<wbr/>Sync</span><a href="#waitforsync" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
 <li class="tsd-is-inherited">
-<div class="tsd-signature tsd-anchor-link" id="waitforsync-1"><span class="tsd-kind-call-signature">waitForSync</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">timeout</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">policy</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">FactsSyncTimeoutPolicy</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">this</span><a href="#waitforsync-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="waitforsync-1"><span class="tsd-kind-call-signature">waitForSync</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">timeout</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">policy</span><span class="tsd-signature-symbol">?:</span> <a href="../types/FactsSyncTimeoutPolicy.html" class="tsd-signature-type tsd-kind-type-alias">FactsSyncTimeoutPolicy</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">this</span><a href="#waitforsync-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Wait for the facts to be synchronized with the PDP. Available only when <code>proxyFactsViaPdp</code> is set to <code>true</code>.</p>
 </div>
@@ -380,7 +380,7 @@ Uses the control plane even when facts proxying or waitForSync is enabled.</p>
 <div class="tsd-comment tsd-typography"><p>The maximum number of seconds to wait for the synchronization to complete.
 Set to null to wait indefinitely.</p>
 </div></li>
-<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">policy</span>: <span class="tsd-signature-type">FactsSyncTimeoutPolicy</span></span>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">policy</span>: <a href="../types/FactsSyncTimeoutPolicy.html" class="tsd-signature-type tsd-kind-type-alias">FactsSyncTimeoutPolicy</a></span>
 <div class="tsd-comment tsd-typography"><p>Controls what happens when the timeout is reached during synchronization.</p>
 <ul>
 <li>'ignore': Respond immediately when data update did not apply within the timeout period</li>

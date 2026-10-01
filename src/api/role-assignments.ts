@@ -78,7 +78,7 @@ type RoleAssignmentListResult<Details, Counts> = Details extends true
     ? PaginatedResultRoleAssignmentRead
     : RoleAssignmentRead[];
 
-type ReturnListRoleAssignments<T extends IListRoleAssignments> = T extends unknown
+export type ReturnListRoleAssignments<T extends IListRoleAssignments> = T extends unknown
   ? RoleAssignmentListResult<
       'detailed' extends keyof T ? T['detailed'] : false,
       'includeTotalCount' extends keyof T ? T['includeTotalCount'] : false

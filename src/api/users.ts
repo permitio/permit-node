@@ -100,9 +100,12 @@ export interface IBaseGetUserRoles {
 type IGetUserRolesWithTotalCount = IBaseGetUserRoles & { includeTotalCount: true };
 type IGetUserRolesWithDetails = IBaseGetUserRoles & { detailed: true };
 
-type IGetUserRoles = IBaseGetUserRoles | IGetUserRolesWithTotalCount | IGetUserRolesWithDetails;
+export type IGetUserRoles =
+  | IBaseGetUserRoles
+  | IGetUserRolesWithTotalCount
+  | IGetUserRolesWithDetails;
 
-type ReturnIGetUserRolesType<T extends IGetUserRoles> = T extends IGetUserRolesWithTotalCount
+export type ReturnIGetUserRolesType<T extends IGetUserRoles> = T extends IGetUserRolesWithTotalCount
   ? // with total count
     T extends IGetUserRolesWithDetails
     ? PaginatedResultRoleAssignmentDetailedRead

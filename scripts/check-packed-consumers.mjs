@@ -69,6 +69,12 @@ export function checkPackedConsumers({ root = process.cwd(), artifact, sha256 })
     for (const file of ['types.mts', 'types.cts'])
       cpSync(join(root, 'scripts/fixtures/migration', file), join(consumer, file));
     cpSync(join(root, 'scripts/fixtures/packed-consumer.mts'), join(consumer, 'mixed.mts'));
+    for (const extension of ['mts', 'cts']) {
+      cpSync(
+        join(root, `scripts/fixtures/public-reference.${extension}`),
+        join(consumer, `public-reference.${extension}`),
+      );
+    }
     const guide = /```ts\n([\s\S]*?)\n```/u.exec(readFileSync(join(root, 'MIGRATION.md'), 'utf8'));
     if (!guide) throw new Error('Migration guide has no complete TypeScript example.');
     writeFileSync(join(consumer, 'guide.mts'), guide[1]);
@@ -83,7 +89,10 @@ export function checkPackedConsumers({ root = process.cwd(), artifact, sha256 })
         'consumer.mts',
         'types.mts',
         'guide.mts',
-        ...(module === 'ESNext' ? [] : ['consumer.cts', 'types.cts', 'mixed.mts']),
+        'public-reference.mts',
+        ...(module === 'ESNext'
+          ? []
+          : ['consumer.cts', 'types.cts', 'mixed.mts', 'public-reference.cts']),
       ];
       const options = {
         target: 'ES2023',
@@ -161,6 +170,11 @@ for (const [from, to] of [[esm, cjs], [cjs, esm]]) {
   const permit = new to.Permit({ token: 'fixture', apiContext: context, log: { level: 'silent' } });
   assert.equal(permit.config.apiContext.environment, 'env');
   assert.equal(typeof permit.check, 'function');
+  assert.ok(permit.api.resourceRelations instanceof to.ResourceRelationsApi);
+  assert.ok(permit.api.resourceRoles instanceof to.ResourceRolesApi);
+  assert.equal(to.ApiContextLevel.ENVIRONMENT, 3);
+  assert.throws(() => new to.ApiContext().setEnvironmentLevelContext('org', 'project', 'env'),
+    to.PermitContextChangeError);
 }
 console.log('PACKED_LOADERS_PASS');
 `;

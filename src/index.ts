@@ -21,9 +21,11 @@ import { resolveRetryConfig } from '#src/utils/retry';
 
 // exported interfaces
 export * from '#src/api/index';
-export { type IPermitConfig, type IPermitOptions } from '#src/config';
+export { type IPermitConfig, type IPermitOptions, type FactsSyncTimeoutPolicy } from '#src/config';
 export {
   type IUser,
+  type ICheckQuery,
+  type IUserPermissions,
   type IAction,
   type IResource,
   type IFilterObject,
@@ -36,9 +38,15 @@ export {
   PermitError,
   PermitPDPStatusError,
 } from '#src/enforcement/enforcer';
-export { type Context, type GetUserPermissionsConfig } from '#src/utils/context';
-export { ApiContext, PermitContextError, ApiKeyLevel } from '#src/api/context';
-export { PermitApiError } from '#src/api/base';
+export { type Context, type CheckConfig, type GetUserPermissionsConfig } from '#src/utils/context';
+export {
+  ApiContext,
+  ApiContextLevel,
+  PermitContextError,
+  PermitContextChangeError,
+  ApiKeyLevel,
+} from '#src/api/context';
+export { PermitApiError, type FormattedAxiosError } from '#src/api/base';
 export { type IRetryConfig, type RetryConditionFn, RETRYABLE_STATUS_CODES } from '#src/utils/retry';
 
 export interface IPermitClient extends IEnforcer {

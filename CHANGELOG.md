@@ -15,6 +15,9 @@ See [the migration guide](MIGRATION.md) for affected callers, actions and retain
 - **A3**: Adapt page/sync/rule results; reject empty rule creation and return void on unassign.
 - **A4**: Allow omitted/partial condition filters; permission filters use the action key/ID.
 - **F1**: Validate effective constructor options and default unset logging format to JSON.
+  Breaking: `log.json: false` now selects pretty text rather than the old JSON output.
+  Update log parsers or use `log.json: true`. Pretty output writes synchronously; blocked stdout
+  can delay the application. The default JSON destination is unchanged.
 - **F2**: Freeze SDK settings and copy initial context while keeping caller transports live.
 - **E1**: Normalize PDP errors and preserve denial cardinality in non-throwing bulk results.
 - **E2**: Detach and bound REST/scope error data; remove raw request and error identity access.
@@ -30,3 +33,7 @@ See [the migration guide](MIGRATION.md) for affected callers, actions and retain
 - **N1**: Add eight GA grouped Groups operations.
 - **N2**: Add new-user tenant membership, three detailed lists, and environment refresh ack.
 - **N3**: Add permission context, authorized-user/role-tenant discovery, and object filtering.
+- Export existing resource-relation/resource-role clients and their public contracts, plus missing
+  method input/result types. `ApiContextLevel` and `PermitContextChangeError` are also named root
+  exports. Generate linked group reference pages and validate local reference targets; building
+  documentation does not publish the candidate.

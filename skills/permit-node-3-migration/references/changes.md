@@ -30,6 +30,10 @@ Root-only package exports already existed in 2.x. If you bypassed them with gene
 paths, review those imports: generated files and the physical runtime layout changed. Do not replace
 them with another internal path. The historical generated inventory lists removed declarations.
 
+`ResourceRelationsApi`, `ResourceRolesApi`, `ApiContextLevel` and `PermitContextChangeError` are
+now named root exports. Use the grouped clients through `permit.api.resourceRelations` and
+`permit.api.resourceRoles`, and use their exported classes for constructor identity checks.
+
 ### C3 — Direct use of former transitive dependencies
 
 The SDK no longer brings in `@bitauth/libauth`, `path-to-regexp`, `require-in-the-middle` or
@@ -132,8 +136,11 @@ before HTTP, without echoing credentials.
 Use complete instances from `axios.create()` and a genuine current-version `ApiContext`, rather
 than partial mock objects. Explicit `undefined` is permitted for constructor options.
 
-Unset `PERMIT_LOG_JSON` now selects JSON lines. Explicit `log.json: false` or environment value
-`false` selects pretty output; case and surrounding whitespace are ignored. Update log parsers.
+Unset `PERMIT_LOG_JSON` now selects JSON lines. Explicit `log.json: false` produced JSON in 2.x
+and now selects pretty output. Environment value `false` also selects pretty output; case and
+surrounding whitespace are ignored. Update log parsers, or explicitly set `log.json: true`.
+Pretty output writes synchronously on the calling thread; blocked stdout can delay the application.
+The default JSON output keeps Pino's default destination and is preferred for production collection.
 Logs omit raw configuration, credentials, full attributes, request bodies and private errors.
 
 ### F2 — Configuration and API context ownership
@@ -235,7 +242,8 @@ uses a synchronous object-array snapshot. No new public global context registrat
 Replace root `EnvironmentCopyConflictStrategyEnum` with `EnvironmentCopyConflictStrategy`.
 Root `Statistics` is removed without a generic substitute. Together with A2, exactly seven root
 names were removed from the reviewed main baseline. The generated derivation-settings name becomes
-`PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings`; generated-only imports need review.
+`PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings` and is available from `permitio`
+alongside the resource-role method contracts. Other generated-only internal imports need review.
 Resource-role and `granted_to` dictionaries use current named models. Review the historical
 [generated inventory][inventory] and compile against the final package, not its old counts.
 
@@ -258,8 +266,10 @@ error data and shape unions. `roleAssignments.list()` correctly reflects literal
 and correlated detail/count flags; its existing wire behavior is retained. Prefer `listDetailed()`
 when a guaranteed detailed envelope is appropriate. With `exactOptionalPropertyTypes`, omit absent
 generated properties instead of explicitly setting `undefined`; constructor options are different.
-Downstream projects are not forced to adopt the SDK's compiler flags. `CheckConfig` was not a root
-export and remains unexported; infer a check argument type if needed.
+Downstream projects are not forced to adopt the SDK's compiler flags. Import `CheckConfig`,
+`ICheckQuery`, `IUserPermissions` and the named pagination/list result contracts from `permitio`
+for explicit call and result annotations. `FormattedAxiosError` describes sanitized REST
+diagnostics; its `error` body remains unknown until narrowed.
 
 ## Additions, not compulsory replacements
 

@@ -23,7 +23,7 @@ import {
   PermitContextError,
 } from '#src/api/context';
 
-interface FormattedAxiosError {
+export interface FormattedAxiosError {
   code?: string | undefined;
   message: string;
   error?: unknown;

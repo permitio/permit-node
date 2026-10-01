@@ -18,6 +18,10 @@ import { BasePermitApi, type IPagination } from '#src/api/base';
 import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
 export {
+  type DerivedRoleRuleCreate,
+  type DerivedRoleRuleDelete,
+  type DerivedRoleRuleRead,
+  type PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings,
   type ResourceRoleCreate,
   type ResourceRoleRead,
   type ResourceRoleUpdate,

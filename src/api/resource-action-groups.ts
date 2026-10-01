@@ -16,7 +16,11 @@ import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 // oxlint-disable-next-line no-unused-vars -- Type imports resolve public TSDoc error/context links.
 import type { ApiContext, PermitContextError } from '#src/api/context';
 
-export { type ResourceActionGroupCreate, type ResourceActionGroupRead } from '#src/openapi/index';
+export {
+  type ResourceActionGroupCreate,
+  type ResourceActionGroupRead,
+  type ResourceActionGroupUpdate,
+} from '#src/openapi/index';
 
 export interface IListActionGroups extends IPagination {
   resourceKey: string;

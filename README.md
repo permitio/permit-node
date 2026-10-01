@@ -33,8 +33,8 @@ pnpm verify
 ```
 
 Installs disable lifecycle scripts, so builds and hook setup are explicit. Run `pnpm hooks:install`
-to install prek for the current checkout without changing sibling worktree hooks. New dependency versions must be
-at least 24 hours old; direct dependencies are saved with exact versions.
+to install prek for the current checkout without changing sibling worktree hooks. New dependency
+versions must be at least 24 hours old; direct dependencies are saved with exact versions.
 
 `pnpm test` runs the unit and module-import suites without a Permit backend.
 `pnpm test:codegen` tests the generator guard without Java; `pnpm check:codegen` also
@@ -78,11 +78,11 @@ contract before publication can proceed. Ordinary PR quality checks do not claim
 acceptance.
 
 Repository check, production approval, release tag and npm publisher settings require the separate
-owner rollout described in [Contributing](.github/CONTRIBUTING.md#release-gate-rollout). Workflow
+owner rollout described in [Contributing](.github/CONTRIBUTING.md). Workflow
 source alone does not configure those protections. Actual merge, tag creation and publication
 also require separate authorization.
 
-See [Contributing](.github/CONTRIBUTING.md#dependency-security) for scan commands and reports.
+See [Contributing](.github/CONTRIBUTING.md) for scan commands and reports.
 
 ## Constructor Configuration
 
@@ -204,8 +204,12 @@ Logs are JSON lines by default. Set `log.json: false` for pretty text. When `log
 omitted, `PERMIT_LOG_JSON` supplies the default: `false` selects pretty text, while `true`, an
 unset variable, or any other value keeps JSON lines. The variable ignores letter case and
 surrounding whitespace. An explicit `log.json` setting always overrides the environment variable.
-Pretty output uses an in-process stream without worker threads. SDK initialization logs do not
-include the API key or serialized configuration.
+This is a breaking logging change: explicit `log.json: false` produced JSON in 2.x and selects
+pretty text in 3.0. Update log parsers, or set `log.json: true` to retain JSON output.
+Pretty output uses an in-process synchronous stream without worker threads. Writes run on the
+calling thread, so blocked stdout can delay the application. Prefer the default JSON output for
+production log collection. SDK initialization logs do not include the API key or serialized
+configuration.
 
 ```typescript
 import { Permit } from 'permitio';
@@ -546,4 +550,11 @@ an environment-level API key or broader access.
 
 ## API Reference
 
-[Check out the tsdoc reference here.](https://permitio.github.io/permit-node/classes/Permit.html)
+The [API reference](https://permitio.github.io/permit-node/classes/Permit.html) is hosted on
+GitHub Pages. For this unreleased candidate, run `pnpm run docs` and inspect the generated
+`docs/index.html`; building the reference does not publish it.
+
+Grouped interfaces and the named input/result/error contracts used by public methods are imported
+from `permitio`. This includes `IRelationshipTuplesApi`, `IResourceInstancesApi`,
+`IResourceRelationsApi` and `IResourceRolesApi`. The reference links these interfaces from
+`IPermitApi` and its navigation. Generated-only internal files are not a supported deep-import API.

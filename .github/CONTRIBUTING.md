@@ -83,6 +83,10 @@ coverage gaps, the unavailable shared parity target and unmeasured backend behav
 Run `pnpm run docs` to generate API documentation, or `pnpm run docs:watch` while editing TSDoc.
 Use `pnpm run docs -- --out /absolute/output/path` to inspect output without replacing tracked docs.
 Keep generated documentation out of unrelated changes.
+Generation fails on missing root method contracts, API group navigation/member links and broken
+local files, fragments or media assets. `pnpm run check:docs` checks an existing output tree;
+pass an absolute output directory to check a preview. These checks do not fetch external links
+or publish the reference. Root API exports determine the grouped interface inventory.
 
 Keep changes focused, preserve supported runtime behavior, and describe validation and remaining
 limitations in the PR. Check [AGENTS.md](../AGENTS.md) for repository development rules.

@@ -24,7 +24,7 @@
 <ul class="tsd-hierarchy">
 <li><a href="../interfaces/IResourceActionGroupsApi.html" class="tsd-signature-type tsd-kind-interface">IResourceActionGroupsApi</a></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in src/api/resource-action-groups.ts:115</li></ul></aside>
+<li>Defined in src/api/resource-action-groups.ts:119</li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -69,7 +69,7 @@
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">ResourceActionGroupsApi</a></h4><aside class="tsd-sources">
 <p>Overrides BasePermitApi.constructor</p>
 <ul>
-<li>Defined in src/api/resource-action-groups.ts:123</li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in src/api/resource-action-groups.ts:127</li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -101,7 +101,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IResourceActionGroupsApi.html">IResourceActionGroupsApi</a>.<a href="../interfaces/IResourceActionGroupsApi.html#create">create</a></p>
 <ul>
-<li>Defined in src/api/resource-action-groups.ts:218</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/resource-action-groups.ts:222</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="delete"><span>delete</span><a href="#delete" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -130,7 +130,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IResourceActionGroupsApi.html">IResourceActionGroupsApi</a>.<a href="../interfaces/IResourceActionGroupsApi.html#delete">delete</a></p>
 <ul>
-<li>Defined in src/api/resource-action-groups.ts:275</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/resource-action-groups.ts:279</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="ensureaccesslevel"><span>ensure<wbr/>Access<wbr/>Level</span><a href="#ensureaccesslevel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -158,14 +158,14 @@ Note that this check is not foolproof, and the API may still throw 401.</p>
 <h3 class="tsd-anchor-link" id="ensurecontext"><span>ensure<wbr/>Context</span><a href="#ensurecontext" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
 <li class="tsd-is-inherited">
-<div class="tsd-signature tsd-anchor-link" id="ensurecontext-1"><span class="tsd-kind-call-signature">ensureContext</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">requiredContext</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ApiContextLevel</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#ensurecontext-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="ensurecontext-1"><span class="tsd-kind-call-signature">ensureContext</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">requiredContext</span><span class="tsd-signature-symbol">:</span> <a href="../enums/ApiContextLevel.html" class="tsd-signature-type tsd-kind-enum">ApiContextLevel</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#ensurecontext-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Ensure that the API context matches the required endpoint context.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">requiredContext</span>: <span class="tsd-signature-type">ApiContextLevel</span></span>
+<li><span><span class="tsd-kind-parameter">requiredContext</span>: <a href="../enums/ApiContextLevel.html" class="tsd-signature-type tsd-kind-enum">ApiContextLevel</a></span>
 <div class="tsd-comment tsd-typography"><p>The required API context level for the endpoint.</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -204,7 +204,7 @@ Note that this check is not foolproof, and the API may still throw 401.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IResourceActionGroupsApi.html">IResourceActionGroupsApi</a>.<a href="../interfaces/IResourceActionGroupsApi.html#get">get</a></p>
 <ul>
-<li>Defined in src/api/resource-action-groups.ts:166</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/resource-action-groups.ts:170</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbyid"><span>get<wbr/>By<wbr/>Id</span><a href="#getbyid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -234,7 +234,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IResourceActionGroupsApi.html">IResourceActionGroupsApi</a>.<a href="../interfaces/IResourceActionGroupsApi.html#getbyid">getById</a></p>
 <ul>
-<li>Defined in src/api/resource-action-groups.ts:206</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/resource-action-groups.ts:210</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbykey"><span>get<wbr/>By<wbr/>Key</span><a href="#getbykey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -264,7 +264,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IResourceActionGroupsApi.html">IResourceActionGroupsApi</a>.<a href="../interfaces/IResourceActionGroupsApi.html#getbykey">getByKey</a></p>
 <ul>
-<li>Defined in src/api/resource-action-groups.ts:192</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/resource-action-groups.ts:196</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="list"><span>list</span><a href="#list" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -293,12 +293,12 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IResourceActionGroupsApi.html">IResourceActionGroupsApi</a>.<a href="../interfaces/IResourceActionGroupsApi.html#list">list</a></p>
 <ul>
-<li>Defined in src/api/resource-action-groups.ts:139</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/resource-action-groups.ts:143</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="update"><span>update</span><a href="#update" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="update-1"><span class="tsd-kind-call-signature">update</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">resourceKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">groupKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">groupData</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ResourceActionGroupUpdate</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceActionGroupRead.html" class="tsd-signature-type tsd-kind-interface">ResourceActionGroupRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#update-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="update-1"><span class="tsd-kind-call-signature">update</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">resourceKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">groupKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">groupData</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/ResourceActionGroupUpdate.html" class="tsd-signature-type tsd-kind-interface">ResourceActionGroupUpdate</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceActionGroupRead.html" class="tsd-signature-type tsd-kind-interface">ResourceActionGroupRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#update-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Updates an action group.</p>
 </div>
@@ -311,7 +311,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 <li><span><span class="tsd-kind-parameter">groupKey</span>: <span class="tsd-signature-type">string</span></span>
 <div class="tsd-comment tsd-typography"><p>The group key.</p>
 </div></li>
-<li><span><span class="tsd-kind-parameter">groupData</span>: <span class="tsd-signature-type">ResourceActionGroupUpdate</span></span>
+<li><span><span class="tsd-kind-parameter">groupData</span>: <a href="../interfaces/ResourceActionGroupUpdate.html" class="tsd-signature-type tsd-kind-interface">ResourceActionGroupUpdate</a></span>
 <div class="tsd-comment tsd-typography"><p>The action group data.</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ResourceActionGroupRead.html" class="tsd-signature-type tsd-kind-interface">ResourceActionGroupRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves to a ResourceActionGroupRead object representing the updated action group.</p>
@@ -325,7 +325,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IResourceActionGroupsApi.html">IResourceActionGroupsApi</a>.<a href="../interfaces/IResourceActionGroupsApi.html#update">update</a></p>
 <ul>
-<li>Defined in src/api/resource-action-groups.ts:246</li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in src/api/resource-action-groups.ts:250</li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

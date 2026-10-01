@@ -57,6 +57,7 @@
     "coverage": "node scripts/run-tests.mjs coverage",
     "docs": "node tools/compiler/docs.mjs",
     "docs:watch": "node tools/compiler/docs.mjs --watch",
+    "check:docs": "node scripts/check-public-reference.mjs",
     "generate-openapi-client": "node scripts/generate-openapi.mjs",
     "check:openapi": "node scripts/generate-openapi.mjs --check",
     "check:codegen": "node scripts/check-codegen.mjs",

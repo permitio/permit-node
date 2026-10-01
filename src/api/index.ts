@@ -1,4 +1,8 @@
-export { type IPagination } from '#src/api/base';
+export {
+  type IPagination,
+  type IPaginationExtended,
+  type ReturnPaginationType,
+} from '#src/api/base';
 export * from '#src/api/condition-set-rules';
 export * from '#src/api/condition-sets';
 export * from '#src/api/environments';
@@ -10,6 +14,8 @@ export * from '#src/api/projects';
 export * from '#src/api/resource-action-groups';
 export * from '#src/api/resource-actions';
 export * from '#src/api/resource-attributes';
+export * from '#src/api/resource-relations';
+export * from '#src/api/resource-roles';
 export * from '#src/api/resources';
 export * from '#src/api/role-assignments';
 export * from '#src/api/roles';
