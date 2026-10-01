@@ -1,44 +1,53 @@
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 import {
   RoleAssignmentsApi as AutogenRoleAssignmentsApi,
   UsersApi as AutogenUsersApi,
-  PaginatedResultRoleAssignmentDetailedRead,
-  PaginatedResultRoleAssignmentRead,
-  PaginatedResultUserRead,
-  RoleAssignmentCreate,
-  RoleAssignmentDetailedRead,
-  RoleAssignmentRead,
-  RoleAssignmentRemove,
-  UserCreate,
-  UserRead,
-  UserUpdate,
-} from '../openapi';
-import { BulkOperationsApi } from '../openapi/api/bulk-operations-api';
-import { BASE_PATH } from '../openapi/base';
-import { UserCreateBulkOperation } from '../openapi/types/user-create-bulk-operation';
-import { UserDeleteBulkOperation } from '../openapi/types/user-delete-bulk-operation';
-import { UserReplaceBulkOperation } from '../openapi/types/user-replace-bulk-operation';
+  type PaginatedResultRoleAssignmentDetailedRead,
+  type PaginatedResultRoleAssignmentRead,
+  type PaginatedResultUserRead as GeneratedPaginatedResultUserRead,
+  type RoleAssignmentCreate,
+  type RoleAssignmentDetailedRead,
+  type RoleAssignmentRead,
+  type RoleAssignmentRemove,
+  type SearchOperator,
+  type UserCreate,
+  type UserRead as GeneratedUserRead,
+  type UserUpdate,
+} from '#src/openapi/index';
+import { BulkOperationsApi } from '#src/openapi/api/bulk-operations-api';
+import { BASE_PATH } from '#src/openapi/base';
 
-import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BaseFactsPermitAPI, type IPagination, type IWaitForSync } from '#src/api/base';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
 export {
-  PaginatedResultUserRead,
-  RoleAssignmentCreate,
-  RoleAssignmentRead,
-  RoleAssignmentRemove,
-  UserCreate,
-  UserRead,
-  UserUpdate,
-} from '../openapi';
+  type RoleAssignmentCreate,
+  type RoleAssignmentRead,
+  type RoleAssignmentRemove,
+  type UserCreate,
+  type UserUpdate,
+} from '#src/openapi/index';
 
-export interface ICreateOrUpdateUserResult {
+/** A user response with an optional caller-declared attribute shape; no runtime validation. */
+export interface UserRead<Attributes extends object = object> extends GeneratedUserRead {
+  /** Attribute values retain the caller's declared shape when present. */
+  attributes?: Attributes;
+}
+
+/** The full user page with the same attribute shape on each returned user. */
+export interface PaginatedResultUserRead<
+  Attributes extends object = object,
+> extends GeneratedPaginatedResultUserRead {
+  data: UserRead<Attributes>[];
+}
+
+export interface ICreateOrUpdateUserResult<Attributes extends object = object> {
   /**
    * the created or updated user
    */
-  user: UserRead;
+  user: UserRead<Attributes>;
 
   /**
    * whether the user was newly created
@@ -91,21 +100,34 @@ export interface IBaseGetUserRoles {
 type IGetUserRolesWithTotalCount = IBaseGetUserRoles & { includeTotalCount: true };
 type IGetUserRolesWithDetails = IBaseGetUserRoles & { detailed: true };
 
-type IGetUserRoles = IBaseGetUserRoles | IGetUserRolesWithTotalCount | IGetUserRolesWithDetails;
+export type IGetUserRoles =
+  | IBaseGetUserRoles
+  | IGetUserRolesWithTotalCount
+  | IGetUserRolesWithDetails;
 
-type ReturnIGetUserRolesType<T extends IGetUserRoles> = T extends IGetUserRolesWithTotalCount
+export type ReturnIGetUserRolesType<T extends IGetUserRoles> = T extends IGetUserRolesWithTotalCount
   ? // with total count
     T extends IGetUserRolesWithDetails
     ? PaginatedResultRoleAssignmentDetailedRead
     : PaginatedResultRoleAssignmentRead
   : // without total count
-  T extends IGetUserRolesWithDetails
-  ? RoleAssignmentDetailedRead[]
-  : RoleAssignmentRead[];
+    T extends IGetUserRolesWithDetails
+    ? RoleAssignmentDetailedRead[]
+    : RoleAssignmentRead[];
 
 export interface IUsersListParams extends IPagination {
   search?: string;
+  /**
+   * Matches search against user keys, emails and names using the selected operator.
+   * The API defaults to `contains` when this option is omitted.
+   */
+  searchOperator?: SearchOperator;
   role?: string;
+  /**
+   * Includes resource instance roles in each user's associated tenant details.
+   * The API defaults to false; the list result remains the full paginated envelope.
+   */
+  includeResourceInstanceRoles?: boolean;
 }
 
 export interface IUsersApi extends IWaitForSync {
@@ -117,7 +139,9 @@ export interface IUsersApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  list(params?: IUsersListParams): Promise<PaginatedResultUserRead>;
+  list<Attributes extends object = object>(
+    params?: IUsersListParams,
+  ): Promise<PaginatedResultUserRead<Attributes>>;
 
   /**
    * Retrieves a user by its key.
@@ -127,7 +151,7 @@ export interface IUsersApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  get(userKey: string): Promise<UserRead>;
+  get<Attributes extends object = object>(userKey: string): Promise<UserRead<Attributes>>;
 
   /**
    * Retrieves a user by its key.
@@ -138,7 +162,7 @@ export interface IUsersApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  getByKey(userKey: string): Promise<UserRead>;
+  getByKey<Attributes extends object = object>(userKey: string): Promise<UserRead<Attributes>>;
 
   /**
    * Retrieves a user by its ID.
@@ -149,7 +173,7 @@ export interface IUsersApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  getById(userId: string): Promise<UserRead>;
+  getById<Attributes extends object = object>(userId: string): Promise<UserRead<Attributes>>;
 
   /**
    * Creates a new user.
@@ -159,7 +183,7 @@ export interface IUsersApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  create(userData: UserCreate): Promise<UserRead>;
+  create<Attributes extends object = object>(userData: UserCreate): Promise<UserRead<Attributes>>;
 
   /**
    * Updates a user.
@@ -170,7 +194,10 @@ export interface IUsersApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  update(userKey: string, userData: UserUpdate): Promise<UserRead>;
+  update<Attributes extends object = object>(
+    userKey: string,
+    userData: UserUpdate,
+  ): Promise<UserRead<Attributes>>;
 
   /**
    * Synchronizes user data by creating or updating a user.
@@ -180,7 +207,9 @@ export interface IUsersApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  sync(userData: UserCreate): Promise<ICreateOrUpdateUserResult>;
+  sync<Attributes extends object = object>(
+    userData: UserCreate,
+  ): Promise<ICreateOrUpdateUserResult<Attributes>>;
 
   /**
    * Deletes a user.
@@ -216,7 +245,7 @@ export interface IUsersApi extends IWaitForSync {
    * Retrieves the roles assigned to a user in a given tenant (if the tenant filter is provided)
    * or across all tenants (if the tenant filter in not provided).
    *
-   * @param roleFilters - The filters for retrieving role assignments.
+   * @param params - The filters for retrieving role assignments.
    * @returns A promise that resolves with an array of role assignments for the user.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
@@ -231,7 +260,7 @@ export interface IUsersApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkUserCreate(users: UserCreate[]): Promise<UserCreateBulkOperation>;
+  bulkUserCreate(users: UserCreate[]): Promise<object>;
 
   /**
    * Deletes users in bulk.
@@ -241,7 +270,7 @@ export interface IUsersApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkUserDelete(userKeys: string[]): Promise<UserDeleteBulkOperation>;
+  bulkUserDelete(userKeys: string[]): Promise<object>;
 
   /**
    * Replaces users in bulk.
@@ -253,7 +282,7 @@ export interface IUsersApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkUserReplace(users: UserCreate[]): Promise<UserReplaceBulkOperation>;
+  bulkUserReplace(users: UserCreate[]): Promise<object>;
 }
 
 /**
@@ -296,7 +325,9 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async list(params?: IUsersListParams): Promise<PaginatedResultUserRead> {
+  public async list<Attributes extends object = object>(
+    params?: IUsersListParams,
+  ): Promise<PaginatedResultUserRead<Attributes>> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -305,7 +336,7 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
           ...params,
           ...this.config.apiContext.environmentContext,
         })
-      ).data;
+      ).data as PaginatedResultUserRead<Attributes>;
     } catch (err) {
       this.handleApiError(err);
     }
@@ -319,7 +350,9 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async get(userKey: string): Promise<UserRead> {
+  public async get<Attributes extends object = object>(
+    userKey: string,
+  ): Promise<UserRead<Attributes>> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -328,7 +361,7 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
           ...this.config.apiContext.environmentContext,
           userId: userKey,
         })
-      ).data;
+      ).data as UserRead<Attributes>;
     } catch (err) {
       this.handleApiError(err);
     }
@@ -343,8 +376,10 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async getByKey(userKey: string): Promise<UserRead> {
-    return await this.get(userKey);
+  public async getByKey<Attributes extends object = object>(
+    userKey: string,
+  ): Promise<UserRead<Attributes>> {
+    return await this.get<Attributes>(userKey);
   }
 
   /**
@@ -356,8 +391,10 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async getById(userId: string): Promise<UserRead> {
-    return await this.get(userId);
+  public async getById<Attributes extends object = object>(
+    userId: string,
+  ): Promise<UserRead<Attributes>> {
+    return await this.get<Attributes>(userId);
   }
 
   /**
@@ -368,7 +405,9 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async create(userData: UserCreate): Promise<UserRead> {
+  public async create<Attributes extends object = object>(
+    userData: UserCreate,
+  ): Promise<UserRead<Attributes>> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -377,7 +416,7 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
           ...this.config.apiContext.environmentContext,
           userCreate: userData,
         })
-      ).data;
+      ).data as UserRead<Attributes>;
     } catch (err) {
       this.handleApiError(err);
     }
@@ -392,7 +431,10 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async update(userKey: string, userData: UserUpdate): Promise<UserRead> {
+  public async update<Attributes extends object = object>(
+    userKey: string,
+    userData: UserUpdate,
+  ): Promise<UserRead<Attributes>> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -402,7 +444,7 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
           userId: userKey,
           userUpdate: userData,
         })
-      ).data;
+      ).data as UserRead<Attributes>;
     } catch (err) {
       this.handleApiError(err);
     }
@@ -416,7 +458,9 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async sync(userData: UserCreate): Promise<ICreateOrUpdateUserResult> {
+  public async sync<Attributes extends object = object>(
+    userData: UserCreate,
+  ): Promise<ICreateOrUpdateUserResult<Attributes>> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -426,7 +470,7 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
         userCreate: userData,
       });
       return {
-        user: response.data,
+        user: response.data as UserRead<Attributes>,
         created: response.status === 201,
       };
     } catch (err) {
@@ -490,12 +534,10 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
-      return (
-        await this.roleAssignments.unassignRole({
-          ...this.config.apiContext.environmentContext,
-          roleAssignmentRemove: unassignment,
-        })
-      ).data;
+      await this.roleAssignments.unassignRole({
+        ...this.config.apiContext.environmentContext,
+        roleAssignmentRemove: unassignment,
+      });
     } catch (err) {
       this.handleApiError(err);
     }
@@ -505,25 +547,23 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
    * Creates users in bulk.
    *
    * @param users The array of users to create.
-   * @returns A promise that resolves to the bulk creation result.
+   * @returns The response object. Its fields are unspecified by the current API schema.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async bulkUserCreate(users: UserCreate[]): Promise<UserCreateBulkOperation> {
-    // Ensure access level and context
+  public async bulkUserCreate(users: UserCreate[]): Promise<object> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.bulkOperationsApi.bulkCreateUsers({
           ...this.config.apiContext.environmentContext,
-          userCreateBulkOperations: {
+          userCreateBulkOperation: {
             operations: users,
           },
         })
       ).data;
     } catch (err) {
-      // Handle any errors that occur during the API call
       this.handleApiError(err);
     }
   }
@@ -532,12 +572,11 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
    * Deletes users in bulk.
    *
    * @param userKeys The array of user keys to delete.
-   * @returns A promise that resolves to the bulk deletion result.
+   * @returns The response object. Its fields are unspecified by the current API schema.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async bulkUserDelete(userKeys: string[]): Promise<UserDeleteBulkOperation> {
-    // Ensure access level and context
+  public async bulkUserDelete(userKeys: string[]): Promise<object> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -550,7 +589,6 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
         })
       ).data;
     } catch (err) {
-      // Handle any errors that occur during the API call
       this.handleApiError(err);
     }
   }
@@ -561,12 +599,11 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
    * If a user exists, it will be replaced. Otherwise, it will be created.
    *
    * @param users The array of users to replace.
-   * @returns A promise that resolves to the bulk replacement result.
+   * @returns The response object. Its fields are unspecified by the current API schema.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async bulkUserReplace(users: UserCreate[]): Promise<UserReplaceBulkOperation> {
-    // Ensure access level and context
+  public async bulkUserReplace(users: UserCreate[]): Promise<object> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -579,7 +616,6 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
         })
       ).data;
     } catch (err) {
-      // Handle any errors that occur during the API call
       this.handleApiError(err);
     }
   }
@@ -588,7 +624,7 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
    * Retrieves the roles assigned to a user in a given tenant (if the tenant filter is provided)
    * or across all tenants (if the tenant filter in not provided).
    *
-   * @param roleFilters - The filters for retrieving role assignments.
+   * @param params - The filters for retrieving role assignments.
    * @returns A promise that resolves with an array of role assignments for the user.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
@@ -615,8 +651,8 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
       return (
         await this.roleAssignments.listRoleAssignments({
           ...this.config.apiContext.environmentContext,
-          user,
-          tenant,
+          user: [user],
+          ...(tenant !== undefined && { tenant: [tenant] }),
           page,
           perPage,
           detailed,

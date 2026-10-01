@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,54 +10,57 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  replaceWithSerializableTypeIfNeeded,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { DataUpdateReport } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PDPConfigRead } from '../types';
-// @ts-ignore
-import { PDPStateUpdate } from '../types';
-// @ts-ignore
-import { RemoteConfig } from '../types';
+import type { Configuration } from '../configuration';
+import type {
+  PDPConfigRead,
+  PDPDataRefreshRequest,
+  PDPDataRefreshResponse,
+  PDPShardMigration,
+  RemoteConfig,
+} from '../types';
 /**
  * PolicyDecisionPointsApi - axios parameter creator
- * @export
  */
 export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * Gets the configuration values for the currently authenticated PDP container.  The PDP authenticates with an API key scoped to a given Permit.io environment. The system identifies the PDP via its API key and then returns all the configuration values required for the container to run correctly.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
-     * @summary Get connected PDP configuration and push state
-     * @param {PDPStateUpdate} pDPStateUpdate
+     * Disabled debug audit logs for the PDP container with id `pdp_id`.
+     * @summary Disable debug audit logs
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} pdpId The unique id of the pdp
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    getAuthenticatingPdpConfigValues: async (
-      pDPStateUpdate: PDPStateUpdate,
-      options: AxiosRequestConfig = {},
+    disableDebugAuditLogs: async (
+      projId: string,
+      envId: string,
+      pdpId: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'pDPStateUpdate' is not null or undefined
-      assertParamExists('getAuthenticatingPdpConfigValues', 'pDPStateUpdate', pDPStateUpdate);
-      const localVarPath = `/v2/pdps/me/config`;
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('disableDebugAuditLogs', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('disableDebugAuditLogs', 'envId', envId);
+      // verify required parameter 'pdpId' is not null or undefined
+      assertParamExists('disableDebugAuditLogs', 'pdpId', pdpId);
+      const localVarPath = `/v2/pdps/{proj_id}/{env_id}/configs/{pdp_id}/debug-audit-logs/disable`
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)))
+        .replace('{pdp_id}', encodeURIComponent(String(pdpId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -67,7 +68,7 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
         baseOptions = configuration.baseOptions;
       }
 
-      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
@@ -75,7 +76,7 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-      localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -84,11 +85,6 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
         ...headersFromBaseOptions,
         ...options.headers,
       };
-      localVarRequestOptions.data = serializeDataIfNeeded(
-        pDPStateUpdate,
-        localVarRequestOptions,
-        configuration,
-      );
 
       return {
         url: toPathString(localVarUrlObj),
@@ -96,15 +92,30 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
       };
     },
     /**
-     * Gets the configuration values for the currently authenticated PDP container.  The PDP authenticates with an API key scoped to a given Permit.io environment. The system identifies the PDP via its API key and then returns all the configuration values required for the container to run correctly.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
-     * @summary Get connected PDP configuration
+     * Enables debug audit logs for the PDP container with id `pdp_id`.
+     * @summary Enable debug audit logs
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} pdpId The unique id of the pdp
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    getAuthenticatingPdpConfigValuesLegacy: async (
-      options: AxiosRequestConfig = {},
+    enableDebugAuditLogs: async (
+      projId: string,
+      envId: string,
+      pdpId: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      const localVarPath = `/v2/pdps/me/config`;
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('enableDebugAuditLogs', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('enableDebugAuditLogs', 'envId', envId);
+      // verify required parameter 'pdpId' is not null or undefined
+      assertParamExists('enableDebugAuditLogs', 'pdpId', pdpId);
+      const localVarPath = `/v2/pdps/{proj_id}/{env_id}/configs/{pdp_id}/debug-audit-logs/enable`
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)))
+        .replace('{pdp_id}', encodeURIComponent(String(pdpId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -112,13 +123,15 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
         baseOptions = configuration.baseOptions;
       }
 
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -139,14 +152,16 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} pdpId The unique id of the pdp
+     * @param {number} [xShardID]
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getPdpConfigValues: async (
       projId: string,
       envId: string,
       pdpId: string,
-      options: AxiosRequestConfig = {},
+      xShardID?: number,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('getPdpConfigValues', 'projId', projId);
@@ -155,9 +170,9 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
       // verify required parameter 'pdpId' is not null or undefined
       assertParamExists('getPdpConfigValues', 'pdpId', pdpId);
       const localVarPath = `/v2/pdps/{proj_id}/{env_id}/configs/{pdp_id}/values`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'pdp_id'}}`, encodeURIComponent(String(pdpId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)))
+        .replace('{pdp_id}', encodeURIComponent(String(pdpId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -173,6 +188,14 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      if (xShardID != null) {
+        localVarHeaderParameter['X-Shard-ID'] =
+          typeof xShardID === 'string'
+            ? xShardID
+            : JSON.stringify(xShardID, replaceWithSerializableTypeIfNeeded);
+      }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -194,22 +217,22 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listPdpConfigs: async (
       projId: string,
       envId: string,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('listPdpConfigs', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('listPdpConfigs', 'envId', envId);
       const localVarPath = `/v2/pdps/{proj_id}/{env_id}/configs`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -233,6 +256,8 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
         localVarQueryParameter['per_page'] = perPage;
       }
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -247,76 +272,29 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
       };
     },
     /**
-     *
-     * @summary Accept a PDP data callback
-     * @param {string} xPermitInstanceId
-     * @param {DataUpdateReport} dataUpdateReport
+     * The migration process is as followed: 1. Perform request to this endpoint with the new number of shards 2. A new PDP Config will be created with the new number of shards and a new api-key 3. Create a new PDP cluster with the same instances as the number of shards defined in the new PDP Config 4. Wait for the new PDP cluster to be ready 5. Update your PDP load balancer to point to the new PDP cluster  More info can be found here https://docs.permit.io/concepts/pdp-sharding
+     * @summary Migrate PDP Config number of shards
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {PDPShardMigration} pDPShardMigration
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    opalDataCallback: async (
-      xPermitInstanceId: string,
-      dataUpdateReport: DataUpdateReport,
-      options: AxiosRequestConfig = {},
+    migrateShards: async (
+      projId: string,
+      envId: string,
+      pDPShardMigration: PDPShardMigration,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'xPermitInstanceId' is not null or undefined
-      assertParamExists('opalDataCallback', 'xPermitInstanceId', xPermitInstanceId);
-      // verify required parameter 'dataUpdateReport' is not null or undefined
-      assertParamExists('opalDataCallback', 'dataUpdateReport', dataUpdateReport);
-      const localVarPath = `/v2/pdps/me/opal_data_callback`;
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication HTTPBearer required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
-
-      if (xPermitInstanceId != null) {
-        localVarHeaderParameter['x-permit-instance-id'] = String(xPermitInstanceId);
-      }
-
-      localVarHeaderParameter['Content-Type'] = 'application/json';
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-      localVarRequestOptions.data = serializeDataIfNeeded(
-        dataUpdateReport,
-        localVarRequestOptions,
-        configuration,
-      );
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     * Push a PDP state update.
-     * @summary Push PDP state
-     * @param {PDPStateUpdate} pDPStateUpdate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    pushPdpState: async (
-      pDPStateUpdate: PDPStateUpdate,
-      options: AxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'pDPStateUpdate' is not null or undefined
-      assertParamExists('pushPdpState', 'pDPStateUpdate', pDPStateUpdate);
-      const localVarPath = `/v2/pdps/me/state`;
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('migrateShards', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('migrateShards', 'envId', envId);
+      // verify required parameter 'pDPShardMigration' is not null or undefined
+      assertParamExists('migrateShards', 'pDPShardMigration', pDPShardMigration);
+      const localVarPath = `/v2/pdps/{proj_id}/{env_id}/configs/migrate-shards`
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -333,6 +311,7 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -342,7 +321,7 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        pDPStateUpdate,
+        pDPShardMigration,
         localVarRequestOptions,
         configuration,
       );
@@ -353,19 +332,140 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
       };
     },
     /**
-     * Rotates the API key of the PDP container with id `pdp_id`.  The rotation of the API key revokes the old API key and issues a new API key to the PDP.
+     * Triggers an out-of-band data refresh for **all** PDPs in the environment.  Publishes an OPAL data update instructing each PDP to immediately re-pull its full authorization data, instead of waiting for the next periodic poll. Use this to propagate external-data-source-backed changes in realtime.  `shard_id` is not accepted here: sharding is a per-PDP topology, so a single shard target is meaningless across a heterogeneous environment. Target a shard via the single-PDP endpoint (`POST .../configs/{pdp_id}/refresh`) instead.
+     * @summary Refresh data for all PDPs in the environment
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {PDPDataRefreshRequest} [pDPDataRefreshRequest]
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    refreshEnvironmentPdpData: async (
+      projId: string,
+      envId: string,
+      pDPDataRefreshRequest?: PDPDataRefreshRequest,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('refreshEnvironmentPdpData', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('refreshEnvironmentPdpData', 'envId', envId);
+      const localVarPath = `/v2/pdps/{proj_id}/{env_id}/configs/refresh`
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        pDPDataRefreshRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Triggers an out-of-band data refresh for the PDP container with id `pdp_id`.  Publishes an OPAL data update instructing the PDP to immediately re-pull its full authorization data, instead of waiting for the next periodic poll.
+     * @summary Refresh PDP data
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} pdpId The unique id of the pdp
+     * @param {PDPDataRefreshRequest} [pDPDataRefreshRequest]
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    refreshPdpData: async (
+      projId: string,
+      envId: string,
+      pdpId: string,
+      pDPDataRefreshRequest?: PDPDataRefreshRequest,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('refreshPdpData', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('refreshPdpData', 'envId', envId);
+      // verify required parameter 'pdpId' is not null or undefined
+      assertParamExists('refreshPdpData', 'pdpId', pdpId);
+      const localVarPath = `/v2/pdps/{proj_id}/{env_id}/configs/{pdp_id}/refresh`
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)))
+        .replace('{pdp_id}', encodeURIComponent(String(pdpId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        pDPDataRefreshRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Rotates the API key of the PDP container with id `pdp_id`.  The rotation of the API key revokes the old API key and issues a new API key to the PDP.  For the per-environment PDP v3 credentials row this rotates the environment\'s NATS credentials instead of minting a token: every EdgePDP in the environment is revoked and fresh bootstrap credentials are minted (PER-15666). That runs as an awaited Celery task, so this call can take up to `NATS_ROTATION_TIMEOUT_SECONDS`.
      * @summary Rotate PDP API Key
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} pdpId The unique id of the pdp
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     rotatePdpApiKey: async (
       projId: string,
       envId: string,
       pdpId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('rotatePdpApiKey', 'projId', projId);
@@ -374,9 +474,9 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
       // verify required parameter 'pdpId' is not null or undefined
       assertParamExists('rotatePdpApiKey', 'pdpId', pdpId);
       const localVarPath = `/v2/pdps/{proj_id}/{env_id}/configs/{pdp_id}/rotate-api-key`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'pdp_id'}}`, encodeURIComponent(String(pdpId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)))
+        .replace('{pdp_id}', encodeURIComponent(String(pdpId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -391,6 +491,8 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -410,40 +512,77 @@ export const PolicyDecisionPointsApiAxiosParamCreator = function (configuration?
 
 /**
  * PolicyDecisionPointsApi - functional programming interface
- * @export
  */
 export const PolicyDecisionPointsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = PolicyDecisionPointsApiAxiosParamCreator(configuration);
   return {
     /**
-     * Gets the configuration values for the currently authenticated PDP container.  The PDP authenticates with an API key scoped to a given Permit.io environment. The system identifies the PDP via its API key and then returns all the configuration values required for the container to run correctly.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
-     * @summary Get connected PDP configuration and push state
-     * @param {PDPStateUpdate} pDPStateUpdate
+     * Disabled debug audit logs for the PDP container with id `pdp_id`.
+     * @summary Disable debug audit logs
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} pdpId The unique id of the pdp
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    async getAuthenticatingPdpConfigValues(
-      pDPStateUpdate: PDPStateUpdate,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RemoteConfig>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthenticatingPdpConfigValues(
-        pDPStateUpdate,
+    async disableDebugAuditLogs(
+      projId: string,
+      envId: string,
+      pdpId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PDPConfigRead>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.disableDebugAuditLogs(
+        projId,
+        envId,
+        pdpId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PolicyDecisionPointsApi.disableDebugAuditLogs']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * Gets the configuration values for the currently authenticated PDP container.  The PDP authenticates with an API key scoped to a given Permit.io environment. The system identifies the PDP via its API key and then returns all the configuration values required for the container to run correctly.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
-     * @summary Get connected PDP configuration
+     * Enables debug audit logs for the PDP container with id `pdp_id`.
+     * @summary Enable debug audit logs
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} pdpId The unique id of the pdp
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    async getAuthenticatingPdpConfigValuesLegacy(
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RemoteConfig>> {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getAuthenticatingPdpConfigValuesLegacy(options);
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    async enableDebugAuditLogs(
+      projId: string,
+      envId: string,
+      pdpId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PDPConfigRead>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.enableDebugAuditLogs(
+        projId,
+        envId,
+        pdpId,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PolicyDecisionPointsApi.enableDebugAuditLogs']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Gets the configuration values for the PDP container with id `pdp_id`.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
@@ -451,22 +590,36 @@ export const PolicyDecisionPointsApiFp = function (configuration?: Configuration
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} pdpId The unique id of the pdp
+     * @param {number} [xShardID]
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getPdpConfigValues(
       projId: string,
       envId: string,
       pdpId: string,
-      options?: AxiosRequestConfig,
+      xShardID?: number,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RemoteConfig>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getPdpConfigValues(
         projId,
         envId,
         pdpId,
+        xShardID,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PolicyDecisionPointsApi.getPdpConfigValues']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      *
@@ -476,14 +629,14 @@ export const PolicyDecisionPointsApiFp = function (configuration?: Configuration
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listPdpConfigs(
       projId: string,
       envId: string,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PDPConfigRead>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listPdpConfigs(
         projId,
@@ -492,59 +645,135 @@ export const PolicyDecisionPointsApiFp = function (configuration?: Configuration
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PolicyDecisionPointsApi.listPdpConfigs']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *
-     * @summary Accept a PDP data callback
-     * @param {string} xPermitInstanceId
-     * @param {DataUpdateReport} dataUpdateReport
+     * The migration process is as followed: 1. Perform request to this endpoint with the new number of shards 2. A new PDP Config will be created with the new number of shards and a new api-key 3. Create a new PDP cluster with the same instances as the number of shards defined in the new PDP Config 4. Wait for the new PDP cluster to be ready 5. Update your PDP load balancer to point to the new PDP cluster  More info can be found here https://docs.permit.io/concepts/pdp-sharding
+     * @summary Migrate PDP Config number of shards
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {PDPShardMigration} pDPShardMigration
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    async opalDataCallback(
-      xPermitInstanceId: string,
-      dataUpdateReport: DataUpdateReport,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.opalDataCallback(
-        xPermitInstanceId,
-        dataUpdateReport,
+    async migrateShards(
+      projId: string,
+      envId: string,
+      pDPShardMigration: PDPShardMigration,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PDPConfigRead>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.migrateShards(
+        projId,
+        envId,
+        pDPShardMigration,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PolicyDecisionPointsApi.migrateShards']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * Push a PDP state update.
-     * @summary Push PDP state
-     * @param {PDPStateUpdate} pDPStateUpdate
+     * Triggers an out-of-band data refresh for **all** PDPs in the environment.  Publishes an OPAL data update instructing each PDP to immediately re-pull its full authorization data, instead of waiting for the next periodic poll. Use this to propagate external-data-source-backed changes in realtime.  `shard_id` is not accepted here: sharding is a per-PDP topology, so a single shard target is meaningless across a heterogeneous environment. Target a shard via the single-PDP endpoint (`POST .../configs/{pdp_id}/refresh`) instead.
+     * @summary Refresh data for all PDPs in the environment
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {PDPDataRefreshRequest} [pDPDataRefreshRequest]
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    async pushPdpState(
-      pDPStateUpdate: PDPStateUpdate,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.pushPdpState(
-        pDPStateUpdate,
+    async refreshEnvironmentPdpData(
+      projId: string,
+      envId: string,
+      pDPDataRefreshRequest?: PDPDataRefreshRequest,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PDPDataRefreshResponse>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.refreshEnvironmentPdpData(
+        projId,
+        envId,
+        pDPDataRefreshRequest,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PolicyDecisionPointsApi.refreshEnvironmentPdpData']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * Rotates the API key of the PDP container with id `pdp_id`.  The rotation of the API key revokes the old API key and issues a new API key to the PDP.
+     * Triggers an out-of-band data refresh for the PDP container with id `pdp_id`.  Publishes an OPAL data update instructing the PDP to immediately re-pull its full authorization data, instead of waiting for the next periodic poll.
+     * @summary Refresh PDP data
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} pdpId The unique id of the pdp
+     * @param {PDPDataRefreshRequest} [pDPDataRefreshRequest]
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    async refreshPdpData(
+      projId: string,
+      envId: string,
+      pdpId: string,
+      pDPDataRefreshRequest?: PDPDataRefreshRequest,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PDPDataRefreshResponse>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.refreshPdpData(
+        projId,
+        envId,
+        pdpId,
+        pDPDataRefreshRequest,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PolicyDecisionPointsApi.refreshPdpData']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Rotates the API key of the PDP container with id `pdp_id`.  The rotation of the API key revokes the old API key and issues a new API key to the PDP.  For the per-environment PDP v3 credentials row this rotates the environment\'s NATS credentials instead of minting a token: every EdgePDP in the environment is revoked and fresh bootstrap credentials are minted (PER-15666). That runs as an awaited Celery task, so this call can take up to `NATS_ROTATION_TIMEOUT_SECONDS`.
      * @summary Rotate PDP API Key
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} pdpId The unique id of the pdp
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async rotatePdpApiKey(
       projId: string,
       envId: string,
       pdpId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PDPConfigRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.rotatePdpApiKey(
         projId,
@@ -552,14 +781,24 @@ export const PolicyDecisionPointsApiFp = function (configuration?: Configuration
         pdpId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PolicyDecisionPointsApi.rotatePdpApiKey']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
 
 /**
  * PolicyDecisionPointsApi - factory interface
- * @export
  */
 export const PolicyDecisionPointsApiFactory = function (
   configuration?: Configuration,
@@ -569,296 +808,377 @@ export const PolicyDecisionPointsApiFactory = function (
   const localVarFp = PolicyDecisionPointsApiFp(configuration);
   return {
     /**
-     * Gets the configuration values for the currently authenticated PDP container.  The PDP authenticates with an API key scoped to a given Permit.io environment. The system identifies the PDP via its API key and then returns all the configuration values required for the container to run correctly.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
-     * @summary Get connected PDP configuration and push state
-     * @param {PDPStateUpdate} pDPStateUpdate
+     * Disabled debug audit logs for the PDP container with id `pdp_id`.
+     * @summary Disable debug audit logs
+     * @param {PolicyDecisionPointsApiDisableDebugAuditLogsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    getAuthenticatingPdpConfigValues(
-      pDPStateUpdate: PDPStateUpdate,
-      options?: any,
-    ): AxiosPromise<RemoteConfig> {
+    disableDebugAuditLogs(
+      requestParameters: PolicyDecisionPointsApiDisableDebugAuditLogsRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PDPConfigRead> {
       return localVarFp
-        .getAuthenticatingPdpConfigValues(pDPStateUpdate, options)
+        .disableDebugAuditLogs(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.pdpId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
-     * Gets the configuration values for the currently authenticated PDP container.  The PDP authenticates with an API key scoped to a given Permit.io environment. The system identifies the PDP via its API key and then returns all the configuration values required for the container to run correctly.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
-     * @summary Get connected PDP configuration
+     * Enables debug audit logs for the PDP container with id `pdp_id`.
+     * @summary Enable debug audit logs
+     * @param {PolicyDecisionPointsApiEnableDebugAuditLogsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    getAuthenticatingPdpConfigValuesLegacy(options?: any): AxiosPromise<RemoteConfig> {
+    enableDebugAuditLogs(
+      requestParameters: PolicyDecisionPointsApiEnableDebugAuditLogsRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PDPConfigRead> {
       return localVarFp
-        .getAuthenticatingPdpConfigValuesLegacy(options)
+        .enableDebugAuditLogs(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.pdpId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Gets the configuration values for the PDP container with id `pdp_id`.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
      * @summary Get PDP configuration
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} pdpId The unique id of the pdp
+     * @param {PolicyDecisionPointsApiGetPdpConfigValuesRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getPdpConfigValues(
-      projId: string,
-      envId: string,
-      pdpId: string,
-      options?: any,
+      requestParameters: PolicyDecisionPointsApiGetPdpConfigValuesRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<RemoteConfig> {
       return localVarFp
-        .getPdpConfigValues(projId, envId, pdpId, options)
+        .getPdpConfigValues(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.pdpId,
+          requestParameters.xShardID,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary List PDP configurations
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {PolicyDecisionPointsApiListPdpConfigsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listPdpConfigs(
-      projId: string,
-      envId: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
+      requestParameters: PolicyDecisionPointsApiListPdpConfigsRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<Array<PDPConfigRead>> {
       return localVarFp
-        .listPdpConfigs(projId, envId, page, perPage, options)
+        .listPdpConfigs(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
-     *
-     * @summary Accept a PDP data callback
-     * @param {string} xPermitInstanceId
-     * @param {DataUpdateReport} dataUpdateReport
+     * The migration process is as followed: 1. Perform request to this endpoint with the new number of shards 2. A new PDP Config will be created with the new number of shards and a new api-key 3. Create a new PDP cluster with the same instances as the number of shards defined in the new PDP Config 4. Wait for the new PDP cluster to be ready 5. Update your PDP load balancer to point to the new PDP cluster  More info can be found here https://docs.permit.io/concepts/pdp-sharding
+     * @summary Migrate PDP Config number of shards
+     * @param {PolicyDecisionPointsApiMigrateShardsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    opalDataCallback(
-      xPermitInstanceId: string,
-      dataUpdateReport: DataUpdateReport,
-      options?: any,
-    ): AxiosPromise<void> {
-      return localVarFp
-        .opalDataCallback(xPermitInstanceId, dataUpdateReport, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     * Push a PDP state update.
-     * @summary Push PDP state
-     * @param {PDPStateUpdate} pDPStateUpdate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    pushPdpState(pDPStateUpdate: PDPStateUpdate, options?: any): AxiosPromise<void> {
-      return localVarFp
-        .pushPdpState(pDPStateUpdate, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     * Rotates the API key of the PDP container with id `pdp_id`.  The rotation of the API key revokes the old API key and issues a new API key to the PDP.
-     * @summary Rotate PDP API Key
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} pdpId The unique id of the pdp
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    rotatePdpApiKey(
-      projId: string,
-      envId: string,
-      pdpId: string,
-      options?: any,
+    migrateShards(
+      requestParameters: PolicyDecisionPointsApiMigrateShardsRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<PDPConfigRead> {
       return localVarFp
-        .rotatePdpApiKey(projId, envId, pdpId, options)
+        .migrateShards(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.pDPShardMigration,
+          options,
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Triggers an out-of-band data refresh for **all** PDPs in the environment.  Publishes an OPAL data update instructing each PDP to immediately re-pull its full authorization data, instead of waiting for the next periodic poll. Use this to propagate external-data-source-backed changes in realtime.  `shard_id` is not accepted here: sharding is a per-PDP topology, so a single shard target is meaningless across a heterogeneous environment. Target a shard via the single-PDP endpoint (`POST .../configs/{pdp_id}/refresh`) instead.
+     * @summary Refresh data for all PDPs in the environment
+     * @param {PolicyDecisionPointsApiRefreshEnvironmentPdpDataRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    refreshEnvironmentPdpData(
+      requestParameters: PolicyDecisionPointsApiRefreshEnvironmentPdpDataRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PDPDataRefreshResponse> {
+      return localVarFp
+        .refreshEnvironmentPdpData(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.pDPDataRefreshRequest,
+          options,
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Triggers an out-of-band data refresh for the PDP container with id `pdp_id`.  Publishes an OPAL data update instructing the PDP to immediately re-pull its full authorization data, instead of waiting for the next periodic poll.
+     * @summary Refresh PDP data
+     * @param {PolicyDecisionPointsApiRefreshPdpDataRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    refreshPdpData(
+      requestParameters: PolicyDecisionPointsApiRefreshPdpDataRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PDPDataRefreshResponse> {
+      return localVarFp
+        .refreshPdpData(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.pdpId,
+          requestParameters.pDPDataRefreshRequest,
+          options,
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Rotates the API key of the PDP container with id `pdp_id`.  The rotation of the API key revokes the old API key and issues a new API key to the PDP.  For the per-environment PDP v3 credentials row this rotates the environment\'s NATS credentials instead of minting a token: every EdgePDP in the environment is revoked and fresh bootstrap credentials are minted (PER-15666). That runs as an awaited Celery task, so this call can take up to `NATS_ROTATION_TIMEOUT_SECONDS`.
+     * @summary Rotate PDP API Key
+     * @param {PolicyDecisionPointsApiRotatePdpApiKeyRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    rotatePdpApiKey(
+      requestParameters: PolicyDecisionPointsApiRotatePdpApiKeyRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PDPConfigRead> {
+      return localVarFp
+        .rotatePdpApiKey(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.pdpId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
 };
 
 /**
- * Request parameters for getAuthenticatingPdpConfigValues operation in PolicyDecisionPointsApi.
- * @export
- * @interface PolicyDecisionPointsApiGetAuthenticatingPdpConfigValuesRequest
+ * Request parameters for disableDebugAuditLogs operation in PolicyDecisionPointsApi.
  */
-export interface PolicyDecisionPointsApiGetAuthenticatingPdpConfigValuesRequest {
-  /**
-   *
-   * @type {PDPStateUpdate}
-   * @memberof PolicyDecisionPointsApiGetAuthenticatingPdpConfigValues
-   */
-  readonly pDPStateUpdate: PDPStateUpdate;
-}
-
-/**
- * Request parameters for getPdpConfigValues operation in PolicyDecisionPointsApi.
- * @export
- * @interface PolicyDecisionPointsApiGetPdpConfigValuesRequest
- */
-export interface PolicyDecisionPointsApiGetPdpConfigValuesRequest {
+export interface PolicyDecisionPointsApiDisableDebugAuditLogsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof PolicyDecisionPointsApiGetPdpConfigValues
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof PolicyDecisionPointsApiGetPdpConfigValues
    */
   readonly envId: string;
 
   /**
    * The unique id of the pdp
-   * @type {string}
-   * @memberof PolicyDecisionPointsApiGetPdpConfigValues
    */
   readonly pdpId: string;
 }
 
 /**
- * Request parameters for listPdpConfigs operation in PolicyDecisionPointsApi.
- * @export
- * @interface PolicyDecisionPointsApiListPdpConfigsRequest
+ * Request parameters for enableDebugAuditLogs operation in PolicyDecisionPointsApi.
  */
-export interface PolicyDecisionPointsApiListPdpConfigsRequest {
+export interface PolicyDecisionPointsApiEnableDebugAuditLogsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof PolicyDecisionPointsApiListPdpConfigs
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof PolicyDecisionPointsApiListPdpConfigs
-   */
-  readonly envId: string;
-
-  /**
-   * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof PolicyDecisionPointsApiListPdpConfigs
-   */
-  readonly page?: number;
-
-  /**
-   * The number of results per page (max 100).
-   * @type {number}
-   * @memberof PolicyDecisionPointsApiListPdpConfigs
-   */
-  readonly perPage?: number;
-}
-
-/**
- * Request parameters for opalDataCallback operation in PolicyDecisionPointsApi.
- * @export
- * @interface PolicyDecisionPointsApiOpalDataCallbackRequest
- */
-export interface PolicyDecisionPointsApiOpalDataCallbackRequest {
-  /**
-   *
-   * @type {string}
-   * @memberof PolicyDecisionPointsApiOpalDataCallback
-   */
-  readonly xPermitInstanceId: string;
-
-  /**
-   *
-   * @type {DataUpdateReport}
-   * @memberof PolicyDecisionPointsApiOpalDataCallback
-   */
-  readonly dataUpdateReport: DataUpdateReport;
-}
-
-/**
- * Request parameters for pushPdpState operation in PolicyDecisionPointsApi.
- * @export
- * @interface PolicyDecisionPointsApiPushPdpStateRequest
- */
-export interface PolicyDecisionPointsApiPushPdpStateRequest {
-  /**
-   *
-   * @type {PDPStateUpdate}
-   * @memberof PolicyDecisionPointsApiPushPdpState
-   */
-  readonly pDPStateUpdate: PDPStateUpdate;
-}
-
-/**
- * Request parameters for rotatePdpApiKey operation in PolicyDecisionPointsApi.
- * @export
- * @interface PolicyDecisionPointsApiRotatePdpApiKeyRequest
- */
-export interface PolicyDecisionPointsApiRotatePdpApiKeyRequest {
-  /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof PolicyDecisionPointsApiRotatePdpApiKey
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof PolicyDecisionPointsApiRotatePdpApiKey
    */
   readonly envId: string;
 
   /**
    * The unique id of the pdp
-   * @type {string}
-   * @memberof PolicyDecisionPointsApiRotatePdpApiKey
+   */
+  readonly pdpId: string;
+}
+
+/**
+ * Request parameters for getPdpConfigValues operation in PolicyDecisionPointsApi.
+ */
+export interface PolicyDecisionPointsApiGetPdpConfigValuesRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
+  /**
+   * The unique id of the pdp
+   */
+  readonly pdpId: string;
+
+  readonly xShardID?: number;
+}
+
+/**
+ * Request parameters for listPdpConfigs operation in PolicyDecisionPointsApi.
+ */
+export interface PolicyDecisionPointsApiListPdpConfigsRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
+  /**
+   * Page number of the results to fetch, starting at 1.
+   */
+  readonly page?: number;
+
+  /**
+   * The number of results per page (max 100).
+   */
+  readonly perPage?: number;
+}
+
+/**
+ * Request parameters for migrateShards operation in PolicyDecisionPointsApi.
+ */
+export interface PolicyDecisionPointsApiMigrateShardsRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
+  readonly pDPShardMigration: PDPShardMigration;
+}
+
+/**
+ * Request parameters for refreshEnvironmentPdpData operation in PolicyDecisionPointsApi.
+ */
+export interface PolicyDecisionPointsApiRefreshEnvironmentPdpDataRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
+  readonly pDPDataRefreshRequest?: PDPDataRefreshRequest;
+}
+
+/**
+ * Request parameters for refreshPdpData operation in PolicyDecisionPointsApi.
+ */
+export interface PolicyDecisionPointsApiRefreshPdpDataRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
+  /**
+   * The unique id of the pdp
+   */
+  readonly pdpId: string;
+
+  readonly pDPDataRefreshRequest?: PDPDataRefreshRequest;
+}
+
+/**
+ * Request parameters for rotatePdpApiKey operation in PolicyDecisionPointsApi.
+ */
+export interface PolicyDecisionPointsApiRotatePdpApiKeyRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
+  /**
+   * The unique id of the pdp
    */
   readonly pdpId: string;
 }
 
 /**
  * PolicyDecisionPointsApi - object-oriented interface
- * @export
- * @class PolicyDecisionPointsApi
- * @extends {BaseAPI}
  */
 export class PolicyDecisionPointsApi extends BaseAPI {
   /**
-   * Gets the configuration values for the currently authenticated PDP container.  The PDP authenticates with an API key scoped to a given Permit.io environment. The system identifies the PDP via its API key and then returns all the configuration values required for the container to run correctly.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
-   * @summary Get connected PDP configuration and push state
-   * @param {PolicyDecisionPointsApiGetAuthenticatingPdpConfigValuesRequest} requestParameters Request parameters.
+   * Disabled debug audit logs for the PDP container with id `pdp_id`.
+   * @summary Disable debug audit logs
+   * @param {PolicyDecisionPointsApiDisableDebugAuditLogsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof PolicyDecisionPointsApi
+   * @throws If a required parameter is missing.
    */
-  public getAuthenticatingPdpConfigValues(
-    requestParameters: PolicyDecisionPointsApiGetAuthenticatingPdpConfigValuesRequest,
-    options?: AxiosRequestConfig,
+  public disableDebugAuditLogs(
+    requestParameters: PolicyDecisionPointsApiDisableDebugAuditLogsRequest,
+    options?: RawAxiosRequestConfig,
   ) {
     return PolicyDecisionPointsApiFp(this.configuration)
-      .getAuthenticatingPdpConfigValues(requestParameters.pDPStateUpdate, options)
+      .disableDebugAuditLogs(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.pdpId,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
-   * Gets the configuration values for the currently authenticated PDP container.  The PDP authenticates with an API key scoped to a given Permit.io environment. The system identifies the PDP via its API key and then returns all the configuration values required for the container to run correctly.  The config values returned are considered \"overrides\", meaning they are overriding any default values given to the container by the user.
-   * @summary Get connected PDP configuration
+   * Enables debug audit logs for the PDP container with id `pdp_id`.
+   * @summary Enable debug audit logs
+   * @param {PolicyDecisionPointsApiEnableDebugAuditLogsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof PolicyDecisionPointsApi
+   * @throws If a required parameter is missing.
    */
-  public getAuthenticatingPdpConfigValuesLegacy(options?: AxiosRequestConfig) {
+  public enableDebugAuditLogs(
+    requestParameters: PolicyDecisionPointsApiEnableDebugAuditLogsRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
     return PolicyDecisionPointsApiFp(this.configuration)
-      .getAuthenticatingPdpConfigValuesLegacy(options)
+      .enableDebugAuditLogs(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.pdpId,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -867,18 +1187,18 @@ export class PolicyDecisionPointsApi extends BaseAPI {
    * @summary Get PDP configuration
    * @param {PolicyDecisionPointsApiGetPdpConfigValuesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof PolicyDecisionPointsApi
+   * @throws If a required parameter is missing.
    */
   public getPdpConfigValues(
     requestParameters: PolicyDecisionPointsApiGetPdpConfigValuesRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return PolicyDecisionPointsApiFp(this.configuration)
       .getPdpConfigValues(
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.pdpId,
+        requestParameters.xShardID,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -889,12 +1209,11 @@ export class PolicyDecisionPointsApi extends BaseAPI {
    * @summary List PDP configurations
    * @param {PolicyDecisionPointsApiListPdpConfigsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof PolicyDecisionPointsApi
+   * @throws If a required parameter is missing.
    */
   public listPdpConfigs(
     requestParameters: PolicyDecisionPointsApiListPdpConfigsRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return PolicyDecisionPointsApiFp(this.configuration)
       .listPdpConfigs(
@@ -908,54 +1227,79 @@ export class PolicyDecisionPointsApi extends BaseAPI {
   }
 
   /**
-   *
-   * @summary Accept a PDP data callback
-   * @param {PolicyDecisionPointsApiOpalDataCallbackRequest} requestParameters Request parameters.
+   * The migration process is as followed: 1. Perform request to this endpoint with the new number of shards 2. A new PDP Config will be created with the new number of shards and a new api-key 3. Create a new PDP cluster with the same instances as the number of shards defined in the new PDP Config 4. Wait for the new PDP cluster to be ready 5. Update your PDP load balancer to point to the new PDP cluster  More info can be found here https://docs.permit.io/concepts/pdp-sharding
+   * @summary Migrate PDP Config number of shards
+   * @param {PolicyDecisionPointsApiMigrateShardsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof PolicyDecisionPointsApi
+   * @throws If a required parameter is missing.
    */
-  public opalDataCallback(
-    requestParameters: PolicyDecisionPointsApiOpalDataCallbackRequest,
-    options?: AxiosRequestConfig,
+  public migrateShards(
+    requestParameters: PolicyDecisionPointsApiMigrateShardsRequest,
+    options?: RawAxiosRequestConfig,
   ) {
     return PolicyDecisionPointsApiFp(this.configuration)
-      .opalDataCallback(
-        requestParameters.xPermitInstanceId,
-        requestParameters.dataUpdateReport,
+      .migrateShards(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.pDPShardMigration,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
-   * Push a PDP state update.
-   * @summary Push PDP state
-   * @param {PolicyDecisionPointsApiPushPdpStateRequest} requestParameters Request parameters.
+   * Triggers an out-of-band data refresh for **all** PDPs in the environment.  Publishes an OPAL data update instructing each PDP to immediately re-pull its full authorization data, instead of waiting for the next periodic poll. Use this to propagate external-data-source-backed changes in realtime.  `shard_id` is not accepted here: sharding is a per-PDP topology, so a single shard target is meaningless across a heterogeneous environment. Target a shard via the single-PDP endpoint (`POST .../configs/{pdp_id}/refresh`) instead.
+   * @summary Refresh data for all PDPs in the environment
+   * @param {PolicyDecisionPointsApiRefreshEnvironmentPdpDataRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof PolicyDecisionPointsApi
+   * @throws If a required parameter is missing.
    */
-  public pushPdpState(
-    requestParameters: PolicyDecisionPointsApiPushPdpStateRequest,
-    options?: AxiosRequestConfig,
+  public refreshEnvironmentPdpData(
+    requestParameters: PolicyDecisionPointsApiRefreshEnvironmentPdpDataRequest,
+    options?: RawAxiosRequestConfig,
   ) {
     return PolicyDecisionPointsApiFp(this.configuration)
-      .pushPdpState(requestParameters.pDPStateUpdate, options)
+      .refreshEnvironmentPdpData(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.pDPDataRefreshRequest,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
-   * Rotates the API key of the PDP container with id `pdp_id`.  The rotation of the API key revokes the old API key and issues a new API key to the PDP.
+   * Triggers an out-of-band data refresh for the PDP container with id `pdp_id`.  Publishes an OPAL data update instructing the PDP to immediately re-pull its full authorization data, instead of waiting for the next periodic poll.
+   * @summary Refresh PDP data
+   * @param {PolicyDecisionPointsApiRefreshPdpDataRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws If a required parameter is missing.
+   */
+  public refreshPdpData(
+    requestParameters: PolicyDecisionPointsApiRefreshPdpDataRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return PolicyDecisionPointsApiFp(this.configuration)
+      .refreshPdpData(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.pdpId,
+        requestParameters.pDPDataRefreshRequest,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Rotates the API key of the PDP container with id `pdp_id`.  The rotation of the API key revokes the old API key and issues a new API key to the PDP.  For the per-environment PDP v3 credentials row this rotates the environment\'s NATS credentials instead of minting a token: every EdgePDP in the environment is revoked and fresh bootstrap credentials are minted (PER-15666). That runs as an awaited Celery task, so this call can take up to `NATS_ROTATION_TIMEOUT_SECONDS`.
    * @summary Rotate PDP API Key
    * @param {PolicyDecisionPointsApiRotatePdpApiKeyRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof PolicyDecisionPointsApi
+   * @throws If a required parameter is missing.
    */
   public rotatePdpApiKey(
     requestParameters: PolicyDecisionPointsApiRotatePdpApiKeyRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return PolicyDecisionPointsApiFp(this.configuration)
       .rotatePdpApiKey(

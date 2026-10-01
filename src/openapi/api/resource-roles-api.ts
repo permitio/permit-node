@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,69 +10,59 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { AddRolePermissions } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { RemoveRolePermissions } from '../types';
-// @ts-ignore
-import { ResourceRoleCreate } from '../types';
-// @ts-ignore
-import { ResourceRoleRead } from '../types';
-// @ts-ignore
-import { ResourceRoleUpdate } from '../types';
+import type { Configuration } from '../configuration';
+import type {
+  AddRolePermissions,
+  RemoveRolePermissions,
+  ResourceRoleCreate,
+  ResourceRoleList,
+  ResourceRoleRead,
+  ResourceRoleUpdate,
+} from '../types';
 /**
  * ResourceRolesApi - axios parameter creator
- * @export
  */
 export const ResourceRolesApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
      * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
      * @summary Assign Permissions to Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {AddRolePermissions} addRolePermissions
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     assignPermissionsToResourceRole: async (
-      projId: string,
-      envId: string,
       resourceId: string,
       roleId: string,
+      projId: string,
+      envId: string,
       addRolePermissions: AddRolePermissions,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('assignPermissionsToResourceRole', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('assignPermissionsToResourceRole', 'envId', envId);
       // verify required parameter 'resourceId' is not null or undefined
       assertParamExists('assignPermissionsToResourceRole', 'resourceId', resourceId);
       // verify required parameter 'roleId' is not null or undefined
       assertParamExists('assignPermissionsToResourceRole', 'roleId', roleId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('assignPermissionsToResourceRole', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('assignPermissionsToResourceRole', 'envId', envId);
       // verify required parameter 'addRolePermissions' is not null or undefined
       assertParamExists(
         'assignPermissionsToResourceRole',
@@ -83,10 +71,10 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
       );
       const localVarPath =
         `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/permissions`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-          .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)));
+          .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+          .replace('{role_id}', encodeURIComponent(String(roleId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -103,6 +91,7 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -125,32 +114,32 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
     /**
      * Creates a new role associated with the resource.
      * @summary Create Resource Role
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {ResourceRoleCreate} resourceRoleCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createResourceRole: async (
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       resourceRoleCreate: ResourceRoleCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'resourceId' is not null or undefined
+      assertParamExists('createResourceRole', 'resourceId', resourceId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('createResourceRole', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('createResourceRole', 'envId', envId);
-      // verify required parameter 'resourceId' is not null or undefined
-      assertParamExists('createResourceRole', 'resourceId', resourceId);
       // verify required parameter 'resourceRoleCreate' is not null or undefined
       assertParamExists('createResourceRole', 'resourceRoleCreate', resourceRoleCreate);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)));
+        .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -167,6 +156,7 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -189,33 +179,33 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
     /**
      * Deletes the role and all its related data. This includes any permissions granted to said role.
      * @summary Delete Resource Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteResourceRole: async (
-      projId: string,
-      envId: string,
       resourceId: string,
       roleId: string,
-      options: AxiosRequestConfig = {},
+      projId: string,
+      envId: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('deleteResourceRole', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('deleteResourceRole', 'envId', envId);
       // verify required parameter 'resourceId' is not null or undefined
       assertParamExists('deleteResourceRole', 'resourceId', resourceId);
       // verify required parameter 'roleId' is not null or undefined
       assertParamExists('deleteResourceRole', 'roleId', roleId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('deleteResourceRole', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('deleteResourceRole', 'envId', envId);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-        .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)));
+        .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+        .replace('{role_id}', encodeURIComponent(String(roleId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -230,6 +220,8 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -247,33 +239,33 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
     /**
      * Gets a single role defined on the resource, if such role exists.
      * @summary Get Resource Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getResourceRole: async (
-      projId: string,
-      envId: string,
       resourceId: string,
       roleId: string,
-      options: AxiosRequestConfig = {},
+      projId: string,
+      envId: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('getResourceRole', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('getResourceRole', 'envId', envId);
       // verify required parameter 'resourceId' is not null or undefined
       assertParamExists('getResourceRole', 'resourceId', resourceId);
       // verify required parameter 'roleId' is not null or undefined
       assertParamExists('getResourceRole', 'roleId', roleId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getResourceRole', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getResourceRole', 'envId', envId);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-        .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)));
+        .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+        .replace('{role_id}', encodeURIComponent(String(roleId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -288,6 +280,130 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get Resource Role Ancestors
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    getResourceRoleAncestors: async (
+      resourceId: string,
+      roleId: string,
+      projId: string,
+      envId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'resourceId' is not null or undefined
+      assertParamExists('getResourceRoleAncestors', 'resourceId', resourceId);
+      // verify required parameter 'roleId' is not null or undefined
+      assertParamExists('getResourceRoleAncestors', 'roleId', roleId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getResourceRoleAncestors', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getResourceRoleAncestors', 'envId', envId);
+      const localVarPath =
+        `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/ancestors`
+          .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+          .replace('{role_id}', encodeURIComponent(String(roleId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get Resource Role Descendants
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    getResourceRoleDescendants: async (
+      resourceId: string,
+      roleId: string,
+      projId: string,
+      envId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'resourceId' is not null or undefined
+      assertParamExists('getResourceRoleDescendants', 'resourceId', resourceId);
+      // verify required parameter 'roleId' is not null or undefined
+      assertParamExists('getResourceRoleDescendants', 'roleId', roleId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getResourceRoleDescendants', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getResourceRoleDescendants', 'envId', envId);
+      const localVarPath =
+        `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/descendants`
+          .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+          .replace('{role_id}', encodeURIComponent(String(roleId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -305,32 +421,32 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
     /**
      * Lists all the roles defined on the resource.
      * @summary List Resource Roles
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listResourceRoles: async (
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'resourceId' is not null or undefined
+      assertParamExists('listResourceRoles', 'resourceId', resourceId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('listResourceRoles', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('listResourceRoles', 'envId', envId);
-      // verify required parameter 'resourceId' is not null or undefined
-      assertParamExists('listResourceRoles', 'resourceId', resourceId);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)));
+        .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -354,6 +470,8 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
         localVarQueryParameter['per_page'] = perPage;
       }
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -370,30 +488,30 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
     /**
      * Remove permissions from role.  If some of the permissions specified are already unassigned, will skip them.
      * @summary Remove Permissions from Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RemoveRolePermissions} removeRolePermissions
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     removePermissionsFromResourceRole: async (
-      projId: string,
-      envId: string,
       resourceId: string,
       roleId: string,
+      projId: string,
+      envId: string,
       removeRolePermissions: RemoveRolePermissions,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('removePermissionsFromResourceRole', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('removePermissionsFromResourceRole', 'envId', envId);
       // verify required parameter 'resourceId' is not null or undefined
       assertParamExists('removePermissionsFromResourceRole', 'resourceId', resourceId);
       // verify required parameter 'roleId' is not null or undefined
       assertParamExists('removePermissionsFromResourceRole', 'roleId', roleId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('removePermissionsFromResourceRole', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('removePermissionsFromResourceRole', 'envId', envId);
       // verify required parameter 'removeRolePermissions' is not null or undefined
       assertParamExists(
         'removePermissionsFromResourceRole',
@@ -402,10 +520,10 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
       );
       const localVarPath =
         `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/permissions`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-          .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)));
+          .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+          .replace('{role_id}', encodeURIComponent(String(roleId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -422,6 +540,7 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -444,37 +563,37 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
     /**
      * Partially updates the role defined on a resource. Fields that will be provided will be completely overwritten.
      * @summary Update Resource Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ResourceRoleUpdate} resourceRoleUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateResourceRole: async (
-      projId: string,
-      envId: string,
       resourceId: string,
       roleId: string,
+      projId: string,
+      envId: string,
       resourceRoleUpdate: ResourceRoleUpdate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('updateResourceRole', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('updateResourceRole', 'envId', envId);
       // verify required parameter 'resourceId' is not null or undefined
       assertParamExists('updateResourceRole', 'resourceId', resourceId);
       // verify required parameter 'roleId' is not null or undefined
       assertParamExists('updateResourceRole', 'roleId', roleId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('updateResourceRole', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('updateResourceRole', 'envId', envId);
       // verify required parameter 'resourceRoleUpdate' is not null or undefined
       assertParamExists('updateResourceRole', 'resourceRoleUpdate', resourceRoleUpdate);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-        .replace(`{${'role_id'}}`, encodeURIComponent(String(roleId)));
+        .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+        .replace('{role_id}', encodeURIComponent(String(roleId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -491,6 +610,7 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -515,7 +635,6 @@ export const ResourceRolesApiAxiosParamCreator = function (configuration?: Confi
 
 /**
  * ResourceRolesApi - functional programming interface
- * @export
  */
 export const ResourceRolesApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ResourceRolesApiAxiosParamCreator(configuration);
@@ -523,205 +642,349 @@ export const ResourceRolesApiFp = function (configuration?: Configuration) {
     /**
      * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
      * @summary Assign Permissions to Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {AddRolePermissions} addRolePermissions
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async assignPermissionsToResourceRole(
-      projId: string,
-      envId: string,
       resourceId: string,
       roleId: string,
+      projId: string,
+      envId: string,
       addRolePermissions: AddRolePermissions,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceRoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.assignPermissionsToResourceRole(
-        projId,
-        envId,
         resourceId,
         roleId,
+        projId,
+        envId,
         addRolePermissions,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceRolesApi.assignPermissionsToResourceRole']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Creates a new role associated with the resource.
      * @summary Create Resource Role
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {ResourceRoleCreate} resourceRoleCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async createResourceRole(
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       resourceRoleCreate: ResourceRoleCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceRoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createResourceRole(
+        resourceId,
         projId,
         envId,
-        resourceId,
         resourceRoleCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceRolesApi.createResourceRole']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Deletes the role and all its related data. This includes any permissions granted to said role.
      * @summary Delete Resource Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deleteResourceRole(
-      projId: string,
-      envId: string,
       resourceId: string,
       roleId: string,
-      options?: AxiosRequestConfig,
+      projId: string,
+      envId: string,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteResourceRole(
-        projId,
-        envId,
         resourceId,
         roleId,
+        projId,
+        envId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceRolesApi.deleteResourceRole']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Gets a single role defined on the resource, if such role exists.
      * @summary Get Resource Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getResourceRole(
-      projId: string,
-      envId: string,
       resourceId: string,
       roleId: string,
-      options?: AxiosRequestConfig,
+      projId: string,
+      envId: string,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceRoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getResourceRole(
-        projId,
-        envId,
         resourceId,
         roleId,
+        projId,
+        envId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceRolesApi.getResourceRole']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     *
+     * @summary Get Resource Role Ancestors
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    async getResourceRoleAncestors(
+      resourceId: string,
+      roleId: string,
+      projId: string,
+      envId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceRoleList>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getResourceRoleAncestors(
+        resourceId,
+        roleId,
+        projId,
+        envId,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceRolesApi.getResourceRoleAncestors']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     *
+     * @summary Get Resource Role Descendants
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    async getResourceRoleDescendants(
+      resourceId: string,
+      roleId: string,
+      projId: string,
+      envId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceRoleList>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getResourceRoleDescendants(
+        resourceId,
+        roleId,
+        projId,
+        envId,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceRolesApi.getResourceRoleDescendants']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists all the roles defined on the resource.
      * @summary List Resource Roles
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listResourceRoles(
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ResourceRoleRead>>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listResourceRoles(
+        resourceId,
         projId,
         envId,
-        resourceId,
         page,
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceRolesApi.listResourceRoles']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Remove permissions from role.  If some of the permissions specified are already unassigned, will skip them.
      * @summary Remove Permissions from Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RemoveRolePermissions} removeRolePermissions
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async removePermissionsFromResourceRole(
-      projId: string,
-      envId: string,
       resourceId: string,
       roleId: string,
+      projId: string,
+      envId: string,
       removeRolePermissions: RemoveRolePermissions,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceRoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.removePermissionsFromResourceRole(
-        projId,
-        envId,
         resourceId,
         roleId,
+        projId,
+        envId,
         removeRolePermissions,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceRolesApi.removePermissionsFromResourceRole']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Partially updates the role defined on a resource. Fields that will be provided will be completely overwritten.
      * @summary Update Resource Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ResourceRoleUpdate} resourceRoleUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async updateResourceRole(
-      projId: string,
-      envId: string,
       resourceId: string,
       roleId: string,
+      projId: string,
+      envId: string,
       resourceRoleUpdate: ResourceRoleUpdate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceRoleRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateResourceRole(
-        projId,
-        envId,
         resourceId,
         roleId,
+        projId,
+        envId,
         resourceRoleUpdate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceRolesApi.updateResourceRole']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
 
 /**
  * ResourceRolesApi - factory interface
- * @export
  */
 export const ResourceRolesApiFactory = function (
   configuration?: Configuration,
@@ -733,29 +996,21 @@ export const ResourceRolesApiFactory = function (
     /**
      * Assign permissions to role.  If some of the permissions specified are already assigned, will skip them.
      * @summary Assign Permissions to Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {AddRolePermissions} addRolePermissions
+     * @param {ResourceRolesApiAssignPermissionsToResourceRoleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     assignPermissionsToResourceRole(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      roleId: string,
-      addRolePermissions: AddRolePermissions,
-      options?: any,
+      requestParameters: ResourceRolesApiAssignPermissionsToResourceRoleRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceRoleRead> {
       return localVarFp
         .assignPermissionsToResourceRole(
-          projId,
-          envId,
-          resourceId,
-          roleId,
-          addRolePermissions,
+          requestParameters.resourceId,
+          requestParameters.roleId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.addRolePermissions,
           options,
         )
         .then((request) => request(axios, basePath));
@@ -763,115 +1018,148 @@ export const ResourceRolesApiFactory = function (
     /**
      * Creates a new role associated with the resource.
      * @summary Create Resource Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {ResourceRoleCreate} resourceRoleCreate
+     * @param {ResourceRolesApiCreateResourceRoleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createResourceRole(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      resourceRoleCreate: ResourceRoleCreate,
-      options?: any,
+      requestParameters: ResourceRolesApiCreateResourceRoleRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceRoleRead> {
       return localVarFp
-        .createResourceRole(projId, envId, resourceId, resourceRoleCreate, options)
+        .createResourceRole(
+          requestParameters.resourceId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.resourceRoleCreate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes the role and all its related data. This includes any permissions granted to said role.
      * @summary Delete Resource Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {ResourceRolesApiDeleteResourceRoleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteResourceRole(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      roleId: string,
-      options?: any,
+      requestParameters: ResourceRolesApiDeleteResourceRoleRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<void> {
       return localVarFp
-        .deleteResourceRole(projId, envId, resourceId, roleId, options)
+        .deleteResourceRole(
+          requestParameters.resourceId,
+          requestParameters.roleId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Gets a single role defined on the resource, if such role exists.
      * @summary Get Resource Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+     * @param {ResourceRolesApiGetResourceRoleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getResourceRole(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      roleId: string,
-      options?: any,
+      requestParameters: ResourceRolesApiGetResourceRoleRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceRoleRead> {
       return localVarFp
-        .getResourceRole(projId, envId, resourceId, roleId, options)
+        .getResourceRole(
+          requestParameters.resourceId,
+          requestParameters.roleId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get Resource Role Ancestors
+     * @param {ResourceRolesApiGetResourceRoleAncestorsRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    getResourceRoleAncestors(
+      requestParameters: ResourceRolesApiGetResourceRoleAncestorsRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ResourceRoleList> {
+      return localVarFp
+        .getResourceRoleAncestors(
+          requestParameters.resourceId,
+          requestParameters.roleId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get Resource Role Descendants
+     * @param {ResourceRolesApiGetResourceRoleDescendantsRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    getResourceRoleDescendants(
+      requestParameters: ResourceRolesApiGetResourceRoleDescendantsRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ResourceRoleList> {
+      return localVarFp
+        .getResourceRoleDescendants(
+          requestParameters.resourceId,
+          requestParameters.roleId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists all the roles defined on the resource.
      * @summary List Resource Roles
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {ResourceRolesApiListResourceRolesRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listResourceRoles(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
+      requestParameters: ResourceRolesApiListResourceRolesRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<Array<ResourceRoleRead>> {
       return localVarFp
-        .listResourceRoles(projId, envId, resourceId, page, perPage, options)
+        .listResourceRoles(
+          requestParameters.resourceId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Remove permissions from role.  If some of the permissions specified are already unassigned, will skip them.
      * @summary Remove Permissions from Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {RemoveRolePermissions} removeRolePermissions
+     * @param {ResourceRolesApiRemovePermissionsFromResourceRoleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     removePermissionsFromResourceRole(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      roleId: string,
-      removeRolePermissions: RemoveRolePermissions,
-      options?: any,
+      requestParameters: ResourceRolesApiRemovePermissionsFromResourceRoleRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceRoleRead> {
       return localVarFp
         .removePermissionsFromResourceRole(
-          projId,
-          envId,
-          resourceId,
-          roleId,
-          removeRolePermissions,
+          requestParameters.resourceId,
+          requestParameters.roleId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.removeRolePermissions,
           options,
         )
         .then((request) => request(axios, basePath));
@@ -879,24 +1167,23 @@ export const ResourceRolesApiFactory = function (
     /**
      * Partially updates the role defined on a resource. Fields that will be provided will be completely overwritten.
      * @summary Update Resource Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} roleId Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-     * @param {ResourceRoleUpdate} resourceRoleUpdate
+     * @param {ResourceRolesApiUpdateResourceRoleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateResourceRole(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      roleId: string,
-      resourceRoleUpdate: ResourceRoleUpdate,
-      options?: any,
+      requestParameters: ResourceRolesApiUpdateResourceRoleRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceRoleRead> {
       return localVarFp
-        .updateResourceRole(projId, envId, resourceId, roleId, resourceRoleUpdate, options)
+        .updateResourceRole(
+          requestParameters.resourceId,
+          requestParameters.roleId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.resourceRoleUpdate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
@@ -904,282 +1191,239 @@ export const ResourceRolesApiFactory = function (
 
 /**
  * Request parameters for assignPermissionsToResourceRole operation in ResourceRolesApi.
- * @export
- * @interface ResourceRolesApiAssignPermissionsToResourceRoleRequest
  */
 export interface ResourceRolesApiAssignPermissionsToResourceRoleRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiAssignPermissionsToResourceRole
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiAssignPermissionsToResourceRole
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiAssignPermissionsToResourceRole
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiAssignPermissionsToResourceRole
    */
   readonly roleId: string;
 
   /**
-   *
-   * @type {AddRolePermissions}
-   * @memberof ResourceRolesApiAssignPermissionsToResourceRole
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
   readonly addRolePermissions: AddRolePermissions;
 }
 
 /**
  * Request parameters for createResourceRole operation in ResourceRolesApi.
- * @export
- * @interface ResourceRolesApiCreateResourceRoleRequest
  */
 export interface ResourceRolesApiCreateResourceRoleRequest {
   /**
+   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+   */
+  readonly resourceId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiCreateResourceRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiCreateResourceRole
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiCreateResourceRole
-   */
-  readonly resourceId: string;
-
-  /**
-   *
-   * @type {ResourceRoleCreate}
-   * @memberof ResourceRolesApiCreateResourceRole
-   */
   readonly resourceRoleCreate: ResourceRoleCreate;
 }
 
 /**
  * Request parameters for deleteResourceRole operation in ResourceRolesApi.
- * @export
- * @interface ResourceRolesApiDeleteResourceRoleRequest
  */
 export interface ResourceRolesApiDeleteResourceRoleRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiDeleteResourceRole
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiDeleteResourceRole
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiDeleteResourceRole
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiDeleteResourceRole
    */
   readonly roleId: string;
+
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
 }
 
 /**
  * Request parameters for getResourceRole operation in ResourceRolesApi.
- * @export
- * @interface ResourceRolesApiGetResourceRoleRequest
  */
 export interface ResourceRolesApiGetResourceRoleRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiGetResourceRole
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiGetResourceRole
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiGetResourceRole
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiGetResourceRole
    */
   readonly roleId: string;
-}
 
-/**
- * Request parameters for listResourceRoles operation in ResourceRolesApi.
- * @export
- * @interface ResourceRolesApiListResourceRolesRequest
- */
-export interface ResourceRolesApiListResourceRolesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiListResourceRoles
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiListResourceRoles
    */
   readonly envId: string;
+}
 
+/**
+ * Request parameters for getResourceRoleAncestors operation in ResourceRolesApi.
+ */
+export interface ResourceRolesApiGetResourceRoleAncestorsRequest {
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiListResourceRoles
    */
   readonly resourceId: string;
 
   /**
+   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+   */
+  readonly roleId: string;
+
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+}
+
+/**
+ * Request parameters for getResourceRoleDescendants operation in ResourceRolesApi.
+ */
+export interface ResourceRolesApiGetResourceRoleDescendantsRequest {
+  /**
+   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+   */
+  readonly resourceId: string;
+
+  /**
+   * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
+   */
+  readonly roleId: string;
+
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+}
+
+/**
+ * Request parameters for listResourceRoles operation in ResourceRolesApi.
+ */
+export interface ResourceRolesApiListResourceRolesRequest {
+  /**
+   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+   */
+  readonly resourceId: string;
+
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
+  /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof ResourceRolesApiListResourceRoles
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
-   * @memberof ResourceRolesApiListResourceRoles
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for removePermissionsFromResourceRole operation in ResourceRolesApi.
- * @export
- * @interface ResourceRolesApiRemovePermissionsFromResourceRoleRequest
  */
 export interface ResourceRolesApiRemovePermissionsFromResourceRoleRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiRemovePermissionsFromResourceRole
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiRemovePermissionsFromResourceRole
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiRemovePermissionsFromResourceRole
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiRemovePermissionsFromResourceRole
    */
   readonly roleId: string;
 
   /**
-   *
-   * @type {RemoveRolePermissions}
-   * @memberof ResourceRolesApiRemovePermissionsFromResourceRole
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
   readonly removeRolePermissions: RemoveRolePermissions;
 }
 
 /**
  * Request parameters for updateResourceRole operation in ResourceRolesApi.
- * @export
- * @interface ResourceRolesApiUpdateResourceRoleRequest
  */
 export interface ResourceRolesApiUpdateResourceRoleRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiUpdateResourceRole
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiUpdateResourceRole
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiUpdateResourceRole
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the role, or the URL-friendly key of the role (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceRolesApiUpdateResourceRole
    */
   readonly roleId: string;
 
   /**
-   *
-   * @type {ResourceRoleUpdate}
-   * @memberof ResourceRolesApiUpdateResourceRole
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
   readonly resourceRoleUpdate: ResourceRoleUpdate;
 }
 
 /**
  * ResourceRolesApi - object-oriented interface
- * @export
- * @class ResourceRolesApi
- * @extends {BaseAPI}
  */
 export class ResourceRolesApi extends BaseAPI {
   /**
@@ -1187,19 +1431,18 @@ export class ResourceRolesApi extends BaseAPI {
    * @summary Assign Permissions to Role
    * @param {ResourceRolesApiAssignPermissionsToResourceRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ResourceRolesApi
+   * @throws If a required parameter is missing.
    */
   public assignPermissionsToResourceRole(
     requestParameters: ResourceRolesApiAssignPermissionsToResourceRoleRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceRolesApiFp(this.configuration)
       .assignPermissionsToResourceRole(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.roleId,
+        requestParameters.projId,
+        requestParameters.envId,
         requestParameters.addRolePermissions,
         options,
       )
@@ -1211,18 +1454,17 @@ export class ResourceRolesApi extends BaseAPI {
    * @summary Create Resource Role
    * @param {ResourceRolesApiCreateResourceRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ResourceRolesApi
+   * @throws If a required parameter is missing.
    */
   public createResourceRole(
     requestParameters: ResourceRolesApiCreateResourceRoleRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceRolesApiFp(this.configuration)
       .createResourceRole(
+        requestParameters.resourceId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.resourceId,
         requestParameters.resourceRoleCreate,
         options,
       )
@@ -1234,19 +1476,18 @@ export class ResourceRolesApi extends BaseAPI {
    * @summary Delete Resource Role
    * @param {ResourceRolesApiDeleteResourceRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ResourceRolesApi
+   * @throws If a required parameter is missing.
    */
   public deleteResourceRole(
     requestParameters: ResourceRolesApiDeleteResourceRoleRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceRolesApiFp(this.configuration)
       .deleteResourceRole(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.roleId,
+        requestParameters.projId,
+        requestParameters.envId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1257,19 +1498,62 @@ export class ResourceRolesApi extends BaseAPI {
    * @summary Get Resource Role
    * @param {ResourceRolesApiGetResourceRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ResourceRolesApi
+   * @throws If a required parameter is missing.
    */
   public getResourceRole(
     requestParameters: ResourceRolesApiGetResourceRoleRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceRolesApiFp(this.configuration)
       .getResourceRole(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.roleId,
+        requestParameters.projId,
+        requestParameters.envId,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get Resource Role Ancestors
+   * @param {ResourceRolesApiGetResourceRoleAncestorsRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws If a required parameter is missing.
+   */
+  public getResourceRoleAncestors(
+    requestParameters: ResourceRolesApiGetResourceRoleAncestorsRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return ResourceRolesApiFp(this.configuration)
+      .getResourceRoleAncestors(
+        requestParameters.resourceId,
+        requestParameters.roleId,
+        requestParameters.projId,
+        requestParameters.envId,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get Resource Role Descendants
+   * @param {ResourceRolesApiGetResourceRoleDescendantsRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws If a required parameter is missing.
+   */
+  public getResourceRoleDescendants(
+    requestParameters: ResourceRolesApiGetResourceRoleDescendantsRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return ResourceRolesApiFp(this.configuration)
+      .getResourceRoleDescendants(
+        requestParameters.resourceId,
+        requestParameters.roleId,
+        requestParameters.projId,
+        requestParameters.envId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1280,18 +1564,17 @@ export class ResourceRolesApi extends BaseAPI {
    * @summary List Resource Roles
    * @param {ResourceRolesApiListResourceRolesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ResourceRolesApi
+   * @throws If a required parameter is missing.
    */
   public listResourceRoles(
     requestParameters: ResourceRolesApiListResourceRolesRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceRolesApiFp(this.configuration)
       .listResourceRoles(
+        requestParameters.resourceId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.resourceId,
         requestParameters.page,
         requestParameters.perPage,
         options,
@@ -1304,19 +1587,18 @@ export class ResourceRolesApi extends BaseAPI {
    * @summary Remove Permissions from Role
    * @param {ResourceRolesApiRemovePermissionsFromResourceRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ResourceRolesApi
+   * @throws If a required parameter is missing.
    */
   public removePermissionsFromResourceRole(
     requestParameters: ResourceRolesApiRemovePermissionsFromResourceRoleRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceRolesApiFp(this.configuration)
       .removePermissionsFromResourceRole(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.roleId,
+        requestParameters.projId,
+        requestParameters.envId,
         requestParameters.removeRolePermissions,
         options,
       )
@@ -1328,19 +1610,18 @@ export class ResourceRolesApi extends BaseAPI {
    * @summary Update Resource Role
    * @param {ResourceRolesApiUpdateResourceRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ResourceRolesApi
+   * @throws If a required parameter is missing.
    */
   public updateResourceRole(
     requestParameters: ResourceRolesApiUpdateResourceRoleRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceRolesApiFp(this.configuration)
       .updateResourceRole(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.roleId,
+        requestParameters.projId,
+        requestParameters.envId,
         requestParameters.resourceRoleUpdate,
         options,
       )

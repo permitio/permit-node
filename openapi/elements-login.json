@@ -1,0 +1,115 @@
+{
+  "paths": {
+    "/v2/auth/elements_login_as": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Elements Login As",
+        "operationId": "elements_login_as",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Permit Session"
+            },
+            "name": "permit_session",
+            "in": "cookie"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginRequestInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmbeddedLoginRequestOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    }
+  },
+  "schemas": {
+    "UserLoginRequestInput": {
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "title": "User Id",
+          "description": "ID or key of the user for whom to generate a token"
+        },
+        "tenant_id": {
+          "type": "string",
+          "title": "Tenant Id",
+          "description": "ID or key of the tenant to which access is requested"
+        }
+      },
+      "type": "object",
+      "required": ["user_id", "tenant_id"],
+      "title": "UserLoginRequestInput"
+    },
+    "EmbeddedLoginRequestOutput": {
+      "properties": {
+        "error": {
+          "type": "string",
+          "title": "Error",
+          "description": "If the login request failed, this field will contain the error message"
+        },
+        "error_code": {
+          "type": "integer",
+          "title": "Error Code",
+          "description": "If the login request failed, this field will contain the error code"
+        },
+        "token": {
+          "type": "string",
+          "title": "Token",
+          "description": "The auth token that lets your users login into permit elements"
+        },
+        "extra": {
+          "type": "string",
+          "title": "Extra",
+          "description": "Extra data that you can pass to the login request"
+        },
+        "redirect_url": {
+          "type": "string",
+          "title": "Redirect Url",
+          "description": "The full URL to which the user should be redirected in order to complete the login process"
+        },
+        "element_bearer_token": {
+          "type": "string",
+          "title": "Element Bearer Token",
+          "description": "The bearer token that lets your users login into permit elements"
+        }
+      },
+      "type": "object",
+      "required": ["redirect_url"],
+      "title": "EmbeddedLoginRequestOutput"
+    }
+  }
+}

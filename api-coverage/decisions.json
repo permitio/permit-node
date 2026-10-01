@@ -1,0 +1,2284 @@
+{
+  "scope": "Node-local evidence; not the unpublished shared parity target",
+  "reviewedAt": "2026-09-30",
+  "operations": {
+    "control-plane DELETE /v2/api-key/{api_key_id}": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Administrative secret automation is deferred pending a concrete SDK use case.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/elements/{proj_id}/{env_id}/{elements_config_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP Elements setup is outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane DELETE /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/users/{user_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Elements end-user session endpoints are outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/users/{user_id}/roles": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Elements end-user session endpoints are outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/facts/{proj_id}/{env_id}/bulk/resource_instances": {
+      "action": "undecided",
+      "owner": "PER-16345",
+      "reason": "No adopted shared decision or approved Node feature owner resolves this omission.",
+      "source": "https://linear.app/permit/issue/PER-16345",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/facts/{proj_id}/{env_id}/bulk/tenants": {
+      "action": "undecided",
+      "owner": "PER-16345",
+      "reason": "No adopted shared decision or approved Node feature owner resolves this omission.",
+      "source": "https://linear.app/permit/issue/PER-16345",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/facts/{proj_id}/{env_id}/bulk/users": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Proxy configuration belongs to setup/CLI workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/facts/{proj_id}/{env_id}/relationship_tuples": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/facts/{proj_id}/{env_id}/relationship_tuples/bulk": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/facts/{proj_id}/{env_id}/role_assignments": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/facts/{proj_id}/{env_id}/role_assignments/bulk": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/facts/{proj_id}/{env_id}/set_rules": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users/{user_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}": {
+      "action": "add",
+      "owner": "PER-12882",
+      "reason": "Approved API-key facts invite operation; direct selected-environment routing, required nullable DTOs and no mail-delivery or PDP synchronization promise.",
+      "source": "https://linear.app/permit/issue/PER-12882",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/facts/{proj_id}/{env_id}/users/{user_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/facts/{proj_id}/{env_id}/users/{user_id}/roles": {
+      "action": "undecided",
+      "owner": "PER-16345",
+      "reason": "No adopted shared decision or approved Node feature owner resolves this omission.",
+      "source": "https://linear.app/permit/issue/PER-16345",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/members": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization membership belongs to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/members/{member_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization membership belongs to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/orgs/{org_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization administration belongs to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/orgs/{org_id}/invites/{invite_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization invites belong to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/policy_guards/scopes/{policy_guard_scope_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP policy guards are outside the approved backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane DELETE /v2/policy_guards/scopes/{policy_guard_scope_id}/disassociate": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP policy guards are outside the approved backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane DELETE /v2/policy_guards/scopes/{policy_guard_scope_id}/rules": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP policy guards are outside the approved backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane DELETE /v2/projects/{proj_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/projects/{proj_id}/{env_id}/opal_scope": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "OPAL scope setup belongs to CLI/Terraform workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/projects/{proj_id}/envs/{env_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/projects/{proj_id}/repos/{repo_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Policy repository setup belongs to CLI/Terraform workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}": {
+      "action": "add",
+      "owner": "PER-16566",
+      "reason": "Approved Groups work includes direct reads and group/user/role membership; contract and key/id issues must be verified.",
+      "source": "https://linear.app/permit/issue/PER-16566",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/assign_group": {
+      "action": "defer",
+      "owner": "PER-16566",
+      "reason": "Group-to-group membership is P2 for a later 3.x release in PER-16337 and is explicitly outside the eight GA core operations approved for PER-16566.",
+      "source": "https://linear.app/permit/issue/PER-16566",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/roles": {
+      "action": "add",
+      "owner": "PER-16566",
+      "reason": "Approved Groups work includes direct reads and group/user/role membership; contract and key/id issues must be verified.",
+      "source": "https://linear.app/permit/issue/PER-16566",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/users/{user_id}": {
+      "action": "add",
+      "owner": "PER-16566",
+      "reason": "Approved Groups work includes direct reads and group/user/role membership; contract and key/id issues must be verified.",
+      "source": "https://linear.app/permit/issue/PER-16566",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups/{action_group_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions/{action_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes/{attribute_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations/{relation_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/implicit_grants": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/permissions": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/schema/{proj_id}/{env_id}/roles/{role_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/schema/{proj_id}/{env_id}/roles/{role_id}/permissions": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane DELETE /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}": {
+      "action": "add",
+      "owner": "PER-16345",
+      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/activity": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Activity history is a dashboard/admin capability.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/activity/types": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Activity history is a dashboard/admin capability.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/api-key": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Administrative secret automation is deferred pending a concrete SDK use case.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/api-key/{api_key_id}": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Administrative secret automation is deferred pending a concrete SDK use case.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/api-key/{proj_id}/{env_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/api-key/scope": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "Scope discovery is an internal supporting request; it does not expose a typed API-key scope wrapper.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/data-export/{task_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization exports are administrative and may expose plaintext secrets.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/deprecated/activity": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Deprecated operation is not a new SDK target; use its supported replacement.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "deprecated"
+    },
+    "control-plane GET /v2/deprecated/activity/types": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Deprecated operation is not a new SDK target; use its supported replacement.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "deprecated"
+    },
+    "control-plane GET /v2/deprecated/history": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Deprecated operation is not a new SDK target; use its supported replacement.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "deprecated"
+    },
+    "control-plane GET /v2/deprecated/history/{event_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Deprecated operation is not a new SDK target; use its supported replacement.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "deprecated"
+    },
+    "control-plane GET /v2/deprecated/history/{event_id}/request": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Deprecated operation is not a new SDK target; use its supported replacement.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "deprecated"
+    },
+    "control-plane GET /v2/deprecated/history/{event_id}/response": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Deprecated operation is not a new SDK target; use its supported replacement.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "deprecated"
+    },
+    "control-plane GET /v2/elements/{proj_id}/{env_id}/config": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP Elements setup is outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP Elements setup is outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/access_requests": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Elements Access Requests require end-user sessions.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/access_requests/{access_request_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Elements Access Requests require end-user sessions.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/audit_logs": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Elements end-user session endpoints are outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/roles": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Elements end-user session endpoints are outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/user-invites": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Elements end-user session endpoints are outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/users": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Elements end-user session endpoints are outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/operation_approval": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP operation approval requires Elements end-user sessions.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/operation_approval/{operation_approval_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP operation approval requires Elements end-user sessions.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/runtime": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP Elements setup is outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/access_requests/{elements_config_id}/user/{user_id}/tenant/{tenant_id}": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Facts Access Requests are deferred until GA.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/access_requests/{elements_config_id}/user/{user_id}/tenant/{tenant_id}/{access_request_id}": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Facts Access Requests are deferred until GA.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/email_configurations": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Email setup belongs to administrative workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/email_templates/": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Email setup belongs to administrative workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/email_templates/{template_type}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Email setup belongs to administrative workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/proxy_configs": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Proxy configuration belongs to setup/CLI workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Proxy configuration belongs to setup/CLI workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/relationship_tuples": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/relationship_tuples/detailed": {
+      "action": "add",
+      "owner": "PER-16567",
+      "reason": "Approved P1 GA operation verified against the generated contract and exposed by the typed tenant-membership, dedicated detailed-list, or environment-refresh method.",
+      "source": "https://linear.app/permit/issue/PER-16567",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/resource_instances": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/resource_instances/detailed": {
+      "action": "add",
+      "owner": "PER-16567",
+      "reason": "Approved P1 GA operation verified against the generated contract and exposed by the typed tenant-membership, dedicated detailed-list, or environment-refresh method.",
+      "source": "https://linear.app/permit/issue/PER-16567",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/role_assignments": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/role_assignments/detailed": {
+      "action": "add",
+      "owner": "PER-16567",
+      "reason": "Approved P1 GA operation verified against the generated contract and exposed by the typed tenant-membership, dedicated detailed-list, or environment-refresh method.",
+      "source": "https://linear.app/permit/issue/PER-16567",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/set_rules": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/tenants": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites": {
+      "action": "add",
+      "owner": "PER-12882",
+      "reason": "Approved API-key facts invite operation; direct selected-environment routing, required nullable DTOs and no mail-delivery or PDP synchronization promise.",
+      "source": "https://linear.app/permit/issue/PER-12882",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}": {
+      "action": "add",
+      "owner": "PER-12882",
+      "reason": "Approved API-key facts invite operation; direct selected-environment routing, required nullable DTOs and no mail-delivery or PDP synchronization promise.",
+      "source": "https://linear.app/permit/issue/PER-12882",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/users": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/facts/{proj_id}/{env_id}/users/{user_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/history": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Request history is a dashboard/admin capability.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/history/{event_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Request history is a dashboard/admin capability.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/history/{event_id}/request": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Request history is a dashboard/admin capability.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/history/{event_id}/response": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Request history is a dashboard/admin capability.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/internal/opal_data/{org_id}/{proj_id}/{env_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Internal OPAL data endpoints are infrastructure contracts.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/internal/opal_data/{org_id}/{proj_id}/{env_id}/optimized": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Internal OPAL data endpoints are infrastructure contracts.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/internal/opal_data/{org_id}/{proj_id}/{env_id}/relationships": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Internal OPAL data endpoints are infrastructure contracts.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/internal/opal_data/{org_id}/{proj_id}/{env_id}/resource_instances": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Internal OPAL data endpoints are infrastructure contracts.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/internal/opal_data/{org_id}/{proj_id}/{env_id}/role_assignments": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Internal OPAL data endpoints are infrastructure contracts.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/internal/opal_data/{org_id}/{proj_id}/{env_id}/users": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Internal OPAL data endpoints are infrastructure contracts.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/members": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization membership belongs to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/members/{member_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization membership belongs to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/members/me": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization membership belongs to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/orgs": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization administration belongs to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/orgs/{org_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization administration belongs to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/orgs/{org_id}/invites": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization invites belong to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/orgs/{org_id}/stats": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization administration belongs to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/orgs/active/org": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization administration belongs to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Add only when backend-SDK audit-query demand is established.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs/{log_id}": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Add only when backend-SDK audit-query demand is established.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/pdps/{proj_id}/{env_id}/configs": {
+      "action": "defer",
+      "owner": "PER-14243",
+      "reason": "Adoption depends on the PDP-config security issue being resolved and reviewed.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/pdps/{proj_id}/{env_id}/configs/{pdp_id}/values": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Operator/debug/sharding/key-rotation APIs belong to operational tooling.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/policy_guards/scopes": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP policy guards are outside the approved backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/policy_guards/scopes/{policy_guard_scope_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP policy guards are outside the approved backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/policy_guards/scopes/{policy_guard_scope_id}/rules": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP policy guards are outside the approved backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/projects": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/projects/{proj_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/projects/{proj_id}/{env_id}/opal_scope": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "OPAL scope setup belongs to CLI/Terraform workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/projects/{proj_id}/envs": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/projects/{proj_id}/envs/{env_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/projects/{proj_id}/envs/{env_id}/copy/async/{task_id}/result": {
+      "action": "add",
+      "owner": "PER-16345",
+      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/projects/{proj_id}/envs/{env_id}/stats": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/projects/{proj_id}/repos": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Policy repository setup belongs to CLI/Terraform workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/projects/{proj_id}/repos/{repo_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Policy repository setup belongs to CLI/Terraform workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/projects/{proj_id}/repos/active": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Policy repository setup belongs to CLI/Terraform workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/condition_sets": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}/ancestors": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Hierarchy traversal is a UI helper outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}/descendants": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Hierarchy traversal is a UI helper outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/groups": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Deprecated operation is not a new SDK target; use its supported replacement.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "deprecated"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Deprecated operation is not a new SDK target; use its supported replacement.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "deprecated"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/children": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Summary advertises EAP while the tag is GA; product must resolve lifecycle before adoption.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/parents": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Summary advertises EAP while the tag is GA; product must resolve lifecycle before adoption.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/roles": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Summary advertises EAP while the tag is GA; product must resolve lifecycle before adoption.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/users": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Summary advertises EAP while the tag is GA; product must resolve lifecycle before adoption.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/groups/direct": {
+      "action": "add",
+      "owner": "PER-16566",
+      "reason": "Approved Groups work includes direct reads and group/user/role membership; contract and key/id issues must be verified.",
+      "source": "https://linear.app/permit/issue/PER-16566",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/groups/direct/{group_instance_key}": {
+      "action": "add",
+      "owner": "PER-16566",
+      "reason": "Approved Groups work includes direct reads and group/user/role membership; contract and key/id issues must be verified.",
+      "source": "https://linear.app/permit/issue/PER-16566",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/resources": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups/{action_group_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions/{action_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes/{attribute_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations/{relation_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/ancestors": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Hierarchy traversal is a UI helper outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/descendants": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Hierarchy traversal is a UI helper outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/roles": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/roles/{role_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/roles/{role_id}/ancestors": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Hierarchy traversal is a UI helper outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/roles/{role_id}/descendants": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Hierarchy traversal is a UI helper outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/users/attributes": {
+      "action": "add",
+      "owner": "PER-16345",
+      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane GET /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}": {
+      "action": "add",
+      "owner": "PER-16345",
+      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP Elements setup is outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane PATCH /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/access_requests/{access_request_id}/reviewer": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Elements Access Requests require end-user sessions.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane PATCH /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/operation_approval/{operation_approval_id}/reviewer": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP operation approval requires Elements end-user sessions.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane PATCH /v2/facts/{proj_id}/{env_id}/access_requests/{elements_config_id}/user/{user_id}/tenant/{tenant_id}/{access_request_id}/reviewer": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Facts Access Requests are deferred until GA.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane PATCH /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Proxy configuration belongs to setup/CLI workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}": {
+      "action": "add",
+      "owner": "PER-12882",
+      "reason": "Approved API-key facts invite operation; direct selected-environment routing, required nullable DTOs and no mail-delivery or PDP synchronization promise.",
+      "source": "https://linear.app/permit/issue/PER-12882",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/facts/{proj_id}/{env_id}/users/{user_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/members/{member_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization membership belongs to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/orgs/{org_id}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization administration belongs to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/projects/{proj_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/projects/{proj_id}/envs/{env_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/schema/{proj_id}/{env_id}/resources/{resource_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups/{action_group_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions/{action_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes/{attribute_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/schema/{proj_id}/{env_id}/roles/{role_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane PATCH /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}": {
+      "action": "add",
+      "owner": "PER-16345",
+      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/api-key": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Administrative secret automation is deferred pending a concrete SDK use case.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/api-key/{api_key_id}/rotate-secret": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Administrative secret automation is deferred pending a concrete SDK use case.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/audit-log-replay": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Replay is restricted diagnostic/test functionality.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/data-export": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization exports are administrative and may expose plaintext secrets.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/elements/{proj_id}/{env_id}/config": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP Elements setup is outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane POST /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/access_requests": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Elements Access Requests require end-user sessions.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane POST /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/active": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Elements end-user session endpoints are outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/users": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Elements end-user session endpoints are outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/users/{user_id}/roles": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Elements end-user session endpoints are outside the backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/operation_approval": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP operation approval requires Elements end-user sessions.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/access_requests/{elements_config_id}/user/{user_id}/tenant/{tenant_id}": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Facts Access Requests are deferred until GA.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/bulk/tenants": {
+      "action": "undecided",
+      "owner": "PER-16345",
+      "reason": "No adopted shared decision or approved Node feature owner resolves this omission.",
+      "source": "https://linear.app/permit/issue/PER-16345",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/bulk/users": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/email_configurations": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Email setup belongs to administrative workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/email_configurations/send_test_email": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Email setup belongs to administrative workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/email_templates/{template_type}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Email setup belongs to administrative workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/email_templates/{template_type}/send_test_email": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Email setup belongs to administrative workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/proxy_configs": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Proxy configuration belongs to setup/CLI workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/relationship_tuples": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/relationship_tuples/bulk": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/resource_instances": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/role_assignments": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/role_assignments/bulk": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/set_rules": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/tenants": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users": {
+      "action": "add",
+      "owner": "PER-16567",
+      "reason": "Approved P1 GA operation verified against the generated contract and exposed by the typed tenant-membership, dedicated detailed-list, or environment-refresh method.",
+      "source": "https://linear.app/permit/issue/PER-16567",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites": {
+      "action": "add",
+      "owner": "PER-12882",
+      "reason": "Approved API-key facts invite operation; direct selected-environment routing, required nullable DTOs and no mail-delivery or PDP synchronization promise.",
+      "source": "https://linear.app/permit/issue/PER-12882",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}/approve": {
+      "action": "add",
+      "owner": "PER-12882",
+      "reason": "Approved API-key facts invite operation; direct selected-environment routing, required nullable DTOs and no mail-delivery or PDP synchronization promise.",
+      "source": "https://linear.app/permit/issue/PER-12882",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/users": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/facts/{proj_id}/{env_id}/users/{user_id}/roles": {
+      "action": "undecided",
+      "owner": "PER-16345",
+      "reason": "No adopted shared decision or approved Node feature owner resolves this omission.",
+      "source": "https://linear.app/permit/issue/PER-16345",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/members": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization membership belongs to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/orgs": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization administration belongs to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/orgs/{org_id}/invites": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization invites belong to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/orgs/{org_id}/restore": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Organization administration belongs to dashboard/admin workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/pdps/{proj_id}/{env_id}/configs/{pdp_id}/refresh": {
+      "action": "defer",
+      "owner": "PER-16337",
+      "reason": "Individual-PDP data refresh is P2 for a later 3.x release; only environment-wide refresh is approved for PER-16567.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/pdps/{proj_id}/{env_id}/configs/{pdp_id}/rotate-api-key": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Operator/debug/sharding/key-rotation APIs belong to operational tooling.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/pdps/{proj_id}/{env_id}/configs/migrate-shards": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Operator/debug/sharding/key-rotation APIs belong to operational tooling.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/pdps/{proj_id}/{env_id}/configs/refresh": {
+      "action": "add",
+      "owner": "PER-16567",
+      "reason": "Approved P1 GA operation verified against the generated contract and exposed by the typed tenant-membership, dedicated detailed-list, or environment-refresh method.",
+      "source": "https://linear.app/permit/issue/PER-16567",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/policy_guards/scopes": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP policy guards are outside the approved backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane POST /v2/policy_guards/scopes/{policy_guard_scope_id}/associate": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP policy guards are outside the approved backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane POST /v2/policy_guards/scopes/{policy_guard_scope_id}/rules": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP policy guards are outside the approved backend SDK target.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane POST /v2/projects": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/projects/{proj_id}/envs": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/projects/{proj_id}/envs/{env_id}/copy": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/projects/{proj_id}/envs/{env_id}/copy/async": {
+      "action": "add",
+      "owner": "PER-16345",
+      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/projects/{proj_id}/envs/{env_id}/test_jwks": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "JWKS URL testing is a setup diagnostic.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/projects/{proj_id}/repos": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Policy repository setup belongs to CLI/Terraform workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/schema/{proj_id}/{env_id}/condition_sets": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/schema/{proj_id}/{env_id}/groups": {
+      "action": "add",
+      "owner": "PER-16566",
+      "reason": "Approved Groups work includes direct reads and group/user/role membership; contract and key/id issues must be verified.",
+      "source": "https://linear.app/permit/issue/PER-16566",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/roles": {
+      "action": "add",
+      "owner": "PER-16566",
+      "reason": "Approved Groups work includes direct reads and group/user/role membership; contract and key/id issues must be verified.",
+      "source": "https://linear.app/permit/issue/PER-16566",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/schema/{proj_id}/{env_id}/resources": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/implicit_grants": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/permissions": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/schema/{proj_id}/{env_id}/roles": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/schema/{proj_id}/{env_id}/roles/{role_id}/permissions": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane POST /v2/schema/{proj_id}/{env_id}/users/attributes": {
+      "action": "add",
+      "owner": "PER-16345",
+      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane PUT /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/access_requests/{access_request_id}/approve": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Elements Access Requests require end-user sessions.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane PUT /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/access_requests/{access_request_id}/cancel": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Elements Access Requests require end-user sessions.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane PUT /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/access_requests/{access_request_id}/deny": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Elements Access Requests require end-user sessions.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane PUT /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/operation_approval/{operation_approval_id}/approve": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP operation approval requires Elements end-user sessions.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane PUT /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/operation_approval/{operation_approval_id}/cancel": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP operation approval requires Elements end-user sessions.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane PUT /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/operation_approval/{operation_approval_id}/deny": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "EAP operation approval requires Elements end-user sessions.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane PUT /v2/facts/{proj_id}/{env_id}/access_requests/{elements_config_id}/user/{user_id}/tenant/{tenant_id}/{access_request_id}/approve": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Facts Access Requests are deferred until GA.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane PUT /v2/facts/{proj_id}/{env_id}/access_requests/{elements_config_id}/user/{user_id}/tenant/{tenant_id}/{access_request_id}/cancel": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Facts Access Requests are deferred until GA.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane PUT /v2/facts/{proj_id}/{env_id}/access_requests/{elements_config_id}/user/{user_id}/tenant/{tenant_id}/{access_request_id}/deny": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "Facts Access Requests are deferred until GA.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "EAP"
+    },
+    "control-plane PUT /v2/facts/{proj_id}/{env_id}/bulk/resource_instances": {
+      "action": "undecided",
+      "owner": "PER-16345",
+      "reason": "No adopted shared decision or approved Node feature owner resolves this omission.",
+      "source": "https://linear.app/permit/issue/PER-16345",
+      "lifecycle": "GA"
+    },
+    "control-plane PUT /v2/facts/{proj_id}/{env_id}/bulk/users": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane PUT /v2/facts/{proj_id}/{env_id}/users/{user_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane PUT /v2/pdps/{proj_id}/{env_id}/configs/{pdp_id}/debug-audit-logs/disable": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Operator/debug/sharding/key-rotation APIs belong to operational tooling.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane PUT /v2/pdps/{proj_id}/{env_id}/configs/{pdp_id}/debug-audit-logs/enable": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Operator/debug/sharding/key-rotation APIs belong to operational tooling.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane PUT /v2/projects/{proj_id}/{env_id}/opal_scope": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "OPAL scope setup belongs to CLI/Terraform workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane PUT /v2/projects/{proj_id}/repos/{repo_id}/activate": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Policy repository setup belongs to CLI/Terraform workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane PUT /v2/projects/{proj_id}/repos/disable": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Policy repository setup belongs to CLI/Terraform workflows.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane PUT /v2/schema/{proj_id}/{env_id}/bulk/roles": {
+      "action": "add",
+      "owner": "PER-16345",
+      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "control-plane PUT /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/assign_group": {
+      "action": "defer",
+      "owner": "PER-16566",
+      "reason": "Group-to-group membership is P2 for a later 3.x release in PER-16337 and is explicitly outside the eight GA core operations approved for PER-16566.",
+      "source": "https://linear.app/permit/issue/PER-16566",
+      "lifecycle": "GA"
+    },
+    "control-plane PUT /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/users/{user_id}": {
+      "action": "add",
+      "owner": "PER-16566",
+      "reason": "Approved Groups work includes direct reads and group/user/role membership; contract and key/id issues must be verified.",
+      "source": "https://linear.app/permit/issue/PER-16566",
+      "lifecycle": "GA"
+    },
+    "control-plane PUT /v2/schema/{proj_id}/{env_id}/resources/{resource_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "control-plane PUT /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/implicit_grants/conditions": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "pdp-container DELETE /callbacks/{key}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Callback, updater, health, gateway or policy-store operations are PDP infrastructure/operator APIs.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-container DELETE /facts/role_assignments": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "pdp-container DELETE /facts/users/{user_id}/roles": {
+      "action": "undecided",
+      "owner": "PER-16345",
+      "reason": "No exposed matching typed method or adopted target decision for this PDP-local facts route.",
+      "source": "https://linear.app/permit/issue/PER-16345",
+      "lifecycle": "GA"
+    },
+    "pdp-container GET /callbacks": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Callback, updater, health, gateway or policy-store operations are PDP infrastructure/operator APIs.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-container GET /callbacks/{key}": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Callback, updater, health, gateway or policy-store operations are PDP infrastructure/operator APIs.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-container GET /healthchecks/opa/healthy": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Callback, updater, health, gateway or policy-store operations are PDP infrastructure/operator APIs.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-container GET /healthchecks/opa/ready": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Callback, updater, health, gateway or policy-store operations are PDP infrastructure/operator APIs.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-container GET /healthchecks/opa/system": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Callback, updater, health, gateway or policy-store operations are PDP infrastructure/operator APIs.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-container GET /local/role_assignments": {
+      "action": "undecided",
+      "owner": "PER-16345",
+      "reason": "No exposed matching typed method or adopted target decision for this PDP-local facts route.",
+      "source": "https://linear.app/permit/issue/PER-16345",
+      "lifecycle": "GA"
+    },
+    "pdp-container GET /opal-server/connectivity": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Callback, updater, health, gateway or policy-store operations are PDP infrastructure/operator APIs.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-container GET /policy-store/config": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Callback, updater, health, gateway or policy-store operations are PDP infrastructure/operator APIs.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "deprecated"
+    },
+    "pdp-container PATCH /facts/resource_instances/{instance_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "pdp-container PATCH /facts/users/{user_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /allowed": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /allowed_url": {
+      "action": "defer",
+      "owner": "PER-16568",
+      "reason": "URL checks require a parity decision and supported container contract.",
+      "source": "https://linear.app/permit/issue/PER-16568",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /allowed/all-tenants": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /allowed/bulk": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /authorized_users": {
+      "action": "add",
+      "owner": "PER-16568",
+      "reason": "Approved complete authorized-user discovery: the pinned container and cloud contracts publish action/resource/request context and the full assignment envelope. Local evidence is recorded separately; no cloud runtime claim.",
+      "source": "https://linear.app/permit/issue/PER-16568",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /callbacks": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Callback, updater, health, gateway or policy-store operations are PDP infrastructure/operator APIs.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /data-updater/trigger": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Callback, updater, health, gateway or policy-store operations are PDP infrastructure/operator APIs.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /facts/relationship_tuples": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /facts/resource_instances": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /facts/role_assignments": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /facts/tenants": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /facts/users": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /facts/users/{user_id}/roles": {
+      "action": "undecided",
+      "owner": "PER-16345",
+      "reason": "No exposed matching typed method or adopted target decision for this PDP-local facts route.",
+      "source": "https://linear.app/permit/issue/PER-16345",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /kong": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Callback, updater, health, gateway or policy-store operations are PDP infrastructure/operator APIs.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /nginx_allowed": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Callback, updater, health, gateway or policy-store operations are PDP infrastructure/operator APIs.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /opal-server/connectivity/disable": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Callback, updater, health, gateway or policy-store operations are PDP infrastructure/operator APIs.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /opal-server/connectivity/enable": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Callback, updater, health, gateway or policy-store operations are PDP infrastructure/operator APIs.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /policy-updater/trigger": {
+      "action": "exclude",
+      "owner": "PER-16345",
+      "reason": "Callback, updater, health, gateway or policy-store operations are PDP infrastructure/operator APIs.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /user-permissions": {
+      "action": "retain",
+      "owner": "PER-16568",
+      "reason": "Retain the existing permission query and add request context in its fifth config argument, preserving global then request precedence. Route exposure alone does not establish real backend behavior.",
+      "source": "https://linear.app/permit/issue/PER-16568",
+      "lifecycle": "GA"
+    },
+    "pdp-container POST /user-tenants": {
+      "action": "add",
+      "owner": "PER-16568",
+      "reason": "Approved container-only role-derived tenant discovery with request context and validated tenant details. The cloud contract omits this route; an unavailable endpoint raises an actionable capability error regardless of deny fallback.",
+      "source": "https://linear.app/permit/issue/PER-16568",
+      "lifecycle": "GA"
+    },
+    "pdp-container PUT /facts/users/{user_id}": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "pdp-cloud GET /.well-known/authzen-configuration": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "AuthZEN adoption awaits the product decision and search-pagination contract.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-cloud POST /access/v1/evaluation": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "AuthZEN adoption awaits the product decision and search-pagination contract.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-cloud POST /access/v1/evaluations": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "AuthZEN adoption awaits the product decision and search-pagination contract.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-cloud POST /access/v1/search/action": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "AuthZEN adoption awaits the product decision and search-pagination contract.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-cloud POST /access/v1/search/resource": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "AuthZEN adoption awaits the product decision and search-pagination contract.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-cloud POST /access/v1/search/subject": {
+      "action": "defer",
+      "owner": "PER-16345",
+      "reason": "AuthZEN adoption awaits the product decision and search-pagination contract.",
+      "source": "https://linear.app/permit/issue/PER-16337",
+      "lifecycle": "GA"
+    },
+    "pdp-cloud POST /allowed": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "pdp-cloud POST /allowed/bulk": {
+      "action": "retain",
+      "owner": "PER-16561",
+      "reason": "An existing public SDK method reaches this operation; route presence does not prove complete parameters, response fidelity, or backend success.",
+      "source": "https://linear.app/permit/issue/PER-16561",
+      "lifecycle": "GA"
+    },
+    "pdp-cloud POST /authorized_users": {
+      "action": "add",
+      "owner": "PER-16568",
+      "reason": "Approved complete authorized-user discovery: the pinned container and cloud contracts publish action/resource/request context and the full assignment envelope. Local evidence is recorded separately; no cloud runtime claim.",
+      "source": "https://linear.app/permit/issue/PER-16568",
+      "lifecycle": "GA"
+    },
+    "pdp-cloud POST /user-permissions": {
+      "action": "retain",
+      "owner": "PER-16568",
+      "reason": "Retain the existing permission query and add request context in its fifth config argument, preserving global then request precedence. Route exposure alone does not establish real backend behavior.",
+      "source": "https://linear.app/permit/issue/PER-16568",
+      "lifecycle": "GA"
+    }
+  },
+  "helpers": {
+    "permit.api.relationshipTuples.waitForSync": "Waits locally for requested propagation delay; performs no HTTP request.",
+    "permit.api.resourceInstances.waitForSync": "Waits locally for requested propagation delay; performs no HTTP request.",
+    "permit.api.roleAssignments.waitForSync": "Waits locally for requested propagation delay; performs no HTTP request.",
+    "permit.api.tenants.waitForSync": "Waits locally for requested propagation delay; performs no HTTP request.",
+    "permit.api.users.waitForSync": "Waits locally for requested propagation delay; performs no HTTP request."
+  },
+  "sdkOnly": {
+    "pdp-forwarding POST /v2/facts/{proj_id}/{env_id}/relationship_tuples/bulk": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding DELETE /v2/facts/{proj_id}/{env_id}/relationship_tuples/bulk": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding DELETE /v2/facts/{proj_id}/{env_id}/relationship_tuples": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding GET /v2/facts/{proj_id}/{env_id}/relationship_tuples": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding DELETE /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding GET /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding GET /v2/facts/{proj_id}/{env_id}/resource_instances": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding POST /v2/facts/{proj_id}/{env_id}/role_assignments/bulk": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding DELETE /v2/facts/{proj_id}/{env_id}/role_assignments/bulk": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding GET /v2/facts/{proj_id}/{env_id}/role_assignments": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding DELETE /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding DELETE /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users/{user_id}": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding GET /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding GET /v2/facts/{proj_id}/{env_id}/tenants": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding GET /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding PATCH /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding POST /v2/facts/{proj_id}/{env_id}/bulk/users": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding DELETE /v2/facts/{proj_id}/{env_id}/bulk/users": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding PUT /v2/facts/{proj_id}/{env_id}/bulk/users": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding DELETE /v2/facts/{proj_id}/{env_id}/users/{user_id}": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding GET /v2/facts/{proj_id}/{env_id}/users/{user_id}": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "pdp-forwarding GET /v2/facts/{proj_id}/{env_id}/users": {
+      "reason": "SDK proxy routing forwards this control-plane path to the PDP; no matching operation is published by the pinned PDP. No local-handler or backend support is claimed.",
+      "owner": "PER-16568",
+      "source": "https://linear.app/permit/issue/PER-16568"
+    },
+    "opa POST /root": {
+      "reason": "Existing optional OPA check uses the SDK-derived OPA base URL plus root; it is not a PDP OpenAPI operation.",
+      "owner": "PER-16561",
+      "source": "https://linear.app/permit/issue/PER-16561"
+    },
+    "control-plane POST /v2/auth/elements_login_as": {
+      "reason": "Existing Elements login route is retained by the reviewed, hashed supplement in openapi/elements-login.json; it is missing from public OpenAPI.",
+      "owner": "PER-16342",
+      "source": "https://linear.app/permit/issue/PER-16342"
+    }
+  }
+}

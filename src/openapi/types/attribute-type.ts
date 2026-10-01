@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,8 +12,6 @@
 
 /**
  * supported attribute primitives
- * @export
- * @enum {string}
  */
 
 export const AttributeType = {
@@ -25,6 +21,8 @@ export const AttributeType = {
   Time: 'time',
   Array: 'array',
   Json: 'json',
+  Object: 'object',
+  ObjectArray: 'object_array',
 } as const;
 
 export type AttributeType = (typeof AttributeType)[keyof typeof AttributeType];

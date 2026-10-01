@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,16 +10,6 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface BulkRoleUnAssignmentReport
- */
 export interface BulkRoleUnAssignmentReport {
-  /**
-   *
-   * @type {number}
-   * @memberof BulkRoleUnAssignmentReport
-   */
   assignments_removed?: number;
 }

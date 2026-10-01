@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,16 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface RelationshipTupleCreateBulkOperation
- */
+// May contain unused imports in some cases
+import type { RelationshipTupleCreate } from './relationship-tuple-create';
+
 export interface RelationshipTupleCreateBulkOperation {
-  /**
-   *
-   * @type {any}
-   * @memberof RelationshipTupleCreateBulkOperation
-   */
-  operations: any;
+  operations: Array<RelationshipTupleCreate>;
 }

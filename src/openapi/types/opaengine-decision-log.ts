@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,65 +11,18 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { OPALabels } from './opalabels';
+import type { OPALabels } from './opalabels';
 // May contain unused imports in some cases
-// @ts-ignore
-import { OPAMetrics } from './opametrics';
+import type { OPAMetrics } from './opametrics';
 
-/**
- *
- * @export
- * @interface OPAEngineDecisionLog
- */
 export interface OPAEngineDecisionLog {
-  /**
-   *
-   * @type {string}
-   * @memberof OPAEngineDecisionLog
-   */
   engine?: OPAEngineDecisionLogEngineEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof OPAEngineDecisionLog
-   */
   decision_id: string;
-  /**
-   *
-   * @type {OPALabels}
-   * @memberof OPAEngineDecisionLog
-   */
   labels: OPALabels;
-  /**
-   *
-   * @type {string}
-   * @memberof OPAEngineDecisionLog
-   */
   timestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof OPAEngineDecisionLog
-   */
   path: string;
-  /**
-   *
-   * @type {any}
-   * @memberof OPAEngineDecisionLog
-   */
   input?: any;
-  /**
-   *
-   * @type {any}
-   * @memberof OPAEngineDecisionLog
-   */
   result?: any;
-  /**
-   *
-   * @type {OPAMetrics}
-   * @memberof OPAEngineDecisionLog
-   */
   metrics: OPAMetrics;
 }
 

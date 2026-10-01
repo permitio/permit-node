@@ -1,26 +1,28 @@
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 import {
   RelationshipTuplesApi as AutogenRelationshipTuplesApi,
-  RelationshipTupleCreate,
-  RelationshipTupleCreateBulkOperation,
-  RelationshipTupleDelete,
-  RelationshipTupleDeleteBulkOperation,
-  RelationshipTupleRead,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+  Configuration,
+  type RelationshipTupleCreate,
+  type RelationshipTupleDelete,
+  type RelationshipTupleRead,
+  type PaginatedResultRelationshipTupleDetailedRead,
+} from '#src/openapi/index';
+import { BASE_PATH } from '#src/openapi/base';
 
-import { BaseFactsPermitAPI, IPagination, IWaitForSync } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BaseFactsPermitAPI, type IPagination, type IWaitForSync } from '#src/api/base';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
 export {
-  RelationshipTupleCreate,
-  RelationshipTupleDelete,
-  RelationshipTupleRead,
-  RelationshipTupleCreateBulkOperation,
-  RelationshipTupleDeleteBulkOperation,
-} from '../openapi';
+  type RelationshipTupleCreate,
+  type RelationshipTupleDelete,
+  type RelationshipTupleRead,
+  type RelationshipTupleDetailedRead,
+  type PaginatedResultRelationshipTupleDetailedRead,
+  type RelationshipTupleCreateBulkOperation,
+  type RelationshipTupleDeleteBulkOperation,
+} from '#src/openapi/index';
 
 /**
  * Represents the parameters for listing role createments.
@@ -69,6 +71,18 @@ export interface IRelationshipTuplesApi extends IWaitForSync {
   list(params: IListRelationshipTuples): Promise<RelationshipTupleRead[]>;
 
   /**
+   * Lists relationship tuples with nested details through the dedicated endpoint.
+   * Uses the control plane even when facts proxying or waitForSync is enabled.
+   * @param params - Filters and pagination. Pages start at 1; perPage defaults to 100.
+   * @returns The complete detailed envelope, including data, total_count, and optional page_count.
+   * @throws {@link PermitApiError} If the API rejects the request.
+   * @throws {@link PermitContextError} If the environment context or API key is insufficient.
+   */
+  listDetailed(
+    params?: IListRelationshipTuples,
+  ): Promise<PaginatedResultRelationshipTupleDetailedRead>;
+
+  /**
    * Creates a new relationship tuple, that states that a relationship (of type: relation)
    * exists between two resource instances: the subject and the object.
    *
@@ -98,22 +112,18 @@ export interface IRelationshipTuplesApi extends IWaitForSync {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkRelationshipTuples(
-    tuples: RelationshipTupleCreate[],
-  ): Promise<RelationshipTupleCreateBulkOperation>;
+  bulkRelationshipTuples(tuples: RelationshipTupleCreate[]): Promise<object>;
 
   /**
    * Deletes multiple relationship tuples at once using the provided tuple data.
    * Each tuple object is of type RelationshipTupleDelete and is essentially a tuple of (subject, relation, object).
    *
    * @param tuples - he relationship tuples to delete.
-   * @returns A promise that resolves with the bulk un relationship tuples report.
+   * @returns The response object. Its fields are unspecified by the current API schema.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  bulkUnRelationshipTuples(
-    tuples: RelationshipTupleDelete[],
-  ): Promise<RelationshipTupleDeleteBulkOperation>;
+  bulkUnRelationshipTuples(tuples: RelationshipTupleDelete[]): Promise<object>;
 }
 
 /**
@@ -121,6 +131,7 @@ export interface IRelationshipTuplesApi extends IWaitForSync {
  */
 export class RelationshipTuplesApi extends BaseFactsPermitAPI implements IRelationshipTuplesApi {
   private relationshipTuples: AutogenRelationshipTuplesApi;
+  private detailedRelationshipTuples: AutogenRelationshipTuplesApi;
 
   /**
    * Creates an instance of the RelationshipTuplesApi.
@@ -129,11 +140,54 @@ export class RelationshipTuplesApi extends BaseFactsPermitAPI implements IRelati
    */
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
+    this.detailedRelationshipTuples = new AutogenRelationshipTuplesApi(
+      new Configuration({
+        basePath: this.config.apiUrl,
+        accessToken: this.config.token,
+        baseOptions: {
+          headers: {
+            'X-Permit-SDK-Version':
+              this.openapiClientConfig.baseOptions.headers['X-Permit-SDK-Version'],
+          },
+        },
+      }),
+      BASE_PATH,
+      this.config.axiosInstance,
+    );
     this.relationshipTuples = new AutogenRelationshipTuplesApi(
       this.openapiClientConfig,
       BASE_PATH,
       this.config.axiosInstance,
     );
+  }
+
+  /**
+   * Lists relationship tuples with nested details through the dedicated endpoint.
+   * Uses the control plane even when facts proxying or waitForSync is enabled.
+   * @param params - Filters and pagination. Pages start at 1; perPage defaults to 100.
+   * @returns The complete detailed envelope, including data, total_count, and optional page_count.
+   * @throws {@link PermitApiError} If the API rejects the request.
+   * @throws {@link PermitContextError} If the environment context or API key is insufficient.
+   */
+  public async listDetailed({
+    page = 1,
+    perPage = 100,
+    ...params
+  }: IListRelationshipTuples = {}): Promise<PaginatedResultRelationshipTupleDetailedRead> {
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
+    try {
+      return (
+        await this.detailedRelationshipTuples.listRelationshipTuplesDetailed({
+          ...params,
+          ...this.config.apiContext.environmentContext,
+          page,
+          perPage,
+        })
+      ).data;
+    } catch (err) {
+      this.handleApiError(err);
+    }
   }
 
   /**
@@ -148,12 +202,13 @@ export class RelationshipTuplesApi extends BaseFactsPermitAPI implements IRelati
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
-      return (
+      const response = (
         await this.relationshipTuples.listRelationshipTuples({
           ...params,
           ...this.config.apiContext.environmentContext,
         })
       ).data;
+      return Array.isArray(response) ? response : response.data;
     } catch (err) {
       this.handleApiError(err);
     }
@@ -210,14 +265,12 @@ export class RelationshipTuplesApi extends BaseFactsPermitAPI implements IRelati
    * Creates a new relationship tuple, that states that a relationship (of type: relation)
    * exists between two resource instances: the subject and the object.
    *
-   * @returns A promise that resolves to the created relationship tuple.
+   * @returns The response object. Its fields are unspecified by the current API schema.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    * @param tuples
    */
-  public async bulkRelationshipTuples(
-    tuples: RelationshipTupleCreate[],
-  ): Promise<RelationshipTupleCreateBulkOperation> {
+  public async bulkRelationshipTuples(tuples: RelationshipTupleCreate[]): Promise<object> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -239,13 +292,11 @@ export class RelationshipTuplesApi extends BaseFactsPermitAPI implements IRelati
    * Each tuple object is of type RelationshipTupleDelete and is essentially a tuple of (subject, relation, object).
    *
    * @param tuples - he relationship tuples to delete.
-   * @returns A promise that resolves with the bulk un relationship tuples report.
+   * @returns The response object. Its fields are unspecified by the current API schema.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async bulkUnRelationshipTuples(
-    tuples: RelationshipTupleDelete[],
-  ): Promise<RelationshipTupleDeleteBulkOperation> {
+  public async bulkUnRelationshipTuples(tuples: RelationshipTupleDelete[]): Promise<object> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {

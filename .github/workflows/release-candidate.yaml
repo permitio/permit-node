@@ -1,0 +1,407 @@
+name: SDK candidate validation
+
+on:
+  workflow_call:
+    inputs:
+      release-tag:
+        type: string
+        default: ''
+      prerelease:
+        type: boolean
+        default: false
+    outputs:
+      sha256:
+        value: ${{ jobs.build-candidate.outputs.sha256 }}
+      version:
+        value: ${{ jobs.build-candidate.outputs.version }}
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash --noprofile --norc -euo pipefail {0}
+
+jobs:
+  preinstall-security:
+    name: Locked dependency security (${{ matrix.node }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22.13.0', '24.0.0']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node }}
+          package-manager-cache: false
+      - name: Setup Trivy
+        uses: aquasecurity/setup-trivy@81e514348e19b6112ce2a7e3ecbafe19c1e1f567 # v0.3.1
+        with:
+          version: v0.74.0
+          cache: false
+      - name: Audit locked runtime and tooling before installation
+        run: node scripts/audit-dependencies.mjs --locked-only --out security-preinstall
+      - name: Save preinstall evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: candidate-preinstall-${{ matrix.node }}
+          path: security-preinstall/
+          if-no-files-found: error
+
+  lint:
+    name: SDK lint
+    needs: preinstall-security
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          package-manager-cache: false
+      - name: Install locked tools without lifecycle scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Run required check
+        run: pnpm lint:oxlint && pnpm lint:format
+
+  types:
+    name: SDK strict types
+    needs: preinstall-security
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          package-manager-cache: false
+      - name: Install locked tools without lifecycle scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Run required check
+        run: pnpm lint:types
+
+  docs:
+    name: SDK public reference
+    needs: preinstall-security
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          package-manager-cache: false
+      - name: Install locked tools without lifecycle scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Build and validate the actual public reference
+        run: pnpm run docs -- --out .test-results/reference
+
+  unit:
+    name: SDK unit and tooling (${{ matrix.node }})
+    needs: preinstall-security
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22.13.0', '24.0.0']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node }}
+          package-manager-cache: false
+      - name: Install locked tools without lifecycle scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Build and run local behavior checks
+        run: |
+          pnpm test
+          pnpm test:codegen
+          pnpm check:api-contracts
+
+  workflow-validation:
+    name: SDK workflow checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install verified actionlint binary
+        run: |
+          actionlint_url=https://github.com/rhysd/actionlint/releases/download/v1.7.12
+          curl --fail --silent --show-error --location --max-time 60 \
+            "$actionlint_url/actionlint_1.7.12_linux_amd64.tar.gz" \
+            --output "$RUNNER_TEMP/actionlint.tar.gz"
+          printf '%s  %s\n' \
+            '8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8' \
+            "$RUNNER_TEMP/actionlint.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint
+      - name: Validate workflow behavior and shell scripts
+        run: '"$RUNNER_TEMP/actionlint" .github/workflows/*.yaml'
+      - name: Inspect workflow security with online audits
+        uses: zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482 # v0.6.4
+        with:
+          inputs: .github/workflows
+          version: '1.30.1'
+          online-audits: true
+          advanced-security: false
+
+  codegen-guard:
+    name: SDK generated contract checks
+    needs: preinstall-security
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          package-manager-cache: false
+      - name: Setup Java
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install locked tools without lifecycle scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Reproduce reviewed generated source
+        run: |
+          pnpm check:codegen
+          pnpm check:openapi
+
+  build-candidate:
+    name: SDK versioned archive
+    needs: [lint, types, docs, unit, workflow-validation, codegen-guard]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      sha256: ${{ steps.identity.outputs.sha256 }}
+      version: ${{ steps.identity.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          package-manager-cache: false
+      - name: Install locked tools without lifecycle scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Validate the reviewed release version
+        env:
+          RELEASE_TAG: ${{ inputs.release-tag }}
+          IS_PRERELEASE: ${{ inputs.prerelease }}
+        run: node scripts/check-release-tag.mjs
+      - name: Validate npm version rerun without changing reviewed metadata
+        if: inputs.release-tag != ''
+        env:
+          RELEASE_TAG: ${{ inputs.release-tag }}
+          IS_PRERELEASE: ${{ inputs.prerelease }}
+        run: |
+          node scripts/set-release-version.mjs
+          git diff --exit-code -- package.json pnpm-lock.yaml
+      - name: Build and pack the single candidate
+        run: |
+          pnpm build
+          mkdir -p .test-results/release-candidate
+          pnpm pack --out .test-results/release-candidate/permitio.tgz --ignore-scripts
+      - name: Bind archive and reviewed source identity
+        id: identity
+        run: |
+          node scripts/release-artifact.mjs \
+            --artifact .test-results/release-candidate/permitio.tgz \
+            --identity .test-results/release-candidate/identity.json --write
+          node --input-type=module <<'NODE'
+          import { appendFileSync, readFileSync } from 'node:fs';
+          const file = '.test-results/release-candidate/identity.json';
+          const identity = JSON.parse(readFileSync(file));
+          appendFileSync(process.env.GITHUB_OUTPUT,
+            `sha256=${identity.sha256}\nversion=${identity.version}\n`);
+          NODE
+      - name: Save the exact candidate archive
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-candidate
+          path: .test-results/release-candidate/
+          include-hidden-files: true
+          if-no-files-found: error
+
+  packed-consumers:
+    name: SDK packed consumers (${{ matrix.node }})
+    needs: build-candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22.13.0', '24.0.0']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node }}
+          package-manager-cache: false
+      - name: Install locked tools without lifecycle scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Download the candidate from this run
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-candidate
+          path: .test-results/release-candidate/
+      - name: Verify candidate bytes and source identity
+        env:
+          EXPECTED_SHA256: ${{ needs.build-candidate.outputs.sha256 }}
+        run: >-
+          node scripts/release-artifact.mjs --artifact .test-results/release-candidate/permitio.tgz
+          --identity .test-results/release-candidate/identity.json --sha256 "$EXPECTED_SHA256"
+      - name: Compile and run installed customer fixtures
+        env:
+          EXPECTED_SHA256: ${{ needs.build-candidate.outputs.sha256 }}
+        run: >-
+          pnpm check:packed-consumers --artifact .test-results/release-candidate/permitio.tgz
+          --sha256 "$EXPECTED_SHA256" --output .test-results/packed-consumers.json
+      - name: Verify archive identity after customer execution
+        env:
+          EXPECTED_SHA256: ${{ needs.build-candidate.outputs.sha256 }}
+        run: >-
+          node scripts/release-artifact.mjs --artifact .test-results/release-candidate/permitio.tgz
+          --identity .test-results/release-candidate/identity.json --sha256 "$EXPECTED_SHA256"
+      - name: Save packed consumer evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: packed-consumers-${{ matrix.node }}
+          path: .test-results/packed-consumers.json
+          include-hidden-files: true
+          if-no-files-found: error
+
+  dependency-security:
+    needs: build-candidate
+    # Both forms use the caller's commit; actionlint 1.7.12 does not yet accept `$/`.
+    uses: ./.github/workflows/dependency-security.yaml # zizmor: ignore[self-repository]
+    with:
+      artifact-name: release-candidate
+      artifact-sha256: ${{ needs.build-candidate.outputs.sha256 }}
+
+  candidate-ready:
+    name: SDK candidate gates
+    needs:
+      [
+        lint,
+        types,
+        docs,
+        unit,
+        workflow-validation,
+        codegen-guard,
+        build-candidate,
+        packed-consumers,
+        dependency-security,
+      ]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          package-manager-cache: false
+      - name: Require every quality gate to succeed
+        env:
+          GATE_STAGE: candidate
+          GATE_RESULTS: ${{ toJSON(needs) }}
+        run: node scripts/check-release-gates.mjs

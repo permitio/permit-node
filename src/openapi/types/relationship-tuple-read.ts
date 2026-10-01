@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,88 +10,84 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface RelationshipTupleRead
- */
+// May contain unused imports in some cases
+import type { ResourceInstanceBlockRead } from './resource-instance-block-read';
+// May contain unused imports in some cases
+import type { StrippedRelationBlockRead } from './stripped-relation-block-read';
+// May contain unused imports in some cases
+import type { TenantBlockRead } from './tenant-block-read';
+
 export interface RelationshipTupleRead {
   /**
-   * Unique id of the relationship tuple
-   * @type {string}
-   * @memberof RelationshipTupleRead
-   */
-  id: string;
-  /**
    * resource_key:resource_instance_key of the subject
-   * @type {string}
-   * @memberof RelationshipTupleRead
    */
   subject: string;
   /**
    * key of the assigned relation
-   * @type {string}
-   * @memberof RelationshipTupleRead
    */
   relation: string;
   /**
    * resource_key:resource_instance_key of the object
-   * @type {string}
-   * @memberof RelationshipTupleRead
    */
   object: string;
   /**
+   * Unique id of the relationship tuple
+   */
+  id: string;
+  /**
+   * The tenant the relationship tuple is associated with
+   */
+  tenant: string;
+  /**
    * Unique id of the subject
-   * @type {string}
-   * @memberof RelationshipTupleRead
    */
   subject_id: string;
   /**
    * Unique id of the relation
-   * @type {string}
-   * @memberof RelationshipTupleRead
    */
   relation_id: string;
   /**
-   * Unique id of the object
-   * @type {string}
-   * @memberof RelationshipTupleRead
+   * Unique id of the object (null = all resources of this type)
    */
-  object_id: string;
+  object_id?: string;
   /**
    * Unique id of the tenant
-   * @type {string}
-   * @memberof RelationshipTupleRead
    */
   tenant_id: string;
   /**
    * Unique id of the organization that the relationship tuple belongs to.
-   * @type {string}
-   * @memberof RelationshipTupleRead
    */
   organization_id: string;
   /**
    * Unique id of the project that the relationship tuple belongs to.
-   * @type {string}
-   * @memberof RelationshipTupleRead
    */
   project_id: string;
   /**
    * Unique id of the environment that the relationship tuple belongs to.
-   * @type {string}
-   * @memberof RelationshipTupleRead
    */
   environment_id: string;
   /**
    * Date and time when the relationship tuple was created (ISO_8601 format).
-   * @type {string}
-   * @memberof RelationshipTupleRead
    */
   created_at: string;
   /**
    * Date and time when the relationship tuple was created (ISO_8601 format).
-   * @type {string}
-   * @memberof RelationshipTupleRead
    */
   updated_at: string;
+  /**
+   * The subject details of the relationship tuple
+   */
+  subject_details?: ResourceInstanceBlockRead;
+  /**
+   * The relation details of the relationship tuple
+   */
+  relation_details?: StrippedRelationBlockRead;
+  /**
+   * The object details of the relationship tuple
+   */
+  object_details?: ResourceInstanceBlockRead;
+  /**
+   * The tenant details of the relationship tuple
+   */
+  tenant_details?: TenantBlockRead;
 }

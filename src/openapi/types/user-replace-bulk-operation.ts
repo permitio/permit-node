@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,16 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface UserReplaceBulkOperation
- */
+// May contain unused imports in some cases
+import type { UserCreate } from './user-create';
+
 export interface UserReplaceBulkOperation {
-  /**
-   *
-   * @type {any}
-   * @memberof UserReplaceBulkOperation
-   */
-  operations: any;
+  operations: Array<UserCreate>;
 }

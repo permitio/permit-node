@@ -3,143 +3,109 @@ name: Release permit Node SDK
 on:
   release:
     types: [published]
-env: 
-  PROJECT_ID: 7f55831d77c642739bc17733ab0af138 #github actions project id (under 'Permit.io Tests' workspace)
-  ENV_NAME: node-sdk-ci
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash --noprofile --norc -euo pipefail {0}
 
 jobs:
+  candidate:
+    permissions:
+      contents: read
+    # Both forms use the caller's commit; actionlint 1.7.12 does not yet accept `$/`.
+    uses: ./.github/workflows/release-candidate.yaml # zizmor: ignore[self-repository]
+    with:
+      release-tag: ${{ github.event.release.tag_name }}
+      prerelease: ${{ github.event.release.prerelease }}
+
+  publication-acceptance:
+    name: Publication acceptance
+    needs: candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          package-manager-cache: false
+      # SDK71 has no releaseReady=true state. Shared adoption and Curtain Call must
+      # provide their reviewed acceptance contract before publication can proceed.
+      - name: Require the unresolved shared release acceptance
+        run: node scripts/check-publication-readiness.mjs
+
   publish_node_sdk:
-    runs-on: ubuntu-latest
+    needs: [candidate, publication-acceptance]
+    if: github.repository == 'permitio/permit-node'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     environment: production
     permissions:
       contents: read
       id-token: write # Required for npm Trusted Publishing (OIDC)
+    env:
+      NODE_AUTH_TOKEN: ''
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          node-version: '20'
+          persist-credentials: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-
-      - name: Upgrade npm for Trusted Publishing
-        run: npm install -g npm@latest && npm --version
-
-      - name: Set git user
-        run: |
-          git config --global user.email "eli@permit.io"
-          git config --global user.name "elimoshkovich"
-
-      - name: Install dependencies
-        run: |
-          rm -rf node_modules
-          yarn install
-          yarn run build
-          yarn docs ; git add docs/ ; git commit -m "update tsdoc"
-
-      - name: Creation env ${{ env.ENV_NAME }} under 'Permit.io Tests' workspace
-        run: |
-          response=$(curl -X POST \
-            https://api.permit.io/v2/projects/${{ env.PROJECT_ID }}/envs \
-            -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}' \
-            -H 'Content-Type: application/json' \
-            -d '{
-            "key": "${{ env.ENV_NAME }}",
-            "name": "${{ env.ENV_NAME }}"
-          }')
-
-          # Extract the new env id
-          echo "ENV_ID=$(echo "$response" | jq -r '.id')" >> $GITHUB_ENV
-
-          echo "New env ID: $ENV_ID"
-      
-      - name: Fetch API_KEY of ${{ env.ENV_NAME }}
-        run: |
-          response=$(curl -X GET \
-            https://api.permit.io/v2/api-key/${{ env.PROJECT_ID }}/${{ env.ENV_ID }} \
-            -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}')
-
-          # Extract the api key secret and register it for masking BEFORE writing
-          # it to the environment, so it is redacted everywhere in the logs
-          # (including the env-group dumps of every later step). Do not echo it.
-          ENV_API_KEY=$(echo "$response" | jq -r '.secret')
-          echo "::add-mask::$ENV_API_KEY"
-          echo "ENV_API_KEY=$ENV_API_KEY" >> "$GITHUB_ENV"
-
-      - name: local PDP runnning
+          package-manager-cache: false
+      - name: Require all publication dependencies
         env:
-          PDP_API_KEY: ${{ env.ENV_API_KEY }}
-          PERMIT_API_KEY: ${{ env.ENV_API_KEY }}
-          PDP_DEBUG: true
-        run: docker run -d -p 7766:7000 permitio/pdp-v2:latest
-
-      - name: Run tests
+          GATE_STAGE: publication
+          GATE_RESULTS: ${{ toJSON(needs) }}
+        run: node scripts/check-release-gates.mjs
+      - name: Verify bundled npm supports Trusted Publishing
+        run: node scripts/check-publish-runtime.mjs
+      - name: Download the exact tested and scanned archive
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-candidate
+          path: .test-results/release-candidate/
+      - name: Recheck archive hash, metadata and source identity
         env:
-          PDP_API_KEY: ${{ env.ENV_API_KEY }}
-          PERMIT_API_KEY: ${{ env.ENV_API_KEY }}
-          API_TIER: 'prod'
-        run: yarn test
-
-      - name: Delete env ${{ env.ENV_NAME }}
-        if: always()
-        run: |
-          curl -X DELETE \
-            https://api.permit.io/v2/projects/${{ env.PROJECT_ID }}/envs/${{ env.ENV_ID }} \
-            -H 'Authorization: Bearer ${{ secrets.PROJECT_API_KEY }}'
-          
-      - name: Bump version at package.json
-        env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: |
-          # Pass the release tag through an environment variable to prevent shell
-          # injection. Validate it is a literal semantic version (not a keyword like
-          # "minor" or "patch" that npm version would accept). Bump only the
-          # top-level "version" field. npm is JSON-aware (unlike greedy sed, which
-          # also rewrites scripts.version); no git tag/commit is created, re-runs on
-          # the same version are tolerated, and the "version" lifecycle script
-          # (standard-version) is skipped.
-          node -e "
-            const semver = require('semver');
-            const tag = process.env.RELEASE_TAG;
-            if (!semver.valid(tag)) {
-              console.error('Release tag', JSON.stringify(tag), 'is not a valid semantic version');
-              process.exit(1);
-            }
-          "
-          npm version "$RELEASE_TAG" --no-git-tag-version --allow-same-version --ignore-scripts
-          # Assert: package.json version matches the normalized release tag
-          node -e "
-            const semver = require('semver');
-            const tag = process.env.RELEASE_TAG;
-            // npm strips both the optional 'v' prefix and semver build metadata.
-            const normalized = semver.valid(tag);
-            const pkg = require('./package.json');
-            if (pkg.version !== normalized) {
-              console.error('Version mismatch: expected', normalized, 'got', pkg.version);
-              process.exit(1);
-            }
-            if (pkg.scripts.version !== 'standard-version') {
-              console.error('scripts.version was corrupted by the version bump');
-              process.exit(1);
-            }
-          "
-
+          EXPECTED_SHA256: ${{ needs.candidate.outputs.sha256 }}
+        run: >-
+          node scripts/release-artifact.mjs --artifact .test-results/release-candidate/permitio.tgz
+          --identity .test-results/release-candidate/identity.json --sha256 "$EXPECTED_SHA256"
       - name: Publish package to NPM
+        timeout-minutes: 15
         env:
           IS_PRERELEASE: ${{ github.event.release.prerelease }}
         run: |
           if [[ "$IS_PRERELEASE" == "true" ]]; then
-            echo "Publishing as a release candidate (rc)..."
-            npm publish --access public --tag rc
+            npm publish .test-results/release-candidate/permitio.tgz \
+              --ignore-scripts --access public --tag rc
+          elif [[ "$IS_PRERELEASE" == "false" ]]; then
+            npm publish .test-results/release-candidate/permitio.tgz \
+              --ignore-scripts --access public
           else
-            echo "Publishing as the latest release..."
-            npm publish --access public
+            echo '::error::Release prerelease metadata is invalid.' >&2
+            exit 1
           fi
-        # No NPM_TOKEN needed — authenticated via npm Trusted Publishing (OIDC),
-        # which requires the job's `id-token: write` permission above plus a
-        # Trusted Publisher configured on npmjs.com:
-        #   permitio/permit-node -> Settings -> Trusted Publishers
-        #   (workflow: node_sdk_publish.yaml, environment: production)
-        # Provenance attestations are generated automatically.
+        # npm OIDC trust remains bound to permitio/permit-node,
+        # node_sdk_publish.yaml and production. No NPM_TOKEN is used.

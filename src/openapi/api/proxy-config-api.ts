@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,35 +10,22 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { ProxyConfigCreate } from '../types';
-// @ts-ignore
-import { ProxyConfigRead } from '../types';
-// @ts-ignore
-import { ProxyConfigUpdate } from '../types';
+import type { Configuration } from '../configuration';
+import type { ProxyConfigCreate, ProxyConfigRead, ProxyConfigUpdate } from '../types';
 /**
  * ProxyConfigApi - axios parameter creator
- * @export
  */
 export const ProxyConfigApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -51,13 +36,13 @@ export const ProxyConfigApiAxiosParamCreator = function (configuration?: Configu
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ProxyConfigCreate} proxyConfigCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createProxyConfig: async (
       projId: string,
       envId: string,
       proxyConfigCreate: ProxyConfigCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('createProxyConfig', 'projId', projId);
@@ -66,8 +51,8 @@ export const ProxyConfigApiAxiosParamCreator = function (configuration?: Configu
       // verify required parameter 'proxyConfigCreate' is not null or undefined
       assertParamExists('createProxyConfig', 'proxyConfigCreate', proxyConfigCreate);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/proxy_configs`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -84,6 +69,7 @@ export const ProxyConfigApiAxiosParamCreator = function (configuration?: Configu
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -106,28 +92,28 @@ export const ProxyConfigApiAxiosParamCreator = function (configuration?: Configu
     /**
      * Deletes the proxy config and all its related data.
      * @summary Delete Proxy Config
+     * @param {string} proxyConfigId Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} proxyConfigId Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteProxyConfig: async (
+      proxyConfigId: string,
       projId: string,
       envId: string,
-      proxyConfigId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'proxyConfigId' is not null or undefined
+      assertParamExists('deleteProxyConfig', 'proxyConfigId', proxyConfigId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('deleteProxyConfig', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('deleteProxyConfig', 'envId', envId);
-      // verify required parameter 'proxyConfigId' is not null or undefined
-      assertParamExists('deleteProxyConfig', 'proxyConfigId', proxyConfigId);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'proxy_config_id'}}`, encodeURIComponent(String(proxyConfigId)));
+        .replace('{proxy_config_id}', encodeURIComponent(String(proxyConfigId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -142,6 +128,8 @@ export const ProxyConfigApiAxiosParamCreator = function (configuration?: Configu
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -159,28 +147,28 @@ export const ProxyConfigApiAxiosParamCreator = function (configuration?: Configu
     /**
      * Gets a proxy config, if such proxy config exists. Otherwise returns 404.
      * @summary Get Proxy Config
+     * @param {string} proxyConfigId Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} proxyConfigId Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getProxyConfig: async (
+      proxyConfigId: string,
       projId: string,
       envId: string,
-      proxyConfigId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'proxyConfigId' is not null or undefined
+      assertParamExists('getProxyConfig', 'proxyConfigId', proxyConfigId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('getProxyConfig', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('getProxyConfig', 'envId', envId);
-      // verify required parameter 'proxyConfigId' is not null or undefined
-      assertParamExists('getProxyConfig', 'proxyConfigId', proxyConfigId);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'proxy_config_id'}}`, encodeURIComponent(String(proxyConfigId)));
+        .replace('{proxy_config_id}', encodeURIComponent(String(proxyConfigId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -195,6 +183,8 @@ export const ProxyConfigApiAxiosParamCreator = function (configuration?: Configu
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -217,22 +207,22 @@ export const ProxyConfigApiAxiosParamCreator = function (configuration?: Configu
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listProxyConfigs: async (
       projId: string,
       envId: string,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('listProxyConfigs', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('listProxyConfigs', 'envId', envId);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/proxy_configs`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -256,6 +246,8 @@ export const ProxyConfigApiAxiosParamCreator = function (configuration?: Configu
         localVarQueryParameter['per_page'] = perPage;
       }
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -272,32 +264,32 @@ export const ProxyConfigApiAxiosParamCreator = function (configuration?: Configu
     /**
      * Partially updates the proxy config definition. Fields that will be provided will be completely overwritten.
      * @summary Update Proxy Config
+     * @param {string} proxyConfigId Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} proxyConfigId Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
      * @param {ProxyConfigUpdate} proxyConfigUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateProxyConfig: async (
+      proxyConfigId: string,
       projId: string,
       envId: string,
-      proxyConfigId: string,
       proxyConfigUpdate: ProxyConfigUpdate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'proxyConfigId' is not null or undefined
+      assertParamExists('updateProxyConfig', 'proxyConfigId', proxyConfigId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('updateProxyConfig', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('updateProxyConfig', 'envId', envId);
-      // verify required parameter 'proxyConfigId' is not null or undefined
-      assertParamExists('updateProxyConfig', 'proxyConfigId', proxyConfigId);
       // verify required parameter 'proxyConfigUpdate' is not null or undefined
       assertParamExists('updateProxyConfig', 'proxyConfigUpdate', proxyConfigUpdate);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'proxy_config_id'}}`, encodeURIComponent(String(proxyConfigId)));
+        .replace('{proxy_config_id}', encodeURIComponent(String(proxyConfigId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -314,6 +306,7 @@ export const ProxyConfigApiAxiosParamCreator = function (configuration?: Configu
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -338,7 +331,6 @@ export const ProxyConfigApiAxiosParamCreator = function (configuration?: Configu
 
 /**
  * ProxyConfigApi - functional programming interface
- * @export
  */
 export const ProxyConfigApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ProxyConfigApiAxiosParamCreator(configuration);
@@ -350,13 +342,13 @@ export const ProxyConfigApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ProxyConfigCreate} proxyConfigCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async createProxyConfig(
       projId: string,
       envId: string,
       proxyConfigCreate: ProxyConfigCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProxyConfigRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createProxyConfig(
         projId,
@@ -364,53 +356,80 @@ export const ProxyConfigApiFp = function (configuration?: Configuration) {
         proxyConfigCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ProxyConfigApi.createProxyConfig']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Deletes the proxy config and all its related data.
      * @summary Delete Proxy Config
+     * @param {string} proxyConfigId Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} proxyConfigId Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deleteProxyConfig(
+      proxyConfigId: string,
       projId: string,
       envId: string,
-      proxyConfigId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteProxyConfig(
+        proxyConfigId,
         projId,
         envId,
-        proxyConfigId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ProxyConfigApi.deleteProxyConfig']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Gets a proxy config, if such proxy config exists. Otherwise returns 404.
      * @summary Get Proxy Config
+     * @param {string} proxyConfigId Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} proxyConfigId Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getProxyConfig(
+      proxyConfigId: string,
       projId: string,
       envId: string,
-      proxyConfigId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProxyConfigRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getProxyConfig(
+        proxyConfigId,
         projId,
         envId,
-        proxyConfigId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ProxyConfigApi.getProxyConfig']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists all the proxy configs defined within an environment.
@@ -420,14 +439,14 @@ export const ProxyConfigApiFp = function (configuration?: Configuration) {
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listProxyConfigs(
       projId: string,
       envId: string,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ProxyConfigRead>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listProxyConfigs(
         projId,
@@ -436,40 +455,57 @@ export const ProxyConfigApiFp = function (configuration?: Configuration) {
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ProxyConfigApi.listProxyConfigs']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Partially updates the proxy config definition. Fields that will be provided will be completely overwritten.
      * @summary Update Proxy Config
+     * @param {string} proxyConfigId Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} proxyConfigId Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
      * @param {ProxyConfigUpdate} proxyConfigUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async updateProxyConfig(
+      proxyConfigId: string,
       projId: string,
       envId: string,
-      proxyConfigId: string,
       proxyConfigUpdate: ProxyConfigUpdate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProxyConfigRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateProxyConfig(
+        proxyConfigId,
         projId,
         envId,
-        proxyConfigId,
         proxyConfigUpdate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ProxyConfigApi.updateProxyConfig']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
 
 /**
  * ProxyConfigApi - factory interface
- * @export
  */
 export const ProxyConfigApiFactory = function (
   configuration?: Configuration,
@@ -481,100 +517,103 @@ export const ProxyConfigApiFactory = function (
     /**
      * Creates a new proxy config inside the Permit.io system.  If the proxy config is already created: will return 200 instead of 201, and will return the existing proxy config object in the response body.
      * @summary Create Proxy Config
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {ProxyConfigCreate} proxyConfigCreate
+     * @param {ProxyConfigApiCreateProxyConfigRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createProxyConfig(
-      projId: string,
-      envId: string,
-      proxyConfigCreate: ProxyConfigCreate,
-      options?: any,
+      requestParameters: ProxyConfigApiCreateProxyConfigRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ProxyConfigRead> {
       return localVarFp
-        .createProxyConfig(projId, envId, proxyConfigCreate, options)
+        .createProxyConfig(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.proxyConfigCreate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes the proxy config and all its related data.
      * @summary Delete Proxy Config
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} proxyConfigId Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
+     * @param {ProxyConfigApiDeleteProxyConfigRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteProxyConfig(
-      projId: string,
-      envId: string,
-      proxyConfigId: string,
-      options?: any,
+      requestParameters: ProxyConfigApiDeleteProxyConfigRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<void> {
       return localVarFp
-        .deleteProxyConfig(projId, envId, proxyConfigId, options)
+        .deleteProxyConfig(
+          requestParameters.proxyConfigId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Gets a proxy config, if such proxy config exists. Otherwise returns 404.
      * @summary Get Proxy Config
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} proxyConfigId Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
+     * @param {ProxyConfigApiGetProxyConfigRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getProxyConfig(
-      projId: string,
-      envId: string,
-      proxyConfigId: string,
-      options?: any,
+      requestParameters: ProxyConfigApiGetProxyConfigRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ProxyConfigRead> {
       return localVarFp
-        .getProxyConfig(projId, envId, proxyConfigId, options)
+        .getProxyConfig(
+          requestParameters.proxyConfigId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists all the proxy configs defined within an environment.
      * @summary List Proxy Configs
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {ProxyConfigApiListProxyConfigsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listProxyConfigs(
-      projId: string,
-      envId: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
+      requestParameters: ProxyConfigApiListProxyConfigsRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<Array<ProxyConfigRead>> {
       return localVarFp
-        .listProxyConfigs(projId, envId, page, perPage, options)
+        .listProxyConfigs(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Partially updates the proxy config definition. Fields that will be provided will be completely overwritten.
      * @summary Update Proxy Config
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} proxyConfigId Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
-     * @param {ProxyConfigUpdate} proxyConfigUpdate
+     * @param {ProxyConfigApiUpdateProxyConfigRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateProxyConfig(
-      projId: string,
-      envId: string,
-      proxyConfigId: string,
-      proxyConfigUpdate: ProxyConfigUpdate,
-      options?: any,
+      requestParameters: ProxyConfigApiUpdateProxyConfigRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ProxyConfigRead> {
       return localVarFp
-        .updateProxyConfig(projId, envId, proxyConfigId, proxyConfigUpdate, options)
+        .updateProxyConfig(
+          requestParameters.proxyConfigId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.proxyConfigUpdate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
@@ -582,163 +621,110 @@ export const ProxyConfigApiFactory = function (
 
 /**
  * Request parameters for createProxyConfig operation in ProxyConfigApi.
- * @export
- * @interface ProxyConfigApiCreateProxyConfigRequest
  */
 export interface ProxyConfigApiCreateProxyConfigRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ProxyConfigApiCreateProxyConfig
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ProxyConfigApiCreateProxyConfig
    */
   readonly envId: string;
 
-  /**
-   *
-   * @type {ProxyConfigCreate}
-   * @memberof ProxyConfigApiCreateProxyConfig
-   */
   readonly proxyConfigCreate: ProxyConfigCreate;
 }
 
 /**
  * Request parameters for deleteProxyConfig operation in ProxyConfigApi.
- * @export
- * @interface ProxyConfigApiDeleteProxyConfigRequest
  */
 export interface ProxyConfigApiDeleteProxyConfigRequest {
   /**
+   * Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
+   */
+  readonly proxyConfigId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ProxyConfigApiDeleteProxyConfig
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ProxyConfigApiDeleteProxyConfig
    */
   readonly envId: string;
-
-  /**
-   * Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ProxyConfigApiDeleteProxyConfig
-   */
-  readonly proxyConfigId: string;
 }
 
 /**
  * Request parameters for getProxyConfig operation in ProxyConfigApi.
- * @export
- * @interface ProxyConfigApiGetProxyConfigRequest
  */
 export interface ProxyConfigApiGetProxyConfigRequest {
   /**
+   * Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
+   */
+  readonly proxyConfigId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ProxyConfigApiGetProxyConfig
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ProxyConfigApiGetProxyConfig
    */
   readonly envId: string;
-
-  /**
-   * Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ProxyConfigApiGetProxyConfig
-   */
-  readonly proxyConfigId: string;
 }
 
 /**
  * Request parameters for listProxyConfigs operation in ProxyConfigApi.
- * @export
- * @interface ProxyConfigApiListProxyConfigsRequest
  */
 export interface ProxyConfigApiListProxyConfigsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ProxyConfigApiListProxyConfigs
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ProxyConfigApiListProxyConfigs
    */
   readonly envId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof ProxyConfigApiListProxyConfigs
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
-   * @memberof ProxyConfigApiListProxyConfigs
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateProxyConfig operation in ProxyConfigApi.
- * @export
- * @interface ProxyConfigApiUpdateProxyConfigRequest
  */
 export interface ProxyConfigApiUpdateProxyConfigRequest {
   /**
+   * Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
+   */
+  readonly proxyConfigId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ProxyConfigApiUpdateProxyConfig
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ProxyConfigApiUpdateProxyConfig
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the proxy config, or the URL-friendly key of the proxy config (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ProxyConfigApiUpdateProxyConfig
-   */
-  readonly proxyConfigId: string;
-
-  /**
-   *
-   * @type {ProxyConfigUpdate}
-   * @memberof ProxyConfigApiUpdateProxyConfig
-   */
   readonly proxyConfigUpdate: ProxyConfigUpdate;
 }
 
 /**
  * ProxyConfigApi - object-oriented interface
- * @export
- * @class ProxyConfigApi
- * @extends {BaseAPI}
  */
 export class ProxyConfigApi extends BaseAPI {
   /**
@@ -746,12 +732,11 @@ export class ProxyConfigApi extends BaseAPI {
    * @summary Create Proxy Config
    * @param {ProxyConfigApiCreateProxyConfigRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ProxyConfigApi
+   * @throws If a required parameter is missing.
    */
   public createProxyConfig(
     requestParameters: ProxyConfigApiCreateProxyConfigRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ProxyConfigApiFp(this.configuration)
       .createProxyConfig(
@@ -768,18 +753,17 @@ export class ProxyConfigApi extends BaseAPI {
    * @summary Delete Proxy Config
    * @param {ProxyConfigApiDeleteProxyConfigRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ProxyConfigApi
+   * @throws If a required parameter is missing.
    */
   public deleteProxyConfig(
     requestParameters: ProxyConfigApiDeleteProxyConfigRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ProxyConfigApiFp(this.configuration)
       .deleteProxyConfig(
+        requestParameters.proxyConfigId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.proxyConfigId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -790,18 +774,17 @@ export class ProxyConfigApi extends BaseAPI {
    * @summary Get Proxy Config
    * @param {ProxyConfigApiGetProxyConfigRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ProxyConfigApi
+   * @throws If a required parameter is missing.
    */
   public getProxyConfig(
     requestParameters: ProxyConfigApiGetProxyConfigRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ProxyConfigApiFp(this.configuration)
       .getProxyConfig(
+        requestParameters.proxyConfigId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.proxyConfigId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -812,12 +795,11 @@ export class ProxyConfigApi extends BaseAPI {
    * @summary List Proxy Configs
    * @param {ProxyConfigApiListProxyConfigsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ProxyConfigApi
+   * @throws If a required parameter is missing.
    */
   public listProxyConfigs(
     requestParameters: ProxyConfigApiListProxyConfigsRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ProxyConfigApiFp(this.configuration)
       .listProxyConfigs(
@@ -835,18 +817,17 @@ export class ProxyConfigApi extends BaseAPI {
    * @summary Update Proxy Config
    * @param {ProxyConfigApiUpdateProxyConfigRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ProxyConfigApi
+   * @throws If a required parameter is missing.
    */
   public updateProxyConfig(
     requestParameters: ProxyConfigApiUpdateProxyConfigRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ProxyConfigApiFp(this.configuration)
       .updateProxyConfig(
+        requestParameters.proxyConfigId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.proxyConfigId,
         requestParameters.proxyConfigUpdate,
         options,
       )

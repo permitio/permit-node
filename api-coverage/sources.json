@@ -1,0 +1,63 @@
+{
+  "sources": [
+    {
+      "name": "control-plane",
+      "file": "openapi/permit-api.json",
+      "url": "https://api.permit.io/v2/openapi.json",
+      "capturedAt": "2026-09-30",
+      "sha256": "1a29f1c75002d214b442a678a2b9f178db83a28f5fd1032322aa26d1eb835655",
+      "counts": {
+        "paths": 164,
+        "operations": 263,
+        "schemas": 333
+      }
+    },
+    {
+      "name": "pdp-container",
+      "file": "openapi/pdp/container.json",
+      "image": "permitio/pdp-v2:0.9.16@sha256:e3cf30794ec2d256636b4714641df46e51ee58a3f1f0d24c606e214e0bf8669a",
+      "capturedAt": "2026-09-30",
+      "sha256": "863635167e13483f21ccce5b3f38d93a2f8625c4e480d5fdea306c56a461b46f",
+      "counts": {
+        "paths": 29,
+        "operations": 34,
+        "schemas": 39
+      }
+    },
+    {
+      "name": "pdp-cloud",
+      "file": "openapi/pdp/cloud.json",
+      "url": "https://cloudpdp.api.permit.io/openapi.json",
+      "capturedAt": "2026-09-30",
+      "sha256": "8fb3ad79b93679b24ddd90596e17b7f6baa6b662e2c09a96f1a3ffc938292a29",
+      "counts": {
+        "paths": 10,
+        "operations": 10,
+        "schemas": 32
+      }
+    }
+  ],
+  "containerFactsAlias": {
+    "from": "/v2/facts/{proj_id}/{env_id}",
+    "to": "/facts",
+    "sourceSha256": "8a5f22fd7e1e65f576716d73db9e58eb6801208c1d9f0ede89b581c7b892c5e8",
+    "basis": "The pinned image mounts the same facts router at both prefixes; the compatibility mount is intentionally omitted from OpenAPI."
+  },
+  "unmeasuredCapabilities": {
+    "latestContainer": {
+      "status": "NOT_MEASURED",
+      "owner": "PER-16571",
+      "reason": "The inventory is tied to the pinned image, not a moving latest image."
+    },
+    "futurePdp": {
+      "status": "NOT_ADOPTED",
+      "owner": "PER-16568",
+      "reason": "No approved future PDP contract snapshot is published in this SDK."
+    },
+    "sharedTarget": {
+      "status": "UNAVAILABLE",
+      "owner": "PER-16345",
+      "reason": "No machine-readable shared target artifact was published when this Node evidence was reviewed."
+    }
+  }
+}

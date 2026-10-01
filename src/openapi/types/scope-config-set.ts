@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,19 +11,8 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { OpalCommonSchemasDataDataSourceConfig } from './opal-common-schemas-data-data-source-config';
+import type { DataSourceConfig } from './data-source-config';
 
-/**
- *
- * @export
- * @interface ScopeConfigSet
- */
 export interface ScopeConfigSet {
-  /**
-   *
-   * @type {OpalCommonSchemasDataDataSourceConfig}
-   * @memberof ScopeConfigSet
-   */
-  data?: OpalCommonSchemasDataDataSourceConfig;
+  data?: DataSourceConfig;
 }

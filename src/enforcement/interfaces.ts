@@ -1,5 +1,5 @@
-import { Context } from '../utils/context';
-import { Dict } from '../utils/dict';
+import { type Context } from '#src/utils/context';
+import { type Dict } from '#src/utils/dict';
 
 export interface ICheckInput {
   user: IUser;
@@ -90,6 +90,28 @@ export interface IResource {
   attributes?: Dict;
 }
 
+/** An object to filter, with request context that overrides the shared call context. */
+export interface IFilterObject extends IResource {
+  context?: Context;
+}
+
+/** A role assignment explaining a user's access to a resource. */
+export interface IAuthorizedUserAssignment {
+  user: string;
+  tenant: string;
+  resource: string;
+  role: string;
+  [id: string]: unknown;
+}
+
+/** The complete authorized-user result, including arbitrary user-key dictionary entries. */
+export interface IAuthorizedUsersResult {
+  resource: string;
+  tenant: string;
+  users: Record<string, IAuthorizedUserAssignment[]>;
+  [id: string]: unknown;
+}
+
 /**
  * Represents the bulk decision made by a policy.
  */
@@ -138,11 +160,12 @@ export interface TenantDetails {
 }
 
 export interface AllTenantsCheckResponse {
+  allow: true;
   tenant: TenantDetails;
 }
 
 export interface AllTenantsResponse {
-  allowedTenants: AllTenantsCheckResponse[];
+  allowed_tenants: AllTenantsCheckResponse[];
 }
 
 interface TenantPermissions {
@@ -177,8 +200,4 @@ export interface GetUserPermissionsResult {
 
 export interface OpaGetUserPermissionsResult {
   result: GetUserPermissionsResult;
-}
-
-export function isOpaGetUserPermissionsResult(obj: any): obj is OpaGetUserPermissionsResult {
-  return 'result' in obj;
 }

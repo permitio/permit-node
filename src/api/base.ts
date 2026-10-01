@@ -1,37 +1,72 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
-import { Logger } from 'pino';
+import axios, { type AxiosError, type AxiosResponse } from 'axios';
+import { type Logger } from 'pino';
 
-import { FactsSyncTimeoutPolicy, IPermitConfig } from '../config';
-import { APIKeysApi, Configuration } from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+import { type FactsSyncTimeoutPolicy, type IPermitConfig } from '#src/config';
+import { APIKeysApi, Configuration } from '#src/openapi/index';
+import { BASE_PATH } from '#src/openapi/base';
 
-import { API_ACCESS_LEVELS, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context';
+import {
+  diagnosticAxiosError,
+  diagnosticCause,
+  diagnosticErrorSecrets,
+  diagnosticMessage,
+  diagnosticMetadata,
+  diagnosticRequestSecrets,
+  diagnosticText,
+} from '#src/utils/diagnostics';
 
-interface FormattedAxiosError<T> {
-  code?: string;
+import {
+  API_ACCESS_LEVELS,
+  ApiContextLevel,
+  ApiKeyLevel,
+  initializeApiContext,
+  PermitContextError,
+} from '#src/api/context';
+
+export interface FormattedAxiosError {
+  code?: string | undefined;
   message: string;
-  error?: T;
-  status?: number;
+  error?: unknown;
+  status?: number | undefined;
 }
-export class PermitApiError<T> extends Error {
-  constructor(message: string, public originalError: AxiosError<T>) {
-    super(message);
+export class PermitApiError extends Error {
+  public readonly originalError: AxiosError<unknown>;
+  public readonly status: number | undefined;
+  public readonly code: string | undefined;
+
+  /**
+   * Creates a named REST failure from a detached, bounded request-error snapshot.
+   *
+   * @param message - Description of the failure, sanitized against request credentials and data.
+   * @param originalError - Failed Axios request. Its raw response body is not retained after redaction.
+   */
+  constructor(message: string, originalError: AxiosError<unknown>) {
+    const snapshot = diagnosticAxiosError(originalError);
+    super(diagnosticText(message || snapshot.message, diagnosticRequestSecrets(originalError)), {
+      cause: diagnosticCause(snapshot),
+    });
+    this.name = 'PermitApiError';
+    this.originalError = snapshot;
+    this.status = snapshot.status;
+    this.code = snapshot.code;
   }
 
-  public get formattedAxiosError(): FormattedAxiosError<T> {
+  public get formattedAxiosError(): FormattedAxiosError {
     return {
-      code: this.originalError.code,
+      code: this.code,
       message: this.message,
       error: this.originalError.response?.data,
-      status: this.originalError.status,
+      status: this.status,
     };
   }
 
-  public get request(): any {
-    return this.originalError.request;
+  /** Underlying socket/request objects are never retained on public errors. */
+  public get request(): undefined {
+    return undefined;
   }
 
-  public get response(): AxiosResponse<T> | undefined {
+  /** Bounded response diagnostics; private fields are omitted and the resulting body is unknown. */
+  public get response(): AxiosResponse<unknown> | undefined {
     return this.originalError.response;
   }
 }
@@ -75,8 +110,11 @@ export abstract class BasePermitApi {
   protected openapiClientConfig: Configuration;
   private scopeApi: APIKeysApi;
 
-  constructor(protected config: IPermitConfig, protected logger: Logger) {
-    const version = process.env.npm_package_version ?? 'unknown';
+  constructor(
+    protected config: IPermitConfig,
+    protected logger: Logger,
+  ) {
+    const version = process.env['npm_package_version'] ?? 'unknown';
     this.openapiClientConfig = new Configuration({
       basePath: `${this.config.apiUrl}`,
       accessToken: this.config.token,
@@ -93,57 +131,26 @@ export abstract class BasePermitApi {
    * Sets the API context and permitted access level based on the API key scope.
    */
   private async setContextFromApiKey(): Promise<void> {
-    try {
-      this.logger.debug('Fetching api key scope');
-      const response = await this.scopeApi.getApiKeyScope();
-
-      if (response.data.organization_id !== undefined && response.data.organization_id !== null) {
-        this.config.apiContext._saveApiKeyAccessibleScope(
-          response.data.organization_id,
-          response.data.project_id,
-          response.data.environment_id,
+    return initializeApiContext(this.config.apiContext, async () => {
+      try {
+        this.logger.debug('Fetching api key scope');
+        const response = await this.scopeApi.getApiKeyScope();
+        return response.data;
+      } catch (error) {
+        const cause = axios.isAxiosError<unknown>(error)
+          ? diagnosticAxiosError(error, [this.config.token])
+          : diagnosticCause(error, [this.config.token]);
+        const failure = new PermitContextError(
+          `Could not fetch the API key scope: ${cause.message} Check connectivity and API key access.`,
+          { cause },
         );
-
-        if (response.data.project_id !== undefined && response.data.project_id !== null) {
-          if (response.data.environment_id !== undefined && response.data.environment_id !== null) {
-            // set environment level context
-            this.logger.debug(`setting: environment-level api context`);
-            this.config.apiContext.setEnvironmentLevelContext(
-              response.data.organization_id,
-              response.data.project_id,
-              response.data.environment_id,
-            );
-            return;
-          }
-
-          // set project level context
-          this.logger.debug(`setting: project-level api context`);
-          this.config.apiContext.setProjectLevelContext(
-            response.data.organization_id,
-            response.data.project_id,
-          );
-          return;
-        }
-
-        // set org level context
-        this.logger.debug(`setting: organization-level api context`);
-        this.config.apiContext.setOrganizationLevelContext(response.data.organization_id);
-        return;
-      }
-
-      throw new PermitContextError('could not set api context level');
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
         this.logger.error(
-          `[${err?.response?.status}] permit.api.getApiKeyScope(), err: ${JSON.stringify(
-            err?.response?.data,
-          )}`,
+          { err: failure, operation: 'getApiKeyScope' },
+          'permit.api.getApiKeyScope() failed',
         );
+        throw failure;
       }
-      throw new PermitContextError(
-        'could not fetch the api key scope in order to set the api context level',
-      );
-    }
+    });
   }
 
   /**
@@ -202,20 +209,15 @@ export abstract class BasePermitApi {
   }
 
   protected handleApiError(err: unknown): never {
-    if (axios.isAxiosError(err)) {
-      // this is an http response with an error status code
-      const logMessage = `Got error status code: ${err.response?.status}, err: ${JSON.stringify(
-        err?.response?.data,
-      )}`;
-      const apiMessage = err.response?.data.message;
-      // log this to the SDK logger
-      this.logger.error(logMessage);
-      // and throw a permit error exception
-      throw new PermitApiError(apiMessage, err);
-    } else {
-      // unexpected error, just throw
-      throw err;
-    }
+    const privacy = diagnosticErrorSecrets(err, [this.config.token]);
+    const metadata = diagnosticMetadata(err, privacy);
+    const snapshot = axios.isAxiosError<unknown>(err)
+      ? diagnosticAxiosError(err, [this.config.token])
+      : new axios.AxiosError(diagnosticMessage(err, privacy), metadata.code);
+    if (metadata.status !== undefined) snapshot.status = metadata.status;
+    const failure = new PermitApiError(snapshot.message, snapshot);
+    this.logger.error({ err: failure, operation: 'REST' }, 'Permit REST API request failed');
+    throw failure;
   }
 }
 
@@ -232,7 +234,10 @@ export interface IWaitForSync {
 }
 
 export abstract class BaseFactsPermitAPI extends BasePermitApi implements IWaitForSync {
-  constructor(protected config: IPermitConfig, protected logger: Logger) {
+  constructor(
+    protected override config: IPermitConfig,
+    protected override logger: Logger,
+  ) {
     super(config, logger);
     if (config.proxyFactsViaPdp) {
       this.openapiClientConfig = new Configuration({

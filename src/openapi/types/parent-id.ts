@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,9 +10,4 @@
  * Do not edit the class manually.
  */
 
-/**
- * Parent Condition Set
- * @export
- * @interface ParentId
- */
-export interface ParentId {}
+export type ParentId = string;

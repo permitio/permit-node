@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,64 +10,18 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface UserObj
- */
+// May contain unused imports in some cases
+import type { RelationshipTupleObj } from './relationship-tuple-obj';
+
 export interface UserObj {
-  /**
-   *
-   * @type {string}
-   * @memberof UserObj
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof UserObj
-   */
   key: string;
-  /**
-   *
-   * @type {string}
-   * @memberof UserObj
-   */
   email?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof UserObj
-   */
   first_name?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof UserObj
-   */
   last_name?: string;
-  /**
-   *
-   * @type {object}
-   * @memberof UserObj
-   */
   attributes?: object;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof UserObj
-   */
+  roles?: Array<RelationshipTupleObj>;
   assigned_roles?: Array<string>;
-  /**
-   *
-   * @type {string}
-   * @memberof UserObj
-   */
   created_at: string;
-  /**
-   *
-   * @type {string}
-   * @memberof UserObj
-   */
   updated_at: string;
 }

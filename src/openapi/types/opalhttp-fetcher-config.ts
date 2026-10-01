@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,49 +11,19 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { HttpMethods } from './http-methods';
+import type { HttpMethods } from './http-methods';
 
 /**
  * Config for HttpFetchProvider\'s Adding HTTP headers.
- * @export
- * @interface OPALHttpFetcherConfig
  */
 export interface OPALHttpFetcherConfig {
   /**
    * indicates to OPAL client that it should use a custom FetcherProvider to fetch the data
-   * @type {string}
-   * @memberof OPALHttpFetcherConfig
    */
   fetcher?: string;
-  /**
-   *
-   * @type {{ [key: string]: string; }}
-   * @memberof OPALHttpFetcherConfig
-   */
   headers?: { [key: string]: string };
-  /**
-   *
-   * @type {boolean}
-   * @memberof OPALHttpFetcherConfig
-   */
   is_json?: boolean;
-  /**
-   *
-   * @type {boolean}
-   * @memberof OPALHttpFetcherConfig
-   */
   process_data?: boolean;
-  /**
-   *
-   * @type {HttpMethods}
-   * @memberof OPALHttpFetcherConfig
-   */
   method?: HttpMethods;
-  /**
-   *
-   * @type {any}
-   * @memberof OPALHttpFetcherConfig
-   */
   data?: any;
 }

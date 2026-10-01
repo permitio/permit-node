@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,46 +11,17 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { OPALClient } from './opalclient';
+import type { OPALClient } from './opalclient';
 // May contain unused imports in some cases
-// @ts-ignore
-import { OpalCommon } from './opal-common';
+import type { OPALCommon } from './opalcommon';
 // May contain unused imports in some cases
-// @ts-ignore
-import { PDPContext } from './pdpcontext';
+import type { PDPContext } from './pdpcontext';
 // May contain unused imports in some cases
-// @ts-ignore
-import { Pdp } from './pdp';
+import type { PdpValues } from './pdp-values';
 
-/**
- *
- * @export
- * @interface RemoteConfig
- */
 export interface RemoteConfig {
-  /**
-   *
-   * @type {OpalCommon}
-   * @memberof RemoteConfig
-   */
-  opal_common?: OpalCommon;
-  /**
-   *
-   * @type {OPALClient}
-   * @memberof RemoteConfig
-   */
+  opal_common: OPALCommon;
   opal_client: OPALClient;
-  /**
-   *
-   * @type {Pdp}
-   * @memberof RemoteConfig
-   */
-  pdp?: Pdp;
-  /**
-   *
-   * @type {PDPContext}
-   * @memberof RemoteConfig
-   */
+  pdp?: PdpValues;
   context: PDPContext;
 }

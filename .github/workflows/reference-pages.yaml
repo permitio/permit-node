@@ -1,0 +1,120 @@
+name: Publish API reference
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Full commit SHA selected on main for the approved reference publication
+        required: true
+        type: string
+
+concurrency:
+  group: reference-pages-main
+  cancel-in-progress: false
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash --noprofile --norc -euo pipefail {0}
+
+jobs:
+  guard:
+    name: Validate approved reference source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      commit: ${{ steps.source.outputs.commit }}
+    steps:
+      - name: Require trusted main and exact intended commit before checkout
+        id: source
+        env:
+          EXPECTED_COMMIT: ${{ inputs.commit }}
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" != workflow_dispatch ||
+                "$GITHUB_REPOSITORY" != permitio/permit-node ||
+                "$GITHUB_REF" != refs/heads/main ]]; then
+            echo '::error::Dispatch the reference only on permitio/permit-node main.' >&2
+            exit 1
+          fi
+          if [[ ! "$EXPECTED_COMMIT" =~ ^[0-9a-f]{40}$ ||
+                "$EXPECTED_COMMIT" != "$GITHUB_SHA" ]]; then
+            echo '::error::The commit input must be the full SHA selected on main for this run.' >&2
+            exit 1
+          fi
+          echo "commit=${EXPECTED_COMMIT}" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build the approved reference artifact
+    needs: guard
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      EXPECTED_COMMIT: ${{ needs.guard.outputs.commit }}
+    outputs:
+      artifact-name: reference-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Checkout the validated commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.guard.outputs.commit }}
+          persist-credentials: false
+      - name: Verify checked-out source
+        run: |
+          set -euo pipefail
+          if [[ "$(git rev-parse HEAD)" != "$EXPECTED_COMMIT" ]]; then
+            echo '::error::Checkout differs from the intended commit; rebuild that SHA.' >&2
+            exit 1
+          fi
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          package-manager-cache: false
+      - name: Audit the locked dependency graph before installation
+        run: pnpm audit --audit-level=moderate
+      - name: Install locked tools without lifecycle scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Rebuild and validate the public reference
+        run: pnpm run docs -- --out .test-results/reference
+      - name: Bind and verify source and reference file bytes
+        run: |
+          node scripts/reference-pages.mjs --out .test-results/reference --write
+          node scripts/reference-pages.mjs --out .test-results/reference
+      - name: Upload this run's validated reference
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          name: reference-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .test-results/reference
+          include-hidden-files: true
+
+  deploy:
+    name: Deploy the approved reference
+    needs: [guard, build]
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.repository == 'permitio/permit-node' && github.ref == 'refs/heads/main' &&
+      inputs.commit == github.sha
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy only this run's named artifact
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+        with:
+          artifact_name: ${{ needs.build.outputs.artifact-name }}

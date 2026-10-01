@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,47 +10,12 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface AVPEngineDecisionLog
- */
 export interface AVPEngineDecisionLog {
-  /**
-   *
-   * @type {string}
-   * @memberof AVPEngineDecisionLog
-   */
   engine?: AVPEngineDecisionLogEngineEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof AVPEngineDecisionLog
-   */
   timestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof AVPEngineDecisionLog
-   */
   tenant: string;
-  /**
-   *
-   * @type {number}
-   * @memberof AVPEngineDecisionLog
-   */
   process_time_ms?: number;
-  /**
-   *
-   * @type {object}
-   * @memberof AVPEngineDecisionLog
-   */
   input: object;
-  /**
-   *
-   * @type {object}
-   * @memberof AVPEngineDecisionLog
-   */
   result: object;
 }
 

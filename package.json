@@ -1,141 +1,101 @@
 {
   "name": "permitio",
-  "version": "2.7.5",
+  "version": "3.0.0",
   "description": "Node.js client library for the Permit.io full-stack permissions platform",
-  "type": "commonjs",
-  "main": "build/index.js",
-  "typings": "build/index.d.ts",
-  "module": "build/index.mjs",
-  "exports": {
-    ".": {
-      "types": "./build/index.d.ts",
-      "import": "./build/index.mjs",
-      "require": "./build/index.js"
-    }
-  },
+  "keywords": [],
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/permitio/permit-node.git"
   },
-  "license": "MIT",
-  "keywords": [],
-  "scripts": {
-    "build": "run-s build:js build:types",
-    "build:js": "tsup",
-    "build:types": "tsc --emitDeclarationOnly --outDir build",
-    "lint": "run-s lint:*",
-    "lint:eslint": "eslint src --ext .ts",
-    "lint:prettier": "prettier --config .prettierrc \"src/**/*.{ts,css,less,scss,js}\" --check",
-    "fix": "run-s fix:*",
-    "fix:prettier": "prettier --config .prettierrc \"src/**/*.{ts,css,less,scss,js}\" --write",
-    "fix:lint": "eslint src --ext .ts --fix",
-    "test": "run-s test:*",
-    "test:unit": "run-s build && ava --verbose 'build/tests/unit/**/*.spec.js'",
-    "test:integration": "run-s build && ava --verbose build/tests/endpoints/**/*.spec.js",
-    "test:module-imports": "run-s build && ava --verbose build/tests/module-imports/**/*.spec.js",
-    "test:e2e:rbac": "run-s build && ava --verbose build/tests/e2e/rbac.e2e.spec.js",
-    "test:e2e:rebac": "run-s build && ava --verbose build/tests/e2e/rebac.e2e.spec.js",
-    "test:e2e:local_facts": "run-s build && ava --verbose build/tests/e2e/local_facts.e2e.spec.js",
-    "check-cli": "run-s test diff-integration-tests check-integration-tests",
-    "check-integration-tests": "run-s check-integration-test:*",
-    "diff-integration-tests": "mkdir -p diff && rm -rf diff/test && cp -r test diff/test && rm -rf diff/test/test-*/.git && cd diff && git init --quiet && git add -A && git commit --quiet --no-verify --allow-empty -m 'WIP' && echo '\\n\\nCommitted most recent integration test output in the \"diff\" directory. Review the changes with \"cd diff && git diff HEAD\" or your preferred git diff viewer.'",
-    "watch:build": "tsc -p tsconfig.json -w",
-    "watch:test": "nyc --silent ava --watch --verbose",
-    "cov": "run-s build test:unit cov:html cov:lcov && open-cli coverage/index.html",
-    "cov:html": "nyc report --reporter=html",
-    "cov:lcov": "nyc report --reporter=lcov",
-    "cov:send": "run-s cov:lcov && codecov",
-    "cov:check": "nyc report && nyc check-coverage --lines 100 --functions 100 --branches 100",
-    "docs": "typedoc",
-    "docs:watch": "typedoc --watch",
-    "version": "standard-version",
-    "reset-hard": "git clean -dfx && git reset --hard && yarn",
-    "prepare": "npm run build && husky install",
-    "prepare-release": "run-s reset-hard test cov:check doc:html version doc:publish",
-    "generate-openapi-client": "openapi-generator-cli generate -i https://api.permit.io/v2/openapi.json -g typescript-axios -o src/openapi/ --additional-properties=useSingleRequestParameter=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=types --skip-validate-spec && yarn fix:prettier",
-    "check:codegen": "node scripts/check-codegen.mjs",
-    "test:codegen": "ava --verbose scripts/check-codegen.spec.mjs",
-    "lint:codegen": "eslint scripts --ext .mjs && prettier --check \"scripts/*.mjs\""
-  },
-  "engines": {
-    "node": ">=10"
-  },
-  "dependencies": {
-    "@bitauth/libauth": "^1.17.1",
-    "axios": "^1.7.4",
-    "axios-retry": "^4.5.0",
-    "lodash": "^4.17.21",
-    "path-to-regexp": "^6.2.1",
-    "pino": "8.11.0",
-    "pino-pretty": "10.2.0",
-    "require-in-the-middle": "^5.1.0",
-    "url-parse": "^1.5.10"
-  },
-  "devDependencies": {
-    "@ava/typescript": "^1.1.1",
-    "@babel/traverse": "^7.24.8",
-    "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "@openapitools/openapi-generator-cli": "^2.5.2",
-    "@types/express": "^4.17.9",
-    "@types/lodash": "^4.14.166",
-    "@types/node": "^14.14.14",
-    "@types/url-parse": "^1.4.11",
-    "@typescript-eslint/eslint-plugin": "^4.0.1",
-    "@typescript-eslint/parser": "^4.0.1",
-    "ava": "^3.12.1",
-    "codecov": "^3.5.0",
-    "cspell": "^4.1.0",
-    "cz-conventional-changelog": "^3.3.0",
-    "eslint": "^7.8.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-eslint-comments": "^3.2.0",
-    "eslint-plugin-functional": "^3.0.2",
-    "eslint-plugin-import": "^2.22.0",
-    "gh-pages": "^6.1.1",
-    "husky": "^7.0.0",
-    "lint-staged": "^12.1.2",
-    "npm-run-all": "^4.1.5",
-    "nyc": "^15.1.0",
-    "open-cli": "^8.0.0",
-    "prettier": "^2.5.1",
-    "standard-version": "^9.0.0",
-    "ts-node": "^9.0.0",
-    "tsup": "^8.5.0",
-    "typedoc": "^0.24.7",
-    "typescript": "^4.6.4"
-  },
   "files": [
     "build/**/*.d.ts",
+    "build/index.d.mts",
     "build/index.js",
     "build/index.mjs",
     "!build/tests/**",
     "CHANGELOG.md",
     "LICENSE",
-    "README.md"
+    "MIGRATION.md",
+    "README.md",
+    "skills/permit-node-3-migration/SKILL.md",
+    "skills/permit-node-3-migration/references/**",
+    "skills/permit-node-3-migration/scripts/**",
+    "skills/permit-node-3-migration/package.json",
+    "skills/permit-node-3-migration/compiler-lock.yaml",
+    "skills/permit-node-3-migration/pnpm-workspace.yaml"
   ],
-  "ava": {
-    "failFast": true,
-    "failWithoutAssertions": false,
-    "timeout": "60s",
-    "files": [
-      "!src/tests/fixtures.ts"
-    ]
-  },
-  "lint-staged": {
-    "*.{ts,css,less,scss,js,html}": [
-      "prettier --config .prettierrc --write"
-    ]
-  },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
+  "type": "commonjs",
+  "main": "build/index.js",
+  "module": "build/index.mjs",
+  "typings": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./build/index.d.mts",
+        "default": "./build/index.mjs"
+      },
+      "require": {
+        "types": "./build/index.d.ts",
+        "default": "./build/index.js"
+      }
     }
   },
-  "nyc": {
-    "extends": "@istanbuljs/nyc-config-typescript",
-    "exclude": [
-      "**/*.spec.js"
-    ]
+  "scripts": {
+    "build": "pnpm run build:js && pnpm run build:types",
+    "build:js": "node scripts/build.mjs",
+    "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly --outDir build && node scripts/declarations.mjs",
+    "lint": "pnpm run lint:oxlint && pnpm run lint:format && pnpm run lint:types",
+    "lint:types": "tsc -p tsconfig.test.json",
+    "fix": "oxlint --fix . && oxfmt --write .",
+    "test": "pnpm run build && node scripts/run-tests.mjs offline",
+    "test:unit": "node scripts/run-tests.mjs unit",
+    "test:module-imports": "pnpm run build && node scripts/run-tests.mjs module-imports",
+    "test:integration": "node scripts/run-tests.mjs integration",
+    "test:e2e": "node scripts/run-tests.mjs e2e",
+    "watch": "vitest --project unit",
+    "coverage": "node scripts/run-tests.mjs coverage",
+    "docs": "node tools/compiler/docs.mjs",
+    "docs:watch": "node tools/compiler/docs.mjs --watch",
+    "check:docs": "node scripts/check-public-reference.mjs",
+    "generate-openapi-client": "node scripts/generate-openapi.mjs",
+    "check:openapi": "node scripts/generate-openapi.mjs --check",
+    "check:codegen": "node scripts/check-codegen.mjs",
+    "test:codegen": "pnpm run build && node scripts/run-tests.mjs codegen",
+    "lint:oxlint": "oxlint --deny-warnings .",
+    "lint:format": "oxfmt --check .",
+    "verify": "pnpm exec prek run --config .pre-commit-config.yaml --all-files && pnpm run build && node scripts/run-tests.mjs verify && pnpm run check:api-contracts",
+    "hooks:install": "node scripts/hooks.mjs",
+    "normalize:openapi": "node scripts/normalize-openapi.mjs && oxfmt --write src/openapi",
+    "audit:dependencies": "node scripts/audit-dependencies.mjs",
+    "check:api-contracts": "node scripts/check-api-contracts.mjs",
+    "check:api-drift": "node scripts/check-api-contracts.mjs --live",
+    "check:release-evidence": "node scripts/check-release-evidence.mjs",
+    "check:packed-consumers": "node scripts/check-packed-consumers.mjs"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "dependencies": {
+    "axios": "1.20.0",
+    "lodash": "4.18.1",
+    "pino": "8.21.0",
+    "pino-pretty": "10.3.1"
+  },
+  "devDependencies": {
+    "@j178/prek": "0.5.4",
+    "@openapitools/openapi-generator-cli": "2.41.0",
+    "@permitio/compiler-tools": "workspace:*",
+    "@types/lodash": "4.17.25",
+    "@types/node": "22.20.4",
+    "@vitest/coverage-v8": "5.0.2",
+    "esbuild": "0.28.2",
+    "oxfmt": "0.71.0",
+    "oxlint": "1.86.0",
+    "semver": "7.8.5",
+    "typescript": "7.0.2",
+    "vite": "8.3.1",
+    "vitest": "5.0.2"
+  },
+  "engines": {
+    "node": "^22.13.0 || ^24.0.0"
+  },
+  "packageManager": "pnpm@12.8.1"
 }

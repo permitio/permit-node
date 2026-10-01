@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,16 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface ElementsUserRoleRemove
- */
 export interface ElementsUserRoleRemove {
   /**
    * the role that will be unassigned (accepts either the role id or the role key)
-   * @type {string}
-   * @memberof ElementsUserRoleRemove
    */
   role: string;
 }

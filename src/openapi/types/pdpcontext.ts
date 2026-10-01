@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,34 +10,12 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface PDPContext
- */
 export interface PDPContext {
-  /**
-   *
-   * @type {string}
-   * @memberof PDPContext
-   */
   customer_id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof PDPContext
-   */
   client_id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof PDPContext
-   */
   backend_tier: string;
-  /**
-   *
-   * @type {string}
-   * @memberof PDPContext
-   */
   component?: string;
+  org_id: string;
+  project_id: string;
+  env_id: string;
 }

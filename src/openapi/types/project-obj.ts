@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,40 +10,10 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface ProjectObj
- */
 export interface ProjectObj {
-  /**
-   *
-   * @type {string}
-   * @memberof ProjectObj
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ProjectObj
-   */
   key: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ProjectObj
-   */
   name?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ProjectObj
-   */
   created_at: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ProjectObj
-   */
   updated_at: string;
 }

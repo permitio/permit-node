@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,28 +10,17 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface RelationshipTupleDelete
- */
 export interface RelationshipTupleDelete {
   /**
    * the resource instance assigned the new relation (accepts either the resource instance id or resource_key:resource_instance_key)
-   * @type {string}
-   * @memberof RelationshipTupleDelete
    */
   subject: string;
   /**
    * the relation to assign between the subject and object
-   * @type {string}
-   * @memberof RelationshipTupleDelete
    */
   relation: string;
   /**
    * the resource instance on which the new relation is assigned (accepts either the resource instance id or resource_key:resource_instance_key)
-   * @type {string}
-   * @memberof RelationshipTupleDelete
    */
   object: string;
 }

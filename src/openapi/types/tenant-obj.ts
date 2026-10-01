@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,46 +10,11 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface TenantObj
- */
 export interface TenantObj {
-  /**
-   *
-   * @type {string}
-   * @memberof TenantObj
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof TenantObj
-   */
   key: string;
-  /**
-   *
-   * @type {string}
-   * @memberof TenantObj
-   */
   name?: string;
-  /**
-   *
-   * @type {object}
-   * @memberof TenantObj
-   */
   attributes?: object;
-  /**
-   *
-   * @type {string}
-   * @memberof TenantObj
-   */
   created_at: string;
-  /**
-   *
-   * @type {string}
-   * @memberof TenantObj
-   */
   updated_at: string;
 }
