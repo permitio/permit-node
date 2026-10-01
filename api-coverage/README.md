@@ -128,3 +128,11 @@ Review a failed scheduled run before the next SDK release and link the resolved 
 issue in the baseline-change PR. GitHub's workflow failure notifications, job summary and retained
 artifact are the implemented alert surfaces. No Slack destination, automated ticket creation or
 cross-SDK owner service is configured by this change.
+
+## Packed release evidence
+
+[The release-evidence contract](RELEASE-EVIDENCE.md) validates a separate compatibility harness's
+allowlisted observations against the exact candidate package, official released baseline, clean
+source inventory, and reviewed runtime/case matrix. It does not start services. Package/wire/API/PDP
+proof remain distinct, and missing execution remains INVALID. This command's local PASS never
+resolves the unavailable shared parity target or approves npm publication.
