@@ -334,6 +334,28 @@ Existing permission-query and bulk OPA error policies remain unchanged. `checkAl
 retained; future deprecation planning does not remove it here. URL checking and AuthZEN remain
 deferred. Internal context transforms are not activated by these methods.
 
+## User lists
+
+`permit.api.users.list` returns the full `PaginatedResultUserRead` envelope. Pass
+`searchOperator: 'contains'`, `'startswith'` or `'endswith'` to match user keys, emails
+and names. Omitting it leaves the API default of `contains`. Search, role and pagination
+options can be combined; `role: ''` selects users without roles.
+
+```typescript
+const users = await permit.api.users.list({
+  search: 'alice',
+  searchOperator: 'startswith',
+  includeResourceInstanceRoles: true,
+  page: 1,
+  perPage: 20,
+});
+console.log(users.total_count, users.data[0]?.associated_tenants);
+```
+
+`includeResourceInstanceRoles` defaults to false at the API. When true, resource roles
+appear in each associated tenant's `resource_instance_roles`, with `resource`,
+`resource_instance` and `role` fields. Both flag values retain the same paginated result.
+
 ## Groups
 
 `permit.api.groups` supports the eight GA core operations: `create`, `delete`, `list`, `get`,

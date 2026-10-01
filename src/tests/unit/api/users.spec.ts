@@ -38,6 +38,8 @@ describe('UsersApi (unit)', () => {
       // Unlike resources.list, users.list does not inject default page/per_page.
       expect(rest.last?.params).not.toHaveProperty('page');
       expect(rest.last?.params).not.toHaveProperty('per_page');
+      expect(rest.last?.params).not.toHaveProperty('search_operator');
+      expect(rest.last?.params).not.toHaveProperty('include_resource_instance_roles');
     });
 
     it('forwards search, role and pagination as wire params', async () => {
@@ -52,6 +54,73 @@ describe('UsersApi (unit)', () => {
         role: 'admin',
         page: '2',
         per_page: '5',
+      });
+    });
+
+    it.each(['startswith', 'endswith', 'contains'] as const)(
+      'preserves %s search and both resource-role flag values',
+      async (searchOperator) => {
+        for (const includeResourceInstanceRoles of [true, false]) {
+          rest.reset();
+          const response = {
+            data: [
+              {
+                key: 'bob &/é',
+                associated_tenants: [
+                  {
+                    tenant: 'east',
+                    roles: [],
+                    status: 'active',
+                    resource_instance_roles: includeResourceInstanceRoles
+                      ? [{ resource: 'document', resource_instance: 'report', role: 'owner' }]
+                      : [],
+                  },
+                ],
+              },
+            ],
+            total_count: 9,
+            page_count: 1,
+          };
+          rest.resolveWith(response);
+          const params = Object.freeze({
+            search: 'bob &/é',
+            searchOperator,
+            role: '',
+            includeResourceInstanceRoles,
+            page: 2,
+            perPage: 5,
+          });
+          const before = { ...params };
+
+          expect(await permit.api.users.list(params)).toEqual(response);
+          expect(params).toEqual(before);
+          expect(rest.requests).toHaveLength(1);
+          expect(rest.last?.method).toBe('GET');
+          expect(rest.last?.path).toBe(USERS);
+          expect(rest.last?.params).toEqual({
+            search: 'bob &/é',
+            search_operator: searchOperator,
+            role: '',
+            include_resource_instance_roles: String(includeResourceInstanceRoles),
+            page: '2',
+            per_page: '5',
+          });
+        }
+      },
+    );
+
+    it('propagates list filter validation errors through the public error', async () => {
+      rest.rejectWith(422, { detail: 'invalid filter' });
+      await expect(
+        permit.api.users.list({
+          searchOperator: 'contains',
+          includeResourceInstanceRoles: false,
+        }),
+      ).rejects.toMatchObject({ name: 'PermitApiError', status: 422 });
+      expect(rest.requests).toHaveLength(1);
+      expect(rest.last?.params).toEqual({
+        search_operator: 'contains',
+        include_resource_instance_roles: 'false',
       });
     });
   });

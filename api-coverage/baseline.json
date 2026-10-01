@@ -554,7 +554,12 @@
       "src/api/users.ts:IUsersListParams": {
         "extends": [" extends IPagination"],
         "kind": "interface",
-        "members": ["role?: string;", "search?: string;"]
+        "members": [
+          "includeResourceInstanceRoles?: boolean;",
+          "role?: string;",
+          "search?: string;",
+          "searchOperator?: SearchOperator;"
+        ]
       },
       "src/api/users.ts:ReturnIGetUserRolesType": {
         "kind": "type",

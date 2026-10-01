@@ -11,6 +11,7 @@ import {
   type RoleAssignmentDetailedRead,
   type RoleAssignmentRead,
   type RoleAssignmentRemove,
+  type SearchOperator,
   type UserCreate,
   type UserRead,
   type UserUpdate,
@@ -102,7 +103,17 @@ type ReturnIGetUserRolesType<T extends IGetUserRoles> = T extends IGetUserRolesW
 
 export interface IUsersListParams extends IPagination {
   search?: string;
+  /**
+   * Matches search against user keys, emails and names using the selected operator.
+   * The API defaults to `contains` when this option is omitted.
+   */
+  searchOperator?: SearchOperator;
   role?: string;
+  /**
+   * Includes resource instance roles in each user's associated tenant details.
+   * The API defaults to false; the list result remains the full paginated envelope.
+   */
+  includeResourceInstanceRoles?: boolean;
 }
 
 export interface IUsersApi extends IWaitForSync {

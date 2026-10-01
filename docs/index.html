@@ -47,12 +47,28 @@ Dependabot runs explicitly report unavailable backend coverage.</p>
 configuration and utilities. Generated OpenAPI clients and test files are excluded. Text, HTML,
 LCOV and JSON summaries are saved in <code>coverage/</code>; this measured scope has no percentage threshold.</p>
 <h2 id="release" class="tsd-anchor-link">Release<a href="#release" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
-<p>Releases use the <code>Release permit Node SDK</code> GitHub workflow after maintainer approval. The workflow
-validates the literal release tag, verifies dependency security on both supported Node floors,
-builds and tests the SDK, then scans and publishes the same tarball through npm Trusted Publishing.
-Dependency installation, packing, and publication disable lifecycle scripts. Failed or incomplete
-security scans block publication. Release candidates use the <code>rc</code> distribution tag.</p>
-<p>See <a href="media/CONTRIBUTING.md#dependency-security">Contributing</a> for local scan commands and reports.</p>
+<p>The shared candidate workflow builds <code>permitio@3.0.0</code> from the committed version, validates the
+package metadata and file allowlist, and records its archive hash and source identity. Required
+quality checks cover lint, strict types, local unit/tooling tests, generated contracts, workflow
+security, and external packed ESM/CommonJS customers on Node 22.13.0 and 24.0.0. The customer
+fixtures also compile with TypeScript 6 and 7 under Node16, NodeNext and Bundler resolution.
+Both runtime entry points expose named exports; the ESM declaration facade preserves shared
+class identity with CommonJS. Dependency security scans the same archive on both Node floors.</p>
+<p>The release workflow normalizes semantic-version tags, including an optional <code>v</code> prefix, and
+requires the resulting version to match the reviewed package version.
+Its production job downloads and revalidates the tested/scanned archive, then uses npm Trusted
+Publishing with lifecycle scripts disabled. It does not build, change the version or repack.
+Release candidates use the <code>rc</code> distribution tag.</p>
+<p><strong>Publication is currently blocked.</strong> SDK71's local release evidence has 13 unproved operations,
+its <code>releaseReady</code> remains false, and the shared target is unavailable (PER-16345).
+Shared acceptance and Curtain Call (PER-16561, PER-16574) must provide their reviewed acceptance
+contract before publication can proceed. Ordinary PR quality checks do not claim this external
+acceptance.</p>
+<p>Repository check, production approval, release tag and npm publisher settings require the separate
+owner rollout described in <a href="media/CONTRIBUTING.md#release-gate-rollout">Contributing</a>. Workflow
+source alone does not configure those protections. Actual merge, tag creation and publication
+also require separate authorization.</p>
+<p>See <a href="media/CONTRIBUTING.md#dependency-security">Contributing</a> for scan commands and reports.</p>
 <h2 id="constructor-configuration" class="tsd-anchor-link">Constructor Configuration<a href="#constructor-configuration" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>The constructor accepts <code>IPermitOptions</code>. Omitted values use environment variables and SDK
 defaults. A nonempty token is required after <code>PERMIT_API_KEY</code> fallback; tokens are opaque strings
@@ -220,6 +236,17 @@ including an empty filtering call. Operational or malformed-response failures fo
 Existing permission-query and bulk OPA error policies remain unchanged. <code>checkAllTenants</code> is
 retained; future deprecation planning does not remove it here. URL checking and AuthZEN remain
 deferred. Internal context transforms are not activated by these methods.</p>
+<h2 id="user-lists" class="tsd-anchor-link">User lists<a href="#user-lists" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p><code>permit.api.users.list</code> returns the full <code>PaginatedResultUserRead</code> envelope. Pass
+<code>searchOperator: 'contains'</code>, <code>'startswith'</code> or <code>'endswith'</code> to match user keys, emails
+and names. Omitting it leaves the API default of <code>contains</code>. Search, role and pagination
+options can be combined; <code>role: ''</code> selects users without roles.</p>
+<pre><code class="typescript"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">users</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">users</span><span class="hl-1">.</span><span class="hl-2">list</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-0">search:</span><span class="hl-1"> </span><span class="hl-3">&#39;alice&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">searchOperator:</span><span class="hl-1"> </span><span class="hl-3">&#39;startswith&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">includeResourceInstanceRoles:</span><span class="hl-1"> </span><span class="hl-4">true</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">page:</span><span class="hl-1"> </span><span class="hl-8">1</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">perPage:</span><span class="hl-1"> </span><span class="hl-8">20</span><span class="hl-1">,</span><br/><span class="hl-1">});</span><br/><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-2">log</span><span class="hl-1">(</span><span class="hl-0">users</span><span class="hl-1">.</span><span class="hl-0">total_count</span><span class="hl-1">, </span><span class="hl-0">users</span><span class="hl-1">.</span><span class="hl-0">data</span><span class="hl-1">[</span><span class="hl-8">0</span><span class="hl-1">]?.</span><span class="hl-0">associated_tenants</span><span class="hl-1">);</span>
+</code><button type="button">Copy</button></pre>
+
+<p><code>includeResourceInstanceRoles</code> defaults to false at the API. When true, resource roles
+appear in each associated tenant's <code>resource_instance_roles</code>, with <code>resource</code>,
+<code>resource_instance</code> and <code>role</code> fields. Both flag values retain the same paginated result.</p>
 <h2 id="groups" class="tsd-anchor-link">Groups<a href="#groups" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p><code>permit.api.groups</code> supports the eight GA core operations: <code>create</code>, <code>delete</code>, <code>list</code>, <code>get</code>,
 <code>assignUser</code>, <code>removeUser</code>, <code>assignRole</code>, and <code>removeRole</code>. <code>list</code> and <code>get</code> use the direct Groups
@@ -291,6 +318,7 @@ an environment-level API key or broader access.</p>
 <li><a href="#customizing-retry-behavior"><span>Customizing <wbr/>Retry <wbr/>Behavior</span></a></li></ul></li>
 <li><a href="#logging-and-errors"><span>Logging and errors</span></a></li>
 <li><a href="#pdp-discovery-and-object-filtering"><span>PDP discovery and object filtering</span></a></li>
+<li><a href="#user-lists"><span>User lists</span></a></li>
 <li><a href="#groups"><span>Groups</span></a></li>
 <li><a href="#tenant-membership-detailed-lists-and-pdp-refresh"><span>Tenant membership, detailed lists, and <wbr/>PDP refresh</span></a></li>
 <li><a href="#documentation"><span>Documentation</span></a></li>
