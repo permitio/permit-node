@@ -119,6 +119,30 @@ test('checks a same-page encoded anchor and leaves remote links offline', () => 
   expect(() => checkReferenceLinks(directory, contracts.groups)).not.toThrow();
 });
 
+test.each([
+  ['ampersand', 'asset&amp;.txt', 'asset&.txt'],
+  ['quote', 'asset&quot;.txt', 'asset".txt'],
+  ['apostrophe', 'asset&#39;.txt', "asset'.txt"],
+  ['encoded quote entity', 'asset&amp;quot;.txt', 'asset&quot;.txt'],
+])('decodes the %s in a file reference exactly once', (_name, encoded, filename) => {
+  const directory = fixture();
+  const file = join(directory, 'index.html');
+  writeFileSync(join(directory, filename), 'Public fixture');
+  writeFileSync(file, readFileSync(file, 'utf8') + `<a href="${encoded}">Asset</a>`);
+  expect(() => checkReferenceLinks(directory, contracts.groups)).not.toThrow();
+});
+
+test('does not accept a target reachable only after decoding a second time', () => {
+  const directory = fixture();
+  const file = join(directory, 'index.html');
+  writeFileSync(join(directory, 'asset".txt'), 'Wrong public fixture');
+  writeFileSync(
+    file,
+    readFileSync(file, 'utf8') + '<a href="asset&amp;quot;.txt">Missing asset</a>',
+  );
+  expect(() => checkReferenceLinks(directory, contracts.groups)).toThrow(/missing local reference/);
+});
+
 test('rejects links outside the standalone output directory', () => {
   const directory = fixture();
   const file = join(directory, 'index.html');

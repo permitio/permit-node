@@ -9,8 +9,8 @@ import { rejectionOf } from '#src/tests/helpers/rejection';
 
 const TOKEN = 'permit_key_rest-token-do-not-log';
 const CUSTOM_SECRET = 'custom-header-secret-do-not-log';
-const COOKIE_SECRET = 'session-cookie-do-not-log';
-const SECRETS = [TOKEN, CUSTOM_SECRET, COOKIE_SECRET];
+const COOKIE_REDACTION_CANARY = 'session-cookie-do-not-log';
+const SECRETS = [TOKEN, CUSTOM_SECRET, COOKIE_REDACTION_CANARY];
 const USER_PATH = '/v2/facts/proj-1/env-1/users/user-1';
 
 type Reply = { status: number; body: unknown } | 'reset';
@@ -42,7 +42,7 @@ async function startApi(reply: Reply): Promise<string> {
     } else {
       response.writeHead(reply.status, {
         'Content-Type': 'application/json',
-        'Set-Cookie': `session=${COOKIE_SECRET}`,
+        'Set-Cookie': `session=${COOKIE_REDACTION_CANARY}`,
       });
       response.end(JSON.stringify(reply.body));
     }

@@ -119,7 +119,11 @@ export function auditPublicExports(root) {
 function attributes(text, name) {
   const expression = new RegExp(`(?:^|\\s)(?:${name})\\s*=\\s*(["'])(.*?)\\1`, 'gi');
   return [...text.matchAll(expression)].map((match) =>
-    match[2].replaceAll('&amp;', '&').replaceAll('&quot;', '"').replaceAll('&#39;', "'"),
+    match[2].replace(/&(?:amp|quot|#39);/g, (entity) => {
+      if (entity === '&amp;') return '&';
+      if (entity === '&quot;') return '"';
+      return "'";
+    }),
   );
 }
 

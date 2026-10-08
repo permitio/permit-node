@@ -23,11 +23,8 @@ jobs:
     name: Validate approved reference source
     runs-on: ubuntu-24.04
     timeout-minutes: 5
-    outputs:
-      commit: ${{ steps.source.outputs.commit }}
     steps:
       - name: Require trusted main and exact intended commit before checkout
-        id: source
         env:
           EXPECTED_COMMIT: ${{ inputs.commit }}
         run: |
@@ -43,7 +40,6 @@ jobs:
             echo '::error::The commit input must be the full SHA selected on main for this run.' >&2
             exit 1
           fi
-          echo "commit=${EXPECTED_COMMIT}" >> "$GITHUB_OUTPUT"
 
   build:
     name: Build the approved reference artifact
@@ -53,14 +49,14 @@ jobs:
     permissions:
       contents: read
     env:
-      EXPECTED_COMMIT: ${{ needs.guard.outputs.commit }}
+      EXPECTED_COMMIT: ${{ github.sha }}
     outputs:
       artifact-name: reference-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Checkout the validated commit
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ needs.guard.outputs.commit }}
+          ref: ${{ github.sha }}
           persist-credentials: false
       - name: Verify checked-out source
         run: |

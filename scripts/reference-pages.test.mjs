@@ -99,7 +99,7 @@ test('actual pre-checkout dispatch guard accepts only the intended trusted main 
   const result = dispatch();
   expect(result.status).toBe(0);
   expect(result.stderr).toBe('');
-  expect(result.output).toBe(`commit=${commit}\n`);
+  expect(result.output).toBe('');
 });
 
 test.each([
@@ -113,7 +113,7 @@ test.each([
   ['another full commit', { EXPECTED_COMMIT: 'f'.repeat(40) }],
   ['shell expansion', { EXPECTED_COMMIT: '$(echo injected)' }],
   ['multiline commit', { EXPECTED_COMMIT: commit + '\n' }],
-])('actual dispatch guard actively fails %s without exporting a source', (_name, env) => {
+])('actual dispatch guard actively fails %s before checkout', (_name, env) => {
   mkdirSync(join(root, '.test-results'), { recursive: true });
   const result = dispatch(env);
   expect(result.status).toBe(1);
