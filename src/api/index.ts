@@ -8,6 +8,7 @@ export * from '#src/api/condition-sets';
 export * from '#src/api/environments';
 export * from '#src/api/groups';
 export * from '#src/api/pdps';
+export * from '#src/api/proxy-configs';
 export * from '#src/api/relationship-tuples';
 export * from '#src/api/resource-instances';
 export * from '#src/api/projects';

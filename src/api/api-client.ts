@@ -27,8 +27,12 @@ import { type ITenantsApi, TenantsApi } from '#src/api/tenants';
 import { type IUsersApi, UsersApi } from '#src/api/users';
 import { type IUserInvitesApi, UserInvitesApi } from '#src/api/user-invites';
 import { type IUserAttributesApi, UserAttributesApi } from '#src/api/user-attributes';
+import { type IProxyConfigsApi, ProxyConfigsApi } from '#src/api/proxy-configs';
 
 export interface IPermitApi {
+  /** Direct API for environment proxy configurations and complete URL mapping rules. */
+  proxyConfigs: IProxyConfigsApi;
+
   /** API for user attribute definitions; individual user values belong to users. */
   userAttributes: IUserAttributesApi;
 
@@ -154,6 +158,9 @@ export interface IPermitApi {
 }
 
 export class ApiClient extends BasePermitApi implements IPermitApi {
+  /** Direct API for environment proxy configurations and complete URL mapping rules. */
+  public readonly proxyConfigs: IProxyConfigsApi;
+
   /** API for user attribute definitions; individual user values belong to users. */
   public readonly userAttributes: IUserAttributesApi;
 
@@ -270,6 +277,7 @@ export class ApiClient extends BasePermitApi implements IPermitApi {
    */
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
+    this.proxyConfigs = new ProxyConfigsApi(config, logger);
     this.userAttributes = new UserAttributesApi(config, logger);
     this.userInvites = new UserInvitesApi(config, logger);
     this.groups = new GroupsApi(config, logger);

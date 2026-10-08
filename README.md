@@ -426,6 +426,53 @@ OPA-only envelope) and unavailable HTTP `404`, `405` or `501` always reject with
 `throwOnError` override or SDK policy: throwing mode preserves typed sanitized errors, and
 non-throwing mode returns `false`.
 
+## Proxy configurations
+
+`permit.api.proxyConfigs` manages the selected environment's proxy configurations through the
+control-plane API. It supports `list`, `get`, `create`, `update` and `delete`; keys or IDs identify
+individual configurations. Listing returns a plain array and defaults to page 1/perPage 100.
+
+```typescript
+import { AuthMechanism, Methods, Permit } from 'permitio';
+
+const permit = new Permit({ token: process.env.PERMIT_API_KEY });
+const created = await permit.api.proxyConfigs.create({
+  key: 'payments',
+  name: 'Payments',
+  secret: 'example-only-credential',
+  auth_mechanism: AuthMechanism.Bearer,
+  mapping_rules: [
+    {
+      url: 'https://service.example.test/items/{id}',
+      http_method: Methods.Get,
+      resource: 'document',
+      action: 'read',
+      priority: 0,
+    },
+  ],
+});
+const stored = await permit.api.proxyConfigs.get(created.id);
+const changed = await permit.api.proxyConfigs.update(created.id, {
+  secret: { 'X-Authorization': 'example-only-header' },
+  auth_mechanism: AuthMechanism.Headers,
+});
+const page = await permit.api.proxyConfigs.list({ page: 1, perPage: 7 });
+await permit.api.proxyConfigs.delete(created.id);
+```
+
+The exported `ProxyConfigCreate`, `ProxyConfigUpdate`, `ProxyConfigRead`, `Secret`, `MappingRule`
+and `MappingRuleUpdate` retain the published fields. `Secret` accepts a string or string-valued
+header dictionary. Mapping rules use the lowercase `Methods` enum; regex rules set
+`url_type: MappingRuleUrlTypeEnum.Regex`, while plain/template rules omit `url_type`.
+Updates may mark a rule with `should_delete: true`; they cannot rename the configuration key.
+
+Results preserve the complete received configuration and any returned secret mask. Submitted
+credentials are never merged into a returned result; the API decides which secret value it
+returns. Write bodies and pagination are copied before asynchronous context discovery. Inputs
+that cannot be JSON-serialized reject before a write. Named REST/context failures remain visible,
+and REST POST/PATCH follow the existing SDK policy of no automatic retries. These operations use
+the control plane even when `proxyFactsViaPdp` is enabled and have no `waitForSync` helper.
+
 ## User lists
 
 `permit.api.users.list` returns the full `PaginatedResultUserRead` envelope. Pass

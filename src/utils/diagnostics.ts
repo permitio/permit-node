@@ -223,18 +223,8 @@ export function diagnosticSecrets(value: unknown): CollectedSecrets {
   return result;
 }
 
-/**
- * Retains bounded error-description fields while excluding private response attributes.
- *
- * @param value - Untrusted JSON or text response body.
- * @param secrets - Known private request values to remove from retained descriptions.
- * @returns A bounded diagnostic body. The shape differs from the raw response and is unknown.
- */
-export function diagnosticBody(value: unknown, secrets: SecretContext = []): unknown {
-  const privacy: CollectedSecrets = {
-    values: [...('complete' in secrets ? secrets.values : secrets)],
-    complete: !('complete' in secrets) || secrets.complete,
-  };
+function omittedResponseSecrets(value: unknown, secrets: SecretContext): CollectedSecrets {
+  const privacy: CollectedSecrets = { values: [], complete: true };
   let fields = 64;
   function collectOmitted(item: unknown, depth: number): void {
     if (item === null || typeof item !== 'object') return;
@@ -243,8 +233,35 @@ export function diagnosticBody(value: unknown, secrets: SecretContext = []): unk
       return;
     }
     if (Array.isArray(item)) {
-      if (item.length > MAX_ITEMS) privacy.complete = false;
-      for (const entry of item.slice(0, MAX_ITEMS)) collectOmitted(entry, depth + 1);
+      if (item.length > MAX_ITEMS) {
+        privacy.complete = false;
+        return;
+      }
+      const keys = Object.keys(item);
+      if (keys.length > MAX_ITEMS) {
+        privacy.complete = false;
+        return;
+      }
+      for (const key of keys) {
+        const field = Object.getOwnPropertyDescriptor(item, key);
+        const index = Number(key);
+        if (
+          !field ||
+          !('value' in field) ||
+          !Number.isInteger(index) ||
+          index < 0 ||
+          String(index) !== key ||
+          index >= item.length
+        ) {
+          privacy.complete = false;
+          return;
+        }
+      }
+      for (let index = 0; index < Math.min(item.length, MAX_ITEMS); index++) {
+        const field = Object.getOwnPropertyDescriptor(item, String(index));
+        if (field && 'value' in field) collectOmitted(field.value, depth + 1);
+        else privacy.complete = false;
+      }
       return;
     }
     for (const key of Object.keys(item)) {
@@ -266,6 +283,18 @@ export function diagnosticBody(value: unknown, secrets: SecretContext = []): unk
     }
   }
   collectOmitted(value, 0);
+  return mergeDiagnosticSecrets(secrets, privacy);
+}
+
+/**
+ * Retains bounded error-description fields while excluding private response attributes.
+ *
+ * @param value - Untrusted JSON or text response body.
+ * @param secrets - Known private values to remove from retained descriptions.
+ * @returns A bounded diagnostic body. The shape differs from the raw response and is unknown.
+ */
+export function diagnosticBody(value: unknown, secrets: SecretContext = []): unknown {
+  const privacy = omittedResponseSecrets(value, secrets);
   let remaining = 16;
   let characters = 2048;
   function visit(item: unknown, depth: number): unknown {
@@ -283,8 +312,14 @@ export function diagnosticBody(value: unknown, secrets: SecretContext = []): unk
       return text;
     }
     if (typeof item !== 'object' || depth >= 4) return REDACTED;
-    if (Array.isArray(item))
-      return item.slice(0, MAX_ITEMS).map((entry) => visit(entry, depth + 1));
+    if (Array.isArray(item)) {
+      const array: unknown[] = [];
+      for (let index = 0; index < Math.min(item.length, MAX_ITEMS); index++) {
+        const field = Object.getOwnPropertyDescriptor(item, String(index));
+        array.push(field && 'value' in field ? visit(field.value, depth + 1) : REDACTED);
+      }
+      return array;
+    }
     const body: Record<string, unknown> = {};
     for (const key of BODY_FIELDS) {
       const field = Object.getOwnPropertyDescriptor(item, key);
@@ -385,7 +420,7 @@ export function diagnosticCause(error: unknown, secrets: SecretContext = []): Er
 }
 
 /**
- * Collects secrets from omitted request values, headers and URL credentials.
+ * Collects secrets from omitted request/response values, headers and URL credentials.
  *
  * @param error - Request/response metadata to inspect without mutation.
  * @param secrets - Additional credentials, including the SDK token and caller default headers.
@@ -427,7 +462,9 @@ export function diagnosticRequestSecrets(
       collect(address);
     }
   }
-  return result;
+  const privacy = omittedResponseSecrets(error.response?.data, result);
+  failurePrivacy.set(error, privacy);
+  return privacy;
 }
 
 /**

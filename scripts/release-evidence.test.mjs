@@ -483,7 +483,7 @@ test('requires mapping for every method and retained operation without erasing g
 
 test('extracts all actual SDK/source entries with case-independent hashing', async () => {
   const result = await expectedReleaseInventory(resolve(import.meta.dirname, '..'));
-  expect(result.inventory.methods).toHaveLength(165);
+  expect(result.inventory.methods).toHaveLength(170);
   expect(
     result.inventory.methods.filter((method) => method.name.startsWith('permit.api.userInvites.')),
   ).toHaveLength(6);
@@ -664,7 +664,7 @@ test('the committed plan preserves missing source-addition proof', async () => {
   );
   expect(report.incomplete).toContain('Missing local candidate cell: Node 24.21.0/current.');
   expect(report.incomplete.some((message) => message.startsWith('Missing case '))).toBe(true);
-  expect(evidence.inventory.methods).toHaveLength(165);
+  expect(evidence.inventory.methods).toHaveLength(170);
   expect(evidence.inventory.operations).toHaveLength(307);
 }, 20_000);
 
@@ -752,7 +752,13 @@ test('the real matrix accepts reviewed capability phases without granting fixtur
         .map(([id]) => id),
     ].sort(),
   );
-  const capabilityPhases = [...urlPhases, ...localRolePhases];
+  const proxyPhases = [
+    ['wire.proxy-configs.esm', 'wire'],
+    ['wire.proxy-configs.commonjs', 'wire'],
+    ['api.proxy-configs-owned-fixtures', 'api'],
+    ['api.proxy-configs-lifecycle', 'api'],
+  ];
+  const capabilityPhases = [...urlPhases, ...localRolePhases, ...proxyPhases];
   const phaseForWireCase = {
     'wire.checkUrl.esm': 'release.wire.enforcement.esm',
     'wire.checkUrl.commonjs': 'release.wire.enforcement.commonjs',
@@ -789,7 +795,11 @@ test('the real matrix accepts reviewed capability phases without granting fixtur
           ...entry,
           phaseId: capabilityPhases.some(([id]) => id === entry.id)
             ? entry.id
-            : (phaseForWireCase[entry.id] ?? phaseForLevel[entry.level]),
+            : entry.id.startsWith('wire.api.proxyConfigs.')
+              ? `wire.proxy-configs.${entry.id.endsWith('.commonjs') ? 'commonjs' : 'esm'}`
+              : entry.id.startsWith('api.proxy-configs.')
+                ? 'api.proxy-configs-lifecycle'
+                : (phaseForWireCase[entry.id] ?? phaseForLevel[entry.level]),
           status: 'PASSED',
           assertions: 1,
         }));
@@ -841,6 +851,7 @@ test('the real matrix accepts reviewed capability phases without granting fixtur
   expect(plan.cases.some((entry) => entry.id === 'api.local-role-assignments-owned-fixtures')).toBe(
     false,
   );
+  expect(plan.cases.some((entry) => entry.id === 'api.proxy-configs-owned-fixtures')).toBe(false);
 
   for (const [id] of capabilityPhases) {
     const unregistered = structuredClone(expected);

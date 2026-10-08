@@ -649,11 +649,8 @@ describe('PER-16565: safe diagnostics at public boundaries', () => {
     expect(error).toBeInstanceOf(PermitApiError);
     assert(error instanceof PermitApiError);
     expect(error.code).toBeUndefined();
-    const url = new URL(error.originalError.config?.url ?? '');
-    expect(url.username).toBe('');
-    expect(url.password).toBe('');
-    expect(url.search).toBe('');
-    expect(url.hash).toBe('');
+    // The oversized omitted response cannot be inspected completely, so all text fails closed.
+    expect(error.originalError.config?.url).toBe('[REDACTED]');
     assertSafe([...lines, ...representations(error)]);
     expect(JSON.stringify(error).length).toBeLessThan(10_000);
     expect(inspect(raw, { depth: Infinity })).toContain(TOKEN);

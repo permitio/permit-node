@@ -52,10 +52,10 @@
       "lifecycle": "GA"
     },
     "control-plane DELETE /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}": {
-      "action": "exclude",
-      "owner": "PER-16345",
-      "reason": "Proxy configuration belongs to setup/CLI workflows.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "action": "add",
+      "owner": "PER-16947",
+      "reason": "The proxyConfigs facade exposes the five published direct control-plane operations with complete existing DTOs, selected environment scope and preserved response secrets; no PDP synchronization contract is added.",
+      "source": "https://linear.app/permit/issue/PER-16947",
       "lifecycle": "GA"
     },
     "control-plane DELETE /v2/facts/{proj_id}/{env_id}/relationship_tuples": {
@@ -528,17 +528,17 @@
       "lifecycle": "GA"
     },
     "control-plane GET /v2/facts/{proj_id}/{env_id}/proxy_configs": {
-      "action": "exclude",
-      "owner": "PER-16345",
-      "reason": "Proxy configuration belongs to setup/CLI workflows.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "action": "add",
+      "owner": "PER-16947",
+      "reason": "The proxyConfigs facade exposes the five published direct control-plane operations with complete existing DTOs, selected environment scope and preserved response secrets; no PDP synchronization contract is added.",
+      "source": "https://linear.app/permit/issue/PER-16947",
       "lifecycle": "GA"
     },
     "control-plane GET /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}": {
-      "action": "exclude",
-      "owner": "PER-16345",
-      "reason": "Proxy configuration belongs to setup/CLI workflows.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "action": "add",
+      "owner": "PER-16947",
+      "reason": "The proxyConfigs facade exposes the five published direct control-plane operations with complete existing DTOs, selected environment scope and preserved response secrets; no PDP synchronization contract is added.",
+      "source": "https://linear.app/permit/issue/PER-16947",
       "lifecycle": "GA"
     },
     "control-plane GET /v2/facts/{proj_id}/{env_id}/relationship_tuples": {
@@ -1144,10 +1144,10 @@
       "lifecycle": "EAP"
     },
     "control-plane PATCH /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}": {
-      "action": "exclude",
-      "owner": "PER-16345",
-      "reason": "Proxy configuration belongs to setup/CLI workflows.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "action": "add",
+      "owner": "PER-16947",
+      "reason": "The proxyConfigs facade exposes the five published direct control-plane operations with complete existing DTOs, selected environment scope and preserved response secrets; no PDP synchronization contract is added.",
+      "source": "https://linear.app/permit/issue/PER-16947",
       "lifecycle": "GA"
     },
     "control-plane PATCH /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}": {
@@ -1382,10 +1382,10 @@
       "lifecycle": "GA"
     },
     "control-plane POST /v2/facts/{proj_id}/{env_id}/proxy_configs": {
-      "action": "exclude",
-      "owner": "PER-16345",
-      "reason": "Proxy configuration belongs to setup/CLI workflows.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "action": "add",
+      "owner": "PER-16947",
+      "reason": "The proxyConfigs facade exposes the five published direct control-plane operations with complete existing DTOs, selected environment scope and preserved response secrets; no PDP synchronization contract is added.",
+      "source": "https://linear.app/permit/issue/PER-16947",
       "lifecycle": "GA"
     },
     "control-plane POST /v2/facts/{proj_id}/{env_id}/relationship_tuples": {

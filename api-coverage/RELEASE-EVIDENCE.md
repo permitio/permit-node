@@ -101,7 +101,7 @@ Inventory hashing uses the existing `digest` canonicalization in `scripts/api-co
 recursive object-key sorting and UTF-8 JSON serialization. The input contains sorted method names
 and operations sorted by `source + " " + method + " " + path`; each operation includes only source,
 method, path, and reviewed decision. Case links are excluded from this hash and checked separately.
-All 165 current methods and all 307 reviewed published operations remain visible. The extractor,
+All 170 current methods and all 307 reviewed published operations remain visible. The extractor,
 not these documented counts, is authoritative after future reviewed changes.
 
 ## Proof levels and matrix
@@ -146,3 +146,9 @@ of replacing them with a later success. Review the exported payload before publi
 When changing the matrix, review the actual method/route/assertion implementation and its failure
 probes. Preserve missing proof; do not remove a case, source operation, or runtime solely to obtain
 PASS. No automatic catalog adoption, parity approval, service setup, or npm publication is performed.
+
+The proxy configuration unit registers separate installed ESM/CommonJS wire cases for all five
+control-plane methods and local API lifecycle cases. Its owned-fixture phase supplies readiness
+only; it cannot credit any method case. The strict allowlist includes both wire phases, the
+fixture phase and the API lifecycle phase; unknown or unexecuted phases remain incomplete.
+Proxy configuration proof adds no PDP or downstream proxy request claim.

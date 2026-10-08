@@ -2628,6 +2628,114 @@
       "level": "pdp",
       "methodNames": ["permit.getLocalRoleAssignments"],
       "operationKeys": ["pdp-container GET /local/role_assignments"]
+    },
+    {
+      "id": "wire.api.proxyConfigs.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/proxy_configs"]
+    },
+    {
+      "id": "wire.api.proxyConfigs.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/proxy_configs"]
+    },
+    {
+      "id": "api.proxy-configs.list",
+      "level": "api",
+      "methodNames": ["permit.api.proxyConfigs.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/proxy_configs"]
+    },
+    {
+      "id": "wire.api.proxyConfigs.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.get"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "wire.api.proxyConfigs.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.get"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "api.proxy-configs.get",
+      "level": "api",
+      "methodNames": ["permit.api.proxyConfigs.get"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "wire.api.proxyConfigs.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/proxy_configs"]
+    },
+    {
+      "id": "wire.api.proxyConfigs.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/proxy_configs"]
+    },
+    {
+      "id": "api.proxy-configs.create",
+      "level": "api",
+      "methodNames": ["permit.api.proxyConfigs.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/proxy_configs"]
+    },
+    {
+      "id": "wire.api.proxyConfigs.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "wire.api.proxyConfigs.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "api.proxy-configs.update",
+      "level": "api",
+      "methodNames": ["permit.api.proxyConfigs.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "wire.api.proxyConfigs.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "wire.api.proxyConfigs.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "api.proxy-configs.delete",
+      "level": "api",
+      "methodNames": ["permit.api.proxyConfigs.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
     }
   ],
   "abCaseIds": [
@@ -2829,7 +2937,11 @@
     "commonjs.mock-pdp.local-role-assignments-errors",
     "api.local-role-assignments-owned-fixtures",
     "pdp.local-role-assignments-filters-pagination",
-    "pdp.local-role-assignments-removal"
+    "pdp.local-role-assignments-removal",
+    "wire.proxy-configs.esm",
+    "wire.proxy-configs.commonjs",
+    "api.proxy-configs-owned-fixtures",
+    "api.proxy-configs-lifecycle"
   ],
   "runIds": [
     "candidate.local.node22.13.0",

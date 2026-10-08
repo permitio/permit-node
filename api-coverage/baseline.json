@@ -1,8 +1,71 @@
 {
+  "provenance": {
+    "containerFactsAlias": {
+      "basis": "The pinned image mounts the same facts router at both prefixes; the compatibility mount is intentionally omitted from OpenAPI.",
+      "from": "/v2/facts/{proj_id}/{env_id}",
+      "sourceSha256": "8a5f22fd7e1e65f576716d73db9e58eb6801208c1d9f0ede89b581c7b892c5e8",
+      "to": "/facts"
+    },
+    "sources": [
+      {
+        "capturedAt": "2026-09-30",
+        "counts": {
+          "operations": 263,
+          "paths": 164,
+          "schemas": 333
+        },
+        "file": "openapi/permit-api.json",
+        "name": "control-plane",
+        "sha256": "1a29f1c75002d214b442a678a2b9f178db83a28f5fd1032322aa26d1eb835655",
+        "url": "https://api.permit.io/v2/openapi.json"
+      },
+      {
+        "capturedAt": "2026-09-30",
+        "counts": {
+          "operations": 34,
+          "paths": 29,
+          "schemas": 39
+        },
+        "file": "openapi/pdp/container.json",
+        "image": "permitio/pdp-v2:0.9.16@sha256:e3cf30794ec2d256636b4714641df46e51ee58a3f1f0d24c606e214e0bf8669a",
+        "name": "pdp-container",
+        "sha256": "863635167e13483f21ccce5b3f38d93a2f8625c4e480d5fdea306c56a461b46f"
+      },
+      {
+        "capturedAt": "2026-09-30",
+        "counts": {
+          "operations": 10,
+          "paths": 10,
+          "schemas": 32
+        },
+        "file": "openapi/pdp/cloud.json",
+        "name": "pdp-cloud",
+        "sha256": "8fb3ad79b93679b24ddd90596e17b7f6baa6b662e2c09a96f1a3ffc938292a29",
+        "url": "https://cloudpdp.api.permit.io/openapi.json"
+      }
+    ],
+    "unmeasuredCapabilities": {
+      "futurePdp": {
+        "owner": "PER-16568",
+        "reason": "No approved future PDP contract snapshot is published in this SDK.",
+        "status": "NOT_ADOPTED"
+      },
+      "latestContainer": {
+        "owner": "PER-16571",
+        "reason": "The inventory is tied to the pinned image, not a moving latest image.",
+        "status": "NOT_MEASURED"
+      },
+      "sharedTarget": {
+        "owner": "PER-16345",
+        "reason": "No machine-readable shared target artifact was published when this Node evidence was reviewed.",
+        "status": "UNAVAILABLE"
+      }
+    }
+  },
   "scope": "Reviewed Node AST evidence, not a shared target",
   "sdk": {
     "authoredClassShapes": {
-      "src/api/api-client.ts:ApiClient": "373f297f339c2ded36b3c4289a38f3ab66dec4da8dccd7fcf99622f9d10769f7",
+      "src/api/api-client.ts:ApiClient": "59f25b2b01b5f298a5436c07744790ba3650fb740d1f3deab1d7b78ebb35ed37",
       "src/api/base.ts:BaseFactsPermitAPI": "d54abe08baf1c3cf60b7c2dcc6de5daa886d258067988490df118b6f042e7c40",
       "src/api/base.ts:BasePermitApi": "c226bd3d4f364e0484706683e1073a21ac6fa201749ffa2903dae4ed1d6d0239",
       "src/api/base.ts:PermitApiError": "6aa8dbec715101edd3fe8b7835cc023149bf80f041964aa6f18783d1daa47f9a",
@@ -16,6 +79,7 @@
       "src/api/groups.ts:GroupsApi": "d971dc683695b0d5c5eea026e26f8aee661397231b5aab6d37eb1fef865ae2cc",
       "src/api/pdps.ts:PdpsApi": "017e9bcd53ea41fc029b18c453cbf349c731613c9a994f236cb4029e5a1ae4b4",
       "src/api/projects.ts:ProjectsApi": "6160a88ca2873cb03fdbbf74aa80af386412ecf951a9d55ecc208f391c0f38e1",
+      "src/api/proxy-configs.ts:ProxyConfigsApi": "2d7c1ee5dba03a851f25ac2b3b4373cc01b7304cf8ab76ec0553d42b0559da31",
       "src/api/relationship-tuples.ts:RelationshipTuplesApi": "d00e5554087790967f936173301c40375b73bfe31e178ab12eb760b4a7fc104d",
       "src/api/resource-action-groups.ts:ResourceActionGroupsApi": "8cb11d18e3a92d70b411e8c32f705494dea95fcef42b4f3c45c7eb3c7a4449bc",
       "src/api/resource-actions.ts:ResourceActionsApi": "77cb8378b7803934e8e54aab9c6df3d012938bae4084e376df08b4d5a897604c",
@@ -53,6 +117,7 @@
           "groups: IGroupsApi;",
           "pdps: IPdpsApi;",
           "projects: IProjectsApi;",
+          "proxyConfigs: IProxyConfigsApi;",
           "relationshipTuples: IRelationshipTuplesApi;",
           "resourceActions: IResourceActionsApi;",
           "resourceAttributes: IResourceAttributesApi;",
@@ -261,6 +326,17 @@
           "getByKey(projectKey: string): Promise<ProjectRead>;",
           "list(pagination?: IPagination): Promise<ProjectRead[]>;",
           "update(projectKey: string, projectData: ProjectUpdate): Promise<ProjectRead>;"
+        ]
+      },
+      "src/api/proxy-configs.ts:IProxyConfigsApi": {
+        "extends": [],
+        "kind": "interface",
+        "members": [
+          "create(proxyConfig: ProxyConfigCreate): Promise<ProxyConfigRead>;",
+          "delete(proxyConfigKeyOrId: string): Promise<void>;",
+          "get(proxyConfigKeyOrId: string): Promise<ProxyConfigRead>;",
+          "list(params?: IPagination): Promise<ProxyConfigRead[]>;",
+          "update(proxyConfigKeyOrId: string, proxyConfig: ProxyConfigUpdate): Promise<ProxyConfigRead>;"
         ]
       },
       "src/api/relationship-tuples.ts:IListRelationshipTuples": {
@@ -1699,7 +1775,7 @@
         }
       },
       "src/utils/diagnostics.ts:diagnosticBody": {
-        "implementationSha256": "e14d466663d594af902ce3106c6a7dae9f00b75d8188be7554e9f48d93118dca",
+        "implementationSha256": "fe086a34090bc6abe8ec7f7b16fafa05ea3206baf5ada28df005ac8ad0e9fc98",
         "signature": {
           "generics": [],
           "parameters": [
@@ -1804,7 +1880,7 @@
         }
       },
       "src/utils/diagnostics.ts:diagnosticRequestSecrets": {
-        "implementationSha256": "82c47ab499f4b55e1ba93a3875b782e9af7f251ed7e1322d0007dc457aa396fe",
+        "implementationSha256": "91ca6e4ae9c3d00f55bc6d3074a1283a098ce7c56e47b9d3e08c71904973c53d",
         "signature": {
           "generics": [],
           "parameters": [
@@ -1910,6 +1986,27 @@
             {
               "initializer": null,
               "name": "right",
+              "optional": false,
+              "type": "SecretContext"
+            }
+          ],
+          "returns": "CollectedSecrets"
+        }
+      },
+      "src/utils/diagnostics.ts:omittedResponseSecrets": {
+        "implementationSha256": "5217d040569cdd1ec681539478668555f95f49eb20b666c2631e97c04d1d778c",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            },
+            {
+              "initializer": null,
+              "name": "secrets",
               "optional": false,
               "type": "SecretContext"
             }
@@ -21023,6 +21120,11 @@
       "src/api/projects.ts:ProjectsApi.getByKey": "f9a61792bfad0fb155eb7cd32f6d09775e7ce4eb9ecbbd79166dfda4890d8f91",
       "src/api/projects.ts:ProjectsApi.list": "2473141f5a3c3b8acc0598ddc70aa4764349ea9f07d95313aacacef7bb79415f",
       "src/api/projects.ts:ProjectsApi.update": "3ca164d1758849477f84854c0646ec8933472d7bcc16b9fc4aa6dcd816295fa2",
+      "src/api/proxy-configs.ts:ProxyConfigsApi.create": "90488cd1d4f6e393e5eae28300fb2b646d7a772e60c02d029fa4491fa11ca345",
+      "src/api/proxy-configs.ts:ProxyConfigsApi.delete": "ddd97fd1c3ed483973b73e5e36fe3aa3912b1a0197b76342920aea42a533a190",
+      "src/api/proxy-configs.ts:ProxyConfigsApi.get": "18d52c95e0ed573ed44c6e2fd153ebed441635277d2d643115957dfc1fb415ba",
+      "src/api/proxy-configs.ts:ProxyConfigsApi.list": "77f248c6467d8b43b5d3280fcfb91b5d77c04953cdaa955e02bece982efc7a0f",
+      "src/api/proxy-configs.ts:ProxyConfigsApi.update": "efbac53c50f5d5dbd1c2c637027965bb2a44176d329647dac079807989c4a7c6",
       "src/api/relationship-tuples.ts:RelationshipTuplesApi.bulkRelationshipTuples": "3f67eb5dffbd5d55c48d176d9fd788184d41949424c18989e49a2c21d5184c4e",
       "src/api/relationship-tuples.ts:RelationshipTuplesApi.bulkUnRelationshipTuples": "6ec1992d989f3d9168bacf5886037d38a8c46032930af1af4d0eec6e3939fdbc",
       "src/api/relationship-tuples.ts:RelationshipTuplesApi.create": "55e771b38c0fe9f1f7d1da723f71e5e1cd35df8c7ddc854dc56f6a911f9414d7",
@@ -21175,25 +21277,26 @@
       "src/index.ts:Permit.getUserTenants": "7afb862bc0123cd6e54c5e4c265ddd93d0212bfa146e80ce54f2cafdbd0e3669",
       "src/utils/context.ts:ContextStore.getDerivedContext": "f01adc283f3dc4a6c1fa5457f4a2044d7b22572f36640ef4ea22eb8bede62760",
       "src/utils/diagnostics.ts:.collect": "9bfdaac8b88e391f04c4478dee31d3138e8c47dc860dd04ba831e923be02e2c0",
-      "src/utils/diagnostics.ts:.collectOmitted": "4cfbfafc34cbffbaff050f8861861ad0f1c45784661c05c1906e9a2c636bdce3",
+      "src/utils/diagnostics.ts:.collectOmitted": "56ddecf948bfb70552e13916457756e51a1db8297d6fc7c8fb5b0838f08d1d64",
       "src/utils/diagnostics.ts:.diagnosticAxiosError": "0eb0ad7f6e1f31661e05ac0295981b5861536adb057c961540f146e82eb45588",
-      "src/utils/diagnostics.ts:.diagnosticBody": "44984199ef80a5c8a767a805e744f3f4c752cd8938eb22cf21ad14483a53d34d",
+      "src/utils/diagnostics.ts:.diagnosticBody": "8ef8c820bac67ec0d3cdd751167f1130ccd04b216b9a612741d0a94fbf815bf0",
       "src/utils/diagnostics.ts:.diagnosticCause": "bb5795dc71ec4a4b6901868286cf502e4daeae04f3f5a3af93b1934c174b7770",
       "src/utils/diagnostics.ts:.diagnosticErrorSecrets": "3cc5649307ba8c3570816716d09bbc012201cebeeb19f4b1aed33eebc535dd55",
       "src/utils/diagnostics.ts:.diagnosticMessage": "e57beb1ed6d83714325aae856052a18fc2bdff7c0b2a05d3d7c14c41935cbe36",
       "src/utils/diagnostics.ts:.diagnosticMetadata": "b9dbdd375488d63ebaf91388344d9c843fd4dd0f90c9eb7672490814c2c89679",
-      "src/utils/diagnostics.ts:.diagnosticRequestSecrets": "ae3383a8090edaeefe8075bb76944d5468ed5a4bc1f16bbf2d733e321019565a",
+      "src/utils/diagnostics.ts:.diagnosticRequestSecrets": "88ee9a42c7c8a2decc77512dd0b11694f1199579ca4f392e9a0d6a6e96af624e",
       "src/utils/diagnostics.ts:.diagnosticSecrets": "2c21e19d4fad24aa01ac7dfcdfbb4ceb2a4dc69eac0136450748ca67de35568b",
       "src/utils/diagnostics.ts:.diagnosticStatus": "97b6f29383823549b819c45a4e304ec8f082d191f13c695f2cb489333c680122",
       "src/utils/diagnostics.ts:.diagnosticText": "1a57977142ac798fda682db0f80a55c6c95adafbab651491abea4669f3a16092",
       "src/utils/diagnostics.ts:.diagnosticUrl": "78d8cf425e1b44fa3a56ce2e68e303ed30eb6e701070898090d540fdebff02e7",
       "src/utils/diagnostics.ts:.mergeDiagnosticSecrets": "d4baa0c988a992fee9f6c35b91ed0a53cff4105b1d7acc1c6465643cc3596e81",
       "src/utils/diagnostics.ts:.message": "bbf7417c49d38fc88c0da86cd23c7d7f32c88bc7d4aba7b8b10fada989deefb0",
+      "src/utils/diagnostics.ts:.omittedResponseSecrets": "c36148e43fee8d7fbff3590b93b02be799b1daa47de053b30ce77b02095b956e",
       "src/utils/diagnostics.ts:.redactPrivateValues": "2845c5c8ab8d26308fec121a6d98fca804194dabbac636eb4dd41a1cd2eef259",
-      "src/utils/diagnostics.ts:.visit": "91387e5c3a03951500f9ecd0b20705eba1ea04b60c3a9c078de951e27f30becb"
+      "src/utils/diagnostics.ts:.visit": "df37b433c55e9eb2529dae6ffbcedc3329fdf8e01a379c33030fcb81f63d0873"
     },
     "initializationShapes": {
-      "src/api/api-client.ts:ApiClient.constructor": "8445659fc69d7e977fc369d742aa54cb0731b722b8136385067f330d232e5d6b",
+      "src/api/api-client.ts:ApiClient.constructor": "2c2ddc55f74a5a69ff60ed0e5f7557f0dbae06c1d1981b0708f3ea3a745da6a4",
       "src/api/base.ts:BaseFactsPermitAPI.constructor": "6e36d36e49b99ff53949668d767e5dc630e0f849e693aa48b8b6d75ecdaacad1",
       "src/api/base.ts:BasePermitApi.constructor": "7c4a19909cf67f1c91b5086d603edae3a11f9f8599babb2f7f0418e9c1473353",
       "src/api/base.ts:PermitApiError.constructor": "2ca0da89f1fe278121953aab7b5adf980a90905b1dfde38c413a0191b56f9436",
@@ -21210,6 +21313,7 @@
       "src/api/groups.ts:GroupsApi.constructor": "e09bac9a6d0ce4d7d8ee8180ee5346ecab40197aa50a2d78d8852b8ca8344d95",
       "src/api/pdps.ts:PdpsApi.constructor": "36d4fbcd74f7a7bdbabd64ddd3120c972aeb022350161fcd7dbdf6b71bc24515",
       "src/api/projects.ts:ProjectsApi.constructor": "b45a7ef29f86ff5ae56ed928934ce538ac06a36ac6b32c689ec1a66b3faa2156",
+      "src/api/proxy-configs.ts:ProxyConfigsApi.constructor": "a1100d72b3c6fec0b420a692d37dfc1174eefa989ca4635c13ba5b1121f1dee5",
       "src/api/relationship-tuples.ts:RelationshipTuplesApi.constructor": "8ba333e5f23a9048a00198da14d8db7b739a8ad959c3dc9e8488ba8814d53c8d",
       "src/api/resource-action-groups.ts:ResourceActionGroupsApi.constructor": "46e8644f311c6f9951ffe60cf6336ea948fc6bdd4b0773befa0a46045cb1b3b2",
       "src/api/resource-actions.ts:ResourceActionsApi.constructor": "dc9f80ab3f4d3e9b740860f404e2c2ffe61fe0875455a77b0fc7336e4be797e8",
@@ -22827,6 +22931,169 @@
             }
           ],
           "returns": "Promise<ProjectRead>"
+        }
+      },
+      "permit.api.proxyConfigs.create": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(proxyConfig: ProxyConfigCreate): Promise<ProxyConfigRead>"],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "ProxyConfigApi.createProxyConfig",
+            "method": "POST",
+            "path": "/v2/facts/{proj_id}/{env_id}/proxy_configs",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "proxyConfig",
+              "optional": false,
+              "type": "ProxyConfigCreate"
+            }
+          ],
+          "returns": "Promise<ProxyConfigRead>"
+        }
+      },
+      "permit.api.proxyConfigs.delete": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(proxyConfigKeyOrId: string): Promise<void>"],
+        "routes": [
+          {
+            "generatedMethod": "ProxyConfigApi.deleteProxyConfig",
+            "method": "DELETE",
+            "path": "/v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}",
+            "supporting": false
+          },
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "proxyConfigKeyOrId",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "Promise<void>"
+        }
+      },
+      "permit.api.proxyConfigs.get": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(proxyConfigKeyOrId: string): Promise<ProxyConfigRead>"],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "ProxyConfigApi.getProxyConfig",
+            "method": "GET",
+            "path": "/v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "proxyConfigKeyOrId",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "Promise<ProxyConfigRead>"
+        }
+      },
+      "permit.api.proxyConfigs.list": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(params?: IPagination | undefined): Promise<ProxyConfigRead[]>"],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "ProxyConfigApi.listProxyConfigs",
+            "method": "GET",
+            "path": "/v2/facts/{proj_id}/{env_id}/proxy_configs",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": "{}",
+              "name": "params",
+              "optional": true,
+              "type": "IPagination"
+            }
+          ],
+          "returns": "Promise<ProxyConfigRead[]>"
+        }
+      },
+      "permit.api.proxyConfigs.update": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(proxyConfigKeyOrId: string, proxyConfig: ProxyConfigUpdate): Promise<ProxyConfigRead>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "ProxyConfigApi.updateProxyConfig",
+            "method": "PATCH",
+            "path": "/v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "proxyConfigKeyOrId",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "proxyConfig",
+              "optional": false,
+              "type": "ProxyConfigUpdate"
+            }
+          ],
+          "returns": "Promise<ProxyConfigRead>"
         }
       },
       "permit.api.relationshipTuples.bulkRelationshipTuples": {
@@ -30495,69 +30762,6 @@
       "RoleAssignmentsApi.basePath": "this.config.apiUrl",
       "TenantsApi.basePath": "this.config.apiUrl",
       "opaBaseUrl": "{\n    let opaBaseUrl: URL;\n    try {\n        opaBaseUrl = new URL(pdp);\n    }\n    catch {\n        throw new PermitError('Invalid PDP URL in the \"pdp\" option: expected an absolute http(s) URL, ' +\n            'e.g. \"http://localhost:7766\".');\n    }\n    opaBaseUrl.port = '8181';\n    opaBaseUrl.pathname = `${opaBaseUrl.pathname}v1/data/permit/`;\n    return opaBaseUrl.toString();\n}"
-    }
-  },
-  "provenance": {
-    "sources": [
-      {
-        "name": "control-plane",
-        "file": "openapi/permit-api.json",
-        "url": "https://api.permit.io/v2/openapi.json",
-        "capturedAt": "2026-09-30",
-        "sha256": "1a29f1c75002d214b442a678a2b9f178db83a28f5fd1032322aa26d1eb835655",
-        "counts": {
-          "paths": 164,
-          "operations": 263,
-          "schemas": 333
-        }
-      },
-      {
-        "name": "pdp-container",
-        "file": "openapi/pdp/container.json",
-        "image": "permitio/pdp-v2:0.9.16@sha256:e3cf30794ec2d256636b4714641df46e51ee58a3f1f0d24c606e214e0bf8669a",
-        "capturedAt": "2026-09-30",
-        "sha256": "863635167e13483f21ccce5b3f38d93a2f8625c4e480d5fdea306c56a461b46f",
-        "counts": {
-          "paths": 29,
-          "operations": 34,
-          "schemas": 39
-        }
-      },
-      {
-        "name": "pdp-cloud",
-        "file": "openapi/pdp/cloud.json",
-        "url": "https://cloudpdp.api.permit.io/openapi.json",
-        "capturedAt": "2026-09-30",
-        "sha256": "8fb3ad79b93679b24ddd90596e17b7f6baa6b662e2c09a96f1a3ffc938292a29",
-        "counts": {
-          "paths": 10,
-          "operations": 10,
-          "schemas": 32
-        }
-      }
-    ],
-    "containerFactsAlias": {
-      "from": "/v2/facts/{proj_id}/{env_id}",
-      "to": "/facts",
-      "sourceSha256": "8a5f22fd7e1e65f576716d73db9e58eb6801208c1d9f0ede89b581c7b892c5e8",
-      "basis": "The pinned image mounts the same facts router at both prefixes; the compatibility mount is intentionally omitted from OpenAPI."
-    },
-    "unmeasuredCapabilities": {
-      "latestContainer": {
-        "status": "NOT_MEASURED",
-        "owner": "PER-16571",
-        "reason": "The inventory is tied to the pinned image, not a moving latest image."
-      },
-      "futurePdp": {
-        "status": "NOT_ADOPTED",
-        "owner": "PER-16568",
-        "reason": "No approved future PDP contract snapshot is published in this SDK."
-      },
-      "sharedTarget": {
-        "status": "UNAVAILABLE",
-        "owner": "PER-16345",
-        "reason": "No machine-readable shared target artifact was published when this Node evidence was reviewed."
-      }
     }
   }
 }

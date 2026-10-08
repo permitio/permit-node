@@ -215,3 +215,48 @@ async function localRolePages(client: SDK.IPermitClient): Promise<void> {
   void [instance, control];
 }
 void localRolePages;
+
+async function proxyConfigurations(client: SDK.IPermitApi): Promise<void> {
+  const api: SDK.IProxyConfigsApi = client.proxyConfigs;
+  const rule: SDK.MappingRule = {
+    url: '^https://service.example.test/items/[0-9]+$',
+    url_type: SDK.MappingRuleUrlTypeEnum.Regex,
+    http_method: SDK.Methods.Get,
+    resource: 'document',
+    action: 'read',
+    headers: { 'X-Tenant': 'east' },
+    priority: 0,
+  };
+  const input: SDK.ProxyConfigCreate = {
+    key: 'payments',
+    name: 'Payments',
+    secret: 'dummy',
+    auth_mechanism: SDK.AuthMechanism.Basic,
+    mapping_rules: [rule],
+  };
+  const patch: SDK.ProxyConfigUpdate = {
+    secret: { 'X-Authorization': 'dummy-header' },
+    auth_mechanism: SDK.AuthMechanism.Headers,
+    mapping_rules: [{ ...rule, should_delete: false }],
+  };
+  const created: SDK.ProxyConfigRead = await api.create(input);
+  const got: SDK.ProxyConfigRead = await api.get(created.id);
+  const changed: SDK.ProxyConfigRead = await api.update(created.key, patch);
+  const listed: SDK.ProxyConfigRead[] = await api.list({ page: 1, perPage: 7 });
+  const deleted: void = await api.delete(created.id);
+  const secret: SDK.Secret = got.secret;
+  // @ts-expect-error Proxy creation requires key, name and secret.
+  void api.create({ key: 'payments', name: 'Payments' });
+  // @ts-expect-error Secret dictionaries contain strings.
+  void api.update(created.id, { secret: { 'X-Authorization': 7 } });
+  // @ts-expect-error PATCH cannot rename a key.
+  void api.update(created.id, { key: 'other' });
+  // @ts-expect-error Plain URL matching omits url_type; none is not an enum member.
+  const invalidRule: SDK.MappingRule = { ...rule, url_type: 'none' };
+  // @ts-expect-error Lists return a plain array without invented counts.
+  const page: { data: SDK.ProxyConfigRead[] } = await api.list();
+  // @ts-expect-error This configuration API has no facts synchronization helper.
+  void api.waitForSync(5);
+  void [changed, listed, deleted, secret, invalidRule, page];
+}
+void proxyConfigurations;

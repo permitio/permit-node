@@ -8,6 +8,8 @@ const PRIVATE_VALUES = [
   'SECOND_OPAQUE_TOKEN',
   'first_private',
   'second_private',
+  'FIRST_RESPONSE_ONLY_CREDENTIAL',
+  'SECOND_RESPONSE_ONLY_CREDENTIAL',
 ];
 
 const runtimeProbe = `
@@ -75,10 +77,38 @@ for (const [firstModule, secondModule] of [[cjs, esm], [esm, cjs]]) {
   assert.equal(otherError.message, 'Service unavailable');
   assert.equal(otherError.code, 'ECONNRESET');
 }
+for (const [firstModule, secondModule] of [[cjs, esm], [esm, cjs]]) {
+  const firstSecret = 'FIRST_RESPONSE_ONLY_CREDENTIAL';
+  const secondSecret = 'SECOND_RESPONSE_ONLY_CREDENTIAL';
+  const config = { headers: new axios.AxiosHeaders(), url: 'https://control.example/proxy_configs' };
+  const raw = new axios.AxiosError('Proxy denied', firstSecret, config, undefined, {
+    config, status: 422, statusText: 'Denied', headers: {},
+    data: { detail: 'Proxy configuration denied', secret: firstSecret },
+  });
+  const caller = axios.create({ adapter: async () => { throw raw; } });
+  const first = client(firstModule, 'ordinary-token', caller);
+  const firstFailure = await rejection(first.api.proxyConfigs.get('payments'));
+  assert.ok(firstFailure instanceof firstModule.PermitApiError);
+  assert.equal(firstFailure.status, 422);
+  assert.equal(firstFailure.code, undefined);
+  safe(firstFailure);
+  raw.response.data = { detail: 'Proxy configuration denied', secret: secondSecret };
+  raw.message = 'Proxy denied ' + firstSecret + ' ' + secondSecret;
+  const second = client(secondModule, 'ordinary-token', caller);
+  const secondFailure = await rejection(second.api.proxyConfigs.get('payments'));
+  assert.ok(secondFailure instanceof secondModule.PermitApiError);
+  assert.equal(secondFailure.code, undefined);
+  assert.equal(secondFailure.status, 422);
+  safe(secondFailure);
+  safe(new secondModule.PermitContextError(raw.message, { cause: raw }));
+  assert.equal(raw.code, firstSecret);
+  assert.equal(raw.response.data.secret, secondSecret);
+  assert.ok(raw.message.includes(firstSecret));
+}
 console.log('MIXED_DIAGNOSTICS_OK');
 `;
 
-test('ordinary errors reused across CJS and ESM retain prior privacy in both directions', async () => {
+test('CJS and ESM preserve prior caller and response privacy in both directions', async () => {
   const { stdout, stderr } = await promisify(execFile)(
     process.execPath,
     ['--input-type=module', '-e', runtimeProbe],
