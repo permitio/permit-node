@@ -3,10 +3,10 @@
   "reviewedAt": "2026-10-08",
   "operations": {
     "control-plane DELETE /v2/api-key/{api_key_id}": {
-      "action": "defer",
-      "owner": "PER-16345",
-      "reason": "Administrative secret automation is deferred pending a concrete SDK use case.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "action": "add",
+      "owner": "PER-16949",
+      "reason": "Expose the existing typed API-key management contract through the direct control-plane client.",
+      "source": "https://linear.app/permit/issue/PER-16949",
       "lifecycle": "GA"
     },
     "control-plane DELETE /v2/elements/{proj_id}/{env_id}/{elements_config_id}": {
@@ -339,17 +339,17 @@
       "lifecycle": "GA"
     },
     "control-plane GET /v2/api-key": {
-      "action": "defer",
-      "owner": "PER-16345",
-      "reason": "Administrative secret automation is deferred pending a concrete SDK use case.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "action": "add",
+      "owner": "PER-16949",
+      "reason": "Expose the existing typed API-key management contract through the direct control-plane client.",
+      "source": "https://linear.app/permit/issue/PER-16949",
       "lifecycle": "GA"
     },
     "control-plane GET /v2/api-key/{api_key_id}": {
-      "action": "defer",
-      "owner": "PER-16345",
-      "reason": "Administrative secret automation is deferred pending a concrete SDK use case.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "action": "add",
+      "owner": "PER-16949",
+      "reason": "Expose the existing typed API-key management contract through the direct control-plane client.",
+      "source": "https://linear.app/permit/issue/PER-16949",
       "lifecycle": "GA"
     },
     "control-plane GET /v2/api-key/{proj_id}/{env_id}": {
@@ -360,10 +360,10 @@
       "lifecycle": "GA"
     },
     "control-plane GET /v2/api-key/scope": {
-      "action": "retain",
-      "owner": "PER-16561",
-      "reason": "Scope discovery is an internal supporting request; it does not expose a typed API-key scope wrapper.",
-      "source": "https://linear.app/permit/issue/PER-16561",
+      "action": "add",
+      "owner": "PER-16949",
+      "reason": "Expose the existing typed API-key management contract through the direct control-plane client.",
+      "source": "https://linear.app/permit/issue/PER-16949",
       "lifecycle": "GA"
     },
     "control-plane GET /v2/data-export/{task_id}": {
@@ -1263,17 +1263,17 @@
       "lifecycle": "GA"
     },
     "control-plane POST /v2/api-key": {
-      "action": "defer",
-      "owner": "PER-16345",
-      "reason": "Administrative secret automation is deferred pending a concrete SDK use case.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "action": "add",
+      "owner": "PER-16949",
+      "reason": "Expose the existing typed API-key management contract through the direct control-plane client.",
+      "source": "https://linear.app/permit/issue/PER-16949",
       "lifecycle": "GA"
     },
     "control-plane POST /v2/api-key/{api_key_id}/rotate-secret": {
-      "action": "defer",
-      "owner": "PER-16345",
-      "reason": "Administrative secret automation is deferred pending a concrete SDK use case.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "action": "add",
+      "owner": "PER-16949",
+      "reason": "Expose the existing typed API-key management contract through the direct control-plane client.",
+      "source": "https://linear.app/permit/issue/PER-16949",
       "lifecycle": "GA"
     },
     "control-plane POST /v2/audit-log-replay": {

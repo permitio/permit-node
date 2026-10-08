@@ -36,6 +36,9 @@ See [the migration guide](MIGRATION.md) for affected callers, actions and retain
 - Add `permit.getLocalRoleAssignments` with dedicated local query/row types, complete array
   validation and one-page REST pagination. Invalid input, OPA, malformed pages and unavailable
   HTTP 404/405/501 remain visible even in non-throwing mode.
+- Add typed `permit.api.apiKeys` list/get/create/delete/rotate/getScope operations through
+  the control plane, preserving complete pages, scoped bodies and optional returned secrets.
+  Management does not initialize context; rotation is bodyless and is not replayed by the SDK.
 - Add typed `permit.api.proxyConfigs` for the five published control-plane configuration routes,
   preserving complete mapping rules and received secret values without input rehydration.
 - Add `permit.checkUrl` and `CheckUrlConfig` for the published container URL check, with

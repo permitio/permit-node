@@ -137,6 +137,177 @@ export function prepareOpenApi(source, supplement) {
     secret.anyOf[2].type = 'string';
   }
 
+  const keyScope = spec.components.schemas.APIKeyScopeRead;
+  requireShape(
+    keyScope,
+    {
+      properties: {
+        organization_id: {
+          type: 'string',
+          format: 'uuid',
+          title: 'Organization Id',
+          description: 'Unique id of the organization that the api_key belongs to.',
+        },
+        project_id: {
+          type: 'string',
+          format: 'uuid',
+          title: 'Project Id',
+          description: 'Unique id of the project that the api_key belongs to.',
+        },
+        environment_id: {
+          type: 'string',
+          format: 'uuid',
+          title: 'Environment Id',
+          description: 'Unique id of the environment that the api_key belongs to.',
+        },
+      },
+      additionalProperties: false,
+      type: 'object',
+      required: ['organization_id'],
+      title: 'APIKeyScopeRead',
+    },
+    '/components/schemas/APIKeyScopeRead',
+  );
+  for (const field of ['project_id', 'environment_id']) {
+    keyScope.properties[field].type = ['string', 'null'];
+  }
+
+  const keyRead = spec.components.schemas.APIKeyRead;
+  requireShape(
+    keyRead,
+    {
+      properties: {
+        organization_id: {
+          type: 'string',
+          format: 'uuid',
+          title: 'Organization Id',
+        },
+        project_id: {
+          type: 'string',
+          format: 'uuid',
+          title: 'Project Id',
+        },
+        environment_id: {
+          type: 'string',
+          format: 'uuid',
+          title: 'Environment Id',
+        },
+        object_type: {
+          allOf: [
+            {
+              $ref: '#/components/schemas/MemberAccessObj',
+            },
+          ],
+          default: 'env',
+        },
+        access_level: {
+          allOf: [
+            {
+              $ref: '#/components/schemas/MemberAccessLevel',
+            },
+          ],
+          default: 'admin',
+        },
+        owner_type: {
+          $ref: '#/components/schemas/APIKeyOwnerType',
+        },
+        name: {
+          type: 'string',
+          title: 'Name',
+        },
+        id: {
+          type: 'string',
+          format: 'uuid',
+          title: 'Id',
+        },
+        secret: {
+          type: 'string',
+          title: 'Secret',
+        },
+        created_at: {
+          type: 'string',
+          format: 'date-time',
+          title: 'Created At',
+        },
+        created_by_member: {
+          $ref: '#/components/schemas/OrgMemberRead',
+        },
+        last_used_at: {
+          type: 'string',
+          format: 'date-time',
+          title: 'Last Used At',
+        },
+        env: {
+          $ref: '#/components/schemas/EnvironmentRead',
+        },
+        project: {
+          $ref: '#/components/schemas/ProjectRead',
+        },
+      },
+      additionalProperties: false,
+      type: 'object',
+      required: ['organization_id', 'owner_type', 'id', 'created_at'],
+      title: 'APIKeyRead',
+    },
+    '/components/schemas/APIKeyRead',
+  );
+  for (const field of [
+    'project_id',
+    'environment_id',
+    'object_type',
+    'access_level',
+    'name',
+    'secret',
+    'created_by_member',
+    'last_used_at',
+    'env',
+    'project',
+  ]) {
+    const property = keyRead.properties[field];
+    if (property.type === 'string') {
+      property.type = ['string', 'null'];
+    } else if (property.$ref) {
+      keyRead.properties[field] = { anyOf: [{ $ref: property.$ref }, { type: 'null' }] };
+    } else {
+      property.anyOf = [...property.allOf, { type: 'null' }];
+      delete property.allOf;
+    }
+  }
+
+  const keyPage = spec.components.schemas.PaginatedResult_APIKeyRead_;
+  requireShape(
+    keyPage,
+    {
+      properties: {
+        data: {
+          items: {
+            $ref: '#/components/schemas/APIKeyRead',
+          },
+          type: 'array',
+          title: 'Data',
+          description: 'List of Api Keys',
+        },
+        total_count: {
+          type: 'integer',
+          minimum: 0.0,
+          title: 'Total Count',
+        },
+        page_count: {
+          type: 'integer',
+          minimum: 0.0,
+          title: 'Page Count',
+          default: 0,
+        },
+      },
+      additionalProperties: false,
+      type: 'object',
+      required: ['data', 'total_count'],
+      title: 'PaginatedResult[APIKeyRead]',
+    },
+    '/components/schemas/PaginatedResult_APIKeyRead_',
+  );
+  keyPage.properties.page_count.type = ['integer', 'null'];
+
   requireShape(
     spec.components.schemas.MonthlyUsage?.properties?.monthly_tenants,
     {

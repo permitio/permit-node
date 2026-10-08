@@ -26,6 +26,27 @@ const FREE_FORM = new Set([
   'raw-data1.ts:context',
 ]);
 const EXPECTED = {
+  'apikey-read.ts:organization_id': 'string',
+  'apikey-read.ts:owner_type': 'APIKeyOwnerType',
+  'apikey-read.ts:id': 'string',
+  'apikey-read.ts:created_at': 'string',
+  'apikey-read.ts:project_id': 'string|null',
+  'apikey-read.ts:environment_id': 'string|null',
+  'apikey-read.ts:object_type': 'MemberAccessObj|null',
+  'apikey-read.ts:access_level': 'MemberAccessLevel|null',
+  'apikey-read.ts:name': 'string|null',
+  'apikey-read.ts:secret': 'string|null',
+  'apikey-read.ts:created_by_member': 'OrgMemberRead|null',
+  'apikey-read.ts:last_used_at': 'string|null',
+  'apikey-read.ts:env': 'EnvironmentRead|null',
+  'apikey-read.ts:project': 'ProjectRead|null',
+  'paginated-result-apikey-read.ts:data': 'Array<APIKeyRead>',
+  'paginated-result-apikey-read.ts:total_count': 'number',
+  'paginated-result-apikey-read.ts:page_count': 'number|null',
+
+  'apikey-scope-read.ts:organization_id': 'string',
+  'apikey-scope-read.ts:project_id': 'string|null',
+  'apikey-scope-read.ts:environment_id': 'string|null',
   'monthly-usage.ts:monthly_tenants': 'Array<string>',
   'role-create.ts:key': 'string',
   'role-create.ts:extends': 'Array<string>',
@@ -38,6 +59,30 @@ const EXPECTED = {
   'codegen-probe.ts:nullable_any_of': 'string|null',
   'codegen-probe.ts:nullable_ref': 'CodegenProbeInner|null',
   'codegen-probe.ts:nullable_array': 'Array<number>|null',
+};
+
+const OPTIONAL = {
+  'apikey-read.ts:organization_id': false,
+  'apikey-read.ts:owner_type': false,
+  'apikey-read.ts:id': false,
+  'apikey-read.ts:created_at': false,
+  'apikey-read.ts:project_id': true,
+  'apikey-read.ts:environment_id': true,
+  'apikey-read.ts:object_type': true,
+  'apikey-read.ts:access_level': true,
+  'apikey-read.ts:name': true,
+  'apikey-read.ts:secret': true,
+  'apikey-read.ts:created_by_member': true,
+  'apikey-read.ts:last_used_at': true,
+  'apikey-read.ts:env': true,
+  'apikey-read.ts:project': true,
+  'paginated-result-apikey-read.ts:data': false,
+  'paginated-result-apikey-read.ts:total_count': false,
+  'paginated-result-apikey-read.ts:page_count': true,
+
+  'apikey-scope-read.ts:organization_id': false,
+  'apikey-scope-read.ts:project_id': true,
+  'apikey-scope-read.ts:environment_id': true,
 };
 
 const UNIONS = {
@@ -77,6 +122,7 @@ export async function assertModelShapes(typesDir, files, { fixture = false } = {
   }
 
   const properties = new Map();
+  const optionalProperties = new Map();
   const aliases = new Map();
   const problems = [];
   for (const file of files) {
@@ -111,6 +157,7 @@ export async function assertModelShapes(typesDir, files, { fixture = false } = {
         if (!ts.isPropertySignature(member)) continue;
         const key = `${file}:${member.name.text}`;
         properties.set(key, member.type?.getText(source).replace(/\s+/g, ''));
+        optionalProperties.set(key, Boolean(member.questionToken));
         if ((!member.type || containsAny(member.type)) && !FREE_FORM.has(key)) {
           problems.push(`${key}: unexpected any (named type lost)`);
         }
@@ -121,6 +168,11 @@ export async function assertModelShapes(typesDir, files, { fixture = false } = {
     if (key.startsWith('codegen-probe.ts:') && !fixture) continue;
     if (properties.get(key) !== expected) {
       problems.push(`${key}: expected ${expected}, got ${properties.get(key) ?? 'missing'}`);
+    }
+  }
+  for (const [key, optional] of Object.entries(OPTIONAL)) {
+    if (optionalProperties.get(key) !== optional) {
+      problems.push(`${key}: expected ${optional ? 'optional' : 'required'} field`);
     }
   }
   if (!fixture) {

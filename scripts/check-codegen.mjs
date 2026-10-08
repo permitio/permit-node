@@ -27,7 +27,7 @@ try {
   await assertModelShapes(types, files, { fixture: true });
   console.log(
     `codegen guard OK - generator ${pin}; ${files.length} models checked for unexpected any; ` +
-      '12 property shapes verified',
+      '32 property shapes and 20 field requiredness checks verified',
   );
 } catch (error) {
   console.error(`codegen guard FAILED (generator ${pin}):\n${error.message}`);

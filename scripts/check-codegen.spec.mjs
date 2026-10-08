@@ -56,6 +56,33 @@ const correctedComments = Object.fromEntries(
   ]),
 );
 const cleanTypes = {
+  'apikey-read.ts': `export interface APIKeyRead {
+    organization_id: string;
+    owner_type: APIKeyOwnerType;
+    id: string;
+    created_at: string;
+    project_id?: string | null;
+    environment_id?: string | null;
+    object_type?: MemberAccessObj | null;
+    access_level?: MemberAccessLevel | null;
+    name?: string | null;
+    secret?: string | null;
+    created_by_member?: OrgMemberRead | null;
+    last_used_at?: string | null;
+    env?: EnvironmentRead | null;
+    project?: ProjectRead | null;
+  }`,
+  'paginated-result-apikey-read.ts': `export interface PaginatedResultAPIKeyRead {
+    data: Array<APIKeyRead>;
+    total_count: number;
+    page_count?: number | null;
+  }`,
+
+  'apikey-scope-read.ts': `export interface APIKeyScopeRead {
+    organization_id: string;
+    project_id?: string | null;
+    environment_id?: string | null;
+  }`,
   ...correctedComments,
   'callbacks-inner.ts': 'export type CallbacksInner = Array<any> | string;',
   'role-create.ts': "export interface RoleCreate { 'key': string; 'extends'?: Array<string>; }",
@@ -465,4 +492,54 @@ test('rejects changed generic return code instead of concealing its type', () =>
       "\nconst file = require('path').join(out, 'common.ts'); fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace('as Promise<R>', 'as any'));",
   );
   fails(dir, /Generated Axios return type changed/);
+});
+
+test.each(['project_id', 'environment_id'])(
+  'rejects lost API-key scope %s nullability in generated output',
+  (field) => {
+    const types = {
+      ...cleanTypes,
+      'apikey-scope-read.ts': cleanTypes['apikey-scope-read.ts'].replace(
+        `${field}?: string | null`,
+        `${field}?: string`,
+      ),
+    };
+    fails(setup({ types }), new RegExp(`apikey-scope-read\\.ts:${field}: expected string\\|null`));
+  },
+);
+test.each(['organization_id', 'project_id', 'environment_id'])(
+  'rejects changed API-key scope %s requiredness in generated output',
+  (field) => {
+    const original = cleanTypes['apikey-scope-read.ts'];
+    const types = {
+      ...cleanTypes,
+      'apikey-scope-read.ts':
+        field === 'organization_id'
+          ? original.replace('organization_id:', 'organization_id?:')
+          : original.replace(`${field}?:`, `${field}:`),
+    };
+    fails(setup({ types }), new RegExp(`apikey-scope-read\\.ts:${field}: expected .* field`));
+  },
+);
+
+test.each([
+  ...[
+    'project_id',
+    'environment_id',
+    'object_type',
+    'access_level',
+    'name',
+    'secret',
+    'created_by_member',
+    'last_used_at',
+    'env',
+    'project',
+  ].map((field) => ['apikey-read.ts', field]),
+  ['paginated-result-apikey-read.ts', 'page_count'],
+])('rejects lost %s:%s readonly nullability in generated output', (file, field) => {
+  const types = {
+    ...cleanTypes,
+    [file]: cleanTypes[file].replace(new RegExp(`(${field}\\?: [^;]+) \\| null;`), '$1;'),
+  };
+  fails(setup({ types }), new RegExp(`${file}:${field}: expected`));
 });

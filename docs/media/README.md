@@ -46,6 +46,26 @@ unknown primitive types and unresolved references fail validation.
 | `/components/schemas/OPALUpdateCallback/properties/callbacks/items/anyOf/1/items` | Move the two tuple entries into `prefixItems`, retain `minItems` and `maxItems` of 2, and set `items: false`, using OpenAPI 3.1/JSON Schema tuple syntax.                                                                                |
 | `/components/schemas/ProxyConfig{Create,Read,Update}/properties/secret/anyOf`     | Replace the nonstandard `HeadersAuth`, `BasicAuth` and `BearerAuth` primitive names with the documented header dictionary or string shapes. Preserve the basic-auth pattern and bearer-token minimum length. No null branch is inferred. |
 
+Preparation also restores the null branch of exactly `APIKeyScopeRead.project_id` and
+`APIKeyScopeRead.environment_id`. The captured public OpenAPI omits their nullability; the
+[pinned public Python model](https://github.com/permitio/permit-python/blob/ef80ae2393b4c74e400fdd40ca838d589ee43709/permit/api/models.py)
+declares both as `Optional[UUID]` with a `None` default. The checked correction uses OpenAPI 3.1
+`type: ['string', 'null']`, preserving UUID format and optionality. It requires the complete
+original read-scope shape, including required nonnullable `organization_id`, so upstream changes
+fail before generation. `APIKeyCreate`, the captured snapshot and its provenance remain
+unchanged. Generated-shape guards and strict consumers check both nullable fields and
+all three fields' requiredness.
+
+The same pinned public Python model explicitly marks ten `APIKeyRead` fields nullable:
+`project_id`, `environment_id`, `object_type`, `access_level`, `name`, `secret`,
+`created_by_member`, `last_used_at`, `env` and `project`. Preparation adds only those null
+branches, preserving captured metadata, reference targets and defaults. Organization ID,
+owner type, record ID and creation time remain required and nonnullable. Exactly
+`PaginatedResult_APIKeyRead_.page_count` also gains its published optional null branch;
+`data` and `total_count` remain required and nonnullable. Complete original model shapes
+and field requiredness are checked before correction, and generation checks every repaired
+property. No creation input or nested model fields are widened.
+
 `elements-login.json` supplements only the existing `POST /v2/auth/elements_login_as` wrapper route
 and its two request/response models. The contract was verified against backend OpenAPI on the
 capture date; its hash is recorded separately. This route is absent from the public document but

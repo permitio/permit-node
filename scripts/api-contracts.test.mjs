@@ -57,13 +57,13 @@ test('accounts for complete source denominators while leaving parity and backend
   expect(report.sharedTarget.status).toBe('UNAVAILABLE');
   expect(report.realBackend.status).toBe('NOT_MEASURED');
   expect(report.operations).toHaveLength(307);
-  expect(report.counts.publicHttpMethods).toBe(165);
+  expect(report.counts.publicHttpMethods).toBe(171);
   expect(report.operations.filter((op) => op.source === 'control-plane')).toHaveLength(263);
   expect(report.operations.filter((op) => op.source === 'pdp-container')).toHaveLength(34);
   expect(report.operations.filter((op) => op.source === 'pdp-cloud')).toHaveLength(10);
   const scope = report.operations.find((op) => op.id === 'get_api_key_scope');
-  expect(scope.coverage).toBe('supporting-only');
-  expect(scope.methods).toEqual([]);
+  expect(scope.coverage).toBe('exposed');
+  expect(scope.methods.map((method) => method.name)).toEqual(['permit.api.apiKeys.getScope']);
   expect(scope.supporting.some((method) => method.name === 'permit.api.users.list')).toBe(true);
   expect(report.sdkOnly.every((entry) => entry.decision?.reason)).toBe(true);
   expect(report.sdkOnly.some((entry) => entry.target === 'pdp-forwarding')).toBe(true);
@@ -73,6 +73,30 @@ test('accounts for complete source denominators while leaving parity and backend
       .routes.map((r) => r.target)
       .sort(),
   ).toEqual(['opa', 'pdp']);
+});
+
+test('exposes six API-key contracts directly while preserving supporting scope discovery', () => {
+  const report = coverageReport(evidence());
+  const methods = sdk.methods.filter((method) => method.name.startsWith('permit.api.apiKeys.'));
+  expect(methods.map((method) => method.name)).toEqual(
+    ['create', 'delete', 'get', 'getScope', 'list', 'rotate'].map(
+      (method) => `permit.api.apiKeys.${method}`,
+    ),
+  );
+  expect(methods.every((method) => !method.factsProxy && !method.deprecated)).toBe(true);
+  for (const method of methods) {
+    const primary = method.routes.filter((route) => !route.supporting);
+    expect(primary).toHaveLength(1);
+    expect(primary[0].generatedMethod).toMatch(/^APIKeysApi\./);
+    const operation = report.operations.find(
+      (entry) => entry.method === primary[0].method && entry.path === primary[0].path,
+    );
+    expect(operation.coverage).toBe('exposed');
+    expect(operation.decision).toMatchObject({ action: 'add', owner: 'PER-16949' });
+  }
+  expect(report.operations).toHaveLength(307);
+  expect(report.counts.generatedMethods).toBe(266);
+  expect(report.counts.generatedModels).toBe(408);
 });
 
 test('exposes six direct invite operations without changing the source denominator', () => {

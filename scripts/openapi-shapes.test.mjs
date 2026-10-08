@@ -60,3 +60,80 @@ test('detects content drift, additions and deletions across the entire output tr
   rmSync(file);
   expect(() => assertSameOutput(types, path, 'drift')).toThrow(/added or removed/);
 });
+
+test.each(['project_id', 'environment_id'])(
+  'rejects loss of nullable API-key scope %s in production declarations',
+  async (field) => {
+    const path = temporaryModels();
+    const file = join(path, 'apikey-scope-read.ts');
+    writeFileSync(
+      file,
+      readFileSync(file, 'utf8').replace(`${field}?: string | null`, `${field}?: string`),
+    );
+    await expect(assertModelShapes(path, readdirSync(path))).rejects.toThrow(
+      new RegExp(`apikey-scope-read\\.ts:${field}: expected string\\|null`),
+    );
+  },
+);
+
+test.each(['organization_id', 'project_id', 'environment_id'])(
+  'rejects changed scope %s requiredness in production declarations',
+  async (field) => {
+    const path = temporaryModels();
+    const file = join(path, 'apikey-scope-read.ts');
+    const original = readFileSync(file, 'utf8');
+    writeFileSync(
+      file,
+      field === 'organization_id'
+        ? original.replace('organization_id:', 'organization_id?:')
+        : original.replace(`${field}?:`, `${field}:`),
+    );
+    await expect(assertModelShapes(path, readdirSync(path))).rejects.toThrow(
+      new RegExp(`apikey-scope-read\\.ts:${field}: expected .* field`),
+    );
+  },
+);
+
+test.each([
+  ...[
+    'project_id',
+    'environment_id',
+    'object_type',
+    'access_level',
+    'name',
+    'secret',
+    'created_by_member',
+    'last_used_at',
+    'env',
+    'project',
+  ].map((field) => ['apikey-read.ts', field]),
+  ['paginated-result-apikey-read.ts', 'page_count'],
+])('rejects lost %s:%s readonly nullability in production declarations', async (name, field) => {
+  const path = temporaryModels();
+  const file = join(path, name);
+  writeFileSync(
+    file,
+    readFileSync(file, 'utf8').replace(new RegExp(`(${field}\\?: [^;]+) \\| null;`), '$1;'),
+  );
+  await expect(assertModelShapes(path, readdirSync(path))).rejects.toThrow(
+    new RegExp(`${name}:${field}: expected`),
+  );
+});
+test.each([
+  ...['organization_id', 'owner_type', 'id', 'created_at'].map((field) => [
+    'apikey-read.ts',
+    field,
+  ]),
+  ['paginated-result-apikey-read.ts', 'data'],
+  ['paginated-result-apikey-read.ts', 'total_count'],
+])('rejects lost %s:%s readonly requiredness', async (name, field) => {
+  const path = temporaryModels();
+  const file = join(path, name);
+  writeFileSync(
+    file,
+    readFileSync(file, 'utf8').replace(new RegExp(`^(\\s*)${field}:`, 'm'), `$1${field}?:`),
+  );
+  await expect(assertModelShapes(path, readdirSync(path))).rejects.toThrow(
+    new RegExp(`${name}:${field}: expected required field`),
+  );
+});

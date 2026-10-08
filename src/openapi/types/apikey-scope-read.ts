@@ -18,9 +18,9 @@ export interface APIKeyScopeRead {
   /**
    * Unique id of the project that the api_key belongs to.
    */
-  project_id?: string;
+  project_id?: string | null;
   /**
    * Unique id of the environment that the api_key belongs to.
    */
-  environment_id?: string;
+  environment_id?: string | null;
 }

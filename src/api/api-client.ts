@@ -6,6 +6,7 @@ import { ConditionSetRulesApi, type IConditionSetRulesApi } from '#src/api/condi
 import { ConditionSetsApi, type IConditionSetsApi } from '#src/api/condition-sets';
 import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 import { BasePermitApi } from '#src/api/base';
+import { ApiKeysApi, type IApiKeysApi } from '#src/api/api-keys';
 import { EnvironmentsApi, type IEnvironmentsApi } from '#src/api/environments';
 import { GroupsApi, type IGroupsApi } from '#src/api/groups';
 import { type IPdpsApi, PdpsApi } from '#src/api/pdps';
@@ -30,6 +31,8 @@ import { type IUserAttributesApi, UserAttributesApi } from '#src/api/user-attrib
 import { type IProxyConfigsApi, ProxyConfigsApi } from '#src/api/proxy-configs';
 
 export interface IPermitApi {
+  /** Direct API-key management and scope discovery; server authorization governs access. */
+  apiKeys: IApiKeysApi;
   /** Direct API for environment proxy configurations and complete URL mapping rules. */
   proxyConfigs: IProxyConfigsApi;
 
@@ -158,6 +161,8 @@ export interface IPermitApi {
 }
 
 export class ApiClient extends BasePermitApi implements IPermitApi {
+  /** Direct API-key management and scope discovery; server authorization governs access. */
+  public readonly apiKeys: IApiKeysApi;
   /** Direct API for environment proxy configurations and complete URL mapping rules. */
   public readonly proxyConfigs: IProxyConfigsApi;
 
@@ -277,6 +282,7 @@ export class ApiClient extends BasePermitApi implements IPermitApi {
    */
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
+    this.apiKeys = new ApiKeysApi(config, logger);
     this.proxyConfigs = new ProxyConfigsApi(config, logger);
     this.userAttributes = new UserAttributesApi(config, logger);
     this.userInvites = new UserInvitesApi(config, logger);

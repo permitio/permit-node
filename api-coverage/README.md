@@ -48,9 +48,16 @@ through generated dispatch to HTTP parameter creators. Enforcement JSON serializ
 structural input body in the inventory: the compiler verifies the private serializer's native
 `JSON.stringify` call and input parameter identity. Removing it, substituting a local lookalike,
 or bypassing it remains a measured change. Generated clients alone do not count
-as public `Permit` methods. Internal scope discovery appears as supporting-only evidence and
-receives no typed-wrapper credit. Explicit helper decisions cover route-free public methods;
+as public `Permit` methods. Internal scope discovery remains supporting evidence;
+`permit.api.apiKeys.getScope` independently exposes its complete typed result through the
+control plane. Explicit helper decisions cover route-free public methods;
 new unresolved methods fail instead of disappearing from the inventory.
+
+PER-16949 exposes the six published API-key management operations through `permit.api.apiKeys`.
+The compiler and separate wire cases retain API-only routing, bodyless rotation, finite list
+filters, complete pagination envelopes and optional response secrets. Successful DTO preservation
+and sanitized failure diagnostics are distinct checks; these wrappers do not infer server privilege
+or inject selected scope.
 
 The snapshot includes authored interfaces/type aliases, generated model and request shapes,
 resolved generated return types, actual exposed overloads, HTTP paths/methods and transport selection.

@@ -65,7 +65,8 @@
   "scope": "Reviewed Node AST evidence, not a shared target",
   "sdk": {
     "authoredClassShapes": {
-      "src/api/api-client.ts:ApiClient": "59f25b2b01b5f298a5436c07744790ba3650fb740d1f3deab1d7b78ebb35ed37",
+      "src/api/api-client.ts:ApiClient": "39e24aec998cd3eeab0264ee82db57b623ed021ea6a06f6c37e6261548ba201b",
+      "src/api/api-keys.ts:ApiKeysApi": "cbd94ec83da3b52872cd370bae2e28cb39d11dbdb53f4bbc07114eb9d0193954",
       "src/api/base.ts:BaseFactsPermitAPI": "d54abe08baf1c3cf60b7c2dcc6de5daa886d258067988490df118b6f042e7c40",
       "src/api/base.ts:BasePermitApi": "c226bd3d4f364e0484706683e1073a21ac6fa201749ffa2903dae4ed1d6d0239",
       "src/api/base.ts:PermitApiError": "6aa8dbec715101edd3fe8b7835cc023149bf80f041964aa6f18783d1daa47f9a",
@@ -109,6 +110,7 @@
         "kind": "interface",
         "members": [
           "actionGroups: IResourceActionGroupsApi;",
+          "apiKeys: IApiKeysApi;",
           "conditionSetRules: IConditionSetRulesApi;",
           "conditionSets: IConditionSetsApi;",
           "ensureAccessLevel(requiredAccessLevel: ApiKeyLevel): Promise<void>;",
@@ -132,6 +134,23 @@
           "userInvites: IUserInvitesApi;",
           "users: IUsersApi;"
         ]
+      },
+      "src/api/api-keys.ts:IApiKeysApi": {
+        "extends": [],
+        "kind": "interface",
+        "members": [
+          "create(apiKey: APIKeyCreate): Promise<APIKeyRead>;",
+          "delete(apiKeyId: string): Promise<void>;",
+          "get(apiKeyId: string): Promise<APIKeyRead>;",
+          "getScope(): Promise<APIKeyScopeRead>;",
+          "list(params?: IListApiKeys): Promise<PaginatedResultAPIKeyRead>;",
+          "rotate(apiKeyId: string): Promise<APIKeyRead>;"
+        ]
+      },
+      "src/api/api-keys.ts:IListApiKeys": {
+        "extends": [" extends IPagination"],
+        "kind": "interface",
+        "members": ["objectType?: MemberAccessObj;", "projId?: string;"]
       },
       "src/api/base.ts:FormattedAxiosError": {
         "extends": [],
@@ -21072,6 +21091,12 @@
       "src/openapi/index.ts": "98471e02cfe26a2700ae09063879ca6cd10204f31fd06c85ffbc8b665d357330"
     },
     "implementationShapes": {
+      "src/api/api-keys.ts:ApiKeysApi.create": "c5e8ed8c20b9b5f445b76bee84806184373e859006ffccc375fac8eaf8a27e4c",
+      "src/api/api-keys.ts:ApiKeysApi.delete": "cb7ee0ab006f85108cd57894dc46cf0a9f71167317ae50556f6ce167cfc71083",
+      "src/api/api-keys.ts:ApiKeysApi.get": "18c40439c4384653e5d33584754ce910e341d7a3398fb78fb163fac48143a4fa",
+      "src/api/api-keys.ts:ApiKeysApi.getScope": "dd2ee0b0329eaba95a0091797b48e831486f6f894795dcf63ff2e0f5844e0c8e",
+      "src/api/api-keys.ts:ApiKeysApi.list": "f401eeef4714fed0dd05610e6c04a81c80324fcf268a73896a4f3b2bf9374408",
+      "src/api/api-keys.ts:ApiKeysApi.rotate": "61ad1fce0ad7fd0cc6a3312ee97ea4a375a3fbc5d1c6182cbca0fc2c9777d81e",
       "src/api/base.ts:BaseFactsPermitAPI.clone": "3b46132f3c954b259f0d3cbabd8ae38817c138bd74aeb5d79989f741b0f5bd8b",
       "src/api/base.ts:BaseFactsPermitAPI.waitForSync": "4f08c3142f6705f377fc984d78458f5fd80c2fc4b7fb797bbe825f1e56513c40",
       "src/api/base.ts:BasePermitApi.ensureAccessLevel": "7b0488016a2275b9add93fc8baafa74ddff925a21fcdd9d0595c5bca1c9a39ff",
@@ -21296,7 +21321,8 @@
       "src/utils/diagnostics.ts:.visit": "df37b433c55e9eb2529dae6ffbcedc3329fdf8e01a379c33030fcb81f63d0873"
     },
     "initializationShapes": {
-      "src/api/api-client.ts:ApiClient.constructor": "2c2ddc55f74a5a69ff60ed0e5f7557f0dbae06c1d1981b0708f3ea3a745da6a4",
+      "src/api/api-client.ts:ApiClient.constructor": "bf3f938b524ce174e912bf0c3d0b15d071d42dc4449a6eb62583ab08a6ff5ee2",
+      "src/api/api-keys.ts:ApiKeysApi.constructor": "9fc07806f1fd9b01e15ce74ae4f3fa383842077545c86cf17f0a577339681004",
       "src/api/base.ts:BaseFactsPermitAPI.constructor": "6e36d36e49b99ff53949668d767e5dc630e0f849e693aa48b8b6d75ecdaacad1",
       "src/api/base.ts:BasePermitApi.constructor": "7c4a19909cf67f1c91b5086d603edae3a11f9f8599babb2f7f0418e9c1473353",
       "src/api/base.ts:PermitApiError.constructor": "2ca0da89f1fe278121953aab7b5adf980a90905b1dfde38c413a0191b56f9436",
@@ -21619,6 +21645,151 @@
             }
           ],
           "returns": "Promise<ResourceActionGroupRead>"
+        }
+      },
+      "permit.api.apiKeys.create": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(apiKey: APIKeyCreate): Promise<APIKeyRead>"],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.createApiKey",
+            "method": "POST",
+            "path": "/v2/api-key",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "apiKey",
+              "optional": false,
+              "type": "APIKeyCreate"
+            }
+          ],
+          "returns": "Promise<APIKeyRead>"
+        }
+      },
+      "permit.api.apiKeys.delete": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(apiKeyId: string): Promise<void>"],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.deleteApiKey",
+            "method": "DELETE",
+            "path": "/v2/api-key/{api_key_id}",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "apiKeyId",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "Promise<void>"
+        }
+      },
+      "permit.api.apiKeys.get": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(apiKeyId: string): Promise<APIKeyRead>"],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKey",
+            "method": "GET",
+            "path": "/v2/api-key/{api_key_id}",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "apiKeyId",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "Promise<APIKeyRead>"
+        }
+      },
+      "permit.api.apiKeys.getScope": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(): Promise<APIKeyScopeRead>"],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [],
+          "returns": "Promise<APIKeyScopeRead>"
+        }
+      },
+      "permit.api.apiKeys.list": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(params?: IListApiKeys | undefined): Promise<PaginatedResultAPIKeyRead>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.listApiKeys",
+            "method": "GET",
+            "path": "/v2/api-key",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": "{}",
+              "name": "params",
+              "optional": true,
+              "type": "IListApiKeys"
+            }
+          ],
+          "returns": "Promise<PaginatedResultAPIKeyRead>"
+        }
+      },
+      "permit.api.apiKeys.rotate": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(apiKeyId: string): Promise<APIKeyRead>"],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.rotateApiKey",
+            "method": "POST",
+            "path": "/v2/api-key/{api_key_id}/rotate-secret",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "apiKeyId",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "Promise<APIKeyRead>"
         }
       },
       "permit.api.conditionSetRules.create": {
@@ -27423,26 +27594,30 @@
         "extends": [],
         "kind": "interface",
         "members": [
-          "access_level?: MemberAccessLevel;",
+          "access_level?: MemberAccessLevel | null;",
           "created_at: string;",
-          "created_by_member?: OrgMemberRead;",
-          "env?: EnvironmentRead;",
-          "environment_id?: string;",
+          "created_by_member?: OrgMemberRead | null;",
+          "env?: EnvironmentRead | null;",
+          "environment_id?: string | null;",
           "id: string;",
-          "last_used_at?: string;",
-          "name?: string;",
-          "object_type?: MemberAccessObj;",
+          "last_used_at?: string | null;",
+          "name?: string | null;",
+          "object_type?: MemberAccessObj | null;",
           "organization_id: string;",
           "owner_type: APIKeyOwnerType;",
-          "project?: ProjectRead;",
-          "project_id?: string;",
-          "secret?: string;"
+          "project?: ProjectRead | null;",
+          "project_id?: string | null;",
+          "secret?: string | null;"
         ]
       },
       "APIKeyScopeRead": {
         "extends": [],
         "kind": "interface",
-        "members": ["environment_id?: string;", "organization_id: string;", "project_id?: string;"]
+        "members": [
+          "environment_id?: string | null;",
+          "organization_id: string;",
+          "project_id?: string | null;"
+        ]
       },
       "AVPEngineDecisionLog": {
         "extends": [],
@@ -29178,7 +29353,11 @@
       "PaginatedResultAPIKeyRead": {
         "extends": [],
         "kind": "interface",
-        "members": ["data: Array<APIKeyRead>;", "page_count?: number;", "total_count: number;"]
+        "members": [
+          "data: Array<APIKeyRead>;",
+          "page_count?: number | null;",
+          "total_count: number;"
+        ]
       },
       "PaginatedResultAccessRequestList": {
         "extends": [],

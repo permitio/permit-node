@@ -276,3 +276,198 @@ test('rejects a removed monthly usage model with its source location', () => {
     /MonthlyUsage.*monthly_tenants is stale/,
   );
 });
+
+test('corrects only two optional API-key scope read fields without mutating source', () => {
+  const original = structuredClone(source);
+  const prepared = prepareOpenApi(source, supplement);
+  const scope = prepared.components.schemas.APIKeyScopeRead;
+  expect(scope.required).toEqual(['organization_id']);
+  for (const field of ['project_id', 'environment_id']) {
+    expect(scope.properties[field]).toEqual({
+      ...source.components.schemas.APIKeyScopeRead.properties[field],
+      type: ['string', 'null'],
+    });
+  }
+  const restored = structuredClone(scope);
+  for (const field of ['project_id', 'environment_id']) restored.properties[field].type = 'string';
+  expect(restored).toEqual(source.components.schemas.APIKeyScopeRead);
+  for (const name of ['APIKeyCreate', 'ProjectObj', 'TenantObj', 'RoleCreate']) {
+    expect(prepared.components.schemas[name]).toEqual(source.components.schemas[name]);
+  }
+  expect(source).toEqual(original);
+});
+
+test.each([
+  [
+    'organization requiredness',
+    (scope) => {
+      scope.required = [];
+    },
+  ],
+  [
+    'project requiredness',
+    (scope) => {
+      scope.required.push('project_id');
+    },
+  ],
+  [
+    'environment requiredness',
+    (scope) => {
+      scope.required.push('environment_id');
+    },
+  ],
+  [
+    'organization type',
+    (scope) => {
+      scope.properties.organization_id.type = ['string', 'null'];
+    },
+  ],
+  [
+    'project type',
+    (scope) => {
+      scope.properties.project_id.type = ['string', 'null'];
+    },
+  ],
+  [
+    'environment type',
+    (scope) => {
+      scope.properties.environment_id.type = ['string', 'null'];
+    },
+  ],
+  [
+    'UUID format',
+    (scope) => {
+      scope.properties.project_id.format = 'email';
+    },
+  ],
+  [
+    'field description',
+    (scope) => {
+      scope.properties.environment_id.description += ' changed';
+    },
+  ],
+  [
+    'removed optional field',
+    (scope) => {
+      delete scope.properties.environment_id;
+    },
+  ],
+  [
+    'new field',
+    (scope) => {
+      scope.properties.secret = { type: 'string' };
+    },
+  ],
+])('rejects stale API-key scope %s before generation', (_label, mutate) => {
+  const changed = structuredClone(source);
+  mutate(changed.components.schemas.APIKeyScopeRead);
+  expect(() => prepareOpenApi(changed, supplement)).toThrow(/APIKeyScopeRead is stale/);
+});
+
+test('rejects a removed API-key scope read model before generation', () => {
+  const changed = structuredClone(source);
+  delete changed.components.schemas.APIKeyScopeRead;
+  expect(() => prepareOpenApi(changed, supplement)).toThrow(/APIKeyScopeRead is stale/);
+});
+
+const nullableKeyReadFields = [
+  'project_id',
+  'environment_id',
+  'object_type',
+  'access_level',
+  'name',
+  'secret',
+  'created_by_member',
+  'last_used_at',
+  'env',
+  'project',
+];
+test('prepares only the published nullable key output fields and preserves input/required shapes', () => {
+  const original = structuredClone(source);
+  const prepared = prepareOpenApi(source, supplement);
+  const read = prepared.components.schemas.APIKeyRead;
+  expect(read.required).toEqual(['organization_id', 'owner_type', 'id', 'created_at']);
+  for (const field of nullableKeyReadFields) {
+    const property = read.properties[field];
+    const captured = source.components.schemas.APIKeyRead.properties[field];
+    if (captured.type === 'string')
+      expect(property).toEqual({ ...captured, type: ['string', 'null'] });
+    else if (captured.$ref) expect(property).toEqual({ anyOf: [captured, { type: 'null' }] });
+    else {
+      const { allOf, ...metadata } = captured;
+      expect(property).toEqual({ ...metadata, anyOf: [...allOf, { type: 'null' }] });
+    }
+  }
+  const restored = structuredClone(read);
+  for (const field of nullableKeyReadFields)
+    restored.properties[field] = source.components.schemas.APIKeyRead.properties[field];
+  expect(restored).toEqual(source.components.schemas.APIKeyRead);
+  const page = structuredClone(prepared.components.schemas.PaginatedResult_APIKeyRead_);
+  expect(page.properties.page_count).toEqual({
+    ...source.components.schemas.PaginatedResult_APIKeyRead_.properties.page_count,
+    type: ['integer', 'null'],
+  });
+  page.properties.page_count.type = 'integer';
+  expect(page).toEqual(source.components.schemas.PaginatedResult_APIKeyRead_);
+  expect(prepared.components.schemas.APIKeyCreate).toEqual(source.components.schemas.APIKeyCreate);
+  expect(source).toEqual(original);
+});
+test.each(nullableKeyReadFields)(
+  'rejects stale nullable key output %s before generation',
+  (field) => {
+    const changed = structuredClone(source);
+    changed.components.schemas.APIKeyRead.properties[field] = { type: ['string', 'null'] };
+    expect(() => prepareOpenApi(changed, supplement)).toThrow(/APIKeyRead is stale/);
+  },
+);
+test.each(['organization_id', 'owner_type', 'id', 'created_at'])(
+  'rejects changed required key output %s before generation',
+  (field) => {
+    const changed = structuredClone(source);
+    changed.components.schemas.APIKeyRead.required =
+      changed.components.schemas.APIKeyRead.required.filter((required) => required !== field);
+    expect(() => prepareOpenApi(changed, supplement)).toThrow(/APIKeyRead is stale/);
+  },
+);
+test.each([
+  [
+    'required page_count',
+    (page) => {
+      page.required.push('page_count');
+    },
+  ],
+  [
+    'optional total_count',
+    (page) => {
+      page.required = ['data'];
+    },
+  ],
+  [
+    'optional data',
+    (page) => {
+      page.required = ['total_count'];
+    },
+  ],
+  [
+    'nullable total_count',
+    (page) => {
+      page.properties.total_count.type = ['integer', 'null'];
+    },
+  ],
+  [
+    'page count bound',
+    (page) => {
+      page.properties.page_count.minimum = -1;
+    },
+  ],
+  [
+    'page count default',
+    (page) => {
+      page.properties.page_count.default = null;
+    },
+  ],
+])('rejects stale key pagination %s before generation', (_label, mutate) => {
+  const changed = structuredClone(source);
+  mutate(changed.components.schemas.PaginatedResult_APIKeyRead_);
+  expect(() => prepareOpenApi(changed, supplement)).toThrow(/PaginatedResult_APIKeyRead_ is stale/);
+});

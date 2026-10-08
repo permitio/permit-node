@@ -25,17 +25,17 @@ import type { ProjectRead } from './project-read';
 
 export interface APIKeyRead {
   organization_id: string;
-  project_id?: string;
-  environment_id?: string;
-  object_type?: MemberAccessObj;
-  access_level?: MemberAccessLevel;
+  project_id?: string | null;
+  environment_id?: string | null;
+  object_type?: MemberAccessObj | null;
+  access_level?: MemberAccessLevel | null;
   owner_type: APIKeyOwnerType;
-  name?: string;
+  name?: string | null;
   id: string;
-  secret?: string;
+  secret?: string | null;
   created_at: string;
-  created_by_member?: OrgMemberRead;
-  last_used_at?: string;
-  env?: EnvironmentRead;
-  project?: ProjectRead;
+  created_by_member?: OrgMemberRead | null;
+  last_used_at?: string | null;
+  env?: EnvironmentRead | null;
+  project?: ProjectRead | null;
 }

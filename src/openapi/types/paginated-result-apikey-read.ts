@@ -19,5 +19,5 @@ export interface PaginatedResultAPIKeyRead {
    */
   data: Array<APIKeyRead>;
   total_count: number;
-  page_count?: number;
+  page_count?: number | null;
 }

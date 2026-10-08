@@ -555,6 +555,60 @@ defaults page 1 and perPage 100. This dedicated group has no resource selector o
 method. Deleting a definition also removes its related data; policies then evaluate it as
 `undefined`. Context failures use `PermitContextError`; HTTP failures use `PermitApiError`.
 
+## API keys
+
+`permit.api.apiKeys` exposes `list`, `get`, `create`, `delete`, `rotate` and `getScope` through
+the control-plane `/v2/api-key` routes on `apiUrl`, including with `proxyFactsViaPdp` enabled.
+Server authorization governs access. These methods do not initialize or require selected API
+context, inject scope into creation bodies, or provide a facts synchronization helper.
+
+```typescript
+import { APIKeyOwnerType, MemberAccessLevel, MemberAccessObj } from 'permitio';
+
+const scope = await permit.api.apiKeys.getScope();
+const page = await permit.api.apiKeys.list({
+  objectType: MemberAccessObj.Project,
+  projId: 'project-key-or-uuid',
+  page: 1,
+  perPage: 20,
+});
+const disposable = await permit.api.apiKeys.create({
+  organization_id: scope.organization_id,
+  object_type: MemberAccessObj.Org,
+  access_level: MemberAccessLevel.Read,
+  owner_type: APIKeyOwnerType.Member,
+  name: 'Disposable key',
+});
+const stored = await permit.api.apiKeys.get(disposable.id);
+const rotated = await permit.api.apiKeys.rotate(disposable.id);
+// Store returned secrets securely when present; do not log them.
+console.log(page.total_count, stored.organization_id, rotated.id);
+await permit.api.apiKeys.delete(rotated.id);
+```
+
+Creation uses the complete `APIKeyCreate` body: `organization_id` is required; project and
+environment IDs, record scope, access level, owner type and name are optional. The SDK forwards
+these values without replacing them from selected context. List accepts only `objectType`,
+`projId`, `page` and `perPage`; its defaults are 1/100, while REST defaults are 1/30 with a
+maximum page size of 100. It returns the complete `PaginatedResultAPIKeyRead` envelope,
+including required `total_count` and optional nullable `page_count`, without automatic
+pagination.
+
+Record operations accept API-key IDs, not names or credential strings; rotation's published ID
+is a UUID. `APIKeyRead` retains all received metadata and its optional nullable `secret`.
+A successful response may omit the secret or return null; the SDK does not recover it from
+earlier inputs or responses.
+`getScope()` returns `APIKeyScopeRead` directly without initializing or changing selected API
+context. Optional record scope, name, enum, timestamp and nested metadata fields also allow null.
+The organization ID is required; project/environment IDs may be omitted or null.
+Use a null-and-undefined guard before treating those optional IDs as strings.
+
+Rotation sends a bodyless POST to `/v2/api-key/{api_key_id}/rotate-secret`. The SDK does not
+retry create or rotation POSTs, or replace the client's configured credential. Preserve the
+received result without assuming its ID stays unchanged. API failures always reject with
+`PermitApiError`; the authorization-check fallback setting does not suppress management errors.
+Existing `permit.api.environments.getApiKey` remains the separate environment-key helper.
+
 ## User invites
 
 `permit.api.userInvites` manages API-key facts invites through `create`, `list`, `get`,

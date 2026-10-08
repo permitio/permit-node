@@ -483,7 +483,7 @@ test('requires mapping for every method and retained operation without erasing g
 
 test('extracts all actual SDK/source entries with case-independent hashing', async () => {
   const result = await expectedReleaseInventory(resolve(import.meta.dirname, '..'));
-  expect(result.inventory.methods).toHaveLength(170);
+  expect(result.inventory.methods).toHaveLength(176);
   expect(
     result.inventory.methods.filter((method) => method.name.startsWith('permit.api.userInvites.')),
   ).toHaveLength(6);
@@ -664,7 +664,7 @@ test('the committed plan preserves missing source-addition proof', async () => {
   );
   expect(report.incomplete).toContain('Missing local candidate cell: Node 24.21.0/current.');
   expect(report.incomplete.some((message) => message.startsWith('Missing case '))).toBe(true);
-  expect(evidence.inventory.methods).toHaveLength(170);
+  expect(evidence.inventory.methods).toHaveLength(176);
   expect(evidence.inventory.operations).toHaveLength(307);
 }, 20_000);
 
@@ -758,7 +758,12 @@ test('the real matrix accepts reviewed capability phases without granting fixtur
     ['api.proxy-configs-owned-fixtures', 'api'],
     ['api.proxy-configs-lifecycle', 'api'],
   ];
-  const capabilityPhases = [...urlPhases, ...localRolePhases, ...proxyPhases];
+  const apiKeyPhases = [
+    ['wire.api-keys.esm', 'wire'],
+    ['wire.api-keys.commonjs', 'wire'],
+    ['api.api-keys-lifecycle', 'api'],
+  ];
+  const capabilityPhases = [...urlPhases, ...localRolePhases, ...proxyPhases, ...apiKeyPhases];
   const phaseForWireCase = {
     'wire.checkUrl.esm': 'release.wire.enforcement.esm',
     'wire.checkUrl.commonjs': 'release.wire.enforcement.commonjs',
@@ -795,11 +800,15 @@ test('the real matrix accepts reviewed capability phases without granting fixtur
           ...entry,
           phaseId: capabilityPhases.some(([id]) => id === entry.id)
             ? entry.id
-            : entry.id.startsWith('wire.api.proxyConfigs.')
-              ? `wire.proxy-configs.${entry.id.endsWith('.commonjs') ? 'commonjs' : 'esm'}`
-              : entry.id.startsWith('api.proxy-configs.')
-                ? 'api.proxy-configs-lifecycle'
-                : (phaseForWireCase[entry.id] ?? phaseForLevel[entry.level]),
+            : entry.id.startsWith('wire.api.apiKeys.')
+              ? `wire.api-keys.${entry.id.endsWith('.commonjs') ? 'commonjs' : 'esm'}`
+              : entry.id.startsWith('api.api-keys.')
+                ? 'api.api-keys-lifecycle'
+                : entry.id.startsWith('wire.api.proxyConfigs.')
+                  ? `wire.proxy-configs.${entry.id.endsWith('.commonjs') ? 'commonjs' : 'esm'}`
+                  : entry.id.startsWith('api.proxy-configs.')
+                    ? 'api.proxy-configs-lifecycle'
+                    : (phaseForWireCase[entry.id] ?? phaseForLevel[entry.level]),
           status: 'PASSED',
           assertions: 1,
         }));

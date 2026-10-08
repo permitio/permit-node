@@ -260,3 +260,123 @@ async function proxyConfigurations(client: SDK.IPermitApi): Promise<void> {
   void [changed, listed, deleted, secret, invalidRule, page];
 }
 void proxyConfigurations;
+
+async function apiKeyManagement(client: SDK.IPermitApi): Promise<void> {
+  const api: SDK.IApiKeysApi = client.apiKeys;
+  const input: SDK.APIKeyCreate = {
+    organization_id: 'organization-id',
+    project_id: 'project-id',
+    environment_id: 'environment-id',
+    object_type: SDK.MemberAccessObj.Env,
+    access_level: SDK.MemberAccessLevel.Read,
+    owner_type: SDK.APIKeyOwnerType.Member,
+    name: 'Disposable key',
+  };
+  const query: SDK.IListApiKeys = {
+    objectType: SDK.MemberAccessObj.Project,
+    projId: 'project-key-or-id',
+    page: 1,
+    perPage: 3,
+  };
+  const page: SDK.PaginatedResultAPIKeyRead = await api.list(query);
+  const created: SDK.APIKeyRead = await api.create(input);
+  const got: SDK.APIKeyRead = await api.get(created.id);
+  const rotated: SDK.APIKeyRead = await api.rotate(created.id);
+  const deleted: void = await api.delete(rotated.id);
+  const scope: SDK.APIKeyScopeRead = await api.getScope();
+  const secret: string | null | undefined = got.secret;
+  const counts: [number, number | null | undefined] = [page.total_count, page.page_count];
+  const ids: [string, string | null | undefined, string | null | undefined] = [
+    scope.organization_id,
+    scope.project_id,
+    scope.environment_id,
+  ];
+  const organizationScope: SDK.APIKeyScopeRead = {
+    organization_id: 'org',
+    project_id: null,
+    environment_id: null,
+  };
+  const projectScope: SDK.APIKeyScopeRead = {
+    organization_id: 'org',
+    project_id: 'project',
+    environment_id: null,
+  };
+  if (scope.project_id !== undefined) {
+    // @ts-expect-error Excluding undefined still leaves a nullable project ID.
+    scope.project_id.toUpperCase();
+  }
+  if (scope.environment_id !== undefined) {
+    // @ts-expect-error Excluding undefined still leaves a nullable environment ID.
+    scope.environment_id.toUpperCase();
+  }
+  if (scope.project_id != null) scope.project_id.toUpperCase();
+  if (scope.environment_id != null) scope.environment_id.toUpperCase();
+  // @ts-expect-error The organization ID remains required and nonnullable.
+  const invalidScope: SDK.APIKeyScopeRead = { organization_id: null };
+  // @ts-expect-error Creation input is not widened by scope-response nullability.
+  void api.create({ organization_id: 'org', environment_id: null });
+  void [organizationScope, projectScope, invalidScope];
+  const nullableRecord: SDK.APIKeyRead = {
+    organization_id: 'org',
+    owner_type: SDK.APIKeyOwnerType.Member,
+    id: 'id',
+    created_at: 'created',
+    project_id: null,
+    environment_id: null,
+    object_type: null,
+    access_level: null,
+    name: null,
+    secret: null,
+    created_by_member: null,
+    last_used_at: null,
+    env: null,
+    project: null,
+  };
+  const nullablePage: SDK.PaginatedResultAPIKeyRead = {
+    data: [nullableRecord],
+    total_count: 1,
+    page_count: null,
+  };
+  if (got.secret !== undefined) {
+    // @ts-expect-error Excluding undefined still leaves a nullable secret.
+    got.secret.toUpperCase();
+  }
+  if (got.project !== undefined) {
+    // @ts-expect-error Excluding undefined still leaves a nullable nested project.
+    void got.project.id;
+  }
+  if (page.page_count !== undefined) {
+    // @ts-expect-error Excluding undefined still leaves a nullable page count.
+    page.page_count.toFixed();
+  }
+  if (got.secret != null) got.secret.toUpperCase();
+  if (got.project != null) void got.project.id;
+  if (page.page_count != null) page.page_count.toFixed();
+  // @ts-expect-error Required key record IDs stay nonnullable.
+  const nullId: SDK.APIKeyRead = { ...got, id: null };
+  // @ts-expect-error Required list totals stay nonnullable.
+  const nullTotal: SDK.PaginatedResultAPIKeyRead = { data: [], total_count: null };
+  void [nullableRecord, nullablePage, nullId, nullTotal];
+  // @ts-expect-error Creation requires organization_id.
+  void api.create({ name: 'Incomplete' });
+  // @ts-expect-error Secrets are server responses, not creation input.
+  void api.create({ ...input, secret: 'caller-supplied' });
+  // @ts-expect-error The published project filter is projId.
+  void api.list({ projectId: 'project' });
+  // @ts-expect-error No environment filter is published.
+  void api.list({ environmentId: 'environment' });
+  // @ts-expect-error Lists preserve their complete envelope.
+  const rows: SDK.APIKeyRead[] = await api.list();
+  // @ts-expect-error A returned secret is optional.
+  const requiredSecret: string = created.secret;
+  // @ts-expect-error Rotation is bodyless.
+  void api.rotate(created.id, input);
+  // @ts-expect-error Scope discovery takes no selected-context argument.
+  void api.getScope({ projectId: 'project' });
+  // @ts-expect-error API-key management has no update operation.
+  void api.update(created.id, {});
+  // @ts-expect-error Exact optional scope does not accept explicit undefined.
+  void api.create({ organization_id: 'org', environment_id: undefined });
+  void [deleted, secret, counts, ids, rows, requiredSecret];
+}
+void apiKeyManagement;
