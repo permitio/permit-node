@@ -8,6 +8,8 @@ import { Enforcer, type IEnforcer } from '#src/enforcement/enforcer';
 import {
   type ICheckQuery,
   type IAuthorizedUsersResult,
+  type ILocalRoleAssignment,
+  type ILocalRoleAssignmentsQuery,
   type IFilterObject,
   type IResource,
   type IUser,
@@ -36,6 +38,8 @@ export {
   type IFilterObject,
   type IAuthorizedUserAssignment,
   type IAuthorizedUsersResult,
+  type ILocalRoleAssignment,
+  type ILocalRoleAssignmentsQuery,
   type TenantDetails,
 } from '#src/enforcement/interfaces';
 export {
@@ -295,6 +299,25 @@ export class Permit implements IPermitClient {
     config?: CheckConfig,
   ): Promise<TenantDetails[]> {
     return await this.enforcer.getUserTenants(user, context, config);
+  }
+
+  /**
+   * Returns one page of role assignments cached by a compatible container PDP.
+   *
+   * @param query - Key filters and pagination; defaults to page 1 and page size 30, maximum 100.
+   * @param config - Timeout/error policy; useOpa:true is unsupported and always rejects.
+   * @returns Complete local rows, or [] on ordinary operational failure in non-throwing mode.
+   *   Omitted tenant is unfiltered. There is no automatic pagination or cache synchronization.
+   * @throws {PermitError} For invalid input or unsupported OPA, regardless of error policy.
+   * @throws {PermitPDPStatusError} For malformed responses or unavailable 404/405/501 endpoints
+   *   regardless of policy; for other rejected responses in throwing mode.
+   * @throws {PermitConnectionError} On operational failure in throwing mode.
+   */
+  public async getLocalRoleAssignments(
+    query?: ILocalRoleAssignmentsQuery,
+    config?: CheckConfig,
+  ): Promise<ILocalRoleAssignment[]> {
+    return await this.enforcer.getLocalRoleAssignments(query, config);
   }
 
   /**

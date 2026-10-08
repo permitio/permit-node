@@ -431,6 +431,25 @@ export function extractSdk(root) {
     }
     return print(expression);
   }
+  function getRequestOptions(expression) {
+    if (!expression) return { body: null, query: null };
+    if (!ts.isObjectLiteralExpression(expression))
+      throw new Error(`Unresolved HTTP GET configuration: ${print(expression)}.`);
+    const property = (name) =>
+      expression.properties.find(
+        (entry) =>
+          (ts.isPropertyAssignment(entry) || ts.isShorthandPropertyAssignment(entry)) &&
+          propertyName(entry.name) === name,
+      );
+    const input = (entry) =>
+      ts.isShorthandPropertyAssignment(entry) ? entry.name : entry.initializer;
+    const data = property('data');
+    const params = property('params');
+    return {
+      body: data ? requestBody(input(data)) : null,
+      query: params ? print(input(params)) : null,
+    };
+  }
   function routesFor(method, seen = new Set()) {
     if (seen.has(method)) return [];
     seen.add(method);
@@ -477,7 +496,9 @@ export function extractSdk(root) {
               path: `/${path.value.replace(/^\//, '')}`,
               target,
               conditions: { ...path.conditions, ...receiver.conditions },
-              body: node.arguments[1] ? requestBody(node.arguments[1]) : null,
+              ...(call.name.text === 'get'
+                ? getRequestOptions(node.arguments[1])
+                : { body: node.arguments[1] ? requestBody(node.arguments[1]) : null }),
               response: node.typeArguments?.map(print) ?? [],
               source: location(node),
             });

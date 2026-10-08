@@ -191,3 +191,27 @@ void [
   invalidCheck,
   invalidContext,
 ];
+
+async function localRolePages(client: SDK.IPermitClient): Promise<void> {
+  const query: SDK.ILocalRoleAssignmentsQuery = {
+    user: 'alice',
+    role: 'reader',
+    tenant: 'east',
+    resource: 'document',
+    resourceInstance: 'document:report',
+    page: 1,
+    perPage: 30,
+  };
+  const rows: SDK.ILocalRoleAssignment[] = await client.getLocalRoleAssignments(query, {
+    timeout: 0,
+  });
+  const instance: string | null | undefined = rows[0]?.resource_instance;
+  // @ts-expect-error Local reads have no total-count option.
+  void client.getLocalRoleAssignments({ includeTotalCount: true });
+  // @ts-expect-error The query uses camelCase names, mapped internally to the wire.
+  void client.getLocalRoleAssignments({ resource_instance: 'document:report' });
+  // @ts-expect-error Local rows do not require control-plane IDs or timestamps.
+  const control: SDK.RoleAssignmentRead[] = rows;
+  void [instance, control];
+}
+void localRolePages;

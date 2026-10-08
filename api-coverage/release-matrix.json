@@ -2580,6 +2580,54 @@
       "level": "pdp",
       "methodNames": ["permit.checkUrl"],
       "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "wire.permit.getLocalRoleAssignments.esm",
+      "level": "wire",
+      "methodNames": ["permit.getLocalRoleAssignments"],
+      "operationKeys": ["pdp-container GET /local/role_assignments"]
+    },
+    {
+      "id": "mock-pdp.local-role-assignments-invalid",
+      "level": "mock-pdp",
+      "methodNames": ["permit.getLocalRoleAssignments"],
+      "operationKeys": ["pdp-container GET /local/role_assignments"]
+    },
+    {
+      "id": "mock-pdp.local-role-assignments-errors",
+      "level": "mock-pdp",
+      "methodNames": ["permit.getLocalRoleAssignments"],
+      "operationKeys": ["pdp-container GET /local/role_assignments"]
+    },
+    {
+      "id": "wire.permit.getLocalRoleAssignments.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.getLocalRoleAssignments"],
+      "operationKeys": ["pdp-container GET /local/role_assignments"]
+    },
+    {
+      "id": "commonjs.mock-pdp.local-role-assignments-invalid",
+      "level": "mock-pdp",
+      "methodNames": ["permit.getLocalRoleAssignments"],
+      "operationKeys": ["pdp-container GET /local/role_assignments"]
+    },
+    {
+      "id": "commonjs.mock-pdp.local-role-assignments-errors",
+      "level": "mock-pdp",
+      "methodNames": ["permit.getLocalRoleAssignments"],
+      "operationKeys": ["pdp-container GET /local/role_assignments"]
+    },
+    {
+      "id": "pdp.local-role-assignments-filters-pagination",
+      "level": "pdp",
+      "methodNames": ["permit.getLocalRoleAssignments"],
+      "operationKeys": ["pdp-container GET /local/role_assignments"]
+    },
+    {
+      "id": "pdp.local-role-assignments-removal",
+      "level": "pdp",
+      "methodNames": ["permit.getLocalRoleAssignments"],
+      "operationKeys": ["pdp-container GET /local/role_assignments"]
     }
   ],
   "abCaseIds": [
@@ -2772,7 +2820,16 @@
     "mock-pdp.url-check-errors",
     "api.url-check-owned-fixtures",
     "pdp.url-check-mapped-allow-and-deny",
-    "pdp.url-check-mapping-removal"
+    "pdp.url-check-mapping-removal",
+    "wire.local-role-assignments-contract",
+    "mock-pdp.local-role-assignments-invalid",
+    "mock-pdp.local-role-assignments-errors",
+    "commonjs.wire.local-role-assignments-contract",
+    "commonjs.mock-pdp.local-role-assignments-invalid",
+    "commonjs.mock-pdp.local-role-assignments-errors",
+    "api.local-role-assignments-owned-fixtures",
+    "pdp.local-role-assignments-filters-pagination",
+    "pdp.local-role-assignments-removal"
   ],
   "runIds": [
     "candidate.local.node22.13.0",

@@ -33,6 +33,9 @@ See [the migration guide](MIGRATION.md) for affected callers, actions and retain
 - **N1**: Add eight GA grouped Groups operations.
 - **N2**: Add new-user tenant membership, three detailed lists, and environment refresh ack.
 - **N3**: Add permission context, authorized-user/role-tenant discovery, and object filtering.
+- Add `permit.getLocalRoleAssignments` with dedicated local query/row types, complete array
+  validation and one-page REST pagination. Invalid input, OPA, malformed pages and unavailable
+  HTTP 404/405/501 remain visible even in non-throwing mode.
 - Add `permit.checkUrl` and `CheckUrlConfig` for the published container URL check, with
   tenant/context/timeout options. Invalid input, unsupported OPA, malformed decisions and
   unavailable HTTP 404/405/501 remain visible even in non-throwing mode.

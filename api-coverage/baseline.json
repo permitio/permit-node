@@ -31,11 +31,11 @@
       "src/api/user-invites.ts:UserInvitesApi": "0f000adabfee6953fe5ce7944e11adbf952c901f86b7163755918c733b1c7e6e",
       "src/api/users.ts:UsersApi": "a777e0965c966b00d2fe916374b924251aa75c406c6dec78f21830b6d79f4e2a",
       "src/config.ts:ConfigFactory": "5dc5eeecb95886e850dae6c76c83ab96ac7c3f3661cee616d47e8e9f5dde4be4",
-      "src/enforcement/enforcer.ts:Enforcer": "ee7b319e72f988660cd3214eea2eb48388a9ac3fbd7860e6b53ff9bbb7709fb4",
+      "src/enforcement/enforcer.ts:Enforcer": "c1c2553efc71223a9d15cd969ce590b4d752c210d8821057f3762f2c557a30cb",
       "src/enforcement/enforcer.ts:PermitConnectionError": "86cd79f9aa748daf1d8324a63993215e2aa1d7b7a05fdb71229666d5ad98dffb",
       "src/enforcement/enforcer.ts:PermitError": "93daac3739a0e4feefad07b32fd3817ddfd0682880874c0783c9ffd8d528e8c9",
       "src/enforcement/enforcer.ts:PermitPDPStatusError": "25fff480295bb4b4afaca85625891e5ea3e98c8767a68333a2a246f3a4acd82a",
-      "src/index.ts:Permit": "39766fed6e332f14fb57da4fa28332ad3180925f8bb7ff6cc1b4cd4a65e9f725",
+      "src/index.ts:Permit": "05f98e480ba03b03ded2ca0900c67ff8166845c09deeb5df0f280c593dfc90f7",
       "src/logger.ts:LoggerFactory": "ac4bd9886641019a5aa3fb64bfe2d4baac7b8904c854afcbcda48af87fb35974",
       "src/utils/context.ts:ContextStore": "0a94c1379b87bea55588ee5624ef329a97befe0e32988588dce84847798c2d09"
     },
@@ -756,6 +756,7 @@
           "checkUrl(user: IUser | string, httpMethod: string, url: string, config?: CheckUrlConfig): Promise<boolean>;",
           "filterObjects<T extends IFilterObject>(user: IUser | string, action: IAction, objects: readonly T[], context?: Context, config?: CheckConfig): Promise<T[]>;",
           "getAuthorizedUsers(action: IAction, resource: IResource | string, context?: Context, config?: CheckConfig): Promise<IAuthorizedUsersResult>;",
+          "getLocalRoleAssignments(query?: ILocalRoleAssignmentsQuery, config?: CheckConfig): Promise<ILocalRoleAssignment[]>;",
           "getUserPermissions(user: IUser | string, tenants?: string[], resources?: string[], resource_types?: string[], config?: GetUserPermissionsConfig): Promise<IUserPermissions>;",
           "getUserTenants(user: IUser | string, context?: Context, config?: CheckConfig): Promise<TenantDetails[]>;"
         ]
@@ -859,6 +860,30 @@
           "resource_type?: string[];",
           "tenants?: string[];",
           "user: IUser | string;"
+        ]
+      },
+      "src/enforcement/interfaces.ts:ILocalRoleAssignment": {
+        "extends": [],
+        "kind": "interface",
+        "members": [
+          "[id: string]: unknown;",
+          "resource_instance?: string | null;",
+          "role: string;",
+          "tenant: string;",
+          "user: string;"
+        ]
+      },
+      "src/enforcement/interfaces.ts:ILocalRoleAssignmentsQuery": {
+        "extends": [],
+        "kind": "interface",
+        "members": [
+          "page?: number;",
+          "perPage?: number;",
+          "resource?: string;",
+          "resourceInstance?: string;",
+          "role?: string;",
+          "tenant?: string;",
+          "user?: string;"
         ]
       },
       "src/enforcement/interfaces.ts:IResource": {
@@ -1554,6 +1579,21 @@
             }
           ],
           "returns": "boolean"
+        }
+      },
+      "src/enforcement/responses.ts:parseLocalRoleAssignmentsResponse": {
+        "implementationSha256": "a6405894471dd4cc01d4d3722f91a6a0139a1ba67151d3eec2b5a55cca400f53",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "unknown"
+            }
+          ],
+          "returns": "ILocalRoleAssignment[]"
         }
       },
       "src/enforcement/responses.ts:parsePermissionsResponse": {
@@ -21098,6 +21138,7 @@
       "src/enforcement/enforcer.ts:.isString": "6809b400b07b7344d876bfa38d90a150c171ad47969b53e4014dd01a607b81e4",
       "src/enforcement/enforcer.ts:Enforcer.buildCheckInput": "0efb94d0ecaf599f8f17da7a6e205414703e1a99c74dc87f616de239b849a4c5",
       "src/enforcement/enforcer.ts:Enforcer.buildCheckUrlInput": "c9f8b97da6b1c10cf73a2ad63ed42c1393736b8855ee024c3c307b8f169b694c",
+      "src/enforcement/enforcer.ts:Enforcer.buildLocalRoleAssignmentsQuery": "aa53215610785d4706537c56358d387487d0d078eec151648f053067ecaa15fd",
       "src/enforcement/enforcer.ts:Enforcer.bulkCheck": "4f6aa0b3ea11aa46b60f46bf87454e822bf07b6072f65d4b5e2ae1f353f5cdf6",
       "src/enforcement/enforcer.ts:Enforcer.bulkCheckWithExceptions": "ce5417cfc7b224ef982df888ad24b381b24dab8218fc1ace3686aaf1c014c3f3",
       "src/enforcement/enforcer.ts:Enforcer.check": "fe2aadd9ee38992788a98629a092000ef302c6a1e37025395447804ee499af39",
@@ -21109,6 +21150,7 @@
       "src/enforcement/enforcer.ts:Enforcer.filterObjects": "285f705d1fdee426fd673ce214362ddeccf6f04e75fb4f7e8e4d96c106cdc98d",
       "src/enforcement/enforcer.ts:Enforcer.getAuthorizedUsers": "db7b2035003c51858f61300726d007521efa459eaf8ca3c10e0e0781d8165a92",
       "src/enforcement/enforcer.ts:Enforcer.getAuthorizedUsersWithExceptions": "a5d75fbda4e7fadcefa14a9a20793bcceb6c83153c357560bf328389392c4de5",
+      "src/enforcement/enforcer.ts:Enforcer.getLocalRoleAssignments": "0d715704d42f64b29e70e97654b4fc118a4dcf3348ecaa1d58951e207c5ca0c7",
       "src/enforcement/enforcer.ts:Enforcer.getUserPermissions": "8486e109b4f2866f7f33948a26951520e5edb2e36ec547540ed27e11f8aa3e36",
       "src/enforcement/enforcer.ts:Enforcer.getUserPermissionsWithExceptions": "b088d13931a7c1cd2ea8e275a38f781708af5896ef02d50f90e38ab01b681959",
       "src/enforcement/enforcer.ts:Enforcer.getUserTenants": "3e94f803def7e980bbc686cb3eb3391f274c9e61f2b3ab5f99c36a8f2526897f",
@@ -21116,7 +21158,7 @@
       "src/enforcement/enforcer.ts:Enforcer.handlePDPError": "f131004953b9e0d9f2f0dd2b1e34bbdb3f2616bc1ede2572f1dae228f191073e",
       "src/enforcement/enforcer.ts:Enforcer.normalizeResource": "01287f313beea5f524091e1f6462e791cc06224b846aa0ce026bbfd5b7fd2a40",
       "src/enforcement/enforcer.ts:Enforcer.parsePdpResponse": "d695d7623e025411e93099861e180269dc692911469b815e5ccd9b2fd3bfc487",
-      "src/enforcement/enforcer.ts:Enforcer.pdpStatusError": "61372569cb4c54a1c32587143b94fdf2811ed01784227a644c6ae1edce767494",
+      "src/enforcement/enforcer.ts:Enforcer.pdpStatusError": "995a87e540e4bc0a5c4ce35be9b69c49a3edc5f3d37317453b2dd6c7a0550b39",
       "src/enforcement/enforcer.ts:Enforcer.resourceFromString": "bedfdd6f1cbbdddd3d36a37b68a7478aa88774614a7185c87e909374431c3c56",
       "src/enforcement/enforcer.ts:Enforcer.serializeInput": "ef1bbe63a7be82da81078edd3c35a3e70b9df21fac896512398a399cb0a0e86f",
       "src/enforcement/responses.ts:.decisionEnvelope": "6102ee1ffde5f29db96bfcc06678ff799cd30d20b4e6a7ff341b03356e520d2c",
@@ -21128,6 +21170,7 @@
       "src/index.ts:Permit.checkUrl": "06c9fe488593e8488b18bfec0759988daf35529ea36cf8f1252e497255fe1048",
       "src/index.ts:Permit.filterObjects": "40a1dced3ad7041b12a88dddbe97131313eab52164b60698799ce17a591e7b8c",
       "src/index.ts:Permit.getAuthorizedUsers": "b02e7d92f880af4f933f70d73f1eaa356a513b566f1ffbebb07c91090b0daf03",
+      "src/index.ts:Permit.getLocalRoleAssignments": "f2fc420336885e4cf0e4cc5b033d140b643ac835dfcbf69c856b2efaa6304399",
       "src/index.ts:Permit.getUserPermissions": "561f30ed436101ac0cc9ed0a564ecda55aae4acb218849179b69d73cca5ebc4a",
       "src/index.ts:Permit.getUserTenants": "7afb862bc0123cd6e54c5e4c265ddd93d0212bfa146e80ce54f2cafdbd0e3669",
       "src/utils/context.ts:ContextStore.getDerivedContext": "f01adc283f3dc4a6c1fa5457f4a2044d7b22572f36640ef4ea22eb8bede62760",
@@ -26910,6 +26953,42 @@
             }
           ],
           "returns": "Promise<IAuthorizedUsersResult>"
+        }
+      },
+      "permit.getLocalRoleAssignments": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(query?: ILocalRoleAssignmentsQuery | undefined, config?: CheckConfig | undefined): Promise<ILocalRoleAssignment[]>"
+        ],
+        "routes": [
+          {
+            "body": null,
+            "conditions": {},
+            "method": "GET",
+            "path": "/local/role_assignments",
+            "query": "params",
+            "response": ["unknown"],
+            "target": "pdp"
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "query",
+              "optional": true,
+              "type": "ILocalRoleAssignmentsQuery"
+            },
+            {
+              "initializer": null,
+              "name": "config",
+              "optional": true,
+              "type": "CheckConfig"
+            }
+          ],
+          "returns": "Promise<ILocalRoleAssignment[]>"
         }
       },
       "permit.getUserPermissions": {

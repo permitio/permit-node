@@ -25,6 +25,8 @@ import { resolveRetryConfig } from '#src/utils/retry';
 import {
   type IAction,
   type IAuthorizedUsersResult,
+  type ILocalRoleAssignment,
+  type ILocalRoleAssignmentsQuery,
   type IFilterObject,
   type ICheckInput,
   type ICheckUrlInput,
@@ -44,6 +46,7 @@ import {
   parseCheckResponse,
   parseCheckUrlResponse,
   parsePermissionsResponse,
+  parseLocalRoleAssignmentsResponse,
 } from '#src/enforcement/responses';
 
 const RESOURCE_DELIMITER = ':';
@@ -174,6 +177,12 @@ export interface IEnforcer {
     context?: Context,
     config?: CheckConfig,
   ): Promise<TenantDetails[]>;
+
+  /** Reads one validated container PDP page; invalid, malformed or unavailable reads reject. */
+  getLocalRoleAssignments(
+    query?: ILocalRoleAssignmentsQuery,
+    config?: CheckConfig,
+  ): Promise<ILocalRoleAssignment[]>;
 
   /** Filters a stable snapshot of objects through positional bulk authorization decisions. */
   filterObjects<T extends IFilterObject>(
@@ -465,6 +474,130 @@ export class Enforcer implements IEnforcer {
         return this.parsePdpResponse('getUserTenants', response, parseUserTenantsResponse);
       })
       .catch((error: unknown) => this.handlePDPError(error, 'getUserTenants'));
+  }
+
+  /**
+   * Reads one page of role assignments cached by a compatible container PDP.
+   *
+   * @param query - Optional key filters and pagination; defaults to page 1 and page size 30.
+   * @param config - Timeout/error policy; useOpa:true is unsupported and always rejects.
+   * @returns The complete validated page, or [] on ordinary operational failure in
+   *   non-throwing mode. This does not automatically paginate or synchronize the local cache.
+   * @throws {PermitError} For invalid query/options or unsupported OPA, regardless of policy.
+   * @throws {PermitPDPStatusError} For malformed responses or unavailable 404/405/501 endpoints
+   *   regardless of policy; for other rejected responses in throwing mode.
+   * @throws {PermitConnectionError} On operational failure in throwing mode.
+   */
+  public async getLocalRoleAssignments(
+    query: ILocalRoleAssignmentsQuery = {},
+    config: CheckConfig = {},
+  ): Promise<ILocalRoleAssignment[]> {
+    const params = this.buildLocalRoleAssignmentsQuery(query, config);
+    const shouldThrow = config.throwOnError ?? this.config.throwOnError;
+    const timeout = config.timeout ?? this.config.timeout;
+    return await this.client
+      .get<unknown>('local/role_assignments', {
+        params,
+        headers: { Authorization: `Bearer ${this.config.token}` },
+        ...(timeout !== undefined && { timeout }),
+      })
+      .then((response) => {
+        if (response.status !== 200) throw this.pdpStatusError('getLocalRoleAssignments', response);
+        return this.parsePdpResponse(
+          'getLocalRoleAssignments',
+          response,
+          parseLocalRoleAssignmentsResponse,
+        );
+      })
+      .catch((error: unknown) => this.handlePDPError(error, 'getLocalRoleAssignments'))
+      .catch((failure: unknown) => {
+        if (
+          (failure instanceof PermitPDPStatusError &&
+            [200, 404, 405, 501].includes(failure.statusCode ?? 0)) ||
+          shouldThrow
+        ) {
+          throw failure;
+        }
+        return [];
+      });
+  }
+
+  private buildLocalRoleAssignmentsQuery(
+    query: ILocalRoleAssignmentsQuery,
+    config: CheckConfig,
+  ): Record<string, string | number> {
+    if (query === null || typeof query !== 'object' || Array.isArray(query)) {
+      throw new PermitError('Permit.getLocalRoleAssignments() query must be an object.');
+    }
+    const fields = ['user', 'role', 'tenant', 'resource', 'resourceInstance', 'page', 'perPage'];
+    for (const field of Reflect.ownKeys(query)) {
+      if (typeof field !== 'string' || !fields.includes(field)) {
+        throw new PermitError('Permit.getLocalRoleAssignments() query has an unsupported field.');
+      }
+    }
+    if (config === null || typeof config !== 'object' || Array.isArray(config)) {
+      throw new PermitError('Permit.getLocalRoleAssignments() options must be an object.');
+    }
+    for (const field of Reflect.ownKeys(config)) {
+      if (typeof field !== 'string' || !['useOpa', 'throwOnError', 'timeout'].includes(field)) {
+        throw new PermitError(
+          'Permit.getLocalRoleAssignments() options have an unsupported field.',
+        );
+      }
+    }
+    for (const field of ['useOpa', 'throwOnError'] as const) {
+      if (config[field] !== undefined && typeof config[field] !== 'boolean') {
+        throw new PermitError(`Permit.getLocalRoleAssignments() ${field} must be a boolean.`);
+      }
+    }
+    if (config.useOpa) {
+      throw new PermitError('The useOpa option is supported only by permit.check()');
+    }
+    if (
+      config.timeout !== undefined &&
+      (typeof config.timeout !== 'number' ||
+        !Number.isFinite(config.timeout) ||
+        config.timeout < 0 ||
+        config.timeout > 2_147_483_647)
+    ) {
+      throw new PermitError(
+        'Permit.getLocalRoleAssignments() timeout must be between 0 and 2147483647 ms.',
+      );
+    }
+    const params: Record<string, string | number> = {};
+    for (const field of ['user', 'role', 'tenant', 'resource', 'resourceInstance'] as const) {
+      const value = query[field];
+      if (value !== undefined) {
+        if (typeof value !== 'string') {
+          throw new PermitError(`Permit.getLocalRoleAssignments() ${field} must be a string.`);
+        }
+        params[field === 'resourceInstance' ? 'resource_instance' : field] = value;
+      }
+    }
+    const page = query.page ?? 1;
+    const perPage = query.perPage ?? 30;
+    if (
+      (query.page !== undefined && typeof query.page !== 'number') ||
+      !Number.isSafeInteger(page) ||
+      page < 1
+    ) {
+      throw new PermitError(
+        'Permit.getLocalRoleAssignments() page must be a positive safe integer.',
+      );
+    }
+    if (
+      (query.perPage !== undefined && typeof query.perPage !== 'number') ||
+      !Number.isInteger(perPage) ||
+      perPage < 1 ||
+      perPage > 100
+    ) {
+      throw new PermitError(
+        'Permit.getLocalRoleAssignments() perPage must be an integer from 1 to 100.',
+      );
+    }
+    params['page'] = page;
+    params['per_page'] = perPage;
+    return params;
   }
 
   /**
@@ -899,17 +1032,22 @@ export class Enforcer implements IEnforcer {
         ? `Permit.checkUrl() endpoint /allowed_url is unavailable (status ${status}). ` +
           'Configure a compatible Permit container PDP; the cloud PDP contract does not publish ' +
           'this endpoint.'
-        : method === 'getUserTenants' && status === 404
-          ? 'Permit.getUserTenants() endpoint /user-tenants is unavailable (status 404). ' +
-            'Configure a compatible Permit container PDP; the cloud PDP contract does not publish ' +
-            'this endpoint.'
-          : malformedBody
-            ? `Permit.${method}() got an unexpected response body from the PDP ` +
-              `(status ${statusLabel}), please check that the SDK's pdp URL points to a Permit ` +
-              'PDP. Read more about setting up the PDP at https://docs.permit.io'
-            : `Permit.${method}() got an unexpected status code: ${statusLabel}, ` +
-              'please check your SDK init and make sure the PDP sidecar is configured correctly. ' +
-              'Read more about setting up the PDP at https://docs.permit.io';
+        : method === 'getLocalRoleAssignments' &&
+            (status === 404 || status === 405 || status === 501)
+          ? `Permit.getLocalRoleAssignments() endpoint /local/role_assignments is unavailable ` +
+            `(status ${status}). Configure a compatible Permit container PDP; the cloud PDP ` +
+            'contract does not publish this endpoint.'
+          : method === 'getUserTenants' && status === 404
+            ? 'Permit.getUserTenants() endpoint /user-tenants is unavailable (status 404). ' +
+              'Configure a compatible Permit container PDP; the cloud PDP contract does not publish ' +
+              'this endpoint.'
+            : malformedBody
+              ? `Permit.${method}() got an unexpected response body from the PDP ` +
+                `(status ${statusLabel}), please check that the SDK's pdp URL points to a Permit ` +
+                'PDP. Read more about setting up the PDP at https://docs.permit.io'
+              : `Permit.${method}() got an unexpected status code: ${statusLabel}, ` +
+                'please check your SDK init and make sure the PDP sidecar is configured correctly. ' +
+                'Read more about setting up the PDP at https://docs.permit.io';
     const snapshot = diagnosticAxiosError(
       source ?? new AxiosError(message, undefined, response.config, undefined, response),
       [this.config.token],

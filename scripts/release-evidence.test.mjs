@@ -483,7 +483,7 @@ test('requires mapping for every method and retained operation without erasing g
 
 test('extracts all actual SDK/source entries with case-independent hashing', async () => {
   const result = await expectedReleaseInventory(resolve(import.meta.dirname, '..'));
-  expect(result.inventory.methods).toHaveLength(164);
+  expect(result.inventory.methods).toHaveLength(165);
   expect(
     result.inventory.methods.filter((method) => method.name.startsWith('permit.api.userInvites.')),
   ).toHaveLength(6);
@@ -528,6 +528,31 @@ test('extracts all actual SDK/source entries with case-independent hashing', asy
     expect(entry.operationKeys).toEqual([
       'control-plane PUT /v2/schema/{proj_id}/{env_id}/bulk/roles',
     ]);
+  const localName = 'permit.getLocalRoleAssignments';
+  expect(result.inventory.methods.filter((method) => method.name === localName)).toHaveLength(1);
+  const localCases = plan.cases.filter((entry) => entry.methodNames.includes(localName));
+  expect(localCases.map((entry) => entry.id).sort()).toEqual([
+    'commonjs.mock-pdp.local-role-assignments-errors',
+    'commonjs.mock-pdp.local-role-assignments-invalid',
+    'mock-pdp.local-role-assignments-errors',
+    'mock-pdp.local-role-assignments-invalid',
+    'pdp.local-role-assignments-filters-pagination',
+    'pdp.local-role-assignments-removal',
+    'wire.permit.getLocalRoleAssignments.commonjs',
+    'wire.permit.getLocalRoleAssignments.esm',
+  ]);
+  expect(localCases.map((entry) => entry.level).sort()).toEqual([
+    'mock-pdp',
+    'mock-pdp',
+    'mock-pdp',
+    'mock-pdp',
+    'pdp',
+    'pdp',
+    'wire',
+    'wire',
+  ]);
+  for (const entry of localCases)
+    expect(entry.operationKeys).toEqual(['pdp-container GET /local/role_assignments']);
   expect(result.inventory.operations).toHaveLength(307);
   expect(result.inventorySha256).toBe(digest(canonicalReleaseInventory(result.inventory)));
   const changed = structuredClone(result.inventory);
@@ -639,7 +664,7 @@ test('the committed plan preserves missing source-addition proof', async () => {
   );
   expect(report.incomplete).toContain('Missing local candidate cell: Node 24.21.0/current.');
   expect(report.incomplete.some((message) => message.startsWith('Missing case '))).toBe(true);
-  expect(evidence.inventory.methods).toHaveLength(164);
+  expect(evidence.inventory.methods).toHaveLength(165);
   expect(evidence.inventory.operations).toHaveLength(307);
 }, 20_000);
 
@@ -675,7 +700,7 @@ test('requires complete execution evidence in the current Node 26 cell', () => {
   expect(report.incomplete).toContain('Missing local candidate cell: Node 26.11.0/current.');
 });
 
-test('the real matrix accepts reviewed URL phases without granting fixture setup case credit', async () => {
+test('the real matrix accepts reviewed capability phases without granting fixture setup case credit', async () => {
   const root = resolve(import.meta.dirname, '..');
   const actual = await expectedReleaseInventory(root);
   const plan = JSON.parse(readFileSync(resolve(root, 'api-coverage/release-matrix.json'), 'utf8'));
@@ -702,6 +727,38 @@ test('the real matrix accepts reviewed URL phases without granting fixture setup
       ...urlPhases.filter(([, kind]) => kind !== 'api').map(([id]) => id),
     ].sort(),
   );
+  const localRolePhases = [
+    ['wire.local-role-assignments-contract', 'wire'],
+    ['mock-pdp.local-role-assignments-invalid', 'mock-pdp'],
+    ['mock-pdp.local-role-assignments-errors', 'mock-pdp'],
+    ['commonjs.wire.local-role-assignments-contract', 'wire'],
+    ['commonjs.mock-pdp.local-role-assignments-invalid', 'mock-pdp'],
+    ['commonjs.mock-pdp.local-role-assignments-errors', 'mock-pdp'],
+    ['api.local-role-assignments-owned-fixtures', 'api'],
+    ['pdp.local-role-assignments-filters-pagination', 'pdp'],
+    ['pdp.local-role-assignments-removal', 'pdp'],
+  ];
+  expect(
+    plan.cases
+      .filter((entry) => entry.methodNames.includes('permit.getLocalRoleAssignments'))
+      .map((entry) => entry.id)
+      .sort(),
+  ).toEqual(
+    [
+      'wire.permit.getLocalRoleAssignments.esm',
+      'wire.permit.getLocalRoleAssignments.commonjs',
+      ...localRolePhases
+        .filter(([, kind]) => kind === 'mock-pdp' || kind === 'pdp')
+        .map(([id]) => id),
+    ].sort(),
+  );
+  const capabilityPhases = [...urlPhases, ...localRolePhases];
+  const phaseForWireCase = {
+    'wire.checkUrl.esm': 'release.wire.enforcement.esm',
+    'wire.checkUrl.commonjs': 'release.wire.enforcement.commonjs',
+    'wire.permit.getLocalRoleAssignments.esm': 'wire.local-role-assignments-contract',
+    'wire.permit.getLocalRoleAssignments.commonjs': 'commonjs.wire.local-role-assignments-contract',
+  };
   const phaseForLevel = {
     package: 'release.package.clone-helpers',
     wire: 'release.wire.observed.esm',
@@ -730,19 +787,15 @@ test('the real matrix accepts reviewed URL phases without granting fixture setup
         .filter((entry) => role === 'candidate' || plan.abCaseIds.includes(entry.id))
         .map((entry) => ({
           ...entry,
-          phaseId: urlPhases.some(([id]) => id === entry.id)
+          phaseId: capabilityPhases.some(([id]) => id === entry.id)
             ? entry.id
-            : entry.id === 'wire.checkUrl.esm'
-              ? 'release.wire.enforcement.esm'
-              : entry.id === 'wire.checkUrl.commonjs'
-                ? 'release.wire.enforcement.commonjs'
-                : phaseForLevel[entry.level],
+            : (phaseForWireCase[entry.id] ?? phaseForLevel[entry.level]),
           status: 'PASSED',
           assertions: 1,
         }));
       const phaseIds =
         role === 'candidate'
-          ? [...new Set([...plan.phaseIds, ...urlPhases.map(([id]) => id)])]
+          ? [...new Set([...plan.phaseIds, ...capabilityPhases.map(([id]) => id)])]
           : [...new Set(caseResults.map((entry) => entry.phaseId))];
       return {
         ...fixture().evidence.runs[0],
@@ -757,7 +810,7 @@ test('the real matrix accepts reviewed URL phases without granting fixture setup
         phaseResults: phaseIds.map((id) => ({
           id,
           kind:
-            urlPhases.find(([name]) => name === id)?.[1] ??
+            capabilityPhases.find(([name]) => name === id)?.[1] ??
             caseResults.find((entry) => entry.phaseId === id)?.level ??
             'package',
           status: 'PASSED',
@@ -785,8 +838,11 @@ test('the real matrix accepts reviewed URL phases without granting fixture setup
   expect(report.failures).toEqual([]);
   expect(report.releaseReady).toBe(false);
   expect(plan.cases.some((entry) => entry.id === 'api.url-check-owned-fixtures')).toBe(false);
+  expect(plan.cases.some((entry) => entry.id === 'api.local-role-assignments-owned-fixtures')).toBe(
+    false,
+  );
 
-  for (const [id] of urlPhases) {
+  for (const [id] of capabilityPhases) {
     const unregistered = structuredClone(expected);
     unregistered.requirements.phaseIds = plan.phaseIds.filter((name) => name !== id);
     expect(validateReleaseEvidence(evidence, unregistered).incomplete).toEqual([

@@ -104,6 +104,34 @@ export interface IFilterObject extends IResource {
   context?: Context;
 }
 
+/** Filters one page of role assignments cached by a compatible container PDP. */
+export interface ILocalRoleAssignmentsQuery {
+  /** User key; omission leaves users unfiltered. */
+  user?: string;
+  /** Role key; omission leaves roles unfiltered. */
+  role?: string;
+  /** Tenant key; omission does not select the configured default tenant. */
+  tenant?: string;
+  /** Resource type key. */
+  resource?: string;
+  /** Resource type:key identifier, forwarded unchanged. */
+  resourceInstance?: string;
+  /** Positive safe integer; defaults to 1. */
+  page?: number;
+  /** Page size from 1 through 100; defaults to 30. */
+  perPage?: number;
+}
+
+/** A local PDP assignment with keys, distinct from a control-plane assignment with IDs. */
+export interface ILocalRoleAssignment {
+  user: string;
+  role: string;
+  tenant: string;
+  /** Resource type:key identifier; absence and explicit null are preserved. */
+  resource_instance?: string | null;
+  [id: string]: unknown;
+}
+
 /** A role assignment explaining a user's access to a resource. */
 export interface IAuthorizedUserAssignment {
   user: string;

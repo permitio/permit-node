@@ -57,7 +57,7 @@ test('accounts for complete source denominators while leaving parity and backend
   expect(report.sharedTarget.status).toBe('UNAVAILABLE');
   expect(report.realBackend.status).toBe('NOT_MEASURED');
   expect(report.operations).toHaveLength(307);
-  expect(report.counts.publicHttpMethods).toBe(159);
+  expect(report.counts.publicHttpMethods).toBe(160);
   expect(report.operations.filter((op) => op.source === 'control-plane')).toHaveLength(263);
   expect(report.operations.filter((op) => op.source === 'pdp-container')).toHaveLength(34);
   expect(report.operations.filter((op) => op.source === 'pdp-cloud')).toHaveLength(10);
@@ -226,6 +226,45 @@ test('a local JSON lookalike cannot hide a changed enforcement serializer', () =
   );
   expect(() => extractSdk(copy)).toThrow('must stringify exactly one checked input');
 }, 20_000);
+
+test('exposes dedicated local role pages through GET query options without a request body', () => {
+  const report = coverageReport(evidence());
+  const operation = report.operations.find(
+    (entry) =>
+      entry.source === 'pdp-container' &&
+      entry.method === 'GET' &&
+      entry.path === '/local/role_assignments',
+  );
+  expect(operation.coverage).toBe('exposed');
+  expect(operation.decision).toMatchObject({ action: 'add', owner: 'PER-16946' });
+  expect(operation.methods.map((method) => method.name)).toEqual([
+    'permit.getLocalRoleAssignments',
+  ]);
+  const method = sdk.methods.find((entry) => entry.name === 'permit.getLocalRoleAssignments');
+  expect(method.publicSignatures).toEqual([
+    '(query?: ILocalRoleAssignmentsQuery | undefined, config?: CheckConfig | undefined): Promise<ILocalRoleAssignment[]>',
+  ]);
+  expect(method.routes).toMatchObject([
+    {
+      method: 'GET',
+      path: '/local/role_assignments',
+      target: 'pdp',
+      body: null,
+      query: 'params',
+      response: ['unknown'],
+    },
+  ]);
+  expect(sdk.authoredShapes['src/enforcement/interfaces.ts:ILocalRoleAssignment'].members).toEqual(
+    expect.arrayContaining([
+      'user: string;',
+      'role: string;',
+      'tenant: string;',
+      'resource_instance?: string | null;',
+      '[id: string]: unknown;',
+    ]),
+  );
+  expect(report.operations).toHaveLength(307);
+});
 
 test('bypassing enforcement serialization remains a measured implementation change', () => {
   const copy = sourceCopy();

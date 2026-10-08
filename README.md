@@ -342,6 +342,42 @@ Existing permission-query and bulk OPA error policies remain unchanged. `checkAl
 retained; future deprecation planning does not remove it here. AuthZEN remains deferred.
 Internal context transforms are not activated by these methods.
 
+## Local role assignments
+
+`permit.getLocalRoleAssignments(query?, config?)` reads one page of assignments cached by a
+compatible container PDP. It uses `GET /local/role_assignments`; the cloud PDP does not publish
+this endpoint. These key-based rows are distinct from `permit.api.roleAssignments.list` records
+with control-plane IDs. The helper does not synchronize the local cache or promise freshness.
+
+```typescript
+const assignments = await permit.getLocalRoleAssignments({
+  user: 'alice',
+  tenant: 'east',
+  resource: 'document',
+  resourceInstance: 'document:report',
+  page: 1,
+  perPage: 30,
+});
+```
+
+Optional `user`, `role`, `tenant`, `resource` and `resourceInstance` filters are strings forwarded
+unchanged. `resource` selects a resource type; `resourceInstance` is its type:key identifier.
+Omitted tenant leaves tenants unfiltered and does not inject `multiTenancy.defaultTenant`.
+No request context, total count, control-plane IDs or envelope is added. The result is a complete
+`ILocalRoleAssignment[]` page with required string `user`, `role` and `tenant`, optional
+`resource_instance` and preserved additive fields, order and duplicates. Missing and explicit
+null `resource_instance` values remain distinct, matching the public Python SDK compatibility.
+
+`page` defaults to 1 and must be a positive safe integer. `perPage` defaults to the REST value 30
+and must be an integer from 1 through 100. The SDK rejects invalid values instead of clamping them.
+There is no automatic pagination: request subsequent pages until a page is shorter than `perPage`.
+Timeout/error policy uses `CheckConfig`; a per-call timeout overrides the SDK value, and `0`
+disables it. `useOpa: true` and invalid query/options always reject before HTTP with `PermitError`.
+Malformed 200 pages and unavailable HTTP 404/405/501 endpoints always reject with
+`PermitPDPStatusError`, even with `throwOnError: false`. Ordinary HTTP, connection and timeout
+failures follow the per-call/global error policy: typed sanitized errors in throwing mode or `[]`
+in non-throwing mode. A genuine empty page also returns `[]`.
+
 ## URL authorization
 
 `permit.checkUrl(user, httpMethod, url, config?)` evaluates a full URL through the compatible

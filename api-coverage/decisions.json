@@ -1900,10 +1900,10 @@
       "lifecycle": "GA"
     },
     "pdp-container GET /local/role_assignments": {
-      "action": "undecided",
-      "owner": "PER-16345",
-      "reason": "No exposed matching typed method or adopted target decision for this PDP-local facts route.",
-      "source": "https://linear.app/permit/issue/PER-16345",
+      "action": "add",
+      "owner": "PER-16946",
+      "reason": "Expose the published container local role-assignment GET with dedicated key-based rows, complete page validation and REST pagination.",
+      "source": "https://linear.app/permit/issue/PER-16946",
       "lifecycle": "GA"
     },
     "pdp-container GET /opal-server/connectivity": {

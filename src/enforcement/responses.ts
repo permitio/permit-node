@@ -1,6 +1,7 @@
 import {
   type IAuthorizedUserAssignment,
   type IAuthorizedUsersResult,
+  type ILocalRoleAssignment,
   type IUserPermissions,
   type TenantDetails,
 } from '#src/enforcement/interfaces';
@@ -230,6 +231,38 @@ export function parseUserTenantsResponse(value: unknown): TenantDetails[] {
   for (const tenant of value) {
     if (!isTenantDetails(tenant)) throw new Error('Expected a tenant with a string key');
     result.push(normalizeTenant(tenant));
+  }
+  return result;
+}
+
+/**
+ * Reads one complete local PDP role-assignment page without projecting or defaulting fields.
+ *
+ * @param value - Untrusted direct response body.
+ * @returns All validated rows, preserving order, duplicates and additive fields.
+ * @throws {Error} If the body or any required or optional row field is malformed.
+ */
+export function parseLocalRoleAssignmentsResponse(value: unknown): ILocalRoleAssignment[] {
+  if (!Array.isArray(value)) throw new Error('Expected a local role-assignment array');
+  const result: ILocalRoleAssignment[] = [];
+  for (const assignment of value) {
+    if (
+      !isRecord(assignment) ||
+      typeof assignment['user'] !== 'string' ||
+      typeof assignment['role'] !== 'string' ||
+      typeof assignment['tenant'] !== 'string' ||
+      (Object.hasOwn(assignment, 'resource_instance') &&
+        assignment['resource_instance'] !== null &&
+        typeof assignment['resource_instance'] !== 'string')
+    ) {
+      throw new Error('Expected valid user, role, tenant and optional resource_instance fields');
+    }
+    result.push({
+      ...assignment,
+      user: assignment['user'],
+      role: assignment['role'],
+      tenant: assignment['tenant'],
+    });
   }
   return result;
 }
