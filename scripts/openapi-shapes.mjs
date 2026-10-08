@@ -26,6 +26,10 @@ const FREE_FORM = new Set([
   'raw-data1.ts:context',
 ]);
 const EXPECTED = {
+  'task-result-environment-read.ts:task_id': 'string',
+  'task-result-environment-read.ts:status': 'TaskStatus',
+  'task-result-environment-read.ts:result': 'EnvironmentRead|null',
+  'task-result-environment-read.ts:error': 'ErrorDetails|null',
   'apikey-read.ts:organization_id': 'string',
   'apikey-read.ts:owner_type': 'APIKeyOwnerType',
   'apikey-read.ts:id': 'string',
@@ -62,6 +66,10 @@ const EXPECTED = {
 };
 
 const OPTIONAL = {
+  'task-result-environment-read.ts:task_id': false,
+  'task-result-environment-read.ts:status': false,
+  'task-result-environment-read.ts:result': true,
+  'task-result-environment-read.ts:error': true,
   'apikey-read.ts:organization_id': false,
   'apikey-read.ts:owner_type': false,
   'apikey-read.ts:id': false,

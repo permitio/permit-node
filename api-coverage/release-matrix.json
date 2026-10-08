@@ -2880,6 +2880,52 @@
       "level": "api",
       "methodNames": ["permit.api.auditLogs.get"],
       "operationKeys": ["control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs/{log_id}"]
+    },
+    {
+      "id": "wire.api.environments.copyAsync.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.copyAsync"],
+      "operationKeys": ["control-plane POST /v2/projects/{proj_id}/envs/{env_id}/copy/async"]
+    },
+    {
+      "id": "wire.api.environments.copyAsync.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.copyAsync"],
+      "operationKeys": ["control-plane POST /v2/projects/{proj_id}/envs/{env_id}/copy/async"]
+    },
+    {
+      "id": "wire.api.environments.getCopyResult.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.getCopyResult"],
+      "operationKeys": [
+        "control-plane GET /v2/projects/{proj_id}/envs/{env_id}/copy/async/{task_id}/result"
+      ]
+    },
+    {
+      "id": "wire.api.environments.getCopyResult.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.getCopyResult"],
+      "operationKeys": [
+        "control-plane GET /v2/projects/{proj_id}/envs/{env_id}/copy/async/{task_id}/result"
+      ]
+    },
+    {
+      "id": "api.async-copy.new-target",
+      "level": "api",
+      "methodNames": ["permit.api.environments.copyAsync", "permit.api.environments.getCopyResult"],
+      "operationKeys": [
+        "control-plane POST /v2/projects/{proj_id}/envs/{env_id}/copy/async",
+        "control-plane GET /v2/projects/{proj_id}/envs/{env_id}/copy/async/{task_id}/result"
+      ]
+    },
+    {
+      "id": "api.async-copy.existing-target",
+      "level": "api",
+      "methodNames": ["permit.api.environments.copyAsync", "permit.api.environments.getCopyResult"],
+      "operationKeys": [
+        "control-plane POST /v2/projects/{proj_id}/envs/{env_id}/copy/async",
+        "control-plane GET /v2/projects/{proj_id}/envs/{env_id}/copy/async/{task_id}/result"
+      ]
     }
   ],
   "abCaseIds": [
@@ -3094,7 +3140,12 @@
     "api.audit-logs-owned-fixtures",
     "pdp.audit-logs-decisions",
     "api.audit-logs-ingestion-list",
-    "api.audit-logs-ingestion-detail"
+    "api.audit-logs-ingestion-detail",
+    "wire.async-copy.esm",
+    "wire.async-copy.commonjs",
+    "api.async-copy-owned-fixtures",
+    "api.async-copy.new-target",
+    "api.async-copy.existing-target"
   ],
   "runIds": [
     "candidate.local.node22.13.0",

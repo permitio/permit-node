@@ -56,6 +56,12 @@ const correctedComments = Object.fromEntries(
   ]),
 );
 const cleanTypes = {
+  'task-result-environment-read.ts': `export interface TaskResultEnvironmentRead {
+    task_id: string;
+    status: TaskStatus;
+    result?: EnvironmentRead | null;
+    error?: ErrorDetails | null;
+  }`,
   'apikey-read.ts': `export interface APIKeyRead {
     organization_id: string;
     owner_type: APIKeyOwnerType;
@@ -543,3 +549,27 @@ test.each([
   };
   fails(setup({ types }), new RegExp(`${file}:${field}: expected`));
 });
+
+for (const field of ['result', 'error']) {
+  test(`rejects lost environment task ${field} nullability at the generator boundary`, () => {
+    const file = 'task-result-environment-read.ts';
+    const types = {
+      ...cleanTypes,
+      [file]: cleanTypes[file].replace(new RegExp(`(${field}\\?: [^;]+) \\| null;`), '$1;'),
+    };
+    fails(setup({ types }), new RegExp(`${file}:${field}: expected`));
+  });
+}
+for (const field of ['task_id', 'status', 'result', 'error']) {
+  test(`rejects changed environment task ${field} requiredness at the generator boundary`, () => {
+    const file = 'task-result-environment-read.ts';
+    const original = cleanTypes[file];
+    const types = {
+      ...cleanTypes,
+      [file]: ['result', 'error'].includes(field)
+        ? original.replace(`${field}?:`, `${field}:`)
+        : original.replace(`${field}:`, `${field}?:`),
+    };
+    fails(setup({ types }), new RegExp(`${file}:${field}: expected .* field`));
+  });
+}

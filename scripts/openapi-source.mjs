@@ -136,19 +136,14 @@ const AUDIT_READ_NULLABILITY = {
   },
 };
 
-/** Corrects only the pinned public audit read graph, refusing new input uses or source drift. */
-function correctAuditReadNullability(spec) {
-  const affected = new Set(
-    Object.keys(AUDIT_READ_NULLABILITY).map((name) => `#/components/schemas/${name}`),
-  );
+/** Refuses direct and transitive input uses of corrected read-only schemas. */
+function rejectReadInputUse(spec, affected, label) {
   function rejectInputUse(value, location, visited = new Set()) {
     if (!value || typeof value !== 'object') return;
     if (typeof value.$ref === 'string') {
       const ref = value.$ref;
       if (affected.has(ref)) {
-        throw new Error(
-          `Audit read nullability reaches an input at ${location}; review the source.`,
-        );
+        throw new Error(`${label} nullability reaches an input at ${location}; review the source.`);
       }
       if (!visited.has(ref) && ref.startsWith('#/')) {
         visited.add(ref);
@@ -167,14 +162,44 @@ function correctAuditReadNullability(spec) {
   for (const [name, body] of Object.entries(spec.components.requestBodies ?? {})) {
     rejectInputUse(body, `/components/requestBodies/${name}`);
   }
-  for (const [path, item] of Object.entries(spec.paths)) {
+  function inspectPathItem(item, path, visited = new Set()) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) {
+      throw new Error(
+        `${label} Path Item reference cannot be checked at ${path}; review the source.`,
+      );
+    }
+    if (item.$ref !== undefined) {
+      const ref = item.$ref;
+      if (typeof ref !== 'string' || !ref.startsWith('#/') || visited.has(ref)) {
+        throw new Error(
+          `${label} Path Item reference is unsupported at ${path}; review the source.`,
+        );
+      }
+      visited.add(ref);
+      const target = ref
+        .slice(2)
+        .split('/')
+        .reduce((node, key) => node?.[key.replaceAll('~1', '/').replaceAll('~0', '~')], spec);
+      inspectPathItem(target, path, visited);
+    }
+    for (const parameter of item.parameters ?? []) rejectInputUse(parameter, `${path}/parameters`);
     for (const [method, operation] of Object.entries(item)) {
-      if (!['get', 'put', 'post', 'delete', 'patch', 'head', 'options'].includes(method)) continue;
+      if (!['get', 'put', 'post', 'delete', 'patch', 'head', 'options', 'trace'].includes(method))
+        continue;
       rejectInputUse(operation.requestBody, `${method.toUpperCase()} ${path}/requestBody`);
-      for (const parameter of [...(item.parameters ?? []), ...(operation.parameters ?? [])])
+      for (const parameter of operation.parameters ?? [])
         rejectInputUse(parameter, `${method.toUpperCase()} ${path}/parameters`);
     }
   }
+  for (const [path, item] of Object.entries(spec.paths)) inspectPathItem(item, path);
+}
+
+/** Corrects only the pinned public audit read graph, refusing new input uses or source drift. */
+function correctAuditReadNullability(spec) {
+  const affected = new Set(
+    Object.keys(AUDIT_READ_NULLABILITY).map((name) => `#/components/schemas/${name}`),
+  );
+  rejectReadInputUse(spec, affected, 'Audit read');
   for (const [name, { sha256, fields }] of Object.entries(AUDIT_READ_NULLABILITY)) {
     const model = spec.components.schemas[name];
     requireShape(
@@ -204,6 +229,63 @@ function correctAuditReadNullability(spec) {
         };
       }
     }
+  }
+}
+
+// Official permitio/docs 6ec47cd3f04da6fa1bc9d48226ccbe781b304f77 background-task examples.
+function correctCopyTaskNullability(spec) {
+  rejectReadInputUse(
+    spec,
+    new Set(['#/components/schemas/TaskResult_EnvironmentRead_']),
+    'Environment copy task',
+  );
+  const model = spec.components.schemas.TaskResult_EnvironmentRead_;
+  requireShape(
+    model,
+    {
+      properties: {
+        task_id: {
+          type: 'string',
+          title: 'Task Id',
+          description: 'The unique id of the task.',
+        },
+        status: {
+          allOf: [
+            {
+              $ref: '#/components/schemas/TaskStatus',
+            },
+          ],
+          description: 'The status of the task.',
+        },
+        result: {
+          allOf: [
+            {
+              $ref: '#/components/schemas/EnvironmentRead',
+            },
+          ],
+          title: 'Result',
+          description: 'The result of the task when the task finished.',
+        },
+        error: {
+          allOf: [
+            {
+              $ref: '#/components/schemas/ErrorDetails',
+            },
+          ],
+          title: 'Error',
+          description: 'The error details when the task failed.',
+        },
+      },
+      additionalProperties: false,
+      type: 'object',
+      required: ['task_id', 'status'],
+      title: 'TaskResult[EnvironmentRead]',
+    },
+    '/components/schemas/TaskResult_EnvironmentRead_',
+  );
+  for (const field of ['result', 'error']) {
+    const { allOf, ...metadata } = model.properties[field];
+    model.properties[field] = { ...metadata, anyOf: [{ allOf }, { type: 'null' }] };
   }
 }
 
@@ -583,6 +665,7 @@ export function prepareOpenApi(source, supplement) {
     }
   }
   correctAuditReadNullability(spec);
+  correctCopyTaskNullability(spec);
   validateSource(spec);
   return spec;
 }

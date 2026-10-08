@@ -415,3 +415,117 @@ async function auditLogs(client: SDK.IPermitApi) {
   void rows;
 }
 void auditLogs;
+
+async function asynchronousEnvironmentCopy(client: SDK.IPermitApi): Promise<void> {
+  const api: SDK.IEnvironmentsApi = client.environments;
+  const copy: SDK.EnvironmentCopy = {
+    target_env: {
+      new: {
+        key: 'target',
+        name: 'Target',
+        jwks: { url: 'https://keys.example' },
+        settings: { count: 0, enabled: false },
+      },
+      existing: 'existing-target',
+    },
+    conflict_strategy: SDK.EnvironmentCopyConflictStrategy.Overwrite,
+    scope: {
+      resources: { include: ['doc'], exclude: [] },
+      roles: { exclude: ['other'] },
+      user_sets: { include: [] },
+      resource_sets: { exclude: [] },
+      custom_policies: { include: [] },
+    },
+  };
+  const submitted: SDK.TaskResultEnvironmentRead = await api.copyAsync(
+    'project',
+    'source',
+    copy,
+    0,
+  );
+  const read: SDK.TaskResultEnvironmentRead = await api.getCopyResult(
+    'project',
+    'source',
+    submitted.task_id,
+    0.5,
+  );
+  const status: SDK.TaskStatus = read.status;
+  const nullable: SDK.TaskResultEnvironmentRead = {
+    task_id: 'task',
+    status: SDK.TaskStatus.Processing,
+    result: null,
+    error: null,
+  };
+  const omitted: SDK.TaskResultEnvironmentRead = {
+    task_id: 'task',
+    status: SDK.TaskStatus.Cancelled,
+  };
+  if (read.result) {
+    const result: SDK.EnvironmentRead = read.result;
+    const required: string[] = [
+      result.key,
+      result.name,
+      result.id,
+      result.organization_id,
+      result.project_id,
+      result.created_at,
+      result.updated_at,
+    ];
+    void [
+      required,
+      result.description,
+      result.custom_branch_name,
+      result.avp_policy_store_id,
+      result.jwks?.url,
+      result.jwks?.ttl,
+      result.jwks?.jwks,
+      result.settings,
+    ];
+  }
+  if (read.error) {
+    const error: SDK.ErrorDetails = read.error;
+    const required: string[] = [error.id, error.title, error.error_code];
+    const details: unknown = error.additional_info;
+    void [required, details, error.message, error.support_link];
+  }
+  // @ts-expect-error A copy body requires the published target_env.
+  void api.copyAsync('project', 'source', { scope: {} });
+  // @ts-expect-error Wait seconds require a number.
+  void api.copyAsync('project', 'source', copy, '0');
+  // @ts-expect-error Result wait seconds require a number.
+  void api.getCopyResult('project', 'source', 'task', null);
+  // @ts-expect-error The published task status has no failed alias.
+  const badStatus: SDK.TaskStatus = 'failed';
+  // @ts-expect-error Task result requires complete environment metadata.
+  const badResult: SDK.TaskResultEnvironmentRead['result'] = { key: 'target' };
+  // @ts-expect-error ErrorDetails requires its ID, title and error_code.
+  const badError: SDK.TaskResultEnvironmentRead['error'] = { message: 'failure' };
+  // @ts-expect-error Exact optional result does not accept explicit undefined.
+  const undefinedResult: SDK.TaskResultEnvironmentRead = {
+    task_id: 'task',
+    status,
+    result: undefined,
+  };
+  // @ts-expect-error Exact optional error does not accept explicit undefined.
+  const undefinedError: SDK.TaskResultEnvironmentRead = {
+    task_id: 'task',
+    status,
+    error: undefined,
+  };
+  // @ts-expect-error Task ID is required even for processing.
+  const missingTask: SDK.TaskResultEnvironmentRead = { status: SDK.TaskStatus.Processing };
+  // @ts-expect-error Async copy returns the task envelope, not only its environment.
+  const projected: SDK.EnvironmentRead = await api.copyAsync('project', 'source', copy);
+  void [
+    nullable,
+    omitted,
+    badStatus,
+    badResult,
+    badError,
+    undefinedResult,
+    undefinedError,
+    missingTask,
+    projected,
+  ];
+}
+void asynchronousEnvironmentCopy;

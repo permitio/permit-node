@@ -10,6 +10,7 @@ import {
   type EnvironmentRead,
   type EnvironmentStats,
   type EnvironmentUpdate,
+  type TaskResultEnvironmentRead,
 } from '#src/openapi/index';
 import { BASE_PATH } from '#src/openapi/base';
 
@@ -27,6 +28,9 @@ export {
   type EnvironmentRead,
   type EnvironmentStats,
   type EnvironmentUpdate,
+  type ErrorDetails,
+  type TaskResultEnvironmentRead,
+  TaskStatus,
 } from '#src/openapi/index';
 
 export interface IListEnvironments extends IPagination {
@@ -152,6 +156,46 @@ export interface IEnvironmentsApi {
     environmentKey: string,
     copyParams: EnvironmentCopy,
   ): Promise<EnvironmentRead>;
+
+  /**
+   * Submits a background copy from the explicit source environment in the same project.
+   * The SDK requires a project or organization API key and does not replay submission or poll.
+   *
+   * @param projectKey - The source project key or ID.
+   * @param environmentKey - The source environment key or ID, not the target environment.
+   * @param copyParams - Complete target, conflict strategy and optional copy scope.
+   * @param wait - Optional finite server wait in seconds, from 0 through 60, including fractions.
+   * @returns The complete task response; processing, failure and cancelled statuses remain data.
+   * @throws {@link PermitApiError} If serialization, HTTP or transport fails.
+   * @throws {@link PermitContextError} If organization context or API key scope is insufficient.
+   * @throws RangeError If wait is outside its supported range or is not a finite number.
+   */
+  copyAsync(
+    projectKey: string,
+    environmentKey: string,
+    copyParams: EnvironmentCopy,
+    wait?: number,
+  ): Promise<TaskResultEnvironmentRead>;
+
+  /**
+   * Reads one acknowledged copy task using its explicit source project and environment.
+   * The SDK returns once, including a processing response; it does not poll or cancel the task.
+   *
+   * @param projectKey - The source project key or ID.
+   * @param environmentKey - The source environment key or ID.
+   * @param taskId - The acknowledged task ID.
+   * @param wait - Optional finite server wait in seconds, from 0 through 60, including fractions.
+   * @returns The complete task response, preserving nullable result and error data.
+   * @throws {@link PermitApiError} If the API rejects the request or transport fails.
+   * @throws {@link PermitContextError} If organization context or API key scope is insufficient.
+   * @throws RangeError If wait is outside its supported range or is not a finite number.
+   */
+  getCopyResult(
+    projectKey: string,
+    environmentKey: string,
+    taskId: string,
+    wait?: number,
+  ): Promise<TaskResultEnvironmentRead>;
 
   /**
    * Deletes an environment.
@@ -406,6 +450,76 @@ export class EnvironmentsApi extends BasePermitApi implements IEnvironmentsApi {
       ).data;
     } catch (err) {
       this.handleApiError(err);
+    }
+  }
+
+  /** {@inheritDoc IEnvironmentsApi.copyAsync} */
+  public async copyAsync(
+    projectKey: string,
+    environmentKey: string,
+    copyParams: EnvironmentCopy,
+    wait?: number,
+  ): Promise<TaskResultEnvironmentRead> {
+    this.validateCopyWait(wait);
+    let body: EnvironmentCopy;
+    try {
+      body = structuredClone(copyParams);
+      JSON.stringify(body);
+    } catch (cause) {
+      this.handleApiError(
+        new Error('Cannot serialize environment copy body. Supply JSON-compatible fields.', {
+          cause,
+        }),
+      );
+    }
+    await this.ensureAccessLevel(ApiKeyLevel.PROJECT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ORGANIZATION);
+    try {
+      return (
+        await this.environments.copyEnvironmentAsync({
+          projId: projectKey,
+          envId: environmentKey,
+          environmentCopy: body,
+          ...(wait === undefined ? {} : { wait }),
+        })
+      ).data;
+    } catch (err) {
+      this.handleApiError(err);
+    }
+  }
+
+  /** {@inheritDoc IEnvironmentsApi.getCopyResult} */
+  public async getCopyResult(
+    projectKey: string,
+    environmentKey: string,
+    taskId: string,
+    wait?: number,
+  ): Promise<TaskResultEnvironmentRead> {
+    this.validateCopyWait(wait);
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ORGANIZATION);
+    try {
+      return (
+        await this.environments.getCopyEnvironmentAsyncResult({
+          projId: projectKey,
+          envId: environmentKey,
+          taskId,
+          ...(wait === undefined ? {} : { wait }),
+        })
+      ).data;
+    } catch (err) {
+      this.handleApiError(err);
+    }
+  }
+
+  private validateCopyWait(wait: number | undefined): void {
+    if (
+      wait !== undefined &&
+      (typeof wait !== 'number' || !Number.isFinite(wait) || wait < 0 || wait > 60)
+    ) {
+      throw new RangeError(
+        'Environment copy wait must be a finite number from 0 through 60 seconds.',
+      );
     }
   }
 

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -683,4 +684,136 @@ test('input reachability handles reference cycles and ignores application exampl
     },
   };
   expect(() => prepareOpenApi(changed, supplement)).not.toThrow();
+});
+
+const taskModelName = 'TaskResult_EnvironmentRead_';
+test('corrects only the two nullable environment task fields from public examples', () => {
+  const prepared = prepareOpenApi(source, supplement);
+  const actual = structuredClone(prepared.components.schemas[taskModelName]);
+  const original = source.components.schemas[taskModelName];
+  for (const field of ['result', 'error']) {
+    const { allOf, ...metadata } = original.properties[field];
+    expect(actual.properties[field]).toEqual({
+      ...metadata,
+      anyOf: [{ allOf }, { type: 'null' }],
+    });
+    actual.properties[field] = structuredClone(original.properties[field]);
+  }
+  expect(actual).toEqual(original);
+  for (const [name, model] of Object.entries(source.components.schemas)) {
+    if (name.startsWith('TaskResult_') && name !== taskModelName)
+      expect(prepared.components.schemas[name]).toEqual(model);
+  }
+  expect(prepared.paths).toEqual({
+    ...source.paths,
+    '/v2/auth/elements_login_as': supplement.paths['/v2/auth/elements_login_as'],
+  });
+});
+test.each(['result', 'error', 'status', 'task_id', 'required', 'metadata'])(
+  'refuses environment task source drift at %s',
+  (field) => {
+    const changed = structuredClone(source);
+    const model = changed.components.schemas[taskModelName];
+    if (field === 'required') model.required.push('result');
+    else if (field === 'metadata') model.title = 'Changed upstream';
+    else delete model.properties[field];
+    expect(() => prepareOpenApi(changed, supplement)).toThrow(
+      /TaskResult_EnvironmentRead_ is stale/,
+    );
+  },
+);
+test.each(['direct', 'transitive', 'supplement', 'unused body', 'parameter'])(
+  'refuses a new %s input use of the environment copy task',
+  (kind) => {
+    const changed = structuredClone(source);
+    const extra = structuredClone(supplement);
+    const ref = { $ref: '#/components/schemas/TaskResult_EnvironmentRead_' };
+    changed.components.schemas.CopyInput = { type: 'object', properties: { value: ref } };
+    const schema = kind === 'transitive' ? { $ref: '#/components/schemas/CopyInput' } : ref;
+    const body = { content: { 'application/json': { schema } } };
+    if (kind === 'unused body') changed.components.requestBodies = { CopyInput: body };
+    else if (kind === 'parameter')
+      changed.paths['/copy-input'] = {
+        get: { parameters: [{ name: 'copy', in: 'query', schema }], responses: {} },
+      };
+    else
+      (kind === 'supplement' ? extra.paths : changed.paths)['/copy-input'] = {
+        post: { requestBody: body, responses: {} },
+      };
+    expect(() => prepareOpenApi(changed, extra)).toThrow(
+      /Environment copy task nullability reaches an input/,
+    );
+  },
+);
+
+test('the complete prepared source delta is exactly the two task null branches', () => {
+  const prepared = prepareOpenApi(source, supplement);
+  prepared.components.schemas.TaskResult_EnvironmentRead_ = structuredClone(
+    source.components.schemas.TaskResult_EnvironmentRead_,
+  );
+  expect(createHash('sha256').update(JSON.stringify(prepared)).digest('hex')).toBe(
+    '610c6f124d2e2bba92e607696957218e2a82f67164389234197faadafb8ff98b',
+  );
+});
+
+for (const name of ['TaskResult_EnvironmentRead_', 'AuditLogModel']) {
+  for (const form of ['trace', 'path item', 'path item trace']) {
+    test.each(['direct', 'transitive', 'supplement'])(
+      `rejects ${name} ${form} %s input references`,
+      (kind) => {
+        const changed = structuredClone(source),
+          extra = structuredClone(supplement);
+        const schemas = kind === 'supplement' ? extra.schemas : changed.components.schemas;
+        schemas.CopyInput = {
+          type: 'object',
+          properties: { value: { $ref: `#/components/schemas/${name}` } },
+        };
+        const schema = {
+          $ref: `#/components/schemas/${kind === 'transitive' ? 'CopyInput' : name}`,
+        };
+        const operation = { parameters: [{ name: 'copy', in: 'query', schema }], responses: {} };
+        const selected = kind === 'supplement' ? extra : changed;
+        const method = form.includes('trace') ? 'trace' : 'get';
+        if (form.startsWith('path item')) {
+          changed.components.pathItems = { CopyInput: { [method]: operation } };
+          selected.paths['/copy-input'] = { $ref: '#/components/pathItems/CopyInput' };
+        } else selected.paths['/copy-input'] = { [method]: operation };
+        expect(() => prepareOpenApi(changed, extra)).toThrow(/nullability reaches an input/);
+      },
+    );
+  }
+}
+
+test.each([
+  'https://example.test/path-item.json',
+  '#/components/pathItems/Missing',
+  '#/components/pathItems/Cycle',
+])('refuses unsupported or cyclic Path Item input reachability %s', (ref) => {
+  const changed = structuredClone(source);
+  changed.components.pathItems = { Cycle: { $ref: '#/components/pathItems/Cycle' } };
+  changed.paths['/path-ref'] = { $ref: ref };
+  expect(() => prepareOpenApi(changed, supplement)).toThrow(/Path Item reference/);
+});
+
+test('resolves safe chained Path Items and checks sibling parameters', () => {
+  const changed = structuredClone(source);
+  changed.components.pathItems = {
+    'escaped/item': {
+      get: {
+        parameters: [{ name: 'safe', in: 'query', schema: { type: 'string' } }],
+        responses: {},
+      },
+    },
+    Chain: { $ref: '#/components/pathItems/escaped~1item' },
+  };
+  changed.paths['/path-ref'] = { $ref: '#/components/pathItems/Chain' };
+  expect(() => prepareOpenApi(changed, supplement)).not.toThrow();
+  changed.paths['/path-ref'].parameters = [
+    {
+      name: 'unsafe',
+      in: 'query',
+      schema: { $ref: '#/components/schemas/TaskResult_EnvironmentRead_' },
+    },
+  ];
+  expect(() => prepareOpenApi(changed, supplement)).toThrow(/nullability reaches an input/);
 });

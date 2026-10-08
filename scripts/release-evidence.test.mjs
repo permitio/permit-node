@@ -483,7 +483,7 @@ test('requires mapping for every method and retained operation without erasing g
 
 test('extracts all actual SDK/source entries with case-independent hashing', async () => {
   const result = await expectedReleaseInventory(resolve(import.meta.dirname, '..'));
-  expect(result.inventory.methods).toHaveLength(178);
+  expect(result.inventory.methods).toHaveLength(180);
   expect(
     result.inventory.methods.filter((method) => method.name.startsWith('permit.api.userInvites.')),
   ).toHaveLength(6);
@@ -660,11 +660,11 @@ test('the committed plan preserves missing source-addition proof', async () => {
   const report = validateReleaseEvidence(evidence, expected);
   expect(report.exitCode).toBe(2);
   expect(report.incomplete).toContain(
-    'No reviewed case for control-plane POST /v2/projects/{proj_id}/envs/{env_id}/copy/async.',
+    'Missing case api.async-copy.new-target: Node 22.13.0/pinned.',
   );
   expect(report.incomplete).toContain('Missing local candidate cell: Node 24.21.0/current.');
   expect(report.incomplete.some((message) => message.startsWith('Missing case '))).toBe(true);
-  expect(evidence.inventory.methods).toHaveLength(178);
+  expect(evidence.inventory.methods).toHaveLength(180);
   expect(evidence.inventory.operations).toHaveLength(307);
 }, 20_000);
 
@@ -771,14 +771,26 @@ test('the real matrix accepts reviewed capability phases without granting fixtur
     ['api.audit-logs-ingestion-list', 'api'],
     ['api.audit-logs-ingestion-detail', 'api'],
   ];
+  const asyncPhases = [
+    ['wire.async-copy.esm', 'wire'],
+    ['wire.async-copy.commonjs', 'wire'],
+    ['api.async-copy-owned-fixtures', 'api'],
+    ['api.async-copy.new-target', 'api'],
+    ['api.async-copy.existing-target', 'api'],
+  ];
   const capabilityPhases = [
     ...urlPhases,
     ...localRolePhases,
     ...proxyPhases,
     ...apiKeyPhases,
     ...auditPhases,
+    ...asyncPhases,
   ];
   const phaseForWireCase = {
+    'wire.api.environments.copyAsync.esm': 'wire.async-copy.esm',
+    'wire.api.environments.copyAsync.commonjs': 'wire.async-copy.commonjs',
+    'wire.api.environments.getCopyResult.esm': 'wire.async-copy.esm',
+    'wire.api.environments.getCopyResult.commonjs': 'wire.async-copy.commonjs',
     'wire.checkUrl.esm': 'release.wire.enforcement.esm',
     'wire.checkUrl.commonjs': 'release.wire.enforcement.commonjs',
     'wire.permit.getLocalRoleAssignments.esm': 'wire.local-role-assignments-contract',
@@ -868,7 +880,7 @@ test('the real matrix accepts reviewed capability phases without granting fixtur
   );
   const report = validateReleaseEvidence(evidence, expected);
   expect(report.exitCode).toBe(2);
-  expect(report.incomplete).toHaveLength(6);
+  expect(report.incomplete).toHaveLength(4);
   expect(report.incomplete.every((message) => message.startsWith('No reviewed case for '))).toBe(
     true,
   );
@@ -881,6 +893,16 @@ test('the real matrix accepts reviewed capability phases without granting fixtur
   expect(plan.cases.some((entry) => entry.id === 'api.proxy-configs-owned-fixtures')).toBe(false);
   expect(plan.cases.some((entry) => entry.id === 'api.audit-logs-owned-fixtures')).toBe(false);
   expect(plan.cases.some((entry) => entry.id === 'pdp.audit-logs-decisions')).toBe(false);
+  expect(plan.cases.some((entry) => entry.id === 'api.async-copy-owned-fixtures')).toBe(false);
+  const fixtureOnly = structuredClone(evidence);
+  for (const run of fixtureOnly.runs) {
+    run.caseResults = run.caseResults.filter((entry) => !entry.id.startsWith('api.async-copy.'));
+  }
+  const fixtureReport = validateReleaseEvidence(fixtureOnly, expected);
+  expect(fixtureReport.exitCode).toBe(2);
+  expect(fixtureReport.incomplete).toContain(
+    'Missing case api.async-copy.new-target: Node 22.13.0/pinned.',
+  );
 
   for (const [id] of capabilityPhases) {
     const unregistered = structuredClone(expected);

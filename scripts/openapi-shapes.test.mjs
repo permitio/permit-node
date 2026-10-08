@@ -137,3 +137,46 @@ test.each([
     new RegExp(`${name}:${field}: expected required field`),
   );
 });
+
+test.each(['result', 'error'])('rejects loss of nullable environment task %s', async (field) => {
+  const path = temporaryModels();
+  const file = join(path, 'task-result-environment-read.ts');
+  writeFileSync(
+    file,
+    readFileSync(file, 'utf8').replace(new RegExp(`(${field}\\?: [^;]+) \\| null;`), '$1;'),
+  );
+  await expect(assertModelShapes(path, readdirSync(path))).rejects.toThrow(
+    new RegExp(`task-result-environment-read.ts:${field}: expected`),
+  );
+});
+test.each(['task_id', 'status', 'result', 'error'])(
+  'rejects changed environment task %s requiredness',
+  async (field) => {
+    const path = temporaryModels();
+    const file = join(path, 'task-result-environment-read.ts');
+    const original = readFileSync(file, 'utf8');
+    writeFileSync(
+      file,
+      ['result', 'error'].includes(field)
+        ? original.replace(`${field}?:`, `${field}:`)
+        : original.replace(`${field}:`, `${field}?:`),
+    );
+    await expect(assertModelShapes(path, readdirSync(path))).rejects.toThrow(
+      new RegExp(`task-result-environment-read.ts:${field}: expected .* field`),
+    );
+  },
+);
+test.each(['any', 'unknown', 'object', 'EnvironmentRead'])(
+  'rejects a collapsed environment task result %s',
+  async (type) => {
+    const path = temporaryModels();
+    const file = join(path, 'task-result-environment-read.ts');
+    writeFileSync(
+      file,
+      readFileSync(file, 'utf8').replace(/result\?: [^;]+;/, `result?: ${type};`),
+    );
+    await expect(assertModelShapes(path, readdirSync(path))).rejects.toThrow(
+      /task-result-environment-read.ts:result/,
+    );
+  },
+);

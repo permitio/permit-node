@@ -856,3 +856,47 @@ Grouped interfaces and the named input/result/error contracts used by public met
 from `permitio`. This includes `IRelationshipTuplesApi`, `IResourceInstancesApi`,
 `IResourceRelationsApi` and `IResourceRolesApi`. The reference links these interfaces from
 `IPermitApi` and its navigation. Generated-only internal files are not a supported deep-import API.
+
+## Background environment copies
+
+`permit.api.environments.copyAsync` submits a copy in the same project and returns the complete
+received task response. Pass the source project and source environment explicitly; `target_env`
+selects the destination. The existing `copy` method retains its synchronous environment response.
+
+```typescript
+const task = await permit.api.environments.copyAsync(
+  'project',
+  'source',
+  {
+    target_env: { new: { key: 'staging', name: 'Staging' } },
+    conflict_strategy: 'fail',
+    scope: { resources: { include: ['document'] } },
+  },
+  0,
+);
+
+const current = await permit.api.environments.getCopyResult('project', 'source', task.task_id, 0.5);
+if (current.status === 'success' && current.result) {
+  console.log(current.result.id, current.result.key);
+} else if (current.status === 'failure' && current.error) {
+  console.log(current.error.error_code);
+}
+```
+
+Both methods return once and preserve `task_id`, `status`, optional nullable `result` and `error`,
+and any additional response fields. Status is `processing`, `success`, `failure` or `cancelled`;
+a failure or cancelled task response is data, while HTTP and transport failures throw named SDK
+errors. A fast task may already be complete in the submission response. The SDK does not poll,
+replay submission or cancel the task. Keep the acknowledged task ID to request another result.
+
+The optional `wait` is a finite server wait in seconds from 0 through 60, including fractions.
+Omitting it omits the query parameter; explicit zero is forwarded. It is independent of the
+caller's Axios REST timeout in milliseconds. `Config.timeout` configures PDP/OPA requests.
+Expiration of a wait or caller transport timeout does not cancel an accepted background task.
+Submission requires a project or organization API key in the SDK preflight. Result reads use the
+existing environment-read preflight; the server still determines permission for either request.
+
+The [public background-task guide](https://docs.permit.io/api/background-tasks/) describes the
+wait and task responses. The
+[copy guide](https://github.com/permitio/docs/blob/6ec47cd3f04da6fa1bc9d48226ccbe781b304f77/docs/manage-your-account/creating-environments.mdx) describes destination,
+conflict strategy and scope filters.

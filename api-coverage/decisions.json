@@ -858,9 +858,9 @@
     },
     "control-plane GET /v2/projects/{proj_id}/envs/{env_id}/copy/async/{task_id}/result": {
       "action": "add",
-      "owner": "PER-16345",
-      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "owner": "PER-16951",
+      "reason": "The environments.getCopyResult facade exposes the published direct control-plane async copy operation with explicit source paths and complete nullable task responses.",
+      "source": "https://linear.app/permit/issue/PER-16951",
       "lifecycle": "GA"
     },
     "control-plane GET /v2/projects/{proj_id}/envs/{env_id}/stats": {
@@ -1572,9 +1572,9 @@
     },
     "control-plane POST /v2/projects/{proj_id}/envs/{env_id}/copy/async": {
       "action": "add",
-      "owner": "PER-16345",
-      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "owner": "PER-16951",
+      "reason": "The environments.copyAsync facade exposes the published direct control-plane async copy operation with explicit source paths and complete nullable task responses.",
+      "source": "https://linear.app/permit/issue/PER-16951",
       "lifecycle": "GA"
     },
     "control-plane POST /v2/projects/{proj_id}/envs/{env_id}/test_jwks": {

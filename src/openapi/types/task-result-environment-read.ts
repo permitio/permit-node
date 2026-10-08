@@ -29,9 +29,9 @@ export interface TaskResultEnvironmentRead {
   /**
    * The result of the task when the task finished.
    */
-  result?: EnvironmentRead;
+  result?: EnvironmentRead | null;
   /**
    * The error details when the task failed.
    */
-  error?: ErrorDetails;
+  error?: ErrorDetails | null;
 }

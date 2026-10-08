@@ -138,3 +138,12 @@ contracts before replacing `permit-api.json`. Update the capture date, hash and 
 needed. Run regeneration, the two-generation comparison, the historical fixture guard and
 `pnpm verify`. Review generated additions/removals and update the migration inventory. Do not
 update expectations merely to accept a degraded type.
+
+The environment copy task has a separate checked read correction. Exactly
+`TaskResult_EnvironmentRead_.result` and `.error` gain a null branch, preserving their original
+metadata, optionality, referenced models and required `task_id`/`status`. The official
+[background-task examples at permitio/docs 6ec47cd3f04da6fa1bc9d48226ccbe781b304f77](https://github.com/permitio/docs/blob/6ec47cd3f04da6fa1bc9d48226ccbe781b304f77/docs/api/background-tasks.mdx)
+show null result/error for processing and null result for failure. The captured snapshot and its
+provenance stay unchanged. The correction refuses source-shape drift or new direct/transitive
+request uses, including supplemental operations. Other task-result schemas are unchanged.
+Generated shape controls reject lost null branches, changed requiredness and collapsed types.

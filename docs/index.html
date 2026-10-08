@@ -511,6 +511,28 @@ GitHub Pages. For this unreleased candidate, run <code>pnpm run docs</code> and 
 from <code>permitio</code>. This includes <code>IRelationshipTuplesApi</code>, <code>IResourceInstancesApi</code>,
 <code>IResourceRelationsApi</code> and <code>IResourceRolesApi</code>. The reference links these interfaces from
 <code>IPermitApi</code> and its navigation. Generated-only internal files are not a supported deep-import API.</p>
+<h2 id="background-environment-copies" class="tsd-anchor-link">Background environment copies<a href="#background-environment-copies" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p><code>permit.api.environments.copyAsync</code> submits a copy in the same project and returns the complete
+received task response. Pass the source project and source environment explicitly; <code>target_env</code>
+selects the destination. The existing <code>copy</code> method retains its synchronous environment response.</p>
+<pre><code class="typescript"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">task</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">environments</span><span class="hl-1">.</span><span class="hl-2">copyAsync</span><span class="hl-1">(</span><br/><span class="hl-1">  </span><span class="hl-3">&#39;project&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-3">&#39;source&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  {</span><br/><span class="hl-1">    </span><span class="hl-0">target_env:</span><span class="hl-1"> { </span><span class="hl-0">new:</span><span class="hl-1"> { </span><span class="hl-0">key:</span><span class="hl-1"> </span><span class="hl-3">&#39;staging&#39;</span><span class="hl-1">, </span><span class="hl-0">name:</span><span class="hl-1"> </span><span class="hl-3">&#39;Staging&#39;</span><span class="hl-1"> } },</span><br/><span class="hl-1">    </span><span class="hl-0">conflict_strategy:</span><span class="hl-1"> </span><span class="hl-3">&#39;fail&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-0">scope:</span><span class="hl-1"> { </span><span class="hl-0">resources:</span><span class="hl-1"> { </span><span class="hl-0">include:</span><span class="hl-1"> [</span><span class="hl-3">&#39;document&#39;</span><span class="hl-1">] } },</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">  </span><span class="hl-8">0</span><span class="hl-1">,</span><br/><span class="hl-1">);</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">current</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">environments</span><span class="hl-1">.</span><span class="hl-2">getCopyResult</span><span class="hl-1">(</span><span class="hl-3">&#39;project&#39;</span><span class="hl-1">, </span><span class="hl-3">&#39;source&#39;</span><span class="hl-1">, </span><span class="hl-0">task</span><span class="hl-1">.</span><span class="hl-0">task_id</span><span class="hl-1">, </span><span class="hl-8">0.5</span><span class="hl-1">);</span><br/><span class="hl-5">if</span><span class="hl-1"> (</span><span class="hl-0">current</span><span class="hl-1">.</span><span class="hl-0">status</span><span class="hl-1"> === </span><span class="hl-3">&#39;success&#39;</span><span class="hl-1"> &amp;&amp; </span><span class="hl-0">current</span><span class="hl-1">.</span><span class="hl-0">result</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-2">log</span><span class="hl-1">(</span><span class="hl-0">current</span><span class="hl-1">.</span><span class="hl-0">result</span><span class="hl-1">.</span><span class="hl-0">id</span><span class="hl-1">, </span><span class="hl-0">current</span><span class="hl-1">.</span><span class="hl-0">result</span><span class="hl-1">.</span><span class="hl-0">key</span><span class="hl-1">);</span><br/><span class="hl-1">} </span><span class="hl-5">else</span><span class="hl-1"> </span><span class="hl-5">if</span><span class="hl-1"> (</span><span class="hl-0">current</span><span class="hl-1">.</span><span class="hl-0">status</span><span class="hl-1"> === </span><span class="hl-3">&#39;failure&#39;</span><span class="hl-1"> &amp;&amp; </span><span class="hl-0">current</span><span class="hl-1">.</span><span class="hl-0">error</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-2">log</span><span class="hl-1">(</span><span class="hl-0">current</span><span class="hl-1">.</span><span class="hl-0">error</span><span class="hl-1">.</span><span class="hl-0">error_code</span><span class="hl-1">);</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Both methods return once and preserve <code>task_id</code>, <code>status</code>, optional nullable <code>result</code> and <code>error</code>,
+and any additional response fields. Status is <code>processing</code>, <code>success</code>, <code>failure</code> or <code>cancelled</code>;
+a failure or cancelled task response is data, while HTTP and transport failures throw named SDK
+errors. A fast task may already be complete in the submission response. The SDK does not poll,
+replay submission or cancel the task. Keep the acknowledged task ID to request another result.</p>
+<p>The optional <code>wait</code> is a finite server wait in seconds from 0 through 60, including fractions.
+Omitting it omits the query parameter; explicit zero is forwarded. It is independent of the
+caller's Axios REST timeout in milliseconds. <code>Config.timeout</code> configures PDP/OPA requests.
+Expiration of a wait or caller transport timeout does not cancel an accepted background task.
+Submission requires a project or organization API key in the SDK preflight. Result reads use the
+existing environment-read preflight; the server still determines permission for either request.</p>
+<p>The <a href="https://docs.permit.io/api/background-tasks/">public background-task guide</a> describes the
+wait and task responses. The
+<a href="https://github.com/permitio/docs/blob/6ec47cd3f04da6fa1bc9d48226ccbe781b304f77/docs/manage-your-account/creating-environments.mdx">copy guide</a> describes destination,
+conflict strategy and scope filters.</p>
 </div></div>
 <div class="col-sidebar">
 <div class="page-menu">
@@ -552,7 +574,8 @@ from <code>permitio</code>. This includes <code>IRelationshipTuplesApi</code>, <
 <li><a href="#groups"><span>Groups</span></a></li>
 <li><a href="#tenant-membership-detailed-lists-and-pdp-refresh"><span>Tenant membership, detailed lists, and <wbr/>PDP refresh</span></a></li>
 <li><a href="#documentation"><span>Documentation</span></a></li>
-<li><a href="#api-reference"><span>API <wbr/>Reference</span></a></li></ul></div></details></div>
+<li><a href="#api-reference"><span>API <wbr/>Reference</span></a></li>
+<li><a href="#background-environment-copies"><span>Background environment copies</span></a></li></ul></div></details></div>
 <div class="site-menu">
 <nav class="tsd-navigation"><a href="modules.html">permitio</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">

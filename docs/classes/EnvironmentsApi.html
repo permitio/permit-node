@@ -13,7 +13,7 @@
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>The EnvironmentsApi class provides methods for interacting with Permit Environments.</p>
 </div></section>
-<section class="tsd-panel tsd-hierarchy" data-refl="338">
+<section class="tsd-panel tsd-hierarchy" data-refl="350">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><span class="tsd-signature-type">BasePermitApi</span>
@@ -24,7 +24,7 @@
 <ul class="tsd-hierarchy">
 <li><a href="../interfaces/IEnvironmentsApi.html" class="tsd-signature-type tsd-kind-interface">IEnvironmentsApi</a></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in src/api/environments.ts:171</li></ul></aside>
+<li>Defined in src/api/environments.ts:215</li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -37,6 +37,7 @@
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading tsd-anchor-link" id="methods">Methods<a href="#methods" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-index-list"><a href="#copy" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>copy</span></a>
+<a href="#copyasync" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>copy<wbr/>Async</span></a>
 <a href="#create" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create</span></a>
 <a href="#delete" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete</span></a>
 <a href="#ensureaccesslevel" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>ensure<wbr/>Access<wbr/>Level</span></a>
@@ -45,6 +46,7 @@
 <a href="#getapikey" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Api<wbr/>Key</span></a>
 <a href="#getbyid" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>By<wbr/>Id</span></a>
 <a href="#getbykey" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>By<wbr/>Key</span></a>
+<a href="#getcopyresult" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Copy<wbr/>Result</span></a>
 <a href="#getstats" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Stats</span></a>
 <a href="#list" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list</span></a>
 <a href="#update" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>update</span></a>
@@ -72,7 +74,7 @@
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">EnvironmentsApi</a></h4><aside class="tsd-sources">
 <p>Overrides BasePermitApi.constructor</p>
 <ul>
-<li>Defined in src/api/environments.ts:180</li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in src/api/environments.ts:224</li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -112,7 +114,36 @@ cancel the copy) when encountering the first conflict.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IEnvironmentsApi.html">IEnvironmentsApi</a>.<a href="../interfaces/IEnvironmentsApi.html#copy">copy</a></p>
 <ul>
-<li>Defined in src/api/environments.ts:392</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/environments.ts:436</li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="copyasync"><span>copy<wbr/>Async</span><a href="#copyasync" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="copyasync-1"><span class="tsd-kind-call-signature">copyAsync</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">projectKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">environmentKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">copyParams</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/EnvironmentCopy.html" class="tsd-signature-type tsd-kind-interface">EnvironmentCopy</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">wait</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TaskResultEnvironmentRead.html" class="tsd-signature-type tsd-kind-interface">TaskResultEnvironmentRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#copyasync-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Submits a background copy from the explicit source environment in the same project.
+The SDK requires a project or organization API key and does not replay submission or poll.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">projectKey</span>: <span class="tsd-signature-type">string</span></span>
+<div class="tsd-comment tsd-typography"><p>The source project key or ID.</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">environmentKey</span>: <span class="tsd-signature-type">string</span></span>
+<div class="tsd-comment tsd-typography"><p>The source environment key or ID, not the target environment.</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">copyParams</span>: <a href="../interfaces/EnvironmentCopy.html" class="tsd-signature-type tsd-kind-interface">EnvironmentCopy</a></span>
+<div class="tsd-comment tsd-typography"><p>Complete target, conflict strategy and optional copy scope.</p>
+</div></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">wait</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>Optional finite server wait in seconds, from 0 through 60, including fractions.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TaskResultEnvironmentRead.html" class="tsd-signature-type tsd-kind-interface">TaskResultEnvironmentRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>The complete task response; processing, failure and cancelled statuses remain data.</p>
+<aside class="tsd-sources">
+<p>Implementation of <a href="../interfaces/IEnvironmentsApi.html">IEnvironmentsApi</a>.<a href="../interfaces/IEnvironmentsApi.html#copyasync">copyAsync</a></p>
+<ul>
+<li>Defined in src/api/environments.ts:457</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="create"><span>create</span><a href="#create" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -141,7 +172,7 @@ cancel the copy) when encountering the first conflict.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IEnvironmentsApi.html">IEnvironmentsApi</a>.<a href="../interfaces/IEnvironmentsApi.html#create">create</a></p>
 <ul>
-<li>Defined in src/api/environments.ts:329</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/environments.ts:373</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="delete"><span>delete</span><a href="#delete" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -170,7 +201,7 @@ cancel the copy) when encountering the first conflict.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IEnvironmentsApi.html">IEnvironmentsApi</a>.<a href="../interfaces/IEnvironmentsApi.html#delete">delete</a></p>
 <ul>
-<li>Defined in src/api/environments.ts:421</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/environments.ts:535</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="ensureaccesslevel"><span>ensure<wbr/>Access<wbr/>Level</span><a href="#ensureaccesslevel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -244,7 +275,7 @@ Note that this check is not foolproof, and the API may still throw 401.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IEnvironmentsApi.html">IEnvironmentsApi</a>.<a href="../interfaces/IEnvironmentsApi.html#get">get</a></p>
 <ul>
-<li>Defined in src/api/environments.ts:228</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/environments.ts:272</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getapikey"><span>get<wbr/>Api<wbr/>Key</span><a href="#getapikey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -274,7 +305,7 @@ Must be requested with an organization-level api key.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IEnvironmentsApi.html">IEnvironmentsApi</a>.<a href="../interfaces/IEnvironmentsApi.html#getapikey">getApiKey</a></p>
 <ul>
-<li>Defined in src/api/environments.ts:305</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/environments.ts:349</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbyid"><span>get<wbr/>By<wbr/>Id</span><a href="#getbyid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -304,7 +335,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IEnvironmentsApi.html">IEnvironmentsApi</a>.<a href="../interfaces/IEnvironmentsApi.html#getbyid">getById</a></p>
 <ul>
-<li>Defined in src/api/environments.ts:267</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/environments.ts:311</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbykey"><span>get<wbr/>By<wbr/>Key</span><a href="#getbykey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -334,7 +365,36 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IEnvironmentsApi.html">IEnvironmentsApi</a>.<a href="../interfaces/IEnvironmentsApi.html#getbykey">getByKey</a></p>
 <ul>
-<li>Defined in src/api/environments.ts:253</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/environments.ts:297</li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getcopyresult"><span>get<wbr/>Copy<wbr/>Result</span><a href="#getcopyresult" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getcopyresult-1"><span class="tsd-kind-call-signature">getCopyResult</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">projectKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">environmentKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">taskId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">wait</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TaskResultEnvironmentRead.html" class="tsd-signature-type tsd-kind-interface">TaskResultEnvironmentRead</a><span class="tsd-signature-symbol">&gt;</span><a href="#getcopyresult-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Reads one acknowledged copy task using its explicit source project and environment.
+The SDK returns once, including a processing response; it does not poll or cancel the task.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">projectKey</span>: <span class="tsd-signature-type">string</span></span>
+<div class="tsd-comment tsd-typography"><p>The source project key or ID.</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">environmentKey</span>: <span class="tsd-signature-type">string</span></span>
+<div class="tsd-comment tsd-typography"><p>The source environment key or ID.</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">taskId</span>: <span class="tsd-signature-type">string</span></span>
+<div class="tsd-comment tsd-typography"><p>The acknowledged task ID.</p>
+</div></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">wait</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>Optional finite server wait in seconds, from 0 through 60, including fractions.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/TaskResultEnvironmentRead.html" class="tsd-signature-type tsd-kind-interface">TaskResultEnvironmentRead</a><span class="tsd-signature-symbol">&gt;</span></h4><p>The complete task response, preserving nullable result and error data.</p>
+<aside class="tsd-sources">
+<p>Implementation of <a href="../interfaces/IEnvironmentsApi.html">IEnvironmentsApi</a>.<a href="../interfaces/IEnvironmentsApi.html#getcopyresult">getCopyResult</a></p>
+<ul>
+<li>Defined in src/api/environments.ts:492</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getstats"><span>get<wbr/>Stats</span><a href="#getstats" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -363,7 +423,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IEnvironmentsApi.html">IEnvironmentsApi</a>.<a href="../interfaces/IEnvironmentsApi.html#getstats">getStats</a></p>
 <ul>
-<li>Defined in src/api/environments.ts:280</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/environments.ts:324</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="list"><span>list</span><a href="#list" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -392,7 +452,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IEnvironmentsApi.html">IEnvironmentsApi</a>.<a href="../interfaces/IEnvironmentsApi.html#list">list</a></p>
 <ul>
-<li>Defined in src/api/environments.ts:202</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/environments.ts:246</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="update"><span>update</span><a href="#update" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -424,7 +484,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IEnvironmentsApi.html">IEnvironmentsApi</a>.<a href="../interfaces/IEnvironmentsApi.html#update">update</a></p>
 <ul>
-<li>Defined in src/api/environments.ts:357</li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in src/api/environments.ts:401</li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -442,7 +502,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Constructors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Constructors</summary>
 <div><a href="#constructor"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Constructor"><use href="../assets/icons.svg#icon-512"></use></svg><span>constructor</span></a></div></details>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Methods</summary>
-<div><a href="#copy"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>copy</span></a><a href="#create"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create</span></a><a href="#delete"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete</span></a><a href="#ensureaccesslevel" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>ensure<wbr/>Access<wbr/>Level</span></a><a href="#ensurecontext" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>ensure<wbr/>Context</span></a><a href="#get"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get</span></a><a href="#getapikey"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Api<wbr/>Key</span></a><a href="#getbyid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>By<wbr/>Id</span></a><a href="#getbykey"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>By<wbr/>Key</span></a><a href="#getstats"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Stats</span></a><a href="#list"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list</span></a><a href="#update"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>update</span></a></div></details></div></details></div>
+<div><a href="#copy"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>copy</span></a><a href="#copyasync"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>copy<wbr/>Async</span></a><a href="#create"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create</span></a><a href="#delete"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete</span></a><a href="#ensureaccesslevel" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>ensure<wbr/>Access<wbr/>Level</span></a><a href="#ensurecontext" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>ensure<wbr/>Context</span></a><a href="#get"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get</span></a><a href="#getapikey"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Api<wbr/>Key</span></a><a href="#getbyid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>By<wbr/>Id</span></a><a href="#getbykey"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>By<wbr/>Key</span></a><a href="#getcopyresult"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Copy<wbr/>Result</span></a><a href="#getstats"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Stats</span></a><a href="#list"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list</span></a><a href="#update"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>update</span></a></div></details></div></details></div>
 <div class="site-menu">
 <nav class="tsd-navigation"><a href="../modules.html">permitio</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">

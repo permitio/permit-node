@@ -77,7 +77,7 @@
       "src/api/context.ts:PermitContextChangeError": "15512e4e2f0e61c047c9b8ce2f2ea571b355649ffcb8e7849952f5a361191c40",
       "src/api/context.ts:PermitContextError": "bd676798f4c3b1eae37b00bd62c9116792f7db977899800e9d8dda4c0568b6ee",
       "src/api/elements.ts:ElementsClient": "28b2c12fed9a0c22c3f340213dc0f5de0c750827e99eafff67ee7850a622c822",
-      "src/api/environments.ts:EnvironmentsApi": "e9cbc89b391cf15cb41034d3d6de045aae1672aa1d13a20e405afc9e9f515cae",
+      "src/api/environments.ts:EnvironmentsApi": "81f916b124b09b3b8f71da60d45068e165a6a396f2c4c666ecdbde62a448e7e2",
       "src/api/groups.ts:GroupsApi": "d971dc683695b0d5c5eea026e26f8aee661397231b5aab6d37eb1fef865ae2cc",
       "src/api/pdps.ts:PdpsApi": "017e9bcd53ea41fc029b18c453cbf349c731613c9a994f236cb4029e5a1ae4b4",
       "src/api/projects.ts:ProjectsApi": "6160a88ca2873cb03fdbbf74aa80af386412ecf951a9d55ecc208f391c0f38e1",
@@ -314,12 +314,14 @@
         "kind": "interface",
         "members": [
           "copy(projectKey: string, environmentKey: string, copyParams: EnvironmentCopy): Promise<EnvironmentRead>;",
+          "copyAsync(projectKey: string, environmentKey: string, copyParams: EnvironmentCopy, wait?: number): Promise<TaskResultEnvironmentRead>;",
           "create(projectKey: string, environmentData: EnvironmentCreate): Promise<EnvironmentRead>;",
           "delete(projectKey: string, environmentKey: string): Promise<void>;",
           "get(projectKey: string, environmentKey: string): Promise<EnvironmentRead>;",
           "getApiKey(projectKey: string, environmentKey: string): Promise<APIKeyRead>;",
           "getById(projectId: string, environmentId: string): Promise<EnvironmentRead>;",
           "getByKey(projectKey: string, environmentKey: string): Promise<EnvironmentRead>;",
+          "getCopyResult(projectKey: string, environmentKey: string, taskId: string, wait?: number): Promise<TaskResultEnvironmentRead>;",
           "getStats(projectKey: string, environmentKey: string): Promise<EnvironmentStats>;",
           "list(params: IListEnvironments): Promise<EnvironmentRead[]>;",
           "update(projectKey: string, environmentKey: string, environmentData: EnvironmentUpdate): Promise<EnvironmentRead>;"
@@ -21148,15 +21150,18 @@
       "src/api/context.ts:.stateOf": "4711b172517c99a05d4919f90d475b9139ff2c0ba62a12cbbee06e47c91f2a84",
       "src/api/elements.ts:ElementsClient.loginAs": "3efbdf39bab053e511dfd2fde512c431310ed675fd7ded69a1a9888258d2852d",
       "src/api/environments.ts:EnvironmentsApi.copy": "6519b8d09579eac752575c60f0a19b69190980012371e711dcc1e45ce8b97d98",
+      "src/api/environments.ts:EnvironmentsApi.copyAsync": "5754cc392161a7ee2cdf149b0ccbf62e5d3476b9a3b2e09696d2e2cda42f47f0",
       "src/api/environments.ts:EnvironmentsApi.create": "b64b4374a61662177122ddc9d4474692e54cecf608e45ff46d59df8be2201589",
       "src/api/environments.ts:EnvironmentsApi.delete": "5baece8a473ee28a1db88471cc6f8be440a5ff38de7197f566c71218675c859f",
       "src/api/environments.ts:EnvironmentsApi.get": "0074e3a621a5f9764eead8c15841e93a97f4ec376dc4ce730b2c18cf5bd6d163",
       "src/api/environments.ts:EnvironmentsApi.getApiKey": "cfecc6c896bec44207e3e67126282207d33081c5f17253308d324b57a8189ee6",
       "src/api/environments.ts:EnvironmentsApi.getById": "658d3d51f81f60fc5247f8551191e7871869f305683c28f7f64cc983ddbe4159",
       "src/api/environments.ts:EnvironmentsApi.getByKey": "07c30e1ac48454b55af44a5a5e3b6bee15a1a5d3627a6c46cf100c7d543be870",
+      "src/api/environments.ts:EnvironmentsApi.getCopyResult": "f7fc38145d02a5e3646a03458289cfb311a55460bae4b751cca429cffd60379e",
       "src/api/environments.ts:EnvironmentsApi.getStats": "229276989397998a57aa326fe39b77419955a1e219ec8d4c3c854847e4825f19",
       "src/api/environments.ts:EnvironmentsApi.list": "e4c2966344c73da509933e552f34e80d56036dba85339a6382338911c9e63d44",
       "src/api/environments.ts:EnvironmentsApi.update": "ca53dce1644f9d25819c009a4d195991bdde1b864fe934cdcb5e2125240853c5",
+      "src/api/environments.ts:EnvironmentsApi.validateCopyWait": "2b95057e953b8031502c2fef1d2dd2c5e47c382a1f1c9744cac69eafa318afe4",
       "src/api/groups.ts:GroupsApi.assignRole": "4699e6a2e173a84d023d6d6b35fd5a4fc79c2099314d2e1c2296813c87713b03",
       "src/api/groups.ts:GroupsApi.assignUser": "0ae2d94d4975c4a617c24626ca6e686c11bfd0d8b90982626dc59b44ab459588",
       "src/api/groups.ts:GroupsApi.create": "53e869985f197804f878ad0fc59a4a3d08c39b49e0080fc6f35e33c5c246083e",
@@ -22302,6 +22307,57 @@
           "returns": "Promise<EnvironmentRead>"
         }
       },
+      "permit.api.environments.copyAsync": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(projectKey: string, environmentKey: string, copyParams: EnvironmentCopy, wait?: number | undefined): Promise<TaskResultEnvironmentRead>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "EnvironmentsApi.copyEnvironmentAsync",
+            "method": "POST",
+            "path": "/v2/projects/{proj_id}/envs/{env_id}/copy/async",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "projectKey",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "environmentKey",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "copyParams",
+              "optional": false,
+              "type": "EnvironmentCopy"
+            },
+            {
+              "initializer": null,
+              "name": "wait",
+              "optional": true,
+              "type": "number"
+            }
+          ],
+          "returns": "Promise<TaskResultEnvironmentRead>"
+        }
+      },
       "permit.api.environments.create": {
         "deprecated": false,
         "factsProxy": false,
@@ -22530,6 +22586,57 @@
             }
           ],
           "returns": "Promise<EnvironmentRead>"
+        }
+      },
+      "permit.api.environments.getCopyResult": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(projectKey: string, environmentKey: string, taskId: string, wait?: number | undefined): Promise<TaskResultEnvironmentRead>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "EnvironmentsApi.getCopyEnvironmentAsyncResult",
+            "method": "GET",
+            "path": "/v2/projects/{proj_id}/envs/{env_id}/copy/async/{task_id}/result",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "projectKey",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "environmentKey",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "taskId",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "wait",
+              "optional": true,
+              "type": "number"
+            }
+          ],
+          "returns": "Promise<TaskResultEnvironmentRead>"
         }
       },
       "permit.api.environments.getStats": {
@@ -30724,8 +30831,8 @@
         "extends": [],
         "kind": "interface",
         "members": [
-          "error?: ErrorDetails;",
-          "result?: EnvironmentRead;",
+          "error?: ErrorDetails | null;",
+          "result?: EnvironmentRead | null;",
           "status: TaskStatus;",
           "task_id: string;"
         ]

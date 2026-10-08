@@ -57,7 +57,7 @@ test('accounts for complete source denominators while leaving parity and backend
   expect(report.sharedTarget.status).toBe('UNAVAILABLE');
   expect(report.realBackend.status).toBe('NOT_MEASURED');
   expect(report.operations).toHaveLength(307);
-  expect(report.counts.publicHttpMethods).toBe(173);
+  expect(report.counts.publicHttpMethods).toBe(175);
   expect(report.operations.filter((op) => op.source === 'control-plane')).toHaveLength(263);
   expect(report.operations.filter((op) => op.source === 'pdp-container')).toHaveLength(34);
   expect(report.operations.filter((op) => op.source === 'pdp-cloud')).toHaveLength(10);
@@ -1119,3 +1119,25 @@ test('changed facade destinations require an intentional contract review', () =>
     true,
   );
 }, 20_000);
+
+test('exposes the two async copy operations directly with explicit source paths', () => {
+  const report = coverageReport(evidence());
+  for (const [name, generatedMethod, verb] of [
+    ['copyAsync', 'copyEnvironmentAsync', 'POST'],
+    ['getCopyResult', 'getCopyEnvironmentAsyncResult', 'GET'],
+  ]) {
+    const method = sdk.methods.find((entry) => entry.name === `permit.api.environments.${name}`);
+    expect(method.factsProxy).toBe(false);
+    expect(
+      method.routes
+        .filter((route) => !route.supporting)
+        .map((route) => [route.generatedMethod, route.method]),
+    ).toEqual([[`EnvironmentsApi.${generatedMethod}`, verb]]);
+    const operation = report.operations.find((entry) =>
+      entry.methods.some((candidate) => candidate.name === method.name),
+    );
+    expect(operation.coverage).toBe('exposed');
+    expect(operation.decision.owner).toBe('PER-16951');
+    expect(operation.decision.action).toBe('add');
+  }
+});
