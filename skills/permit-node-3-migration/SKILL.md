@@ -15,17 +15,19 @@ remains unpublished; confirm the official release before changing production req
 ## Establish scope
 
 Inspect the customer's installed version, package/lock/runtime pins, Permit imports, constructor
-options, grouped/flat calls, results, errors, transport hooks and authorization tests. Keep CJS and
-ESM as appropriate. Follow the customer's repository instructions and existing authorization.
-Use supported grouped APIs; do not introduce compatibility shims or new public context APIs.
+options, grouped/flat calls, results, errors, transport hooks and authorization tests. Use Node
+`>=22.13.0`, including later major versions. Keep CJS and ESM as appropriate. Follow the customer's
+repository instructions and existing authorization. Use supported grouped APIs; do not introduce
+compatibility shims or new public context APIs.
 
 ## Install the scanner prerequisite
 
-The copied skill directory is self-contained. Its manifest/lock explicitly pin TypeScript 6.0.3,
-the JavaScript compiler API. This is a customer tool dependency, not a Permit runtime dependency.
-It does not use the customer's TypeScript or the SDK workspace's compiler tools. Install only this
-locked prerequisite with lifecycle scripts disabled. Installation needs registry access; scanning
-does not. The SDK package includes this directory; copy it to your agent's skills directory first.
+The copied skill directory is self-contained. Its manifest/lock explicitly pin TypeScript 6.0.3
+for the JavaScript compiler API and semver 7.8.5 for runtime range validation. These are customer
+tool dependencies, not Permit runtime dependencies. The scanner does not use the customer's
+TypeScript, semver or the SDK workspace's compiler tools. Install only these locked prerequisites
+with lifecycle scripts disabled. Installation needs registry access; scanning does not. The SDK
+package includes this directory; copy it to your agent's skills directory first.
 For Codex, use `$CODEX_HOME/skills/permit-node-3-migration` (usually `~/.codex/skills/...`).
 
 ```bash

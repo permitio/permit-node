@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 
+import { gte, valid } from 'semver';
+
 import { compareStrings, digest, extractSdk } from '#scripts/api-contracts.mjs';
 import { inspectContracts } from '#scripts/check-api-contracts.mjs';
 
@@ -8,7 +10,11 @@ const statuses = ['PASSED', 'FAILED', 'INVALID', 'NOT_RUN'];
 const levels = ['package', 'wire', 'mock-pdp', 'api', 'pdp'];
 const sha256 = /^[a-f0-9]{64}$/;
 const stableId = /^[a-z][A-Za-z0-9]*(?:[.-][A-Za-z0-9]+)*$/;
-const nodeVersion = /^(22|24)\.\d+\.\d+$/;
+const supportedNodeVersion = (value) =>
+  typeof value === 'string' &&
+  /^\d+\.\d+\.\d+$/u.test(value) &&
+  valid(value) !== null &&
+  gte(value, '22.13.0');
 const changeId = /^[A-Z][1-9]\d*$/;
 const object = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
 const integer = (value) => Number.isSafeInteger(value) && value >= 0;
@@ -141,7 +147,7 @@ function validateSchema(evidence) {
         id: label,
         artifactSha256: hash,
         nativeReportSha256: hash,
-        node: (v) => typeof v === 'string' && nodeVersion.test(v),
+        node: supportedNodeVersion,
         target: oneOf(['offline', 'local']),
         pdp: object,
         phaseResults: array,
@@ -256,10 +262,10 @@ function equal(actual, expected, message) {
 function validateRequirements(expected) {
   const plan = expected.requirements;
   requireValid(
-    strings(plan.nodes, (v) => typeof v === 'string' && nodeVersion.test(v)) &&
+    strings(plan.nodes, supportedNodeVersion) &&
       plan.nodes.includes('22.13.0') &&
       plan.nodes.includes('24.0.0'),
-    'Reviewed runtime matrix must include both supported floors.',
+    'Reviewed runtime matrix must use supported Node versions and retain both test floors.',
   );
   requireValid(
     ids(plan.runIds) && plan.runIds.length > 0 && ids(plan.phaseIds) && plan.phaseIds.length > 0,

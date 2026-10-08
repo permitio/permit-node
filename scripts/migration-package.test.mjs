@@ -100,13 +100,16 @@ afterAll(async () => {
 });
 
 describe('packed customer migration tooling', () => {
-  it('ships an isolated compiler without adding SDK runtime dependencies', async () => {
+  it('ships isolated scanner prerequisites without adding SDK runtime dependencies', async () => {
     const manifest = JSON.parse(await readFile(join(skill, 'package.json'), 'utf8'));
-    expect(manifest.dependencies).toEqual({ typescript: '6.0.3' });
+    expect(manifest.dependencies).toEqual({ semver: '7.8.5', typescript: '6.0.3' });
     const require = createRequire(pathToFileURL(join(skill, 'package.json')));
     const compiler = require.resolve('typescript');
     expect(compiler.startsWith(join(await realpath(skill), 'node_modules'))).toBe(true);
+    const semver = require.resolve('semver');
+    expect(semver.startsWith(join(await realpath(skill), 'node_modules'))).toBe(true);
     expect(require('typescript').version).toBe('6.0.3');
+    expect(require('semver/package.json').version).toBe('7.8.5');
     const lock = await readFile(join(skill, 'pnpm-lock.yaml'), 'utf8');
     expect(lock).toContain('y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38');
     const sdk = JSON.parse(await readFile(join(consumer, 'node_modules/permitio/package.json')));
@@ -161,6 +164,49 @@ describe('packed customer migration tooling', () => {
     expect(report.status).toBe('COMPLETE');
     expect(report.findings).toEqual([]);
     expect(report.scanned).toEqual(['consumer.cts', 'consumer.mts', 'package.json']);
+  });
+
+  it.each([
+    'FROM node AS final',
+    'from --platform=linux/amd64 node AS final',
+    `FROM node@sha256:${'a'.repeat(64)} AS final`,
+  ])('reviews unversioned official Node stages using the copied scanner: %s', async (stage) => {
+    const customer = await mkdtemp(join(directory, 'docker-customer-'));
+    await writeFile(join(customer, 'customer.ts'), 'const value = 1;');
+    await writeFile(join(customer, 'Dockerfile'), `FROM node:26.11.0 AS build\n${stage}\n`);
+    const result = spawnSync(process.execPath, [join(skill, 'scripts/scan.mjs'), customer], {
+      cwd: directory,
+      encoding: 'utf8',
+    });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toBe('');
+    const report = JSON.parse(result.stdout);
+    expect(report.status).toBe('COMPLETE');
+    expect(report.exitCode).toBe(1);
+    expect(report.failures).toEqual([]);
+    expect(report.findings).toEqual([
+      expect.objectContaining({ id: 'C1', classification: 'REVIEW_REQUIRED' }),
+    ]);
+  });
+
+  it('keeps a prior Node-named stage alias clean using the copied scanner', async () => {
+    const customer = await mkdtemp(join(directory, 'docker-customer-'));
+    await writeFile(join(customer, 'customer.ts'), 'const value = 1;');
+    await writeFile(
+      join(customer, 'Dockerfile'),
+      'FROM node:26.11.0 AS node\nFROM --platform=linux/amd64 node AS final\n',
+    );
+    const result = spawnSync(process.execPath, [join(skill, 'scripts/scan.mjs'), customer], {
+      cwd: directory,
+      encoding: 'utf8',
+    });
+    expect(result.status).toBe(0);
+    expect(result.stderr).toBe('');
+    const report = JSON.parse(result.stdout);
+    expect(report.status).toBe('COMPLETE');
+    expect(report.exitCode).toBe(0);
+    expect(report.failures).toEqual([]);
+    expect(report.findings).toEqual([]);
   });
 
   it('fails clearly when the copied compiler prerequisite is absent', async () => {

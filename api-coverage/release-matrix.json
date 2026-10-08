@@ -1,5 +1,5 @@
 {
-  "nodes": ["22.13.0", "22.23.3", "24.0.0", "24.21.0"],
+  "nodes": ["22.13.0", "22.23.3", "24.0.0", "24.21.0", "26.11.0"],
   "pdps": [
     {
       "role": "pinned",
@@ -2569,6 +2569,10 @@
     "candidate.local.node24.21.0",
     "candidate.offline.node24.21.0",
     "baseline.local.node24.21.0",
-    "baseline.offline.node24.21.0"
+    "baseline.offline.node24.21.0",
+    "candidate.local.node26.11.0",
+    "candidate.offline.node26.11.0",
+    "baseline.local.node26.11.0",
+    "baseline.offline.node26.11.0"
   ]
 }

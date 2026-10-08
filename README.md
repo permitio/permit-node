@@ -8,8 +8,9 @@ Node.js client library for the Permit.io full-stack permissions platform.
 
 ## Supported runtimes
 
-Node.js 22.13.0 or newer in the 22.x line, and Node.js 24.x are supported.
-CI tests the minimum versions, 22.13.0 and 24.0.0. The package provides both
+Node.js 22.13.0 or newer is supported, including later major versions.
+CI retains the 22.13.0 and 24.0.0 floors and tests current releases of Node 22, 24 and 26.
+The package provides both
 CommonJS (`require`) and ES module (`import`) entry points.
 
 ## Installation
@@ -60,7 +61,8 @@ LCOV and JSON summaries are saved in `coverage/`; this measured scope has no per
 The shared candidate workflow builds `permitio@3.0.0` from the committed version, validates the
 package metadata and file allowlist, and records its archive hash and source identity. Required
 quality checks cover lint, strict types, local unit/tooling tests, generated contracts, workflow
-security, and external packed ESM/CommonJS customers on Node 22.13.0 and 24.0.0. The customer
+security, and external packed ESM/CommonJS customers on Node 22.13.0, 24.0.0, and current
+Node 22, 24 and 26 releases. The customer
 fixtures also compile with TypeScript 6 and 7 under Node16, NodeNext and Bundler resolution.
 Both runtime entry points expose named exports; the ESM declaration facade preserves shared
 class identity with CommonJS. Dependency security scans the same archive on both Node floors.

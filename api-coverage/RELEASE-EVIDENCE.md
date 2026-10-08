@@ -113,8 +113,9 @@ only the routes, methods, and successful assertions actually exercised inside it
 Case assertion totals cannot exceed their containing phase's assertions. Cases must reference an
 existing phase of the same level, and PASSED cases require a successful containing phase.
 
-The matrix records Node 22.13.0 and 24.0.0 floors plus 22.23.3 and 24.21.0 current patches resolved
-on 2026-09-30 from [Node's official release index](https://nodejs.org/dist/index.json). Pinned and
+The SDK supports Node >=22.13.0, including later major versions. The matrix retains Node 22.13.0
+and 24.0.0 floors plus current Node 22.23.3, 24.21.0 and 26.11.0 releases verified on 2026-10-08
+from [Node's official release index](https://nodejs.org/dist/index.json). Pinned and
 current PDP roles share one image digest in this dated snapshot. One execution can fulfill both
 roles only when the reviewed digest and resolution date match. This is not ongoing monitoring of
 moving tags; refresh and review the matrix before relying on a newer runtime or image.

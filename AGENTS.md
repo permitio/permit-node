@@ -1,6 +1,6 @@
 # Working on the Permit Node SDK
 
-Use Node 22.13+ in the 22.x line or Node 24, and the exact pnpm version in `package.json`.
+Use Node 22.13.0 or newer, and the exact pnpm version in `package.json`.
 Run `pnpm verify` before proposing a change. This runs the pinned prek checks, builds both
 published entry points, and runs local unit, module-import, and tooling tests.
 

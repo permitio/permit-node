@@ -2,6 +2,7 @@ import { lstat, readdir, readFile, realpath } from 'node:fs/promises';
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
+import { minVersion, satisfies, subset, valid, validRange } from 'semver';
 
 const FLAT = {
   listUsers: '(await api.users.list()).data',
@@ -306,14 +307,21 @@ async function metadata(full, name, report) {
       (!data.engines || typeof data.engines !== 'object' || Array.isArray(data.engines))
     )
       throw new Error('Expected engines to be an object.');
-    if (data.engines?.node !== undefined && data.engines.node !== '^22.13.0 || ^24.0.0') {
+    const nodeRange = data.engines?.node;
+    if (
+      nodeRange !== undefined &&
+      (typeof nodeRange !== 'string' ||
+        validRange(nodeRange) === null ||
+        minVersion(nodeRange) === null ||
+        !subset(nodeRange, '>=22.13.0'))
+    ) {
       finding(report, {
         id: 'C1',
         path: name,
         line: 1,
         column: 1,
         classification: 'REVIEW_REQUIRED',
-        action: 'Verify Node ^22.13.0 or ^24.0.0 support.',
+        action: 'Require Node >=22.13.0 or a supported subset of that range.',
         observed: data.engines.node,
       });
     }
@@ -329,14 +337,42 @@ async function runtimePin(full, name, report) {
   try {
     const value = (await readFile(full, 'utf8')).trim();
     report.scanned.push(name);
-    const pins = name.endsWith('Dockerfile')
-      ? [...value.matchAll(/^FROM\s+node:([^\s]+)/gmu)].map((match) => match[1])
-      : name.endsWith('.tool-versions')
-        ? [...value.matchAll(/^nodejs\s+([^\s]+)/gmu)].map((match) => match[1])
-        : [value];
+    const pins = [];
+    if (name.endsWith('Dockerfile')) {
+      const aliases = new Set();
+      for (const stage of value.matchAll(/^\s*FROM\s+([^\r\n]+)$/gimu)) {
+        let source = stage[1].trim();
+        const platform = /^--platform=([^\s]+)\s+/u.exec(source);
+        if (platform) {
+          if (!/^[a-z][a-z0-9_]*\/[a-z0-9_]+(?:\/[a-z0-9_]+)?$/u.test(platform[1])) {
+            pins.push(source);
+            continue;
+          }
+          source = source.slice(platform[0].length);
+        }
+        const instruction = /^([^\s]+)(?:\s+AS\s+([A-Za-z0-9_.-]+))?(?:\s+#.*)?$/iu.exec(source);
+        const image = instruction?.[1];
+        if (!image || image.startsWith('--') || /[$\\]/u.test(image)) {
+          pins.push(source);
+          continue;
+        }
+        const node = /^(?:docker\.io\/)?(?:library\/)?node(?::(.*)|@.*)?$/u.exec(image);
+        if (node && !aliases.has(image.toLowerCase())) pins.push(node[1] ?? image);
+        if (instruction[2]) aliases.add(instruction[2].toLowerCase());
+      }
+    } else if (name.endsWith('.tool-versions')) {
+      for (const pin of value.matchAll(/^nodejs\s+([^\s]+)/gmu)) pins.push(pin[1]);
+    } else pins.push(value);
     for (const pin of pins) {
-      const match = /^v?(\d+)\.(\d+)\.(\d+)(?:[-@].*)?$/u.exec(pin);
-      const allowed = match && (match[1] === '24' || (match[1] === '22' && Number(match[2]) >= 13));
+      const match = /^v?(\d+\.\d+\.\d+)([^@]*)(?:@(sha256:[a-f0-9]{64}))?$/u.exec(pin);
+      const dockerSuffix =
+        /^-(?:alpine(?:\d+(?:\.\d+)*)?|(?:bookworm|bullseye|trixie)(?:-slim)?|slim)$/u;
+      const allowedSuffix =
+        match &&
+        (name.endsWith('Dockerfile')
+          ? match[2] === '' || dockerSuffix.test(match[2])
+          : match[2] === '' && match[3] === undefined);
+      const allowed = allowedSuffix && valid(match[1]) !== null && satisfies(match[1], '>=22.13.0');
       if (!allowed)
         finding(report, {
           id: 'C1',

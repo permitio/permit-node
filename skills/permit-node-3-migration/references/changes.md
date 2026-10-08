@@ -17,10 +17,11 @@ After 3.0 is released, update the direct `permitio` requirement and regenerate t
 with your package manager. Check every workspace, deployment image and independent consumer. Review
 transitive pins rather than assuming a successful install migrated application behavior.
 
-### C1 — Supported Node families
+### C1 — Supported Node versions
 
-Use Node `^22.13.0 || ^24.0.0`. The former `>=10` requirement no longer applies. This range does not
-promise Node 23, 25, or all later majors. Check CI, containers, deployment providers and local pins.
+Use Node `>=22.13.0`, including later major versions. The former `>=10` requirement no longer
+applies. Check CI, containers, deployment providers and local pins. Validation retains the 22.13.0
+and 24.0.0 floors and exercises current releases of Node 22, 24 and 26.
 
 ### C2 — Imports and modules
 

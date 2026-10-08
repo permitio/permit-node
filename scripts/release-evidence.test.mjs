@@ -20,7 +20,7 @@ const sharedCase = {
   operationKeys: ['control-plane POST /v2/facts/{proj_id}/{env_id}/users'],
 };
 
-function fixture() {
+function fixture(nodes = ['22.13.0', '24.0.0']) {
   const inventory = {
     methods: [{ name: 'permit.api.users.create', caseIds: [sharedCase.id] }],
     operations: [
@@ -56,8 +56,8 @@ function fixture() {
     integrity: `sha512-${'A'.repeat(86)}==`,
   };
   const requirements = {
-    nodes: ['22.13.0', '24.0.0'],
-    runIds: ['baseline-22.13.0', 'candidate-22.13.0', 'baseline-24.0.0', 'candidate-24.0.0'],
+    nodes,
+    runIds: nodes.flatMap((node) => [`baseline-${node}`, `candidate-${node}`]),
     phaseIds: ['api.users'],
     pdps: ['pinned', 'current'].map((role) => ({
       role,
@@ -601,3 +601,35 @@ test('the committed plan preserves missing source-addition proof', async () => {
   expect(evidence.inventory.methods).toHaveLength(157);
   expect(evidence.inventory.operations).toHaveLength(307);
 }, 20_000);
+
+test.each(['23.0.0', '25.0.0', '26.11.0', '27.0.0'])(
+  'accepts complete reviewed evidence on supported later Node %s',
+  (node) => {
+    const { evidence, expected } = fixture(['22.13.0', '24.0.0', node]);
+    expect(validateReleaseEvidence(evidence, expected).exitCode).toBe(0);
+  },
+);
+
+test.each([
+  '20.0.0',
+  '22.12.9',
+  '22.13.0-rc.1',
+  '26.11.0-rc.1',
+  '26.11.0+build',
+  '026.11.0',
+  '26.11',
+  '9007199254740993.0.0',
+])('rejects unsupported or noncanonical Node identities: %s', (node) => {
+  const { evidence, expected } = fixture(['22.13.0', '24.0.0', node]);
+  expect(validateReleaseEvidence(evidence, expected).exitCode).toBe(2);
+  evidence.runs = evidence.runs.filter((run) => run.node !== node);
+  expect(validateReleaseEvidence(evidence, expected).exitCode).toBe(2);
+});
+
+test('requires complete execution evidence in the current Node 26 cell', () => {
+  const { evidence, expected } = fixture(['22.13.0', '24.0.0', '26.11.0']);
+  evidence.runs = evidence.runs.filter((run) => run.node !== '26.11.0');
+  const report = validateReleaseEvidence(evidence, expected);
+  expect(report.exitCode).toBe(2);
+  expect(report.incomplete).toContain('Missing local candidate cell: Node 26.11.0/current.');
+});

@@ -261,7 +261,7 @@ describe('customer migration scanner', () => {
         }),
         '.node-version': '22.12.0',
         Dockerfile: 'FROM node:20.0.0-alpine',
-        '.tool-versions': 'nodejs 23.0.0',
+        '.tool-versions': 'nodejs 21.0.0',
       }),
     );
     expect(report.findings.filter((item) => item.id === 'P1')).toHaveLength(1);
@@ -274,13 +274,178 @@ describe('customer migration scanner', () => {
         'customer.ts': `${construct} p.api.users.get('u');`,
         'package.json': JSON.stringify({
           dependencies: { permitio: '^3.0.0' },
-          engines: { node: '^22.13.0 || ^24.0.0' },
+          engines: { node: '>=22.13.0' },
         }),
         '.nvmrc': '22.13.0',
         Dockerfile: 'FROM node:24.0.0-alpine',
       }),
     );
     expect(report.exitCode).toBe(0);
+  });
+
+  it.each(['^22.13.0 || ^24.0.0', '^23.0.0', '>=25.0.0', '26.x', '>=22.13.0 <27'])(
+    'accepts customer engine ranges contained in the supported Node range: %s',
+    async (node) => {
+      const report = await scan(
+        await project({
+          'customer.ts': 'const value = 1;',
+          'package.json': JSON.stringify({ engines: { node } }),
+        }),
+      );
+      expect(report.exitCode).toBe(0);
+      expect(report.findings).toEqual([]);
+    },
+  );
+
+  it.each(['>=22', '22.x', '>=20 || >=25', '<22.13.0', '*', 'not-a-range', 26])(
+    'requires review for engines admitting unsupported or unspecified Node versions: %s',
+    async (node) => {
+      const report = await scan(
+        await project({
+          'customer.ts': 'const value = 1;',
+          'package.json': JSON.stringify({ engines: { node } }),
+        }),
+      );
+      expect(report.exitCode).toBe(1);
+      expect(report.findings).toContainEqual(
+        expect.objectContaining({ id: 'C1', classification: 'REVIEW_REQUIRED' }),
+      );
+    },
+  );
+
+  it.each(['22.13.0', '23.0.0', '25.0.0', '26.11.0', '27.0.0'])(
+    'accepts literal pins across supported Node majors: %s',
+    async (node) => {
+      const report = await scan(
+        await project({
+          'customer.ts': 'const value = 1;',
+          '.node-version': node,
+          '.nvmrc': `v${node}`,
+          '.tool-versions': `nodejs ${node}`,
+          Dockerfile: `FROM node:${node}-alpine`,
+        }),
+      );
+      expect(report.exitCode).toBe(0);
+      expect(report.findings).toEqual([]);
+    },
+  );
+
+  it.each(['22.12.9', '20.0.0', '026.0.0', '26', '26.0.0-rc.1'])(
+    'requires review for unsupported or ambiguous literal runtime pins: %s',
+    async (node) => {
+      const report = await scan(
+        await project({ 'customer.ts': 'const value = 1;', '.node-version': node }),
+      );
+      expect(report.exitCode).toBe(1);
+      expect(report.findings).toContainEqual(expect.objectContaining({ id: 'C1' }));
+    },
+  );
+
+  it.each([
+    '22.13.0-rc.1',
+    '26.11.0-beta.1',
+    '26.11.0-alpine-rc.1',
+    '26.11.0-custom',
+    '26.11.0@sha256:invalid',
+    `22.13.0-rc.1@sha256:${'a'.repeat(64)}`,
+  ])('requires review for prerelease or ambiguous Docker tags: %s', async (tag) => {
+    const report = await scan(
+      await project({ 'customer.ts': 'const value = 1;', Dockerfile: `FROM node:${tag}` }),
+    );
+    expect(report.exitCode).toBe(1);
+    expect(report.findings).toContainEqual(expect.objectContaining({ id: 'C1' }));
+  });
+
+  it.each([
+    '22.13.0',
+    '26.11.0-alpine',
+    '26.11.0-alpine3.23',
+    '26.11.0-bookworm',
+    '26.11.0-bookworm-slim',
+    '26.11.0-trixie-slim',
+    '26.11.0-slim',
+    `26.11.0@sha256:${'a'.repeat(64)}`,
+    `26.11.0-alpine@sha256:${'b'.repeat(64)}`,
+  ])('accepts stable Docker tags with recognized distributions and digests: %s', async (tag) => {
+    const report = await scan(
+      await project({ 'customer.ts': 'const value = 1;', Dockerfile: `FROM node:${tag}` }),
+    );
+    expect(report.exitCode).toBe(0);
+    expect(report.findings).toEqual([]);
+  });
+
+  it.each([
+    'FROM --platform=linux/arm64 node:20.0.0-alpine AS final',
+    'from --platform=linux/amd64 node:22.12.9',
+    'FROM --platform=$BUILDPLATFORM node:26.11.0',
+    'FROM --platform=${TARGETPLATFORM} node:26.11.0',
+    'FROM --platform=linux/arm64 ${BASE_IMAGE} AS final',
+    'FROM --platform=linux/arm64 node:${NODE_VERSION}',
+    'FROM --platform linux/arm64 node:26.11.0',
+    'FROM --platform=linux/arm64 docker.io/library/node:20.0.0',
+  ])('reviews every unsupported or ambiguous Docker stage: %s', async (stage) => {
+    const report = await scan(
+      await project({
+        'customer.ts': 'const value = 1;',
+        Dockerfile: `FROM node:26.11.0 AS build\n${stage}\n`,
+      }),
+    );
+    expect(report.exitCode).toBe(1);
+    expect(report.findings).toContainEqual(expect.objectContaining({ id: 'C1' }));
+  });
+
+  it('accepts supported literal Node pins across platform-qualified Docker stages', async () => {
+    const report = await scan(
+      await project({
+        'customer.ts': 'const value = 1;',
+        Dockerfile: `FROM --platform=linux/arm64 node:22.13.0-alpine AS build
+from --platform=linux/amd64 docker.io/library/node:26.11.0-bookworm-slim AS final`,
+      }),
+    );
+    expect(report.exitCode).toBe(0);
+    expect(report.findings).toEqual([]);
+  });
+
+  it.each([
+    'FROM node AS final',
+    'from library/node AS final',
+    'FROM docker.io/node AS final',
+    'FROM --platform=linux/amd64 docker.io/library/node AS final',
+    `FROM node@sha256:${'a'.repeat(64)} AS final`,
+    `from --platform=linux/arm64 node@sha256:${'a'.repeat(64)} AS final`,
+    `FROM library/node@sha256:${'a'.repeat(64)} AS final`,
+    `FROM --platform=linux/amd64 docker.io/library/node@sha256:${'a'.repeat(64)} AS final`,
+    'FROM node: AS final',
+    'FROM --platform=linux/amd64 node@ AS final',
+  ])('reviews official Node stages without a literal stable version: %s', async (stage) => {
+    const report = await scan(
+      await project({
+        'customer.ts': 'const value = 1;',
+        Dockerfile: `FROM node:26.11.0 AS build\n${stage}\n`,
+      }),
+    );
+    expect(report.status).toBe('COMPLETE');
+    expect(report.exitCode).toBe(1);
+    expect(report.failures).toEqual([]);
+    expect(report.findings).toEqual([
+      expect.objectContaining({ id: 'C1', classification: 'REVIEW_REQUIRED' }),
+    ]);
+  });
+
+  it.each([
+    'FROM node:26.11.0 AS node\nFROM node AS final',
+    'FROM node:26.11.0 AS Node\nfrom --platform=linux/arm64 node AS final',
+    'FROM node:26.11.0 AS build\nFROM build AS final',
+    'FROM node:26.11.0 AS build\nFROM alpine:3.23 AS final',
+    'FROM node:26.11.0 AS build\nFROM example/node:latest AS final',
+  ])('keeps prior stage aliases and non-Node images clean: %s', async (dockerfile) => {
+    const report = await scan(
+      await project({ 'customer.ts': 'const value = 1;', Dockerfile: dockerfile }),
+    );
+    expect(report.status).toBe('COMPLETE');
+    expect(report.exitCode).toBe(0);
+    expect(report.failures).toEqual([]);
+    expect(report.findings).toEqual([]);
   });
 
   it('makes partial parse failure incomplete even when migration findings exist', async () => {

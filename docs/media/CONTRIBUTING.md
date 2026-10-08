@@ -162,7 +162,8 @@ The shared candidate security jobs scan the same versioned archive as the packed
 Failed, skipped, cancelled or missing candidate gates prevent the publisher from running.
 npm Trusted Publishing requires Node >=22.14.0 and npm >=11.5.1; the release job validates
 the npm bundled with its Node 24 runner.
-The supported SDK Node floor remains 22.13.0.
+The SDK supports Node >=22.13.0, including later major versions. Local behavior and packed
+consumer CI retain the 22.13.0 and 24.0.0 floors and test current Node 22, 24 and 26 releases.
 
 Dependabot groups runtime and tooling minor/patch updates, uses `increase`, and waits seven days
 (fourteen for majors). Its published support matrix currently lists pnpm through version 10;
@@ -175,7 +176,7 @@ security gate does not depend on Dependabot and continues to scan all four trees
 The `SDK required checks` aggregate requires the shared candidate, the explicit trusted/fork backend
 path and cleanup to succeed. Candidate gates require lint, strict types, public docs,
 unit/tooling tests, workflow checks, generated contracts, the versioned archive,
-both supported-floor packed consumers
+the floor and current-release packed consumers
 and dependency security. Fork and Dependabot runs report backend coverage as UNAVAILABLE and run
 local checks; same-repository backend runs fail when their required secret is missing. Failed
 cleanup attempts every owned environment deletion, then fails the aggregate rather than warning

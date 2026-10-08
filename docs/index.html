@@ -13,8 +13,9 @@
 <h1 id="permitio-client-for-nodejs" class="tsd-anchor-link"><a href="http://Permit.io">Permit.io</a> client for Node.js<a href="#permitio-client-for-nodejs" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1>
 <p>Node.js client library for the <a href="http://Permit.io">Permit.io</a> full-stack permissions platform.</p>
 <h2 id="supported-runtimes" class="tsd-anchor-link">Supported runtimes<a href="#supported-runtimes" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
-<p>Node.js 22.13.0 or newer in the 22.x line, and Node.js 24.x are supported.
-CI tests the minimum versions, 22.13.0 and 24.0.0. The package provides both
+<p>Node.js 22.13.0 or newer is supported, including later major versions.
+CI retains the 22.13.0 and 24.0.0 floors and tests current releases of Node 22, 24 and 26.
+The package provides both
 CommonJS (<code>require</code>) and ES module (<code>import</code>) entry points.</p>
 <h2 id="installation" class="tsd-anchor-link">Installation<a href="#installation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <pre><code><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-0">install</span><span class="hl-1"> </span><span class="hl-0">permitio</span>
@@ -50,7 +51,8 @@ LCOV and JSON summaries are saved in <code>coverage/</code>; this measured scope
 <p>The shared candidate workflow builds <code>permitio@3.0.0</code> from the committed version, validates the
 package metadata and file allowlist, and records its archive hash and source identity. Required
 quality checks cover lint, strict types, local unit/tooling tests, generated contracts, workflow
-security, and external packed ESM/CommonJS customers on Node 22.13.0 and 24.0.0. The customer
+security, and external packed ESM/CommonJS customers on Node 22.13.0, 24.0.0, and current
+Node 22, 24 and 26 releases. The customer
 fixtures also compile with TypeScript 6 and 7 under Node16, NodeNext and Bundler resolution.
 Both runtime entry points expose named exports; the ESM declaration facade preserves shared
 class identity with CommonJS. Dependency security scans the same archive on both Node floors.</p>

@@ -207,11 +207,22 @@ settings:
 importers:
   .:
     dependencies:
+      semver:
+        specifier: 7.8.5
+        version: 7.8.5
       typescript:
         specifier: 6.0.3
         version: 6.0.3
 
 packages:
+  semver@7.8.5:
+    resolution:
+      {
+        integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==,
+      }
+    engines: { node: '>=10' }
+    hasBin: true
+
   typescript@6.0.3:
     resolution:
       {
@@ -221,4 +232,6 @@ packages:
     hasBin: true
 
 snapshots:
+  semver@7.8.5: {}
+
   typescript@6.0.3: {}
