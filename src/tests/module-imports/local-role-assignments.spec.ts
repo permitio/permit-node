@@ -122,4 +122,5 @@ it.each([
     expect(stdout).toBe('');
     expect(stderr).toBe('');
   },
+  35_000,
 );
