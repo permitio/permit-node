@@ -81,7 +81,6 @@
   },
   "devDependencies": {
     "@j178/prek": "0.5.4",
-    "@openapitools/openapi-generator-cli": "2.41.0",
     "@permitio/compiler-tools": "workspace:*",
     "@types/lodash": "4.17.25",
     "@types/node": "22.20.4",

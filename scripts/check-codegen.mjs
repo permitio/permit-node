@@ -12,6 +12,8 @@ const fixture = join(root, 'src/tests/codegen/fixtures/openapi-3.1.0.json');
 let output;
 let pin = '';
 try {
+  if (!existsSync(join(root, 'node_modules')))
+    throw new Error('Node dependencies unavailable; run pnpm install first.');
   if (!existsSync(fixture))
     throw new Error('Fixture spec not found; restore the committed fixture.');
   pin = JSON.parse(readFileSync(join(root, 'openapitools.json'), 'utf8'))['generator-cli']?.version;

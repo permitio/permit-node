@@ -18,8 +18,10 @@ pnpm verify
 `generator.json` is the single configuration for production generation and the historical
 fixture guard. `openapitools.json` pins generator 7.25.0. Both commands verify its recorded JAR
 SHA-256 before invoking the generator. If the archive is missing, they download that exact version
-from Maven Central and verify its bytes before caching or execution. Both commands validate the
-prepared schema; neither skips validation.
+from Maven Central and verify its bytes before caching or execution. The verified archive is cached at
+`node_modules/.cache/openapi-generator/7.25.0.jar` and invoked directly with Java 17, using
+`JAVA_HOME/bin/java` when `JAVA_HOME` is set or `java` from `PATH` otherwise. Both commands
+validate the prepared schema; neither skips validation.
 The normalizer applies strict compiler-compatible imports and annotations before Oxfmt. Generation
 checks all model shapes and the TypeScript 7 SDK build before replacing the previous generated tree.
 A failure leaves the previous tree intact. Only generated TypeScript files are installed, so stale

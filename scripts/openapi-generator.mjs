@@ -164,7 +164,7 @@ export async function verifyGeneratorArtifact(root) {
   if (pin !== provenance.generator || !/^[a-f0-9]{64}$/.test(provenance.generatorSha256 ?? '')) {
     throw new Error('Generator pin and reviewed artifact provenance disagree.');
   }
-  const jar = join(root, `node_modules/@openapitools/openapi-generator-cli/versions/${pin}.jar`);
+  const jar = join(root, `node_modules/.cache/openapi-generator/${pin}.jar`);
   const expected = provenance.generatorSha256;
   function verify(bytes) {
     if (createHash('sha256').update(bytes).digest('hex') !== expected) {
@@ -200,15 +200,15 @@ export async function verifyGeneratorArtifact(root) {
  */
 export async function generateOpenApi({ root, input, output }) {
   const config = generatorOptions(root);
-  const wrapper = join(root, 'node_modules/@openapitools/openapi-generator-cli/main.js');
-  if (!existsSync(wrapper))
-    throw new Error('OpenAPI generator unavailable; run pnpm install first.');
   const pin = await verifyGeneratorArtifact(root);
+  const jar = join(root, `node_modules/.cache/openapi-generator/${pin}.jar`);
+  const java = process.env.JAVA_HOME ? join(process.env.JAVA_HOME, 'bin/java') : 'java';
   mkdirSync(dirname(output), { recursive: true });
   const result = spawnSync(
-    process.execPath,
+    java,
     [
-      wrapper,
+      '-jar',
+      relative(root, jar),
       'generate',
       '-i',
       relative(root, input),
@@ -227,11 +227,37 @@ export async function generateOpenApi({ root, input, output }) {
     },
   );
   const log = `${result.stdout ?? ''}${result.stderr ?? ''}`;
-  if (result.status !== 0) {
-    throw new Error(
-      `OpenAPI generator ${pin} failed (${result.signal ?? `exit ${result.status ?? result.error?.code}`}).\n${log}`,
-      { cause: result.error },
-    );
+  if (result.error || result.status !== 0) {
+    const detail = result.error?.code ?? result.signal ?? `exit ${result.status}`;
+    let message = `OpenAPI generator ${pin} failed (${detail}).`;
+    if (result.error?.code === 'ENOENT') {
+      message =
+        `Cannot execute Java at ${java} (ENOENT); ` +
+        'install Java 17 and check JAVA_HOME or PATH.';
+    } else if (result.error?.code === 'EACCES') {
+      message =
+        `Cannot execute Java at ${java} (EACCES); ` +
+        'check executable permissions and JAVA_HOME or PATH.';
+    } else if (result.error?.code === 'ENOBUFS') {
+      message =
+        `OpenAPI generator ${pin} exceeded its 10 MiB output limit (ENOBUFS); ` +
+        'inspect the captured diagnostics and reduce generator output.';
+    }
+    const diagnosticLimit = 16 * 1024;
+    for (const [stream, output] of [
+      ['stdout', result.stdout ?? ''],
+      ['stderr', result.stderr ?? ''],
+    ]) {
+      if (output.length === 0) continue;
+      const diagnostic =
+        output.length > diagnosticLimit
+          ? output.slice(0, diagnosticLimit / 2) +
+            '\n[output truncated]\n' +
+            output.slice(-diagnosticLimit / 2)
+          : output;
+      message += `\n${stream}:\n${diagnostic}`;
+    }
+    throw new Error(message, { cause: result.error });
   }
   for (const warning of log.split(/\r?\n/).filter((line) => /\b(?:WARN|ERROR)\b/.test(line))) {
     if (/\bERROR\b/.test(warning) || !KNOWN_WARNINGS.some((known) => warning.endsWith(known)))

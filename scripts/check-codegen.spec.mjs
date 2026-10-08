@@ -74,13 +74,14 @@ const cleanTypes = {
 };
 
 // Only the external generator is mocked; the CLI, filesystem and type checks are real.
-const wrapper = `#!/usr/bin/env node
+const javaFixture = `#!${process.execPath}
 const fs = require('fs');
 const path = require('path');
 const config = JSON.parse(fs.readFileSync('mock-generator.json'));
 fs.writeFileSync('invocation.json', JSON.stringify({args: process.argv.slice(2),
   cwd: process.cwd(), pwd: process.env.PWD, initCwd: process.env.INIT_CWD}));
 if (config.warning) console.warn(config.warning);
+if (config.stderr) console.error(config.stderr);
 if (config.exit) process.exit(config.exit);
 if (config.signal) process.kill(process.pid, config.signal);
 const out = process.argv[process.argv.indexOf('-o') + 1];
@@ -107,7 +108,7 @@ if (!config.noManifest) {
 function setup(changes = {}) {
   const dir = realpathSync(mkdtempSync(join(tmpdir(), 'codegen test ')));
   onTestFinished(() => rmSync(dir, { recursive: true, force: true }));
-  for (const name of ['scripts', 'openapi', 'src/tests/codegen/fixtures', 'node_modules/.bin']) {
+  for (const name of ['scripts', 'openapi', 'src/tests/codegen/fixtures', 'mock-java/bin']) {
     mkdirSync(join(dir, name), { recursive: true });
   }
   for (const file of [
@@ -126,10 +127,10 @@ function setup(changes = {}) {
     join(dir, 'node_modules/@permitio/compiler-tools'),
     'dir',
   );
-  const wrapperDir = join(dir, 'node_modules/@openapitools/openapi-generator-cli');
-  mkdirSync(join(wrapperDir, 'versions'), { recursive: true });
+  const cache = join(dir, 'node_modules/.cache/openapi-generator');
+  mkdirSync(cache, { recursive: true });
   const jar = 'reviewed fixture JAR';
-  writeFileSync(join(wrapperDir, 'versions/7.25.0.jar'), jar);
+  writeFileSync(join(cache, '7.25.0.jar'), jar);
   writeFileSync(
     join(dir, 'openapi/provenance.json'),
     JSON.stringify({
@@ -137,8 +138,7 @@ function setup(changes = {}) {
       generatorSha256: createHash('sha256').update(jar).digest('hex'),
     }),
   );
-  writeFileSync(join(wrapperDir, 'main.js'), wrapper, { mode: 0o755 });
-  symlinkSync(join(wrapperDir, 'main.js'), join(dir, 'node_modules/.bin/openapi-generator-cli'));
+  writeFileSync(join(dir, 'mock-java/bin/java'), javaFixture, { mode: 0o755 });
   writeFileSync(join(dir, 'package.json'), '{"type":"commonjs"}');
   writeFileSync(join(dir, 'openapitools.json'), '{"generator-cli":{"version":"7.25.0"}}');
   copyFileSync(
@@ -153,7 +153,13 @@ function setup(changes = {}) {
 function run(dir, env = {}) {
   const result = spawnSync(process.execPath, [join(dir, 'scripts/check-codegen.mjs')], {
     cwd: tmpdir(),
-    env: { ...process.env, PWD: tmpdir(), INIT_CWD: tmpdir(), ...env },
+    env: {
+      ...process.env,
+      PWD: tmpdir(),
+      INIT_CWD: tmpdir(),
+      JAVA_HOME: join(dir, 'mock-java'),
+      ...env,
+    },
     encoding: 'utf8',
   });
   return { ...result, output: result.stdout + result.stderr };
@@ -177,6 +183,11 @@ test('uses the repository pin from another directory and relative paths with spa
   const invocation = JSON.parse(readFileSync(join(dir, 'invocation.json'), 'utf8'));
   expect(invocation.pwd).toBe(dir);
   expect(invocation.initCwd).toBe(dir);
+  expect(invocation.args.slice(0, 3)).toEqual([
+    '-jar',
+    'node_modules/.cache/openapi-generator/7.25.0.jar',
+    'generate',
+  ]);
   for (const flag of ['-i', '-o']) {
     expect(invocation.args[invocation.args.indexOf(flag) + 1].includes(' ')).toBe(false);
   }
@@ -185,15 +196,40 @@ test('uses the repository pin from another directory and relative paths with spa
   ).toStrictEqual([]);
 });
 
-test('invokes the Node entry point without requiring a platform-specific bin shim', () => {
+test('uses Java from PATH when JAVA_HOME is unset', () => {
   const dir = setup();
-  rmSync(join(dir, 'node_modules/.bin/openapi-generator-cli'));
-  expect(run(dir).status).toBe(0);
+  const result = run(dir, {
+    JAVA_HOME: '',
+    PATH: join(dir, 'mock-java/bin') + ':' + process.env.PATH,
+  });
+  expect(result.status, result.output).toBe(0);
+  expect(existsSync(join(dir, 'invocation.json'))).toBe(true);
+});
+
+test('reports a missing Java executable with an actionable fix', () => {
+  const dir = setup();
+  rmSync(join(dir, 'mock-java/bin/java'));
+  fails(dir, /Cannot execute Java.*ENOENT.*install Java 17.*JAVA_HOME or PATH/);
+  expect(existsSync(join(dir, 'invocation.json'))).toBe(false);
+});
+
+test('a failed Java invocation retains its exit status and diagnostic', () => {
+  const dir = setup({ exit: 17, stderr: 'fixture Java failure' });
+  fails(dir, /exit 17/);
+  expect(run(dir).output).toMatch(/fixture Java failure/);
+});
+
+test('changed artifact provenance prevents Java execution', () => {
+  const dir = setup();
+  const file = join(dir, 'openapi/provenance.json');
+  const provenance = JSON.parse(readFileSync(file, 'utf8'));
+  writeFileSync(file, JSON.stringify({ ...provenance, generator: '7.26.0' }));
+  fails(dir, /pin and reviewed artifact provenance disagree/);
+  expect(existsSync(join(dir, 'invocation.json'))).toBe(false);
 });
 
 for (const [label, file, pattern] of [
   ['fixture', 'src/tests/codegen/fixtures/openapi-3.1.0.json', /fixture.*not found/i],
-  ['wrapper', 'node_modules/@openapitools/openapi-generator-cli/main.js', /pnpm install/],
   ['pin', 'openapitools.json', /openapitools.json/],
 ]) {
   test(`reports a missing ${label} without blaming generator compatibility`, () => {
@@ -358,21 +394,21 @@ for (const [label, source, pattern] of [
 
 test('rejects model files missing from the completion manifest', () => {
   const dir = setup();
-  const path = join(dir, 'node_modules/@openapitools/openapi-generator-cli/main.js');
-  writeFileSync(path, wrapper + "\nfs.writeFileSync(path.join(types, 'unlisted.ts'), '');");
+  const path = join(dir, 'mock-java/bin/java');
+  writeFileSync(path, javaFixture + "\nfs.writeFileSync(path.join(types, 'unlisted.ts'), '');");
   fails(dir, /differ from the completion manifest/);
 });
 
 test('rejects a missing model directory after reported completion', () => {
   const dir = setup();
-  const path = join(dir, 'node_modules/@openapitools/openapi-generator-cli/main.js');
-  writeFileSync(path, wrapper + '\nfs.rmSync(types, {recursive: true});');
+  const path = join(dir, 'mock-java/bin/java');
+  writeFileSync(path, javaFixture + '\nfs.rmSync(types, {recursive: true});');
   fails(dir, /Incomplete generation/);
 });
 
 test('reports pnpm install when all node dependencies are missing', () => {
   const dir = setup();
-  rmSync(join(dir, 'node_modules/@openapitools'), { recursive: true });
+  rmSync(join(dir, 'node_modules'), { recursive: true });
   const result = run(dir);
   expect(result.status).toBe(1);
   expect(result.output).toMatch(/pnpm install/);
@@ -404,10 +440,10 @@ test('rejects changed tuple output instead of applying a stale repair', () => {
 
 test('rejects changed routing output instead of applying a stale compatibility correction', () => {
   const dir = setup();
-  const path = join(dir, 'node_modules/@openapitools/openapi-generator-cli/main.js');
+  const path = join(dir, 'mock-java/bin/java');
   writeFileSync(
     path,
-    wrapper +
+    javaFixture +
       "\nfs.writeFileSync(require('path').join(out, 'common.ts'), 'export const changed = true;');",
   );
   fails(dir, /Generated request routing changed/);
@@ -415,20 +451,17 @@ test('rejects changed routing output instead of applying a stale compatibility c
 
 test('a mismatched cached JAR never executes the generator', () => {
   const dir = setup();
-  writeFileSync(
-    join(dir, 'node_modules/@openapitools/openapi-generator-cli/versions/7.25.0.jar'),
-    'wrong archive',
-  );
+  writeFileSync(join(dir, 'node_modules/.cache/openapi-generator/7.25.0.jar'), 'wrong archive');
   fails(dir, /Generator JAR hash differs/);
   expect(existsSync(join(dir, 'invocation.json'))).toBe(false);
 });
 
 test('rejects changed generic return code instead of concealing its type', () => {
   const dir = setup();
-  const path = join(dir, 'node_modules/@openapitools/openapi-generator-cli/main.js');
+  const path = join(dir, 'mock-java/bin/java');
   writeFileSync(
     path,
-    wrapper +
+    javaFixture +
       "\nconst file = require('path').join(out, 'common.ts'); fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace('as Promise<R>', 'as any'));",
   );
   fails(dir, /Generated Axios return type changed/);

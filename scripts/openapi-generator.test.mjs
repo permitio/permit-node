@@ -1,11 +1,12 @@
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 
 import { expect, onTestFinished, test, vi } from 'vitest';
 
 import {
+  generateOpenApi,
   generatorOptions,
   repairPropertyDescriptions,
   verifyGeneratorArtifact,
@@ -16,6 +17,7 @@ function fixture() {
   onTestFinished(() => {
     rmSync(root, { recursive: true, force: true });
     vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
   });
   const bytes = Buffer.from('verified test archive');
   mkdirSync(join(root, 'openapi'));
@@ -30,7 +32,7 @@ function fixture() {
       generatorSha256: createHash('sha256').update(bytes).digest('hex'),
     }),
   );
-  const jar = join(root, 'node_modules/@openapitools/openapi-generator-cli/versions/7.25.0.jar');
+  const jar = join(root, 'node_modules/.cache/openapi-generator/7.25.0.jar');
   return { root, jar, bytes };
 }
 
@@ -72,6 +74,72 @@ test('download transport failure retains operation context and its cause', async
     cause,
   });
   expect(existsSync(jar)).toBe(false);
+});
+
+test('a missing Java executable preserves the spawn failure as its cause', async () => {
+  const { root, jar, bytes } = fixture();
+  mkdirSync(dirname(jar), { recursive: true });
+  writeFileSync(jar, bytes);
+  writeFileSync(join(root, 'openapi/generator.json'), JSON.stringify(reviewedConfig));
+  vi.stubEnv('JAVA_HOME', join(root, 'missing java'));
+  await expect(
+    generateOpenApi({ root, input: join(root, 'input.json'), output: join(root, 'output') }),
+  ).rejects.toMatchObject({
+    message: expect.stringMatching(/Cannot execute Java.*ENOENT.*install Java 17/),
+    cause: expect.objectContaining({ code: 'ENOENT' }),
+  });
+});
+
+test('Java output overflow retains bounded stdout and stderr with its cause', async () => {
+  const { root, jar, bytes } = fixture();
+  mkdirSync(dirname(jar), { recursive: true });
+  writeFileSync(jar, bytes);
+  writeFileSync(join(root, 'openapi/generator.json'), JSON.stringify(reviewedConfig));
+  const javaHome = join(root, 'fixture java');
+  mkdirSync(join(javaHome, 'bin'), { recursive: true });
+  writeFileSync(
+    join(javaHome, 'bin/java'),
+    `#!${process.execPath}
+const fs = require('node:fs');
+fs.writeFileSync('java-executed', 'yes');
+fs.writeSync(2, 'stderr before overflow\\n');
+fs.writeSync(1, 'stdout before overflow\\n');
+fs.writeSync(1, Buffer.alloc(12 * 1024 * 1024, 'x'));
+`,
+    { mode: 0o755 },
+  );
+  vi.stubEnv('JAVA_HOME', javaHome);
+  const failure = await generateOpenApi({
+    root,
+    input: join(root, 'input.json'),
+    output: join(root, 'output'),
+  }).catch((error) => error);
+  expect(readFileSync(join(root, 'java-executed'), 'utf8')).toBe('yes');
+  expect(failure).toBeInstanceOf(Error);
+  expect(failure).toMatchObject({ cause: expect.objectContaining({ code: 'ENOBUFS' }) });
+  expect(failure.message).toMatch(/generator 7\.25\.0 exceeded its 10 MiB output limit/);
+  expect(failure.message).toContain('stdout before overflow');
+  expect(failure.message).toContain('stderr before overflow');
+  expect(failure.message).toContain('[output truncated]');
+  expect(failure.message.length).toBeLessThan(34 * 1024);
+  expect(failure.message).not.toContain('install Java');
+});
+
+test('a Java permission failure preserves its cause and names executable permissions', async () => {
+  const { root, jar, bytes } = fixture();
+  mkdirSync(dirname(jar), { recursive: true });
+  writeFileSync(jar, bytes);
+  writeFileSync(join(root, 'openapi/generator.json'), JSON.stringify(reviewedConfig));
+  const javaHome = join(root, 'fixture java');
+  mkdirSync(join(javaHome, 'bin'), { recursive: true });
+  writeFileSync(join(javaHome, 'bin/java'), 'not executable', { mode: 0o644 });
+  vi.stubEnv('JAVA_HOME', javaHome);
+  await expect(
+    generateOpenApi({ root, input: join(root, 'input.json'), output: join(root, 'output') }),
+  ).rejects.toMatchObject({
+    message: expect.stringMatching(/Cannot execute Java.*EACCES.*check executable permissions/),
+    cause: expect.objectContaining({ code: 'EACCES' }),
+  });
 });
 
 test('rejects changed pin provenance before download', async () => {
