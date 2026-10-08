@@ -16,7 +16,7 @@ import type { OPALabels } from './opalabels';
 import type { OPAMetrics } from './opametrics';
 
 export interface OPAEngineDecisionLog {
-  engine?: OPAEngineDecisionLogEngineEnum;
+  engine?: OPAEngineDecisionLogEngineEnum | null;
   decision_id: string;
   labels: OPALabels;
   timestamp: string;

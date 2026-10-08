@@ -13,8 +13,8 @@
 export interface TenantObj {
   id: string;
   key: string;
-  name?: string;
-  attributes?: object;
+  name?: string | null;
+  attributes?: object | null;
   created_at: string;
   updated_at: string;
 }

@@ -13,7 +13,7 @@
 export interface ProjectObj {
   id: string;
   key: string;
-  name?: string;
+  name?: string | null;
   created_at: string;
   updated_at: string;
 }

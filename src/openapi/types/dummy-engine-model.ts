@@ -17,6 +17,6 @@ import type { Engine } from './engine';
  * dummy engine class in case we couldn\'t parse the log but we didn\'t want to drop it
  */
 export interface DummyEngineModel {
-  engine?: Engine;
-  timestamp?: string;
+  engine?: Engine | null;
+  timestamp?: string | null;
 }

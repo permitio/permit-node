@@ -65,8 +65,9 @@
   "scope": "Reviewed Node AST evidence, not a shared target",
   "sdk": {
     "authoredClassShapes": {
-      "src/api/api-client.ts:ApiClient": "39e24aec998cd3eeab0264ee82db57b623ed021ea6a06f6c37e6261548ba201b",
+      "src/api/api-client.ts:ApiClient": "df687bd8d749332a4f3b7ea096cf6d9147be47002e03c027c4a7b737dc130cd5",
       "src/api/api-keys.ts:ApiKeysApi": "cbd94ec83da3b52872cd370bae2e28cb39d11dbdb53f4bbc07114eb9d0193954",
+      "src/api/audit-logs.ts:AuditLogsApi": "b4cb11d373c4a133e5ab9873f130ac8d2a1997479e7cbf6f9af9284983dd2b6b",
       "src/api/base.ts:BaseFactsPermitAPI": "d54abe08baf1c3cf60b7c2dcc6de5daa886d258067988490df118b6f042e7c40",
       "src/api/base.ts:BasePermitApi": "c226bd3d4f364e0484706683e1073a21ac6fa201749ffa2903dae4ed1d6d0239",
       "src/api/base.ts:PermitApiError": "6aa8dbec715101edd3fe8b7835cc023149bf80f041964aa6f18783d1daa47f9a",
@@ -111,6 +112,7 @@
         "members": [
           "actionGroups: IResourceActionGroupsApi;",
           "apiKeys: IApiKeysApi;",
+          "auditLogs: IAuditLogsApi;",
           "conditionSetRules: IConditionSetRulesApi;",
           "conditionSets: IConditionSetsApi;",
           "ensureAccessLevel(requiredAccessLevel: ApiKeyLevel): Promise<void>;",
@@ -151,6 +153,30 @@
         "extends": [" extends IPagination"],
         "kind": "interface",
         "members": ["objectType?: MemberAccessObj;", "projId?: string;"]
+      },
+      "src/api/audit-logs.ts:IAuditLogsApi": {
+        "extends": [],
+        "kind": "interface",
+        "members": [
+          "get(logId: string): Promise<DetailedAuditLogModel>;",
+          "list(params?: IListAuditLogs): Promise<LimitedPaginatedResultAuditLogModel>;"
+        ]
+      },
+      "src/api/audit-logs.ts:IListAuditLogs": {
+        "extends": [" extends IPagination"],
+        "kind": "interface",
+        "members": [
+          "readonly action?: string;",
+          "readonly decision?: boolean;",
+          "readonly pdpId?: string;",
+          "readonly query?: AuditLogQueryType;",
+          "readonly resources?: readonly string[];",
+          "readonly sortBy?: AuditLogSortKey;",
+          "readonly tenant?: string;",
+          "readonly timestampFrom?: number;",
+          "readonly timestampTo?: number;",
+          "readonly users?: readonly string[];"
+        ]
       },
       "src/api/base.ts:FormattedAxiosError": {
         "extends": [],
@@ -21097,6 +21123,8 @@
       "src/api/api-keys.ts:ApiKeysApi.getScope": "dd2ee0b0329eaba95a0091797b48e831486f6f894795dcf63ff2e0f5844e0c8e",
       "src/api/api-keys.ts:ApiKeysApi.list": "f401eeef4714fed0dd05610e6c04a81c80324fcf268a73896a4f3b2bf9374408",
       "src/api/api-keys.ts:ApiKeysApi.rotate": "61ad1fce0ad7fd0cc6a3312ee97ea4a375a3fbc5d1c6182cbca0fc2c9777d81e",
+      "src/api/audit-logs.ts:AuditLogsApi.get": "c1d457319bd266529ec199d1c639d267286516dc6cd6ef15d19e5a3e34ab03ed",
+      "src/api/audit-logs.ts:AuditLogsApi.list": "96029df0d060a3c38d3a4ebbd75e28cfe022776fb5e42302b5dfca228e93339d",
       "src/api/base.ts:BaseFactsPermitAPI.clone": "3b46132f3c954b259f0d3cbabd8ae38817c138bd74aeb5d79989f741b0f5bd8b",
       "src/api/base.ts:BaseFactsPermitAPI.waitForSync": "4f08c3142f6705f377fc984d78458f5fd80c2fc4b7fb797bbe825f1e56513c40",
       "src/api/base.ts:BasePermitApi.ensureAccessLevel": "7b0488016a2275b9add93fc8baafa74ddff925a21fcdd9d0595c5bca1c9a39ff",
@@ -21321,8 +21349,9 @@
       "src/utils/diagnostics.ts:.visit": "df37b433c55e9eb2529dae6ffbcedc3329fdf8e01a379c33030fcb81f63d0873"
     },
     "initializationShapes": {
-      "src/api/api-client.ts:ApiClient.constructor": "bf3f938b524ce174e912bf0c3d0b15d071d42dc4449a6eb62583ab08a6ff5ee2",
+      "src/api/api-client.ts:ApiClient.constructor": "4f138b7d207032a9d67b2cbb1512e9345daee21a1e9af590a5215acac2c691ae",
       "src/api/api-keys.ts:ApiKeysApi.constructor": "9fc07806f1fd9b01e15ce74ae4f3fa383842077545c86cf17f0a577339681004",
+      "src/api/audit-logs.ts:AuditLogsApi.constructor": "a7a55498c8c53b1bddcdfde2a1ebfce0aaf61a5d4340744f980eab643607c9a3",
       "src/api/base.ts:BaseFactsPermitAPI.constructor": "6e36d36e49b99ff53949668d767e5dc630e0f849e693aa48b8b6d75ecdaacad1",
       "src/api/base.ts:BasePermitApi.constructor": "7c4a19909cf67f1c91b5086d603edae3a11f9f8599babb2f7f0418e9c1473353",
       "src/api/base.ts:PermitApiError.constructor": "2ca0da89f1fe278121953aab7b5adf980a90905b1dfde38c413a0191b56f9436",
@@ -21790,6 +21819,70 @@
             }
           ],
           "returns": "Promise<APIKeyRead>"
+        }
+      },
+      "permit.api.auditLogs.get": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(logId: string): Promise<DetailedAuditLogModel>"],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "AuditLogsApi.getDetailedAuditLog",
+            "method": "GET",
+            "path": "/v2/pdps/{proj_id}/{env_id}/audit_logs/{log_id}",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "logId",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "Promise<DetailedAuditLogModel>"
+        }
+      },
+      "permit.api.auditLogs.list": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(params?: IListAuditLogs | undefined): Promise<LimitedPaginatedResultAuditLogModel>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "AuditLogsApi.listAuditLogs",
+            "method": "GET",
+            "path": "/v2/pdps/{proj_id}/{env_id}/audit_logs",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": "{}",
+              "name": "params",
+              "optional": true,
+              "type": "IListAuditLogs"
+            }
+          ],
+          "returns": "Promise<LimitedPaginatedResultAuditLogModel>"
         }
       },
       "permit.api.conditionSetRules.create": {
@@ -27623,9 +27716,9 @@
         "extends": [],
         "kind": "interface",
         "members": [
-          "engine?: AVPEngineDecisionLogEngineEnum;",
+          "engine?: AVPEngineDecisionLogEngineEnum | null;",
           "input: object;",
-          "process_time_ms?: number;",
+          "process_time_ms?: number | null;",
           "result: object;",
           "tenant: string;",
           "timestamp: string;"
@@ -27805,7 +27898,7 @@
           "created_at: string;",
           "id: string;",
           "key: string;",
-          "name?: string;",
+          "name?: string | null;",
           "updated_at: string;"
         ]
       },
@@ -27893,42 +27986,42 @@
         "extends": [],
         "kind": "interface",
         "members": [
-          "action?: string;",
+          "action?: string | null;",
           "context?: any;",
-          "created_at?: string;",
-          "decision?: boolean;",
+          "created_at?: string | null;",
+          "decision?: boolean | null;",
           "env_id: string;",
           "id: string;",
           "input?: any;",
           "org_id: string;",
-          "pdp_config_id?: string;",
+          "pdp_config_id?: string | null;",
           "project_id: string;",
-          "query?: string;",
-          "raw_data?: RawData;",
-          "reason?: string;",
-          "resource_type?: string;",
+          "query?: string | null;",
+          "raw_data?: RawData | null;",
+          "reason?: string | null;",
+          "resource_type?: string | null;",
           "result?: any;",
-          "tenant?: string;",
+          "tenant?: string | null;",
           "timestamp: string;",
-          "user_email?: string;",
-          "user_key?: string;",
-          "user_name?: string;"
+          "user_email?: string | null;",
+          "user_key?: string | null;",
+          "user_name?: string | null;"
         ]
       },
       "AuditLogObjectsModel": {
         "extends": [],
         "kind": "interface",
         "members": [
-          "action_object?: ActionObj;",
-          "created_at?: string;",
-          "environment_object?: EnvironmentObject;",
-          "id?: string;",
-          "organization_object?: OrganizationObject;",
-          "pdp_config_object?: PdpConfigObject;",
-          "project_object?: ProjectObject;",
-          "resource_type_object?: ResourceTypeObj;",
-          "tenant_object?: TenantObj;",
-          "user_object?: UserObj;"
+          "action_object?: ActionObj | null;",
+          "created_at?: string | null;",
+          "environment_object?: EnvironmentObject | null;",
+          "id?: string | null;",
+          "organization_object?: OrganizationObject | null;",
+          "pdp_config_object?: PdpConfigObject | null;",
+          "project_object?: ProjectObject | null;",
+          "resource_type_object?: ResourceTypeObj | null;",
+          "tenant_object?: TenantObj | null;",
+          "user_object?: UserObj | null;"
         ]
       },
       "AuditLogQueryType": {
@@ -28227,33 +28320,33 @@
         "extends": [],
         "kind": "interface",
         "members": [
-          "action?: string;",
+          "action?: string | null;",
           "context?: any;",
-          "created_at?: string;",
-          "decision?: boolean;",
+          "created_at?: string | null;",
+          "decision?: boolean | null;",
           "env_id: string;",
           "id: string;",
           "input?: any;",
-          "objects?: AuditLogObjectsModel;",
+          "objects?: AuditLogObjectsModel | null;",
           "org_id: string;",
-          "pdp_config_id?: string;",
+          "pdp_config_id?: string | null;",
           "project_id: string;",
-          "query?: string;",
+          "query?: string | null;",
           "raw_data: RawData1;",
-          "reason?: string;",
-          "resource_type?: string;",
+          "reason?: string | null;",
+          "resource_type?: string | null;",
           "result?: any;",
-          "tenant?: string;",
+          "tenant?: string | null;",
           "timestamp: string;",
-          "user_email?: string;",
-          "user_key?: string;",
-          "user_name?: string;"
+          "user_email?: string | null;",
+          "user_key?: string | null;",
+          "user_name?: string | null;"
         ]
       },
       "DummyEngineModel": {
         "extends": [],
         "kind": "interface",
-        "members": ["engine?: Engine;", "timestamp?: string;"]
+        "members": ["engine?: Engine | null;", "timestamp?: string | null;"]
       },
       "ElementsConfigCreate": {
         "extends": [],
@@ -28519,7 +28612,7 @@
           "created_at: string;",
           "id: string;",
           "key: string;",
-          "name?: string;",
+          "name?: string | null;",
           "updated_at: string;"
         ]
       },
@@ -28634,21 +28727,21 @@
         "extends": [],
         "kind": "interface",
         "members": [
-          "action?: string;",
+          "action?: string | null;",
           "context?: any;",
           "decision: boolean;",
-          "decision_id?: string;",
-          "engine?: GenericEngineDecisionLogEngineEnum;",
+          "decision_id?: string | null;",
+          "engine?: GenericEngineDecisionLogEngineEnum | null;",
           "input?: any;",
-          "process_time_ms?: number;",
-          "query?: string;",
-          "resource_type?: string;",
+          "process_time_ms?: number | null;",
+          "query?: string | null;",
+          "resource_type?: string | null;",
           "result?: any;",
-          "tenant?: string;",
+          "tenant?: string | null;",
           "timestamp: string;",
-          "user_email?: string;",
-          "user_key?: string;",
-          "user_name?: string;"
+          "user_email?: string | null;",
+          "user_key?: string | null;",
+          "user_name?: string | null;"
         ]
       },
       "GenericEngineDecisionLogEngineEnum": {
@@ -28818,7 +28911,7 @@
         "kind": "interface",
         "members": [
           "data: Array<AuditLogModel>;",
-          "page_count?: number;",
+          "page_count?: number | null;",
           "pagination_count: number;",
           "total_count: number;"
         ]
@@ -28933,7 +29026,7 @@
         "kind": "interface",
         "members": [
           "decision_id: string;",
-          "engine?: OPAEngineDecisionLogEngineEnum;",
+          "engine?: OPAEngineDecisionLogEngineEnum | null;",
           "input?: any;",
           "labels: OPALabels;",
           "metrics: OPAMetrics;",
@@ -28993,13 +29086,13 @@
         "extends": [],
         "kind": "interface",
         "members": [
-          "timer_rego_input_parse_ns?: number;",
-          "timer_rego_module_compile_ns?: number;",
-          "timer_rego_module_parse_ns?: number;",
-          "timer_rego_query_compile_ns?: number;",
-          "timer_rego_query_eval_ns?: number;",
-          "timer_rego_query_parse_ns?: number;",
-          "timer_server_handler_ns?: number;"
+          "timer_rego_input_parse_ns?: number | null;",
+          "timer_rego_module_compile_ns?: number | null;",
+          "timer_rego_module_parse_ns?: number | null;",
+          "timer_rego_query_compile_ns?: number | null;",
+          "timer_rego_query_eval_ns?: number | null;",
+          "timer_rego_query_parse_ns?: number | null;",
+          "timer_server_handler_ns?: number | null;"
         ]
       },
       "OnboardingStep": {
@@ -29220,7 +29313,7 @@
           "created_at: string;",
           "id: string;",
           "key: string;",
-          "name?: string;",
+          "name?: string | null;",
           "updated_at: string;"
         ]
       },
@@ -29744,7 +29837,7 @@
           "created_at: string;",
           "id: string;",
           "key: string;",
-          "name?: string;",
+          "name?: string | null;",
           "updated_at: string;"
         ]
       },
@@ -30266,11 +30359,11 @@
         "extends": [],
         "kind": "interface",
         "members": [
-          "attributes?: Array<ResourceAttributes>;",
+          "attributes?: Array<ResourceAttributes> | null;",
           "created_at: string;",
           "id: string;",
           "key: string;",
-          "name?: string;",
+          "name?: string | null;",
           "updated_at: string;"
         ]
       },
@@ -30695,11 +30788,11 @@
         "extends": [],
         "kind": "interface",
         "members": [
-          "attributes?: object;",
+          "attributes?: object | null;",
           "created_at: string;",
           "id: string;",
           "key: string;",
-          "name?: string;",
+          "name?: string | null;",
           "updated_at: string;"
         ]
       },
@@ -30775,15 +30868,15 @@
         "extends": [],
         "kind": "interface",
         "members": [
-          "assigned_roles?: Array<string>;",
-          "attributes?: object;",
+          "assigned_roles?: Array<string> | null;",
+          "attributes?: object | null;",
           "created_at: string;",
-          "email?: string;",
-          "first_name?: string;",
+          "email?: string | null;",
+          "first_name?: string | null;",
           "id: string;",
           "key: string;",
-          "last_name?: string;",
-          "roles?: Array<RelationshipTupleObj>;",
+          "last_name?: string | null;",
+          "roles?: Array<RelationshipTupleObj> | null;",
           "updated_at: string;"
         ]
       },

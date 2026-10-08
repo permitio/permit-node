@@ -11,10 +11,10 @@
  */
 
 export interface AVPEngineDecisionLog {
-  engine?: AVPEngineDecisionLogEngineEnum;
+  engine?: AVPEngineDecisionLogEngineEnum | null;
   timestamp: string;
   tenant: string;
-  process_time_ms?: number;
+  process_time_ms?: number | null;
   input: object;
   result: object;
 }

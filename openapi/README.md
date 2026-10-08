@@ -73,6 +73,17 @@ is still used by `permit.elements.loginAs()`. Preparation fails if the route bec
 so the exception must then be reviewed and removed. Other routes omitted by the public snapshot
 are accounted for in [migration notes](MIGRATION.md), without retaining obsolete generated files.
 
+The audit read graph has one additional checked correction: 71 explicit `Optional` output
+fields across 16 schemas accept `null`, matching the pinned public
+[Python models](https://github.com/permitio/permit-python/blob/ef80ae2393b4c74e400fdd40ca838d589ee43709/permit/api/models.py).
+The exact fields and source link are in `scripts/fixtures/audit-read-nullability.json`.
+Each original schema is hash checked before correction. Required fields, formats, defaults,
+constraints, unconstrained data and other schemas retain their captured definitions.
+These schemas are not reachable from any captured request body or parameter; preparation
+rejects a new direct or transitive input use before widening an input contract. The captured
+snapshot and its provenance remain unchanged. Strict consumers cover nullable nested output
+and retain negative controls for required fields, engine payloads and request inputs.
+
 ## Generator adaptations and unresolved source contracts
 
 The small `model.mustache` override adds dispatch to `modelAnyOf.mustache`, which emits TypeScript

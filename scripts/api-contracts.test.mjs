@@ -57,7 +57,7 @@ test('accounts for complete source denominators while leaving parity and backend
   expect(report.sharedTarget.status).toBe('UNAVAILABLE');
   expect(report.realBackend.status).toBe('NOT_MEASURED');
   expect(report.operations).toHaveLength(307);
-  expect(report.counts.publicHttpMethods).toBe(171);
+  expect(report.counts.publicHttpMethods).toBe(173);
   expect(report.operations.filter((op) => op.source === 'control-plane')).toHaveLength(263);
   expect(report.operations.filter((op) => op.source === 'pdp-container')).toHaveLength(34);
   expect(report.operations.filter((op) => op.source === 'pdp-cloud')).toHaveLength(10);
@@ -73,6 +73,28 @@ test('accounts for complete source denominators while leaving parity and backend
       .routes.map((r) => r.target)
       .sort(),
   ).toEqual(['opa', 'pdp']);
+});
+
+test('exposes both audit reads directly with supporting scope discovery and finite filters', () => {
+  const report = coverageReport(evidence());
+  const methods = sdk.methods.filter((method) => method.name.startsWith('permit.api.auditLogs.'));
+  expect(methods.map((method) => method.name)).toEqual([
+    'permit.api.auditLogs.get',
+    'permit.api.auditLogs.list',
+  ]);
+  for (const method of methods) {
+    expect(method.factsProxy).toBe(false);
+    const operation = report.operations.find((entry) =>
+      entry.methods.some((candidate) => candidate.name === method.name),
+    );
+    expect(operation.source).toBe('control-plane');
+    expect(operation.coverage).toBe('exposed');
+    expect(operation.decision.owner).toBe('PER-16950');
+    expect(operation.decision.action).toBe('add');
+    expect(
+      method.routes.some((route) => route.supporting && route.path === '/v2/api-key/scope'),
+    ).toBe(true);
+  }
 });
 
 test('exposes six API-key contracts directly while preserving supporting scope discovery', () => {

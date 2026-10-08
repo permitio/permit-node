@@ -473,6 +473,57 @@ that cannot be JSON-serialized reject before a write. Named REST/context failure
 and REST POST/PATCH follow the existing SDK policy of no automatic retries. These operations use
 the control plane even when `proxyFactsViaPdp` is enabled and have no `waitForSync` helper.
 
+## Authorization audit logs
+
+`permit.api.auditLogs.list` and `get` read the selected environment's authorization audit logs
+through the control-plane API, including when `proxyFactsViaPdp` is enabled. List returns the full
+`LimitedPaginatedResultAuditLogModel` envelope with `data`, `total_count`, `pagination_count` and
+optional nullable `page_count`. Get takes a log UUID and returns `DetailedAuditLogModel`, including its
+required `raw_data` and optional nullable `objects`. Successful results preserve all received
+decision data, including nullable optional fields and nested objects.
+
+```typescript
+import { AuditLogQueryType, AuditLogSortKey, Permit } from 'permitio';
+
+const permit = new Permit({ token: process.env.PERMIT_API_KEY });
+const page = await permit.api.auditLogs.list({
+  users: ['alice', 'bob'],
+  resources: ['document'],
+  tenant: 'east',
+  action: 'read',
+  decision: false,
+  query: AuditLogQueryType.None,
+  sortBy: AuditLogSortKey.Timestamp,
+  page: 1,
+  perPage: 100,
+});
+for (const log of page.data) {
+  const detail = await permit.api.auditLogs.get(log.id);
+  if ('metrics' in detail.raw_data) {
+    const metrics = detail.raw_data.metrics;
+  }
+}
+```
+
+`IListAuditLogs` exposes pagination plus `pdpId`, `users`, `decision`, `resources`, `tenant`,
+`action`, `timestampFrom`, `timestampTo`, `sortBy` and `query`. Arrays use repeated query entries,
+retaining order, duplicates, commas and empty strings; empty arrays omit those entries. Options
+and arrays are copied before asynchronous context discovery. Explicit false, zero and empty values
+are forwarded for server validation. User filter items have a published 500-character maximum.
+Numeric timestamp filters are forwarded unchanged because their units are not specified by the
+published contract. Omitted sorting/query fields retain the service's timestamp/check defaults;
+`AuditLogSortKey.None` and `AuditLogQueryType.None` serialize as `None` and `none`, respectively.
+
+The SDK defaults to page 1/perPage 100; the REST omission default is 1/30 and maximum page size
+is 100. Reads do not auto-paginate or promise an atomic list/detail snapshot. The exported
+`AuditLogModel`, `DetailedAuditLogModel`, `RawData`, `RawData1`, `OPAEngineDecisionLog`,
+`AVPEngineDecisionLog`, `GenericEngineDecisionLog`, `DummyEngineModel` and `AuditLogObjectsModel`
+preserve the published read schemas, including optional nullable engine tags and metrics.
+Engine tags overlap the dummy branch, so guard properties
+before using engine-specific fields. Named REST/context failures reject, including unavailable
+records; there is no empty-page fallback. Audit replay, deletion, Elements and `waitForSync`
+are outside this read API. Record availability and retention remain service responsibilities.
+
 ## User lists
 
 `permit.api.users.list` returns the full `PaginatedResultUserRead` envelope. Pass

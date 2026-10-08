@@ -11,11 +11,11 @@
  */
 
 export interface OPAMetrics {
-  timer_rego_input_parse_ns?: number;
-  timer_rego_query_parse_ns?: number;
-  timer_rego_query_compile_ns?: number;
-  timer_rego_query_eval_ns?: number;
-  timer_rego_module_parse_ns?: number;
-  timer_rego_module_compile_ns?: number;
-  timer_server_handler_ns?: number;
+  timer_rego_input_parse_ns?: number | null;
+  timer_rego_query_parse_ns?: number | null;
+  timer_rego_query_compile_ns?: number | null;
+  timer_rego_query_eval_ns?: number | null;
+  timer_rego_module_parse_ns?: number | null;
+  timer_rego_module_compile_ns?: number | null;
+  timer_server_handler_ns?: number | null;
 }

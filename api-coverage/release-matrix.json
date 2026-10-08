@@ -2844,6 +2844,42 @@
       "level": "api",
       "methodNames": ["permit.api.apiKeys.rotate"],
       "operationKeys": ["control-plane POST /v2/api-key/{api_key_id}/rotate-secret"]
+    },
+    {
+      "id": "wire.api.auditLogs.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.auditLogs.list"],
+      "operationKeys": ["control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs"]
+    },
+    {
+      "id": "wire.api.auditLogs.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.auditLogs.list"],
+      "operationKeys": ["control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs"]
+    },
+    {
+      "id": "api.audit-logs-ingestion-list",
+      "level": "api",
+      "methodNames": ["permit.api.auditLogs.list"],
+      "operationKeys": ["control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs"]
+    },
+    {
+      "id": "wire.api.auditLogs.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.auditLogs.get"],
+      "operationKeys": ["control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs/{log_id}"]
+    },
+    {
+      "id": "wire.api.auditLogs.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.auditLogs.get"],
+      "operationKeys": ["control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs/{log_id}"]
+    },
+    {
+      "id": "api.audit-logs-ingestion-detail",
+      "level": "api",
+      "methodNames": ["permit.api.auditLogs.get"],
+      "operationKeys": ["control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs/{log_id}"]
     }
   ],
   "abCaseIds": [
@@ -3052,7 +3088,13 @@
     "api.proxy-configs-lifecycle",
     "wire.api-keys.esm",
     "wire.api-keys.commonjs",
-    "api.api-keys-lifecycle"
+    "api.api-keys-lifecycle",
+    "wire.audit-logs.esm",
+    "wire.audit-logs.commonjs",
+    "api.audit-logs-owned-fixtures",
+    "pdp.audit-logs-decisions",
+    "api.audit-logs-ingestion-list",
+    "api.audit-logs-ingestion-detail"
   ],
   "runIds": [
     "candidate.local.node22.13.0",

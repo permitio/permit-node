@@ -29,10 +29,15 @@ import { type IUsersApi, UsersApi } from '#src/api/users';
 import { type IUserInvitesApi, UserInvitesApi } from '#src/api/user-invites';
 import { type IUserAttributesApi, UserAttributesApi } from '#src/api/user-attributes';
 import { type IProxyConfigsApi, ProxyConfigsApi } from '#src/api/proxy-configs';
+import { AuditLogsApi, type IAuditLogsApi } from '#src/api/audit-logs';
 
 export interface IPermitApi {
   /** Direct API-key management and scope discovery; server authorization governs access. */
   apiKeys: IApiKeysApi;
+
+  /** Reads complete authorization audit pages and detailed engine data. */
+  auditLogs: IAuditLogsApi;
+
   /** Direct API for environment proxy configurations and complete URL mapping rules. */
   proxyConfigs: IProxyConfigsApi;
 
@@ -163,6 +168,10 @@ export interface IPermitApi {
 export class ApiClient extends BasePermitApi implements IPermitApi {
   /** Direct API-key management and scope discovery; server authorization governs access. */
   public readonly apiKeys: IApiKeysApi;
+
+  /** Reads complete authorization audit pages and detailed engine data. */
+  public readonly auditLogs: IAuditLogsApi;
+
   /** Direct API for environment proxy configurations and complete URL mapping rules. */
   public readonly proxyConfigs: IProxyConfigsApi;
 
@@ -283,6 +292,8 @@ export class ApiClient extends BasePermitApi implements IPermitApi {
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
     this.apiKeys = new ApiKeysApi(config, logger);
+
+    this.auditLogs = new AuditLogsApi(config, logger);
     this.proxyConfigs = new ProxyConfigsApi(config, logger);
     this.userAttributes = new UserAttributesApi(config, logger);
     this.userInvites = new UserInvitesApi(config, logger);

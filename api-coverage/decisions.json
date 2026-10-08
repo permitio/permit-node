@@ -773,17 +773,17 @@
       "lifecycle": "GA"
     },
     "control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs": {
-      "action": "defer",
-      "owner": "PER-16345",
-      "reason": "Add only when backend-SDK audit-query demand is established.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "action": "add",
+      "owner": "PER-16950",
+      "reason": "The auditLogs facade exposes the two published direct control-plane read operations with complete existing envelopes and raw-data unions, selected environment scope and finite copied filters.",
+      "source": "https://linear.app/permit/issue/PER-16950",
       "lifecycle": "GA"
     },
     "control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs/{log_id}": {
-      "action": "defer",
-      "owner": "PER-16345",
-      "reason": "Add only when backend-SDK audit-query demand is established.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "action": "add",
+      "owner": "PER-16950",
+      "reason": "The auditLogs facade exposes the two published direct control-plane read operations with complete existing envelopes and raw-data unions, selected environment scope and finite copied filters.",
+      "source": "https://linear.app/permit/issue/PER-16950",
       "lifecycle": "GA"
     },
     "control-plane GET /v2/pdps/{proj_id}/{env_id}/configs": {

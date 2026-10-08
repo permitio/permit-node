@@ -380,3 +380,38 @@ async function apiKeyManagement(client: SDK.IPermitApi): Promise<void> {
   void [deleted, secret, counts, ids, rows, requiredSecret];
 }
 void apiKeyManagement;
+
+async function auditLogs(client: SDK.IPermitApi) {
+  const api: SDK.IAuditLogsApi = client.auditLogs;
+  const options: SDK.IListAuditLogs = {
+    users: ['alice'] as const,
+    decision: false,
+    timestampFrom: 0,
+    query: SDK.AuditLogQueryType.None,
+    sortBy: SDK.AuditLogSortKey.None,
+  };
+  const page: SDK.LimitedPaginatedResultAuditLogModel = await api.list(options);
+  for (const row of page.data) {
+    const detail: SDK.DetailedAuditLogModel = await api.get(row.id);
+    const raw: SDK.RawData1 = detail.raw_data;
+    if ('metrics' in raw) {
+      const duration: number | null | undefined = raw.metrics.timer_rego_query_eval_ns;
+      void duration;
+    }
+    const objects: SDK.AuditLogObjectsModel | null | undefined = detail.objects;
+    const count: number | null | undefined = page.page_count;
+    void [objects, count];
+    // @ts-expect-error The optional engine tag does not exclude the dummy union branch.
+    if (raw.engine === 'OPA') void raw.metrics;
+  }
+  // @ts-expect-error User filters require repeated arrays, not CSV strings.
+  void api.list({ users: 'alice,bob' });
+  // @ts-expect-error False is boolean, not a numeric decision.
+  void api.list({ decision: 0 });
+  // @ts-expect-error List preserves the complete envelope.
+  const rows: SDK.AuditLogModel[] = await api.list();
+  // @ts-expect-error Audit reads have no replay API.
+  void api.replay('id');
+  void rows;
+}
+void auditLogs;

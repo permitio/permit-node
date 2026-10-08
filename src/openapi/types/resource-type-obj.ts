@@ -16,8 +16,8 @@ import type { ResourceAttributes } from './resource-attributes';
 export interface ResourceTypeObj {
   id: string;
   key: string;
-  name?: string;
-  attributes?: Array<ResourceAttributes>;
+  name?: string | null;
+  attributes?: Array<ResourceAttributes> | null;
   created_at: string;
   updated_at: string;
 }

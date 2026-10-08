@@ -291,7 +291,7 @@ test('corrects only two optional API-key scope read fields without mutating sour
   const restored = structuredClone(scope);
   for (const field of ['project_id', 'environment_id']) restored.properties[field].type = 'string';
   expect(restored).toEqual(source.components.schemas.APIKeyScopeRead);
-  for (const name of ['APIKeyCreate', 'ProjectObj', 'TenantObj', 'RoleCreate']) {
+  for (const name of ['APIKeyCreate', 'ProjectCreate', 'TenantCreate', 'RoleCreate']) {
     expect(prepared.components.schemas[name]).toEqual(source.components.schemas[name]);
   }
   expect(source).toEqual(original);
@@ -470,4 +470,217 @@ test.each([
   const changed = structuredClone(source);
   mutate(changed.components.schemas.PaginatedResult_APIKeyRead_);
   expect(() => prepareOpenApi(changed, supplement)).toThrow(/PaginatedResult_APIKeyRead_ is stale/);
+});
+
+const auditNullability = JSON.parse(
+  readFileSync(join(root, 'scripts/fixtures/audit-read-nullability.json'), 'utf8'),
+).fields;
+
+test('corrects exactly the 71 pinned public audit read fields and preserves their metadata', () => {
+  const prepared = prepareOpenApi(source, supplement);
+  expect(Object.keys(auditNullability)).toHaveLength(16);
+  expect(Object.values(auditNullability).flat()).toHaveLength(71);
+  for (const [name, fields] of Object.entries(auditNullability)) {
+    const original = source.components.schemas[name];
+    const actual = structuredClone(prepared.components.schemas[name]);
+    for (const field of fields) {
+      const previous = original.properties[field];
+      const property = actual.properties[field];
+      expect(original.required ?? []).not.toContain(field);
+      if (previous.enum) {
+        expect(property.anyOf).toEqual([
+          { type: previous.type, enum: previous.enum },
+          { type: 'null' },
+        ]);
+        const metadata = structuredClone(property);
+        delete metadata.anyOf;
+        const previousMetadata = structuredClone(previous);
+        delete previousMetadata.type;
+        delete previousMetadata.enum;
+        expect(metadata).toEqual(previousMetadata);
+      } else if (typeof previous.type === 'string') {
+        expect(property.type).toEqual([previous.type, 'null']);
+        property.type = previous.type;
+        expect(property).toEqual(previous);
+      } else if (previous.anyOf) {
+        expect(property.anyOf.at(-1)).toEqual({ type: 'null' });
+        property.anyOf.pop();
+        expect(property).toEqual(previous);
+      } else {
+        expect(property.anyOf.at(-1)).toEqual({ type: 'null' });
+        expect(property.anyOf[0]).toEqual(
+          previous.$ref ? { $ref: previous.$ref } : { allOf: previous.allOf },
+        );
+        const metadata = structuredClone(property);
+        delete metadata.anyOf;
+        const previousMetadata = structuredClone(previous);
+        delete previousMetadata.$ref;
+        delete previousMetadata.allOf;
+        expect(metadata).toEqual(previousMetadata);
+      }
+      actual.properties[field] = structuredClone(previous);
+    }
+    expect(actual).toEqual(original);
+  }
+  const unaffected = [
+    'PdpConfigObj',
+    'OPALabels',
+    'RelationshipTupleObj',
+    'ResourceAttributes',
+    'AttributeType',
+    'Engine',
+    'GenericEngineDecisionLogBatch',
+    'AuditLogQueryType',
+    'AuditLogSortKey',
+  ];
+  for (const name of unaffected)
+    expect(prepared.components.schemas[name]).toEqual(source.components.schemas[name]);
+  expect(prepared.paths).toEqual({
+    ...source.paths,
+    '/v2/auth/elements_login_as': supplement.paths['/v2/auth/elements_login_as'],
+  });
+});
+
+test.each(Object.keys(auditNullability))(
+  'fails closed for removed or changed audit output %s',
+  (name) => {
+    for (const mutation of ['missing', 'required', 'metadata']) {
+      const changed = structuredClone(source);
+      if (mutation === 'missing') delete changed.components.schemas[name];
+      else if (mutation === 'required')
+        changed.components.schemas[name].required = [
+          ...(changed.components.schemas[name].required ?? []),
+          auditNullability[name][0],
+        ];
+      else
+        changed.components.schemas[name].properties[auditNullability[name][0]].description =
+          'New upstream metadata';
+      expect(() => prepareOpenApi(changed, supplement)).toThrow(
+        new RegExp(`/components/schemas/${name} is stale`),
+      );
+    }
+  },
+);
+
+test.each(Object.keys(auditNullability))(
+  'rejects new direct and transitive request uses of audit output %s',
+  (name) => {
+    for (const transitive of [false, true]) {
+      const changed = structuredClone(source);
+      const reference = { $ref: `#/components/schemas/${name}` };
+      if (transitive) {
+        changed.components.schemas.AuditInputWrapper = {
+          type: 'object',
+          properties: { nested: { type: 'array', items: reference } },
+        };
+        changed.components.requestBodies = {
+          AuditInput: {
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/AuditInputWrapper' } },
+            },
+          },
+        };
+      }
+      changed.paths['/audit-input-regression'] = {
+        post: {
+          requestBody: transitive
+            ? { $ref: '#/components/requestBodies/AuditInput' }
+            : {
+                content: { 'application/json': { schema: reference } },
+              },
+          responses: { 204: { description: 'No content' } },
+        },
+      };
+      expect(() => prepareOpenApi(changed, supplement)).toThrow(
+        /Audit read nullability reaches an input.*requestBod/,
+      );
+    }
+  },
+);
+
+test.each(Object.keys(auditNullability))(
+  'rejects direct and transitive supplemental request uses of audit output %s',
+  (name) => {
+    for (const transitive of [false, true]) {
+      const changed = structuredClone(supplement);
+      const reference = { $ref: `#/components/schemas/${name}` };
+      if (transitive) {
+        changed.schemas.SupplementedAuditInput = {
+          type: 'object',
+          properties: { nested: { type: 'array', items: reference } },
+        };
+      }
+      changed.paths['/audit-supplement-request-regression'] = {
+        post: {
+          requestBody: {
+            content: {
+              'application/json': {
+                schema: transitive
+                  ? { $ref: '#/components/schemas/SupplementedAuditInput' }
+                  : reference,
+              },
+            },
+          },
+          responses: { 204: { description: 'No content' } },
+        },
+      };
+      expect(() => prepareOpenApi(source, changed)).toThrow(
+        /Audit read nullability reaches an input.*requestBody/,
+      );
+    }
+  },
+);
+
+test('rejects audit read references in unused request body components', () => {
+  const changed = structuredClone(source);
+  changed.components.requestBodies = {
+    NewInput: {
+      content: { 'application/json': { schema: { $ref: '#/components/schemas/AuditLogModel' } } },
+    },
+  };
+  expect(() => prepareOpenApi(changed, supplement)).toThrow(
+    /Audit read nullability reaches an input.*components\/requestBodies\/NewInput/,
+  );
+});
+
+test.each(['path', 'operation'])(
+  'rejects new %s parameter uses of nullable audit reads',
+  (level) => {
+    const changed = structuredClone(source);
+    const parameter = {
+      name: 'audit',
+      in: 'query',
+      schema: { $ref: '#/components/schemas/OPAMetrics' },
+    };
+    changed.paths['/audit-parameter-regression'] = {
+      ...(level === 'path' ? { parameters: [parameter] } : {}),
+      get: {
+        ...(level === 'operation' ? { parameters: [parameter] } : {}),
+        responses: { 204: { description: 'No content' } },
+      },
+    };
+    expect(() => prepareOpenApi(changed, supplement)).toThrow(
+      /Audit read nullability reaches an input.*parameters/,
+    );
+  },
+);
+
+test('input reachability handles reference cycles and ignores application examples', () => {
+  const changed = structuredClone(source);
+  changed.components.schemas.SafeAuditInput = {
+    type: 'object',
+    properties: { next: { $ref: '#/components/schemas/SafeAuditInput' } },
+    example: { $ref: '#/components/schemas/OPAMetrics' },
+  };
+  changed.paths['/safe-audit-input-regression'] = {
+    post: {
+      requestBody: {
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/SafeAuditInput' } },
+        },
+      },
+      responses: { 204: { description: 'No content' } },
+    },
+  };
+  expect(() => prepareOpenApi(changed, supplement)).not.toThrow();
 });

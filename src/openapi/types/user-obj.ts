@@ -16,12 +16,12 @@ import type { RelationshipTupleObj } from './relationship-tuple-obj';
 export interface UserObj {
   id: string;
   key: string;
-  email?: string;
-  first_name?: string;
-  last_name?: string;
-  attributes?: object;
-  roles?: Array<RelationshipTupleObj>;
-  assigned_roles?: Array<string>;
+  email?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  attributes?: object | null;
+  roles?: Array<RelationshipTupleObj> | null;
+  assigned_roles?: Array<string> | null;
   created_at: string;
   updated_at: string;
 }

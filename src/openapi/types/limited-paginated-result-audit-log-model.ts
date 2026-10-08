@@ -19,6 +19,6 @@ export interface LimitedPaginatedResultAuditLogModel {
    */
   data: Array<AuditLogModel>;
   total_count: number;
-  page_count?: number;
+  page_count?: number | null;
   pagination_count: number;
 }

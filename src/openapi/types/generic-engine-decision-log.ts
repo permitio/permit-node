@@ -14,18 +14,18 @@
  * Generic decision log format for external or custom integrations.  Accepts a flat JSON payload with explicit fields rather than requiring engine-specific nested structures. Unknown fields are rejected to prevent unbounded storage growth.
  */
 export interface GenericEngineDecisionLog {
-  engine?: GenericEngineDecisionLogEngineEnum;
+  engine?: GenericEngineDecisionLogEngineEnum | null;
   timestamp: string;
   decision: boolean;
-  decision_id?: string;
-  process_time_ms?: number;
-  query?: string;
-  user_key?: string;
-  user_email?: string;
-  user_name?: string;
-  action?: string;
-  resource_type?: string;
-  tenant?: string;
+  decision_id?: string | null;
+  process_time_ms?: number | null;
+  query?: string | null;
+  user_key?: string | null;
+  user_email?: string | null;
+  user_name?: string | null;
+  action?: string | null;
+  resource_type?: string | null;
+  tenant?: string | null;
   input?: any;
   result?: any;
   context?: any;

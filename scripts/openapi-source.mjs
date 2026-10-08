@@ -11,6 +11,202 @@ function requireShape(actual, expected, location) {
   }
 }
 
+// Public permit-python ef80ae2393b4c74e400fdd40ca838d589ee43709, permit/api/models.py.
+// Only its 71 explicit Optional read-output fields below are corrected; inputs are excluded.
+const AUDIT_READ_NULLABILITY = {
+  AVPEngineDecisionLog: {
+    sha256: '627e1f19fa9dee86f208a174b36d5831bcbc1d742318bcc9387efeab0b98c382',
+    fields: ['engine', 'process_time_ms'],
+  },
+  ActionObj: {
+    sha256: '96e255f7be87c4a1e8367b27845ca73848e6857d02e7c02452b3127d85deaf67',
+    fields: ['name'],
+  },
+  AuditLogModel: {
+    sha256: '3101bc7d1c1634b381101b252ed12842729113e600f92dfd7136f5b6e61602e2',
+    fields: [
+      'raw_data',
+      'created_at',
+      'query',
+      'user_key',
+      'user_email',
+      'user_name',
+      'resource_type',
+      'tenant',
+      'action',
+      'decision',
+      'reason',
+      'pdp_config_id',
+    ],
+  },
+  AuditLogObjectsModel: {
+    sha256: '3c6fd5d927e0ac3eafda0e83794f710228f6c63be796c887e9d1878f23fb424b',
+    fields: [
+      'id',
+      'organization_object',
+      'project_object',
+      'environment_object',
+      'pdp_config_object',
+      'user_object',
+      'action_object',
+      'resource_type_object',
+      'tenant_object',
+      'created_at',
+    ],
+  },
+  DetailedAuditLogModel: {
+    sha256: 'd8d12c8c6e41f2c6e08ac4ad76d0b0e4c0f6ac7fcbc73f1c07a177bf6e7486b5',
+    fields: [
+      'created_at',
+      'query',
+      'user_key',
+      'user_email',
+      'user_name',
+      'resource_type',
+      'tenant',
+      'action',
+      'decision',
+      'reason',
+      'pdp_config_id',
+      'objects',
+    ],
+  },
+  DummyEngineModel: {
+    sha256: '876d535102a6db8ab6642e3866bfb761eff340bfd2aba43233a1b9b4e5cf88dd',
+    fields: ['engine', 'timestamp'],
+  },
+  EnvironmentObj: {
+    sha256: '268b0aa006e1016ee348966b45e1a80da7ce3c8a6c930c0668d481e9da2de66d',
+    fields: ['name'],
+  },
+  GenericEngineDecisionLog: {
+    sha256: '6b68a0015680cc155dec4d941ffd717394cbba9a6a1f6acface809b414182f04',
+    fields: [
+      'engine',
+      'decision_id',
+      'process_time_ms',
+      'query',
+      'user_key',
+      'user_email',
+      'user_name',
+      'action',
+      'resource_type',
+      'tenant',
+    ],
+  },
+  LimitedPaginatedResult_AuditLogModel_: {
+    sha256: 'cc5e880c98a692c01c90f63f44e6ab4465de7b6e64f1d2353d71f813df5e061e',
+    fields: ['page_count'],
+  },
+  OPAEngineDecisionLog: {
+    sha256: 'f5fcc30b1507d9244b8157511148c0bc58e8c46278057a35837f7439ea2b16a9',
+    fields: ['engine'],
+  },
+  OPAMetrics: {
+    sha256: 'b15d6ffac83b14f5536b199fd1395f2e8f213f8edc3dd46875744f223d5557a4',
+    fields: [
+      'timer_rego_input_parse_ns',
+      'timer_rego_query_parse_ns',
+      'timer_rego_query_compile_ns',
+      'timer_rego_query_eval_ns',
+      'timer_rego_module_parse_ns',
+      'timer_rego_module_compile_ns',
+      'timer_server_handler_ns',
+    ],
+  },
+  OrganizationObj: {
+    sha256: 'a8864abb658259aa78fcaabd316bc8193a2175ea162b903a9388b94c807d445b',
+    fields: ['name'],
+  },
+  ProjectObj: {
+    sha256: 'e3ad7af6f58465026396142aeb868fa6d158d64ba5ff6dca6294b5bef9f2cbaf',
+    fields: ['name'],
+  },
+  ResourceTypeObj: {
+    sha256: '05b7d465a260ceedd729171a3db21ef2e5dde525c4d362a9b71e2e0b1c394e17',
+    fields: ['name', 'attributes'],
+  },
+  TenantObj: {
+    sha256: '25be63e87b33fc7c104b2681404c826482c9911b695691db2a12c73261c3a8ef',
+    fields: ['name', 'attributes'],
+  },
+  UserObj: {
+    sha256: '8312e23114aca5279679d127c90cfd148539a3cd9921cbd266172a48deb56431',
+    fields: ['email', 'first_name', 'last_name', 'attributes', 'roles', 'assigned_roles'],
+  },
+};
+
+/** Corrects only the pinned public audit read graph, refusing new input uses or source drift. */
+function correctAuditReadNullability(spec) {
+  const affected = new Set(
+    Object.keys(AUDIT_READ_NULLABILITY).map((name) => `#/components/schemas/${name}`),
+  );
+  function rejectInputUse(value, location, visited = new Set()) {
+    if (!value || typeof value !== 'object') return;
+    if (typeof value.$ref === 'string') {
+      const ref = value.$ref;
+      if (affected.has(ref)) {
+        throw new Error(
+          `Audit read nullability reaches an input at ${location}; review the source.`,
+        );
+      }
+      if (!visited.has(ref) && ref.startsWith('#/')) {
+        visited.add(ref);
+        const target = ref
+          .slice(2)
+          .split('/')
+          .reduce((node, key) => node?.[key.replaceAll('~1', '/').replaceAll('~0', '~')], spec);
+        rejectInputUse(target, location, visited);
+      }
+    }
+    for (const [key, child] of Object.entries(value)) {
+      if (!['example', 'examples', 'default', 'enum', 'const'].includes(key))
+        rejectInputUse(child, `${location}/${key}`, visited);
+    }
+  }
+  for (const [name, body] of Object.entries(spec.components.requestBodies ?? {})) {
+    rejectInputUse(body, `/components/requestBodies/${name}`);
+  }
+  for (const [path, item] of Object.entries(spec.paths)) {
+    for (const [method, operation] of Object.entries(item)) {
+      if (!['get', 'put', 'post', 'delete', 'patch', 'head', 'options'].includes(method)) continue;
+      rejectInputUse(operation.requestBody, `${method.toUpperCase()} ${path}/requestBody`);
+      for (const parameter of [...(item.parameters ?? []), ...(operation.parameters ?? [])])
+        rejectInputUse(parameter, `${method.toUpperCase()} ${path}/parameters`);
+    }
+  }
+  for (const [name, { sha256, fields }] of Object.entries(AUDIT_READ_NULLABILITY)) {
+    const model = spec.components.schemas[name];
+    requireShape(
+      createHash('sha256')
+        .update(JSON.stringify(model ?? null))
+        .digest('hex'),
+      sha256,
+      `/components/schemas/${name}`,
+    );
+    for (const field of fields) {
+      const property = model.properties[field];
+      if (property.enum) {
+        const { type, enum: values, ...metadata } = property;
+        model.properties[field] = {
+          ...metadata,
+          anyOf: [{ type, enum: values }, { type: 'null' }],
+        };
+      } else if (typeof property.type === 'string') {
+        property.type = [property.type, 'null'];
+      } else if (property.anyOf) {
+        property.anyOf.push({ type: 'null' });
+      } else {
+        const { $ref, allOf, ...metadata } = property;
+        model.properties[field] = {
+          ...metadata,
+          anyOf: [$ref ? { $ref } : { allOf }, { type: 'null' }],
+        };
+      }
+    }
+  }
+}
+
 /**
  * Rejects unresolved references and invalid JSON Schema primitive names before generation.
  *
@@ -386,6 +582,7 @@ export function prepareOpenApi(source, supplement) {
       spec.components.schemas[name] = structuredClone(model);
     }
   }
+  correctAuditReadNullability(spec);
   validateSource(spec);
   return spec;
 }

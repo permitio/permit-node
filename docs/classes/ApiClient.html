@@ -10,7 +10,7 @@
 <ul class="tsd-breadcrumb" aria-label="Breadcrumb">
 <li><a href="" aria-current="page">ApiClient</a></li></ul>
 <h1>Class ApiClient</h1></div>
-<section class="tsd-panel tsd-hierarchy" data-refl="2059">
+<section class="tsd-panel tsd-hierarchy" data-refl="2104">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><span class="tsd-signature-type">BasePermitApi</span>
@@ -21,7 +21,7 @@
 <ul class="tsd-hierarchy">
 <li><a href="../interfaces/IPermitApi.html" class="tsd-signature-type tsd-kind-interface">IPermitApi</a></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in src/api/api-client.ts:163</li></ul></aside>
+<li>Defined in src/api/api-client.ts:168</li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -35,6 +35,7 @@
 <h3 class="tsd-index-heading tsd-anchor-link" id="properties">Properties<a href="#properties" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-index-list"><a href="#actiongroups" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>action<wbr/>Groups</span></a>
 <a href="#apikeys" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>api<wbr/>Keys</span></a>
+<a href="#auditlogs" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>audit<wbr/>Logs</span></a>
 <a href="#conditionsetrules" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>condition<wbr/>Set<wbr/>Rules</span></a>
 <a href="#conditionsets" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>condition<wbr/>Sets</span></a>
 <a href="#environments" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>environments</span></a>
@@ -84,7 +85,7 @@
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">ApiClient</a></h4><aside class="tsd-sources">
 <p>Overrides BasePermitApi.constructor</p>
 <ul>
-<li>Defined in src/api/api-client.ts:283</li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in src/api/api-client.ts:292</li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="properties-1">Properties<a href="#properties-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -99,7 +100,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#actiongroups">actionGroups</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:209</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:218</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="apikeys"><code class="tsd-tag">Readonly</code><span>api<wbr/>Keys</span><a href="#apikeys" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">apiKeys</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IApiKeysApi.html" class="tsd-signature-type tsd-kind-interface">IApiKeysApi</a></div>
@@ -107,7 +108,15 @@
 </div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#apikeys">apiKeys</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:165</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:170</li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="auditlogs"><code class="tsd-tag">Readonly</code><span>audit<wbr/>Logs</span><a href="#auditlogs" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">auditLogs</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IAuditLogsApi.html" class="tsd-signature-type tsd-kind-interface">IAuditLogsApi</a></div>
+<div class="tsd-comment tsd-typography"><p>Reads complete authorization audit pages and detailed engine data.</p>
+</div><aside class="tsd-sources">
+<p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#auditlogs">auditLogs</a></p>
+<ul>
+<li>Defined in src/api/api-client.ts:173</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="conditionsetrules"><code class="tsd-tag">Readonly</code><span>condition<wbr/>Set<wbr/>Rules</span><a href="#conditionsetrules" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">conditionSetRules</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IConditionSetRulesApi.html" class="tsd-signature-type tsd-kind-interface">IConditionSetRulesApi</a></div>
@@ -119,7 +128,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#conditionsetrules">conditionSetRules</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:185</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:194</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="conditionsets"><code class="tsd-tag">Readonly</code><span>condition<wbr/>Sets</span><a href="#conditionsets" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">conditionSets</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IConditionSetsApi.html" class="tsd-signature-type tsd-kind-interface">IConditionSetsApi</a></div>
@@ -131,7 +140,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#conditionsets">conditionSets</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:191</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:200</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="environments"><code class="tsd-tag">Readonly</code><span>environments</span><a href="#environments" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">environments</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IEnvironmentsApi.html" class="tsd-signature-type tsd-kind-interface">IEnvironmentsApi</a></div>
@@ -143,7 +152,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#environments">environments</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:203</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:212</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="groups"><code class="tsd-tag">Readonly</code><span>groups</span><a href="#groups" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">groups</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IGroupsApi.html" class="tsd-signature-type tsd-kind-interface">IGroupsApi</a></div>
@@ -151,7 +160,7 @@
 </div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#groups">groups</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:176</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:185</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="pdps"><code class="tsd-tag">Readonly</code><span>pdps</span><a href="#pdps" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">pdps</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IPdpsApi.html" class="tsd-signature-type tsd-kind-interface">IPdpsApi</a></div>
@@ -159,7 +168,7 @@
 </div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#pdps">pdps</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:179</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:188</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="projects"><code class="tsd-tag">Readonly</code><span>projects</span><a href="#projects" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">projects</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IProjectsApi.html" class="tsd-signature-type tsd-kind-interface">IProjectsApi</a></div>
@@ -171,7 +180,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#projects">projects</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:197</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:206</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="proxyconfigs"><code class="tsd-tag">Readonly</code><span>proxy<wbr/>Configs</span><a href="#proxyconfigs" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">proxyConfigs</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IProxyConfigsApi.html" class="tsd-signature-type tsd-kind-interface">IProxyConfigsApi</a></div>
@@ -179,7 +188,7 @@
 </div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#proxyconfigs">proxyConfigs</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:167</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:176</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="relationshiptuples"><code class="tsd-tag">Readonly</code><span>relationship<wbr/>Tuples</span><a href="#relationshiptuples" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">relationshipTuples</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IRelationshipTuplesApi.html" class="tsd-signature-type tsd-kind-interface">IRelationshipTuplesApi</a></div>
@@ -191,7 +200,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#relationshiptuples">relationshipTuples</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:257</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:266</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="resourceactions"><code class="tsd-tag">Readonly</code><span>resource<wbr/>Actions</span><a href="#resourceactions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">resourceActions</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IResourceActionsApi.html" class="tsd-signature-type tsd-kind-interface">IResourceActionsApi</a></div>
@@ -203,7 +212,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#resourceactions">resourceActions</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:215</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:224</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="resourceattributes"><code class="tsd-tag">Readonly</code><span>resource<wbr/>Attributes</span><a href="#resourceattributes" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">resourceAttributes</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IResourceAttributesApi.html" class="tsd-signature-type tsd-kind-interface">IResourceAttributesApi</a></div>
@@ -215,7 +224,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#resourceattributes">resourceAttributes</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:221</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:230</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="resourceinstances"><code class="tsd-tag">Readonly</code><span>resource<wbr/>Instances</span><a href="#resourceinstances" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">resourceInstances</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IResourceInstancesApi.html" class="tsd-signature-type tsd-kind-interface">IResourceInstancesApi</a></div>
@@ -227,7 +236,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#resourceinstances">resourceInstances</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:239</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:248</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="resourcerelations"><code class="tsd-tag">Readonly</code><span>resource<wbr/>Relations</span><a href="#resourcerelations" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">resourceRelations</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IResourceRelationsApi.html" class="tsd-signature-type tsd-kind-interface">IResourceRelationsApi</a></div>
@@ -239,7 +248,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#resourcerelations">resourceRelations</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:233</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:242</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="resourceroles"><code class="tsd-tag">Readonly</code><span>resource<wbr/>Roles</span><a href="#resourceroles" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">resourceRoles</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IResourceRolesApi.html" class="tsd-signature-type tsd-kind-interface">IResourceRolesApi</a></div>
@@ -251,7 +260,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#resourceroles">resourceRoles</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:227</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:236</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="resources"><code class="tsd-tag">Readonly</code><span>resources</span><a href="#resources" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">resources</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IResourcesApi.html" class="tsd-signature-type tsd-kind-interface">IResourcesApi</a></div>
@@ -263,7 +272,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#resources">resources</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:245</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:254</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="roleassignments"><code class="tsd-tag">Readonly</code><span>role<wbr/>Assignments</span><a href="#roleassignments" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">roleAssignments</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IRoleAssignmentsApi.html" class="tsd-signature-type tsd-kind-interface">IRoleAssignmentsApi</a></div>
@@ -275,7 +284,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#roleassignments">roleAssignments</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:251</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:260</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="roles"><code class="tsd-tag">Readonly</code><span>roles</span><a href="#roles" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">roles</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IRolesApi.html" class="tsd-signature-type tsd-kind-interface">IRolesApi</a></div>
@@ -287,7 +296,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#roles">roles</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:263</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:272</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="tenants"><code class="tsd-tag">Readonly</code><span>tenants</span><a href="#tenants" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">tenants</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/ITenantsApi.html" class="tsd-signature-type tsd-kind-interface">ITenantsApi</a></div>
@@ -299,7 +308,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#tenants">tenants</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:269</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:278</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="userattributes"><code class="tsd-tag">Readonly</code><span>user<wbr/>Attributes</span><a href="#userattributes" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">userAttributes</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IUserAttributesApi.html" class="tsd-signature-type tsd-kind-interface">IUserAttributesApi</a></div>
@@ -307,7 +316,7 @@
 </div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#userattributes">userAttributes</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:170</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:179</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="userinvites"><code class="tsd-tag">Readonly</code><span>user<wbr/>Invites</span><a href="#userinvites" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">userInvites</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IUserInvitesApi.html" class="tsd-signature-type tsd-kind-interface">IUserInvitesApi</a></div>
@@ -315,7 +324,7 @@
 </div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#userinvites">userInvites</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:173</li></ul></aside></section>
+<li>Defined in src/api/api-client.ts:182</li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="users"><code class="tsd-tag">Readonly</code><span>users</span><a href="#users" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">users</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/IUsersApi.html" class="tsd-signature-type tsd-kind-interface">IUsersApi</a></div>
@@ -327,7 +336,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IPermitApi.html">IPermitApi</a>.<a href="../interfaces/IPermitApi.html#users">users</a></p>
 <ul>
-<li>Defined in src/api/api-client.ts:275</li></ul></aside></section></section></details>
+<li>Defined in src/api/api-client.ts:284</li></ul></aside></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -395,7 +404,7 @@ Note that this check is not foolproof, and the API may still throw 401.</p>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Constructors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Constructors</summary>
 <div><a href="#constructor"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Constructor"><use href="../assets/icons.svg#icon-512"></use></svg><span>constructor</span></a></div></details>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Properties</summary>
-<div><a href="#actiongroups"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>action<wbr/>Groups</span></a><a href="#apikeys"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>api<wbr/>Keys</span></a><a href="#conditionsetrules"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>condition<wbr/>Set<wbr/>Rules</span></a><a href="#conditionsets"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>condition<wbr/>Sets</span></a><a href="#environments"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>environments</span></a><a href="#groups"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>groups</span></a><a href="#pdps"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>pdps</span></a><a href="#projects"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>projects</span></a><a href="#proxyconfigs"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>proxy<wbr/>Configs</span></a><a href="#relationshiptuples"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>relationship<wbr/>Tuples</span></a><a href="#resourceactions"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>resource<wbr/>Actions</span></a><a href="#resourceattributes"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>resource<wbr/>Attributes</span></a><a href="#resourceinstances"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>resource<wbr/>Instances</span></a><a href="#resourcerelations"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>resource<wbr/>Relations</span></a><a href="#resourceroles"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>resource<wbr/>Roles</span></a><a href="#resources"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>resources</span></a><a href="#roleassignments"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>role<wbr/>Assignments</span></a><a href="#roles"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>roles</span></a><a href="#tenants"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>tenants</span></a><a href="#userattributes"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>user<wbr/>Attributes</span></a><a href="#userinvites"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>user<wbr/>Invites</span></a><a href="#users"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>users</span></a></div></details>
+<div><a href="#actiongroups"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>action<wbr/>Groups</span></a><a href="#apikeys"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>api<wbr/>Keys</span></a><a href="#auditlogs"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>audit<wbr/>Logs</span></a><a href="#conditionsetrules"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>condition<wbr/>Set<wbr/>Rules</span></a><a href="#conditionsets"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>condition<wbr/>Sets</span></a><a href="#environments"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>environments</span></a><a href="#groups"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>groups</span></a><a href="#pdps"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>pdps</span></a><a href="#projects"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>projects</span></a><a href="#proxyconfigs"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>proxy<wbr/>Configs</span></a><a href="#relationshiptuples"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>relationship<wbr/>Tuples</span></a><a href="#resourceactions"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>resource<wbr/>Actions</span></a><a href="#resourceattributes"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>resource<wbr/>Attributes</span></a><a href="#resourceinstances"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>resource<wbr/>Instances</span></a><a href="#resourcerelations"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>resource<wbr/>Relations</span></a><a href="#resourceroles"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>resource<wbr/>Roles</span></a><a href="#resources"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>resources</span></a><a href="#roleassignments"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>role<wbr/>Assignments</span></a><a href="#roles"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>roles</span></a><a href="#tenants"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>tenants</span></a><a href="#userattributes"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>user<wbr/>Attributes</span></a><a href="#userinvites"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>user<wbr/>Invites</span></a><a href="#users"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>users</span></a></div></details>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Methods</summary>
 <div><a href="#ensureaccesslevel" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>ensure<wbr/>Access<wbr/>Level</span></a><a href="#ensurecontext" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>ensure<wbr/>Context</span></a></div></details></div></details></div>
 <div class="site-menu">

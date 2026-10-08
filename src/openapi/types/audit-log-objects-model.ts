@@ -28,14 +28,14 @@ import type { TenantObj } from './tenant-obj';
 import type { UserObj } from './user-obj';
 
 export interface AuditLogObjectsModel {
-  id?: string;
-  organization_object?: OrganizationObject;
-  project_object?: ProjectObject;
-  environment_object?: EnvironmentObject;
-  pdp_config_object?: PdpConfigObject;
-  user_object?: UserObj;
-  action_object?: ActionObj;
-  resource_type_object?: ResourceTypeObj;
-  tenant_object?: TenantObj;
-  created_at?: string;
+  id?: string | null;
+  organization_object?: OrganizationObject | null;
+  project_object?: ProjectObject | null;
+  environment_object?: EnvironmentObject | null;
+  pdp_config_object?: PdpConfigObject | null;
+  user_object?: UserObj | null;
+  action_object?: ActionObj | null;
+  resource_type_object?: ResourceTypeObj | null;
+  tenant_object?: TenantObj | null;
+  created_at?: string | null;
 }
