@@ -2,7 +2,7 @@
   "scope": "Reviewed Node AST evidence, not a shared target",
   "sdk": {
     "authoredClassShapes": {
-      "src/api/api-client.ts:ApiClient": "f0a558d2f4ab6b81d9736522e07fd4f31d9fc7192b90d72e5330a309dadf51fe",
+      "src/api/api-client.ts:ApiClient": "373f297f339c2ded36b3c4289a38f3ab66dec4da8dccd7fcf99622f9d10769f7",
       "src/api/base.ts:BaseFactsPermitAPI": "d54abe08baf1c3cf60b7c2dcc6de5daa886d258067988490df118b6f042e7c40",
       "src/api/base.ts:BasePermitApi": "c226bd3d4f364e0484706683e1073a21ac6fa201749ffa2903dae4ed1d6d0239",
       "src/api/base.ts:PermitApiError": "6aa8dbec715101edd3fe8b7835cc023149bf80f041964aa6f18783d1daa47f9a",
@@ -27,6 +27,8 @@
       "src/api/role-assignments.ts:RoleAssignmentsApi": "48903ae8fa791d37fd53fd3402388a36b34dc0d60a21b53e9cb4e99dbdf18618",
       "src/api/roles.ts:RolesApi": "dc48457df60c94a7d4904cd0c5b0dd5be99f3a9905588c273de90e952ac07362",
       "src/api/tenants.ts:TenantsApi": "0d1b4b8ebd111804a89aa027043091ea95d5d8c2c3011aac016d3057e7c3d9bf",
+      "src/api/user-attributes.ts:UserAttributesApi": "5e0081bc92454c12785e3ab3b97882b2547d257da6d078c507bd2a22511c96e8",
+      "src/api/user-invites.ts:UserInvitesApi": "0f000adabfee6953fe5ce7944e11adbf952c901f86b7163755918c733b1c7e6e",
       "src/api/users.ts:UsersApi": "a777e0965c966b00d2fe916374b924251aa75c406c6dec78f21830b6d79f4e2a",
       "src/config.ts:ConfigFactory": "5dc5eeecb95886e850dae6c76c83ab96ac7c3f3661cee616d47e8e9f5dde4be4",
       "src/enforcement/enforcer.ts:Enforcer": "c94d57cc39709aa00c81bd6aaede74a943ff3af54f96c4586d363644bb73dff2",
@@ -35,8 +37,7 @@
       "src/enforcement/enforcer.ts:PermitPDPStatusError": "25fff480295bb4b4afaca85625891e5ea3e98c8767a68333a2a246f3a4acd82a",
       "src/index.ts:Permit": "d4df300273e2b47ac939cb68e3a4796ab4604b84b1b1fc6da75c81df8fcee791",
       "src/logger.ts:LoggerFactory": "ac4bd9886641019a5aa3fb64bfe2d4baac7b8904c854afcbcda48af87fb35974",
-      "src/utils/context.ts:ContextStore": "0a94c1379b87bea55588ee5624ef329a97befe0e32988588dce84847798c2d09",
-      "src/api/user-invites.ts:UserInvitesApi": "0f000adabfee6953fe5ce7944e11adbf952c901f86b7163755918c733b1c7e6e"
+      "src/utils/context.ts:ContextStore": "0a94c1379b87bea55588ee5624ef329a97befe0e32988588dce84847798c2d09"
     },
     "authoredShapes": {
       "src/api/api-client.ts:IPermitApi": {
@@ -62,6 +63,7 @@
           "roleAssignments: IRoleAssignmentsApi;",
           "roles: IRolesApi;",
           "tenants: ITenantsApi;",
+          "userAttributes: IUserAttributesApi;",
           "userInvites: IUserInvitesApi;",
           "users: IUsersApi;"
         ]
@@ -368,6 +370,21 @@
           "update<Attributes extends object = object>(instanceKey: string, instanceData: ResourceInstanceUpdate): Promise<ResourceInstanceRead<Attributes>>;"
         ]
       },
+      "src/api/resource-instances.ts:PaginatedResultResourceInstanceDetailedRead": {
+        "extends": [" extends GeneratedDetailedPage"],
+        "kind": "interface",
+        "members": ["data: ResourceInstanceDetailedRead<Attributes>[];"]
+      },
+      "src/api/resource-instances.ts:ResourceInstanceDetailedRead": {
+        "extends": [" extends GeneratedResourceInstanceDetailedRead"],
+        "kind": "interface",
+        "members": ["attributes?: Attributes;"]
+      },
+      "src/api/resource-instances.ts:ResourceInstanceRead": {
+        "extends": [" extends GeneratedResourceInstanceRead"],
+        "kind": "interface",
+        "members": ["attributes?: Attributes;"]
+      },
       "src/api/resource-relations.ts:IListRelations": {
         "extends": [" extends IPagination"],
         "kind": "interface",
@@ -506,6 +523,99 @@
           "update<Attributes extends object = object>(tenantKey: string, tenantData: TenantUpdate): Promise<TenantRead<Attributes>>;"
         ]
       },
+      "src/api/tenants.ts:PaginatedResultTenantRead": {
+        "extends": [" extends GeneratedPaginatedResultTenantRead"],
+        "kind": "interface",
+        "members": ["data: TenantRead<Attributes>[];"]
+      },
+      "src/api/tenants.ts:TenantRead": {
+        "extends": [" extends GeneratedTenantRead"],
+        "kind": "interface",
+        "members": ["attributes?: Attributes;"]
+      },
+      "src/api/user-attributes.ts:IUserAttributesApi": {
+        "extends": [],
+        "kind": "interface",
+        "members": [
+          "create(attribute: ResourceAttributeCreate): Promise<ResourceAttributeRead>;",
+          "delete(attributeKey: string): Promise<void>;",
+          "get(attributeKey: string): Promise<ResourceAttributeRead>;",
+          "list(params?: IPagination): Promise<ResourceAttributeRead[]>;",
+          "update(attributeKey: string, attribute: ResourceAttributeUpdate): Promise<ResourceAttributeRead>;"
+        ]
+      },
+      "src/api/user-invites.ts:ElementsUserInviteApprove": {
+        "extends": [" extends Omit<GeneratedApprove, 'attributes'>"],
+        "kind": "interface",
+        "members": ["attributes: object | null;"]
+      },
+      "src/api/user-invites.ts:ElementsUserInviteCreate": {
+        "extends": [" extends Omit<GeneratedCreate, NullableInviteKeys>"],
+        "kind": "interface",
+        "members": [
+          "first_name: string | null;",
+          "key: string | null;",
+          "last_name: string | null;",
+          "resource_instance_id: string | null;"
+        ]
+      },
+      "src/api/user-invites.ts:ElementsUserInviteRead": {
+        "extends": [" extends Omit<GeneratedRead, NullableInviteKeys>"],
+        "kind": "interface",
+        "members": [
+          "first_name: string | null;",
+          "key: string | null;",
+          "last_name: string | null;",
+          "resource_instance_id: string | null;"
+        ]
+      },
+      "src/api/user-invites.ts:ElementsUserInviteUpdate": {
+        "extends": [" extends Omit<GeneratedUpdate, NullableInviteKeys>"],
+        "kind": "interface",
+        "members": [
+          "first_name: string | null;",
+          "key: string | null;",
+          "last_name: string | null;",
+          "resource_instance_id: string | null;"
+        ]
+      },
+      "src/api/user-invites.ts:IListUserInvites": {
+        "extends": [" extends IPagination"],
+        "kind": "interface",
+        "members": ["role?: string;", "search?: string;", "tenant?: string;"]
+      },
+      "src/api/user-invites.ts:IUserInvitesApi": {
+        "extends": [],
+        "kind": "interface",
+        "members": [
+          "approve<Attributes extends object = object>(userInviteId: string, approval: ElementsUserInviteApprove): Promise<UserInviteApprovalRead<Attributes>>;",
+          "create(invite: ElementsUserInviteCreate): Promise<ElementsUserInviteRead>;",
+          "delete(userInviteId: string): Promise<void>;",
+          "get(userInviteId: string): Promise<ElementsUserInviteRead>;",
+          "list(params?: IListUserInvites): Promise<PaginatedResultElementsUserInviteRead>;",
+          "update(userInviteId: string, invite: ElementsUserInviteUpdate): Promise<ElementsUserInviteRead>;"
+        ]
+      },
+      "src/api/user-invites.ts:NullableInviteKeys": {
+        "kind": "type",
+        "type": "'key' | 'first_name' | 'last_name' | 'resource_instance_id'"
+      },
+      "src/api/user-invites.ts:PaginatedResultElementsUserInviteRead": {
+        "extends": [" extends Omit<GeneratedPage, 'data'>"],
+        "kind": "interface",
+        "members": ["data: ElementsUserInviteRead[];"]
+      },
+      "src/api/user-invites.ts:UserInviteApprovalRead": {
+        "extends": [
+          " extends Omit<UserRead<Attributes>, 'first_name' | 'last_name' | 'attributes'>"
+        ],
+        "kind": "interface",
+        "members": [
+          "attributes?: Attributes | null;",
+          "first_name?: string | null;",
+          "last_name?: string | null;"
+        ]
+      },
       "src/api/users.ts:IBaseGetUserRoles": {
         "extends": [],
         "kind": "interface",
@@ -565,9 +675,19 @@
           "searchOperator?: SearchOperator;"
         ]
       },
+      "src/api/users.ts:PaginatedResultUserRead": {
+        "extends": [" extends GeneratedPaginatedResultUserRead"],
+        "kind": "interface",
+        "members": ["data: UserRead<Attributes>[];"]
+      },
       "src/api/users.ts:ReturnIGetUserRolesType": {
         "kind": "type",
         "type": "T extends IGetUserRolesWithTotalCount ? T extends IGetUserRolesWithDetails ? PaginatedResultRoleAssignmentDetailedRead : PaginatedResultRoleAssignmentRead : T extends IGetUserRolesWithDetails ? RoleAssignmentDetailedRead[] : RoleAssignmentRead[]"
+      },
+      "src/api/users.ts:UserRead": {
+        "extends": [" extends GeneratedUserRead"],
+        "kind": "interface",
+        "members": ["attributes?: Attributes;"]
       },
       "src/config.ts:FactsSyncTimeoutPolicy": {
         "kind": "type",
@@ -871,113 +991,6 @@
       "src/utils/retry.ts:RetryConditionFn": {
         "kind": "type",
         "type": "(error: AxiosError) => boolean"
-      },
-      "src/api/resource-instances.ts:PaginatedResultResourceInstanceDetailedRead": {
-        "extends": [" extends GeneratedDetailedPage"],
-        "kind": "interface",
-        "members": ["data: ResourceInstanceDetailedRead<Attributes>[];"]
-      },
-      "src/api/resource-instances.ts:ResourceInstanceDetailedRead": {
-        "extends": [" extends GeneratedResourceInstanceDetailedRead"],
-        "kind": "interface",
-        "members": ["attributes?: Attributes;"]
-      },
-      "src/api/resource-instances.ts:ResourceInstanceRead": {
-        "extends": [" extends GeneratedResourceInstanceRead"],
-        "kind": "interface",
-        "members": ["attributes?: Attributes;"]
-      },
-      "src/api/tenants.ts:TenantRead": {
-        "extends": [" extends GeneratedTenantRead"],
-        "kind": "interface",
-        "members": ["attributes?: Attributes;"]
-      },
-      "src/api/users.ts:PaginatedResultUserRead": {
-        "extends": [" extends GeneratedPaginatedResultUserRead"],
-        "kind": "interface",
-        "members": ["data: UserRead<Attributes>[];"]
-      },
-      "src/api/users.ts:UserRead": {
-        "extends": [" extends GeneratedUserRead"],
-        "kind": "interface",
-        "members": ["attributes?: Attributes;"]
-      },
-      "src/api/tenants.ts:PaginatedResultTenantRead": {
-        "extends": [" extends GeneratedPaginatedResultTenantRead"],
-        "kind": "interface",
-        "members": ["data: TenantRead<Attributes>[];"]
-      },
-      "src/api/user-invites.ts:ElementsUserInviteApprove": {
-        "extends": [" extends Omit<GeneratedApprove, 'attributes'>"],
-        "kind": "interface",
-        "members": ["attributes: object | null;"]
-      },
-      "src/api/user-invites.ts:ElementsUserInviteCreate": {
-        "extends": [" extends Omit<GeneratedCreate, NullableInviteKeys>"],
-        "kind": "interface",
-        "members": [
-          "first_name: string | null;",
-          "key: string | null;",
-          "last_name: string | null;",
-          "resource_instance_id: string | null;"
-        ]
-      },
-      "src/api/user-invites.ts:ElementsUserInviteRead": {
-        "extends": [" extends Omit<GeneratedRead, NullableInviteKeys>"],
-        "kind": "interface",
-        "members": [
-          "first_name: string | null;",
-          "key: string | null;",
-          "last_name: string | null;",
-          "resource_instance_id: string | null;"
-        ]
-      },
-      "src/api/user-invites.ts:ElementsUserInviteUpdate": {
-        "extends": [" extends Omit<GeneratedUpdate, NullableInviteKeys>"],
-        "kind": "interface",
-        "members": [
-          "first_name: string | null;",
-          "key: string | null;",
-          "last_name: string | null;",
-          "resource_instance_id: string | null;"
-        ]
-      },
-      "src/api/user-invites.ts:IListUserInvites": {
-        "extends": [" extends IPagination"],
-        "kind": "interface",
-        "members": ["role?: string;", "search?: string;", "tenant?: string;"]
-      },
-      "src/api/user-invites.ts:IUserInvitesApi": {
-        "extends": [],
-        "kind": "interface",
-        "members": [
-          "approve<Attributes extends object = object>(userInviteId: string, approval: ElementsUserInviteApprove): Promise<UserInviteApprovalRead<Attributes>>;",
-          "create(invite: ElementsUserInviteCreate): Promise<ElementsUserInviteRead>;",
-          "delete(userInviteId: string): Promise<void>;",
-          "get(userInviteId: string): Promise<ElementsUserInviteRead>;",
-          "list(params?: IListUserInvites): Promise<PaginatedResultElementsUserInviteRead>;",
-          "update(userInviteId: string, invite: ElementsUserInviteUpdate): Promise<ElementsUserInviteRead>;"
-        ]
-      },
-      "src/api/user-invites.ts:NullableInviteKeys": {
-        "kind": "type",
-        "type": "'key' | 'first_name' | 'last_name' | 'resource_instance_id'"
-      },
-      "src/api/user-invites.ts:PaginatedResultElementsUserInviteRead": {
-        "extends": [" extends Omit<GeneratedPage, 'data'>"],
-        "kind": "interface",
-        "members": ["data: ElementsUserInviteRead[];"]
-      },
-      "src/api/user-invites.ts:UserInviteApprovalRead": {
-        "extends": [
-          " extends Omit<UserRead<Attributes>, 'first_name' | 'last_name' | 'attributes'>"
-        ],
-        "kind": "interface",
-        "members": [
-          "attributes?: Attributes | null;",
-          "first_name?: string | null;",
-          "last_name?: string | null;"
-        ]
       }
     },
     "functionShapes": {
@@ -21023,6 +21036,17 @@
       "src/api/tenants.ts:TenantsApi.list": "d73563fa6af5fa334a3ca279858d3ef1be75f93c59e3602f61709858a6bd936d",
       "src/api/tenants.ts:TenantsApi.listTenantUsers": "b8d46dd85f47691c41684a7348a5012bf2269f23d34142defa38d2ca61be6d38",
       "src/api/tenants.ts:TenantsApi.update": "227c4505187e9a97ebfb47c0dd668f7865d97b673f9814c11159d8db3772fecb",
+      "src/api/user-attributes.ts:UserAttributesApi.create": "932b48ff594da0fbe79e465f4b787085c948657f72ee8e3100ff792df814ce42",
+      "src/api/user-attributes.ts:UserAttributesApi.delete": "a332fc1121104734f296009a0d782b0da06cbb7402d05645b8108a2e858e17c3",
+      "src/api/user-attributes.ts:UserAttributesApi.get": "95744ba805a98a960632aec84bf17cb1bbe34794885e39dd52ff4d5a5ffa3b55",
+      "src/api/user-attributes.ts:UserAttributesApi.list": "626569a539505be09d371461a7a86eac7480497635036e16b6d0558df3275af6",
+      "src/api/user-attributes.ts:UserAttributesApi.update": "ea1f3b00a579d0c2d1e94ff3c61698baea9c6d06575c2be5a4e595e8e169b0cc",
+      "src/api/user-invites.ts:UserInvitesApi.approve": "b660cedcb8e9efd26553f43945a97b24a76edf3b3234c48ae62439a050959f1b",
+      "src/api/user-invites.ts:UserInvitesApi.create": "c4ede7cfbdab26f3a09e41f3aad61a29ab4797ca0232b018a2a7bb9a0b5ecf69",
+      "src/api/user-invites.ts:UserInvitesApi.delete": "ad56a9a6b942fa63d6619976e4d81f4cb14d4a3eae6136b28e49abee273a4671",
+      "src/api/user-invites.ts:UserInvitesApi.get": "acc754cd28ab05516cedd14a6162e4177ac22e678c2e92e0e4ab5a7a41f32b50",
+      "src/api/user-invites.ts:UserInvitesApi.list": "ca5409501df6a941ee5cf4f4f2518aca9782511f126c40093e7dbf13e9a8b510",
+      "src/api/user-invites.ts:UserInvitesApi.update": "c9d4db7a02c52d85c61882232e6ccfc5c5c7b871206124891feeff9b8ee2f22b",
       "src/api/users.ts:UsersApi.assignRole": "c5f25fbc4d157e56149a554b98127d83b3cce7c6f13b7da8ca0302cd4b59ef0d",
       "src/api/users.ts:UsersApi.bulkUserCreate": "35c763b8cf33dadea4a7a1ca70eea387252f49704a3ca2c96d1342f8434bea2f",
       "src/api/users.ts:UsersApi.bulkUserDelete": "d3c10d77fdfd11f69e3aa33019d4adfbc471d14f8930bb845c56ffb6125b3063",
@@ -21085,16 +21109,10 @@
       "src/utils/diagnostics.ts:.mergeDiagnosticSecrets": "d4baa0c988a992fee9f6c35b91ed0a53cff4105b1d7acc1c6465643cc3596e81",
       "src/utils/diagnostics.ts:.message": "bbf7417c49d38fc88c0da86cd23c7d7f32c88bc7d4aba7b8b10fada989deefb0",
       "src/utils/diagnostics.ts:.redactPrivateValues": "2845c5c8ab8d26308fec121a6d98fca804194dabbac636eb4dd41a1cd2eef259",
-      "src/utils/diagnostics.ts:.visit": "91387e5c3a03951500f9ecd0b20705eba1ea04b60c3a9c078de951e27f30becb",
-      "src/api/user-invites.ts:UserInvitesApi.approve": "b660cedcb8e9efd26553f43945a97b24a76edf3b3234c48ae62439a050959f1b",
-      "src/api/user-invites.ts:UserInvitesApi.create": "c4ede7cfbdab26f3a09e41f3aad61a29ab4797ca0232b018a2a7bb9a0b5ecf69",
-      "src/api/user-invites.ts:UserInvitesApi.delete": "ad56a9a6b942fa63d6619976e4d81f4cb14d4a3eae6136b28e49abee273a4671",
-      "src/api/user-invites.ts:UserInvitesApi.get": "acc754cd28ab05516cedd14a6162e4177ac22e678c2e92e0e4ab5a7a41f32b50",
-      "src/api/user-invites.ts:UserInvitesApi.list": "ca5409501df6a941ee5cf4f4f2518aca9782511f126c40093e7dbf13e9a8b510",
-      "src/api/user-invites.ts:UserInvitesApi.update": "c9d4db7a02c52d85c61882232e6ccfc5c5c7b871206124891feeff9b8ee2f22b"
+      "src/utils/diagnostics.ts:.visit": "91387e5c3a03951500f9ecd0b20705eba1ea04b60c3a9c078de951e27f30becb"
     },
     "initializationShapes": {
-      "src/api/api-client.ts:ApiClient.constructor": "59ea332336e923dc56f8688375230ce26156cef4df8f31027b1f47fe0c70dff7",
+      "src/api/api-client.ts:ApiClient.constructor": "8445659fc69d7e977fc369d742aa54cb0731b722b8136385067f330d232e5d6b",
       "src/api/base.ts:BaseFactsPermitAPI.constructor": "6e36d36e49b99ff53949668d767e5dc630e0f849e693aa48b8b6d75ecdaacad1",
       "src/api/base.ts:BasePermitApi.constructor": "7c4a19909cf67f1c91b5086d603edae3a11f9f8599babb2f7f0418e9c1473353",
       "src/api/base.ts:PermitApiError.constructor": "2ca0da89f1fe278121953aab7b5adf980a90905b1dfde38c413a0191b56f9436",
@@ -21122,6 +21140,8 @@
       "src/api/role-assignments.ts:RoleAssignmentsApi.constructor": "6b97701130a940e825f879d7815bca3b46712e0dd6159e29bde8269d87b70ce5",
       "src/api/roles.ts:RolesApi.constructor": "2bd0e83b72db918151a36152c736dee3a84e871230cc08005d6996474752f5dc",
       "src/api/tenants.ts:TenantsApi.constructor": "8d6f8741c4b964c78d7ec07ac7e92c6b5b761b6317ce656afc099f64f9bba747",
+      "src/api/user-attributes.ts:UserAttributesApi.constructor": "9df99cd50dfd82a45b3f497d9888e06f489097b81de4a68018270e3845eefa73",
+      "src/api/user-invites.ts:UserInvitesApi.constructor": "b7d9171211725879e89c774ff6da0010d46415896fde5e569ce82ba4a15d4861",
       "src/api/users.ts:UsersApi.constructor": "c3f53ff93453caac14ceb493c097cdf551654434a54b8c4ebea2ed01db1d620f",
       "src/enforcement/enforcer.ts:Enforcer.constructor": "c061950b57df51721ae75d0599581a771771e9124f64c6bb39ccccd743ada33f",
       "src/enforcement/enforcer.ts:PermitConnectionError.constructor": "b281f839d10bd89f178407d6e5d76256d0bd614f4655d75632ef416d4e269042",
@@ -21144,8 +21164,7 @@
       "src/utils/retry.ts:httpMethods": "cf801f911dbcd4d7e2853f05305e186b097e789a3c14440623c13047ec72a00b",
       "src/utils/retry.ts:maximumTimerDelay": "4947b585ee731c61bd9a008ba1016e23c06be3ad1aa5770f561ab23aab338e66",
       "src/utils/retry.ts:permanentErrorCodes": "ce4cccfdfe51f554290c473da0979da371faa4bdc8f4b10dbee66c878d759ced",
-      "src/utils/retry.ts:transientNetworkCodes": "2cdb83120b7946d946f283ace219d13f1001bd369c5062fa8bf7032f9c8bee1c",
-      "src/api/user-invites.ts:UserInvitesApi.constructor": "b7d9171211725879e89c774ff6da0010d46415896fde5e569ce82ba4a15d4861"
+      "src/utils/retry.ts:transientNetworkCodes": "2cdb83120b7946d946f283ace219d13f1001bd369c5062fa8bf7032f9c8bee1c"
     },
     "methods": {
       "permit.api.actionGroups.create": {
@@ -25638,6 +25657,377 @@
           "returns": "this"
         }
       },
+      "permit.api.userAttributes.create": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(attribute: ResourceAttributeCreate): Promise<ResourceAttributeRead>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "UserAttributesApi.createUserAttribute",
+            "method": "POST",
+            "path": "/v2/schema/{proj_id}/{env_id}/users/attributes",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "attribute",
+              "optional": false,
+              "type": "ResourceAttributeCreate"
+            }
+          ],
+          "returns": "Promise<ResourceAttributeRead>"
+        }
+      },
+      "permit.api.userAttributes.delete": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(attributeKey: string): Promise<void>"],
+        "routes": [
+          {
+            "generatedMethod": "UserAttributesApi.deleteUserAttribute",
+            "method": "DELETE",
+            "path": "/v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}",
+            "supporting": false
+          },
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "attributeKey",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "Promise<void>"
+        }
+      },
+      "permit.api.userAttributes.get": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(attributeKey: string): Promise<ResourceAttributeRead>"],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "UserAttributesApi.getUserAttribute",
+            "method": "GET",
+            "path": "/v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "attributeKey",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "Promise<ResourceAttributeRead>"
+        }
+      },
+      "permit.api.userAttributes.list": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(params?: IPagination | undefined): Promise<ResourceAttributeRead[]>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "UserAttributesApi.listUserAttributes",
+            "method": "GET",
+            "path": "/v2/schema/{proj_id}/{env_id}/users/attributes",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": "{}",
+              "name": "params",
+              "optional": true,
+              "type": "IPagination"
+            }
+          ],
+          "returns": "Promise<ResourceAttributeRead[]>"
+        }
+      },
+      "permit.api.userAttributes.update": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(attributeKey: string, attribute: ResourceAttributeUpdate): Promise<ResourceAttributeRead>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "UserAttributesApi.updateUserAttribute",
+            "method": "PATCH",
+            "path": "/v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "attributeKey",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "attribute",
+              "optional": false,
+              "type": "ResourceAttributeUpdate"
+            }
+          ],
+          "returns": "Promise<ResourceAttributeRead>"
+        }
+      },
+      "permit.api.userInvites.approve": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "<Attributes extends object = object>(userInviteId: string, approval: ElementsUserInviteApprove): Promise<UserInviteApprovalRead<Attributes>>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "UserInvitesApi.approveUserInvite",
+            "method": "POST",
+            "path": "/v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}/approve",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": ["Attributes extends object = object"],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "userInviteId",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "approval",
+              "optional": false,
+              "type": "ElementsUserInviteApprove"
+            }
+          ],
+          "returns": "Promise<UserInviteApprovalRead<Attributes>>"
+        }
+      },
+      "permit.api.userInvites.create": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(invite: ElementsUserInviteCreate): Promise<ElementsUserInviteRead>"],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "UserInvitesApi.createUserInvite",
+            "method": "POST",
+            "path": "/v2/facts/{proj_id}/{env_id}/user_invites",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "invite",
+              "optional": false,
+              "type": "ElementsUserInviteCreate"
+            }
+          ],
+          "returns": "Promise<ElementsUserInviteRead>"
+        }
+      },
+      "permit.api.userInvites.delete": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(userInviteId: string): Promise<void>"],
+        "routes": [
+          {
+            "generatedMethod": "UserInvitesApi.deleteUserInvite",
+            "method": "DELETE",
+            "path": "/v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}",
+            "supporting": false
+          },
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "userInviteId",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "Promise<void>"
+        }
+      },
+      "permit.api.userInvites.get": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(userInviteId: string): Promise<ElementsUserInviteRead>"],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "UserInvitesApi.getUserInvite",
+            "method": "GET",
+            "path": "/v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "userInviteId",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returns": "Promise<ElementsUserInviteRead>"
+        }
+      },
+      "permit.api.userInvites.list": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(params?: IListUserInvites | undefined): Promise<PaginatedResultElementsUserInviteRead>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "UserInvitesApi.listUserInvites",
+            "method": "GET",
+            "path": "/v2/facts/{proj_id}/{env_id}/user_invites",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": "{}",
+              "name": "params",
+              "optional": true,
+              "type": "IListUserInvites"
+            }
+          ],
+          "returns": "Promise<PaginatedResultElementsUserInviteRead>"
+        }
+      },
+      "permit.api.userInvites.update": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": [
+          "(userInviteId: string, invite: ElementsUserInviteUpdate): Promise<ElementsUserInviteRead>"
+        ],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "UserInvitesApi.updateUserInvite",
+            "method": "PATCH",
+            "path": "/v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "userInviteId",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "invite",
+              "optional": false,
+              "type": "ElementsUserInviteUpdate"
+            }
+          ],
+          "returns": "Promise<ElementsUserInviteRead>"
+        }
+      },
       "permit.api.users.assignRole": {
         "deprecated": false,
         "factsProxy": true,
@@ -26498,210 +26888,6 @@
             }
           ],
           "returns": "Promise<TenantDetails[]>"
-        }
-      },
-      "permit.api.userInvites.approve": {
-        "deprecated": false,
-        "factsProxy": false,
-        "publicSignatures": [
-          "<Attributes extends object = object>(userInviteId: string, approval: ElementsUserInviteApprove): Promise<UserInviteApprovalRead<Attributes>>"
-        ],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "UserInvitesApi.approveUserInvite",
-            "method": "POST",
-            "path": "/v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}/approve",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": ["Attributes extends object = object"],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "userInviteId",
-              "optional": false,
-              "type": "string"
-            },
-            {
-              "initializer": null,
-              "name": "approval",
-              "optional": false,
-              "type": "ElementsUserInviteApprove"
-            }
-          ],
-          "returns": "Promise<UserInviteApprovalRead<Attributes>>"
-        }
-      },
-      "permit.api.userInvites.create": {
-        "deprecated": false,
-        "factsProxy": false,
-        "publicSignatures": ["(invite: ElementsUserInviteCreate): Promise<ElementsUserInviteRead>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "UserInvitesApi.createUserInvite",
-            "method": "POST",
-            "path": "/v2/facts/{proj_id}/{env_id}/user_invites",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "invite",
-              "optional": false,
-              "type": "ElementsUserInviteCreate"
-            }
-          ],
-          "returns": "Promise<ElementsUserInviteRead>"
-        }
-      },
-      "permit.api.userInvites.delete": {
-        "deprecated": false,
-        "factsProxy": false,
-        "publicSignatures": ["(userInviteId: string): Promise<void>"],
-        "routes": [
-          {
-            "generatedMethod": "UserInvitesApi.deleteUserInvite",
-            "method": "DELETE",
-            "path": "/v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}",
-            "supporting": false
-          },
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "userInviteId",
-              "optional": false,
-              "type": "string"
-            }
-          ],
-          "returns": "Promise<void>"
-        }
-      },
-      "permit.api.userInvites.get": {
-        "deprecated": false,
-        "factsProxy": false,
-        "publicSignatures": ["(userInviteId: string): Promise<ElementsUserInviteRead>"],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "UserInvitesApi.getUserInvite",
-            "method": "GET",
-            "path": "/v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "userInviteId",
-              "optional": false,
-              "type": "string"
-            }
-          ],
-          "returns": "Promise<ElementsUserInviteRead>"
-        }
-      },
-      "permit.api.userInvites.list": {
-        "deprecated": false,
-        "factsProxy": false,
-        "publicSignatures": [
-          "(params?: IListUserInvites | undefined): Promise<PaginatedResultElementsUserInviteRead>"
-        ],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "UserInvitesApi.listUserInvites",
-            "method": "GET",
-            "path": "/v2/facts/{proj_id}/{env_id}/user_invites",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": "{}",
-              "name": "params",
-              "optional": true,
-              "type": "IListUserInvites"
-            }
-          ],
-          "returns": "Promise<PaginatedResultElementsUserInviteRead>"
-        }
-      },
-      "permit.api.userInvites.update": {
-        "deprecated": false,
-        "factsProxy": false,
-        "publicSignatures": [
-          "(userInviteId: string, invite: ElementsUserInviteUpdate): Promise<ElementsUserInviteRead>"
-        ],
-        "routes": [
-          {
-            "generatedMethod": "APIKeysApi.getApiKeyScope",
-            "method": "GET",
-            "path": "/v2/api-key/scope",
-            "supporting": true
-          },
-          {
-            "generatedMethod": "UserInvitesApi.updateUserInvite",
-            "method": "PATCH",
-            "path": "/v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}",
-            "supporting": false
-          }
-        ],
-        "signature": {
-          "generics": [],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "userInviteId",
-              "optional": false,
-              "type": "string"
-            },
-            {
-              "initializer": null,
-              "name": "invite",
-              "optional": false,
-              "type": "ElementsUserInviteUpdate"
-            }
-          ],
-          "returns": "Promise<ElementsUserInviteRead>"
         }
       }
     },

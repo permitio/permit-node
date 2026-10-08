@@ -1,6 +1,6 @@
 {
   "scope": "Node-local evidence; not the unpublished shared parity target",
-  "reviewedAt": "2026-09-30",
+  "reviewedAt": "2026-10-08",
   "operations": {
     "control-plane DELETE /v2/api-key/{api_key_id}": {
       "action": "defer",
@@ -319,9 +319,9 @@
     },
     "control-plane DELETE /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}": {
       "action": "add",
-      "owner": "PER-16345",
-      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "owner": "PER-16942",
+      "reason": "Dedicated userAttributes facade exposes this user schema operation with the existing ResourceAttribute models, environment scope and full responses; no resource selector or user-value API is added.",
+      "source": "https://linear.app/permit/issue/PER-16942",
       "lifecycle": "GA"
     },
     "control-plane GET /v2/activity": {
@@ -1103,16 +1103,16 @@
     },
     "control-plane GET /v2/schema/{proj_id}/{env_id}/users/attributes": {
       "action": "add",
-      "owner": "PER-16345",
-      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "owner": "PER-16942",
+      "reason": "Dedicated userAttributes facade exposes this user schema operation with the existing ResourceAttribute models, environment scope and full responses; no resource selector or user-value API is added.",
+      "source": "https://linear.app/permit/issue/PER-16942",
       "lifecycle": "GA"
     },
     "control-plane GET /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}": {
       "action": "add",
-      "owner": "PER-16345",
-      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "owner": "PER-16942",
+      "reason": "Dedicated userAttributes facade exposes this user schema operation with the existing ResourceAttribute models, environment scope and full responses; no resource selector or user-value API is added.",
+      "source": "https://linear.app/permit/issue/PER-16942",
       "lifecycle": "GA"
     },
     "control-plane PATCH /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}": {
@@ -1257,9 +1257,9 @@
     },
     "control-plane PATCH /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}": {
       "action": "add",
-      "owner": "PER-16345",
-      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "owner": "PER-16942",
+      "reason": "Dedicated userAttributes facade exposes this user schema operation with the existing ResourceAttribute models, environment scope and full responses; no resource selector or user-value API is added.",
+      "source": "https://linear.app/permit/issue/PER-16942",
       "lifecycle": "GA"
     },
     "control-plane POST /v2/api-key": {
@@ -1684,9 +1684,9 @@
     },
     "control-plane POST /v2/schema/{proj_id}/{env_id}/users/attributes": {
       "action": "add",
-      "owner": "PER-16345",
-      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "owner": "PER-16942",
+      "reason": "Dedicated userAttributes facade exposes this user schema operation with the existing ResourceAttribute models, environment scope and full responses; no resource selector or user-value API is added.",
+      "source": "https://linear.app/permit/issue/PER-16942",
       "lifecycle": "GA"
     },
     "control-plane PUT /v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/access_requests/{access_request_id}/approve": {

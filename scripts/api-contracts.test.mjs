@@ -57,7 +57,7 @@ test('accounts for complete source denominators while leaving parity and backend
   expect(report.sharedTarget.status).toBe('UNAVAILABLE');
   expect(report.realBackend.status).toBe('NOT_MEASURED');
   expect(report.operations).toHaveLength(307);
-  expect(report.counts.publicHttpMethods).toBe(152);
+  expect(report.counts.publicHttpMethods).toBe(157);
   expect(report.operations.filter((op) => op.source === 'control-plane')).toHaveLength(263);
   expect(report.operations.filter((op) => op.source === 'pdp-container')).toHaveLength(34);
   expect(report.operations.filter((op) => op.source === 'pdp-cloud')).toHaveLength(10);
@@ -91,6 +91,32 @@ test('exposes six direct invite operations without changing the source denominat
     expect(operation.coverage).toBe('exposed');
     expect(operation.methods).toHaveLength(1);
     expect(operation.decision).toMatchObject({ action: 'add', owner: 'PER-12882' });
+  }
+  expect(report.operations).toHaveLength(307);
+  expect(report.counts.generatedMethods).toBe(266);
+  expect(report.counts.generatedModels).toBe(408);
+});
+
+test('exposes five dedicated user attribute schema operations with explicit ownership', () => {
+  const report = coverageReport(evidence());
+  const names = ['create', 'delete', 'get', 'list', 'update'];
+  const methods = sdk.methods.filter((method) =>
+    method.name.startsWith('permit.api.userAttributes.'),
+  );
+  expect(methods.map((method) => method.name)).toEqual(
+    names.map((name) => `permit.api.userAttributes.${name}`),
+  );
+  expect(methods.every((method) => !method.factsProxy && !method.deprecated)).toBe(true);
+  const operations = report.operations.filter(
+    (operation) =>
+      operation.source === 'control-plane' && operation.path.includes('/users/attributes'),
+  );
+  expect(operations).toHaveLength(5);
+  for (const operation of operations) {
+    expect(operation.coverage).toBe('exposed');
+    expect(operation.methods).toHaveLength(1);
+    expect(operation.methods[0].name).toContain('permit.api.userAttributes.');
+    expect(operation.decision).toMatchObject({ action: 'add', owner: 'PER-16942' });
   }
   expect(report.operations).toHaveLength(307);
   expect(report.counts.generatedMethods).toBe(266);

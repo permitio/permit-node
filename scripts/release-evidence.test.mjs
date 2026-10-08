@@ -483,10 +483,37 @@ test('requires mapping for every method and retained operation without erasing g
 
 test('extracts all actual SDK/source entries with case-independent hashing', async () => {
   const result = await expectedReleaseInventory(resolve(import.meta.dirname, '..'));
-  expect(result.inventory.methods).toHaveLength(157);
+  expect(result.inventory.methods).toHaveLength(162);
   expect(
     result.inventory.methods.filter((method) => method.name.startsWith('permit.api.userInvites.')),
   ).toHaveLength(6);
+  const attributes = result.inventory.methods.filter((method) =>
+    method.name.startsWith('permit.api.userAttributes.'),
+  );
+  const plan = JSON.parse(
+    readFileSync(resolve(import.meta.dirname, '../api-coverage/release-matrix.json'), 'utf8'),
+  );
+  expect(attributes.map((method) => method.name)).toEqual(
+    ['create', 'delete', 'get', 'list', 'update'].map(
+      (method) => `permit.api.userAttributes.${method}`,
+    ),
+  );
+  for (const method of attributes) {
+    const name = method.name.split('.').at(-1);
+    expect(
+      plan.cases
+        .filter((entry) => entry.methodNames.includes(method.name))
+        .map((entry) => entry.id)
+        .sort(),
+    ).toEqual(
+      [
+        `wire.api.userAttributes.${name}.esm`,
+        `wire.api.userAttributes.${name}.commonjs`,
+        `api.user-attributes.${name}`,
+        'api.user-attributes.access',
+      ].sort(),
+    );
+  }
   expect(result.inventory.operations).toHaveLength(307);
   expect(result.inventorySha256).toBe(digest(canonicalReleaseInventory(result.inventory)));
   const changed = structuredClone(result.inventory);
@@ -598,7 +625,7 @@ test('the committed plan preserves missing source-addition proof', async () => {
   );
   expect(report.incomplete).toContain('Missing local candidate cell: Node 24.21.0/current.');
   expect(report.incomplete.some((message) => message.startsWith('Missing case '))).toBe(true);
-  expect(evidence.inventory.methods).toHaveLength(157);
+  expect(evidence.inventory.methods).toHaveLength(162);
   expect(evidence.inventory.operations).toHaveLength(307);
 }, 20_000);
 

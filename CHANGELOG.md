@@ -33,6 +33,9 @@ See [the migration guide](MIGRATION.md) for affected callers, actions and retain
 - **N1**: Add eight GA grouped Groups operations.
 - **N2**: Add new-user tenant membership, three detailed lists, and environment refresh ack.
 - **N3**: Add permission context, authorized-user/role-tenant discovery, and object filtering.
+- Add `permit.api.userAttributes` for user attribute schema list/get/create/update/delete,
+  preserving the dedicated routes and complete `ResourceAttributeRead` results. User values
+  remain managed through `permit.api.users`.
 - Export existing resource-relation/resource-role clients and their public contracts, plus missing
   method input/result types. `ApiContextLevel` and `PermitContextChangeError` are also named root
   exports. Generate linked group reference pages and validate local reference targets; building

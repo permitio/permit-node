@@ -364,6 +364,40 @@ console.log(users.total_count, users.data[0]?.associated_tenants);
 appear in each associated tenant's `resource_instance_roles`, with `resource`,
 `resource_instance` and `role` fields. Both flag values retain the same paginated result.
 
+## User attribute definitions
+
+`permit.api.userAttributes` manages the selected environment's user attribute schema through
+`list`, `get`, `create`, `update` and `delete`. These definitions describe policy attributes;
+individual user values are supplied through `permit.api.users`, such as `users.update`.
+Calls use the dedicated `/v2/schema/{proj_id}/{env_id}/users/attributes` routes on `apiUrl`,
+including when `proxyFactsViaPdp` is enabled.
+
+```typescript
+import { AttributeType } from 'permitio';
+
+const definition = await permit.api.userAttributes.create({
+  key: 'department',
+  type: AttributeType.String,
+  description: 'The department used by user policies.',
+});
+const definitions = await permit.api.userAttributes.list({ page: 1, perPage: 20 });
+const stored = await permit.api.userAttributes.get(definition.id);
+const updated = await permit.api.userAttributes.update(stored.key, {
+  description: 'Updated policy schema description.',
+});
+await permit.api.users.update('user-key', { attributes: { department: 'engineering' } });
+console.log(definitions.length, updated.resource_key, updated.built_in);
+await permit.api.userAttributes.delete(definition.id);
+```
+
+Creation requires the schema `key` and `AttributeType`; `description` is optional. Update is a
+partial schema body containing `type` and/or `description`. `get`, `update` and `delete` accept
+an attribute key or UUID. Results retain the full `ResourceAttributeRead` metadata, including
+resource identity, environment, timestamps and `built_in`; list returns an array, with SDK
+defaults page 1 and perPage 100. This dedicated group has no resource selector or `waitForSync()`
+method. Deleting a definition also removes its related data; policies then evaluate it as
+`undefined`. Context failures use `PermitContextError`; HTTP failures use `PermitApiError`.
+
 ## User invites
 
 `permit.api.userInvites` manages API-key facts invites through `create`, `list`, `get`,

@@ -1,5 +1,44 @@
 import SDK = require('permitio');
 
+async function userAttributeSchema(client: SDK.IPermitApi): Promise<void> {
+  const definitions: SDK.IUserAttributesApi = client.userAttributes;
+  const listMethod: SDK.UserAttributesApi['list'] = definitions.list;
+  const body: SDK.ResourceAttributeCreate = { key: 'department', type: SDK.AttributeType.String };
+  const patch: SDK.ResourceAttributeUpdate = { description: 'Department schema' };
+  const created: SDK.ResourceAttributeRead = await definitions.create(body);
+  const stored: SDK.ResourceAttributeRead = await definitions.get(created.id);
+  const changed: SDK.ResourceAttributeRead = await definitions.update(created.key, patch);
+  const rows: SDK.ResourceAttributeRead[] = await definitions.list({ page: 1, perPage: 7 });
+  const deleted: void = await definitions.delete(created.id);
+  const metadata: string[] = [
+    created.id,
+    created.resource_id,
+    created.resource_key,
+    created.organization_id,
+    created.project_id,
+    created.environment_id,
+    created.created_at,
+    created.updated_at,
+  ];
+  const builtIn: boolean = created.built_in;
+  // @ts-expect-error The schema body requires both key and type.
+  void definitions.create({ key: 'department' });
+  // @ts-expect-error Individual user values do not belong in a schema definition.
+  void definitions.create({ ...body, attributes: { department: 'engineering' } });
+  // @ts-expect-error The dedicated list has no resource selector.
+  void definitions.list({ resourceId: 'document' });
+  // @ts-expect-error Definitions return rows, not a total-count envelope.
+  const page: { data: SDK.ResourceAttributeRead[] } = await definitions.list();
+  // @ts-expect-error The public update contract does not allow a key change.
+  void definitions.update(created.id, { key: 'changed' });
+  // @ts-expect-error Schema description is not nullable.
+  void definitions.update(created.id, { description: null });
+  // @ts-expect-error Schema has no facts synchronization operation.
+  void definitions.waitForSync(5);
+  void [listMethod, stored, changed, rows, deleted, metadata, builtIn, page];
+}
+void userAttributeSchema;
+
 declare const api: SDK.IPermitApi;
 declare const permit: SDK.Permit;
 declare const relationClient: SDK.ResourceRelationsApi;

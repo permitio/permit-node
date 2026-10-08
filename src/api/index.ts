@@ -22,6 +22,7 @@ export * from '#src/api/roles';
 export * from '#src/api/tenants';
 export * from '#src/api/users';
 export * from '#src/api/user-invites';
+export * from '#src/api/user-attributes';
 export * from '#src/api/api-client';
 export * from '#src/api/elements';
 

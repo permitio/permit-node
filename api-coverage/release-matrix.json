@@ -2376,6 +2376,126 @@
         "control-plane DELETE /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}",
         "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}/approve"
       ]
+    },
+    {
+      "id": "wire.api.userAttributes.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.list"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/users/attributes"]
+    },
+    {
+      "id": "wire.api.userAttributes.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.list"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/users/attributes"]
+    },
+    {
+      "id": "api.user-attributes.list",
+      "level": "api",
+      "methodNames": ["permit.api.userAttributes.list"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/users/attributes"]
+    },
+    {
+      "id": "wire.api.userAttributes.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userAttributes.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "api.user-attributes.get",
+      "level": "api",
+      "methodNames": ["permit.api.userAttributes.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userAttributes.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.create"],
+      "operationKeys": ["control-plane POST /v2/schema/{proj_id}/{env_id}/users/attributes"]
+    },
+    {
+      "id": "wire.api.userAttributes.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.create"],
+      "operationKeys": ["control-plane POST /v2/schema/{proj_id}/{env_id}/users/attributes"]
+    },
+    {
+      "id": "api.user-attributes.create",
+      "level": "api",
+      "methodNames": ["permit.api.userAttributes.create"],
+      "operationKeys": ["control-plane POST /v2/schema/{proj_id}/{env_id}/users/attributes"]
+    },
+    {
+      "id": "wire.api.userAttributes.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userAttributes.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "api.user-attributes.update",
+      "level": "api",
+      "methodNames": ["permit.api.userAttributes.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userAttributes.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userAttributes.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "api.user-attributes.delete",
+      "level": "api",
+      "methodNames": ["permit.api.userAttributes.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "api.user-attributes.access",
+      "level": "api",
+      "methodNames": [
+        "permit.api.userAttributes.list",
+        "permit.api.userAttributes.get",
+        "permit.api.userAttributes.create",
+        "permit.api.userAttributes.update",
+        "permit.api.userAttributes.delete"
+      ],
+      "operationKeys": []
     }
   ],
   "abCaseIds": [
@@ -2551,7 +2671,11 @@
     "wire.user-invites.esm",
     "wire.user-invites.commonjs",
     "api.user-invites-lifecycle",
-    "api.user-invites-refusals"
+    "api.user-invites-refusals",
+    "wire.user-attributes.esm",
+    "wire.user-attributes.commonjs",
+    "api.user-attributes-lifecycle",
+    "api.user-attributes-access"
   ],
   "runIds": [
     "candidate.local.node22.13.0",

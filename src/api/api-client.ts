@@ -26,8 +26,12 @@ import { type IRolesApi, RolesApi } from '#src/api/roles';
 import { type ITenantsApi, TenantsApi } from '#src/api/tenants';
 import { type IUsersApi, UsersApi } from '#src/api/users';
 import { type IUserInvitesApi, UserInvitesApi } from '#src/api/user-invites';
+import { type IUserAttributesApi, UserAttributesApi } from '#src/api/user-attributes';
 
 export interface IPermitApi {
+  /** API for user attribute definitions; individual user values belong to users. */
+  userAttributes: IUserAttributesApi;
+
   /** Direct API for stored user invites and their approval; no mail delivery or PDP sync. */
   userInvites: IUserInvitesApi;
 
@@ -150,6 +154,9 @@ export interface IPermitApi {
 }
 
 export class ApiClient extends BasePermitApi implements IPermitApi {
+  /** API for user attribute definitions; individual user values belong to users. */
+  public readonly userAttributes: IUserAttributesApi;
+
   /** Direct API for stored user invites and their approval; no mail delivery or PDP sync. */
   public readonly userInvites: IUserInvitesApi;
 
@@ -263,6 +270,7 @@ export class ApiClient extends BasePermitApi implements IPermitApi {
    */
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
+    this.userAttributes = new UserAttributesApi(config, logger);
     this.userInvites = new UserInvitesApi(config, logger);
     this.groups = new GroupsApi(config, logger);
     this.pdps = new PdpsApi(config, logger);
