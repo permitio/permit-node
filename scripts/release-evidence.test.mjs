@@ -483,7 +483,7 @@ test('requires mapping for every method and retained operation without erasing g
 
 test('extracts all actual SDK/source entries with case-independent hashing', async () => {
   const result = await expectedReleaseInventory(resolve(import.meta.dirname, '..'));
-  expect(result.inventory.methods).toHaveLength(163);
+  expect(result.inventory.methods).toHaveLength(164);
   expect(
     result.inventory.methods.filter((method) => method.name.startsWith('permit.api.userInvites.')),
   ).toHaveLength(6);
@@ -639,7 +639,7 @@ test('the committed plan preserves missing source-addition proof', async () => {
   );
   expect(report.incomplete).toContain('Missing local candidate cell: Node 24.21.0/current.');
   expect(report.incomplete.some((message) => message.startsWith('Missing case '))).toBe(true);
-  expect(evidence.inventory.methods).toHaveLength(163);
+  expect(evidence.inventory.methods).toHaveLength(164);
   expect(evidence.inventory.operations).toHaveLength(307);
 }, 20_000);
 
@@ -674,3 +674,142 @@ test('requires complete execution evidence in the current Node 26 cell', () => {
   expect(report.exitCode).toBe(2);
   expect(report.incomplete).toContain('Missing local candidate cell: Node 26.11.0/current.');
 });
+
+test('the real matrix accepts reviewed URL phases without granting fixture setup case credit', async () => {
+  const root = resolve(import.meta.dirname, '..');
+  const actual = await expectedReleaseInventory(root);
+  const plan = JSON.parse(readFileSync(resolve(root, 'api-coverage/release-matrix.json'), 'utf8'));
+  const urlPhases = [
+    ['api.url-check-owned-fixtures', 'api'],
+    ['mock-pdp.url-check-contract', 'mock-pdp'],
+    ['mock-pdp.url-check-inputs', 'mock-pdp'],
+    ['mock-pdp.url-check-errors', 'mock-pdp'],
+    ['commonjs.mock-pdp.url-check-contract', 'mock-pdp'],
+    ['commonjs.mock-pdp.url-check-inputs', 'mock-pdp'],
+    ['commonjs.mock-pdp.url-check-errors', 'mock-pdp'],
+    ['pdp.url-check-mapped-allow-and-deny', 'pdp'],
+    ['pdp.url-check-mapping-removal', 'pdp'],
+  ];
+  expect(
+    plan.cases
+      .filter((entry) => entry.methodNames.includes('permit.checkUrl'))
+      .map((entry) => entry.id)
+      .sort(),
+  ).toEqual(
+    [
+      'wire.checkUrl.esm',
+      'wire.checkUrl.commonjs',
+      ...urlPhases.filter(([, kind]) => kind !== 'api').map(([id]) => id),
+    ].sort(),
+  );
+  const phaseForLevel = {
+    package: 'release.package.clone-helpers',
+    wire: 'release.wire.observed.esm',
+    'mock-pdp': 'mock-pdp.decisions-and-context',
+    api: 'api.core-roundtrip',
+    pdp: 'pdp.rbac-grant-and-tenant-boundary',
+  };
+  const { evidence, expected } = fixture();
+  expected.inventory = actual.inventory;
+  expected.methodLevels = actual.methodLevels;
+  expected.requirements = plan;
+  evidence.inventory = structuredClone(actual.inventory);
+  for (const row of evidence.inventory.methods)
+    row.caseIds = plan.cases
+      .filter((entry) => entry.methodNames.includes(row.name))
+      .map((entry) => entry.id);
+  for (const row of evidence.inventory.operations)
+    row.caseIds = plan.cases
+      .filter((entry) => entry.operationKeys.includes(`${row.source} ${row.method} ${row.path}`))
+      .map((entry) => entry.id);
+  evidence.sdk.inventorySha256 = actual.inventorySha256;
+  evidence.ab.intentionalDifferences = plan.intentionalDifferences;
+  evidence.runs = plan.nodes.flatMap((node) =>
+    ['baseline', 'candidate'].map((role) => {
+      const caseResults = plan.cases
+        .filter((entry) => role === 'candidate' || plan.abCaseIds.includes(entry.id))
+        .map((entry) => ({
+          ...entry,
+          phaseId: urlPhases.some(([id]) => id === entry.id)
+            ? entry.id
+            : entry.id === 'wire.checkUrl.esm'
+              ? 'release.wire.enforcement.esm'
+              : entry.id === 'wire.checkUrl.commonjs'
+                ? 'release.wire.enforcement.commonjs'
+                : phaseForLevel[entry.level],
+          status: 'PASSED',
+          assertions: 1,
+        }));
+      const phaseIds =
+        role === 'candidate'
+          ? [...new Set([...plan.phaseIds, ...urlPhases.map(([id]) => id)])]
+          : [...new Set(caseResults.map((entry) => entry.phaseId))];
+      return {
+        ...fixture().evidence.runs[0],
+        id: `${role}.local.node${node}`,
+        node,
+        artifactSha256: role === 'candidate' ? candidateHash : baselineHash,
+        pdp: {
+          digest: plan.pdps[0].digest,
+          resolvedAt: plan.pdps[0].resolvedAt,
+          roles: ['pinned', 'current'],
+        },
+        phaseResults: phaseIds.map((id) => ({
+          id,
+          kind:
+            urlPhases.find(([name]) => name === id)?.[1] ??
+            caseResults.find((entry) => entry.phaseId === id)?.level ??
+            'package',
+          status: 'PASSED',
+          assertions: Math.max(1, caseResults.filter((entry) => entry.phaseId === id).length),
+        })),
+        caseResults,
+      };
+    }),
+  );
+  evidence.ab.cases = plan.nodes.flatMap((node) =>
+    plan.abCaseIds.map((id) => ({
+      id,
+      baselineRunId: `baseline.local.node${node}`,
+      candidateRunId: `candidate.local.node${node}`,
+      status: 'PASSED',
+      assertions: 1,
+    })),
+  );
+  const report = validateReleaseEvidence(evidence, expected);
+  expect(report.exitCode).toBe(2);
+  expect(report.incomplete).toHaveLength(6);
+  expect(report.incomplete.every((message) => message.startsWith('No reviewed case for '))).toBe(
+    true,
+  );
+  expect(report.failures).toEqual([]);
+  expect(report.releaseReady).toBe(false);
+  expect(plan.cases.some((entry) => entry.id === 'api.url-check-owned-fixtures')).toBe(false);
+
+  for (const [id] of urlPhases) {
+    const unregistered = structuredClone(expected);
+    unregistered.requirements.phaseIds = plan.phaseIds.filter((name) => name !== id);
+    expect(validateReleaseEvidence(evidence, unregistered).incomplete).toEqual([
+      'Unreviewed phase ID.',
+    ]);
+    const unexecuted = structuredClone(evidence);
+    for (const run of unexecuted.runs) {
+      run.phaseResults = run.phaseResults.filter((phase) => phase.id !== id);
+      run.caseResults = run.caseResults.filter((entry) => entry.phaseId !== id);
+    }
+    const missing = validateReleaseEvidence(unexecuted, expected);
+    expect(missing.exitCode).toBe(2);
+    expect(missing.incomplete).toContain(`Missing phase ${id}: Node 22.13.0/pinned.`);
+  }
+  const unknown = structuredClone(evidence);
+  unknown.runs[0].phaseResults.push({
+    id: 'api.unreviewed-url-phase',
+    kind: 'api',
+    status: 'PASSED',
+    assertions: 1,
+  });
+  const rejected = validateReleaseEvidence(unknown, expected);
+  expect(rejected.exitCode).toBe(2);
+  expect(rejected.incomplete).toEqual(['Unreviewed phase ID.']);
+  expect(JSON.stringify(rejected)).not.toContain('api.unreviewed-url-phase');
+}, 20_000);

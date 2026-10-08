@@ -15,7 +15,12 @@ import {
   type TenantDetails,
 } from '#src/enforcement/interfaces';
 import { LoggerFactory } from '#src/logger';
-import { type CheckConfig, type Context, type GetUserPermissionsConfig } from '#src/utils/context';
+import {
+  type CheckConfig,
+  type CheckUrlConfig,
+  type Context,
+  type GetUserPermissionsConfig,
+} from '#src/utils/context';
 import { createOwnedTransport } from '#src/utils/http-transport';
 import { resolveRetryConfig } from '#src/utils/retry';
 
@@ -38,7 +43,12 @@ export {
   PermitError,
   PermitPDPStatusError,
 } from '#src/enforcement/enforcer';
-export { type Context, type CheckConfig, type GetUserPermissionsConfig } from '#src/utils/context';
+export {
+  type Context,
+  type CheckConfig,
+  type CheckUrlConfig,
+  type GetUserPermissionsConfig,
+} from '#src/utils/context';
 export {
   ApiContext,
   ApiContextLevel,
@@ -204,6 +214,29 @@ export class Permit implements IPermitClient {
     config?: CheckConfig | undefined,
   ): Promise<boolean> {
     return await this.enforcer.check(user, action, resource, context, config);
+  }
+
+  /**
+   * Checks a full URL against URL mappings on a compatible Permit container PDP.
+   *
+   * @param user - User key or attributes.
+   * @param httpMethod - HTTP method string, sent unchanged without an invented method enum.
+   * @param url - Absolute URI, 1..65536 Unicode characters, sent unchanged; it is not fetched.
+   * @param config - Tenant, context, timeout/error policy; unsupported OPA always rejects.
+   * @returns Literal allow decision, or false for ordinary failures in non-throwing mode.
+   * @throws {PermitError} For invalid input, input that cannot be JSON-serialized,
+   *   or a missing tenant with default tenancy disabled.
+   * @throws {PermitPDPStatusError} For malformed decisions or unavailable 404/405/501 regardless
+   *   of error policy; other rejected responses throw in throwing mode.
+   * @throws {PermitConnectionError} On connection/timeout failure in throwing mode.
+   */
+  public async checkUrl(
+    user: IUser | string,
+    httpMethod: string,
+    url: string,
+    config?: CheckUrlConfig,
+  ): Promise<boolean> {
+    return await this.enforcer.checkUrl(user, httpMethod, url, config);
   }
 
   /**

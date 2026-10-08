@@ -63,6 +63,20 @@ export function parseCheckResponse(value: unknown): boolean {
 }
 
 /**
+ * Reads a literal direct URL authorization decision from the container PDP.
+ *
+ * @param value - Untrusted response body.
+ * @returns The validated boolean allow field, without OPA-envelope or truthiness fallback.
+ * @throws {Error} If a direct boolean allow field is absent.
+ */
+export function parseCheckUrlResponse(value: unknown): boolean {
+  if (!isRecord(value) || !Object.hasOwn(value, 'allow') || typeof value['allow'] !== 'boolean') {
+    throw new Error('Expected a direct boolean allow decision');
+  }
+  return value['allow'];
+}
+
+/**
  * Reads exactly one boolean decision per requested position, preserving order.
  *
  * @param value - Untrusted response body.

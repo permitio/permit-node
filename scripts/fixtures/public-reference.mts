@@ -1,5 +1,39 @@
 import * as SDK from 'permitio';
 
+async function urlAuthorization(client: SDK.IPermitClient): Promise<void> {
+  const config: SDK.CheckUrlConfig = {
+    tenant: 'east',
+    context: { enabled: false, count: 0 },
+    timeout: 0,
+    throwOnError: true,
+  };
+  const decision: boolean = await client.checkUrl(
+    { key: 'alice', attributes: { eligible: true } },
+    'CUSTOM',
+    'https://example.test/document',
+    config,
+  );
+  const defaultTenant: boolean = await client.checkUrl('alice', 'get', 'urn:example:document');
+  // @ts-expect-error User objects require a key.
+  void client.checkUrl({ attributes: {} }, 'GET', 'https://example.test/document');
+  // @ts-expect-error URL authorization requires a URL string.
+  void client.checkUrl('alice', 'GET', new URL('https://example.test/document'));
+  // @ts-expect-error The HTTP method must be a string.
+  void client.checkUrl('alice', 7, 'https://example.test/document');
+  // @ts-expect-error Tenant and context use the fourth options argument.
+  void client.checkUrl('alice', 'GET', 'https://example.test/document', 'east');
+  // @ts-expect-error URL decisions are boolean, never a PDP response envelope.
+  const envelope: { allow: boolean } = await client.checkUrl(
+    'alice',
+    'GET',
+    'https://example.test/document',
+  );
+  // @ts-expect-error Exact optional tenant values cannot explicitly be undefined.
+  const invalidConfig: SDK.CheckUrlConfig = { tenant: undefined };
+  void [decision, defaultTenant, envelope, invalidConfig];
+}
+void urlAuthorization;
+
 async function userAttributeSchema(client: SDK.IPermitApi): Promise<void> {
   const definitions: SDK.IUserAttributesApi = client.userAttributes;
   const listMethod: SDK.UserAttributesApi['list'] = definitions.list;

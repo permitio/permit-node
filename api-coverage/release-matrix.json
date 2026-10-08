@@ -2520,6 +2520,66 @@
       "level": "api",
       "methodNames": ["permit.api.roles.bulkCreateOrReplace"],
       "operationKeys": ["control-plane PUT /v2/schema/{proj_id}/{env_id}/bulk/roles"]
+    },
+    {
+      "id": "wire.checkUrl.esm",
+      "level": "wire",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "wire.checkUrl.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "mock-pdp.url-check-contract",
+      "level": "mock-pdp",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "mock-pdp.url-check-inputs",
+      "level": "mock-pdp",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "mock-pdp.url-check-errors",
+      "level": "mock-pdp",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "commonjs.mock-pdp.url-check-contract",
+      "level": "mock-pdp",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "commonjs.mock-pdp.url-check-inputs",
+      "level": "mock-pdp",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "commonjs.mock-pdp.url-check-errors",
+      "level": "mock-pdp",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "pdp.url-check-mapped-allow-and-deny",
+      "level": "pdp",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "pdp.url-check-mapping-removal",
+      "level": "pdp",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
     }
   ],
   "abCaseIds": [
@@ -2703,7 +2763,16 @@
     "wire.bulk-roles.esm",
     "wire.bulk-roles.commonjs",
     "api.bulk-roles-lifecycle",
-    "api.bulk-roles-context-refusal"
+    "api.bulk-roles-context-refusal",
+    "commonjs.mock-pdp.url-check-contract",
+    "commonjs.mock-pdp.url-check-inputs",
+    "commonjs.mock-pdp.url-check-errors",
+    "mock-pdp.url-check-contract",
+    "mock-pdp.url-check-inputs",
+    "mock-pdp.url-check-errors",
+    "api.url-check-owned-fixtures",
+    "pdp.url-check-mapped-allow-and-deny",
+    "pdp.url-check-mapping-removal"
   ],
   "runIds": [
     "candidate.local.node22.13.0",

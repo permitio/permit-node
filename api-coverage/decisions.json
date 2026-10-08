@@ -1942,10 +1942,10 @@
       "lifecycle": "GA"
     },
     "pdp-container POST /allowed_url": {
-      "action": "defer",
-      "owner": "PER-16568",
-      "reason": "URL checks require a parity decision and supported container contract.",
-      "source": "https://linear.app/permit/issue/PER-16568",
+      "action": "add",
+      "owner": "PER-16945",
+      "reason": "Expose the adopted container URL check with typed tenant/context options, direct boolean decisions and visible malformed or unavailable endpoint failures.",
+      "source": "https://linear.app/permit/issue/PER-16945",
       "lifecycle": "GA"
     },
     "pdp-container POST /allowed/all-tenants": {

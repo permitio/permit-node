@@ -13,6 +13,7 @@ interface CapturedRequest {
 interface PdpReply {
   status: number;
   body: unknown;
+  delayMs?: number;
 }
 
 interface TestPdp {
@@ -24,7 +25,7 @@ interface TestPdp {
  * Starts an HTTP PDP fixture on a free loopback port for the current test and closes it when the
  * test finishes. Omitting the reply leaves requests pending, for timeout tests.
  */
-export async function startPdp(reply?: PdpReply): Promise<TestPdp> {
+export async function startPdp(reply?: PdpReply | ((index: number) => PdpReply)): Promise<TestPdp> {
   // Vitest runs each test file in its own worker; keep loopback traffic off inherited proxies.
   const proxyExclusions = [
     process.env['npm_config_no_proxy'],
@@ -66,8 +67,13 @@ export async function startPdp(reply?: PdpReply): Promise<TestPdp> {
       }
 
       if (reply) {
-        response.writeHead(reply.status, { 'Content-Type': 'application/json' });
-        response.end(JSON.stringify(reply.body));
+        const selected = typeof reply === 'function' ? reply(requests.length - 1) : reply;
+        const respond = () => {
+          response.writeHead(selected.status, { 'Content-Type': 'application/json' });
+          response.end(JSON.stringify(selected.body));
+        };
+        if (selected.delayMs === undefined) respond();
+        else setTimeout(respond, selected.delayMs).unref();
       }
     });
   });

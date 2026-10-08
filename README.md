@@ -339,8 +339,56 @@ including an empty filtering call. Operational or malformed-response failures fo
 `throwOnError`: non-throwing mode returns `[]` for tenant discovery/filtering and a normalized empty
 `{ resource, tenant, users: {} }` for authorized users. No partial authorization data is returned.
 Existing permission-query and bulk OPA error policies remain unchanged. `checkAllTenants` is
-retained; future deprecation planning does not remove it here. URL checking and AuthZEN remain
-deferred. Internal context transforms are not activated by these methods.
+retained; future deprecation planning does not remove it here. AuthZEN remains deferred.
+Internal context transforms are not activated by these methods.
+
+## URL authorization
+
+`permit.checkUrl(user, httpMethod, url, config?)` evaluates a full URL through the compatible
+container PDP's `POST /allowed_url` endpoint and its configured URL mapping rules. It returns
+only a literal boolean `allow`: `false` represents policy denial or no matching mapping.
+The cloud PDP snapshot does not publish this endpoint. See the
+[public URL mapping guide](https://docs.permit.io/how-to/enforce-permissions/url-mapping/regex-url-mapping-check/)
+for mapping configuration.
+
+```typescript
+import { type CheckUrlConfig } from 'permitio';
+
+const urlOptions: CheckUrlConfig = {
+  tenant: 'east',
+  context: { requestFlag: true },
+  timeout: 1000,
+  throwOnError: true,
+};
+const allowed = await permit.checkUrl(
+  { key: 'alice', attributes: { eligible: true } },
+  'GET',
+  'https://api.example.com/documents/report?version=1',
+  urlOptions,
+);
+```
+
+`CheckUrlConfig` adds optional `tenant` and `context` to the existing timeout/error options.
+Omitted or empty tenant uses `multiTenancy.defaultTenant` when `useDefaultTenantIfEmpty` is true;
+otherwise the call requires an explicit tenant. Context merges global values then per-call
+values without changing either source. User, tenant and context are serialized before the
+request, so later caller changes do not alter a pending request or its retries. Per-call timeout
+uses milliseconds and overrides the SDK timeout; `0` disables it.
+
+The HTTP method is a string sent unchanged; the published contract has no closed method enum.
+The URL must be an absolute URI of 1..65536 Unicode characters without unescaped whitespace or
+control characters, raw backslashes, or malformed percent escapes. Its original scheme, case,
+percent encoding, query and fragment are sent
+unchanged. The SDK imposes no HTTP(S)-only scheme restriction and does not fetch this URL;
+matching and authorization remain the PDP's responsibility. Relative paths are invalid.
+
+Invalid input, input that cannot be JSON-serialized and `useOpa: true` reject with `PermitError`
+before HTTP, regardless of
+`throwOnError`. A malformed decision (missing or nonboolean top-level `allow`, including an
+OPA-only envelope) and unavailable HTTP `404`, `405` or `501` always reject with
+`PermitPDPStatusError`. Ordinary HTTP, connection and timeout failures follow the per-call
+`throwOnError` override or SDK policy: throwing mode preserves typed sanitized errors, and
+non-throwing mode returns `false`.
 
 ## User lists
 

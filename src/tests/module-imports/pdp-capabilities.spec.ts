@@ -56,8 +56,20 @@ permit.filterObjects('alice', 'read', [{ key: 'one' }]);
 const decisions: Promise<boolean[]> = permit.filterObjects('alice', 'read', objects);
 // @ts-expect-error Exact optional resource/context fields cannot be explicit undefined.
 permit.filterObjects('alice', 'read', [{ type: 'document', context: undefined }]);
-// @ts-expect-error URL checking is deferred.
-permit.checkUrl('alice', 'GET', '/documents');
+const urlOptions: sdk.CheckUrlConfig = { tenant: 'east', context: { enabled: false }, timeout: 0 };
+const urlDecision = permit.checkUrl({ key: 'alice' }, 'CUSTOM', 'https://example.test/document', urlOptions);
+type UrlDecision = Assert<Equal<Awaited<typeof urlDecision>, boolean>>;
+void (null as unknown as UrlDecision);
+// @ts-expect-error URL checks require a method string.
+permit.checkUrl('alice', 7, 'https://example.test/document');
+// @ts-expect-error URL checks take per-call options in the fourth argument.
+permit.checkUrl('alice', 'GET', 'https://example.test/document', 'east');
+// @ts-expect-error URL check context must be a dictionary.
+permit.checkUrl('alice', 'GET', 'https://example.test/document', { context: 'request' });
+// @ts-expect-error URL check tenant must be a string.
+permit.checkUrl('alice', 'GET', 'https://example.test/document', { tenant: 7 });
+// @ts-expect-error Exact optional URL config fields cannot be explicitly undefined.
+permit.checkUrl('alice', 'GET', 'https://example.test/document', { context: undefined });
 // @ts-expect-error ContextStore remains an internal helper, not an activated runtime API.
 new sdk.ContextStore();
 void [ids, decisions];
@@ -81,7 +93,7 @@ for (const sdk of [esm, cjs]) {
   assert.equal(typeof permit.checkAllTenants, 'function');
   assert.equal(sdk.ContextStore, undefined);
   assert.equal(sdk.Enforcer, undefined);
-  assert.equal(permit.checkUrl, undefined);
+  assert.equal(typeof permit.checkUrl, 'function');
 }
 console.log('PDP_CAPABILITIES_EXPORTS_OK');
 `,

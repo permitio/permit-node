@@ -57,7 +57,7 @@ test('accounts for complete source denominators while leaving parity and backend
   expect(report.sharedTarget.status).toBe('UNAVAILABLE');
   expect(report.realBackend.status).toBe('NOT_MEASURED');
   expect(report.operations).toHaveLength(307);
-  expect(report.counts.publicHttpMethods).toBe(158);
+  expect(report.counts.publicHttpMethods).toBe(159);
   expect(report.operations.filter((op) => op.source === 'control-plane')).toHaveLength(263);
   expect(report.operations.filter((op) => op.source === 'pdp-container')).toHaveLength(34);
   expect(report.operations.filter((op) => op.source === 'pdp-cloud')).toHaveLength(10);
@@ -179,9 +179,27 @@ test('exposes reviewed PDP discovery and filter composition without changing sou
   expect(report.counts.generatedModels).toBe(408);
 });
 
+test('exposes the adopted URL check only on its published container operation', () => {
+  const report = coverageReport(evidence());
+  const operations = report.operations.filter((entry) => entry.path === '/allowed_url');
+  expect(operations).toHaveLength(1);
+  expect(operations[0]).toMatchObject({
+    source: 'pdp-container',
+    method: 'POST',
+    coverage: 'exposed',
+    decision: { action: 'add', owner: 'PER-16945' },
+  });
+  expect(operations[0].methods.map((method) => method.name)).toEqual(['permit.checkUrl']);
+  expect(sdk.methods.find((method) => method.name === 'permit.checkUrl').routes).toMatchObject([
+    { method: 'POST', path: '/allowed_url', target: 'pdp', body: 'input' },
+  ]);
+  expect(report.operations).toHaveLength(307);
+});
+
 test('extracts structural enforcement bodies through the compiler-verified JSON serializer', () => {
   for (const name of [
     'check',
+    'checkUrl',
     'getUserPermissions',
     'getAuthorizedUsers',
     'getUserTenants',

@@ -4,6 +4,7 @@ import { type Logger } from 'pino';
 import { type IPermitConfig } from '#src/config';
 import {
   type CheckConfig,
+  type CheckUrlConfig,
   type Context,
   type GetUserPermissionsConfig,
   ContextStore,
@@ -26,6 +27,7 @@ import {
   type IAuthorizedUsersResult,
   type IFilterObject,
   type ICheckInput,
+  type ICheckUrlInput,
   type ICheckOpaInput,
   type ICheckQuery,
   type IResource,
@@ -40,6 +42,7 @@ import {
   parseUserTenantsResponse,
   parseBulkResponse,
   parseCheckResponse,
+  parseCheckUrlResponse,
   parsePermissionsResponse,
 } from '#src/enforcement/responses';
 
@@ -112,6 +115,14 @@ export interface IEnforcer {
     resource: IResource | string,
     context?: Context,
     config?: CheckConfig,
+  ): Promise<boolean>;
+
+  /** Checks a full URL on a compatible container PDP; invalid or unavailable decisions reject. */
+  checkUrl(
+    user: IUser | string,
+    httpMethod: string,
+    url: string,
+    config?: CheckUrlConfig,
   ): Promise<boolean>;
 
   /**
@@ -652,6 +663,158 @@ export class Enforcer implements IEnforcer {
       });
   }
 
+  /**
+   * Checks access to a full URL using the container PDP's configured URL mappings.
+   *
+   * @param user - User key or user attributes.
+   * @param httpMethod - HTTP method string sent unchanged; the published contract has no enum.
+   * @param url - Absolute URI, 1..65536 Unicode characters, sent unchanged to the PDP.
+   * @param config - Tenant, context, timeout and error policy; useOpa:true always rejects.
+   * @returns The literal allow decision; ordinary operational failures return false in
+   *   non-throwing mode.
+   * @throws {PermitError} For invalid input, input that cannot be JSON-serialized, unsupported OPA,
+   *   or a missing tenant when default tenancy is disabled.
+   * @throws {PermitPDPStatusError} For malformed decisions or unavailable HTTP 404/405/501,
+   *   regardless of error policy; other rejected responses throw in throwing mode.
+   * @throws {PermitConnectionError} On a connection or timeout failure in throwing mode.
+   */
+  public async checkUrl(
+    user: IUser | string,
+    httpMethod: string,
+    url: string,
+    config: CheckUrlConfig = {},
+  ): Promise<boolean> {
+    const input = this.buildCheckUrlInput(user, httpMethod, url, config);
+    const shouldThrow = config.throwOnError ?? this.config.throwOnError;
+    return await this.checkUrlWithExceptions(input, config).catch((error: unknown) => {
+      if (
+        (error instanceof PermitError && !(error instanceof PermitConnectionError)) ||
+        (error instanceof PermitPDPStatusError &&
+          [200, 404, 405, 501].includes(error.statusCode ?? 0)) ||
+        shouldThrow
+      ) {
+        throw error;
+      }
+      this.logger.error(
+        { err: diagnosticCause(error, [this.config.token]) },
+        'Permit authorization failed',
+      );
+      return false;
+    });
+  }
+
+  private buildCheckUrlInput(
+    user: IUser | string,
+    httpMethod: string,
+    url: string,
+    config: CheckUrlConfig,
+  ): ICheckUrlInput {
+    if (config === null || typeof config !== 'object' || Array.isArray(config)) {
+      throw new PermitError('Permit.checkUrl() options must be an object.');
+    }
+    for (const field of ['useOpa', 'throwOnError'] as const) {
+      if (config[field] !== undefined && typeof config[field] !== 'boolean') {
+        throw new PermitError(`Permit.checkUrl() ${field} must be a boolean.`);
+      }
+    }
+    if (config.useOpa) {
+      throw new PermitError('The useOpa option is supported only by permit.check()');
+    }
+    if (
+      config.timeout !== undefined &&
+      (typeof config.timeout !== 'number' ||
+        !Number.isFinite(config.timeout) ||
+        config.timeout < 0 ||
+        config.timeout > 2_147_483_647)
+    ) {
+      throw new PermitError('Permit.checkUrl() timeout must be between 0 and 2147483647 ms.');
+    }
+    const normalizedUser = isString(user) ? { key: user } : user;
+    if (
+      normalizedUser === null ||
+      typeof normalizedUser !== 'object' ||
+      Array.isArray(normalizedUser) ||
+      typeof normalizedUser.key !== 'string'
+    ) {
+      throw new PermitError(
+        'Permit.checkUrl() user must be a string or an object with a string key.',
+      );
+    }
+    for (const field of ['email', 'firstName', 'lastName'] as const) {
+      if (normalizedUser[field] !== undefined && typeof normalizedUser[field] !== 'string') {
+        throw new PermitError(`Permit.checkUrl() user.${field} must be a string.`);
+      }
+    }
+    for (const [field, value] of [
+      ['user.attributes', normalizedUser.attributes],
+      ['context', config.context],
+    ] as const) {
+      if (
+        value !== undefined &&
+        (value === null || typeof value !== 'object' || Array.isArray(value))
+      ) {
+        throw new PermitError(`Permit.checkUrl() ${field} must be an object.`);
+      }
+    }
+    if (typeof httpMethod !== 'string') {
+      throw new PermitError('Permit.checkUrl() httpMethod must be a string.');
+    }
+    let urlLength = 0;
+    if (typeof url === 'string') {
+      for (const _character of url) {
+        urlLength += 1;
+        if (urlLength > 65_536) break;
+      }
+    }
+    if (urlLength < 1 || urlLength > 65_536) {
+      throw new PermitError('Permit.checkUrl() URL must contain 1..65536 Unicode characters.');
+    }
+    try {
+      if (/[\\\s\p{Cc}]/u.test(url) || /%(?![0-9A-Fa-f]{2})/u.test(url)) {
+        throw new Error('Invalid URI syntax');
+      }
+      new URL(url);
+    } catch {
+      throw new PermitError('Permit.checkUrl() URL must be an absolute URI.');
+    }
+    if (config.tenant !== undefined && typeof config.tenant !== 'string') {
+      throw new PermitError('Permit.checkUrl() tenant must be a string.');
+    }
+    let tenant = config.tenant;
+    if (!tenant) {
+      if (!this.config.multiTenancy.useDefaultTenantIfEmpty) {
+        throw new PermitError(
+          'Permit.checkUrl() requires a tenant when default tenancy is disabled.',
+        );
+      }
+      tenant = this.config.multiTenancy.defaultTenant;
+    }
+    return {
+      user: normalizedUser,
+      http_method: httpMethod,
+      url,
+      tenant,
+      context: this.contextStore.getDerivedContext(config.context ?? {}),
+    };
+  }
+
+  private async checkUrlWithExceptions(
+    input: ICheckUrlInput,
+    config: CheckUrlConfig,
+  ): Promise<boolean> {
+    const timeout = config.timeout ?? this.config.timeout;
+    return await this.client
+      .post<unknown>('allowed_url', this.serializeInput(input, 'checkUrl'), {
+        headers: { Authorization: `Bearer ${this.config.token}` },
+        ...(timeout !== undefined && { timeout }),
+      })
+      .then((response) => {
+        if (response.status !== 200) throw this.pdpStatusError('checkUrl', response);
+        return this.parsePdpResponse('checkUrl', response, parseCheckUrlResponse);
+      })
+      .catch((error: unknown) => this.handlePDPError(error, 'checkUrl'));
+  }
+
   public async check(
     user: IUser | string,
     action: IAction,
@@ -732,17 +895,21 @@ export class Enforcer implements IEnforcer {
     const status = diagnosticStatus(response.status);
     const statusLabel = status ?? 'unknown';
     const message =
-      method === 'getUserTenants' && status === 404
-        ? 'Permit.getUserTenants() endpoint /user-tenants is unavailable (status 404). ' +
+      method === 'checkUrl' && (status === 404 || status === 405 || status === 501)
+        ? `Permit.checkUrl() endpoint /allowed_url is unavailable (status ${status}). ` +
           'Configure a compatible Permit container PDP; the cloud PDP contract does not publish ' +
           'this endpoint.'
-        : malformedBody
-          ? `Permit.${method}() got an unexpected response body from the PDP ` +
-            `(status ${statusLabel}), please check that the SDK's pdp URL points to a Permit ` +
-            'PDP. Read more about setting up the PDP at https://docs.permit.io'
-          : `Permit.${method}() got an unexpected status code: ${statusLabel}, ` +
-            'please check your SDK init and make sure the PDP sidecar is configured correctly. ' +
-            'Read more about setting up the PDP at https://docs.permit.io';
+        : method === 'getUserTenants' && status === 404
+          ? 'Permit.getUserTenants() endpoint /user-tenants is unavailable (status 404). ' +
+            'Configure a compatible Permit container PDP; the cloud PDP contract does not publish ' +
+            'this endpoint.'
+          : malformedBody
+            ? `Permit.${method}() got an unexpected response body from the PDP ` +
+              `(status ${statusLabel}), please check that the SDK's pdp URL points to a Permit ` +
+              'PDP. Read more about setting up the PDP at https://docs.permit.io'
+            : `Permit.${method}() got an unexpected status code: ${statusLabel}, ` +
+              'please check your SDK init and make sure the PDP sidecar is configured correctly. ' +
+              'Read more about setting up the PDP at https://docs.permit.io';
     const snapshot = diagnosticAxiosError(
       source ?? new AxiosError(message, undefined, response.config, undefined, response),
       [this.config.token],

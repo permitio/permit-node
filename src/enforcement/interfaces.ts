@@ -8,6 +8,15 @@ export interface ICheckInput {
   context?: Context;
 }
 
+/** The published container PDP URL authorization request. */
+export interface ICheckUrlInput {
+  user: IUser;
+  http_method: string;
+  url: string;
+  tenant: string;
+  context: Context;
+}
+
 export interface ICheckOpaInput {
   input: ICheckInput;
 }
