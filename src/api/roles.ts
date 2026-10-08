@@ -3,8 +3,11 @@ import { type Logger } from 'pino';
 import { type IPermitConfig } from '#src/config';
 import {
   RolesApi as AutogenRolesApi,
+  BulkOperationsApi,
   type PaginatedResultRoleRead,
   type RoleCreate,
+  type RoleCreateBulk,
+  type RoleCreateBulkOperationResult,
   type RoleRead,
   type RoleUpdate,
 } from '#src/openapi/index';
@@ -15,6 +18,8 @@ import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
 export {
   type RoleCreate,
+  type RoleCreateBulk,
+  type RoleCreateBulkOperationResult,
   type RoleRead,
   type RoleUpdate,
   type PaginatedResultRoleRead,
@@ -77,6 +82,15 @@ export interface IRolesApi {
   create(roleData: RoleCreate): Promise<RoleRead>;
 
   /**
+   * Creates or replaces tenant and resource roles in the selected environment.
+   * @param roles - Role definitions; omit resource for a tenant role, or supply its resource key.
+   * @returns The complete published result containing created and updated string arrays.
+   * @throws {@link PermitApiError} If the API rejects the definitions or denies write access.
+   * @throws {@link PermitContextError} If the environment or API key scope is insufficient.
+   */
+  bulkCreateOrReplace(roles: RoleCreateBulk[]): Promise<RoleCreateBulkOperationResult>;
+
+  /**
    * Updates a role.
    *
    * @param roleKey The key of the role.
@@ -123,6 +137,7 @@ export interface IRolesApi {
  */
 export class RolesApi extends BasePermitApi implements IRolesApi {
   private roles: AutogenRolesApi;
+  private readonly bulkOperationsApi: BulkOperationsApi;
 
   /**
    * Creates an instance of the RolesApi.
@@ -132,6 +147,11 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
     this.roles = new AutogenRolesApi(
+      this.openapiClientConfig,
+      BASE_PATH,
+      this.config.axiosInstance,
+    );
+    this.bulkOperationsApi = new BulkOperationsApi(
       this.openapiClientConfig,
       BASE_PATH,
       this.config.axiosInstance,
@@ -235,6 +255,24 @@ export class RolesApi extends BasePermitApi implements IRolesApi {
         await this.roles.createRole({
           ...this.config.apiContext.environmentContext,
           roleCreate: roleData,
+        })
+      ).data;
+    } catch (err) {
+      this.handleApiError(err);
+    }
+  }
+
+  /** {@inheritDoc IRolesApi.bulkCreateOrReplace} */
+  public async bulkCreateOrReplace(
+    roles: RoleCreateBulk[],
+  ): Promise<RoleCreateBulkOperationResult> {
+    await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
+    await this.ensureContext(ApiContextLevel.ENVIRONMENT);
+    try {
+      return (
+        await this.bulkOperationsApi.bulkCreateOrReplaceRoles({
+          ...this.config.apiContext.environmentContext,
+          roleCreateBulkOperation: { operations: roles },
         })
       ).data;
     } catch (err) {

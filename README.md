@@ -364,6 +364,32 @@ console.log(users.total_count, users.data[0]?.associated_tenants);
 appear in each associated tenant's `resource_instance_roles`, with `resource`,
 `resource_instance` and `role` fields. Both flag values retain the same paginated result.
 
+## Bulk roles
+
+`permit.api.roles.bulkCreateOrReplace` creates or replaces role definitions in the selected
+environment. Pass `RoleCreateBulk[]`: each definition requires a `key` and `name`. Omit `resource`
+for a tenant role, or set it to the resource key for a resource role.
+
+```typescript
+import type { RoleCreateBulk, RoleCreateBulkOperationResult } from 'permitio';
+
+const roles: RoleCreateBulk[] = [
+  { key: 'reader', name: 'Reader', permissions: ['document:read'] },
+  { key: 'editor', name: 'Editor', resource: 'document', permissions: ['read', 'write'] },
+];
+const result: RoleCreateBulkOperationResult = await permit.api.roles.bulkCreateOrReplace(roles);
+console.log(result.created, result.updated);
+```
+
+Calls use `PUT /v2/schema/{proj_id}/{env_id}/bulk/roles` on `apiUrl`, including when
+`proxyFactsViaPdp` is enabled. The SDK wraps the definitions in `{ operations: roles }` and returns
+the complete received result, including both `created` and `updated` string arrays. Those strings
+have no published UUID, ordering or input-index guarantee. The contract does not promise batch
+atomicity or first-attempt classifications; existing PUT retries can replay a request. Read role
+definitions through `roles.get` or `resourceRoles.get` to verify persisted outcomes. These schema
+writes have no `waitForSync()` method. Context failures use `PermitContextError`; HTTP failures use
+`PermitApiError`.
+
 ## User attribute definitions
 
 `permit.api.userAttributes` manages the selected environment's user attribute schema through

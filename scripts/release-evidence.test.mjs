@@ -483,7 +483,7 @@ test('requires mapping for every method and retained operation without erasing g
 
 test('extracts all actual SDK/source entries with case-independent hashing', async () => {
   const result = await expectedReleaseInventory(resolve(import.meta.dirname, '..'));
-  expect(result.inventory.methods).toHaveLength(162);
+  expect(result.inventory.methods).toHaveLength(163);
   expect(
     result.inventory.methods.filter((method) => method.name.startsWith('permit.api.userInvites.')),
   ).toHaveLength(6);
@@ -514,6 +514,20 @@ test('extracts all actual SDK/source entries with case-independent hashing', asy
       ].sort(),
     );
   }
+  const bulkName = 'permit.api.roles.bulkCreateOrReplace';
+  expect(result.inventory.methods.filter((method) => method.name === bulkName)).toHaveLength(1);
+  const bulkCases = plan.cases.filter((entry) => entry.methodNames.includes(bulkName));
+  expect(bulkCases.map((entry) => entry.id).sort()).toEqual([
+    'api.bulk-roles.create-replace',
+    'api.bulk-roles.scope',
+    'wire.api.roles.bulkCreateOrReplace.commonjs',
+    'wire.api.roles.bulkCreateOrReplace.esm',
+  ]);
+  expect(bulkCases.map((entry) => entry.level).sort()).toEqual(['api', 'api', 'wire', 'wire']);
+  for (const entry of bulkCases)
+    expect(entry.operationKeys).toEqual([
+      'control-plane PUT /v2/schema/{proj_id}/{env_id}/bulk/roles',
+    ]);
   expect(result.inventory.operations).toHaveLength(307);
   expect(result.inventorySha256).toBe(digest(canonicalReleaseInventory(result.inventory)));
   const changed = structuredClone(result.inventory);
@@ -625,7 +639,7 @@ test('the committed plan preserves missing source-addition proof', async () => {
   );
   expect(report.incomplete).toContain('Missing local candidate cell: Node 24.21.0/current.');
   expect(report.incomplete.some((message) => message.startsWith('Missing case '))).toBe(true);
-  expect(evidence.inventory.methods).toHaveLength(162);
+  expect(evidence.inventory.methods).toHaveLength(163);
   expect(evidence.inventory.operations).toHaveLength(307);
 }, 20_000);
 

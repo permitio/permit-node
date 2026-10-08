@@ -33,6 +33,8 @@ See [the migration guide](MIGRATION.md) for affected callers, actions and retain
 - **N1**: Add eight GA grouped Groups operations.
 - **N2**: Add new-user tenant membership, three detailed lists, and environment refresh ack.
 - **N3**: Add permission context, authorized-user/role-tenant discovery, and object filtering.
+- Add typed `permit.api.roles.bulkCreateOrReplace` for existing tenant and resource role bulk
+  creation/replacement, preserving the complete `created` and `updated` result arrays.
 - Add `permit.api.userAttributes` for user attribute schema list/get/create/update/delete,
   preserving the dedicated routes and complete `ResourceAttributeRead` results. User values
   remain managed through `permit.api.users`.

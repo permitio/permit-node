@@ -2496,6 +2496,30 @@
         "permit.api.userAttributes.delete"
       ],
       "operationKeys": []
+    },
+    {
+      "id": "wire.api.roles.bulkCreateOrReplace.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.bulkCreateOrReplace"],
+      "operationKeys": ["control-plane PUT /v2/schema/{proj_id}/{env_id}/bulk/roles"]
+    },
+    {
+      "id": "wire.api.roles.bulkCreateOrReplace.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.bulkCreateOrReplace"],
+      "operationKeys": ["control-plane PUT /v2/schema/{proj_id}/{env_id}/bulk/roles"]
+    },
+    {
+      "id": "api.bulk-roles.create-replace",
+      "level": "api",
+      "methodNames": ["permit.api.roles.bulkCreateOrReplace"],
+      "operationKeys": ["control-plane PUT /v2/schema/{proj_id}/{env_id}/bulk/roles"]
+    },
+    {
+      "id": "api.bulk-roles.scope",
+      "level": "api",
+      "methodNames": ["permit.api.roles.bulkCreateOrReplace"],
+      "operationKeys": ["control-plane PUT /v2/schema/{proj_id}/{env_id}/bulk/roles"]
     }
   ],
   "abCaseIds": [
@@ -2675,7 +2699,11 @@
     "wire.user-attributes.esm",
     "wire.user-attributes.commonjs",
     "api.user-attributes-lifecycle",
-    "api.user-attributes-access"
+    "api.user-attributes-access",
+    "wire.bulk-roles.esm",
+    "wire.bulk-roles.commonjs",
+    "api.bulk-roles-lifecycle",
+    "api.bulk-roles-context-refusal"
   ],
   "runIds": [
     "candidate.local.node22.13.0",

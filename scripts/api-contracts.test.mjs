@@ -57,7 +57,7 @@ test('accounts for complete source denominators while leaving parity and backend
   expect(report.sharedTarget.status).toBe('UNAVAILABLE');
   expect(report.realBackend.status).toBe('NOT_MEASURED');
   expect(report.operations).toHaveLength(307);
-  expect(report.counts.publicHttpMethods).toBe(157);
+  expect(report.counts.publicHttpMethods).toBe(158);
   expect(report.operations.filter((op) => op.source === 'control-plane')).toHaveLength(263);
   expect(report.operations.filter((op) => op.source === 'pdp-container')).toHaveLength(34);
   expect(report.operations.filter((op) => op.source === 'pdp-cloud')).toHaveLength(10);
@@ -118,6 +118,37 @@ test('exposes five dedicated user attribute schema operations with explicit owne
     expect(operation.methods[0].name).toContain('permit.api.userAttributes.');
     expect(operation.decision).toMatchObject({ action: 'add', owner: 'PER-16942' });
   }
+  expect(report.operations).toHaveLength(307);
+  expect(report.counts.generatedMethods).toBe(266);
+  expect(report.counts.generatedModels).toBe(408);
+});
+
+test('exposes the existing typed bulk role operation without inventing result counts', () => {
+  const report = coverageReport(evidence());
+  const operation = report.operations.find(
+    (entry) => entry.source === 'control-plane' && entry.path.endsWith('/bulk/roles'),
+  );
+  expect(operation.coverage).toBe('exposed');
+  expect(operation.methods.map((method) => method.name)).toEqual([
+    'permit.api.roles.bulkCreateOrReplace',
+  ]);
+  expect(operation.decision).toMatchObject({ action: 'add', owner: 'PER-16948' });
+  const method = sdk.methods.find((entry) => entry.name === 'permit.api.roles.bulkCreateOrReplace');
+  expect(method.factsProxy).toBe(false);
+  expect(method.signature.parameters).toEqual([
+    { name: 'roles', type: 'RoleCreateBulk[]', optional: false, initializer: null },
+  ]);
+  expect(method.signature.returns).toBe('Promise<RoleCreateBulkOperationResult>');
+  expect(method.publicSignatures).toEqual([
+    '(roles: RoleCreateBulk[]): Promise<RoleCreateBulkOperationResult>',
+  ]);
+  expect(method.routes.filter((route) => !route.supporting)).toEqual([
+    expect.objectContaining({
+      generatedMethod: 'BulkOperationsApi.bulkCreateOrReplaceRoles',
+      method: 'PUT',
+      path: '/v2/schema/{proj_id}/{env_id}/bulk/roles',
+    }),
+  ]);
   expect(report.operations).toHaveLength(307);
   expect(report.counts.generatedMethods).toBe(266);
   expect(report.counts.generatedModels).toBe(408);

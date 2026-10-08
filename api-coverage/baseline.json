@@ -25,7 +25,7 @@
       "src/api/resource-roles.ts:ResourceRolesApi": "d3e78d2175b02561645930a8a575795b2a8caaab9a212cf72675b8c135287701",
       "src/api/resources.ts:ResourcesApi": "3c35f246b7fa105b504d69d77ae1e57228c934b8b6ddc7488eed378ca2f56145",
       "src/api/role-assignments.ts:RoleAssignmentsApi": "48903ae8fa791d37fd53fd3402388a36b34dc0d60a21b53e9cb4e99dbdf18618",
-      "src/api/roles.ts:RolesApi": "dc48457df60c94a7d4904cd0c5b0dd5be99f3a9905588c273de90e952ac07362",
+      "src/api/roles.ts:RolesApi": "64e3a5eebe7c7c1e674fa6a0e8757c892de1a17ae60df8253f802a32bb174485",
       "src/api/tenants.ts:TenantsApi": "0d1b4b8ebd111804a89aa027043091ea95d5d8c2c3011aac016d3057e7c3d9bf",
       "src/api/user-attributes.ts:UserAttributesApi": "5e0081bc92454c12785e3ab3b97882b2547d257da6d078c507bd2a22511c96e8",
       "src/api/user-invites.ts:UserInvitesApi": "0f000adabfee6953fe5ce7944e11adbf952c901f86b7163755918c733b1c7e6e",
@@ -484,6 +484,7 @@
         "kind": "interface",
         "members": [
           "assignPermissions(roleKey: string, permissions: string[]): Promise<RoleRead>;",
+          "bulkCreateOrReplace(roles: RoleCreateBulk[]): Promise<RoleCreateBulkOperationResult>;",
           "create(roleData: RoleCreate): Promise<RoleRead>;",
           "delete(roleKey: string): Promise<void>;",
           "get(roleKey: string): Promise<RoleRead>;",
@@ -21018,6 +21019,7 @@
       "src/api/role-assignments.ts:RoleAssignmentsApi.listDetailed": "a11f1f0341d774ff45a0bf4de145a57ac2d659504f1341fb164d306919b0f47a",
       "src/api/role-assignments.ts:RoleAssignmentsApi.unassign": "29397e52cb1adb12448dba63f958577df8d2045ea3d0c866308871a6116978e0",
       "src/api/roles.ts:RolesApi.assignPermissions": "6808f3d8d599f608b4fdb7584b81a6e177d7d257a5d418299a4a11067d3c85bc",
+      "src/api/roles.ts:RolesApi.bulkCreateOrReplace": "5c74bd2cf0e33f847df0259a332d317d1167aedaa9d5ab387f08f917965dd13f",
       "src/api/roles.ts:RolesApi.create": "4b2190be260277358718a0b627b2ce1c98db970ba29121d287e34cb1d56d9947",
       "src/api/roles.ts:RolesApi.delete": "d68128a6a59723948ba3732e4903667e3d4772225dfe7db11ad4961be5543848",
       "src/api/roles.ts:RolesApi.get": "ba891beb68a146bf3c2340502f235ea654a2ece4a796096e5d7df2aa1a150deb",
@@ -21138,7 +21140,7 @@
       "src/api/resource-roles.ts:ResourceRolesApi.constructor": "4e3e46b06c9871c197e01c4043d092cecde8a7f2768c54c1af2d29ba83a127bb",
       "src/api/resources.ts:ResourcesApi.constructor": "e8cbda0ccfb439c4b1229f93250e5c5d3001b21089f65249d7d93239dd19448d",
       "src/api/role-assignments.ts:RoleAssignmentsApi.constructor": "6b97701130a940e825f879d7815bca3b46712e0dd6159e29bde8269d87b70ce5",
-      "src/api/roles.ts:RolesApi.constructor": "2bd0e83b72db918151a36152c736dee3a84e871230cc08005d6996474752f5dc",
+      "src/api/roles.ts:RolesApi.constructor": "82dccad0baded1f1f9807e4941c2afc1dbdd2bf61ad3f036360cb2e50d0ad30f",
       "src/api/tenants.ts:TenantsApi.constructor": "8d6f8741c4b964c78d7ec07ac7e92c6b5b761b6317ce656afc099f64f9bba747",
       "src/api/user-attributes.ts:UserAttributesApi.constructor": "9df99cd50dfd82a45b3f497d9888e06f489097b81de4a68018270e3845eefa73",
       "src/api/user-invites.ts:UserInvitesApi.constructor": "b7d9171211725879e89c774ff6da0010d46415896fde5e569ce82ba4a15d4861",
@@ -25020,6 +25022,37 @@
             }
           ],
           "returns": "Promise<RoleRead>"
+        }
+      },
+      "permit.api.roles.bulkCreateOrReplace": {
+        "deprecated": false,
+        "factsProxy": false,
+        "publicSignatures": ["(roles: RoleCreateBulk[]): Promise<RoleCreateBulkOperationResult>"],
+        "routes": [
+          {
+            "generatedMethod": "APIKeysApi.getApiKeyScope",
+            "method": "GET",
+            "path": "/v2/api-key/scope",
+            "supporting": true
+          },
+          {
+            "generatedMethod": "BulkOperationsApi.bulkCreateOrReplaceRoles",
+            "method": "PUT",
+            "path": "/v2/schema/{proj_id}/{env_id}/bulk/roles",
+            "supporting": false
+          }
+        ],
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "roles",
+              "optional": false,
+              "type": "RoleCreateBulk[]"
+            }
+          ],
+          "returns": "Promise<RoleCreateBulkOperationResult>"
         }
       },
       "permit.api.roles.create": {

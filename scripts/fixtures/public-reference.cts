@@ -39,6 +39,26 @@ async function userAttributeSchema(client: SDK.IPermitApi): Promise<void> {
 }
 void userAttributeSchema;
 
+async function bulkRoleDefinitions(client: SDK.IPermitApi): Promise<void> {
+  const definitions: SDK.RoleCreateBulk[] = [
+    { key: 'reader', name: 'Reader', permissions: ['document:read'] },
+    { key: 'editor', name: 'Editor', resource: 'document', permissions: ['read', 'write'] },
+  ];
+  const method: SDK.RolesApi['bulkCreateOrReplace'] = client.roles.bulkCreateOrReplace;
+  const result: SDK.RoleCreateBulkOperationResult =
+    await client.roles.bulkCreateOrReplace(definitions);
+  const created: string[] = result.created;
+  const updated: string[] = result.updated;
+  // @ts-expect-error The facade receives an array, not the HTTP body wrapper.
+  void client.roles.bulkCreateOrReplace({ operations: definitions });
+  // @ts-expect-error The existing result requires both arrays even when empty.
+  const incomplete: SDK.RoleCreateBulkOperationResult = { created: [] };
+  // @ts-expect-error The existing result does not contain bulk count fields.
+  void result.created_count;
+  void [method, created, updated, incomplete];
+}
+void bulkRoleDefinitions;
+
 declare const api: SDK.IPermitApi;
 declare const permit: SDK.Permit;
 declare const relationClient: SDK.ResourceRelationsApi;

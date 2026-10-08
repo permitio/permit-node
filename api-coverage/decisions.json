@@ -1810,9 +1810,9 @@
     },
     "control-plane PUT /v2/schema/{proj_id}/{env_id}/bulk/roles": {
       "action": "add",
-      "owner": "PER-16345",
-      "reason": "P2 addition in the prose target; a Node implementation owner is not yet assigned.",
-      "source": "https://linear.app/permit/issue/PER-16337",
+      "owner": "PER-16948",
+      "reason": "Expose the existing typed bulk role create-or-replace contract for tenant and resource roles, preserving both result arrays.",
+      "source": "https://linear.app/permit/issue/PER-16948",
       "lifecycle": "GA"
     },
     "control-plane PUT /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/assign_group": {

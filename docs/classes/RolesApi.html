@@ -13,7 +13,7 @@
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>The RolesApi class provides methods for interacting with Permit Roles.</p>
 </div></section>
-<section class="tsd-panel tsd-hierarchy" data-refl="1340">
+<section class="tsd-panel tsd-hierarchy" data-refl="1343">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><span class="tsd-signature-type">BasePermitApi</span>
@@ -24,7 +24,7 @@
 <ul class="tsd-hierarchy">
 <li><a href="../interfaces/IRolesApi.html" class="tsd-signature-type tsd-kind-interface">IRolesApi</a></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in src/api/roles.ts:124</li></ul></aside>
+<li>Defined in src/api/roles.ts:138</li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -37,6 +37,7 @@
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading tsd-anchor-link" id="methods">Methods<a href="#methods" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-index-list"><a href="#assignpermissions" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>assign<wbr/>Permissions</span></a>
+<a href="#bulkcreateorreplace" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>bulk<wbr/>Create<wbr/>Or<wbr/>Replace</span></a>
 <a href="#create" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create</span></a>
 <a href="#delete" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete</span></a>
 <a href="#ensureaccesslevel" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>ensure<wbr/>Access<wbr/>Level</span></a>
@@ -71,7 +72,7 @@
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">RolesApi</a></h4><aside class="tsd-sources">
 <p>Overrides BasePermitApi.constructor</p>
 <ul>
-<li>Defined in src/api/roles.ts:132</li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in src/api/roles.ts:147</li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -103,7 +104,26 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IRolesApi.html">IRolesApi</a>.<a href="../interfaces/IRolesApi.html#assignpermissions">assignPermissions</a></p>
 <ul>
-<li>Defined in src/api/roles.ts:299</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/roles.ts:337</li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="bulkcreateorreplace"><span>bulk<wbr/>Create<wbr/>Or<wbr/>Replace</span><a href="#bulkcreateorreplace" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="bulkcreateorreplace-1"><span class="tsd-kind-call-signature">bulkCreateOrReplace</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">roles</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/RoleCreateBulk.html" class="tsd-signature-type tsd-kind-interface">RoleCreateBulk</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/RoleCreateBulkOperationResult.html" class="tsd-signature-type tsd-kind-interface">RoleCreateBulkOperationResult</a><span class="tsd-signature-symbol">&gt;</span><a href="#bulkcreateorreplace-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Creates or replaces tenant and resource roles in the selected environment.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">roles</span>: <a href="../interfaces/RoleCreateBulk.html" class="tsd-signature-type tsd-kind-interface">RoleCreateBulk</a><span class="tsd-signature-symbol">[]</span></span>
+<div class="tsd-comment tsd-typography"><p>Role definitions; omit resource for a tenant role, or supply its resource key.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/RoleCreateBulkOperationResult.html" class="tsd-signature-type tsd-kind-interface">RoleCreateBulkOperationResult</a><span class="tsd-signature-symbol">&gt;</span></h4><p>The complete published result containing created and updated string arrays.</p>
+<aside class="tsd-sources">
+<p>Implementation of <a href="../interfaces/IRolesApi.html">IRolesApi</a>.<a href="../interfaces/IRolesApi.html#bulkcreateorreplace">bulkCreateOrReplace</a></p>
+<ul>
+<li>Defined in src/api/roles.ts:266</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="create"><span>create</span><a href="#create" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -129,7 +149,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IRolesApi.html">IRolesApi</a>.<a href="../interfaces/IRolesApi.html#create">create</a></p>
 <ul>
-<li>Defined in src/api/roles.ts:230</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/roles.ts:250</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="delete"><span>delete</span><a href="#delete" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -155,7 +175,7 @@
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IRolesApi.html">IRolesApi</a>.<a href="../interfaces/IRolesApi.html#delete">delete</a></p>
 <ul>
-<li>Defined in src/api/roles.ts:278</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/roles.ts:316</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="ensureaccesslevel"><span>ensure<wbr/>Access<wbr/>Level</span><a href="#ensureaccesslevel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -226,7 +246,7 @@ Note that this check is not foolproof, and the API may still throw 401.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IRolesApi.html">IRolesApi</a>.<a href="../interfaces/IRolesApi.html#get">get</a></p>
 <ul>
-<li>Defined in src/api/roles.ts:181</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/roles.ts:201</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbyid"><span>get<wbr/>By<wbr/>Id</span><a href="#getbyid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -253,7 +273,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IRolesApi.html">IRolesApi</a>.<a href="../interfaces/IRolesApi.html#getbyid">getById</a></p>
 <ul>
-<li>Defined in src/api/roles.ts:218</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/roles.ts:238</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbykey"><span>get<wbr/>By<wbr/>Key</span><a href="#getbykey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -280,7 +300,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IRolesApi.html">IRolesApi</a>.<a href="../interfaces/IRolesApi.html#getbykey">getByKey</a></p>
 <ul>
-<li>Defined in src/api/roles.ts:205</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/roles.ts:225</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="list"><span>list</span><a href="#list" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -301,7 +321,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IRolesApi.html">IRolesApi</a>.<a href="../interfaces/IRolesApi.html#list">list</a></p>
 <ul>
-<li>Defined in src/api/roles.ts:149</li></ul></aside></div></li>
+<li>Defined in src/api/roles.ts:169</li></ul></aside></div></li>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="list-2"><span class="tsd-kind-call-signature">list</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#listt">T</a> <span class="tsd-signature-keyword">extends</span> <a href="../types/IPaginationExtended.html" class="tsd-signature-type tsd-kind-type-alias">IPaginationExtended</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">pagination</span><span class="tsd-signature-symbol">?:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#listt">T</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/ReturnPaginationType.html" class="tsd-signature-type tsd-kind-type-alias">ReturnPaginationType</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#listt">T</a><span class="tsd-signature-symbol">,</span> <a href="../interfaces/PaginatedResultRoleRead.html" class="tsd-signature-type tsd-kind-interface">PaginatedResultRoleRead</a><span class="tsd-signature-symbol">,</span> <a href="../interfaces/RoleRead.html" class="tsd-signature-type tsd-kind-interface">RoleRead</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#list-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
@@ -327,7 +347,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IRolesApi.html">IRolesApi</a>.<a href="../interfaces/IRolesApi.html#list">list</a></p>
 <ul>
-<li>Defined in src/api/roles.ts:150</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/roles.ts:170</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="removepermissions"><span>remove<wbr/>Permissions</span><a href="#removepermissions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -356,7 +376,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IRolesApi.html">IRolesApi</a>.<a href="../interfaces/IRolesApi.html#removepermissions">removePermissions</a></p>
 <ul>
-<li>Defined in src/api/roles.ts:325</li></ul></aside></div></li></ul></section>
+<li>Defined in src/api/roles.ts:363</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="update"><span>update</span><a href="#update" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -385,7 +405,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 </div></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IRolesApi.html">IRolesApi</a>.<a href="../interfaces/IRolesApi.html#update">update</a></p>
 <ul>
-<li>Defined in src/api/roles.ts:254</li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in src/api/roles.ts:292</li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -403,7 +423,7 @@ Alias for the <a href="#get" class="tsd-kind-method">get</a> method.</p>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Constructors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Constructors</summary>
 <div><a href="#constructor"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Constructor"><use href="../assets/icons.svg#icon-512"></use></svg><span>constructor</span></a></div></details>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Methods</summary>
-<div><a href="#assignpermissions"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>assign<wbr/>Permissions</span></a><a href="#create"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create</span></a><a href="#delete"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete</span></a><a href="#ensureaccesslevel" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>ensure<wbr/>Access<wbr/>Level</span></a><a href="#ensurecontext" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>ensure<wbr/>Context</span></a><a href="#get"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get</span></a><a href="#getbyid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>By<wbr/>Id</span></a><a href="#getbykey"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>By<wbr/>Key</span></a><a href="#list"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list</span></a><a href="#removepermissions"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>remove<wbr/>Permissions</span></a><a href="#update"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>update</span></a></div></details></div></details></div>
+<div><a href="#assignpermissions"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>assign<wbr/>Permissions</span></a><a href="#bulkcreateorreplace"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>bulk<wbr/>Create<wbr/>Or<wbr/>Replace</span></a><a href="#create"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create</span></a><a href="#delete"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete</span></a><a href="#ensureaccesslevel" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>ensure<wbr/>Access<wbr/>Level</span></a><a href="#ensurecontext" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>ensure<wbr/>Context</span></a><a href="#get"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get</span></a><a href="#getbyid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>By<wbr/>Id</span></a><a href="#getbykey"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>By<wbr/>Key</span></a><a href="#list"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list</span></a><a href="#removepermissions"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>remove<wbr/>Permissions</span></a><a href="#update"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>update</span></a></div></details></div></details></div>
 <div class="site-menu">
 <nav class="tsd-navigation"><a href="../modules.html">permitio</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
