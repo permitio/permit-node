@@ -21,11 +21,11 @@ beforeAll(async () => {
   await mkdir(join(toolDirectory, 'scripts'));
   script = join(toolDirectory, 'scripts/scan.mjs');
   await cp(sourceScript, script);
-  const install = spawnSync(
-    'pnpm',
-    ['install', '--offline', '--frozen-lockfile', '--ignore-scripts'],
-    { cwd: toolDirectory, encoding: 'utf8', timeout: 30_000 },
-  );
+  const install = spawnSync('pnpm', ['install', '--frozen-lockfile', '--ignore-scripts'], {
+    cwd: toolDirectory,
+    encoding: 'utf8',
+    timeout: 120_000,
+  });
   if (install.error || install.status !== 0) {
     throw new Error(
       `Copied scanner dependency install failed: ` +
@@ -33,7 +33,7 @@ beforeAll(async () => {
     );
   }
   ({ scan } = await import(pathToFileURL(script).href));
-}, 35_000);
+}, 125_000);
 
 afterAll(async () => {
   if (toolDirectory) await rm(toolDirectory, { recursive: true });
