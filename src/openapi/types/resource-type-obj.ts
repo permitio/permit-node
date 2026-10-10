@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,49 +11,13 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { ResourceAttributes } from './resource-attributes';
+import type { ResourceAttributes } from './resource-attributes';
 
-/**
- *
- * @export
- * @interface ResourceTypeObj
- */
 export interface ResourceTypeObj {
-  /**
-   *
-   * @type {string}
-   * @memberof ResourceTypeObj
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ResourceTypeObj
-   */
   key: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ResourceTypeObj
-   */
-  name?: string;
-  /**
-   *
-   * @type {Array<ResourceAttributes>}
-   * @memberof ResourceTypeObj
-   */
-  attributes?: Array<ResourceAttributes>;
-  /**
-   *
-   * @type {string}
-   * @memberof ResourceTypeObj
-   */
+  name?: string | null;
+  attributes?: Array<ResourceAttributes> | null;
   created_at: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ResourceTypeObj
-   */
   updated_at: string;
 }

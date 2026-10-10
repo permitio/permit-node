@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,9 +10,5 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface CallbacksInner
- */
-export interface CallbacksInner {}
+import type { OPALHttpFetcherConfig } from './opalhttp-fetcher-config';
+export type CallbacksInner = string | [string, OPALHttpFetcherConfig];

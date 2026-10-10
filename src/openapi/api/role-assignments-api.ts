@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,45 +10,31 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { BulkRoleAssignmentReport } from '../types';
-// @ts-ignore
-import { BulkRoleUnAssignmentReport } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { RoleAssignmentCreate } from '../types';
-// @ts-ignore
-import { RoleAssignmentRead } from '../types';
-// @ts-ignore
-import { RoleAssignmentDetailedRead } from '../types';
-// @ts-ignore
-import { RoleAssignmentRemove } from '../types';
-// @ts-ignore
-import { PaginatedResultRoleAssignmentRead } from '../types';
-// @ts-ignore
-import { PaginatedResultRoleAssignmentDetailedRead } from '../types';
+import type { Configuration } from '../configuration';
+import type {
+  BulkRoleAssignmentReport,
+  BulkRoleUnAssignmentReport,
+  MissingUserPolicy,
+  PaginatedResultRoleAssignmentDetailedRead,
+  ResponseListRoleAssignmentsV2FactsProjIdEnvIdRoleAssignmentsGet,
+  RoleAssignmentCreate,
+  RoleAssignmentRead,
+  RoleAssignmentRemove,
+} from '../types';
 /**
  * RoleAssignmentsApi - axios parameter creator
- * @export
  */
 export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -61,13 +45,13 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RoleAssignmentCreate} roleAssignmentCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     assignRole: async (
       projId: string,
       envId: string,
       roleAssignmentCreate: RoleAssignmentCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('assignRole', 'projId', projId);
@@ -76,8 +60,8 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
       // verify required parameter 'roleAssignmentCreate' is not null or undefined
       assertParamExists('assignRole', 'roleAssignmentCreate', roleAssignmentCreate);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/role_assignments`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -94,6 +78,7 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -115,18 +100,20 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
     },
     /**
      *
-     * @summary Bulk Assign Role
+     * @summary Bulk create role assignments
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {Array<RoleAssignmentCreate>} roleAssignmentCreate
+     * @param {MissingUserPolicy} [missingUserPolicy] Policy for missing users - \&#39;fail\&#39;: Fail the entire operation if a user is missing; \&#39;ignore\&#39;: Skip assignments for missing users; \&#39;create\&#39;: Create missing users and continue with the operation
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     bulkAssignRole: async (
       projId: string,
       envId: string,
       roleAssignmentCreate: Array<RoleAssignmentCreate>,
-      options: AxiosRequestConfig = {},
+      missingUserPolicy?: MissingUserPolicy,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('bulkAssignRole', 'projId', projId);
@@ -135,8 +122,8 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
       // verify required parameter 'roleAssignmentCreate' is not null or undefined
       assertParamExists('bulkAssignRole', 'roleAssignmentCreate', roleAssignmentCreate);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/role_assignments/bulk`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -152,7 +139,12 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
+      if (missingUserPolicy !== undefined) {
+        localVarQueryParameter['missing_user_policy'] = missingUserPolicy;
+      }
+
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -179,13 +171,13 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {Array<RoleAssignmentRemove>} roleAssignmentRemove
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     bulkUnassignRole: async (
       projId: string,
       envId: string,
       roleAssignmentRemove: Array<RoleAssignmentRemove>,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('bulkUnassignRole', 'projId', projId);
@@ -194,8 +186,8 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
       // verify required parameter 'roleAssignmentRemove' is not null or undefined
       assertParamExists('bulkUnassignRole', 'roleAssignmentRemove', roleAssignmentRemove);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/role_assignments/bulk`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -212,6 +204,7 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -236,39 +229,39 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
      * @summary List Role Assignments
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [user] optional user(s) filter, will only return role assignments granted to this user(s).
-     * @param {string} [role] optional role(s) filter, will only return role assignments granting this role(s).
-     * @param {string} [tenant] optional tenant(s) filter, will only return role assignments granted in that tenant(s).
+     * @param {Array<string>} [user] optional user(s) filter, will only return role assignments granted to this user(s). Split larger sets into successive requests of at most 100 values each.
+     * @param {Array<string>} [role] optional role(s) filter, will only return role assignments granting this role(s). Split larger sets into successive requests of at most 100 values each.
+     * @param {Array<string>} [tenant] optional tenant(s) filter, will only return role assignments granted in that tenant(s). Split larger sets into successive requests of at most 100 values each. Note: when combined with &#x60;resource_instance&#x60;, only the **last** tenant value is used to resolve that instance, while the tenant filter itself still applies to every value. If the instance exists under that last tenant, the result is skewed by that resolution; if it does not, the request fails with **404** even when the instance exists under another tenant in the list. Either outcome depends on the order of the values, so pass a single tenant alongside &#x60;resource_instance&#x60;.
      * @param {string} [resource] optional resource **type** filter, will only return role assignments granted on that resource type.
      * @param {string} [resourceInstance] optional resource instance filter, will only return role assignments granted on that resource instance.
      * @param {boolean} [detailed] Whether to return full details about the user, tenant and role
      * @param {boolean} [includeTotalCount] If true, returns the list of role assignments and the total count.
      * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {number} [perPage] The number of results per page (max 1000).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listRoleAssignments: async (
       projId: string,
       envId: string,
-      user?: string,
-      role?: string,
-      tenant?: string,
+      user?: Array<string>,
+      role?: Array<string>,
+      tenant?: Array<string>,
       resource?: string,
       resourceInstance?: string,
       detailed?: boolean,
       includeTotalCount?: boolean,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('listRoleAssignments', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('listRoleAssignments', 'envId', envId);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/role_assignments`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -284,15 +277,15 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-      if (user !== undefined) {
+      if (user) {
         localVarQueryParameter['user'] = user;
       }
 
-      if (role !== undefined) {
+      if (role) {
         localVarQueryParameter['role'] = role;
       }
 
-      if (tenant !== undefined) {
+      if (tenant) {
         localVarQueryParameter['tenant'] = tenant;
       }
 
@@ -320,6 +313,100 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
         localVarQueryParameter['per_page'] = perPage;
       }
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Lists the role assignments defined within an environment.  - If the `user` filter is present, will only return the role assignments of that user (supports multiple). - If the `tenant` filter is present, will only return the role assignments in that tenant (supports multiple). - If the `role` filter is present, will only return role assignments that are granting that role (supports multiple). - If the `resource` filter is present, will only return role assignments for resource instances of that resource type. - If the `resource_instance` filter is present, will only return role assignments for that resource instance.  Providing both `tenant` and `resource_instance` filters will only return role assignments if the resource instance is in that tenant. If multiple tenants are received, the last tenant will be compared with the resource instance.
+     * @summary List Role Assignments Detailed
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {Array<string>} [user] optional user(s) filter, will only return role assignments granted to this user(s). Split larger sets into successive requests of at most 100 values each.
+     * @param {Array<string>} [role] optional role(s) filter, will only return role assignments granting this role(s). Split larger sets into successive requests of at most 100 values each.
+     * @param {Array<string>} [tenant] optional tenant(s) filter, will only return role assignments granted in that tenant(s). Split larger sets into successive requests of at most 100 values each. Note: when combined with &#x60;resource_instance&#x60;, only the **last** tenant value is used to resolve that instance, while the tenant filter itself still applies to every value. If the instance exists under that last tenant, the result is skewed by that resolution; if it does not, the request fails with **404** even when the instance exists under another tenant in the list. Either outcome depends on the order of the values, so pass a single tenant alongside &#x60;resource_instance&#x60;.
+     * @param {string} [resource] optional resource **type** filter, will only return role assignments granted on that resource type.
+     * @param {string} [resourceInstance] optional resource instance filter, will only return role assignments granted on that resource instance.
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 1000).
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    listRoleAssignmentsDetailed: async (
+      projId: string,
+      envId: string,
+      user?: Array<string>,
+      role?: Array<string>,
+      tenant?: Array<string>,
+      resource?: string,
+      resourceInstance?: string,
+      page?: number,
+      perPage?: number,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('listRoleAssignmentsDetailed', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('listRoleAssignmentsDetailed', 'envId', envId);
+      const localVarPath = `/v2/facts/{proj_id}/{env_id}/role_assignments/detailed`
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (user) {
+        localVarQueryParameter['user'] = user;
+      }
+
+      if (role) {
+        localVarQueryParameter['role'] = role;
+      }
+
+      if (tenant) {
+        localVarQueryParameter['tenant'] = tenant;
+      }
+
+      if (resource !== undefined) {
+        localVarQueryParameter['resource'] = resource;
+      }
+
+      if (resourceInstance !== undefined) {
+        localVarQueryParameter['resource_instance'] = resourceInstance;
+      }
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (perPage !== undefined) {
+        localVarQueryParameter['per_page'] = perPage;
+      }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -339,14 +426,16 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RoleAssignmentRemove} roleAssignmentRemove
+     * @param {boolean} [returnDeleted] Whether to return the deleted role assignment, status code will be 200 instead of the default 204 if true
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     unassignRole: async (
       projId: string,
       envId: string,
       roleAssignmentRemove: RoleAssignmentRemove,
-      options: AxiosRequestConfig = {},
+      returnDeleted?: boolean,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('unassignRole', 'projId', projId);
@@ -355,8 +444,8 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
       // verify required parameter 'roleAssignmentRemove' is not null or undefined
       assertParamExists('unassignRole', 'roleAssignmentRemove', roleAssignmentRemove);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/role_assignments`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -372,7 +461,12 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
+      if (returnDeleted !== undefined) {
+        localVarQueryParameter['return_deleted'] = returnDeleted;
+      }
+
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -397,7 +491,6 @@ export const RoleAssignmentsApiAxiosParamCreator = function (configuration?: Con
 
 /**
  * RoleAssignmentsApi - functional programming interface
- * @export
  */
 export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = RoleAssignmentsApiAxiosParamCreator(configuration);
@@ -409,13 +502,13 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RoleAssignmentCreate} roleAssignmentCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async assignRole(
       projId: string,
       envId: string,
       roleAssignmentCreate: RoleAssignmentCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleAssignmentRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.assignRole(
         projId,
@@ -423,22 +516,33 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
         roleAssignmentCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RoleAssignmentsApi.assignRole']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      *
-     * @summary Bulk Assign Role
+     * @summary Bulk create role assignments
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {Array<RoleAssignmentCreate>} roleAssignmentCreate
+     * @param {MissingUserPolicy} [missingUserPolicy] Policy for missing users - \&#39;fail\&#39;: Fail the entire operation if a user is missing; \&#39;ignore\&#39;: Skip assignments for missing users; \&#39;create\&#39;: Create missing users and continue with the operation
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async bulkAssignRole(
       projId: string,
       envId: string,
       roleAssignmentCreate: Array<RoleAssignmentCreate>,
-      options?: AxiosRequestConfig,
+      missingUserPolicy?: MissingUserPolicy,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<BulkRoleAssignmentReport>
     > {
@@ -446,9 +550,20 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
         projId,
         envId,
         roleAssignmentCreate,
+        missingUserPolicy,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RoleAssignmentsApi.bulkAssignRole']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      *
@@ -457,13 +572,13 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {Array<RoleAssignmentRemove>} roleAssignmentRemove
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async bulkUnassignRole(
       projId: string,
       envId: string,
       roleAssignmentRemove: Array<RoleAssignmentRemove>,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<BulkRoleUnAssignmentReport>
     > {
@@ -473,48 +588,53 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
         roleAssignmentRemove,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RoleAssignmentsApi.bulkUnassignRole']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists the role assignments defined within an environment.  - If the `user` filter is present, will only return the role assignments of that user (supports multiple). - If the `tenant` filter is present, will only return the role assignments in that tenant (supports multiple). - If the `role` filter is present, will only return role assignments that are granting that role (supports multiple). - If the `resource` filter is present, will only return role assignments for resource instances of that resource type. - If the `resource_instance` filter is present, will only return role assignments for that resource instance.  Providing both `tenant` and `resource_instance` filters will only return role assignments if the resource instance is in that tenant. If multiple tenants are received, the last tenant will be compared with the resource instance.
      * @summary List Role Assignments
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [user] optional user(s) filter, will only return role assignments granted to this user(s).
-     * @param {string} [role] optional role(s) filter, will only return role assignments granting this role(s).
-     * @param {string} [tenant] optional tenant(s) filter, will only return role assignments granted in that tenant(s).
+     * @param {Array<string>} [user] optional user(s) filter, will only return role assignments granted to this user(s). Split larger sets into successive requests of at most 100 values each.
+     * @param {Array<string>} [role] optional role(s) filter, will only return role assignments granting this role(s). Split larger sets into successive requests of at most 100 values each.
+     * @param {Array<string>} [tenant] optional tenant(s) filter, will only return role assignments granted in that tenant(s). Split larger sets into successive requests of at most 100 values each. Note: when combined with &#x60;resource_instance&#x60;, only the **last** tenant value is used to resolve that instance, while the tenant filter itself still applies to every value. If the instance exists under that last tenant, the result is skewed by that resolution; if it does not, the request fails with **404** even when the instance exists under another tenant in the list. Either outcome depends on the order of the values, so pass a single tenant alongside &#x60;resource_instance&#x60;.
      * @param {string} [resource] optional resource **type** filter, will only return role assignments granted on that resource type.
      * @param {string} [resourceInstance] optional resource instance filter, will only return role assignments granted on that resource instance.
      * @param {boolean} [detailed] Whether to return full details about the user, tenant and role
      * @param {boolean} [includeTotalCount] If true, returns the list of role assignments and the total count.
      * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {number} [perPage] The number of results per page (max 1000).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listRoleAssignments(
       projId: string,
       envId: string,
-      user?: string,
-      role?: string,
-      tenant?: string,
+      user?: Array<string>,
+      role?: Array<string>,
+      tenant?: Array<string>,
       resource?: string,
       resourceInstance?: string,
       detailed?: boolean,
       includeTotalCount?: boolean,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
         basePath?: string,
-      ) => AxiosPromise<
-        | Array<RoleAssignmentRead>
-        | Array<RoleAssignmentDetailedRead>
-        | PaginatedResultRoleAssignmentRead
-        | PaginatedResultRoleAssignmentDetailedRead
-      >
+      ) => AxiosPromise<ResponseListRoleAssignmentsV2FactsProjIdEnvIdRoleAssignmentsGet>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listRoleAssignments(
         projId,
@@ -530,7 +650,74 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RoleAssignmentsApi.listRoleAssignments']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Lists the role assignments defined within an environment.  - If the `user` filter is present, will only return the role assignments of that user (supports multiple). - If the `tenant` filter is present, will only return the role assignments in that tenant (supports multiple). - If the `role` filter is present, will only return role assignments that are granting that role (supports multiple). - If the `resource` filter is present, will only return role assignments for resource instances of that resource type. - If the `resource_instance` filter is present, will only return role assignments for that resource instance.  Providing both `tenant` and `resource_instance` filters will only return role assignments if the resource instance is in that tenant. If multiple tenants are received, the last tenant will be compared with the resource instance.
+     * @summary List Role Assignments Detailed
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {Array<string>} [user] optional user(s) filter, will only return role assignments granted to this user(s). Split larger sets into successive requests of at most 100 values each.
+     * @param {Array<string>} [role] optional role(s) filter, will only return role assignments granting this role(s). Split larger sets into successive requests of at most 100 values each.
+     * @param {Array<string>} [tenant] optional tenant(s) filter, will only return role assignments granted in that tenant(s). Split larger sets into successive requests of at most 100 values each. Note: when combined with &#x60;resource_instance&#x60;, only the **last** tenant value is used to resolve that instance, while the tenant filter itself still applies to every value. If the instance exists under that last tenant, the result is skewed by that resolution; if it does not, the request fails with **404** even when the instance exists under another tenant in the list. Either outcome depends on the order of the values, so pass a single tenant alongside &#x60;resource_instance&#x60;.
+     * @param {string} [resource] optional resource **type** filter, will only return role assignments granted on that resource type.
+     * @param {string} [resourceInstance] optional resource instance filter, will only return role assignments granted on that resource instance.
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 1000).
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    async listRoleAssignmentsDetailed(
+      projId: string,
+      envId: string,
+      user?: Array<string>,
+      role?: Array<string>,
+      tenant?: Array<string>,
+      resource?: string,
+      resourceInstance?: string,
+      page?: number,
+      perPage?: number,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<PaginatedResultRoleAssignmentDetailedRead>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.listRoleAssignmentsDetailed(
+        projId,
+        envId,
+        user,
+        role,
+        tenant,
+        resource,
+        resourceInstance,
+        page,
+        perPage,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RoleAssignmentsApi.listRoleAssignmentsDetailed']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Unassigns a user role within a tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.  If the role is not actually assigned, will return 404.
@@ -538,29 +725,40 @@ export const RoleAssignmentsApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {RoleAssignmentRemove} roleAssignmentRemove
+     * @param {boolean} [returnDeleted] Whether to return the deleted role assignment, status code will be 200 instead of the default 204 if true
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async unassignRole(
       projId: string,
       envId: string,
       roleAssignmentRemove: RoleAssignmentRemove,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      returnDeleted?: boolean,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleAssignmentRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.unassignRole(
         projId,
         envId,
         roleAssignmentRemove,
+        returnDeleted,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['RoleAssignmentsApi.unassignRole']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
 
 /**
  * RoleAssignmentsApi - factory interface
- * @export
  */
 export const RoleAssignmentsApiFactory = function (
   configuration?: Configuration,
@@ -572,109 +770,114 @@ export const RoleAssignmentsApiFactory = function (
     /**
      * Assigns a role to a user within a tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.
      * @summary Assign Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {RoleAssignmentCreate} roleAssignmentCreate
+     * @param {RoleAssignmentsApiAssignRoleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     assignRole(
-      projId: string,
-      envId: string,
-      roleAssignmentCreate: RoleAssignmentCreate,
-      options?: any,
+      requestParameters: RoleAssignmentsApiAssignRoleRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<RoleAssignmentRead> {
       return localVarFp
-        .assignRole(projId, envId, roleAssignmentCreate, options)
+        .assignRole(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.roleAssignmentCreate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      *
-     * @summary Bulk Assign Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {Array<RoleAssignmentCreate>} roleAssignmentCreate
+     * @summary Bulk create role assignments
+     * @param {RoleAssignmentsApiBulkAssignRoleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     bulkAssignRole(
-      projId: string,
-      envId: string,
-      roleAssignmentCreate: Array<RoleAssignmentCreate>,
-      options?: any,
+      requestParameters: RoleAssignmentsApiBulkAssignRoleRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<BulkRoleAssignmentReport> {
       return localVarFp
-        .bulkAssignRole(projId, envId, roleAssignmentCreate, options)
+        .bulkAssignRole(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.roleAssignmentCreate,
+          requestParameters.missingUserPolicy,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Bulk Unassign Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {Array<RoleAssignmentRemove>} roleAssignmentRemove
+     * @param {RoleAssignmentsApiBulkUnassignRoleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     bulkUnassignRole(
-      projId: string,
-      envId: string,
-      roleAssignmentRemove: Array<RoleAssignmentRemove>,
-      options?: any,
+      requestParameters: RoleAssignmentsApiBulkUnassignRoleRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<BulkRoleUnAssignmentReport> {
       return localVarFp
-        .bulkUnassignRole(projId, envId, roleAssignmentRemove, options)
+        .bulkUnassignRole(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.roleAssignmentRemove,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists the role assignments defined within an environment.  - If the `user` filter is present, will only return the role assignments of that user (supports multiple). - If the `tenant` filter is present, will only return the role assignments in that tenant (supports multiple). - If the `role` filter is present, will only return role assignments that are granting that role (supports multiple). - If the `resource` filter is present, will only return role assignments for resource instances of that resource type. - If the `resource_instance` filter is present, will only return role assignments for that resource instance.  Providing both `tenant` and `resource_instance` filters will only return role assignments if the resource instance is in that tenant. If multiple tenants are received, the last tenant will be compared with the resource instance.
      * @summary List Role Assignments
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [user] optional user(s) filter, will only return role assignments granted to this user(s).
-     * @param {string} [role] optional role(s) filter, will only return role assignments granting this role(s).
-     * @param {string} [tenant] optional tenant(s) filter, will only return role assignments granted in that tenant(s).
-     * @param {string} [resource] optional resource **type** filter, will only return role assignments granted on that resource type.
-     * @param {string} [resourceInstance] optional resource instance filter, will only return role assignments granted on that resource instance.
-     * @param {boolean} [detailed] Whether to return full details about the user, tenant and role
-     * @param {boolean} [includeTotalCount] If true, returns the list of role assignments and the total count.
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {RoleAssignmentsApiListRoleAssignmentsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listRoleAssignments(
-      projId: string,
-      envId: string,
-      user?: string,
-      role?: string,
-      tenant?: string,
-      resource?: string,
-      resourceInstance?: string,
-      detailed?: boolean,
-      includeTotalCount?: boolean,
-      page?: number,
-      perPage?: number,
-      options?: any,
-    ): AxiosPromise<
-      | Array<RoleAssignmentRead>
-      | Array<RoleAssignmentDetailedRead>
-      | PaginatedResultRoleAssignmentRead
-      | PaginatedResultRoleAssignmentDetailedRead
-    > {
+      requestParameters: RoleAssignmentsApiListRoleAssignmentsRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ResponseListRoleAssignmentsV2FactsProjIdEnvIdRoleAssignmentsGet> {
       return localVarFp
         .listRoleAssignments(
-          projId,
-          envId,
-          user,
-          role,
-          tenant,
-          resource,
-          resourceInstance,
-          detailed,
-          includeTotalCount,
-          page,
-          perPage,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.user,
+          requestParameters.role,
+          requestParameters.tenant,
+          requestParameters.resource,
+          requestParameters.resourceInstance,
+          requestParameters.detailed,
+          requestParameters.includeTotalCount,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Lists the role assignments defined within an environment.  - If the `user` filter is present, will only return the role assignments of that user (supports multiple). - If the `tenant` filter is present, will only return the role assignments in that tenant (supports multiple). - If the `role` filter is present, will only return role assignments that are granting that role (supports multiple). - If the `resource` filter is present, will only return role assignments for resource instances of that resource type. - If the `resource_instance` filter is present, will only return role assignments for that resource instance.  Providing both `tenant` and `resource_instance` filters will only return role assignments if the resource instance is in that tenant. If multiple tenants are received, the last tenant will be compared with the resource instance.
+     * @summary List Role Assignments Detailed
+     * @param {RoleAssignmentsApiListRoleAssignmentsDetailedRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    listRoleAssignmentsDetailed(
+      requestParameters: RoleAssignmentsApiListRoleAssignmentsDetailedRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PaginatedResultRoleAssignmentDetailedRead> {
+      return localVarFp
+        .listRoleAssignmentsDetailed(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.user,
+          requestParameters.role,
+          requestParameters.tenant,
+          requestParameters.resource,
+          requestParameters.resourceInstance,
+          requestParameters.page,
+          requestParameters.perPage,
           options,
         )
         .then((request) => request(axios, basePath));
@@ -682,20 +885,22 @@ export const RoleAssignmentsApiFactory = function (
     /**
      * Unassigns a user role within a tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.  If the role is not actually assigned, will return 404.
      * @summary Unassign Role
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {RoleAssignmentRemove} roleAssignmentRemove
+     * @param {RoleAssignmentsApiUnassignRoleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     unassignRole(
-      projId: string,
-      envId: string,
-      roleAssignmentRemove: RoleAssignmentRemove,
-      options?: any,
-    ): AxiosPromise<void> {
+      requestParameters: RoleAssignmentsApiUnassignRoleRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<RoleAssignmentRead> {
       return localVarFp
-        .unassignRole(projId, envId, roleAssignmentRemove, options)
+        .unassignRole(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.roleAssignmentRemove,
+          requestParameters.returnDeleted,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
@@ -703,205 +908,194 @@ export const RoleAssignmentsApiFactory = function (
 
 /**
  * Request parameters for assignRole operation in RoleAssignmentsApi.
- * @export
- * @interface RoleAssignmentsApiAssignRoleRequest
  */
 export interface RoleAssignmentsApiAssignRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RoleAssignmentsApiAssignRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RoleAssignmentsApiAssignRole
    */
   readonly envId: string;
 
-  /**
-   *
-   * @type {RoleAssignmentCreate}
-   * @memberof RoleAssignmentsApiAssignRole
-   */
   readonly roleAssignmentCreate: RoleAssignmentCreate;
 }
 
 /**
  * Request parameters for bulkAssignRole operation in RoleAssignmentsApi.
- * @export
- * @interface RoleAssignmentsApiBulkAssignRoleRequest
  */
 export interface RoleAssignmentsApiBulkAssignRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RoleAssignmentsApiBulkAssignRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RoleAssignmentsApiBulkAssignRole
    */
   readonly envId: string;
 
-  /**
-   *
-   * @type {Array<RoleAssignmentCreate>}
-   * @memberof RoleAssignmentsApiBulkAssignRole
-   */
   readonly roleAssignmentCreate: Array<RoleAssignmentCreate>;
+
+  /**
+   * Policy for missing users - \&#39;fail\&#39;: Fail the entire operation if a user is missing; \&#39;ignore\&#39;: Skip assignments for missing users; \&#39;create\&#39;: Create missing users and continue with the operation
+   */
+  readonly missingUserPolicy?: MissingUserPolicy;
 }
 
 /**
  * Request parameters for bulkUnassignRole operation in RoleAssignmentsApi.
- * @export
- * @interface RoleAssignmentsApiBulkUnassignRoleRequest
  */
 export interface RoleAssignmentsApiBulkUnassignRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RoleAssignmentsApiBulkUnassignRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RoleAssignmentsApiBulkUnassignRole
    */
   readonly envId: string;
 
-  /**
-   *
-   * @type {Array<RoleAssignmentRemove>}
-   * @memberof RoleAssignmentsApiBulkUnassignRole
-   */
   readonly roleAssignmentRemove: Array<RoleAssignmentRemove>;
 }
 
 /**
  * Request parameters for listRoleAssignments operation in RoleAssignmentsApi.
- * @export
- * @interface RoleAssignmentsApiListRoleAssignmentsRequest
  */
 export interface RoleAssignmentsApiListRoleAssignmentsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly envId: string;
 
   /**
-   * optional user(s) filter, will only return role assignments granted to this user(s).
-   * @type {string}
-   * @memberof RoleAssignmentsApiListRoleAssignments
+   * optional user(s) filter, will only return role assignments granted to this user(s). Split larger sets into successive requests of at most 100 values each.
    */
-  readonly user?: string;
+  readonly user?: Array<string>;
 
   /**
-   * optional role(s) filter, will only return role assignments granting this role(s).
-   * @type {string}
-   * @memberof RoleAssignmentsApiListRoleAssignments
+   * optional role(s) filter, will only return role assignments granting this role(s). Split larger sets into successive requests of at most 100 values each.
    */
-  readonly role?: string;
+  readonly role?: Array<string>;
 
   /**
-   * optional tenant(s) filter, will only return role assignments granted in that tenant(s).
-   * @type {string}
-   * @memberof RoleAssignmentsApiListRoleAssignments
+   * optional tenant(s) filter, will only return role assignments granted in that tenant(s). Split larger sets into successive requests of at most 100 values each. Note: when combined with &#x60;resource_instance&#x60;, only the **last** tenant value is used to resolve that instance, while the tenant filter itself still applies to every value. If the instance exists under that last tenant, the result is skewed by that resolution; if it does not, the request fails with **404** even when the instance exists under another tenant in the list. Either outcome depends on the order of the values, so pass a single tenant alongside &#x60;resource_instance&#x60;.
    */
-  readonly tenant?: string;
+  readonly tenant?: Array<string>;
 
   /**
    * optional resource **type** filter, will only return role assignments granted on that resource type.
-   * @type {string}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly resource?: string;
 
   /**
    * optional resource instance filter, will only return role assignments granted on that resource instance.
-   * @type {string}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly resourceInstance?: string;
 
   /**
    * Whether to return full details about the user, tenant and role
-   * @type {boolean}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly detailed?: boolean;
 
   /**
    * If true, returns the list of role assignments and the total count.
-   * @type {boolean}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly includeTotalCount?: boolean;
 
   /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof RoleAssignmentsApiListRoleAssignments
    */
   readonly page?: number;
 
   /**
-   * The number of results per page (max 100).
-   * @type {number}
-   * @memberof RoleAssignmentsApiListRoleAssignments
+   * The number of results per page (max 1000).
+   */
+  readonly perPage?: number;
+}
+
+/**
+ * Request parameters for listRoleAssignmentsDetailed operation in RoleAssignmentsApi.
+ */
+export interface RoleAssignmentsApiListRoleAssignmentsDetailedRequest {
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
+  /**
+   * optional user(s) filter, will only return role assignments granted to this user(s). Split larger sets into successive requests of at most 100 values each.
+   */
+  readonly user?: Array<string>;
+
+  /**
+   * optional role(s) filter, will only return role assignments granting this role(s). Split larger sets into successive requests of at most 100 values each.
+   */
+  readonly role?: Array<string>;
+
+  /**
+   * optional tenant(s) filter, will only return role assignments granted in that tenant(s). Split larger sets into successive requests of at most 100 values each. Note: when combined with &#x60;resource_instance&#x60;, only the **last** tenant value is used to resolve that instance, while the tenant filter itself still applies to every value. If the instance exists under that last tenant, the result is skewed by that resolution; if it does not, the request fails with **404** even when the instance exists under another tenant in the list. Either outcome depends on the order of the values, so pass a single tenant alongside &#x60;resource_instance&#x60;.
+   */
+  readonly tenant?: Array<string>;
+
+  /**
+   * optional resource **type** filter, will only return role assignments granted on that resource type.
+   */
+  readonly resource?: string;
+
+  /**
+   * optional resource instance filter, will only return role assignments granted on that resource instance.
+   */
+  readonly resourceInstance?: string;
+
+  /**
+   * Page number of the results to fetch, starting at 1.
+   */
+  readonly page?: number;
+
+  /**
+   * The number of results per page (max 1000).
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for unassignRole operation in RoleAssignmentsApi.
- * @export
- * @interface RoleAssignmentsApiUnassignRoleRequest
  */
 export interface RoleAssignmentsApiUnassignRoleRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RoleAssignmentsApiUnassignRole
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof RoleAssignmentsApiUnassignRole
    */
   readonly envId: string;
 
-  /**
-   *
-   * @type {RoleAssignmentRemove}
-   * @memberof RoleAssignmentsApiUnassignRole
-   */
   readonly roleAssignmentRemove: RoleAssignmentRemove;
+
+  /**
+   * Whether to return the deleted role assignment, status code will be 200 instead of the default 204 if true
+   */
+  readonly returnDeleted?: boolean;
 }
 
 /**
  * RoleAssignmentsApi - object-oriented interface
- * @export
- * @class RoleAssignmentsApi
- * @extends {BaseAPI}
  */
 export class RoleAssignmentsApi extends BaseAPI {
   /**
@@ -909,12 +1103,11 @@ export class RoleAssignmentsApi extends BaseAPI {
    * @summary Assign Role
    * @param {RoleAssignmentsApiAssignRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof RoleAssignmentsApi
+   * @throws If a required parameter is missing.
    */
   public assignRole(
     requestParameters: RoleAssignmentsApiAssignRoleRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return RoleAssignmentsApiFp(this.configuration)
       .assignRole(
@@ -928,21 +1121,21 @@ export class RoleAssignmentsApi extends BaseAPI {
 
   /**
    *
-   * @summary Bulk Assign Role
+   * @summary Bulk create role assignments
    * @param {RoleAssignmentsApiBulkAssignRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof RoleAssignmentsApi
+   * @throws If a required parameter is missing.
    */
   public bulkAssignRole(
     requestParameters: RoleAssignmentsApiBulkAssignRoleRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return RoleAssignmentsApiFp(this.configuration)
       .bulkAssignRole(
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.roleAssignmentCreate,
+        requestParameters.missingUserPolicy,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -953,12 +1146,11 @@ export class RoleAssignmentsApi extends BaseAPI {
    * @summary Bulk Unassign Role
    * @param {RoleAssignmentsApiBulkUnassignRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof RoleAssignmentsApi
+   * @throws If a required parameter is missing.
    */
   public bulkUnassignRole(
     requestParameters: RoleAssignmentsApiBulkUnassignRoleRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return RoleAssignmentsApiFp(this.configuration)
       .bulkUnassignRole(
@@ -975,12 +1167,11 @@ export class RoleAssignmentsApi extends BaseAPI {
    * @summary List Role Assignments
    * @param {RoleAssignmentsApiListRoleAssignmentsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof RoleAssignmentsApi
+   * @throws If a required parameter is missing.
    */
   public listRoleAssignments(
     requestParameters: RoleAssignmentsApiListRoleAssignmentsRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return RoleAssignmentsApiFp(this.configuration)
       .listRoleAssignments(
@@ -1001,22 +1192,49 @@ export class RoleAssignmentsApi extends BaseAPI {
   }
 
   /**
+   * Lists the role assignments defined within an environment.  - If the `user` filter is present, will only return the role assignments of that user (supports multiple). - If the `tenant` filter is present, will only return the role assignments in that tenant (supports multiple). - If the `role` filter is present, will only return role assignments that are granting that role (supports multiple). - If the `resource` filter is present, will only return role assignments for resource instances of that resource type. - If the `resource_instance` filter is present, will only return role assignments for that resource instance.  Providing both `tenant` and `resource_instance` filters will only return role assignments if the resource instance is in that tenant. If multiple tenants are received, the last tenant will be compared with the resource instance.
+   * @summary List Role Assignments Detailed
+   * @param {RoleAssignmentsApiListRoleAssignmentsDetailedRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws If a required parameter is missing.
+   */
+  public listRoleAssignmentsDetailed(
+    requestParameters: RoleAssignmentsApiListRoleAssignmentsDetailedRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return RoleAssignmentsApiFp(this.configuration)
+      .listRoleAssignmentsDetailed(
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.user,
+        requestParameters.role,
+        requestParameters.tenant,
+        requestParameters.resource,
+        requestParameters.resourceInstance,
+        requestParameters.page,
+        requestParameters.perPage,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
    * Unassigns a user role within a tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.  If the role is not actually assigned, will return 404.
    * @summary Unassign Role
    * @param {RoleAssignmentsApiUnassignRoleRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof RoleAssignmentsApi
+   * @throws If a required parameter is missing.
    */
   public unassignRole(
     requestParameters: RoleAssignmentsApiUnassignRoleRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return RoleAssignmentsApiFp(this.configuration)
       .unassignRole(
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.roleAssignmentRemove,
+        requestParameters.returnDeleted,
         options,
       )
       .then((request) => request(this.axios, this.basePath));

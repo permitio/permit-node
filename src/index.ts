@@ -1,40 +1,74 @@
 // For Default export
 import pino from 'pino';
 
-import { ApiClient, IPermitApi } from './api/api-client';
-import { ElementsClient, IPermitElementsApi } from './api/elements';
-import { ConfigFactory, IPermitConfig } from './config';
-import { Enforcer, IEnforcer } from './enforcement/enforcer';
+import { ApiClient, type IPermitApi } from '#src/api/api-client';
+import { ElementsClient, type IPermitElementsApi } from '#src/api/elements';
+import { ConfigFactory, type IPermitConfig, type IPermitOptions } from '#src/config';
+import { Enforcer, type IEnforcer } from '#src/enforcement/enforcer';
 import {
-  ICheckQuery,
-  IResource,
-  IUser,
-  IUserPermissions,
-  TenantDetails,
-} from './enforcement/interfaces';
-import { LoggerFactory } from './logger';
-import { CheckConfig, Context } from './utils/context';
-import { AxiosLoggingInterceptor } from './utils/http-logger';
-import { resolveRetryConfig } from './utils/retry';
-import { AxiosRetryInterceptor } from './utils/retry-interceptor';
-import { RecursivePartial } from './utils/types';
+  type ICheckQuery,
+  type IAuthorizedUsersResult,
+  type ILocalRoleAssignment,
+  type ILocalRoleAssignmentsQuery,
+  type IFilterObject,
+  type IResource,
+  type IUser,
+  type IUserPermissions,
+  type TenantDetails,
+} from '#src/enforcement/interfaces';
+import { LoggerFactory } from '#src/logger';
+import {
+  type CheckConfig,
+  type CheckUrlConfig,
+  type Context,
+  type GetUserPermissionsConfig,
+} from '#src/utils/context';
+import { createOwnedTransport } from '#src/utils/http-transport';
+import { resolveRetryConfig } from '#src/utils/retry';
 
 // exported interfaces
-export * from './api';
-export { IPermitConfig } from './config';
-export { IUser, IAction, IResource } from './enforcement/interfaces';
-export { PermitConnectionError, PermitError, PermitPDPStatusError } from './enforcement/enforcer';
-export { Context, ContextTransform } from './utils/context';
-export { ApiContext, PermitContextError, ApiKeyLevel } from './api/context';
-export { PermitApiError } from './api/base';
-export { IRetryConfig, RetryConditionFn, RETRYABLE_STATUS_CODES } from './utils/retry';
+export * from '#src/api/index';
+export { type IPermitConfig, type IPermitOptions, type FactsSyncTimeoutPolicy } from '#src/config';
+export {
+  type IUser,
+  type ICheckQuery,
+  type IUserPermissions,
+  type IAction,
+  type IResource,
+  type IFilterObject,
+  type IAuthorizedUserAssignment,
+  type IAuthorizedUsersResult,
+  type ILocalRoleAssignment,
+  type ILocalRoleAssignmentsQuery,
+  type TenantDetails,
+} from '#src/enforcement/interfaces';
+export {
+  PermitConnectionError,
+  PermitError,
+  PermitPDPStatusError,
+} from '#src/enforcement/enforcer';
+export {
+  type Context,
+  type CheckConfig,
+  type CheckUrlConfig,
+  type GetUserPermissionsConfig,
+} from '#src/utils/context';
+export {
+  ApiContext,
+  ApiContextLevel,
+  PermitContextError,
+  PermitContextChangeError,
+  ApiKeyLevel,
+} from '#src/api/context';
+export { PermitApiError, type FormattedAxiosError } from '#src/api/base';
+export { type IRetryConfig, type RetryConditionFn, RETRYABLE_STATUS_CODES } from '#src/utils/retry';
 
 export interface IPermitClient extends IEnforcer {
   /**
    * Access the SDK configuration using this property.
    * Once the SDK is initialized, the configuration is read-only.
    */
-  config: IPermitConfig;
+  readonly config: IPermitConfig;
 
   /**
    * Access the Permit REST API using this property.
@@ -49,7 +83,7 @@ export interface IPermitClient extends IEnforcer {
 
 /**
  * The `Permit` class represents the main entry point for interacting with the Permit.io SDK.
- * The SDK constructor expects an object implementing the {@link IPermitConfig} interface.
+ * The SDK constructor expects {@link IPermitOptions}; effective settings are validated and frozen.
  *
  * Example usage:
  *
@@ -137,40 +171,32 @@ export class Permit implements IPermitClient {
    * Constructs a new instance of the {@link Permit} class with the specified configuration.
    *
    * @param config - The configuration for the Permit SDK.
+   * @throws TypeError When effective constructor options are invalid.
    */
-  constructor(config: RecursivePartial<IPermitConfig>) {
+  constructor(config: IPermitOptions) {
     this.config = ConfigFactory.build(config);
+    Object.defineProperty(this, 'config', { writable: false, configurable: false });
     this.logger = LoggerFactory.createLogger(this.config);
-    AxiosLoggingInterceptor.setupInterceptor(this.config.axiosInstance, this.logger);
-
-    // Setup retry interceptor for REST API calls.
-    // Strip POST from the REST retryMethods regardless of user config: REST
-    // writes are non-idempotent and must never be repeated. (This is symmetric
-    // with the enforcer, which ADDS POST for the idempotent PDP/OPA check calls.)
     const resolvedRetryConfig = resolveRetryConfig(this.config.retry);
-    const restRetryConfig = {
-      ...resolvedRetryConfig,
-      retryMethods: resolvedRetryConfig.retryMethods.filter((m) => m !== 'POST'),
+    const restConfig = {
+      ...this.config,
+      axiosInstance: createOwnedTransport({
+        caller: this.config.axiosInstance,
+        logger: this.logger,
+        retry: {
+          ...resolvedRetryConfig,
+          retryMethods: resolvedRetryConfig.retryMethods.filter(
+            (method) => method !== 'POST' && method !== 'PATCH',
+          ),
+        },
+        name: 'API',
+      }),
     };
-    // Skip the install when no methods remain (e.g. retryMethods: ['POST']),
-    // which would otherwise add an interceptor that can never retry.
-    if (resolvedRetryConfig.enabled && restRetryConfig.retryMethods.length > 0) {
-      AxiosRetryInterceptor.setupInterceptor(
-        this.config.axiosInstance,
-        restRetryConfig,
-        this.logger,
-        'API',
-      );
-    }
-
-    this.api = new ApiClient(this.config, this.logger);
-
+    this.api = new ApiClient(restConfig, this.logger);
     this.enforcer = new Enforcer(this.config, this.logger);
-    this.elements = new ElementsClient(this.config, this.logger);
+    this.elements = new ElementsClient(restConfig, this.logger);
 
-    this.logger.debug(
-      `Permit.io SDK initialized with config:\n${JSON.stringify(this.config, undefined, 2)}`,
-    );
+    this.logger.debug('Permit.io SDK initialized');
   }
 
   /**
@@ -182,7 +208,7 @@ export class Permit implements IPermitClient {
    * @param context  - The context object representing the context in which the action is performed.
    * @returns `true` if the user is authorized, `false` otherwise.
    * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
-   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
+   * @throws {@link PermitPDPStatusError} if the PDP returned an unexpected status code or response body.
    */
   public async check(
     user: string | IUser,
@@ -195,13 +221,36 @@ export class Permit implements IPermitClient {
   }
 
   /**
+   * Checks a full URL against URL mappings on a compatible Permit container PDP.
+   *
+   * @param user - User key or attributes.
+   * @param httpMethod - HTTP method string, sent unchanged without an invented method enum.
+   * @param url - Absolute URI, 1..65536 Unicode characters, sent unchanged; it is not fetched.
+   * @param config - Tenant, context, timeout/error policy; unsupported OPA always rejects.
+   * @returns Literal allow decision, or false for ordinary failures in non-throwing mode.
+   * @throws {PermitError} For invalid input, input that cannot be JSON-serialized,
+   *   or a missing tenant with default tenancy disabled.
+   * @throws {PermitPDPStatusError} For malformed decisions or unavailable 404/405/501 regardless
+   *   of error policy; other rejected responses throw in throwing mode.
+   * @throws {PermitConnectionError} On connection/timeout failure in throwing mode.
+   */
+  public async checkUrl(
+    user: IUser | string,
+    httpMethod: string,
+    url: string,
+    config?: CheckUrlConfig,
+  ): Promise<boolean> {
+    return await this.enforcer.checkUrl(user, httpMethod, url, config);
+  }
+
+  /**
    * Checks multiple requests within the specified context.
    *
    * @param checks   - The check requests.
    * @param context  - The context object representing the context in which the action is performed.
    * @returns array containing `true` if the user is authorized, `false` otherwise for each check request.
    * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
-   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
+   * @throws {@link PermitPDPStatusError} if the PDP returned an unexpected status code or response body.
    */
   public async bulkCheck(
     checks: Array<ICheckQuery>,
@@ -212,9 +261,88 @@ export class Permit implements IPermitClient {
   }
 
   /**
-   * Get all tenants available in the system.
-   * @returns An array of TenantDetails representing all tenants.
+   * Returns the full PDP result for users authorized to perform an action on a resource.
+   *
+   * @param action - Action to evaluate.
+   * @param resource - Resource type, type:key string, or resource attributes and tenant.
+   * @param context - Request context overriding existing global context.
+   * @param config - Timeout/error policy; unsupported useOpa:true always rejects.
+   * @returns The validated result or a normalized empty result in non-throwing mode.
+   * @throws {PermitError} For unsupported OPA, invalid resource strings, or non-JSON inputs.
+   * @throws {PermitConnectionError} On an operational failure in throwing mode.
+   * @throws {PermitPDPStatusError} On a rejected or malformed response in throwing mode.
    */
+  public async getAuthorizedUsers(
+    action: string,
+    resource: IResource | string,
+    context?: Context,
+    config?: CheckConfig,
+  ): Promise<IAuthorizedUsersResult> {
+    return await this.enforcer.getAuthorizedUsers(action, resource, context, config);
+  }
+
+  /**
+   * Returns a user's role-derived tenants from a compatible container PDP; not published by cloud.
+   *
+   * @param user - User key or attributes.
+   * @param context - Request context overriding existing global context.
+   * @param config - Timeout/error policy; unsupported useOpa:true always rejects.
+   * @returns Validated tenants, or [] on operational failure in non-throwing mode.
+   * @throws {PermitError} For unsupported OPA or non-JSON input in throwing mode.
+   * @throws {PermitPDPStatusError} For an unavailable endpoint regardless of error policy,
+   *   or other rejected/malformed responses in throwing mode.
+   * @throws {PermitConnectionError} On an operational failure in throwing mode.
+   */
+  public async getUserTenants(
+    user: IUser | string,
+    context?: Context,
+    config?: CheckConfig,
+  ): Promise<TenantDetails[]> {
+    return await this.enforcer.getUserTenants(user, context, config);
+  }
+
+  /**
+   * Returns one page of role assignments cached by a compatible container PDP.
+   *
+   * @param query - Key filters and pagination; defaults to page 1 and page size 30, maximum 100.
+   * @param config - Timeout/error policy; useOpa:true is unsupported and always rejects.
+   * @returns Complete local rows, or [] on ordinary operational failure in non-throwing mode.
+   *   Omitted tenant is unfiltered. There is no automatic pagination or cache synchronization.
+   * @throws {PermitError} For invalid input or unsupported OPA, regardless of error policy.
+   * @throws {PermitPDPStatusError} For malformed responses or unavailable 404/405/501 endpoints
+   *   regardless of policy; for other rejected responses in throwing mode.
+   * @throws {PermitConnectionError} On operational failure in throwing mode.
+   */
+  public async getLocalRoleAssignments(
+    query?: ILocalRoleAssignmentsQuery,
+    config?: CheckConfig,
+  ): Promise<ILocalRoleAssignment[]> {
+    return await this.enforcer.getLocalRoleAssignments(query, config);
+  }
+
+  /**
+   * Filters objects through bulk authorization while retaining original references and order.
+   *
+   * @param user - User key or attributes.
+   * @param action - Action to evaluate for every object.
+   * @param objects - Dense readonly array; extra fields remain in returned objects only.
+   * @param context - Shared request context; an object's context overrides it.
+   * @param config - Bulk timeout/error policy; unsupported OPA queries always reject.
+   * @returns Authorized original objects from a synchronous snapshot, including duplicates.
+   * @throws {PermitError} For unsupported OPA/invalid slots, or non-JSON inputs in throwing mode.
+   * @throws {PermitConnectionError} On an operational failure in throwing mode.
+   * @throws {PermitPDPStatusError} On rejected/malformed bulk responses in throwing mode.
+   */
+  public async filterObjects<T extends IFilterObject>(
+    user: IUser | string,
+    action: string,
+    objects: readonly T[],
+    context?: Context,
+    config?: CheckConfig,
+  ): Promise<T[]> {
+    return await this.enforcer.filterObjects(user, action, objects, context, config);
+  }
+
   /**
    * Get all tenants available in the system.
    * @returns An array of TenantDetails representing all tenants.
@@ -226,12 +354,7 @@ export class Permit implements IPermitClient {
     context?: Context | undefined,
     sdk?: string | undefined,
   ): Promise<TenantDetails[]> {
-    try {
-      return await this.enforcer.checkAllTenants(user, action, resource, context, sdk);
-    } catch (error) {
-      this.logger.error('Error fetching all tenants:', error);
-      throw error;
-    }
+    return await this.enforcer.checkAllTenants(user, action, resource, context, sdk);
   }
 
   /**
@@ -241,16 +364,17 @@ export class Permit implements IPermitClient {
    * @param tenants  - The list of tenants to filter the permissions on ( given by roles ).
    * @param resources - The list of resources to filter the permissions on ( given by resource roles ).
    * @param resource_types - The list of resource types to filter the permissions on ( given by resource roles ).
+   * @param config - Timeout/error policy and request context overriding existing global context.
    * @returns object with key as the resource identifier and value as the resource details and permissions.
    * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
-   * @throws {@link PermitPDPStatusError} if received a response with unexpected status code from the PDP.
+   * @throws {@link PermitPDPStatusError} if the PDP returned an unexpected status code or response body.
    */
   public async getUserPermissions(
     user: IUser | string,
     tenants?: string[],
     resources?: string[],
     resource_types?: string[],
-    config?: CheckConfig,
+    config?: GetUserPermissionsConfig,
   ): Promise<IUserPermissions> {
     return await this.enforcer.getUserPermissions(user, tenants, resources, resource_types, config);
   }

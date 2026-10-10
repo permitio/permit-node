@@ -1,39 +1,54 @@
-import anyTest, { TestInterface } from 'ava';
+import { type IPermitClient } from '#src/index';
+import { cleanUp, createTestClient } from '#src/tests/fixtures';
+import { waitFor } from '#src/tests/helpers/wait-for';
 
-import { printBreak, provideTestExecutionContext, TestContext } from '../fixtures';
+let permit: IPermitClient;
 
-const sleepTimeMs = 10000;
+// A run-unique prefix keeps these assertions scoped to the users this spec
+// created, so they hold regardless of what other suites leave in the shared
+// environment (no absolute-count assertions).
+const PREFIX = `lists-${process.pid}-${Date.now()}`;
+const USER_KEYS = Array.from({ length: 10 }).map((_, i) => `${PREFIX}-user-${i}`);
 
-const test = anyTest as TestInterface<TestContext>;
-test.before(provideTestExecutionContext);
-test.before(async (t) => {
-  const permit = t.context.permit;
-  await permit.api.users
-    .bulkUserCreate(Array.from({ length: 10 }).map((_, i) => ({ key: `user-${i}` })))
-    .catch(() => null);
+beforeAll(async () => {
+  ({ permit } = createTestClient());
+  await permit.api.users.bulkUserCreate(USER_KEYS.map((key) => ({ key })));
+  // Bulk create is eventually consistent; gate until all 10 users are listable
+  // so the exact-count assertions below don't race the write propagating.
+  await waitFor(
+    () => permit.api.users.list({ search: PREFIX, perPage: 100 }),
+    (users) => users.total_count === 10,
+    {
+      timeoutMs: 60_000,
+      intervalMs: 1_000,
+      message: 'created users not yet listable',
+      describe: (users) => `total_count=${users.total_count}`,
+    },
+  );
 });
 
-test('List users', async (t) => {
-  const permit = t.context.permit;
-
-  const users = await permit.api.users.list();
-  t.is(users.total_count, 10);
-  t.is(users.data.length, 10);
+afterAll(async () => {
+  if (!permit) return; // beforeAll never initialized the client (e.g. missing key)
+  await cleanUp({ [`users ${PREFIX}-user-*`]: () => permit.api.users.bulkUserDelete(USER_KEYS) });
 });
 
-test('List users with pagination', async (t) => {
-  const permit = t.context.permit;
-
-  const users = await permit.api.users.list({ page: 1, perPage: 5 });
-  t.is(users.total_count, 10);
-  t.is(users.data.length, 5);
+it('List users scoped by prefix returns exactly the created users', async () => {
+  const users = await permit.api.users.list({ search: PREFIX });
+  expect(users.total_count).toBe(10);
+  expect(users.data.length).toBe(10);
 });
 
-test('List users with search', async (t) => {
-  const permit = t.context.permit;
+it('List users with pagination over the scoped subset', async () => {
+  const users = await permit.api.users.list({ search: PREFIX, page: 1, perPage: 5 });
+  expect(users.total_count).toBe(10);
+  expect(users.data.length).toBe(5);
+});
 
-  const users = await permit.api.users.list({ search: 'user-1' });
-  t.is(users.total_count, 1);
-  t.is(users.data.length, 1);
-  t.is(users.data[0].key, 'user-1');
+it('List users searching a single full key returns one user', async () => {
+  const oneKey = USER_KEYS[0];
+  assert(oneKey !== undefined);
+  const users = await permit.api.users.list({ search: oneKey });
+  expect(users.total_count).toBe(1);
+  expect(users.data.length).toBe(1);
+  expect(users.data[0]?.key).toBe(oneKey);
 });

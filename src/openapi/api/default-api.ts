@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,108 +10,46 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { OrganizationRead } from '../types';
+import type { Configuration } from '../configuration';
+import type {
+  APIHistoryEventFullRead,
+  PaginatedResultAPIHistoryEventRead,
+  PaginatedResultActivityLogEventRead,
+} from '../types';
 /**
  * DefaultApi - axios parameter creator
- * @export
  */
 export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
-     * @summary Dummy
+     * Returns full information, including request and response bodies, for one event.
+     * @summary Get Api Event
+     * @param {string} eventId
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @deprecated
+     * @throws If a required parameter is missing.
      */
-    dummy: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-      const localVarPath = `/v2/stress/dummy`;
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     *
-     * @summary Dummy Db
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    dummyDb: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-      const localVarPath = `/v2/stress/db/dummy`;
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     *
-     * @summary Get Organization
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getOrganizationV2StressDbOrganizationGet: async (
-      options: AxiosRequestConfig = {},
+    getApiEvent: async (
+      eventId: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      const localVarPath = `/v2/stress/db/organization`;
+      // verify required parameter 'eventId' is not null or undefined
+      assertParamExists('getApiEvent', 'eventId', eventId);
+      const localVarPath = `/v2/deprecated/history/{event_id}`.replace(
+        '{event_id}',
+        encodeURIComponent(String(eventId)),
+      );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -124,6 +60,12 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
       const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -140,12 +82,22 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
     },
     /**
      *
-     * @summary Get Organization With Authn
+     * @summary Get Request Body
+     * @param {string} eventId
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @deprecated
+     * @throws If a required parameter is missing.
      */
-    getOrganizationWithAuthn: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-      const localVarPath = `/v2/stress/db/organization_auth`;
+    getRequestBody: async (
+      eventId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'eventId' is not null or undefined
+      assertParamExists('getRequestBody', 'eventId', eventId);
+      const localVarPath = `/v2/deprecated/history/{event_id}/request`.replace(
+        '{event_id}',
+        encodeURIComponent(String(eventId)),
+      );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -160,6 +112,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -176,12 +130,22 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
     },
     /**
      *
-     * @summary Get Organization With Authz
+     * @summary Get Response Body
+     * @param {string} eventId
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @deprecated
+     * @throws If a required parameter is missing.
      */
-    getOrganizationWithAuthz: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-      const localVarPath = `/v2/stress/db/organization_authz`;
+    getResponseBody: async (
+      eventId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'eventId' is not null or undefined
+      assertParamExists('getResponseBody', 'eventId', eventId);
+      const localVarPath = `/v2/deprecated/history/{event_id}/response`.replace(
+        '{event_id}',
+        encodeURIComponent(String(eventId)),
+      );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -196,6 +160,269 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Fetches all API History events for given filters.
+     * @summary List Activity Events
+     * @param {Array<string>} [actorId] Actor ID to search
+     * @param {string} [actorDisplayName] Actor display name to search
+     * @param {Array<string>} [actorType] Actor type to search (member, user, api_key)
+     * @param {Array<string>} [projectId] Projects to include in search
+     * @param {Array<string>} [envId] Environments to include in search
+     * @param {number} [timestampFrom] Retrieve only events after this timestamp (seconds since epoch)
+     * @param {number} [timestampUntil] Retrieve only events before this timestamp (seconds since epoch)
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @deprecated
+     * @throws If a required parameter is missing.
+     */
+    listActivityEventsV2DeprecatedActivityGet: async (
+      actorId?: Array<string>,
+      actorDisplayName?: string,
+      actorType?: Array<string>,
+      projectId?: Array<string>,
+      envId?: Array<string>,
+      timestampFrom?: number,
+      timestampUntil?: number,
+      page?: number,
+      perPage?: number,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/v2/deprecated/activity`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (actorId) {
+        localVarQueryParameter['actor_id'] = actorId;
+      }
+
+      if (actorDisplayName !== undefined) {
+        localVarQueryParameter['actor_display_name'] = actorDisplayName;
+      }
+
+      if (actorType) {
+        localVarQueryParameter['actor_type'] = actorType;
+      }
+
+      if (projectId) {
+        localVarQueryParameter['project_id'] = projectId;
+      }
+
+      if (envId) {
+        localVarQueryParameter['env_id'] = envId;
+      }
+
+      if (timestampFrom !== undefined) {
+        localVarQueryParameter['timestamp_from'] = timestampFrom;
+      }
+
+      if (timestampUntil !== undefined) {
+        localVarQueryParameter['timestamp_until'] = timestampUntil;
+      }
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (perPage !== undefined) {
+        localVarQueryParameter['per_page'] = perPage;
+      }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary List Activity Types
+     * @param {*} [options] Override http request option.
+     * @deprecated
+     * @throws If a required parameter is missing.
+     */
+    listActivityTypesV2DeprecatedActivityTypesGet: async (
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/v2/deprecated/activity/types`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Fetches all API History events for given filters.
+     * @summary List Api Events
+     * @param {Array<string>} [method] HTTP methods to include in search
+     * @param {Array<string>} [path] API paths to include in search
+     * @param {boolean} [success] Filter by API request success/failure
+     * @param {Array<number>} [statusCode] HTTP status codes to include in search
+     * @param {Array<string>} [clientIp] IPs of clients to include in search
+     * @param {Array<string>} [actorType] Actor type to search (member, user, api_key)
+     * @param {Array<string>} [actorId] Actor ID to search
+     * @param {string} [actorDisplayName] Actor display name to search
+     * @param {Array<string>} [projectId] Projects to include in search
+     * @param {Array<string>} [envId] Environments to include in search
+     * @param {number} [timestampFrom] Retrieve only events after this timestamp (seconds since epoch)
+     * @param {number} [timestampUntil] Retrieve only events before this timestamp (seconds since epoch)
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @deprecated
+     * @throws If a required parameter is missing.
+     */
+    listApiEvents: async (
+      method?: Array<string>,
+      path?: Array<string>,
+      success?: boolean,
+      statusCode?: Array<number>,
+      clientIp?: Array<string>,
+      actorType?: Array<string>,
+      actorId?: Array<string>,
+      actorDisplayName?: string,
+      projectId?: Array<string>,
+      envId?: Array<string>,
+      timestampFrom?: number,
+      timestampUntil?: number,
+      page?: number,
+      perPage?: number,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/v2/deprecated/history`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (method) {
+        localVarQueryParameter['method'] = method;
+      }
+
+      if (path) {
+        localVarQueryParameter['path'] = path;
+      }
+
+      if (success !== undefined) {
+        localVarQueryParameter['success'] = success;
+      }
+
+      if (statusCode) {
+        localVarQueryParameter['status_code'] = statusCode;
+      }
+
+      if (clientIp) {
+        localVarQueryParameter['client_ip'] = clientIp;
+      }
+
+      if (actorType) {
+        localVarQueryParameter['actor_type'] = actorType;
+      }
+
+      if (actorId) {
+        localVarQueryParameter['actor_id'] = actorId;
+      }
+
+      if (actorDisplayName !== undefined) {
+        localVarQueryParameter['actor_display_name'] = actorDisplayName;
+      }
+
+      if (projectId) {
+        localVarQueryParameter['project_id'] = projectId;
+      }
+
+      if (envId) {
+        localVarQueryParameter['env_id'] = envId;
+      }
+
+      if (timestampFrom !== undefined) {
+        localVarQueryParameter['timestamp_from'] = timestampFrom;
+      }
+
+      if (timestampUntil !== undefined) {
+        localVarQueryParameter['timestamp_until'] = timestampUntil;
+      }
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (perPage !== undefined) {
+        localVarQueryParameter['per_page'] = perPage;
+      }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -215,78 +442,241 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 /**
  * DefaultApi - functional programming interface
- * @export
  */
 export const DefaultApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration);
   return {
     /**
-     *
-     * @summary Dummy
+     * Returns full information, including request and response bodies, for one event.
+     * @summary Get Api Event
+     * @param {string} eventId
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @deprecated
+     * @throws If a required parameter is missing.
      */
-    async dummy(
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.dummy(options);
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    async getApiEvent(
+      eventId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIHistoryEventFullRead>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getApiEvent(eventId, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['DefaultApi.getApiEvent']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      *
-     * @summary Dummy Db
+     * @summary Get Request Body
+     * @param {string} eventId
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @deprecated
+     * @throws If a required parameter is missing.
      */
-    async dummyDb(
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.dummyDb(options);
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    async getRequestBody(
+      eventId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<File>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getRequestBody(eventId, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['DefaultApi.getRequestBody']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      *
-     * @summary Get Organization
+     * @summary Get Response Body
+     * @param {string} eventId
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @deprecated
+     * @throws If a required parameter is missing.
      */
-    async getOrganizationV2StressDbOrganizationGet(
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrganizationRead>> {
+    async getResponseBody(
+      eventId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<File>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getResponseBody(eventId, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['DefaultApi.getResponseBody']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Fetches all API History events for given filters.
+     * @summary List Activity Events
+     * @param {Array<string>} [actorId] Actor ID to search
+     * @param {string} [actorDisplayName] Actor display name to search
+     * @param {Array<string>} [actorType] Actor type to search (member, user, api_key)
+     * @param {Array<string>} [projectId] Projects to include in search
+     * @param {Array<string>} [envId] Environments to include in search
+     * @param {number} [timestampFrom] Retrieve only events after this timestamp (seconds since epoch)
+     * @param {number} [timestampUntil] Retrieve only events before this timestamp (seconds since epoch)
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {*} [options] Override http request option.
+     * @deprecated
+     * @throws If a required parameter is missing.
+     */
+    async listActivityEventsV2DeprecatedActivityGet(
+      actorId?: Array<string>,
+      actorDisplayName?: string,
+      actorType?: Array<string>,
+      projectId?: Array<string>,
+      envId?: Array<string>,
+      timestampFrom?: number,
+      timestampUntil?: number,
+      page?: number,
+      perPage?: number,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<PaginatedResultActivityLogEventRead>
+    > {
       const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getOrganizationV2StressDbOrganizationGet(options);
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        await localVarAxiosParamCreator.listActivityEventsV2DeprecatedActivityGet(
+          actorId,
+          actorDisplayName,
+          actorType,
+          projectId,
+          envId,
+          timestampFrom,
+          timestampUntil,
+          page,
+          perPage,
+          options,
+        );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['DefaultApi.listActivityEventsV2DeprecatedActivityGet']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      *
-     * @summary Get Organization With Authn
+     * @summary List Activity Types
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @deprecated
+     * @throws If a required parameter is missing.
      */
-    async getOrganizationWithAuthn(
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrganizationRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getOrganizationWithAuthn(options);
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    async listActivityTypesV2DeprecatedActivityTypesGet(
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.listActivityTypesV2DeprecatedActivityTypesGet(options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['DefaultApi.listActivityTypesV2DeprecatedActivityTypesGet']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *
-     * @summary Get Organization With Authz
+     * Fetches all API History events for given filters.
+     * @summary List Api Events
+     * @param {Array<string>} [method] HTTP methods to include in search
+     * @param {Array<string>} [path] API paths to include in search
+     * @param {boolean} [success] Filter by API request success/failure
+     * @param {Array<number>} [statusCode] HTTP status codes to include in search
+     * @param {Array<string>} [clientIp] IPs of clients to include in search
+     * @param {Array<string>} [actorType] Actor type to search (member, user, api_key)
+     * @param {Array<string>} [actorId] Actor ID to search
+     * @param {string} [actorDisplayName] Actor display name to search
+     * @param {Array<string>} [projectId] Projects to include in search
+     * @param {Array<string>} [envId] Environments to include in search
+     * @param {number} [timestampFrom] Retrieve only events after this timestamp (seconds since epoch)
+     * @param {number} [timestampUntil] Retrieve only events before this timestamp (seconds since epoch)
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @deprecated
+     * @throws If a required parameter is missing.
      */
-    async getOrganizationWithAuthz(
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrganizationRead>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getOrganizationWithAuthz(options);
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    async listApiEvents(
+      method?: Array<string>,
+      path?: Array<string>,
+      success?: boolean,
+      statusCode?: Array<number>,
+      clientIp?: Array<string>,
+      actorType?: Array<string>,
+      actorId?: Array<string>,
+      actorDisplayName?: string,
+      projectId?: Array<string>,
+      envId?: Array<string>,
+      timestampFrom?: number,
+      timestampUntil?: number,
+      page?: number,
+      perPage?: number,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResultAPIHistoryEventRead>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.listApiEvents(
+        method,
+        path,
+        success,
+        statusCode,
+        clientIp,
+        actorType,
+        actorId,
+        actorDisplayName,
+        projectId,
+        envId,
+        timestampFrom,
+        timestampUntil,
+        page,
+        perPage,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['DefaultApi.listApiEvents']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
 
 /**
  * DefaultApi - factory interface
- * @export
  */
 export const DefaultApiFactory = function (
   configuration?: Configuration,
@@ -296,128 +686,401 @@ export const DefaultApiFactory = function (
   const localVarFp = DefaultApiFp(configuration);
   return {
     /**
-     *
-     * @summary Dummy
+     * Returns full information, including request and response bodies, for one event.
+     * @summary Get Api Event
+     * @param {DefaultApiGetApiEventRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @deprecated
+     * @throws If a required parameter is missing.
      */
-    dummy(options?: any): AxiosPromise<any> {
-      return localVarFp.dummy(options).then((request) => request(axios, basePath));
-    },
-    /**
-     *
-     * @summary Dummy Db
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    dummyDb(options?: any): AxiosPromise<any> {
-      return localVarFp.dummyDb(options).then((request) => request(axios, basePath));
-    },
-    /**
-     *
-     * @summary Get Organization
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getOrganizationV2StressDbOrganizationGet(options?: any): AxiosPromise<OrganizationRead> {
+    getApiEvent(
+      requestParameters: DefaultApiGetApiEventRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<APIHistoryEventFullRead> {
       return localVarFp
-        .getOrganizationV2StressDbOrganizationGet(options)
+        .getApiEvent(requestParameters.eventId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
-     * @summary Get Organization With Authn
+     * @summary Get Request Body
+     * @param {DefaultApiGetRequestBodyRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @deprecated
+     * @throws If a required parameter is missing.
      */
-    getOrganizationWithAuthn(options?: any): AxiosPromise<OrganizationRead> {
+    getRequestBody(
+      requestParameters: DefaultApiGetRequestBodyRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<File> {
       return localVarFp
-        .getOrganizationWithAuthn(options)
+        .getRequestBody(requestParameters.eventId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
-     * @summary Get Organization With Authz
+     * @summary Get Response Body
+     * @param {DefaultApiGetResponseBodyRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @deprecated
+     * @throws If a required parameter is missing.
      */
-    getOrganizationWithAuthz(options?: any): AxiosPromise<OrganizationRead> {
+    getResponseBody(
+      requestParameters: DefaultApiGetResponseBodyRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<File> {
       return localVarFp
-        .getOrganizationWithAuthz(options)
+        .getResponseBody(requestParameters.eventId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Fetches all API History events for given filters.
+     * @summary List Activity Events
+     * @param {DefaultApiListActivityEventsV2DeprecatedActivityGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @deprecated
+     * @throws If a required parameter is missing.
+     */
+    listActivityEventsV2DeprecatedActivityGet(
+      requestParameters: DefaultApiListActivityEventsV2DeprecatedActivityGetRequest = {},
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PaginatedResultActivityLogEventRead> {
+      return localVarFp
+        .listActivityEventsV2DeprecatedActivityGet(
+          requestParameters.actorId,
+          requestParameters.actorDisplayName,
+          requestParameters.actorType,
+          requestParameters.projectId,
+          requestParameters.envId,
+          requestParameters.timestampFrom,
+          requestParameters.timestampUntil,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary List Activity Types
+     * @param {*} [options] Override http request option.
+     * @deprecated
+     * @throws If a required parameter is missing.
+     */
+    listActivityTypesV2DeprecatedActivityTypesGet(
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<any> {
+      return localVarFp
+        .listActivityTypesV2DeprecatedActivityTypesGet(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Fetches all API History events for given filters.
+     * @summary List Api Events
+     * @param {DefaultApiListApiEventsRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @deprecated
+     * @throws If a required parameter is missing.
+     */
+    listApiEvents(
+      requestParameters: DefaultApiListApiEventsRequest = {},
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PaginatedResultAPIHistoryEventRead> {
+      return localVarFp
+        .listApiEvents(
+          requestParameters.method,
+          requestParameters.path,
+          requestParameters.success,
+          requestParameters.statusCode,
+          requestParameters.clientIp,
+          requestParameters.actorType,
+          requestParameters.actorId,
+          requestParameters.actorDisplayName,
+          requestParameters.projectId,
+          requestParameters.envId,
+          requestParameters.timestampFrom,
+          requestParameters.timestampUntil,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
 };
 
 /**
+ * Request parameters for getApiEvent operation in DefaultApi.
+ */
+export interface DefaultApiGetApiEventRequest {
+  readonly eventId: string;
+}
+
+/**
+ * Request parameters for getRequestBody operation in DefaultApi.
+ */
+export interface DefaultApiGetRequestBodyRequest {
+  readonly eventId: string;
+}
+
+/**
+ * Request parameters for getResponseBody operation in DefaultApi.
+ */
+export interface DefaultApiGetResponseBodyRequest {
+  readonly eventId: string;
+}
+
+/**
+ * Request parameters for listActivityEventsV2DeprecatedActivityGet operation in DefaultApi.
+ */
+export interface DefaultApiListActivityEventsV2DeprecatedActivityGetRequest {
+  /**
+   * Actor ID to search
+   */
+  readonly actorId?: Array<string>;
+
+  /**
+   * Actor display name to search
+   */
+  readonly actorDisplayName?: string;
+
+  /**
+   * Actor type to search (member, user, api_key)
+   */
+  readonly actorType?: Array<string>;
+
+  /**
+   * Projects to include in search
+   */
+  readonly projectId?: Array<string>;
+
+  /**
+   * Environments to include in search
+   */
+  readonly envId?: Array<string>;
+
+  /**
+   * Retrieve only events after this timestamp (seconds since epoch)
+   */
+  readonly timestampFrom?: number;
+
+  /**
+   * Retrieve only events before this timestamp (seconds since epoch)
+   */
+  readonly timestampUntil?: number;
+
+  /**
+   * Page number of the results to fetch, starting at 1.
+   */
+  readonly page?: number;
+
+  /**
+   * The number of results per page (max 100).
+   */
+  readonly perPage?: number;
+}
+
+/**
+ * Request parameters for listApiEvents operation in DefaultApi.
+ */
+export interface DefaultApiListApiEventsRequest {
+  /**
+   * HTTP methods to include in search
+   */
+  readonly method?: Array<string>;
+
+  /**
+   * API paths to include in search
+   */
+  readonly path?: Array<string>;
+
+  /**
+   * Filter by API request success/failure
+   */
+  readonly success?: boolean;
+
+  /**
+   * HTTP status codes to include in search
+   */
+  readonly statusCode?: Array<number>;
+
+  /**
+   * IPs of clients to include in search
+   */
+  readonly clientIp?: Array<string>;
+
+  /**
+   * Actor type to search (member, user, api_key)
+   */
+  readonly actorType?: Array<string>;
+
+  /**
+   * Actor ID to search
+   */
+  readonly actorId?: Array<string>;
+
+  /**
+   * Actor display name to search
+   */
+  readonly actorDisplayName?: string;
+
+  /**
+   * Projects to include in search
+   */
+  readonly projectId?: Array<string>;
+
+  /**
+   * Environments to include in search
+   */
+  readonly envId?: Array<string>;
+
+  /**
+   * Retrieve only events after this timestamp (seconds since epoch)
+   */
+  readonly timestampFrom?: number;
+
+  /**
+   * Retrieve only events before this timestamp (seconds since epoch)
+   */
+  readonly timestampUntil?: number;
+
+  /**
+   * Page number of the results to fetch, starting at 1.
+   */
+  readonly page?: number;
+
+  /**
+   * The number of results per page (max 100).
+   */
+  readonly perPage?: number;
+}
+
+/**
  * DefaultApi - object-oriented interface
- * @export
- * @class DefaultApi
- * @extends {BaseAPI}
  */
 export class DefaultApi extends BaseAPI {
   /**
-   *
-   * @summary Dummy
+   * Returns full information, including request and response bodies, for one event.
+   * @summary Get Api Event
+   * @param {DefaultApiGetApiEventRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof DefaultApi
+   * @deprecated
+   * @throws If a required parameter is missing.
    */
-  public dummy(options?: AxiosRequestConfig) {
+  public getApiEvent(
+    requestParameters: DefaultApiGetApiEventRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
     return DefaultApiFp(this.configuration)
-      .dummy(options)
+      .getApiEvent(requestParameters.eventId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
-   * @summary Dummy Db
+   * @summary Get Request Body
+   * @param {DefaultApiGetRequestBodyRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof DefaultApi
+   * @deprecated
+   * @throws If a required parameter is missing.
    */
-  public dummyDb(options?: AxiosRequestConfig) {
+  public getRequestBody(
+    requestParameters: DefaultApiGetRequestBodyRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
     return DefaultApiFp(this.configuration)
-      .dummyDb(options)
+      .getRequestBody(requestParameters.eventId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
-   * @summary Get Organization
+   * @summary Get Response Body
+   * @param {DefaultApiGetResponseBodyRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof DefaultApi
+   * @deprecated
+   * @throws If a required parameter is missing.
    */
-  public getOrganizationV2StressDbOrganizationGet(options?: AxiosRequestConfig) {
+  public getResponseBody(
+    requestParameters: DefaultApiGetResponseBodyRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
     return DefaultApiFp(this.configuration)
-      .getOrganizationV2StressDbOrganizationGet(options)
+      .getResponseBody(requestParameters.eventId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Fetches all API History events for given filters.
+   * @summary List Activity Events
+   * @param {DefaultApiListActivityEventsV2DeprecatedActivityGetRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @deprecated
+   * @throws If a required parameter is missing.
+   */
+  public listActivityEventsV2DeprecatedActivityGet(
+    requestParameters: DefaultApiListActivityEventsV2DeprecatedActivityGetRequest = {},
+    options?: RawAxiosRequestConfig,
+  ) {
+    return DefaultApiFp(this.configuration)
+      .listActivityEventsV2DeprecatedActivityGet(
+        requestParameters.actorId,
+        requestParameters.actorDisplayName,
+        requestParameters.actorType,
+        requestParameters.projectId,
+        requestParameters.envId,
+        requestParameters.timestampFrom,
+        requestParameters.timestampUntil,
+        requestParameters.page,
+        requestParameters.perPage,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
-   * @summary Get Organization With Authn
+   * @summary List Activity Types
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof DefaultApi
+   * @deprecated
+   * @throws If a required parameter is missing.
    */
-  public getOrganizationWithAuthn(options?: AxiosRequestConfig) {
+  public listActivityTypesV2DeprecatedActivityTypesGet(options?: RawAxiosRequestConfig) {
     return DefaultApiFp(this.configuration)
-      .getOrganizationWithAuthn(options)
+      .listActivityTypesV2DeprecatedActivityTypesGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
-   *
-   * @summary Get Organization With Authz
+   * Fetches all API History events for given filters.
+   * @summary List Api Events
+   * @param {DefaultApiListApiEventsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof DefaultApi
+   * @deprecated
+   * @throws If a required parameter is missing.
    */
-  public getOrganizationWithAuthz(options?: AxiosRequestConfig) {
+  public listApiEvents(
+    requestParameters: DefaultApiListApiEventsRequest = {},
+    options?: RawAxiosRequestConfig,
+  ) {
     return DefaultApiFp(this.configuration)
-      .getOrganizationWithAuthz(options)
+      .listApiEvents(
+        requestParameters.method,
+        requestParameters.path,
+        requestParameters.success,
+        requestParameters.statusCode,
+        requestParameters.clientIp,
+        requestParameters.actorType,
+        requestParameters.actorId,
+        requestParameters.actorDisplayName,
+        requestParameters.projectId,
+        requestParameters.envId,
+        requestParameters.timestampFrom,
+        requestParameters.timestampUntil,
+        requestParameters.page,
+        requestParameters.perPage,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 }

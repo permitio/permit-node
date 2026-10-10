@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,9 +10,4 @@
  * Do not edit the class manually.
  */
 
-/**
- * For ResourceSets, the id of the base resource.
- * @export
- * @interface ResourceId
- */
-export interface ResourceId {}
+export type ResourceId = string;

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,35 +10,26 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { ResourceAttributeCreate } from '../types';
-// @ts-ignore
-import { ResourceAttributeRead } from '../types';
-// @ts-ignore
-import { ResourceAttributeUpdate } from '../types';
+import type { Configuration } from '../configuration';
+import type {
+  ResourceAttributeCreate,
+  ResourceAttributeRead,
+  ResourceAttributeUpdate,
+} from '../types';
 /**
  * UserAttributesApi - axios parameter creator
- * @export
  */
 export const UserAttributesApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -52,14 +41,14 @@ export const UserAttributesApiAxiosParamCreator = function (configuration?: Conf
      * @param {ResourceAttributeCreate} resourceAttributeCreate
      * @param {string} [resourceId]
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createUserAttribute: async (
       projId: string,
       envId: string,
       resourceAttributeCreate: ResourceAttributeCreate,
       resourceId?: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('createUserAttribute', 'projId', projId);
@@ -68,8 +57,8 @@ export const UserAttributesApiAxiosParamCreator = function (configuration?: Conf
       // verify required parameter 'resourceAttributeCreate' is not null or undefined
       assertParamExists('createUserAttribute', 'resourceAttributeCreate', resourceAttributeCreate);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/users/attributes`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -90,6 +79,7 @@ export const UserAttributesApiAxiosParamCreator = function (configuration?: Conf
       }
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -112,34 +102,34 @@ export const UserAttributesApiAxiosParamCreator = function (configuration?: Conf
     /**
      * Deletes the attribute and all its related data.  Note: If the attribute is used by policies, removing it will cause the attribute to evaluate as `undefined`.
      * @summary Delete User Attribute
+     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
      * @param {string} [resourceId]
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteUserAttribute: async (
+      attributeId: string,
       projId: string,
       envId: string,
-      attributeId: string,
       resourceId?: string,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'attributeId' is not null or undefined
+      assertParamExists('deleteUserAttribute', 'attributeId', attributeId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('deleteUserAttribute', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('deleteUserAttribute', 'envId', envId);
-      // verify required parameter 'attributeId' is not null or undefined
-      assertParamExists('deleteUserAttribute', 'attributeId', attributeId);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'attribute_id'}}`, encodeURIComponent(String(attributeId)));
+        .replace('{attribute_id}', encodeURIComponent(String(attributeId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -167,6 +157,8 @@ export const UserAttributesApiAxiosParamCreator = function (configuration?: Conf
         localVarQueryParameter['per_page'] = perPage;
       }
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -183,30 +175,30 @@ export const UserAttributesApiAxiosParamCreator = function (configuration?: Conf
     /**
      * Gets a single attribute defined on the User resource, if such attribute exists.
      * @summary Get User Attribute
+     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
      * @param {string} [resourceId]
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getUserAttribute: async (
+      attributeId: string,
       projId: string,
       envId: string,
-      attributeId: string,
       resourceId?: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'attributeId' is not null or undefined
+      assertParamExists('getUserAttribute', 'attributeId', attributeId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('getUserAttribute', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('getUserAttribute', 'envId', envId);
-      // verify required parameter 'attributeId' is not null or undefined
-      assertParamExists('getUserAttribute', 'attributeId', attributeId);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'attribute_id'}}`, encodeURIComponent(String(attributeId)));
+        .replace('{attribute_id}', encodeURIComponent(String(attributeId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -225,6 +217,8 @@ export const UserAttributesApiAxiosParamCreator = function (configuration?: Conf
       if (resourceId !== undefined) {
         localVarQueryParameter['resource_id'] = resourceId;
       }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -248,7 +242,7 @@ export const UserAttributesApiAxiosParamCreator = function (configuration?: Conf
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listUserAttributes: async (
       projId: string,
@@ -256,15 +250,15 @@ export const UserAttributesApiAxiosParamCreator = function (configuration?: Conf
       resourceId?: string,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('listUserAttributes', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('listUserAttributes', 'envId', envId);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/users/attributes`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -292,6 +286,8 @@ export const UserAttributesApiAxiosParamCreator = function (configuration?: Conf
         localVarQueryParameter['per_page'] = perPage;
       }
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -308,34 +304,34 @@ export const UserAttributesApiAxiosParamCreator = function (configuration?: Conf
     /**
      * Partially updates the attribute defined on the User resource. Fields that will be provided will be completely overwritten.
      * @summary Update User Attribute
+     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
      * @param {ResourceAttributeUpdate} resourceAttributeUpdate
      * @param {string} [resourceId]
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateUserAttribute: async (
+      attributeId: string,
       projId: string,
       envId: string,
-      attributeId: string,
       resourceAttributeUpdate: ResourceAttributeUpdate,
       resourceId?: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'attributeId' is not null or undefined
+      assertParamExists('updateUserAttribute', 'attributeId', attributeId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('updateUserAttribute', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('updateUserAttribute', 'envId', envId);
-      // verify required parameter 'attributeId' is not null or undefined
-      assertParamExists('updateUserAttribute', 'attributeId', attributeId);
       // verify required parameter 'resourceAttributeUpdate' is not null or undefined
       assertParamExists('updateUserAttribute', 'resourceAttributeUpdate', resourceAttributeUpdate);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'attribute_id'}}`, encodeURIComponent(String(attributeId)));
+        .replace('{attribute_id}', encodeURIComponent(String(attributeId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -356,6 +352,7 @@ export const UserAttributesApiAxiosParamCreator = function (configuration?: Conf
       }
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -380,7 +377,6 @@ export const UserAttributesApiAxiosParamCreator = function (configuration?: Conf
 
 /**
  * UserAttributesApi - functional programming interface
- * @export
  */
 export const UserAttributesApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = UserAttributesApiAxiosParamCreator(configuration);
@@ -393,14 +389,14 @@ export const UserAttributesApiFp = function (configuration?: Configuration) {
      * @param {ResourceAttributeCreate} resourceAttributeCreate
      * @param {string} [resourceId]
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async createUserAttribute(
       projId: string,
       envId: string,
       resourceAttributeCreate: ResourceAttributeCreate,
       resourceId?: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceAttributeRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createUserAttribute(
         projId,
@@ -409,65 +405,95 @@ export const UserAttributesApiFp = function (configuration?: Configuration) {
         resourceId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UserAttributesApi.createUserAttribute']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Deletes the attribute and all its related data.  Note: If the attribute is used by policies, removing it will cause the attribute to evaluate as `undefined`.
      * @summary Delete User Attribute
+     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
      * @param {string} [resourceId]
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deleteUserAttribute(
+      attributeId: string,
       projId: string,
       envId: string,
-      attributeId: string,
       resourceId?: string,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteUserAttribute(
+        attributeId,
         projId,
         envId,
-        attributeId,
         resourceId,
         page,
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UserAttributesApi.deleteUserAttribute']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Gets a single attribute defined on the User resource, if such attribute exists.
      * @summary Get User Attribute
+     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
      * @param {string} [resourceId]
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getUserAttribute(
+      attributeId: string,
       projId: string,
       envId: string,
-      attributeId: string,
       resourceId?: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceAttributeRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getUserAttribute(
+        attributeId,
         projId,
         envId,
-        attributeId,
         resourceId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UserAttributesApi.getUserAttribute']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists all the attributes defined on the User resource.
@@ -478,7 +504,7 @@ export const UserAttributesApiFp = function (configuration?: Configuration) {
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listUserAttributes(
       projId: string,
@@ -486,7 +512,7 @@ export const UserAttributesApiFp = function (configuration?: Configuration) {
       resourceId?: string,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ResourceAttributeRead>>
     > {
@@ -498,43 +524,62 @@ export const UserAttributesApiFp = function (configuration?: Configuration) {
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UserAttributesApi.listUserAttributes']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Partially updates the attribute defined on the User resource. Fields that will be provided will be completely overwritten.
      * @summary Update User Attribute
+     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
      * @param {ResourceAttributeUpdate} resourceAttributeUpdate
      * @param {string} [resourceId]
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async updateUserAttribute(
+      attributeId: string,
       projId: string,
       envId: string,
-      attributeId: string,
       resourceAttributeUpdate: ResourceAttributeUpdate,
       resourceId?: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceAttributeRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateUserAttribute(
+        attributeId,
         projId,
         envId,
-        attributeId,
         resourceAttributeUpdate,
         resourceId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UserAttributesApi.updateUserAttribute']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
 
 /**
  * UserAttributesApi - factory interface
- * @export
  */
 export const UserAttributesApiFactory = function (
   configuration?: Configuration,
@@ -546,119 +591,108 @@ export const UserAttributesApiFactory = function (
     /**
      * Creates a new attribute for the User resource.
      * @summary Create User Attribute
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {ResourceAttributeCreate} resourceAttributeCreate
-     * @param {string} [resourceId]
+     * @param {UserAttributesApiCreateUserAttributeRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createUserAttribute(
-      projId: string,
-      envId: string,
-      resourceAttributeCreate: ResourceAttributeCreate,
-      resourceId?: string,
-      options?: any,
+      requestParameters: UserAttributesApiCreateUserAttributeRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceAttributeRead> {
       return localVarFp
-        .createUserAttribute(projId, envId, resourceAttributeCreate, resourceId, options)
+        .createUserAttribute(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.resourceAttributeCreate,
+          requestParameters.resourceId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes the attribute and all its related data.  Note: If the attribute is used by policies, removing it will cause the attribute to evaluate as `undefined`.
      * @summary Delete User Attribute
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
-     * @param {string} [resourceId]
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {UserAttributesApiDeleteUserAttributeRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteUserAttribute(
-      projId: string,
-      envId: string,
-      attributeId: string,
-      resourceId?: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
+      requestParameters: UserAttributesApiDeleteUserAttributeRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<void> {
       return localVarFp
-        .deleteUserAttribute(projId, envId, attributeId, resourceId, page, perPage, options)
+        .deleteUserAttribute(
+          requestParameters.attributeId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.resourceId,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Gets a single attribute defined on the User resource, if such attribute exists.
      * @summary Get User Attribute
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
-     * @param {string} [resourceId]
+     * @param {UserAttributesApiGetUserAttributeRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getUserAttribute(
-      projId: string,
-      envId: string,
-      attributeId: string,
-      resourceId?: string,
-      options?: any,
+      requestParameters: UserAttributesApiGetUserAttributeRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceAttributeRead> {
       return localVarFp
-        .getUserAttribute(projId, envId, attributeId, resourceId, options)
+        .getUserAttribute(
+          requestParameters.attributeId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.resourceId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists all the attributes defined on the User resource.
      * @summary List User Attributes
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [resourceId]
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {UserAttributesApiListUserAttributesRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listUserAttributes(
-      projId: string,
-      envId: string,
-      resourceId?: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
+      requestParameters: UserAttributesApiListUserAttributesRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<Array<ResourceAttributeRead>> {
       return localVarFp
-        .listUserAttributes(projId, envId, resourceId, page, perPage, options)
+        .listUserAttributes(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.resourceId,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Partially updates the attribute defined on the User resource. Fields that will be provided will be completely overwritten.
      * @summary Update User Attribute
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} attributeId Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
-     * @param {ResourceAttributeUpdate} resourceAttributeUpdate
-     * @param {string} [resourceId]
+     * @param {UserAttributesApiUpdateUserAttributeRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateUserAttribute(
-      projId: string,
-      envId: string,
-      attributeId: string,
-      resourceAttributeUpdate: ResourceAttributeUpdate,
-      resourceId?: string,
-      options?: any,
+      requestParameters: UserAttributesApiUpdateUserAttributeRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceAttributeRead> {
       return localVarFp
         .updateUserAttribute(
-          projId,
-          envId,
-          attributeId,
-          resourceAttributeUpdate,
-          resourceId,
+          requestParameters.attributeId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.resourceAttributeUpdate,
+          requestParameters.resourceId,
           options,
         )
         .then((request) => request(axios, basePath));
@@ -668,212 +702,130 @@ export const UserAttributesApiFactory = function (
 
 /**
  * Request parameters for createUserAttribute operation in UserAttributesApi.
- * @export
- * @interface UserAttributesApiCreateUserAttributeRequest
  */
 export interface UserAttributesApiCreateUserAttributeRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UserAttributesApiCreateUserAttribute
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UserAttributesApiCreateUserAttribute
    */
   readonly envId: string;
 
-  /**
-   *
-   * @type {ResourceAttributeCreate}
-   * @memberof UserAttributesApiCreateUserAttribute
-   */
   readonly resourceAttributeCreate: ResourceAttributeCreate;
 
-  /**
-   *
-   * @type {string}
-   * @memberof UserAttributesApiCreateUserAttribute
-   */
   readonly resourceId?: string;
 }
 
 /**
  * Request parameters for deleteUserAttribute operation in UserAttributesApi.
- * @export
- * @interface UserAttributesApiDeleteUserAttributeRequest
  */
 export interface UserAttributesApiDeleteUserAttributeRequest {
   /**
+   * Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
+   */
+  readonly attributeId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UserAttributesApiDeleteUserAttribute
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UserAttributesApiDeleteUserAttribute
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UserAttributesApiDeleteUserAttribute
-   */
-  readonly attributeId: string;
-
-  /**
-   *
-   * @type {string}
-   * @memberof UserAttributesApiDeleteUserAttribute
-   */
   readonly resourceId?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof UserAttributesApiDeleteUserAttribute
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
-   * @memberof UserAttributesApiDeleteUserAttribute
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for getUserAttribute operation in UserAttributesApi.
- * @export
- * @interface UserAttributesApiGetUserAttributeRequest
  */
 export interface UserAttributesApiGetUserAttributeRequest {
   /**
+   * Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
+   */
+  readonly attributeId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UserAttributesApiGetUserAttribute
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UserAttributesApiGetUserAttribute
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UserAttributesApiGetUserAttribute
-   */
-  readonly attributeId: string;
-
-  /**
-   *
-   * @type {string}
-   * @memberof UserAttributesApiGetUserAttribute
-   */
   readonly resourceId?: string;
 }
 
 /**
  * Request parameters for listUserAttributes operation in UserAttributesApi.
- * @export
- * @interface UserAttributesApiListUserAttributesRequest
  */
 export interface UserAttributesApiListUserAttributesRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UserAttributesApiListUserAttributes
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UserAttributesApiListUserAttributes
    */
   readonly envId: string;
 
-  /**
-   *
-   * @type {string}
-   * @memberof UserAttributesApiListUserAttributes
-   */
   readonly resourceId?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof UserAttributesApiListUserAttributes
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
-   * @memberof UserAttributesApiListUserAttributes
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateUserAttribute operation in UserAttributesApi.
- * @export
- * @interface UserAttributesApiUpdateUserAttributeRequest
  */
 export interface UserAttributesApiUpdateUserAttributeRequest {
   /**
+   * Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
+   */
+  readonly attributeId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UserAttributesApiUpdateUserAttribute
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UserAttributesApiUpdateUserAttribute
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the attribute, or the URL-friendly key of the attribute (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UserAttributesApiUpdateUserAttribute
-   */
-  readonly attributeId: string;
-
-  /**
-   *
-   * @type {ResourceAttributeUpdate}
-   * @memberof UserAttributesApiUpdateUserAttribute
-   */
   readonly resourceAttributeUpdate: ResourceAttributeUpdate;
 
-  /**
-   *
-   * @type {string}
-   * @memberof UserAttributesApiUpdateUserAttribute
-   */
   readonly resourceId?: string;
 }
 
 /**
  * UserAttributesApi - object-oriented interface
- * @export
- * @class UserAttributesApi
- * @extends {BaseAPI}
  */
 export class UserAttributesApi extends BaseAPI {
   /**
@@ -881,12 +833,11 @@ export class UserAttributesApi extends BaseAPI {
    * @summary Create User Attribute
    * @param {UserAttributesApiCreateUserAttributeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UserAttributesApi
+   * @throws If a required parameter is missing.
    */
   public createUserAttribute(
     requestParameters: UserAttributesApiCreateUserAttributeRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return UserAttributesApiFp(this.configuration)
       .createUserAttribute(
@@ -904,18 +855,17 @@ export class UserAttributesApi extends BaseAPI {
    * @summary Delete User Attribute
    * @param {UserAttributesApiDeleteUserAttributeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UserAttributesApi
+   * @throws If a required parameter is missing.
    */
   public deleteUserAttribute(
     requestParameters: UserAttributesApiDeleteUserAttributeRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return UserAttributesApiFp(this.configuration)
       .deleteUserAttribute(
+        requestParameters.attributeId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.attributeId,
         requestParameters.resourceId,
         requestParameters.page,
         requestParameters.perPage,
@@ -929,18 +879,17 @@ export class UserAttributesApi extends BaseAPI {
    * @summary Get User Attribute
    * @param {UserAttributesApiGetUserAttributeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UserAttributesApi
+   * @throws If a required parameter is missing.
    */
   public getUserAttribute(
     requestParameters: UserAttributesApiGetUserAttributeRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return UserAttributesApiFp(this.configuration)
       .getUserAttribute(
+        requestParameters.attributeId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.attributeId,
         requestParameters.resourceId,
         options,
       )
@@ -952,12 +901,11 @@ export class UserAttributesApi extends BaseAPI {
    * @summary List User Attributes
    * @param {UserAttributesApiListUserAttributesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UserAttributesApi
+   * @throws If a required parameter is missing.
    */
   public listUserAttributes(
     requestParameters: UserAttributesApiListUserAttributesRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return UserAttributesApiFp(this.configuration)
       .listUserAttributes(
@@ -976,18 +924,17 @@ export class UserAttributesApi extends BaseAPI {
    * @summary Update User Attribute
    * @param {UserAttributesApiUpdateUserAttributeRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UserAttributesApi
+   * @throws If a required parameter is missing.
    */
   public updateUserAttribute(
     requestParameters: UserAttributesApiUpdateUserAttributeRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return UserAttributesApiFp(this.configuration)
       .updateUserAttribute(
+        requestParameters.attributeId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.attributeId,
         requestParameters.resourceAttributeUpdate,
         requestParameters.resourceId,
         options,

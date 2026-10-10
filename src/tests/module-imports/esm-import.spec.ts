@@ -1,38 +1,32 @@
-import test from 'ava';
+import { builtFile, probePackage } from '#src/tests/module-imports/package-probe';
 
-import { ApiClient } from '../../api/api-client';
-import { ElementsClient } from '../../api/elements';
-import { Enforcer } from '../../enforcement/enforcer';
-import type { IResource, IUser } from '../../enforcement/interfaces';
-import { Permit } from '../../index';
-
-test('ES Module import works correctly', async (t) => {
-  t.is(typeof Permit, 'function');
-  t.is(Permit.name, 'Permit');
-
-  // Test creating a Permit instance
-  const permit = new Permit({
-    token: 'test-token',
-    pdp: 'http://localhost:7766',
+// Validates the BUILT package the way an ES module consumer loads it: a static
+// `import ... from 'permitio'` in a separate Node process, resolved through the
+// package.json `exports` map. This is a packaging-regression guard.
+describe('ES module import of the built package', () => {
+  it("resolves through the exports map to build/index.mjs in Node's ESM loader", async () => {
+    expect(await probePackage('esm')).toHaveProperty('resolved', builtFile('index.mjs'));
   });
 
-  t.truthy(permit);
-  t.is(typeof permit.check, 'function');
-  t.is(typeof permit.api, 'object');
-  t.is(typeof permit.elements, 'object');
-  t.is(typeof permit.config, 'object');
-});
+  it('exposes Permit and the public API classes as named exports', async () => {
+    expect(await probePackage('esm')).toHaveProperty('names', {
+      Permit: 'Permit',
+      ApiClient: 'ApiClient',
+      ElementsClient: 'ElementsClient',
+    });
+  });
 
-test('ES Module imports individual modules', async (t) => {
-  t.is(typeof Enforcer, 'function');
-  t.is(Enforcer.name, '_Enforcer');
-  // IUser and IResource are types, so we can't test them at runtime
-  t.pass('Type imports work correctly');
-});
+  it('constructs a Permit with the given config and its API modules', async () => {
+    const probe = await probePackage('esm');
 
-test('ES Module imports API modules', async (t) => {
-  t.is(typeof ApiClient, 'function');
-  t.is(ApiClient.name, 'ApiClient');
-  t.is(typeof ElementsClient, 'function');
-  t.is(ElementsClient.name, 'ElementsClient');
+    expect(probe).toHaveProperty('members', {
+      check: 'function',
+      api: 'object',
+      elements: 'object',
+      users: 'object',
+      resources: 'object',
+      roles: 'object',
+    });
+    expect(probe).toHaveProperty('config', { token: 'test-token', pdp: 'http://localhost:7766' });
+  });
 });

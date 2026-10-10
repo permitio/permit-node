@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,28 +10,17 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface TenantUpdate
- */
 export interface TenantUpdate {
   /**
    * A descriptive name for the tenant
-   * @type {string}
-   * @memberof TenantUpdate
    */
   name?: string;
   /**
    * an optional longer description of the tenant
-   * @type {string}
-   * @memberof TenantUpdate
    */
   description?: string;
   /**
    * Arbitraty tenant attributes that will be used to enforce attribute-based access control policies.
-   * @type {object}
-   * @memberof TenantUpdate
    */
   attributes?: object;
 }

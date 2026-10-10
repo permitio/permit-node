@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,9 +10,4 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface LocationInner
- */
-export interface LocationInner {}
+export type LocationInner = number | string;

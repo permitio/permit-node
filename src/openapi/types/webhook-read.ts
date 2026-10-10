@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,52 +10,37 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface WebhookRead
- */
+// May contain unused imports in some cases
+import type { WebhookType } from './webhook-type';
+
 export interface WebhookRead {
+  type: WebhookType;
   /**
    * Unique id of the webhook
-   * @type {string}
-   * @memberof WebhookRead
    */
   id: string;
   /**
    * Unique id of the organization that the webhook belongs to.
-   * @type {string}
-   * @memberof WebhookRead
    */
   organization_id: string;
   /**
    * Unique id of the project that the webhook belongs to.
-   * @type {string}
-   * @memberof WebhookRead
    */
   project_id: string;
   /**
    * Unique id of the environment that the webhook belongs to.
-   * @type {string}
-   * @memberof WebhookRead
    */
   environment_id: string;
   /**
    * Date and time when the webhook was created (ISO_8601 format).
-   * @type {string}
-   * @memberof WebhookRead
    */
   created_at: string;
   /**
    * Date and time when the webhook was last updated/modified (ISO_8601 format).
-   * @type {string}
-   * @memberof WebhookRead
    */
   updated_at: string;
   /**
    * The url to POST the webhook to
-   * @type {string}
-   * @memberof WebhookRead
    */
   url: string;
 }

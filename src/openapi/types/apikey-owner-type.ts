@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,14 +12,13 @@
 
 /**
  * An enumeration.
- * @export
- * @enum {string}
  */
 
 export const APIKeyOwnerType = {
   PdpConfig: 'pdp_config',
   Member: 'member',
   Elements: 'elements',
+  NatsPdpConfig: 'nats_pdp_config',
 } as const;
 
 export type APIKeyOwnerType = (typeof APIKeyOwnerType)[keyof typeof APIKeyOwnerType];

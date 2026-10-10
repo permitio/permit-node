@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,31 +11,13 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { UserRead } from './user-read';
+import type { UserRead } from './user-read';
 
-/**
- *
- * @export
- * @interface PaginatedResultUserRead
- */
 export interface PaginatedResultUserRead {
   /**
    * List of Users
-   * @type {Array<UserRead>}
-   * @memberof PaginatedResultUserRead
    */
   data: Array<UserRead>;
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedResultUserRead
-   */
   total_count: number;
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedResultUserRead
-   */
   page_count?: number;
 }

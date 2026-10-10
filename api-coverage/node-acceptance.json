@@ -1,0 +1,54 @@
+{
+  "schema": 2,
+  "scope": "permit-node",
+  "deferrals": {
+    "sharedTarget": {
+      "status": "UNAVAILABLE",
+      "owner": "PER-16345"
+    },
+    "curtainCall": {
+      "status": "OWNER_DEFERRED",
+      "owner": "PER-16574"
+    },
+    "bulkCounts": {
+      "status": "OWNER_DEFERRED",
+      "owner": "PER-9298"
+    }
+  },
+  "requiredGates": ["candidate", "cloud-setup", "cloud-test", "cloud-cleanup"],
+  "features": [
+    {
+      "id": "create-user-inline-roles",
+      "owner": "PER-16573",
+      "caseIds": [
+        "wire.api.users.inline-roles.esm",
+        "wire.api.users.inline-roles.commonjs",
+        "api.users.inline-roles-persisted"
+      ],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/users"]
+    },
+    {
+      "id": "environment-async-copy",
+      "owner": "PER-16951",
+      "caseIds": [
+        "wire.api.environments.copyAsync.esm",
+        "wire.api.environments.copyAsync.commonjs",
+        "wire.api.environments.getCopyResult.esm",
+        "wire.api.environments.getCopyResult.commonjs",
+        "api.async-copy.new-target",
+        "api.async-copy.existing-target"
+      ],
+      "operationKeys": [
+        "control-plane POST /v2/projects/{proj_id}/envs/{env_id}/copy/async",
+        "control-plane GET /v2/projects/{proj_id}/envs/{env_id}/copy/async/{task_id}/result"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "id": "user-attribute-backend-rollout",
+      "owner": "PER-16954",
+      "status": "UNAVAILABLE"
+    }
+  ]
+}

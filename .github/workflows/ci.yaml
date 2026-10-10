@@ -2,75 +2,3370 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+  # Run on every PR regardless of base branch so stacked PRs get CI too.
   pull_request:
-    branches: [ main ]
+
+concurrency:
+  # A new push to a PR cancels that PR's superseded run. Pushes to main get a
+  # group per commit, so no merge's run is cancelled or replaced while queued.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash --noprofile --norc -euo pipefail {0}
+
 env:
-  PDP_API_KEY: test
+  # github actions project id (under 'Permit.io Tests' workspace)
+  PROJECT_ID: 7f55831d77c642739bc17733ab0af138
+  # The integration and e2e tests run when the environment-provisioning secret
+  # is available. Fork PRs and Dependabot PRs get no Actions secrets, so they
+  # run only the unit and module-import tests.
+  RUN_BACKEND: ${{ secrets.PROJECT_API_KEY != '' }}
+  # Pushes and PRs from this repository, other than Dependabot's, must run the
+  # backend suite; the test job fails them if the secret is missing.
+  BACKEND_REQUIRED: ${{ github.event_name == 'push' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]') }}
+  PDP_IMAGE: permitio/pdp-v2:0.9.16@sha256:e3cf30794ec2d256636b4714641df46e51ee58a3f1f0d24c606e214e0bf8669a
 
 jobs:
-  test-and-lint:
-    runs-on: ubuntu-latest
-    
+  candidate:
+    # Both forms use the caller's commit; actionlint 1.7.12 does not yet accept `$/`.
+    uses: ./.github/workflows/release-candidate.yaml # zizmor: ignore[self-repository]
+
+  test:
+    name: test (${{ matrix.node }})
+    needs: candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [18, 20]
-    
+        # Keep node labels in sync with NODE_LABELS in the cleanup job.
+        include:
+          - node: '22'
+            node-version: '22.13.0'
+          - node: '24'
+            node-version: '24.0.0'
+    env:
+      # Known before the env is created, so the cleanup job can delete it by
+      # key even when this job is cancelled while creating it.
+      ENV_KEY: node-sdk-ci-${{ github.run_id }}-${{ github.run_attempt }}-n${{ matrix.node }}
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'yarn'
-    
-    - name: Install dependencies
-      run: yarn install --frozen-lockfile
-    
-    - name: Run linting
-      run: yarn lint
-    
-    - name: Build project
-      run: yarn build
-    
-    - name: Run all tests
-      run: yarn test
+      # Fail instead of reporting green on the unit and module-import tests alone.
+      - name: Require backend secret on same-repo runs
+        if: env.BACKEND_REQUIRED == 'true' && env.RUN_BACKEND != 'true'
+        run: |
+          echo "::error::UNAVAILABLE: PROJECT_API_KEY is not set for a same-repo run; integration and e2e tests cannot run." >&2
+          exit 1
 
-  codegen-guard:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    permissions:
-      contents: read
+      - name: Report unavailable backend coverage on untrusted runs
+        if: env.BACKEND_REQUIRED != 'true' && env.RUN_BACKEND != 'true'
+        run: |
+          echo "::notice::UNAVAILABLE: integration and e2e coverage require PROJECT_API_KEY; no backend tests execute on this run."
 
-    steps:
+      # ---------- Backend setup ----------
+      # PROJECT_API_KEY is used only in the next two steps. They run before
+      # checkout, so no repository or dependency code runs while it is in use.
+      - name: Provision temp Permit env
+        id: provision
+        if: env.RUN_BACKEND == 'true'
+        timeout-minutes: 2
+        env:
+          PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
+        run: |
+          response=$(curl -sS --max-time 30 -w '\n%{http_code}' -X POST \
+            "https://api.permit.io/v2/projects/${PROJECT_ID}/envs" \
+            -H "Authorization: Bearer ${PROJECT_API_KEY}" \
+            -H 'Content-Type: application/json' \
+            -d "{\"key\":\"${ENV_KEY}\",\"name\":\"${ENV_KEY}\"}")
+          status=${response##*$'\n'}
+          body=${response%$'\n'*}
+          if [[ "$status" != 2* ]]; then
+            echo "::error::Creating env ${ENV_KEY} failed with HTTP ${status}: ${body}" >&2
+            exit 1
+          fi
+          env_id=$(jq -r '.id // empty' <<<"$body")
+          if [[ -z "$env_id" ]]; then
+            echo "::error::Creating env ${ENV_KEY} returned HTTP ${status} without an id: ${body}" >&2
+            exit 1
+          fi
+          echo "env_id=${env_id}" >> "$GITHUB_OUTPUT"
+
+      # The key goes to a step output, not $GITHUB_ENV, so only the steps that
+      # name it get it: the PDP, and the integration and e2e tests.
+      - name: Fetch env API key
+        id: env_api_key
+        if: env.RUN_BACKEND == 'true'
+        timeout-minutes: 2
+        env:
+          PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
+          ENV_ID: ${{ steps.provision.outputs.env_id }}
+        run: |
+          response=$(curl -sS --max-time 30 --retry 3 -w '\n%{http_code}' \
+            "https://api.permit.io/v2/api-key/${PROJECT_ID}/${ENV_ID}" \
+            -H "Authorization: Bearer ${PROJECT_API_KEY}")
+          status=${response##*$'\n'}
+          body=${response%$'\n'*}
+          # A successful body holds the key, so it is printed only on HTTP errors.
+          if [[ "$status" != 2* ]]; then
+            echo "::error::Fetching the API key of env ${ENV_KEY} failed with HTTP ${status}: ${body}" >&2
+            exit 1
+          fi
+          env_api_key=$(jq -r '.secret // empty' <<<"$body")
+          if [[ -z "$env_api_key" ]]; then
+            echo "::error::The API key response for env ${ENV_KEY} (HTTP ${status}) has no secret field." >&2
+            exit 1
+          fi
+          # Mask BEFORE writing the output so it is redacted everywhere.
+          echo "::add-mask::${env_api_key}"
+          echo "api_key=${env_api_key}" >> "$GITHUB_OUTPUT"
+
+      # 7766 is the PDP API. 8181 is the PDP's OPA, which the SDK derives from
+      # the PDP URL for the rbac spec's useOpa checks.
+      - name: Start local PDP
+        if: env.RUN_BACKEND == 'true'
+        timeout-minutes: 5
+        env:
+          PDP_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
+          PERMIT_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
+        run: |
+          docker run -d --name pdp \
+            -p 127.0.0.1:7766:7000 -p 127.0.0.1:8181:8181 \
+            -e PDP_API_KEY -e PERMIT_API_KEY \
+            "$PDP_IMAGE"
+
+      # ---------- Both paths ----------
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - name: Setup Node.js
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
         with:
-          node-version: 22
-          cache: 'yarn'
+          run_install: false
 
-      - name: Setup Java (required by openapi-generator-cli)
-        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          distribution: temurin
-          java-version: '17'
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
 
+      # --ignore-scripts: this job holds the env API key, so dependency install
+      # scripts and the prepare script do not run. The test scripts build.
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --ignore-scripts
+        timeout-minutes: 5
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
-      - name: Test codegen guard failure paths
-        run: yarn test:codegen
+      # Builds, then runs the tests that need no backend. No API key is set.
+      - name: Run unit and module-import tests
+        timeout-minutes: 10
+        run: pnpm test
 
-      - name: Codegen type-shape guard
-        run: yarn check:codegen
+      # ---------- Backend tests ----------
+      - name: Wait for PDP to be ready
+        if: env.RUN_BACKEND == 'true'
+        timeout-minutes: 3
+        run: |
+          curl -fsS -o /dev/null --max-time 2 \
+            --retry 60 --retry-delay 2 --retry-max-time 150 --retry-all-errors \
+            http://127.0.0.1:7766/healthy
+
+      - name: Run integration tests
+        if: env.RUN_BACKEND == 'true'
+        timeout-minutes: 10
+        env:
+          PDP_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
+          PERMIT_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
+          API_TIER: prod
+          # The project-level environment test needs a project-scoped key. It
+          # is skipped, with the reason in the report, while this secret is
+          # unset, because the env key above is scoped to one environment.
+          PROJECT_PDP_API_KEY: ${{ secrets.PROJECT_PDP_API_KEY }}
+        run: pnpm test:integration
+
+      - name: Run e2e tests
+        if: env.RUN_BACKEND == 'true'
+        timeout-minutes: 20
+        env:
+          PDP_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
+          PERMIT_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
+          API_TIER: prod
+          # Force IPv4: Node resolves `localhost` to ::1 first, but the PDP is
+          # published on 127.0.0.1 only, so PDP checks would hit ECONNREFUSED.
+          PDP_URL: http://127.0.0.1:7766
+          PERMIT_RUN_OPA_E2E: 'true'
+        run: pnpm test:e2e
+
+      # Dump PDP diagnostics whenever the backend path fails. The SDK reports
+      # PDP connection errors with no HTTP response, so the PDP side is otherwise
+      # invisible; this captures container state and logs to tell a transient
+      # restart/readiness blip apart from a crashed/exited container.
+      - name: Dump PDP diagnostics on failure
+        if: failure() && env.RUN_BACKEND == 'true'
+        timeout-minutes: 2
+        run: |
+          echo "::group::docker ps -a"
+          docker ps -a --filter name=pdp || true
+          echo "::endgroup::"
+          echo "::group::PDP container state"
+          docker inspect -f \
+            'status={{.State.Status}} restartCount={{.RestartCount}} exitCode={{.State.ExitCode}} oomKilled={{.State.OOMKilled}} startedAt={{.State.StartedAt}} finishedAt={{.State.FinishedAt}}' \
+            pdp || true
+          echo "::endgroup::"
+          echo "::group::docker logs pdp"
+          docker logs pdp || true
+          echo "::endgroup::"
+          echo "::group::curl -sv http://127.0.0.1:7766/healthy"
+          curl -sv --max-time 5 http://127.0.0.1:7766/healthy || true
+          echo "::endgroup::"
+
+  # Runs after every test leg, including failed and cancelled ones, with no
+  # checkout, so the project API key never shares a job with repository code.
+  cleanup:
+    name: Delete temp Permit envs
+    needs: test
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      # Keep in sync with the test job's node labels.
+      NODE_LABELS: 22 24
+    steps:
+      # A 404 means the env was never created or is already gone. Attempt every
+      # owned deletion and fail the gate if any environment still needs removal.
+      - name: Delete temp Permit envs
+        if: env.RUN_BACKEND == 'true'
+        env:
+          PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
+          ENV_KEY_PREFIX: node-sdk-ci-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          failures=0
+          for node_label in $NODE_LABELS; do
+            env_key="${ENV_KEY_PREFIX}-n${node_label}"
+            status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 --retry 3 -X DELETE \
+              "https://api.permit.io/v2/projects/${PROJECT_ID}/envs/${env_key}" \
+              -H "Authorization: Bearer ${PROJECT_API_KEY}") || status=000
+            case "$status" in
+              2??) echo "Deleted temp env ${env_key}." ;;
+              404) echo "Temp env ${env_key} does not exist; nothing to delete." ;;
+              *)
+                echo "::error::Temp env ${env_key} was not deleted (HTTP ${status});" \
+                  "delete it from project ${PROJECT_ID} manually." >&2
+                failures=$((failures + 1))
+                ;;
+            esac
+          done
+          if [[ "$failures" -ne 0 ]]; then
+            exit 1
+          fi
+
+  cloud-setup:
+    name: Owned cloud SDK fixture
+    needs: candidate
+    if: >-
+      github.repository == 'permitio/permit-node' &&
+      (github.event_name == 'push' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+    steps:
+      - name: Setup trusted Node runtime
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          package-manager-cache: false
+      - name: Provision and verify public cloud fixture before checkout
+        env:
+          PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
+        run: |
+          # BEGIN TRUSTED_CLOUD_SETUP
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          // scripts/cloud-lifecycle.mjs
+          import {
+            appendFileSync,
+            lstatSync,
+            mkdirSync,
+            readFileSync,
+            realpathSync,
+            renameSync,
+            writeFileSync,
+          } from 'node:fs';
+          import { isAbsolute, join, resolve, sep } from 'node:path';
+
+          // scripts/cloud-http.mjs
+          var CLOUD_CONTROL_ORIGIN = 'https://api.permit.io';
+          function cloudControlRequest({ credential, fetch: fetchBoundary = globalThis.fetch }) {
+            if (
+              typeof credential !== 'string' ||
+              !/^[\x21-\x7e]+$/u.test(credential) ||
+              typeof fetchBoundary !== 'function'
+            )
+              throw new Error('Cloud HTTP boundary requires an explicit valid step credential.');
+            return async ({ method, path, body, credential: scoped }) => {
+              try {
+                const selected = scoped ?? credential;
+                if (
+                  !['GET', 'POST', 'DELETE'].includes(method) ||
+                  typeof path !== 'string' ||
+                  !path.startsWith('/v2/') ||
+                  path.startsWith('//') ||
+                  path.includes('#') ||
+                  path.includes('\\') ||
+                  path
+                    .split('?')[0]
+                    .split('/')
+                    .some((part) => {
+                      const decoded = decodeURIComponent(part);
+                      return ['.', '..'].includes(decoded) || /[/\\]/u.test(decoded);
+                    }) ||
+                  typeof selected !== 'string' ||
+                  !/^[\x21-\x7e]+$/u.test(selected)
+                )
+                  throw new Error('Invalid cloud HTTP inputs.');
+                const target = new URL(path, CLOUD_CONTROL_ORIGIN);
+                if (target.origin !== CLOUD_CONTROL_ORIGIN || !target.pathname.startsWith('/v2/'))
+                  throw new Error('Invalid cloud HTTP destination.');
+                const response = await fetchBoundary(target, {
+                  method,
+                  redirect: 'error',
+                  signal: AbortSignal.timeout(3e4),
+                  headers: {
+                    authorization: `Bearer ${selected}`,
+                    'content-type': 'application/json',
+                  },
+                  ...(body === void 0 ? {} : { body: JSON.stringify(body) }),
+                });
+                if (
+                  !Number.isInteger(response.status) ||
+                  response.status < 100 ||
+                  response.status > 599
+                )
+                  throw new Error('Invalid cloud HTTP response status.');
+                const chunks = [];
+                let size = 0;
+                if (response.body) {
+                  const reader = response.body.getReader();
+                  try {
+                    for (;;) {
+                      const { value, done } = await reader.read();
+                      if (done) break;
+                      size += value.byteLength;
+                      if (size > 1024 * 1024) {
+                        await reader.cancel();
+                        throw new Error('Cloud HTTP response exceeds its size limit.');
+                      }
+                      chunks.push(Buffer.from(value));
+                    }
+                  } finally {
+                    reader.releaseLock();
+                  }
+                }
+                const text = Buffer.concat(chunks).toString('utf8');
+                return { status: response.status, body: text ? JSON.parse(text) : null };
+              } catch {
+                throw new Error(
+                  'Cloud control-plane operation failed; no raw response is reported.',
+                );
+              }
+            };
+          }
+
+          // scripts/cloud-closure.mjs
+          import { createHash } from 'node:crypto';
+          import { isDeepStrictEqual } from 'node:util';
+          var idPattern = /^[a-f0-9-]{32,36}$/u;
+          var automaticRoles = ['admin', 'editor', 'viewer'];
+          var builtins = ['__role', '__user', '__tenant'];
+          var limit = 128;
+          var unverified = 'Cloud destructive closure is unverified; retain the environment.';
+          var inventories = [
+            ['resources', 'schema', 'resources?include_built_in=true&include_total_count=true'],
+            ['roles', 'schema', 'roles?include_total_count=true'],
+            ['user_attributes', 'schema', 'users/attributes'],
+            ['condition_sets', 'schema', 'condition_sets?include_total_count=true'],
+            ['condition_set_rules', 'facts', 'set_rules'],
+            ['users', 'facts', 'users'],
+            ['tenants', 'facts', 'tenants?include_total_count=true'],
+            ['groups', 'schema', 'groups'],
+            ['user_invites', 'facts', 'user_invites'],
+            [
+              'resource_instances',
+              'facts',
+              'resource_instances?detailed=true&include_total_count=true',
+            ],
+            [
+              'relationship_tuples',
+              'facts',
+              'relationship_tuples?detailed=true&include_total_count=true',
+            ],
+            ['role_assignments', 'facts', 'role_assignments?include_total_count=true'],
+            ['proxy_configs', 'facts', 'proxy_configs'],
+            ['pdp_configs', 'pdps', 'configs'],
+            ['elements_configs', 'elements', 'config'],
+            ['email_templates', 'facts', 'email_templates/'],
+          ];
+          var singletons = ['email_configuration', 'opal_scope', 'api_keys'];
+          var children = ['actions', 'attributes', 'roles', 'relations', 'action_groups'];
+          var censusLabels = [
+            ...inventories.map(([kind]) => kind),
+            ...singletons,
+            ...children.map((child) => `resource_${child}`),
+          ];
+          function refusal(message, code) {
+            return Object.assign(new Error(message), { code });
+          }
+          function requireValid(value, code) {
+            if (!value) throw refusal(unverified, code);
+          }
+          function diagnosticCode(error, fallback) {
+            return typeof error?.code === 'string' ? error.code : fallback;
+          }
+          function surface(kind) {
+            if (inventories.some(([name]) => name === kind) || singletons.includes(kind))
+              return kind;
+            const [scope, id, child] = typeof kind === 'string' ? kind.split(':') : [];
+            return scope === 'resource' && idPattern.test(id ?? '') && children.includes(child)
+              ? `resource_${child}`
+              : 'unknown';
+          }
+          function httpStatus(reply) {
+            return Number.isInteger(reply?.status) && reply.status >= 100 && reply.status <= 599
+              ? reply.status
+              : 'invalid';
+          }
+          function stable(value) {
+            if (Array.isArray(value)) return value.map(stable);
+            if (value && typeof value === 'object') {
+              const result = /* @__PURE__ */ Object.create(null);
+              for (const key of Object.keys(value).sort()) result[key] = stable(value[key]);
+              return result;
+            }
+            return value;
+          }
+          function fingerprint(value) {
+            return createHash('sha256')
+              .update(JSON.stringify(stable(value)))
+              .digest('hex');
+          }
+          async function get(request, label, path, singleton = false) {
+            let reply;
+            try {
+              reply = await request({ method: 'GET', path });
+            } catch {
+              throw refusal(unverified, `closure:transport:${label}`);
+            }
+            requireValid(
+              reply && (reply.status === 200 || (singleton && reply.status === 404)),
+              `closure:http:${label}:${httpStatus(reply)}`,
+            );
+            return reply;
+          }
+          async function cloudClosurePages({ request, path, kind }) {
+            const result = [],
+              seen = /* @__PURE__ */ new Set();
+            let total;
+            for (let page = 1; page <= 4; page += 1) {
+              const reply = await get(
+                request,
+                kind,
+                `${path}${path.includes('?') ? '&' : '?'}page=${page}&per_page=100`,
+              );
+              const body = reply.body,
+                rows = Array.isArray(body) ? body : body?.data;
+              requireValid(
+                Array.isArray(rows) && rows.length <= 100,
+                `closure:pages:shape:${kind}`,
+              );
+              if (!Array.isArray(body)) {
+                requireValid(
+                  Number.isSafeInteger(body.total_count) && body.total_count >= 0,
+                  `closure:pages:total-invalid:${kind}`,
+                );
+                requireValid(
+                  total === void 0 || total === body.total_count,
+                  `closure:pages:total-changed:${kind}`,
+                );
+                total = body.total_count;
+                if (body.page_count != null)
+                  requireValid(
+                    Number.isSafeInteger(body.page_count) && body.page_count >= 0,
+                    `closure:pages:page-count:${kind}`,
+                  );
+              } else requireValid(total === void 0, `closure:pages:shape:${kind}`);
+              for (const row of rows) {
+                requireValid(
+                  row &&
+                    typeof row === 'object' &&
+                    !Array.isArray(row) &&
+                    typeof row.id === 'string' &&
+                    idPattern.test(row.id),
+                  `closure:pages:row:${kind}`,
+                );
+                requireValid(!seen.has(row.id), `closure:pages:duplicate:${kind}`);
+                seen.add(row.id);
+                result.push(row);
+                requireValid(result.length <= limit, `closure:pages:limit:${kind}`);
+              }
+              if (rows.length < 100 || (total !== void 0 && result.length === total)) {
+                requireValid(
+                  total === void 0 || result.length === total,
+                  `closure:pages:incomplete:${kind}`,
+                );
+                return result;
+              }
+              requireValid(
+                total === void 0 || result.length < total,
+                `closure:pages:incomplete:${kind}`,
+              );
+            }
+            requireValid(false, `closure:pages:incomplete:${kind}`);
+          }
+          function surfaces(context) {
+            return inventories.map(([kind, section, route]) => [
+              kind,
+              `/v2/${section}/${context.project}/${context.environment}/${route}`,
+            ]);
+          }
+          function requireScope(row, context, label) {
+            requireValid(
+              row &&
+                typeof row === 'object' &&
+                row.organization_id === context.organization &&
+                row.project_id === context.project &&
+                row.environment_id === context.environment &&
+                idPattern.test(row.id),
+              `closure:scope:${label}`,
+            );
+          }
+          function record(kind, row, context) {
+            requireScope(row, context, surface(kind));
+            if (kind !== 'pdp_configs')
+              requireValid(
+                typeof row.created_at === 'string' &&
+                  Number.isFinite(Date.parse(row.created_at)) &&
+                  Date.parse(row.created_at) >= Date.parse(context.createdAt),
+                `closure:created-at:${surface(kind)}`,
+              );
+            const projection = structuredClone(row);
+            const timestamped = [
+              'resources',
+              'roles',
+              'user_attributes',
+              'condition_sets',
+              'condition_set_rules',
+              'users',
+              'tenants',
+              'resource_instances',
+              'relationship_tuples',
+              'proxy_configs',
+              'elements_configs',
+              'opal_scope',
+            ];
+            if (timestamped.includes(kind) || kind.startsWith('resource:'))
+              delete projection.updated_at;
+            if (kind === 'tenants') delete projection.last_action_at;
+            if (kind === 'resources' && projection.roles && typeof projection.roles === 'object') {
+              for (const role of Object.values(projection.roles))
+                if (role && typeof role === 'object' && !Array.isArray(role))
+                  delete role.updated_at;
+            }
+            if (kind === 'api_keys') {
+              delete projection.env;
+              delete projection.project;
+              delete projection.secret;
+              delete projection.last_used_at;
+            }
+            return {
+              kind,
+              id: row.id,
+              key: row.key ?? null,
+              createdAt: row.created_at ?? null,
+              digest: fingerprint(projection),
+            };
+          }
+          async function inventory({ request, projectRequest, context }) {
+            requireValid(typeof projectRequest === 'function', 'closure:project-request');
+            requireValid(
+              idPattern.test(context.organization) &&
+                idPattern.test(context.project) &&
+                idPattern.test(context.environment) &&
+                Number.isFinite(Date.parse(context.createdAt)),
+              'closure:context',
+            );
+            const groups = /* @__PURE__ */ new Map();
+            for (const [kind, path] of surfaces(context))
+              groups.set(kind, await cloudClosurePages({ request, path, kind }));
+            for (const [kind, path] of [
+              [
+                'email_configuration',
+                `/v2/facts/${context.project}/${context.environment}/email_configurations`,
+              ],
+              ['opal_scope', `/v2/projects/${context.project}/${context.environment}/opal_scope`],
+            ]) {
+              const reply = await get(request, kind, path, true);
+              groups.set(kind, reply.status === 404 ? [] : [reply.body]);
+            }
+            const environmentKey = await get(
+              projectRequest,
+              'api_keys',
+              `/v2/api-key/${context.project}/${context.environment}`,
+            );
+            groups.set('api_keys', [environmentKey.body]);
+            requireValid(groups.get('resources').length <= 8, 'closure:limit:resources');
+            for (const resource of groups.get('resources')) {
+              requireScope(resource, context, 'resources');
+              for (const child of children) {
+                const path = [
+                  '/v2/schema',
+                  context.project,
+                  context.environment,
+                  'resources',
+                  resource.id,
+                  child,
+                ].join('/');
+                const rows = await cloudClosurePages({ request, path, kind: `resource_${child}` });
+                for (const row of rows)
+                  requireValid(
+                    row.resource_id === resource.id,
+                    `closure:child-parent:resource_${child}`,
+                  );
+                groups.set(`resource:${resource.id}:${child}`, rows);
+              }
+            }
+            return groups;
+          }
+          function recordsOf(groups, context) {
+            const records = [];
+            for (const [kind, rows] of groups)
+              for (const row of rows) {
+                records.push(record(kind, row, context));
+                requireValid(records.length <= limit, 'closure:limit:records');
+              }
+            records.sort((a, b) => `${a.kind}:${a.id}`.localeCompare(`${b.kind}:${b.id}`));
+            return records;
+          }
+          async function observe(options) {
+            const groups = await inventory(options);
+            return { groups, records: recordsOf(groups, options.context) };
+          }
+          function census(groups) {
+            const counts = new Map(censusLabels.map((label) => [label, 0]));
+            for (const [kind, rows] of groups) {
+              const label = surface(kind);
+              if (counts.has(label)) counts.set(label, counts.get(label) + rows.length);
+            }
+            return censusLabels
+              .map((label) => {
+                const count = counts.get(label);
+                const valid = Number.isSafeInteger(count) && count >= 0 && count <= limit;
+                return `${label}=${valid ? count : 'invalid'}`;
+              })
+              .join(',');
+          }
+          function ownSet(row, role) {
+            return (
+              row.autogenerated === true &&
+              row.type === 'userset' &&
+              isDeepStrictEqual(row.conditions, { 'user.roles': { contains: role.key } })
+            );
+          }
+          function baselinePolicy({ groups, context }) {
+            const resources = groups.get('resources'),
+              roles = groups.get('roles');
+            requireValid(
+              resources.every((row) => builtins.includes(row.key)) &&
+                new Set(resources.map((row) => row.key)).size === resources.length,
+              'closure:defaults:resources',
+            );
+            requireValid(
+              roles.every((row) => automaticRoles.includes(row.key)) &&
+                new Set(roles.map((row) => row.key)).size === roles.length,
+              'closure:defaults:roles',
+            );
+            requireValid(
+              groups.get('tenants').every((row) => row.key === 'default') &&
+                groups.get('tenants').length <= 1,
+              'closure:defaults:tenants',
+            );
+            requireValid(
+              groups
+                .get('user_attributes')
+                .every(
+                  (row) =>
+                    row.built_in === true &&
+                    resources.some(
+                      (resource) => resource.key === '__user' && resource.id === row.resource_id,
+                    ),
+                ),
+              'closure:defaults:user_attributes',
+            );
+            requireValid(
+              groups.get('condition_sets').every((row) => roles.some((role) => ownSet(row, role))),
+              'closure:defaults:condition_sets',
+            );
+            const pdps = groups.get('pdp_configs');
+            requireValid(pdps.length >= 1 && pdps.length <= 4, 'closure:defaults:pdp_configs');
+            const [key] = groups.get('api_keys');
+            requireValid(key.owner_type === 'pdp_config', 'closure:api-key:owner');
+            requireValid(key.object_type === 'env', 'closure:api-key:object');
+            requireValid(
+              typeof key.secret === 'string' && key.secret.length > 0,
+              'closure:api-key:secret',
+            );
+            const matches = pdps.filter((pdp) => pdp.client_secret === key.secret).length;
+            requireValid(matches > 0, 'closure:api-key:secret-unmatched');
+            requireValid(matches === 1, 'closure:api-key:secret-ambiguous');
+            for (const [kind, rows] of groups) {
+              if (
+                [
+                  'resources',
+                  'roles',
+                  'tenants',
+                  'user_attributes',
+                  'condition_sets',
+                  'pdp_configs',
+                  'api_keys',
+                ].includes(kind)
+              )
+                continue;
+              if (kind.startsWith('resource:')) {
+                const resource = resources.find((row) => kind.includes(row.id));
+                const child = kind.split(':').at(-1);
+                requireValid(
+                  rows.every(
+                    (row) =>
+                      (child === 'attributes' && row.built_in === true) ||
+                      (child === 'roles' &&
+                        roles.some((role) => row.id === role.id && row.key === role.key)) ||
+                      (child === 'roles' &&
+                        resource.key === '__tenant' &&
+                        row.key === 'tenant-association') ||
+                      (child === 'actions' && ['__user', '__tenant'].includes(resource.key)),
+                  ),
+                  `closure:child:${child}`,
+                );
+              } else
+                requireValid(
+                  rows.length === 0,
+                  `closure:defaults:unexpected-rows:${surface(kind)}`,
+                );
+            }
+            for (const [kind, rows] of groups)
+              for (const row of rows) requireScope(row, context, surface(kind));
+          }
+          async function captureCloudClosure({ request, projectRequest, context }) {
+            let groups;
+            try {
+              groups = await inventory({ request, projectRequest, context });
+              const records = recordsOf(groups, context);
+              baselinePolicy({ groups, context });
+              return { schema: 1, context: { ...context }, baseline: records, settled: null };
+            } catch (error) {
+              const failure = refusal(
+                'Cloud initial child closure failed; retain the owned environment.',
+                diagnosticCode(error, 'closure:capture:exception'),
+              );
+              if (groups) failure.census = census(groups);
+              throw failure;
+            }
+          }
+          function requireClosure(closure) {
+            requireValid(
+              closure &&
+                isDeepStrictEqual(Object.keys(closure).sort(), [
+                  'baseline',
+                  'context',
+                  'schema',
+                  'settled',
+                ]) &&
+                closure.schema === 1 &&
+                closure.context &&
+                isDeepStrictEqual(Object.keys(closure.context).sort(), [
+                  'createdAt',
+                  'environment',
+                  'organization',
+                  'project',
+                ]) &&
+                Array.isArray(closure.baseline) &&
+                closure.baseline.length <= limit,
+              'closure:state',
+            );
+            for (const rows of [closure.baseline, closure.settled ?? []]) {
+              requireValid(Array.isArray(rows) && rows.length <= limit, 'closure:state');
+              const seen = /* @__PURE__ */ new Set();
+              for (const row of rows) {
+                requireValid(
+                  row &&
+                    isDeepStrictEqual(Object.keys(row).sort(), [
+                      'createdAt',
+                      'digest',
+                      'id',
+                      'key',
+                      'kind',
+                    ]) &&
+                    idPattern.test(row.id) &&
+                    typeof row.kind === 'string' &&
+                    /^[a-f0-9]{64}$/u.test(row.digest) &&
+                    (row.key === null || typeof row.key === 'string') &&
+                    (row.createdAt === null || Number.isFinite(Date.parse(row.createdAt))) &&
+                    !seen.has(`${row.kind}:${row.id}`),
+                  'closure:state:record',
+                );
+                seen.add(`${row.kind}:${row.id}`);
+              }
+            }
+          }
+          async function settleCloudClosure({ request, projectRequest, closure, fixture }) {
+            try {
+              requireClosure(closure);
+              requireValid(
+                closure.settled === null &&
+                  fixture?.schema === 1 &&
+                  fixture.active === false &&
+                  fixture.unknownWrite === false &&
+                  Array.isArray(fixture.records) &&
+                  fixture.records.length <= 7 &&
+                  new Set(fixture.records.map((row) => `${row.kind}:${row.id}`)).size ===
+                    fixture.records.length,
+                'closure:settle:fixture-state',
+              );
+              const observed = await observe({ request, projectRequest, context: closure.context });
+              const baseline = new Map(
+                closure.baseline.map((row) => [`${row.kind}:${row.id}`, row]),
+              );
+              const owned = new Map(fixture.records.map((row) => [`${row.kind}:${row.id}`, row]));
+              for (const row of observed.records) {
+                const prior = baseline.get(`${row.kind}:${row.id}`),
+                  own = owned.get(`${row.kind}:${row.id}`);
+                if (prior && !isDeepStrictEqual(prior, row)) {
+                  const ownRole = fixture.records.find((entry) => entry.kind === 'roles');
+                  const raw = observed.groups.get(row.kind).find((entry) => entry.id === row.id);
+                  const trimmed = structuredClone(raw);
+                  const effect = trimmed.roles?.[ownRole?.key];
+                  requireValid(
+                    row.kind === 'resources' &&
+                      builtins.includes(raw.key) &&
+                      effect?.id === ownRole?.id &&
+                      effect?.created_at === ownRole?.createdAt,
+                    `closure:settle:changed:${surface(row.kind)}`,
+                  );
+                  requireScope(effect, closure.context, 'role_effect');
+                  delete trimmed.roles[ownRole.key];
+                  requireValid(
+                    record(row.kind, trimmed, closure.context).digest === prior.digest,
+                    'closure:settle:builtin-changed',
+                  );
+                } else if (!prior && own)
+                  requireValid(
+                    own.key === row.key || row.kind === 'role_assignments',
+                    `closure:settle:fixture-key:${surface(row.kind)}`,
+                  );
+                else if (!prior) {
+                  const resource = fixture.records.find((entry) => entry.kind === 'resources');
+                  const role = fixture.records.find((entry) => entry.kind === 'roles');
+                  const raw = observed.groups.get(row.kind).find((entry) => entry.id === row.id);
+                  const rawResource = observed.groups
+                    .get('resources')
+                    .find((entry) => entry.id === resource?.id);
+                  requireValid(
+                    (row.kind === `resource:${resource?.id}:actions` &&
+                      ['read', 'write'].includes(row.key) &&
+                      rawResource?.actions?.[row.key]?.id === row.id) ||
+                      (row.kind === 'condition_sets' && ownSet(raw, role)) ||
+                      (row.kind.startsWith('resource:') &&
+                        row.kind.endsWith(':roles') &&
+                        raw.id === role?.id &&
+                        raw.key === role?.key &&
+                        raw.created_at === role?.createdAt),
+                    `closure:settle:addition:${surface(row.kind)}`,
+                  );
+                }
+                if (own)
+                  requireValid(
+                    own.createdAt === row.createdAt,
+                    `closure:settle:fixture-created-at:${surface(row.kind)}`,
+                  );
+                baseline.delete(`${row.kind}:${row.id}`);
+                owned.delete(`${row.kind}:${row.id}`);
+              }
+              requireValid(baseline.size === 0, 'closure:settle:missing-default');
+              requireValid(owned.size === 0, 'closure:settle:missing-fixture');
+              return { ...closure, settled: observed.records };
+            } catch (error) {
+              throw refusal(
+                'Cloud fixture child closure failed; retain the owned environment.',
+                diagnosticCode(error, 'closure:settle:exception'),
+              );
+            }
+          }
+
+          // scripts/cloud-environment.mjs
+          import { isDeepStrictEqual as isDeepStrictEqual2 } from 'node:util';
+          function refusal2(message, code) {
+            return Object.assign(new Error(message), { code });
+          }
+          function requireValid2(value, message, code) {
+            if (!value) throw refusal2(message, code);
+          }
+          function diagnosticCode2(error, fallback) {
+            return typeof error?.code === 'string' ? error.code : fallback;
+          }
+          function httpStatus2(reply) {
+            return Number.isInteger(reply?.status) && reply.status >= 100 && reply.status <= 599
+              ? reply.status
+              : 'invalid';
+          }
+          function ownerInputs({ project, key, marker }) {
+            requireValid2(
+              typeof project === 'string' &&
+                /^[a-f0-9-]{32,36}$/u.test(project) &&
+                typeof key === 'string' &&
+                /^node-acceptance-[1-9]\d*-[1-9]\d*$/u.test(key) &&
+                marker === `permit-node:release-acceptance:${key}`,
+              'Cloud environment ownership inputs are invalid.',
+              'environment:inputs',
+            );
+          }
+          function ownedIdentity(body, owner, source) {
+            requireValid2(
+              body &&
+                typeof body === 'object' &&
+                typeof body.id === 'string' &&
+                /^[a-f0-9-]{32,36}$/u.test(body.id) &&
+                body.project_id === owner.project &&
+                body.key === owner.key &&
+                body.name === owner.key &&
+                body.description === owner.marker &&
+                typeof body.created_at === 'string' &&
+                Number.isFinite(Date.parse(body.created_at)),
+              'Cloud environment readback does not establish the exact owned identity.',
+              `environment:identity:${source}`,
+            );
+            return { id: body.id, createdAt: body.created_at };
+          }
+          async function send(request, input, label, message) {
+            try {
+              return await request(input);
+            } catch {
+              throw refusal2(message, `environment:transport:${label}`);
+            }
+          }
+          async function checkedRead(request, path, label) {
+            const response = await send(
+              request,
+              { method: 'GET', path },
+              label,
+              'Cloud environment ownership read failed before cleanup.',
+            );
+            requireValid2(
+              response?.status === 200 || response?.status === 404,
+              'Cloud environment ownership read returned an unexpected HTTP status.',
+              `environment:http:${label}:${httpStatus2(response)}`,
+            );
+            return response;
+          }
+          async function provisionCloudEnvironment({ request, project, key, marker, save }) {
+            const owner = { project, key, marker };
+            ownerInputs(owner);
+            requireValid2(
+              typeof request === 'function' && typeof save === 'function',
+              'Cloud setup requires a public HTTP boundary and durable state storage.',
+              'environment:boundary',
+            );
+            const state = {
+              schema: 1,
+              ...owner,
+              attempted: false,
+              identity: null,
+              capture: 'unverified',
+            };
+            await save(structuredClone(state));
+            const collection = `/v2/projects/${project}/envs`;
+            const keyPath = `${collection}/${key}`;
+            const existing = await checkedRead(request, keyPath, 'by_key');
+            requireValid2(
+              existing.status === 404,
+              'Cloud environment namespace already exists; setup refused.',
+              'environment:exists',
+            );
+            state.attempted = true;
+            await save(structuredClone(state));
+            let reply;
+            try {
+              reply = await request({
+                method: 'POST',
+                path: collection,
+                body: { key, name: key, description: marker },
+              });
+            } catch {
+              reply = void 0;
+            }
+            try {
+              if (reply?.status === 200 || reply?.status === 201)
+                state.identity = ownedIdentity(reply.body, owner, 'create');
+              const recovered = await checkedRead(request, keyPath, 'by_key');
+              const status = httpStatus2(reply);
+              requireValid2(
+                recovered.status !== 404 || state.identity,
+                'Cloud create did not establish an owned environment.',
+                typeof status === 'number' && status >= 300
+                  ? `environment:http:create:${status}`
+                  : 'environment:create',
+              );
+              requireValid2(
+                recovered.status === 200,
+                'Cloud create acknowledgment is not independently visible.',
+                'environment:readback:by_key',
+              );
+              const identity = ownedIdentity(recovered.body, owner, 'by_key');
+              requireValid2(
+                !state.identity || isDeepStrictEqual2(state.identity, identity),
+                'Cloud create and readback identify different physical environments.',
+                'environment:identity-changed:by_key',
+              );
+              state.identity = identity;
+              const byId = await checkedRead(request, `${collection}/${identity.id}`, 'by_id');
+              requireValid2(
+                byId.status === 200 &&
+                  isDeepStrictEqual2(ownedIdentity(byId.body, owner, 'by_id'), identity),
+                'Cloud physical environment readback differs from its initial identity.',
+                'environment:readback:by_id',
+              );
+              state.capture = 'verified';
+              await save(structuredClone(state));
+            } catch (error) {
+              state.capture = 'unverified';
+              await save(structuredClone(state));
+              throw refusal2(
+                'Cloud setup could not capture immutable ownership; retain the saved state.',
+                diagnosticCode2(error, 'environment:provision:exception'),
+              );
+            }
+            const scoped = await fetchCloudEnvironmentCredential({ request, state });
+            return { state, ...scoped };
+          }
+          async function fetchCloudEnvironmentCredential({ request, state }) {
+            ownerInputs(state);
+            requireValid2(
+              state.attempted === true &&
+                state.capture === 'verified' &&
+                state.identity &&
+                /^[a-f0-9-]{32,36}$/u.test(state.identity.id) &&
+                typeof state.identity.createdAt === 'string' &&
+                Number.isFinite(Date.parse(state.identity.createdAt)),
+              'Cloud credential handoff requires initially captured immutable ownership.',
+              'environment:credential:state',
+            );
+            const project = state.project;
+            const collection = `/v2/projects/${project}/envs`;
+            const reads = await Promise.all([
+              checkedRead(request, `${collection}/${state.key}`, 'by_key'),
+              checkedRead(request, `${collection}/${state.identity.id}`, 'by_id'),
+            ]);
+            for (const [read, label] of [
+              [reads[0], 'by_key'],
+              [reads[1], 'by_id'],
+            ])
+              requireValid2(
+                read.status === 200 &&
+                  isDeepStrictEqual2(ownedIdentity(read.body, state, label), state.identity),
+                'Cloud credential handoff refused changed or ambiguous environment ownership.',
+                `environment:credential:ownership:${label}`,
+              );
+            let credential, organization;
+            try {
+              const unavailable = 'Scoped cloud credential is unavailable.';
+              const response = await send(
+                request,
+                { method: 'GET', path: `/v2/api-key/${project}/${state.identity.id}` },
+                'api_key',
+                unavailable,
+              );
+              requireValid2(
+                response?.status === 200,
+                unavailable,
+                `environment:http:api_key:${httpStatus2(response)}`,
+              );
+              requireValid2(
+                typeof response.body?.secret === 'string' &&
+                  /^[\x21-\x7e]+$/u.test(response.body.secret),
+                unavailable,
+                'environment:credential:secret',
+              );
+              requireValid2(
+                (response.body.project_id == null || response.body.project_id === project) &&
+                  (response.body.environment_id == null ||
+                    response.body.environment_id === state.identity.id) &&
+                  (response.body.object_type == null || response.body.object_type === 'env'),
+                unavailable,
+                'environment:credential:metadata',
+              );
+              credential = response.body.secret;
+              const foreign =
+                'Fetched cloud credential does not belong exclusively to the captured environment.';
+              const scope = await send(
+                request,
+                { method: 'GET', path: '/v2/api-key/scope', credential },
+                'api_key_scope',
+                foreign,
+              );
+              requireValid2(
+                scope?.status === 200,
+                foreign,
+                `environment:http:api_key_scope:${httpStatus2(scope)}`,
+              );
+              requireValid2(
+                typeof scope.body?.organization_id === 'string' &&
+                  scope.body.organization_id.length > 0 &&
+                  (response.body.organization_id == null ||
+                    response.body.organization_id === scope.body.organization_id) &&
+                  scope.body.project_id === project &&
+                  scope.body.environment_id === state.identity.id,
+                foreign,
+                'environment:credential:scope',
+              );
+              organization = scope.body.organization_id;
+            } catch (error) {
+              throw refusal2(
+                'Scoped cloud credential lookup failed; owned cleanup remains required.',
+                diagnosticCode2(error, 'environment:credential:exception'),
+              );
+            }
+            return { credential, organization };
+          }
+
+          // scripts/cloud-fixture.mjs
+          import { isDeepStrictEqual as isDeepStrictEqual3 } from 'node:util';
+          function refusal3(message, code) {
+            return Object.assign(new Error(message), { code });
+          }
+          function requireValid3(value, message, code) {
+            if (!value) throw refusal3(message, code);
+          }
+          function diagnosticCode3(error, fallback) {
+            return typeof error?.code === 'string' ? error.code : fallback;
+          }
+          function httpStatus3(reply) {
+            return Number.isInteger(reply?.status) && reply.status >= 100 && reply.status <= 599
+              ? reply.status
+              : 'invalid';
+          }
+          function writeCode(kind, reply) {
+            const status = httpStatus3(reply);
+            return typeof status === 'number' && status >= 300
+              ? `fixture:http:${kind}:${status}`
+              : `fixture:write:${kind}`;
+          }
+          function cloudFixtureNames(key) {
+            requireValid3(
+              /^node-acceptance-[1-9]\d*-[1-9]\d*$/u.test(key),
+              'Cloud fixture key is invalid.',
+              'fixture:names',
+            );
+            return {
+              allowedUser: `${key}_allowed`,
+              deniedUser: `${key}_denied`,
+              tenant: `${key}_tenant`,
+              otherTenant: `${key}_other`,
+              resource: `${key}_document`,
+              role: `${key}_reader`,
+            };
+          }
+          function fixtureIdentity(row, context, definition) {
+            requireValid3(
+              row &&
+                typeof row === 'object' &&
+                !Array.isArray(row) &&
+                /^[a-f0-9-]{32,36}$/u.test(row.id) &&
+                typeof row.created_at === 'string' &&
+                Number.isFinite(Date.parse(row.created_at)) &&
+                row.organization_id === context.organization &&
+                row.project_id === context.project &&
+                row.environment_id === context.environment &&
+                row.key === definition.key &&
+                (definition.kind === 'users'
+                  ? row.attributes?.release_acceptance === context.marker
+                  : definition.kind === 'resources'
+                    ? row.type_attributes?.release_acceptance === context.marker
+                    : row.description === context.marker),
+              'Cloud fixture response does not establish owned immutable identity.',
+              `fixture:identity:${definition.kind}`,
+            );
+            return {
+              kind: definition.kind,
+              key: definition.key,
+              id: row.id,
+              createdAt: row.created_at,
+            };
+          }
+          async function fixtureRead(request, kind, path) {
+            let reply;
+            try {
+              reply = await request({ method: 'GET', path });
+            } catch {
+              throw refusal3(
+                'Cloud fixture read failed; retain its saved state.',
+                `fixture:transport:${kind}`,
+              );
+            }
+            requireValid3(
+              reply?.status === 200 || reply?.status === 404,
+              'Cloud fixture read status is invalid.',
+              `fixture:http:${kind}:${httpStatus3(reply)}`,
+            );
+            return reply;
+          }
+          async function seedFixture({ request, context, save }) {
+            requireValid3(
+              typeof request === 'function' &&
+                typeof save === 'function' &&
+                context &&
+                /^[a-f0-9-]{32,36}$/u.test(context.project) &&
+                /^[a-f0-9-]{32,36}$/u.test(context.environment) &&
+                typeof context.organization === 'string' &&
+                context.organization.length > 0 &&
+                context.marker === `permit-node:release-acceptance:${context.key}`,
+              'Cloud fixture requires exact environment scope and durable state storage.',
+              'fixture:inputs',
+            );
+            const fixture = cloudFixtureNames(context.key);
+            const state = {
+              schema: 1,
+              project: context.project,
+              environment: context.environment,
+              key: context.key,
+              marker: context.marker,
+              active: true,
+              unknownWrite: false,
+              records: [],
+            };
+            let safeFailure = true;
+            await save(structuredClone(state));
+            const definitions = [
+              {
+                kind: 'resources',
+                key: fixture.resource,
+                body: {
+                  key: fixture.resource,
+                  name: context.marker,
+                  type_attributes: { release_acceptance: context.marker },
+                  actions: { read: {}, write: {} },
+                },
+              },
+              {
+                kind: 'roles',
+                key: fixture.role,
+                body: {
+                  key: fixture.role,
+                  name: context.marker,
+                  description: context.marker,
+                  permissions: [`${fixture.resource}:read`],
+                },
+              },
+              ...[fixture.tenant, fixture.otherTenant].map((key) => ({
+                kind: 'tenants',
+                key,
+                body: { key, name: context.marker, description: context.marker },
+              })),
+              ...[fixture.allowedUser, fixture.deniedUser].map((key) => ({
+                kind: 'users',
+                key,
+                body: { key, attributes: { release_acceptance: context.marker } },
+              })),
+            ];
+            try {
+              for (const definition of definitions) {
+                const prefix = ['resources', 'roles'].includes(definition.kind)
+                  ? 'schema'
+                  : 'facts';
+                const collection2 = [
+                  '/v2',
+                  prefix,
+                  context.project,
+                  context.environment,
+                  definition.kind,
+                ].join('/');
+                const path = `${collection2}/${encodeURIComponent(definition.key)}`;
+                const before = await fixtureRead(request, definition.kind, path);
+                if (before.status !== 404) safeFailure = false;
+                requireValid3(
+                  before.status === 404,
+                  'Cloud fixture namespace already exists; refuse to adopt it.',
+                  `fixture:exists:${definition.kind}`,
+                );
+                state.unknownWrite = true;
+                await save(structuredClone(state));
+                let reply2;
+                try {
+                  reply2 = await request({
+                    method: 'POST',
+                    path: collection2,
+                    body: definition.body,
+                  });
+                } catch {
+                  reply2 = void 0;
+                }
+                let acknowledged;
+                if (reply2?.status === 200 || reply2?.status === 201)
+                  acknowledged = fixtureIdentity(reply2.body, context, definition);
+                const byKey = await fixtureRead(request, definition.kind, path);
+                requireValid3(
+                  byKey.status === 200,
+                  'Cloud fixture write has not established an owned record.',
+                  writeCode(definition.kind, reply2),
+                );
+                const captured = fixtureIdentity(byKey.body, context, definition);
+                requireValid3(
+                  !acknowledged || isDeepStrictEqual3(acknowledged, captured),
+                  'Cloud fixture acknowledgment and readback differ.',
+                  `fixture:ack:${definition.kind}`,
+                );
+                const byId = await fixtureRead(
+                  request,
+                  definition.kind,
+                  `${collection2}/${captured.id}`,
+                );
+                requireValid3(
+                  byId.status === 200 &&
+                    isDeepStrictEqual3(fixtureIdentity(byId.body, context, definition), captured),
+                  'Cloud fixture physical identity readback differs.',
+                  `fixture:readback:${definition.kind}`,
+                );
+                state.records.push(captured);
+                state.unknownWrite = false;
+                await save(structuredClone(state));
+              }
+              const record2 = (key) => state.records.find((row) => row.key === key);
+              const user = record2(fixture.allowedUser),
+                role = record2(fixture.role),
+                tenant = record2(fixture.tenant);
+              const collection = [
+                '/v2/facts',
+                context.project,
+                context.environment,
+                'role_assignments',
+              ].join('/');
+              const body = { user: user.id, role: role.id, tenant: tenant.id };
+              state.unknownWrite = true;
+              await save(structuredClone(state));
+              let reply;
+              try {
+                reply = await request({ method: 'POST', path: collection, body });
+              } catch {
+                reply = void 0;
+              }
+              const read = await fixtureRead(
+                request,
+                'role_assignments',
+                collection +
+                  '?' +
+                  new URLSearchParams({
+                    user: user.id,
+                    role: role.id,
+                    tenant: tenant.id,
+                    page: '1',
+                    per_page: '100',
+                    include_total_count: 'true',
+                  }),
+              );
+              const envelope = read.body;
+              const rows = Array.isArray(envelope) ? envelope : envelope?.data;
+              const inventory2 =
+                'Cloud fixture grant is absent, ambiguous or not exhaustively observed.';
+              requireValid3(
+                read.status === 200,
+                inventory2,
+                `fixture:http:role_assignments:${read.status}`,
+              );
+              requireValid3(
+                !Array.isArray(rows) || rows.length > 0,
+                inventory2,
+                writeCode('role_assignments', reply),
+              );
+              requireValid3(
+                Array.isArray(rows) &&
+                  rows.length === 1 &&
+                  (Array.isArray(envelope) || envelope.total_count === 1),
+                inventory2,
+                'fixture:grant:inventory',
+              );
+              const grant = rows[0];
+              requireValid3(
+                grant &&
+                  /^[a-f0-9-]{32,36}$/u.test(grant.id) &&
+                  typeof grant.created_at === 'string' &&
+                  Number.isFinite(Date.parse(grant.created_at)) &&
+                  grant.organization_id === context.organization &&
+                  grant.project_id === context.project &&
+                  grant.environment_id === context.environment &&
+                  grant.user_id === user.id &&
+                  grant.role_id === role.id &&
+                  grant.tenant_id === tenant.id &&
+                  grant.user === fixture.allowedUser &&
+                  grant.role === fixture.role &&
+                  (grant.tenant == null || grant.tenant === fixture.tenant) &&
+                  grant.resource_instance_id == null &&
+                  grant.resource_instance == null,
+                'Cloud fixture grant does not belong to the exact owned user, role and tenant.',
+                'fixture:grant:identity',
+              );
+              if (reply?.status === 200 || reply?.status === 201)
+                requireValid3(
+                  reply.body?.id === grant.id && reply.body.created_at === grant.created_at,
+                  'Cloud fixture grant acknowledgment differs from independent readback.',
+                  'fixture:grant:ack',
+                );
+              state.records.push({
+                kind: 'role_assignments',
+                key: fixture.allowedUser,
+                id: grant.id,
+                createdAt: grant.created_at,
+              });
+              state.unknownWrite = false;
+              state.active = false;
+              await save(structuredClone(state));
+              return fixture;
+            } catch (error) {
+              if (!state.unknownWrite && safeFailure) {
+                state.active = false;
+                await save(structuredClone(state));
+              }
+              throw refusal3(
+                'Cloud fixture setup failed; cleanup must independently inspect its state.',
+                error?.code,
+              );
+            }
+          }
+          async function seedCloudFixture(options) {
+            try {
+              return await seedFixture(options);
+            } catch (error) {
+              throw refusal3(
+                'Cloud fixture setup failed; retain saved state for independent cleanup.',
+                diagnosticCode3(error, 'fixture:seed:exception'),
+              );
+            }
+          }
+
+          // scripts/cloud-lifecycle.mjs
+          var diagnosticPattern = /^[a-z]+(?::[a-z0-9_-]{1,40}){1,4}$/u;
+          var censusEntry = '[a-z_]{1,40}=(?:12[0-8]|1[01]\\d|[1-9]?\\d|invalid)';
+          var censusPattern = new RegExp(
+            `^Cloud closure census: ${censusEntry}(?:,${censusEntry}){0,40}$`,
+            'u',
+          );
+          function requireValid4(value, code) {
+            if (!value)
+              throw Object.assign(
+                new Error('Trusted cloud lifecycle input or ownership is invalid.'),
+                {
+                  code,
+                },
+              );
+          }
+          function diagnosticLine(error) {
+            const code = error?.code;
+            const safe =
+              typeof code === 'string' &&
+              diagnosticPattern.test(code) &&
+              !/[a-f0-9]{12}/u.test(code);
+            return `Cloud lifecycle diagnostic: ${safe ? code : 'unclassified'}`;
+          }
+          function censusLine(census2) {
+            const line = `Cloud closure census: ${census2}`;
+            return typeof census2 === 'string' &&
+              censusPattern.test(line) &&
+              !/[a-f0-9]{12}/u.test(census2)
+              ? line
+              : 'Cloud closure census: unavailable';
+          }
+          function trustedCloudRun(env) {
+            requireValid4(
+              env.GITHUB_ACTIONS === 'true' &&
+                env.GITHUB_REPOSITORY === 'permitio/permit-node' &&
+                /^[1-9]\d*$/u.test(env.GITHUB_RUN_ID) &&
+                /^[1-9]\d*$/u.test(env.GITHUB_RUN_ATTEMPT) &&
+                /^[a-f0-9]{40}$/u.test(env.GITHUB_SHA) &&
+                env.GITHUB_ACTOR !== 'dependabot[bot]' &&
+                /^permitio\/permit-node\/\.github\/workflows\/ci\.yaml@refs\/(heads|pull)\//u.test(
+                  env.GITHUB_WORKFLOW_REF,
+                ) &&
+                ((env.GITHUB_EVENT_NAME === 'push' && env.GITHUB_REF === 'refs/heads/main') ||
+                  (env.GITHUB_EVENT_NAME === 'pull_request' &&
+                    env.PR_HEAD_REPOSITORY === env.GITHUB_REPOSITORY)),
+              'lifecycle:trusted-run',
+            );
+            return {
+              repository: env.GITHUB_REPOSITORY,
+              workflowRef: env.GITHUB_WORKFLOW_REF,
+              runId: env.GITHUB_RUN_ID,
+              runAttempt: env.GITHUB_RUN_ATTEMPT,
+              commit: env.GITHUB_SHA,
+            };
+          }
+          function cloudDirectory({ directory, env }) {
+            requireValid4(
+              typeof directory === 'string' &&
+                isAbsolute(directory) &&
+                typeof env.RUNNER_TEMP === 'string' &&
+                isAbsolute(env.RUNNER_TEMP),
+              'lifecycle:directory',
+            );
+            const base = realpathSync(env.RUNNER_TEMP);
+            const absolute = resolve(directory);
+            requireValid4(absolute.startsWith(base + sep), 'lifecycle:directory');
+            mkdirSync(absolute, { recursive: true, mode: 448 });
+            requireValid4(
+              realpathSync(absolute) === absolute && !lstatSync(absolute).isSymbolicLink(),
+              'lifecycle:directory',
+            );
+            return absolute;
+          }
+          function regularBytes(file) {
+            const stat = lstatSync(file);
+            requireValid4(
+              stat.isFile() && !stat.isSymbolicLink() && stat.size <= 64 * 1024,
+              'lifecycle:file',
+            );
+            return readFileSync(file, 'utf8');
+          }
+          function savePrivateState(file, value, first = false) {
+            const encoded = JSON.stringify(value) + '\n';
+            requireValid4(Buffer.byteLength(encoded) <= 64 * 1024, 'lifecycle:state-size');
+            if (first) {
+              writeFileSync(file, encoded, { mode: 384, flag: 'wx' });
+              return;
+            }
+            regularBytes(file);
+            const pending = file + '.next';
+            writeFileSync(pending, encoded, { mode: 384, flag: 'wx' });
+            renameSync(pending, file);
+          }
+          async function setupTrustedCloud({
+            directory,
+            env = process.env,
+            request,
+            report = (line) => console.error(line),
+          }) {
+            try {
+              const ci = trustedCloudRun(env);
+              const folder = cloudDirectory({ directory, env });
+              const http = request ?? cloudControlRequest({ credential: env.PROJECT_API_KEY });
+              const key = `node-acceptance-${ci.runId}-${ci.runAttempt}`;
+              const state = { schema: 1, ci, owner: null, fixture: null, closure: null };
+              const file = join(folder, 'state.json');
+              let first = true;
+              const scoped = await provisionCloudEnvironment({
+                request: http,
+                project: env.PROJECT_ID,
+                key,
+                marker: `permit-node:release-acceptance:${key}`,
+                save: async (owner) => {
+                  state.owner = owner;
+                  savePrivateState(file, state, first);
+                  first = false;
+                },
+              });
+              const context = {
+                organization: scoped.organization,
+                project: env.PROJECT_ID,
+                environment: scoped.state.identity.id,
+                createdAt: scoped.state.identity.createdAt,
+              };
+              const childRequest = (input) => http({ ...input, credential: scoped.credential });
+              state.closure = await captureCloudClosure({
+                request: childRequest,
+                projectRequest: http,
+                context,
+              });
+              savePrivateState(file, state);
+              const fixture = await seedCloudFixture({
+                context: {
+                  organization: scoped.organization,
+                  project: env.PROJECT_ID,
+                  environment: scoped.state.identity.id,
+                  key,
+                  marker: state.owner.marker,
+                },
+                request: childRequest,
+                save: async (captured) => {
+                  state.fixture = captured;
+                  savePrivateState(file, state);
+                },
+              });
+              state.closure = await settleCloudClosure({
+                request: childRequest,
+                projectRequest: http,
+                closure: state.closure,
+                fixture: state.fixture,
+              });
+              savePrivateState(file, state);
+              writeFileSync(join(folder, 'fixture.json'), JSON.stringify(fixture) + '\n', {
+                mode: 384,
+                flag: 'wx',
+              });
+              return { schema: 2, status: 'PASS', fixtureWriteCount: state.fixture.records.length };
+            } catch (error) {
+              if (error?.census !== void 0) report(censusLine(error.census));
+              report(diagnosticLine(error));
+              throw new Error(
+                'Trusted cloud setup failed; inspect retained ownership state privately.',
+              );
+            }
+          }
+
+          // scripts/cloud-workflow-entry.mjs
+          import { join as join2 } from 'node:path';
+          try {
+            await setupTrustedCloud({
+              directory: join2(process.env.RUNNER_TEMP, 'cloud-acceptance'),
+            });
+            console.log('Trusted cloud setup completed.');
+          } catch {
+            console.error('Trusted cloud lifecycle failed; no cleanup credit.');
+            process.exitCode = 1;
+          }
+          NODE
+          # END TRUSTED_CLOUD_SETUP
+      - name: Preserve finite owned state for independent cleanup
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: node-cloud-owned-state
+          path: |
+            ${{ runner.temp }}/cloud-acceptance/state.json
+            ${{ runner.temp }}/cloud-acceptance/fixture.json
+          if-no-files-found: error
+          retention-days: 1
+
+  cloud-test:
+    name: Packed cloud SDK (${{ matrix.node }})
+    needs: [candidate, cloud-setup]
+    if: >-
+      github.repository == 'permitio/permit-node' &&
+      (github.event_name == 'push' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22.13.0', '22.23.3', '24.0.0', '24.21.0', '26.11.0']
+    env:
+      PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+      CLOUD_SETUP_RESULT: ${{ needs.cloud-setup.result }}
+    steps:
+      - name: Setup trusted Node runtime before credential step
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node }}
+          package-manager-cache: false
+      - name: Read only this run's finite owned state
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: node-cloud-owned-state
+          path: ${{ runner.temp }}/cloud-acceptance/
+      # Step separation follows the existing CI pattern; it is not runner isolation.
+      - name: Verify owned scope and mask environment key before checkout
+        id: cloud-key
+        env:
+          PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
+        run: |
+          # BEGIN TRUSTED_CLOUD_HANDOFF
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          // scripts/cloud-lifecycle.mjs
+          import {
+            appendFileSync,
+            lstatSync,
+            mkdirSync,
+            readFileSync,
+            realpathSync,
+            renameSync,
+            writeFileSync,
+          } from 'node:fs';
+          import { isAbsolute, join, resolve, sep } from 'node:path';
+          import { isDeepStrictEqual as isDeepStrictEqual3 } from 'node:util';
+
+          // scripts/cloud-http.mjs
+          var CLOUD_CONTROL_ORIGIN = 'https://api.permit.io';
+          function cloudControlRequest({ credential, fetch: fetchBoundary = globalThis.fetch }) {
+            if (
+              typeof credential !== 'string' ||
+              !/^[\x21-\x7e]+$/u.test(credential) ||
+              typeof fetchBoundary !== 'function'
+            )
+              throw new Error('Cloud HTTP boundary requires an explicit valid step credential.');
+            return async ({ method, path, body, credential: scoped }) => {
+              try {
+                const selected = scoped ?? credential;
+                if (
+                  !['GET', 'POST', 'DELETE'].includes(method) ||
+                  typeof path !== 'string' ||
+                  !path.startsWith('/v2/') ||
+                  path.startsWith('//') ||
+                  path.includes('#') ||
+                  path.includes('\\') ||
+                  path
+                    .split('?')[0]
+                    .split('/')
+                    .some((part) => {
+                      const decoded = decodeURIComponent(part);
+                      return ['.', '..'].includes(decoded) || /[/\\]/u.test(decoded);
+                    }) ||
+                  typeof selected !== 'string' ||
+                  !/^[\x21-\x7e]+$/u.test(selected)
+                )
+                  throw new Error('Invalid cloud HTTP inputs.');
+                const target = new URL(path, CLOUD_CONTROL_ORIGIN);
+                if (target.origin !== CLOUD_CONTROL_ORIGIN || !target.pathname.startsWith('/v2/'))
+                  throw new Error('Invalid cloud HTTP destination.');
+                const response = await fetchBoundary(target, {
+                  method,
+                  redirect: 'error',
+                  signal: AbortSignal.timeout(3e4),
+                  headers: {
+                    authorization: `Bearer ${selected}`,
+                    'content-type': 'application/json',
+                  },
+                  ...(body === void 0 ? {} : { body: JSON.stringify(body) }),
+                });
+                if (
+                  !Number.isInteger(response.status) ||
+                  response.status < 100 ||
+                  response.status > 599
+                )
+                  throw new Error('Invalid cloud HTTP response status.');
+                const chunks = [];
+                let size = 0;
+                if (response.body) {
+                  const reader = response.body.getReader();
+                  try {
+                    for (;;) {
+                      const { value, done } = await reader.read();
+                      if (done) break;
+                      size += value.byteLength;
+                      if (size > 1024 * 1024) {
+                        await reader.cancel();
+                        throw new Error('Cloud HTTP response exceeds its size limit.');
+                      }
+                      chunks.push(Buffer.from(value));
+                    }
+                  } finally {
+                    reader.releaseLock();
+                  }
+                }
+                const text = Buffer.concat(chunks).toString('utf8');
+                return { status: response.status, body: text ? JSON.parse(text) : null };
+              } catch {
+                throw new Error(
+                  'Cloud control-plane operation failed; no raw response is reported.',
+                );
+              }
+            };
+          }
+
+          // scripts/cloud-closure.mjs
+          var inventories = [
+            ['resources', 'schema', 'resources?include_built_in=true&include_total_count=true'],
+            ['roles', 'schema', 'roles?include_total_count=true'],
+            ['user_attributes', 'schema', 'users/attributes'],
+            ['condition_sets', 'schema', 'condition_sets?include_total_count=true'],
+            ['condition_set_rules', 'facts', 'set_rules'],
+            ['users', 'facts', 'users'],
+            ['tenants', 'facts', 'tenants?include_total_count=true'],
+            ['groups', 'schema', 'groups'],
+            ['user_invites', 'facts', 'user_invites'],
+            [
+              'resource_instances',
+              'facts',
+              'resource_instances?detailed=true&include_total_count=true',
+            ],
+            [
+              'relationship_tuples',
+              'facts',
+              'relationship_tuples?detailed=true&include_total_count=true',
+            ],
+            ['role_assignments', 'facts', 'role_assignments?include_total_count=true'],
+            ['proxy_configs', 'facts', 'proxy_configs'],
+            ['pdp_configs', 'pdps', 'configs'],
+            ['elements_configs', 'elements', 'config'],
+            ['email_templates', 'facts', 'email_templates/'],
+          ];
+          var singletons = ['email_configuration', 'opal_scope', 'api_keys'];
+          var children = ['actions', 'attributes', 'roles', 'relations', 'action_groups'];
+          var censusLabels = [
+            ...inventories.map(([kind]) => kind),
+            ...singletons,
+            ...children.map((child) => `resource_${child}`),
+          ];
+
+          // scripts/cloud-environment.mjs
+          import { isDeepStrictEqual } from 'node:util';
+          function refusal(message, code) {
+            return Object.assign(new Error(message), { code });
+          }
+          function requireValid(value, message, code) {
+            if (!value) throw refusal(message, code);
+          }
+          function diagnosticCode(error, fallback) {
+            return typeof error?.code === 'string' ? error.code : fallback;
+          }
+          function httpStatus(reply) {
+            return Number.isInteger(reply?.status) && reply.status >= 100 && reply.status <= 599
+              ? reply.status
+              : 'invalid';
+          }
+          function ownerInputs({ project, key, marker }) {
+            requireValid(
+              typeof project === 'string' &&
+                /^[a-f0-9-]{32,36}$/u.test(project) &&
+                typeof key === 'string' &&
+                /^node-acceptance-[1-9]\d*-[1-9]\d*$/u.test(key) &&
+                marker === `permit-node:release-acceptance:${key}`,
+              'Cloud environment ownership inputs are invalid.',
+              'environment:inputs',
+            );
+          }
+          function ownedIdentity(body, owner, source) {
+            requireValid(
+              body &&
+                typeof body === 'object' &&
+                typeof body.id === 'string' &&
+                /^[a-f0-9-]{32,36}$/u.test(body.id) &&
+                body.project_id === owner.project &&
+                body.key === owner.key &&
+                body.name === owner.key &&
+                body.description === owner.marker &&
+                typeof body.created_at === 'string' &&
+                Number.isFinite(Date.parse(body.created_at)),
+              'Cloud environment readback does not establish the exact owned identity.',
+              `environment:identity:${source}`,
+            );
+            return { id: body.id, createdAt: body.created_at };
+          }
+          async function send(request, input, label, message) {
+            try {
+              return await request(input);
+            } catch {
+              throw refusal(message, `environment:transport:${label}`);
+            }
+          }
+          async function checkedRead(request, path, label) {
+            const response = await send(
+              request,
+              { method: 'GET', path },
+              label,
+              'Cloud environment ownership read failed before cleanup.',
+            );
+            requireValid(
+              response?.status === 200 || response?.status === 404,
+              'Cloud environment ownership read returned an unexpected HTTP status.',
+              `environment:http:${label}:${httpStatus(response)}`,
+            );
+            return response;
+          }
+          async function fetchCloudEnvironmentCredential({ request, state }) {
+            ownerInputs(state);
+            requireValid(
+              state.attempted === true &&
+                state.capture === 'verified' &&
+                state.identity &&
+                /^[a-f0-9-]{32,36}$/u.test(state.identity.id) &&
+                typeof state.identity.createdAt === 'string' &&
+                Number.isFinite(Date.parse(state.identity.createdAt)),
+              'Cloud credential handoff requires initially captured immutable ownership.',
+              'environment:credential:state',
+            );
+            const project = state.project;
+            const collection = `/v2/projects/${project}/envs`;
+            const reads = await Promise.all([
+              checkedRead(request, `${collection}/${state.key}`, 'by_key'),
+              checkedRead(request, `${collection}/${state.identity.id}`, 'by_id'),
+            ]);
+            for (const [read, label] of [
+              [reads[0], 'by_key'],
+              [reads[1], 'by_id'],
+            ])
+              requireValid(
+                read.status === 200 &&
+                  isDeepStrictEqual(ownedIdentity(read.body, state, label), state.identity),
+                'Cloud credential handoff refused changed or ambiguous environment ownership.',
+                `environment:credential:ownership:${label}`,
+              );
+            let credential, organization;
+            try {
+              const unavailable = 'Scoped cloud credential is unavailable.';
+              const response = await send(
+                request,
+                { method: 'GET', path: `/v2/api-key/${project}/${state.identity.id}` },
+                'api_key',
+                unavailable,
+              );
+              requireValid(
+                response?.status === 200,
+                unavailable,
+                `environment:http:api_key:${httpStatus(response)}`,
+              );
+              requireValid(
+                typeof response.body?.secret === 'string' &&
+                  /^[\x21-\x7e]+$/u.test(response.body.secret),
+                unavailable,
+                'environment:credential:secret',
+              );
+              requireValid(
+                (response.body.project_id == null || response.body.project_id === project) &&
+                  (response.body.environment_id == null ||
+                    response.body.environment_id === state.identity.id) &&
+                  (response.body.object_type == null || response.body.object_type === 'env'),
+                unavailable,
+                'environment:credential:metadata',
+              );
+              credential = response.body.secret;
+              const foreign =
+                'Fetched cloud credential does not belong exclusively to the captured environment.';
+              const scope = await send(
+                request,
+                { method: 'GET', path: '/v2/api-key/scope', credential },
+                'api_key_scope',
+                foreign,
+              );
+              requireValid(
+                scope?.status === 200,
+                foreign,
+                `environment:http:api_key_scope:${httpStatus(scope)}`,
+              );
+              requireValid(
+                typeof scope.body?.organization_id === 'string' &&
+                  scope.body.organization_id.length > 0 &&
+                  (response.body.organization_id == null ||
+                    response.body.organization_id === scope.body.organization_id) &&
+                  scope.body.project_id === project &&
+                  scope.body.environment_id === state.identity.id,
+                foreign,
+                'environment:credential:scope',
+              );
+              organization = scope.body.organization_id;
+            } catch (error) {
+              throw refusal(
+                'Scoped cloud credential lookup failed; owned cleanup remains required.',
+                diagnosticCode(error, 'environment:credential:exception'),
+              );
+            }
+            return { credential, organization };
+          }
+
+          // scripts/cloud-fixture.mjs
+          import { isDeepStrictEqual as isDeepStrictEqual2 } from 'node:util';
+          function refusal2(message, code) {
+            return Object.assign(new Error(message), { code });
+          }
+          function requireValid2(value, message, code) {
+            if (!value) throw refusal2(message, code);
+          }
+          function cloudFixtureNames(key) {
+            requireValid2(
+              /^node-acceptance-[1-9]\d*-[1-9]\d*$/u.test(key),
+              'Cloud fixture key is invalid.',
+              'fixture:names',
+            );
+            return {
+              allowedUser: `${key}_allowed`,
+              deniedUser: `${key}_denied`,
+              tenant: `${key}_tenant`,
+              otherTenant: `${key}_other`,
+              resource: `${key}_document`,
+              role: `${key}_reader`,
+            };
+          }
+          function verifyCloudFixtureSettled(state, owner) {
+            requireValid2(
+              state &&
+                isDeepStrictEqual2(Object.keys(state).sort(), [
+                  'active',
+                  'environment',
+                  'key',
+                  'marker',
+                  'project',
+                  'records',
+                  'schema',
+                  'unknownWrite',
+                ]) &&
+                state.schema === 1 &&
+                state.project === owner.project &&
+                state.environment === owner.identity?.id &&
+                state.key === owner.key &&
+                state.marker === owner.marker &&
+                state.active === false &&
+                state.unknownWrite === false &&
+                Array.isArray(state.records) &&
+                state.records.length <= 7,
+              'Cloud fixture writes remain unsettled or foreign; refuse environment cleanup.',
+              'fixture:settled:state',
+            );
+            const names = cloudFixtureNames(owner.key);
+            const kinds = /* @__PURE__ */ new Map([
+              [names.resource, 'resources'],
+              [names.role, 'roles'],
+              [names.tenant, 'tenants'],
+              [names.otherTenant, 'tenants'],
+              [names.allowedUser, 'users'],
+              [names.deniedUser, 'users'],
+            ]);
+            const ids = /* @__PURE__ */ new Set();
+            const logical = /* @__PURE__ */ new Set();
+            for (const row of state.records) {
+              requireValid2(
+                row &&
+                  isDeepStrictEqual2(Object.keys(row).sort(), ['createdAt', 'id', 'key', 'kind']) &&
+                  /^[a-f0-9-]{32,36}$/u.test(row.id) &&
+                  typeof row.createdAt === 'string' &&
+                  Number.isFinite(Date.parse(row.createdAt)) &&
+                  !ids.has(row.id) &&
+                  !logical.has(`${row.kind}:${row.key}`) &&
+                  (kinds.get(row.key) === row.kind ||
+                    (row.key === names.allowedUser && row.kind === 'role_assignments')),
+                'Cloud fixture capture is malformed or ambiguous; refuse environment cleanup.',
+                'fixture:settled:record',
+              );
+              ids.add(row.id);
+              logical.add(`${row.kind}:${row.key}`);
+            }
+          }
+
+          // scripts/cloud-lifecycle.mjs
+          var censusEntry = '[a-z_]{1,40}=(?:12[0-8]|1[01]\\d|[1-9]?\\d|invalid)';
+          var censusPattern = new RegExp(
+            `^Cloud closure census: ${censusEntry}(?:,${censusEntry}){0,40}$`,
+            'u',
+          );
+          function requireValid3(value, code) {
+            if (!value)
+              throw Object.assign(
+                new Error('Trusted cloud lifecycle input or ownership is invalid.'),
+                {
+                  code,
+                },
+              );
+          }
+          function trustedCloudRun(env) {
+            requireValid3(
+              env.GITHUB_ACTIONS === 'true' &&
+                env.GITHUB_REPOSITORY === 'permitio/permit-node' &&
+                /^[1-9]\d*$/u.test(env.GITHUB_RUN_ID) &&
+                /^[1-9]\d*$/u.test(env.GITHUB_RUN_ATTEMPT) &&
+                /^[a-f0-9]{40}$/u.test(env.GITHUB_SHA) &&
+                env.GITHUB_ACTOR !== 'dependabot[bot]' &&
+                /^permitio\/permit-node\/\.github\/workflows\/ci\.yaml@refs\/(heads|pull)\//u.test(
+                  env.GITHUB_WORKFLOW_REF,
+                ) &&
+                ((env.GITHUB_EVENT_NAME === 'push' && env.GITHUB_REF === 'refs/heads/main') ||
+                  (env.GITHUB_EVENT_NAME === 'pull_request' &&
+                    env.PR_HEAD_REPOSITORY === env.GITHUB_REPOSITORY)),
+              'lifecycle:trusted-run',
+            );
+            return {
+              repository: env.GITHUB_REPOSITORY,
+              workflowRef: env.GITHUB_WORKFLOW_REF,
+              runId: env.GITHUB_RUN_ID,
+              runAttempt: env.GITHUB_RUN_ATTEMPT,
+              commit: env.GITHUB_SHA,
+            };
+          }
+          function cloudDirectory({ directory, env }) {
+            requireValid3(
+              typeof directory === 'string' &&
+                isAbsolute(directory) &&
+                typeof env.RUNNER_TEMP === 'string' &&
+                isAbsolute(env.RUNNER_TEMP),
+              'lifecycle:directory',
+            );
+            const base = realpathSync(env.RUNNER_TEMP);
+            const absolute = resolve(directory);
+            requireValid3(absolute.startsWith(base + sep), 'lifecycle:directory');
+            mkdirSync(absolute, { recursive: true, mode: 448 });
+            requireValid3(
+              realpathSync(absolute) === absolute && !lstatSync(absolute).isSymbolicLink(),
+              'lifecycle:directory',
+            );
+            return absolute;
+          }
+          function regularBytes(file) {
+            const stat = lstatSync(file);
+            requireValid3(
+              stat.isFile() && !stat.isSymbolicLink() && stat.size <= 64 * 1024,
+              'lifecycle:file',
+            );
+            return readFileSync(file, 'utf8');
+          }
+          function readLifecycleState({ directory, env }) {
+            const ci = trustedCloudRun(env);
+            const folder = cloudDirectory({ directory, env });
+            const state = JSON.parse(regularBytes(join(folder, 'state.json')));
+            requireValid3(
+              state &&
+                isDeepStrictEqual3(Object.keys(state).sort(), [
+                  'ci',
+                  'closure',
+                  'fixture',
+                  'owner',
+                  'schema',
+                ]) &&
+                state.schema === 1 &&
+                isDeepStrictEqual3(state.ci, ci),
+              'lifecycle:state',
+            );
+            const key = `node-acceptance-${ci.runId}-${ci.runAttempt}`;
+            requireValid3(
+              state.owner &&
+                isDeepStrictEqual3(Object.keys(state.owner).sort(), [
+                  'attempted',
+                  'capture',
+                  'identity',
+                  'key',
+                  'marker',
+                  'project',
+                  'schema',
+                ]) &&
+                state.owner.schema === 1 &&
+                state.owner.key === key &&
+                state.owner.marker === `permit-node:release-acceptance:${key}` &&
+                state.owner.project === env.PROJECT_ID &&
+                typeof state.owner.attempted === 'boolean' &&
+                ['verified', 'unverified'].includes(state.owner.capture),
+              'lifecycle:owner',
+            );
+            return { state, folder, ci };
+          }
+          async function handoffTrustedCloud({
+            directory,
+            env = process.env,
+            request,
+            mask = (line) => console.log(line),
+          }) {
+            try {
+              requireValid3(env.CLOUD_SETUP_RESULT === 'success', 'lifecycle:setup-result');
+              const { state } = readLifecycleState({ directory, env });
+              verifyCloudFixtureSettled(state.fixture, state.owner);
+              requireValid3(state.fixture.records.length === 7, 'lifecycle:fixture-count');
+              const http = request ?? cloudControlRequest({ credential: env.PROJECT_API_KEY });
+              const scoped = await fetchCloudEnvironmentCredential({
+                request: http,
+                state: state.owner,
+              });
+              const output = env.GITHUB_OUTPUT;
+              requireValid3(
+                typeof output === 'string' &&
+                  isAbsolute(output) &&
+                  realpathSync(output).startsWith(realpathSync(env.RUNNER_TEMP) + sep),
+                'lifecycle:output',
+              );
+              regularBytes(output);
+              mask('::add-mask::' + scoped.credential.replaceAll('%', '%25'));
+              appendFileSync(
+                output,
+                `api_key=${scoped.credential}
+          `,
+              );
+            } catch {
+              throw new Error(
+                'Trusted cloud credential handoff failed; no candidate execution is allowed.',
+              );
+            }
+          }
+
+          // scripts/cloud-workflow-entry.mjs
+          import { join as join2 } from 'node:path';
+          try {
+            await handoffTrustedCloud({
+              directory: join2(process.env.RUNNER_TEMP, 'cloud-acceptance'),
+            });
+            console.log('Trusted cloud handoff completed.');
+          } catch {
+            console.error('Trusted cloud lifecycle failed; no cleanup credit.');
+            process.exitCode = 1;
+          }
+          NODE
+          # END TRUSTED_CLOUD_HANDOFF
+      - name: Checkout checked candidate source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Setup pinned pnpm without install hooks
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+      - name: Install locked public tools without credentials or lifecycle scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Download this run's scanned candidate
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-candidate
+          path: .test-results/release-candidate/
+      - name: Verify all archive bytes and source identity
+        env:
+          EXPECTED_SHA256: ${{ needs.candidate.outputs.sha256 }}
+        run: >-
+          node scripts/release-artifact.mjs --artifact .test-results/release-candidate/permitio.tgz
+          --identity .test-results/release-candidate/identity.json --sha256 "$EXPECTED_SHA256"
+      - name: Audit and install only the exact external candidate
+        run: >-
+          node scripts/prepare-cloud-consumer.mjs
+          --artifact .test-results/release-candidate/permitio.tgz
+          --directory "$RUNNER_TEMP/cloud-consumer"
+      - name: Observe actual default SDK cloud contracts through both packed entries
+        env:
+          PERMIT_API_KEY: ${{ steps.cloud-key.outputs.api_key }}
+        run: >-
+          node scripts/cloud-release-cli.mjs --artifact .test-results/release-candidate/permitio.tgz
+          --identity .test-results/release-candidate/identity.json
+          --consumer "$RUNNER_TEMP/cloud-consumer"
+          --fixture "$RUNNER_TEMP/cloud-acceptance/fixture.json"
+          --output "$RUNNER_TEMP/cloud-proof"
+      - name: Preserve exact consumer lock bytes after execution
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/cloud-proof"
+          cp "$RUNNER_TEMP/cloud-consumer/pnpm-lock.yaml" \
+            "$RUNNER_TEMP/cloud-proof/consumer-lock.yaml"
+      - name: Save finite execution observations and lock bytes
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: candidate-cloud-${{ matrix.node }}
+          path: |
+            ${{ runner.temp }}/cloud-proof/native.json
+            ${{ runner.temp }}/cloud-proof/run.json
+            ${{ runner.temp }}/cloud-proof/consumer-lock.yaml
+          if-no-files-found: error
+
+  cloud-cleanup:
+    name: Verify owned cloud environment removal
+    needs: [cloud-setup, cloud-test]
+    if: >-
+      always() && github.repository == 'permitio/permit-node' &&
+      needs.cloud-setup.result != 'skipped' &&
+      (github.event_name == 'push' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+      CLOUD_SETUP_RESULT: ${{ needs.cloud-setup.result }}
+    steps:
+      - name: Setup trusted Node runtime
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          package-manager-cache: false
+      - name: Read only this run's finite owned state
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: node-cloud-owned-state
+          path: ${{ runner.temp }}/cloud-acceptance/
+      - name: Verify every owned child and physical parent before cascade deletion
+        env:
+          PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
+        run: |
+          # BEGIN TRUSTED_CLOUD_CLEANUP
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          // scripts/cloud-lifecycle.mjs
+          import {
+            appendFileSync,
+            lstatSync,
+            mkdirSync,
+            readFileSync,
+            realpathSync,
+            renameSync,
+            writeFileSync,
+          } from 'node:fs';
+          import { isAbsolute, join, resolve, sep } from 'node:path';
+          import { isDeepStrictEqual as isDeepStrictEqual4 } from 'node:util';
+
+          // scripts/cloud-http.mjs
+          var CLOUD_CONTROL_ORIGIN = 'https://api.permit.io';
+          function cloudControlRequest({ credential, fetch: fetchBoundary = globalThis.fetch }) {
+            if (
+              typeof credential !== 'string' ||
+              !/^[\x21-\x7e]+$/u.test(credential) ||
+              typeof fetchBoundary !== 'function'
+            )
+              throw new Error('Cloud HTTP boundary requires an explicit valid step credential.');
+            return async ({ method, path, body, credential: scoped }) => {
+              try {
+                const selected = scoped ?? credential;
+                if (
+                  !['GET', 'POST', 'DELETE'].includes(method) ||
+                  typeof path !== 'string' ||
+                  !path.startsWith('/v2/') ||
+                  path.startsWith('//') ||
+                  path.includes('#') ||
+                  path.includes('\\') ||
+                  path
+                    .split('?')[0]
+                    .split('/')
+                    .some((part) => {
+                      const decoded = decodeURIComponent(part);
+                      return ['.', '..'].includes(decoded) || /[/\\]/u.test(decoded);
+                    }) ||
+                  typeof selected !== 'string' ||
+                  !/^[\x21-\x7e]+$/u.test(selected)
+                )
+                  throw new Error('Invalid cloud HTTP inputs.');
+                const target = new URL(path, CLOUD_CONTROL_ORIGIN);
+                if (target.origin !== CLOUD_CONTROL_ORIGIN || !target.pathname.startsWith('/v2/'))
+                  throw new Error('Invalid cloud HTTP destination.');
+                const response = await fetchBoundary(target, {
+                  method,
+                  redirect: 'error',
+                  signal: AbortSignal.timeout(3e4),
+                  headers: {
+                    authorization: `Bearer ${selected}`,
+                    'content-type': 'application/json',
+                  },
+                  ...(body === void 0 ? {} : { body: JSON.stringify(body) }),
+                });
+                if (
+                  !Number.isInteger(response.status) ||
+                  response.status < 100 ||
+                  response.status > 599
+                )
+                  throw new Error('Invalid cloud HTTP response status.');
+                const chunks = [];
+                let size = 0;
+                if (response.body) {
+                  const reader = response.body.getReader();
+                  try {
+                    for (;;) {
+                      const { value, done } = await reader.read();
+                      if (done) break;
+                      size += value.byteLength;
+                      if (size > 1024 * 1024) {
+                        await reader.cancel();
+                        throw new Error('Cloud HTTP response exceeds its size limit.');
+                      }
+                      chunks.push(Buffer.from(value));
+                    }
+                  } finally {
+                    reader.releaseLock();
+                  }
+                }
+                const text = Buffer.concat(chunks).toString('utf8');
+                return { status: response.status, body: text ? JSON.parse(text) : null };
+              } catch {
+                throw new Error(
+                  'Cloud control-plane operation failed; no raw response is reported.',
+                );
+              }
+            };
+          }
+
+          // scripts/cloud-closure.mjs
+          import { createHash } from 'node:crypto';
+          import { isDeepStrictEqual } from 'node:util';
+          var idPattern = /^[a-f0-9-]{32,36}$/u;
+          var limit = 128;
+          var unverified = 'Cloud destructive closure is unverified; retain the environment.';
+          var inventories = [
+            ['resources', 'schema', 'resources?include_built_in=true&include_total_count=true'],
+            ['roles', 'schema', 'roles?include_total_count=true'],
+            ['user_attributes', 'schema', 'users/attributes'],
+            ['condition_sets', 'schema', 'condition_sets?include_total_count=true'],
+            ['condition_set_rules', 'facts', 'set_rules'],
+            ['users', 'facts', 'users'],
+            ['tenants', 'facts', 'tenants?include_total_count=true'],
+            ['groups', 'schema', 'groups'],
+            ['user_invites', 'facts', 'user_invites'],
+            [
+              'resource_instances',
+              'facts',
+              'resource_instances?detailed=true&include_total_count=true',
+            ],
+            [
+              'relationship_tuples',
+              'facts',
+              'relationship_tuples?detailed=true&include_total_count=true',
+            ],
+            ['role_assignments', 'facts', 'role_assignments?include_total_count=true'],
+            ['proxy_configs', 'facts', 'proxy_configs'],
+            ['pdp_configs', 'pdps', 'configs'],
+            ['elements_configs', 'elements', 'config'],
+            ['email_templates', 'facts', 'email_templates/'],
+          ];
+          var singletons = ['email_configuration', 'opal_scope', 'api_keys'];
+          var children = ['actions', 'attributes', 'roles', 'relations', 'action_groups'];
+          var fixtureKinds = ['resources', 'roles', 'tenants', 'users'];
+          var censusLabels = [
+            ...inventories.map(([kind]) => kind),
+            ...singletons,
+            ...children.map((child) => `resource_${child}`),
+          ];
+          function refusal(message, code) {
+            return Object.assign(new Error(message), { code });
+          }
+          function requireValid(value, code) {
+            if (!value) throw refusal(unverified, code);
+          }
+          function diagnosticCode(error, fallback) {
+            return typeof error?.code === 'string' ? error.code : fallback;
+          }
+          function surface(kind) {
+            if (inventories.some(([name]) => name === kind) || singletons.includes(kind))
+              return kind;
+            const [scope, id, child] = typeof kind === 'string' ? kind.split(':') : [];
+            return scope === 'resource' && idPattern.test(id ?? '') && children.includes(child)
+              ? `resource_${child}`
+              : 'unknown';
+          }
+          function httpStatus(reply) {
+            return Number.isInteger(reply?.status) && reply.status >= 100 && reply.status <= 599
+              ? reply.status
+              : 'invalid';
+          }
+          function stable(value) {
+            if (Array.isArray(value)) return value.map(stable);
+            if (value && typeof value === 'object') {
+              const result = /* @__PURE__ */ Object.create(null);
+              for (const key of Object.keys(value).sort()) result[key] = stable(value[key]);
+              return result;
+            }
+            return value;
+          }
+          function fingerprint(value) {
+            return createHash('sha256')
+              .update(JSON.stringify(stable(value)))
+              .digest('hex');
+          }
+          async function get(request, label, path, singleton = false) {
+            let reply;
+            try {
+              reply = await request({ method: 'GET', path });
+            } catch {
+              throw refusal(unverified, `closure:transport:${label}`);
+            }
+            requireValid(
+              reply && (reply.status === 200 || (singleton && reply.status === 404)),
+              `closure:http:${label}:${httpStatus(reply)}`,
+            );
+            return reply;
+          }
+          async function cloudClosurePages({ request, path, kind }) {
+            const result = [],
+              seen = /* @__PURE__ */ new Set();
+            let total;
+            for (let page = 1; page <= 4; page += 1) {
+              const reply = await get(
+                request,
+                kind,
+                `${path}${path.includes('?') ? '&' : '?'}page=${page}&per_page=100`,
+              );
+              const body = reply.body,
+                rows = Array.isArray(body) ? body : body?.data;
+              requireValid(
+                Array.isArray(rows) && rows.length <= 100,
+                `closure:pages:shape:${kind}`,
+              );
+              if (!Array.isArray(body)) {
+                requireValid(
+                  Number.isSafeInteger(body.total_count) && body.total_count >= 0,
+                  `closure:pages:total-invalid:${kind}`,
+                );
+                requireValid(
+                  total === void 0 || total === body.total_count,
+                  `closure:pages:total-changed:${kind}`,
+                );
+                total = body.total_count;
+                if (body.page_count != null)
+                  requireValid(
+                    Number.isSafeInteger(body.page_count) && body.page_count >= 0,
+                    `closure:pages:page-count:${kind}`,
+                  );
+              } else requireValid(total === void 0, `closure:pages:shape:${kind}`);
+              for (const row of rows) {
+                requireValid(
+                  row &&
+                    typeof row === 'object' &&
+                    !Array.isArray(row) &&
+                    typeof row.id === 'string' &&
+                    idPattern.test(row.id),
+                  `closure:pages:row:${kind}`,
+                );
+                requireValid(!seen.has(row.id), `closure:pages:duplicate:${kind}`);
+                seen.add(row.id);
+                result.push(row);
+                requireValid(result.length <= limit, `closure:pages:limit:${kind}`);
+              }
+              if (rows.length < 100 || (total !== void 0 && result.length === total)) {
+                requireValid(
+                  total === void 0 || result.length === total,
+                  `closure:pages:incomplete:${kind}`,
+                );
+                return result;
+              }
+              requireValid(
+                total === void 0 || result.length < total,
+                `closure:pages:incomplete:${kind}`,
+              );
+            }
+            requireValid(false, `closure:pages:incomplete:${kind}`);
+          }
+          function surfaces(context) {
+            return inventories.map(([kind, section, route]) => [
+              kind,
+              `/v2/${section}/${context.project}/${context.environment}/${route}`,
+            ]);
+          }
+          function requireScope(row, context, label) {
+            requireValid(
+              row &&
+                typeof row === 'object' &&
+                row.organization_id === context.organization &&
+                row.project_id === context.project &&
+                row.environment_id === context.environment &&
+                idPattern.test(row.id),
+              `closure:scope:${label}`,
+            );
+          }
+          function record(kind, row, context) {
+            requireScope(row, context, surface(kind));
+            if (kind !== 'pdp_configs')
+              requireValid(
+                typeof row.created_at === 'string' &&
+                  Number.isFinite(Date.parse(row.created_at)) &&
+                  Date.parse(row.created_at) >= Date.parse(context.createdAt),
+                `closure:created-at:${surface(kind)}`,
+              );
+            const projection = structuredClone(row);
+            const timestamped = [
+              'resources',
+              'roles',
+              'user_attributes',
+              'condition_sets',
+              'condition_set_rules',
+              'users',
+              'tenants',
+              'resource_instances',
+              'relationship_tuples',
+              'proxy_configs',
+              'elements_configs',
+              'opal_scope',
+            ];
+            if (timestamped.includes(kind) || kind.startsWith('resource:'))
+              delete projection.updated_at;
+            if (kind === 'tenants') delete projection.last_action_at;
+            if (kind === 'resources' && projection.roles && typeof projection.roles === 'object') {
+              for (const role of Object.values(projection.roles))
+                if (role && typeof role === 'object' && !Array.isArray(role))
+                  delete role.updated_at;
+            }
+            if (kind === 'api_keys') {
+              delete projection.env;
+              delete projection.project;
+              delete projection.secret;
+              delete projection.last_used_at;
+            }
+            return {
+              kind,
+              id: row.id,
+              key: row.key ?? null,
+              createdAt: row.created_at ?? null,
+              digest: fingerprint(projection),
+            };
+          }
+          async function inventory({ request, projectRequest, context }) {
+            requireValid(typeof projectRequest === 'function', 'closure:project-request');
+            requireValid(
+              idPattern.test(context.organization) &&
+                idPattern.test(context.project) &&
+                idPattern.test(context.environment) &&
+                Number.isFinite(Date.parse(context.createdAt)),
+              'closure:context',
+            );
+            const groups = /* @__PURE__ */ new Map();
+            for (const [kind, path] of surfaces(context))
+              groups.set(kind, await cloudClosurePages({ request, path, kind }));
+            for (const [kind, path] of [
+              [
+                'email_configuration',
+                `/v2/facts/${context.project}/${context.environment}/email_configurations`,
+              ],
+              ['opal_scope', `/v2/projects/${context.project}/${context.environment}/opal_scope`],
+            ]) {
+              const reply = await get(request, kind, path, true);
+              groups.set(kind, reply.status === 404 ? [] : [reply.body]);
+            }
+            const environmentKey = await get(
+              projectRequest,
+              'api_keys',
+              `/v2/api-key/${context.project}/${context.environment}`,
+            );
+            groups.set('api_keys', [environmentKey.body]);
+            requireValid(groups.get('resources').length <= 8, 'closure:limit:resources');
+            for (const resource of groups.get('resources')) {
+              requireScope(resource, context, 'resources');
+              for (const child of children) {
+                const path = [
+                  '/v2/schema',
+                  context.project,
+                  context.environment,
+                  'resources',
+                  resource.id,
+                  child,
+                ].join('/');
+                const rows = await cloudClosurePages({ request, path, kind: `resource_${child}` });
+                for (const row of rows)
+                  requireValid(
+                    row.resource_id === resource.id,
+                    `closure:child-parent:resource_${child}`,
+                  );
+                groups.set(`resource:${resource.id}:${child}`, rows);
+              }
+            }
+            return groups;
+          }
+          function recordsOf(groups, context) {
+            const records = [];
+            for (const [kind, rows] of groups)
+              for (const row of rows) {
+                records.push(record(kind, row, context));
+                requireValid(records.length <= limit, 'closure:limit:records');
+              }
+            records.sort((a, b) => `${a.kind}:${a.id}`.localeCompare(`${b.kind}:${b.id}`));
+            return records;
+          }
+          async function observe(options) {
+            const groups = await inventory(options);
+            return { groups, records: recordsOf(groups, options.context) };
+          }
+          function requireClosure(closure) {
+            requireValid(
+              closure &&
+                isDeepStrictEqual(Object.keys(closure).sort(), [
+                  'baseline',
+                  'context',
+                  'schema',
+                  'settled',
+                ]) &&
+                closure.schema === 1 &&
+                closure.context &&
+                isDeepStrictEqual(Object.keys(closure.context).sort(), [
+                  'createdAt',
+                  'environment',
+                  'organization',
+                  'project',
+                ]) &&
+                Array.isArray(closure.baseline) &&
+                closure.baseline.length <= limit,
+              'closure:state',
+            );
+            for (const rows of [closure.baseline, closure.settled ?? []]) {
+              requireValid(Array.isArray(rows) && rows.length <= limit, 'closure:state');
+              const seen = /* @__PURE__ */ new Set();
+              for (const row of rows) {
+                requireValid(
+                  row &&
+                    isDeepStrictEqual(Object.keys(row).sort(), [
+                      'createdAt',
+                      'digest',
+                      'id',
+                      'key',
+                      'kind',
+                    ]) &&
+                    idPattern.test(row.id) &&
+                    typeof row.kind === 'string' &&
+                    /^[a-f0-9]{64}$/u.test(row.digest) &&
+                    (row.key === null || typeof row.key === 'string') &&
+                    (row.createdAt === null || Number.isFinite(Date.parse(row.createdAt))) &&
+                    !seen.has(`${row.kind}:${row.id}`),
+                  'closure:state:record',
+                );
+                seen.add(`${row.kind}:${row.id}`);
+              }
+            }
+          }
+          function firstMissing(rows, others) {
+            return rows.find((row) => !others.some((other) => isDeepStrictEqual(row, other)));
+          }
+          async function verifyCloudClosure({ request, projectRequest, closure, fixture }) {
+            try {
+              requireClosure(closure);
+              const expected = fixture === null ? closure.baseline : closure.settled;
+              requireValid(Array.isArray(expected), 'closure:verify:unsettled');
+              const observed = await observe({ request, projectRequest, context: closure.context });
+              if (!isDeepStrictEqual(observed.records, expected)) {
+                const changed =
+                  firstMissing(observed.records, expected) ??
+                  firstMissing(expected, observed.records);
+                throw refusal(unverified, `closure:verify:changed:${surface(changed?.kind)}`);
+              }
+              if (fixture !== null) {
+                for (const owned of fixture.records) {
+                  if (owned.kind === 'role_assignments') continue;
+                  requireValid(fixtureKinds.includes(owned.kind), 'closure:verify:fixture-kind');
+                  const section = ['resources', 'roles'].includes(owned.kind) ? 'schema' : 'facts';
+                  const path = [
+                    '/v2',
+                    section,
+                    closure.context.project,
+                    closure.context.environment,
+                    owned.kind,
+                    owned.id,
+                  ].join('/');
+                  const reply = await get(request, `detail_${owned.kind}`, path);
+                  requireScope(reply.body, closure.context, `detail_${owned.kind}`);
+                  requireValid(
+                    reply.body.id === owned.id &&
+                      reply.body.created_at === owned.createdAt &&
+                      reply.body.key === owned.key &&
+                      record(owned.kind, reply.body, closure.context).digest ===
+                        expected.find((row) => row.kind === owned.kind && row.id === owned.id)
+                          ?.digest,
+                    `closure:verify:detail:${owned.kind}`,
+                  );
+                }
+                const grant = fixture.records.find((row) => row.kind === 'role_assignments');
+                if (grant) {
+                  const user = fixture.records.find(
+                    (row2) => row2.kind === 'users' && row2.key === grant.key,
+                  );
+                  const role = fixture.records.find((row2) => row2.kind === 'roles');
+                  const row = observed.groups
+                    .get('role_assignments')
+                    .find((entry) => entry.id === grant.id);
+                  requireValid(
+                    row &&
+                      row.user_id === user?.id &&
+                      row.role_id === role?.id &&
+                      row.resource_instance == null &&
+                      row.resource_instance_id == null,
+                    'closure:verify:grant',
+                  );
+                }
+              }
+            } catch (error) {
+              throw refusal(
+                'Cloud cleanup child closure failed; retain the owned environment.',
+                diagnosticCode(error, 'closure:verify:exception'),
+              );
+            }
+          }
+
+          // scripts/cloud-environment.mjs
+          import { isDeepStrictEqual as isDeepStrictEqual2 } from 'node:util';
+          function refusal2(message, code) {
+            return Object.assign(new Error(message), { code });
+          }
+          function requireValid2(value, message, code) {
+            if (!value) throw refusal2(message, code);
+          }
+          function diagnosticCode2(error, fallback) {
+            return typeof error?.code === 'string' ? error.code : fallback;
+          }
+          function httpStatus2(reply) {
+            return Number.isInteger(reply?.status) && reply.status >= 100 && reply.status <= 599
+              ? reply.status
+              : 'invalid';
+          }
+          function ownerInputs({ project, key, marker }) {
+            requireValid2(
+              typeof project === 'string' &&
+                /^[a-f0-9-]{32,36}$/u.test(project) &&
+                typeof key === 'string' &&
+                /^node-acceptance-[1-9]\d*-[1-9]\d*$/u.test(key) &&
+                marker === `permit-node:release-acceptance:${key}`,
+              'Cloud environment ownership inputs are invalid.',
+              'environment:inputs',
+            );
+          }
+          function ownedIdentity(body, owner, source) {
+            requireValid2(
+              body &&
+                typeof body === 'object' &&
+                typeof body.id === 'string' &&
+                /^[a-f0-9-]{32,36}$/u.test(body.id) &&
+                body.project_id === owner.project &&
+                body.key === owner.key &&
+                body.name === owner.key &&
+                body.description === owner.marker &&
+                typeof body.created_at === 'string' &&
+                Number.isFinite(Date.parse(body.created_at)),
+              'Cloud environment readback does not establish the exact owned identity.',
+              `environment:identity:${source}`,
+            );
+            return { id: body.id, createdAt: body.created_at };
+          }
+          async function send(request, input, label, message) {
+            try {
+              return await request(input);
+            } catch {
+              throw refusal2(message, `environment:transport:${label}`);
+            }
+          }
+          async function checkedRead(request, path, label) {
+            const response = await send(
+              request,
+              { method: 'GET', path },
+              label,
+              'Cloud environment ownership read failed before cleanup.',
+            );
+            requireValid2(
+              response?.status === 200 || response?.status === 404,
+              'Cloud environment ownership read returned an unexpected HTTP status.',
+              `environment:http:${label}:${httpStatus2(response)}`,
+            );
+            return response;
+          }
+          async function fetchCloudEnvironmentCredential({ request, state }) {
+            ownerInputs(state);
+            requireValid2(
+              state.attempted === true &&
+                state.capture === 'verified' &&
+                state.identity &&
+                /^[a-f0-9-]{32,36}$/u.test(state.identity.id) &&
+                typeof state.identity.createdAt === 'string' &&
+                Number.isFinite(Date.parse(state.identity.createdAt)),
+              'Cloud credential handoff requires initially captured immutable ownership.',
+              'environment:credential:state',
+            );
+            const project = state.project;
+            const collection = `/v2/projects/${project}/envs`;
+            const reads = await Promise.all([
+              checkedRead(request, `${collection}/${state.key}`, 'by_key'),
+              checkedRead(request, `${collection}/${state.identity.id}`, 'by_id'),
+            ]);
+            for (const [read, label] of [
+              [reads[0], 'by_key'],
+              [reads[1], 'by_id'],
+            ])
+              requireValid2(
+                read.status === 200 &&
+                  isDeepStrictEqual2(ownedIdentity(read.body, state, label), state.identity),
+                'Cloud credential handoff refused changed or ambiguous environment ownership.',
+                `environment:credential:ownership:${label}`,
+              );
+            let credential, organization;
+            try {
+              const unavailable = 'Scoped cloud credential is unavailable.';
+              const response = await send(
+                request,
+                { method: 'GET', path: `/v2/api-key/${project}/${state.identity.id}` },
+                'api_key',
+                unavailable,
+              );
+              requireValid2(
+                response?.status === 200,
+                unavailable,
+                `environment:http:api_key:${httpStatus2(response)}`,
+              );
+              requireValid2(
+                typeof response.body?.secret === 'string' &&
+                  /^[\x21-\x7e]+$/u.test(response.body.secret),
+                unavailable,
+                'environment:credential:secret',
+              );
+              requireValid2(
+                (response.body.project_id == null || response.body.project_id === project) &&
+                  (response.body.environment_id == null ||
+                    response.body.environment_id === state.identity.id) &&
+                  (response.body.object_type == null || response.body.object_type === 'env'),
+                unavailable,
+                'environment:credential:metadata',
+              );
+              credential = response.body.secret;
+              const foreign =
+                'Fetched cloud credential does not belong exclusively to the captured environment.';
+              const scope = await send(
+                request,
+                { method: 'GET', path: '/v2/api-key/scope', credential },
+                'api_key_scope',
+                foreign,
+              );
+              requireValid2(
+                scope?.status === 200,
+                foreign,
+                `environment:http:api_key_scope:${httpStatus2(scope)}`,
+              );
+              requireValid2(
+                typeof scope.body?.organization_id === 'string' &&
+                  scope.body.organization_id.length > 0 &&
+                  (response.body.organization_id == null ||
+                    response.body.organization_id === scope.body.organization_id) &&
+                  scope.body.project_id === project &&
+                  scope.body.environment_id === state.identity.id,
+                foreign,
+                'environment:credential:scope',
+              );
+              organization = scope.body.organization_id;
+            } catch (error) {
+              throw refusal2(
+                'Scoped cloud credential lookup failed; owned cleanup remains required.',
+                diagnosticCode2(error, 'environment:credential:exception'),
+              );
+            }
+            return { credential, organization };
+          }
+          async function cleanupCloudEnvironment({ request, state }) {
+            const fields = [
+              'schema',
+              'project',
+              'key',
+              'marker',
+              'attempted',
+              'identity',
+              'capture',
+            ];
+            requireValid2(
+              state &&
+                isDeepStrictEqual2(Object.keys(state).sort(), fields.sort()) &&
+                state.schema === 1 &&
+                typeof state.attempted === 'boolean' &&
+                ['unverified', 'verified'].includes(state.capture),
+              'Cloud cleanup state is invalid.',
+              'environment:cleanup:state',
+            );
+            ownerInputs(state);
+            requireValid2(
+              typeof request === 'function',
+              'Cloud cleanup HTTP boundary is missing.',
+              'environment:cleanup:boundary',
+            );
+            const collection = `/v2/projects/${state.project}/envs`;
+            const keyPath = `${collection}/${state.key}`;
+            if (!state.attempted || state.capture !== 'verified') {
+              const key2 = await checkedRead(request, keyPath, 'by_key');
+              requireValid2(
+                key2.status === 404 && !state.attempted,
+                'Cloud cleanup cannot adopt a never-attempted or initially unverified identity.',
+                'environment:cleanup:adopt',
+              );
+              return { registered: 1, completed: 1, verified: 1 };
+            }
+            requireValid2(
+              state.identity &&
+                isDeepStrictEqual2(Object.keys(state.identity).sort(), ['createdAt', 'id']) &&
+                /^[a-f0-9-]{32,36}$/u.test(state.identity.id) &&
+                Number.isFinite(Date.parse(state.identity.createdAt)),
+              'Cloud cleanup identity is invalid.',
+              'environment:cleanup:identity',
+            );
+            const idPath = `${collection}/${state.identity.id}`;
+            const [id, key] = await Promise.all([
+              checkedRead(request, idPath, 'by_id'),
+              checkedRead(request, keyPath, 'by_key'),
+            ]);
+            if (id.status === 404 && key.status === 404)
+              return { registered: 1, completed: 1, verified: 1 };
+            requireValid2(
+              id.status === 200 &&
+                key.status === 200 &&
+                isDeepStrictEqual2(ownedIdentity(id.body, state, 'by_id'), state.identity) &&
+                isDeepStrictEqual2(ownedIdentity(key.body, state, 'by_key'), state.identity),
+              'Cloud cleanup refused changed or ambiguous ownership.',
+              'environment:cleanup:ownership',
+            );
+            const deleted = await send(
+              request,
+              { method: 'DELETE', path: idPath },
+              'delete',
+              'Owned cloud environment deletion failed.',
+            );
+            requireValid2(
+              [200, 204, 404].includes(deleted?.status),
+              'Owned cloud environment deletion returned an unexpected HTTP status.',
+              `environment:http:delete:${httpStatus2(deleted)}`,
+            );
+            const absent = await Promise.all([
+              checkedRead(request, idPath, 'by_id'),
+              checkedRead(request, keyPath, 'by_key'),
+            ]);
+            requireValid2(
+              absent.every((response) => response.status === 404),
+              'Owned cloud environment cleanup has not verified key and physical ID absence.',
+              'environment:cleanup:absence',
+            );
+            return { registered: 1, completed: 1, verified: 1 };
+          }
+
+          // scripts/cloud-fixture.mjs
+          import { isDeepStrictEqual as isDeepStrictEqual3 } from 'node:util';
+          function refusal3(message, code) {
+            return Object.assign(new Error(message), { code });
+          }
+          function requireValid3(value, message, code) {
+            if (!value) throw refusal3(message, code);
+          }
+          function cloudFixtureNames(key) {
+            requireValid3(
+              /^node-acceptance-[1-9]\d*-[1-9]\d*$/u.test(key),
+              'Cloud fixture key is invalid.',
+              'fixture:names',
+            );
+            return {
+              allowedUser: `${key}_allowed`,
+              deniedUser: `${key}_denied`,
+              tenant: `${key}_tenant`,
+              otherTenant: `${key}_other`,
+              resource: `${key}_document`,
+              role: `${key}_reader`,
+            };
+          }
+          function verifyCloudFixtureSettled(state, owner) {
+            requireValid3(
+              state &&
+                isDeepStrictEqual3(Object.keys(state).sort(), [
+                  'active',
+                  'environment',
+                  'key',
+                  'marker',
+                  'project',
+                  'records',
+                  'schema',
+                  'unknownWrite',
+                ]) &&
+                state.schema === 1 &&
+                state.project === owner.project &&
+                state.environment === owner.identity?.id &&
+                state.key === owner.key &&
+                state.marker === owner.marker &&
+                state.active === false &&
+                state.unknownWrite === false &&
+                Array.isArray(state.records) &&
+                state.records.length <= 7,
+              'Cloud fixture writes remain unsettled or foreign; refuse environment cleanup.',
+              'fixture:settled:state',
+            );
+            const names = cloudFixtureNames(owner.key);
+            const kinds = /* @__PURE__ */ new Map([
+              [names.resource, 'resources'],
+              [names.role, 'roles'],
+              [names.tenant, 'tenants'],
+              [names.otherTenant, 'tenants'],
+              [names.allowedUser, 'users'],
+              [names.deniedUser, 'users'],
+            ]);
+            const ids = /* @__PURE__ */ new Set();
+            const logical = /* @__PURE__ */ new Set();
+            for (const row of state.records) {
+              requireValid3(
+                row &&
+                  isDeepStrictEqual3(Object.keys(row).sort(), ['createdAt', 'id', 'key', 'kind']) &&
+                  /^[a-f0-9-]{32,36}$/u.test(row.id) &&
+                  typeof row.createdAt === 'string' &&
+                  Number.isFinite(Date.parse(row.createdAt)) &&
+                  !ids.has(row.id) &&
+                  !logical.has(`${row.kind}:${row.key}`) &&
+                  (kinds.get(row.key) === row.kind ||
+                    (row.key === names.allowedUser && row.kind === 'role_assignments')),
+                'Cloud fixture capture is malformed or ambiguous; refuse environment cleanup.',
+                'fixture:settled:record',
+              );
+              ids.add(row.id);
+              logical.add(`${row.kind}:${row.key}`);
+            }
+          }
+
+          // scripts/cloud-lifecycle.mjs
+          var diagnosticPattern = /^[a-z]+(?::[a-z0-9_-]{1,40}){1,4}$/u;
+          var censusEntry = '[a-z_]{1,40}=(?:12[0-8]|1[01]\\d|[1-9]?\\d|invalid)';
+          var censusPattern = new RegExp(
+            `^Cloud closure census: ${censusEntry}(?:,${censusEntry}){0,40}$`,
+            'u',
+          );
+          function requireValid4(value, code) {
+            if (!value)
+              throw Object.assign(
+                new Error('Trusted cloud lifecycle input or ownership is invalid.'),
+                {
+                  code,
+                },
+              );
+          }
+          function diagnosticLine(error) {
+            const code = error?.code;
+            const safe =
+              typeof code === 'string' &&
+              diagnosticPattern.test(code) &&
+              !/[a-f0-9]{12}/u.test(code);
+            return `Cloud lifecycle diagnostic: ${safe ? code : 'unclassified'}`;
+          }
+          function trustedCloudRun(env) {
+            requireValid4(
+              env.GITHUB_ACTIONS === 'true' &&
+                env.GITHUB_REPOSITORY === 'permitio/permit-node' &&
+                /^[1-9]\d*$/u.test(env.GITHUB_RUN_ID) &&
+                /^[1-9]\d*$/u.test(env.GITHUB_RUN_ATTEMPT) &&
+                /^[a-f0-9]{40}$/u.test(env.GITHUB_SHA) &&
+                env.GITHUB_ACTOR !== 'dependabot[bot]' &&
+                /^permitio\/permit-node\/\.github\/workflows\/ci\.yaml@refs\/(heads|pull)\//u.test(
+                  env.GITHUB_WORKFLOW_REF,
+                ) &&
+                ((env.GITHUB_EVENT_NAME === 'push' && env.GITHUB_REF === 'refs/heads/main') ||
+                  (env.GITHUB_EVENT_NAME === 'pull_request' &&
+                    env.PR_HEAD_REPOSITORY === env.GITHUB_REPOSITORY)),
+              'lifecycle:trusted-run',
+            );
+            return {
+              repository: env.GITHUB_REPOSITORY,
+              workflowRef: env.GITHUB_WORKFLOW_REF,
+              runId: env.GITHUB_RUN_ID,
+              runAttempt: env.GITHUB_RUN_ATTEMPT,
+              commit: env.GITHUB_SHA,
+            };
+          }
+          function cloudDirectory({ directory, env }) {
+            requireValid4(
+              typeof directory === 'string' &&
+                isAbsolute(directory) &&
+                typeof env.RUNNER_TEMP === 'string' &&
+                isAbsolute(env.RUNNER_TEMP),
+              'lifecycle:directory',
+            );
+            const base = realpathSync(env.RUNNER_TEMP);
+            const absolute = resolve(directory);
+            requireValid4(absolute.startsWith(base + sep), 'lifecycle:directory');
+            mkdirSync(absolute, { recursive: true, mode: 448 });
+            requireValid4(
+              realpathSync(absolute) === absolute && !lstatSync(absolute).isSymbolicLink(),
+              'lifecycle:directory',
+            );
+            return absolute;
+          }
+          function regularBytes(file) {
+            const stat = lstatSync(file);
+            requireValid4(
+              stat.isFile() && !stat.isSymbolicLink() && stat.size <= 64 * 1024,
+              'lifecycle:file',
+            );
+            return readFileSync(file, 'utf8');
+          }
+          function readLifecycleState({ directory, env }) {
+            const ci = trustedCloudRun(env);
+            const folder = cloudDirectory({ directory, env });
+            const state = JSON.parse(regularBytes(join(folder, 'state.json')));
+            requireValid4(
+              state &&
+                isDeepStrictEqual4(Object.keys(state).sort(), [
+                  'ci',
+                  'closure',
+                  'fixture',
+                  'owner',
+                  'schema',
+                ]) &&
+                state.schema === 1 &&
+                isDeepStrictEqual4(state.ci, ci),
+              'lifecycle:state',
+            );
+            const key = `node-acceptance-${ci.runId}-${ci.runAttempt}`;
+            requireValid4(
+              state.owner &&
+                isDeepStrictEqual4(Object.keys(state.owner).sort(), [
+                  'attempted',
+                  'capture',
+                  'identity',
+                  'key',
+                  'marker',
+                  'project',
+                  'schema',
+                ]) &&
+                state.owner.schema === 1 &&
+                state.owner.key === key &&
+                state.owner.marker === `permit-node:release-acceptance:${key}` &&
+                state.owner.project === env.PROJECT_ID &&
+                typeof state.owner.attempted === 'boolean' &&
+                ['verified', 'unverified'].includes(state.owner.capture),
+              'lifecycle:owner',
+            );
+            return { state, folder, ci };
+          }
+          async function cleanupTrustedCloud({
+            directory,
+            env = process.env,
+            request,
+            report = (line) => console.error(line),
+          }) {
+            try {
+              const { state, folder, ci } = readLifecycleState({ directory, env });
+              requireValid4(
+                ['success', 'failure', 'cancelled'].includes(env.CLOUD_SETUP_RESULT),
+                'lifecycle:setup-result',
+              );
+              if (state.fixture !== null) verifyCloudFixtureSettled(state.fixture, state.owner);
+              else requireValid4(env.CLOUD_SETUP_RESULT !== 'success', 'lifecycle:fixture-missing');
+              if (env.CLOUD_SETUP_RESULT === 'success')
+                requireValid4(
+                  state.fixture.records.length === 7 &&
+                    isDeepStrictEqual4(
+                      JSON.parse(regularBytes(join(folder, 'fixture.json'))),
+                      cloudFixtureNames(state.owner.key),
+                    ),
+                  'lifecycle:fixture-names',
+                );
+              const http = request ?? cloudControlRequest({ credential: env.PROJECT_API_KEY });
+              requireValid4(
+                state.closure &&
+                  state.closure.context.project === state.owner.project &&
+                  state.closure.context.environment === state.owner.identity?.id &&
+                  state.closure.context.createdAt === state.owner.identity?.createdAt,
+                'lifecycle:closure-context',
+              );
+              const scoped = await fetchCloudEnvironmentCredential({
+                request: http,
+                state: state.owner,
+              });
+              requireValid4(
+                scoped.organization === state.closure.context.organization,
+                'lifecycle:organization',
+              );
+              await verifyCloudClosure({
+                request: (input) => http({ ...input, credential: scoped.credential }),
+                projectRequest: http,
+                closure: state.closure,
+                fixture: state.fixture,
+              });
+              const cleanup = await cleanupCloudEnvironment({ request: http, state: state.owner });
+              const receipt = { schema: 2, ci, cleanup };
+              writeFileSync(join(folder, 'cleanup.json'), JSON.stringify(receipt) + '\n', {
+                mode: 384,
+                flag: 'wx',
+              });
+              return receipt;
+            } catch (error) {
+              report(diagnosticLine(error));
+              throw new Error(
+                'Trusted cloud cleanup failed; ownership or verified absence is incomplete.',
+              );
+            }
+          }
+
+          // scripts/cloud-workflow-entry.mjs
+          import { join as join2 } from 'node:path';
+          try {
+            await cleanupTrustedCloud({
+              directory: join2(process.env.RUNNER_TEMP, 'cloud-acceptance'),
+            });
+            console.log('Trusted cloud cleanup completed.');
+          } catch {
+            console.error('Trusted cloud lifecycle failed; no cleanup credit.');
+            process.exitCode = 1;
+          }
+          NODE
+          # END TRUSTED_CLOUD_CLEANUP
+      - name: Save finite verified absence receipt
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: node-cloud-cleanup
+          path: ${{ runner.temp }}/cloud-acceptance/cleanup.json
+          if-no-files-found: error
+
+  cloud-required-checks:
+    name: SDK cloud required checks
+    needs: [candidate, cloud-setup, cloud-test, cloud-cleanup]
+    if: >-
+      always() && github.repository == 'permitio/permit-node' &&
+      (github.event_name == 'push' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+    steps:
+      - name: Checkout checked source without credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Require setup, every runtime and verified cleanup before proof composition
+        env:
+          GATE_STAGE: cloud
+          GATE_RESULTS: ${{ toJSON(needs) }}
+        run: node scripts/check-release-gates.mjs
+      - name: Setup pinned pnpm without install hooks
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+      - name: Setup Node runtime
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          package-manager-cache: false
+      - name: Install locked proof validators without credentials or lifecycle scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Download this run's scanned candidate
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-candidate
+          path: .test-results/release-candidate/
+      - name: Download all five finite execution cells
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: candidate-cloud-*
+          path: .test-results/cloud/
+      - name: Download independent same-run cleanup receipt
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: node-cloud-cleanup
+          path: .test-results/cloud-cleanup/
+      - name: Bind each native report to actual cleanup and exact lock bytes
+        run: >-
+          node scripts/complete-cloud-proof.mjs
+          --artifact .test-results/release-candidate/permitio.tgz
+          --identity .test-results/release-candidate/identity.json
+          --cloud .test-results/cloud --cleanup .test-results/cloud-cleanup/cleanup.json
+          --output .test-results/cloud-final
+      - name: Save allowlisted cloud observations with verified cleanup
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: node-cloud-final
+          path: .test-results/cloud-final/
+          if-no-files-found: error
+
+  required-checks:
+    name: SDK required checks
+    needs: [candidate, test, cleanup]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        env:
+          npm_config_ignore_scripts: 'true'
+        with:
+          run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.13.0'
+          package-manager-cache: false
+      - name: Require candidate and backend path checks
+        env:
+          GATE_STAGE: ci
+          GATE_RESULTS: ${{ toJSON(needs) }}
+        run: node scripts/check-release-gates.mjs

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,28 +10,17 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface OrganizationCreate
- */
 export interface OrganizationCreate {
   /**
    * A URL-friendly name of the organization (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the organization.
-   * @type {string}
-   * @memberof OrganizationCreate
    */
   key: string;
   /**
    * The name of the organization, usually it\'s your company\'s name.
-   * @type {string}
-   * @memberof OrganizationCreate
    */
   name: string;
   /**
    * the settings for this project
-   * @type {object}
-   * @memberof OrganizationCreate
    */
   settings?: object;
 }

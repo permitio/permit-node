@@ -1,0 +1,3241 @@
+{
+  "nodes": ["22.13.0", "22.23.3", "24.0.0", "24.21.0", "26.11.0"],
+  "pdps": [
+    {
+      "role": "pinned",
+      "digest": "sha256:e3cf30794ec2d256636b4714641df46e51ee58a3f1f0d24c606e214e0bf8669a",
+      "resolvedAt": "2026-10-10"
+    },
+    {
+      "role": "current",
+      "digest": "sha256:e3cf30794ec2d256636b4714641df46e51ee58a3f1f0d24c606e214e0bf8669a",
+      "resolvedAt": "2026-10-10"
+    }
+  ],
+  "cases": [
+    {
+      "id": "wire.api.actionGroups.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.actionGroups.create"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups"
+      ]
+    },
+    {
+      "id": "wire.api.actionGroups.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.actionGroups.create"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups"
+      ]
+    },
+    {
+      "id": "wire.api.actionGroups.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.actionGroups.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups/{action_group_id}"
+      ]
+    },
+    {
+      "id": "wire.api.actionGroups.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.actionGroups.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups/{action_group_id}"
+      ]
+    },
+    {
+      "id": "wire.api.actionGroups.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.actionGroups.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups/{action_group_id}"
+      ]
+    },
+    {
+      "id": "wire.api.actionGroups.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.actionGroups.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups/{action_group_id}"
+      ]
+    },
+    {
+      "id": "wire.api.actionGroups.getById.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.actionGroups.getById"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups/{action_group_id}"
+      ]
+    },
+    {
+      "id": "wire.api.actionGroups.getById.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.actionGroups.getById"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups/{action_group_id}"
+      ]
+    },
+    {
+      "id": "wire.api.actionGroups.getByKey.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.actionGroups.getByKey"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups/{action_group_id}"
+      ]
+    },
+    {
+      "id": "wire.api.actionGroups.getByKey.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.actionGroups.getByKey"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups/{action_group_id}"
+      ]
+    },
+    {
+      "id": "wire.api.actionGroups.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.actionGroups.list"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups"
+      ]
+    },
+    {
+      "id": "wire.api.actionGroups.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.actionGroups.list"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups"
+      ]
+    },
+    {
+      "id": "wire.api.actionGroups.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.actionGroups.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups/{action_group_id}"
+      ]
+    },
+    {
+      "id": "wire.api.actionGroups.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.actionGroups.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups/{action_group_id}"
+      ]
+    },
+    {
+      "id": "wire.api.conditionSetRules.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSetRules.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/set_rules"]
+    },
+    {
+      "id": "wire.api.conditionSetRules.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSetRules.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/set_rules"]
+    },
+    {
+      "id": "wire.api.conditionSetRules.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSetRules.delete"],
+      "operationKeys": ["control-plane DELETE /v2/facts/{proj_id}/{env_id}/set_rules"]
+    },
+    {
+      "id": "wire.api.conditionSetRules.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSetRules.delete"],
+      "operationKeys": ["control-plane DELETE /v2/facts/{proj_id}/{env_id}/set_rules"]
+    },
+    {
+      "id": "wire.api.conditionSetRules.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSetRules.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/set_rules"]
+    },
+    {
+      "id": "wire.api.conditionSetRules.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSetRules.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/set_rules"]
+    },
+    {
+      "id": "wire.api.conditionSets.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSets.create"],
+      "operationKeys": ["control-plane POST /v2/schema/{proj_id}/{env_id}/condition_sets"]
+    },
+    {
+      "id": "wire.api.conditionSets.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSets.create"],
+      "operationKeys": ["control-plane POST /v2/schema/{proj_id}/{env_id}/condition_sets"]
+    },
+    {
+      "id": "wire.api.conditionSets.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSets.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}"
+      ]
+    },
+    {
+      "id": "wire.api.conditionSets.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSets.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}"
+      ]
+    },
+    {
+      "id": "wire.api.conditionSets.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSets.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}"
+      ]
+    },
+    {
+      "id": "wire.api.conditionSets.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSets.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}"
+      ]
+    },
+    {
+      "id": "wire.api.conditionSets.getById.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSets.getById"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}"
+      ]
+    },
+    {
+      "id": "wire.api.conditionSets.getById.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSets.getById"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}"
+      ]
+    },
+    {
+      "id": "wire.api.conditionSets.getByKey.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSets.getByKey"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}"
+      ]
+    },
+    {
+      "id": "wire.api.conditionSets.getByKey.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSets.getByKey"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}"
+      ]
+    },
+    {
+      "id": "wire.api.conditionSets.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSets.list"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/condition_sets"]
+    },
+    {
+      "id": "wire.api.conditionSets.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSets.list"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/condition_sets"]
+    },
+    {
+      "id": "wire.api.conditionSets.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSets.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}"
+      ]
+    },
+    {
+      "id": "wire.api.conditionSets.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.conditionSets.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/schema/{proj_id}/{env_id}/condition_sets/{condition_set_id}"
+      ]
+    },
+    {
+      "id": "wire.api.ensureAccessLevel.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.ensureAccessLevel"],
+      "operationKeys": []
+    },
+    {
+      "id": "wire.api.ensureAccessLevel.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.ensureAccessLevel"],
+      "operationKeys": []
+    },
+    {
+      "id": "wire.api.ensureContext.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.ensureContext"],
+      "operationKeys": []
+    },
+    {
+      "id": "wire.api.ensureContext.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.ensureContext"],
+      "operationKeys": []
+    },
+    {
+      "id": "wire.api.environments.copy.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.copy"],
+      "operationKeys": ["control-plane POST /v2/projects/{proj_id}/envs/{env_id}/copy"]
+    },
+    {
+      "id": "wire.api.environments.copy.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.copy"],
+      "operationKeys": ["control-plane POST /v2/projects/{proj_id}/envs/{env_id}/copy"]
+    },
+    {
+      "id": "wire.api.environments.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.create"],
+      "operationKeys": ["control-plane POST /v2/projects/{proj_id}/envs"]
+    },
+    {
+      "id": "wire.api.environments.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.create"],
+      "operationKeys": ["control-plane POST /v2/projects/{proj_id}/envs"]
+    },
+    {
+      "id": "wire.api.environments.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.delete"],
+      "operationKeys": ["control-plane DELETE /v2/projects/{proj_id}/envs/{env_id}"]
+    },
+    {
+      "id": "wire.api.environments.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.delete"],
+      "operationKeys": ["control-plane DELETE /v2/projects/{proj_id}/envs/{env_id}"]
+    },
+    {
+      "id": "wire.api.environments.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.get"],
+      "operationKeys": ["control-plane GET /v2/projects/{proj_id}/envs/{env_id}"]
+    },
+    {
+      "id": "wire.api.environments.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.get"],
+      "operationKeys": ["control-plane GET /v2/projects/{proj_id}/envs/{env_id}"]
+    },
+    {
+      "id": "wire.api.environments.getApiKey.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.getApiKey"],
+      "operationKeys": ["control-plane GET /v2/api-key/{proj_id}/{env_id}"]
+    },
+    {
+      "id": "wire.api.environments.getApiKey.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.getApiKey"],
+      "operationKeys": ["control-plane GET /v2/api-key/{proj_id}/{env_id}"]
+    },
+    {
+      "id": "wire.api.environments.getById.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.getById"],
+      "operationKeys": ["control-plane GET /v2/projects/{proj_id}/envs/{env_id}"]
+    },
+    {
+      "id": "wire.api.environments.getById.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.getById"],
+      "operationKeys": ["control-plane GET /v2/projects/{proj_id}/envs/{env_id}"]
+    },
+    {
+      "id": "wire.api.environments.getByKey.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.getByKey"],
+      "operationKeys": ["control-plane GET /v2/projects/{proj_id}/envs/{env_id}"]
+    },
+    {
+      "id": "wire.api.environments.getByKey.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.getByKey"],
+      "operationKeys": ["control-plane GET /v2/projects/{proj_id}/envs/{env_id}"]
+    },
+    {
+      "id": "wire.api.environments.getStats.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.getStats"],
+      "operationKeys": ["control-plane GET /v2/projects/{proj_id}/envs/{env_id}/stats"]
+    },
+    {
+      "id": "wire.api.environments.getStats.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.getStats"],
+      "operationKeys": ["control-plane GET /v2/projects/{proj_id}/envs/{env_id}/stats"]
+    },
+    {
+      "id": "wire.api.environments.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.list"],
+      "operationKeys": ["control-plane GET /v2/projects/{proj_id}/envs"]
+    },
+    {
+      "id": "wire.api.environments.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.list"],
+      "operationKeys": ["control-plane GET /v2/projects/{proj_id}/envs"]
+    },
+    {
+      "id": "wire.api.environments.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.update"],
+      "operationKeys": ["control-plane PATCH /v2/projects/{proj_id}/envs/{env_id}"]
+    },
+    {
+      "id": "wire.api.environments.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.update"],
+      "operationKeys": ["control-plane PATCH /v2/projects/{proj_id}/envs/{env_id}"]
+    },
+    {
+      "id": "wire.api.groups.assignRole.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.groups.assignRole"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/roles"
+      ]
+    },
+    {
+      "id": "wire.api.groups.assignRole.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.groups.assignRole"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/roles"
+      ]
+    },
+    {
+      "id": "wire.api.groups.assignUser.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.groups.assignUser"],
+      "operationKeys": [
+        "control-plane PUT /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/users/{user_id}"
+      ]
+    },
+    {
+      "id": "wire.api.groups.assignUser.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.groups.assignUser"],
+      "operationKeys": [
+        "control-plane PUT /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/users/{user_id}"
+      ]
+    },
+    {
+      "id": "wire.api.groups.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.groups.create"],
+      "operationKeys": ["control-plane POST /v2/schema/{proj_id}/{env_id}/groups"]
+    },
+    {
+      "id": "wire.api.groups.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.groups.create"],
+      "operationKeys": ["control-plane POST /v2/schema/{proj_id}/{env_id}/groups"]
+    },
+    {
+      "id": "wire.api.groups.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.groups.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}"
+      ]
+    },
+    {
+      "id": "wire.api.groups.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.groups.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}"
+      ]
+    },
+    {
+      "id": "wire.api.groups.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.groups.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/groups/direct/{group_instance_key}"
+      ]
+    },
+    {
+      "id": "wire.api.groups.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.groups.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/groups/direct/{group_instance_key}"
+      ]
+    },
+    {
+      "id": "wire.api.groups.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.groups.list"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/groups/direct"]
+    },
+    {
+      "id": "wire.api.groups.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.groups.list"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/groups/direct"]
+    },
+    {
+      "id": "wire.api.groups.removeRole.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.groups.removeRole"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/roles"
+      ]
+    },
+    {
+      "id": "wire.api.groups.removeRole.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.groups.removeRole"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/roles"
+      ]
+    },
+    {
+      "id": "wire.api.groups.removeUser.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.groups.removeUser"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/users/{user_id}"
+      ]
+    },
+    {
+      "id": "wire.api.groups.removeUser.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.groups.removeUser"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/groups/{group_instance_key}/users/{user_id}"
+      ]
+    },
+    {
+      "id": "wire.api.pdps.refresh.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.pdps.refresh"],
+      "operationKeys": ["control-plane POST /v2/pdps/{proj_id}/{env_id}/configs/refresh"]
+    },
+    {
+      "id": "wire.api.pdps.refresh.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.pdps.refresh"],
+      "operationKeys": ["control-plane POST /v2/pdps/{proj_id}/{env_id}/configs/refresh"]
+    },
+    {
+      "id": "wire.api.projects.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.projects.create"],
+      "operationKeys": ["control-plane POST /v2/projects"]
+    },
+    {
+      "id": "wire.api.projects.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.projects.create"],
+      "operationKeys": ["control-plane POST /v2/projects"]
+    },
+    {
+      "id": "wire.api.projects.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.projects.delete"],
+      "operationKeys": ["control-plane DELETE /v2/projects/{proj_id}"]
+    },
+    {
+      "id": "wire.api.projects.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.projects.delete"],
+      "operationKeys": ["control-plane DELETE /v2/projects/{proj_id}"]
+    },
+    {
+      "id": "wire.api.projects.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.projects.get"],
+      "operationKeys": ["control-plane GET /v2/projects/{proj_id}"]
+    },
+    {
+      "id": "wire.api.projects.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.projects.get"],
+      "operationKeys": ["control-plane GET /v2/projects/{proj_id}"]
+    },
+    {
+      "id": "wire.api.projects.getById.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.projects.getById"],
+      "operationKeys": ["control-plane GET /v2/projects/{proj_id}"]
+    },
+    {
+      "id": "wire.api.projects.getById.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.projects.getById"],
+      "operationKeys": ["control-plane GET /v2/projects/{proj_id}"]
+    },
+    {
+      "id": "wire.api.projects.getByKey.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.projects.getByKey"],
+      "operationKeys": ["control-plane GET /v2/projects/{proj_id}"]
+    },
+    {
+      "id": "wire.api.projects.getByKey.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.projects.getByKey"],
+      "operationKeys": ["control-plane GET /v2/projects/{proj_id}"]
+    },
+    {
+      "id": "wire.api.projects.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.projects.list"],
+      "operationKeys": ["control-plane GET /v2/projects"]
+    },
+    {
+      "id": "wire.api.projects.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.projects.list"],
+      "operationKeys": ["control-plane GET /v2/projects"]
+    },
+    {
+      "id": "wire.api.projects.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.projects.update"],
+      "operationKeys": ["control-plane PATCH /v2/projects/{proj_id}"]
+    },
+    {
+      "id": "wire.api.projects.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.projects.update"],
+      "operationKeys": ["control-plane PATCH /v2/projects/{proj_id}"]
+    },
+    {
+      "id": "wire.api.relationshipTuples.bulkRelationshipTuples.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.relationshipTuples.bulkRelationshipTuples"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/relationship_tuples/bulk"]
+    },
+    {
+      "id": "wire.api.relationshipTuples.bulkRelationshipTuples.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.relationshipTuples.bulkRelationshipTuples"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/relationship_tuples/bulk"]
+    },
+    {
+      "id": "wire.api.relationshipTuples.bulkUnRelationshipTuples.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.relationshipTuples.bulkUnRelationshipTuples"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/relationship_tuples/bulk"
+      ]
+    },
+    {
+      "id": "wire.api.relationshipTuples.bulkUnRelationshipTuples.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.relationshipTuples.bulkUnRelationshipTuples"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/relationship_tuples/bulk"
+      ]
+    },
+    {
+      "id": "wire.api.relationshipTuples.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.relationshipTuples.create"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/relationship_tuples",
+        "pdp-container POST /facts/relationship_tuples"
+      ]
+    },
+    {
+      "id": "wire.api.relationshipTuples.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.relationshipTuples.create"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/relationship_tuples",
+        "pdp-container POST /facts/relationship_tuples"
+      ]
+    },
+    {
+      "id": "wire.api.relationshipTuples.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.relationshipTuples.delete"],
+      "operationKeys": ["control-plane DELETE /v2/facts/{proj_id}/{env_id}/relationship_tuples"]
+    },
+    {
+      "id": "wire.api.relationshipTuples.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.relationshipTuples.delete"],
+      "operationKeys": ["control-plane DELETE /v2/facts/{proj_id}/{env_id}/relationship_tuples"]
+    },
+    {
+      "id": "wire.api.relationshipTuples.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.relationshipTuples.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/relationship_tuples"]
+    },
+    {
+      "id": "wire.api.relationshipTuples.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.relationshipTuples.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/relationship_tuples"]
+    },
+    {
+      "id": "wire.api.relationshipTuples.listDetailed.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.relationshipTuples.listDetailed"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/relationship_tuples/detailed"
+      ]
+    },
+    {
+      "id": "wire.api.relationshipTuples.listDetailed.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.relationshipTuples.listDetailed"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/relationship_tuples/detailed"
+      ]
+    },
+    {
+      "id": "package.api.relationshipTuples.waitForSync.esm",
+      "level": "package",
+      "methodNames": ["permit.api.relationshipTuples.waitForSync"],
+      "operationKeys": []
+    },
+    {
+      "id": "package.api.relationshipTuples.waitForSync.commonjs",
+      "level": "package",
+      "methodNames": ["permit.api.relationshipTuples.waitForSync"],
+      "operationKeys": []
+    },
+    {
+      "id": "wire.api.resourceActions.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceActions.create"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions"
+      ]
+    },
+    {
+      "id": "wire.api.resourceActions.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceActions.create"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions"
+      ]
+    },
+    {
+      "id": "wire.api.resourceActions.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceActions.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions/{action_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceActions.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceActions.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions/{action_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceActions.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceActions.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions/{action_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceActions.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceActions.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions/{action_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceActions.getById.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceActions.getById"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions/{action_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceActions.getById.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceActions.getById"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions/{action_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceActions.getByKey.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceActions.getByKey"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions/{action_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceActions.getByKey.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceActions.getByKey"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions/{action_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceActions.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceActions.list"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions"
+      ]
+    },
+    {
+      "id": "wire.api.resourceActions.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceActions.list"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions"
+      ]
+    },
+    {
+      "id": "wire.api.resourceActions.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceActions.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions/{action_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceActions.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceActions.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/actions/{action_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceAttributes.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceAttributes.create"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes"
+      ]
+    },
+    {
+      "id": "wire.api.resourceAttributes.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceAttributes.create"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes"
+      ]
+    },
+    {
+      "id": "wire.api.resourceAttributes.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceAttributes.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceAttributes.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceAttributes.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceAttributes.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceAttributes.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceAttributes.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceAttributes.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceAttributes.getById.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceAttributes.getById"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceAttributes.getById.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceAttributes.getById"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceAttributes.getByKey.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceAttributes.getByKey"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceAttributes.getByKey.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceAttributes.getByKey"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceAttributes.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceAttributes.list"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes"
+      ]
+    },
+    {
+      "id": "wire.api.resourceAttributes.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceAttributes.list"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes"
+      ]
+    },
+    {
+      "id": "wire.api.resourceAttributes.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceAttributes.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceAttributes.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceAttributes.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceInstances.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceInstances.create"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/resource_instances",
+        "pdp-container POST /facts/resource_instances"
+      ]
+    },
+    {
+      "id": "wire.api.resourceInstances.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceInstances.create"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/resource_instances",
+        "pdp-container POST /facts/resource_instances"
+      ]
+    },
+    {
+      "id": "wire.api.resourceInstances.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceInstances.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceInstances.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceInstances.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceInstances.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceInstances.get"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceInstances.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceInstances.get"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceInstances.getById.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceInstances.getById"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceInstances.getById.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceInstances.getById"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceInstances.getByKey.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceInstances.getByKey"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceInstances.getByKey.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceInstances.getByKey"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceInstances.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceInstances.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/resource_instances"]
+    },
+    {
+      "id": "wire.api.resourceInstances.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceInstances.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/resource_instances"]
+    },
+    {
+      "id": "wire.api.resourceInstances.listDetailed.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceInstances.listDetailed"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/resource_instances/detailed"
+      ]
+    },
+    {
+      "id": "wire.api.resourceInstances.listDetailed.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceInstances.listDetailed"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/resource_instances/detailed"
+      ]
+    },
+    {
+      "id": "wire.api.resourceInstances.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceInstances.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}",
+        "pdp-container PATCH /facts/resource_instances/{instance_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceInstances.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceInstances.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}",
+        "pdp-container PATCH /facts/resource_instances/{instance_id}"
+      ]
+    },
+    {
+      "id": "package.api.resourceInstances.waitForSync.esm",
+      "level": "package",
+      "methodNames": ["permit.api.resourceInstances.waitForSync"],
+      "operationKeys": []
+    },
+    {
+      "id": "package.api.resourceInstances.waitForSync.commonjs",
+      "level": "package",
+      "methodNames": ["permit.api.resourceInstances.waitForSync"],
+      "operationKeys": []
+    },
+    {
+      "id": "wire.api.resourceRelations.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRelations.create"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRelations.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRelations.create"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRelations.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRelations.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations/{relation_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRelations.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRelations.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations/{relation_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRelations.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRelations.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations/{relation_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRelations.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRelations.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations/{relation_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRelations.getById.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRelations.getById"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations/{relation_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRelations.getById.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRelations.getById"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations/{relation_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRelations.getByKey.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRelations.getByKey"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations/{relation_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRelations.getByKey.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRelations.getByKey"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations/{relation_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRelations.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRelations.list"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRelations.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRelations.list"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/relations"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.assignPermissions.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.assignPermissions"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/permissions"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.assignPermissions.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.assignPermissions"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/permissions"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.create"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.create"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.createRoleDerivation.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.createRoleDerivation"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/implicit_grants"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.createRoleDerivation.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.createRoleDerivation"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/implicit_grants"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.deleteRoleDerivation.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.deleteRoleDerivation"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/implicit_grants"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.deleteRoleDerivation.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.deleteRoleDerivation"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/implicit_grants"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.getById.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.getById"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.getById.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.getById"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.getByKey.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.getByKey"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.getByKey.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.getByKey"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.list"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.list"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.removePermissions.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.removePermissions"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/permissions"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.removePermissions.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.removePermissions"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/permissions"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.updateRoleDerivationConditions.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.updateRoleDerivationConditions"],
+      "operationKeys": [
+        "control-plane PUT /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/implicit_grants/conditions"
+      ]
+    },
+    {
+      "id": "wire.api.resourceRoles.updateRoleDerivationConditions.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resourceRoles.updateRoleDerivationConditions"],
+      "operationKeys": [
+        "control-plane PUT /v2/schema/{proj_id}/{env_id}/resources/{resource_id}/roles/{role_id}/implicit_grants/conditions"
+      ]
+    },
+    {
+      "id": "wire.api.resources.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resources.create"],
+      "operationKeys": ["control-plane POST /v2/schema/{proj_id}/{env_id}/resources"]
+    },
+    {
+      "id": "wire.api.resources.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resources.create"],
+      "operationKeys": ["control-plane POST /v2/schema/{proj_id}/{env_id}/resources"]
+    },
+    {
+      "id": "wire.api.resources.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resources.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resources.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resources.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/resources/{resource_id}"
+      ]
+    },
+    {
+      "id": "wire.api.resources.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resources.get"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}"]
+    },
+    {
+      "id": "wire.api.resources.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resources.get"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}"]
+    },
+    {
+      "id": "wire.api.resources.getById.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resources.getById"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}"]
+    },
+    {
+      "id": "wire.api.resources.getById.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resources.getById"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}"]
+    },
+    {
+      "id": "wire.api.resources.getByKey.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resources.getByKey"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}"]
+    },
+    {
+      "id": "wire.api.resources.getByKey.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resources.getByKey"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/resources/{resource_id}"]
+    },
+    {
+      "id": "wire.api.resources.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resources.list"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/resources"]
+    },
+    {
+      "id": "wire.api.resources.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resources.list"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/resources"]
+    },
+    {
+      "id": "wire.api.resources.replace.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resources.replace"],
+      "operationKeys": ["control-plane PUT /v2/schema/{proj_id}/{env_id}/resources/{resource_id}"]
+    },
+    {
+      "id": "wire.api.resources.replace.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resources.replace"],
+      "operationKeys": ["control-plane PUT /v2/schema/{proj_id}/{env_id}/resources/{resource_id}"]
+    },
+    {
+      "id": "wire.api.resources.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.resources.update"],
+      "operationKeys": ["control-plane PATCH /v2/schema/{proj_id}/{env_id}/resources/{resource_id}"]
+    },
+    {
+      "id": "wire.api.resources.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.resources.update"],
+      "operationKeys": ["control-plane PATCH /v2/schema/{proj_id}/{env_id}/resources/{resource_id}"]
+    },
+    {
+      "id": "wire.api.roleAssignments.assign.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roleAssignments.assign"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/role_assignments",
+        "pdp-container POST /facts/role_assignments"
+      ]
+    },
+    {
+      "id": "wire.api.roleAssignments.assign.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roleAssignments.assign"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/role_assignments",
+        "pdp-container POST /facts/role_assignments"
+      ]
+    },
+    {
+      "id": "wire.api.roleAssignments.bulkAssign.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roleAssignments.bulkAssign"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/role_assignments/bulk"]
+    },
+    {
+      "id": "wire.api.roleAssignments.bulkAssign.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roleAssignments.bulkAssign"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/role_assignments/bulk"]
+    },
+    {
+      "id": "wire.api.roleAssignments.bulkUnassign.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roleAssignments.bulkUnassign"],
+      "operationKeys": ["control-plane DELETE /v2/facts/{proj_id}/{env_id}/role_assignments/bulk"]
+    },
+    {
+      "id": "wire.api.roleAssignments.bulkUnassign.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roleAssignments.bulkUnassign"],
+      "operationKeys": ["control-plane DELETE /v2/facts/{proj_id}/{env_id}/role_assignments/bulk"]
+    },
+    {
+      "id": "wire.api.roleAssignments.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roleAssignments.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/role_assignments"]
+    },
+    {
+      "id": "wire.api.roleAssignments.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roleAssignments.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/role_assignments"]
+    },
+    {
+      "id": "wire.api.roleAssignments.listDetailed.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roleAssignments.listDetailed"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/role_assignments/detailed"]
+    },
+    {
+      "id": "wire.api.roleAssignments.listDetailed.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roleAssignments.listDetailed"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/role_assignments/detailed"]
+    },
+    {
+      "id": "wire.api.roleAssignments.unassign.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roleAssignments.unassign"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/role_assignments",
+        "pdp-container DELETE /facts/role_assignments"
+      ]
+    },
+    {
+      "id": "wire.api.roleAssignments.unassign.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roleAssignments.unassign"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/role_assignments",
+        "pdp-container DELETE /facts/role_assignments"
+      ]
+    },
+    {
+      "id": "package.api.roleAssignments.waitForSync.esm",
+      "level": "package",
+      "methodNames": ["permit.api.roleAssignments.waitForSync"],
+      "operationKeys": []
+    },
+    {
+      "id": "package.api.roleAssignments.waitForSync.commonjs",
+      "level": "package",
+      "methodNames": ["permit.api.roleAssignments.waitForSync"],
+      "operationKeys": []
+    },
+    {
+      "id": "wire.api.roles.assignPermissions.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.assignPermissions"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/roles/{role_id}/permissions"
+      ]
+    },
+    {
+      "id": "wire.api.roles.assignPermissions.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.assignPermissions"],
+      "operationKeys": [
+        "control-plane POST /v2/schema/{proj_id}/{env_id}/roles/{role_id}/permissions"
+      ]
+    },
+    {
+      "id": "wire.api.roles.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.create"],
+      "operationKeys": ["control-plane POST /v2/schema/{proj_id}/{env_id}/roles"]
+    },
+    {
+      "id": "wire.api.roles.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.create"],
+      "operationKeys": ["control-plane POST /v2/schema/{proj_id}/{env_id}/roles"]
+    },
+    {
+      "id": "wire.api.roles.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.delete"],
+      "operationKeys": ["control-plane DELETE /v2/schema/{proj_id}/{env_id}/roles/{role_id}"]
+    },
+    {
+      "id": "wire.api.roles.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.delete"],
+      "operationKeys": ["control-plane DELETE /v2/schema/{proj_id}/{env_id}/roles/{role_id}"]
+    },
+    {
+      "id": "wire.api.roles.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.get"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/roles/{role_id}"]
+    },
+    {
+      "id": "wire.api.roles.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.get"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/roles/{role_id}"]
+    },
+    {
+      "id": "wire.api.roles.getById.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.getById"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/roles/{role_id}"]
+    },
+    {
+      "id": "wire.api.roles.getById.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.getById"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/roles/{role_id}"]
+    },
+    {
+      "id": "wire.api.roles.getByKey.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.getByKey"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/roles/{role_id}"]
+    },
+    {
+      "id": "wire.api.roles.getByKey.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.getByKey"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/roles/{role_id}"]
+    },
+    {
+      "id": "wire.api.roles.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.list"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/roles"]
+    },
+    {
+      "id": "wire.api.roles.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.list"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/roles"]
+    },
+    {
+      "id": "wire.api.roles.removePermissions.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.removePermissions"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/roles/{role_id}/permissions"
+      ]
+    },
+    {
+      "id": "wire.api.roles.removePermissions.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.removePermissions"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/roles/{role_id}/permissions"
+      ]
+    },
+    {
+      "id": "wire.api.roles.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.update"],
+      "operationKeys": ["control-plane PATCH /v2/schema/{proj_id}/{env_id}/roles/{role_id}"]
+    },
+    {
+      "id": "wire.api.roles.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.update"],
+      "operationKeys": ["control-plane PATCH /v2/schema/{proj_id}/{env_id}/roles/{role_id}"]
+    },
+    {
+      "id": "wire.api.tenants.addUser.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.addUser"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users"]
+    },
+    {
+      "id": "wire.api.tenants.addUser.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.addUser"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users"]
+    },
+    {
+      "id": "wire.api.tenants.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.create"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/tenants",
+        "pdp-container POST /facts/tenants"
+      ]
+    },
+    {
+      "id": "wire.api.tenants.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.create"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/tenants",
+        "pdp-container POST /facts/tenants"
+      ]
+    },
+    {
+      "id": "wire.api.tenants.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.delete"],
+      "operationKeys": ["control-plane DELETE /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}"]
+    },
+    {
+      "id": "wire.api.tenants.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.delete"],
+      "operationKeys": ["control-plane DELETE /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}"]
+    },
+    {
+      "id": "wire.api.tenants.deleteTenantUser.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.deleteTenantUser"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users/{user_id}"
+      ]
+    },
+    {
+      "id": "wire.api.tenants.deleteTenantUser.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.deleteTenantUser"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users/{user_id}"
+      ]
+    },
+    {
+      "id": "wire.api.tenants.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.get"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}"]
+    },
+    {
+      "id": "wire.api.tenants.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.get"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}"]
+    },
+    {
+      "id": "wire.api.tenants.getById.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.getById"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}"]
+    },
+    {
+      "id": "wire.api.tenants.getById.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.getById"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}"]
+    },
+    {
+      "id": "wire.api.tenants.getByKey.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.getByKey"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}"]
+    },
+    {
+      "id": "wire.api.tenants.getByKey.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.getByKey"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}"]
+    },
+    {
+      "id": "wire.api.tenants.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/tenants"]
+    },
+    {
+      "id": "wire.api.tenants.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/tenants"]
+    },
+    {
+      "id": "wire.api.tenants.listTenantUsers.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.listTenantUsers"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users"]
+    },
+    {
+      "id": "wire.api.tenants.listTenantUsers.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.listTenantUsers"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users"]
+    },
+    {
+      "id": "wire.api.tenants.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.update"],
+      "operationKeys": ["control-plane PATCH /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}"]
+    },
+    {
+      "id": "wire.api.tenants.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.tenants.update"],
+      "operationKeys": ["control-plane PATCH /v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}"]
+    },
+    {
+      "id": "package.api.tenants.waitForSync.esm",
+      "level": "package",
+      "methodNames": ["permit.api.tenants.waitForSync"],
+      "operationKeys": []
+    },
+    {
+      "id": "package.api.tenants.waitForSync.commonjs",
+      "level": "package",
+      "methodNames": ["permit.api.tenants.waitForSync"],
+      "operationKeys": []
+    },
+    {
+      "id": "wire.api.users.assignRole.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.users.assignRole"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/role_assignments",
+        "pdp-container POST /facts/role_assignments"
+      ]
+    },
+    {
+      "id": "wire.api.users.assignRole.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.users.assignRole"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/role_assignments",
+        "pdp-container POST /facts/role_assignments"
+      ]
+    },
+    {
+      "id": "wire.api.users.bulkUserCreate.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.users.bulkUserCreate"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/bulk/users"]
+    },
+    {
+      "id": "wire.api.users.bulkUserCreate.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.users.bulkUserCreate"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/bulk/users"]
+    },
+    {
+      "id": "wire.api.users.bulkUserDelete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.users.bulkUserDelete"],
+      "operationKeys": ["control-plane DELETE /v2/facts/{proj_id}/{env_id}/bulk/users"]
+    },
+    {
+      "id": "wire.api.users.bulkUserDelete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.users.bulkUserDelete"],
+      "operationKeys": ["control-plane DELETE /v2/facts/{proj_id}/{env_id}/bulk/users"]
+    },
+    {
+      "id": "wire.api.users.bulkUserReplace.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.users.bulkUserReplace"],
+      "operationKeys": ["control-plane PUT /v2/facts/{proj_id}/{env_id}/bulk/users"]
+    },
+    {
+      "id": "wire.api.users.bulkUserReplace.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.users.bulkUserReplace"],
+      "operationKeys": ["control-plane PUT /v2/facts/{proj_id}/{env_id}/bulk/users"]
+    },
+    {
+      "id": "wire.api.users.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.users.create"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/users",
+        "pdp-container POST /facts/users"
+      ]
+    },
+    {
+      "id": "wire.api.users.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.users.create"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/users",
+        "pdp-container POST /facts/users"
+      ]
+    },
+    {
+      "id": "wire.api.users.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.users.delete"],
+      "operationKeys": ["control-plane DELETE /v2/facts/{proj_id}/{env_id}/users/{user_id}"]
+    },
+    {
+      "id": "wire.api.users.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.users.delete"],
+      "operationKeys": ["control-plane DELETE /v2/facts/{proj_id}/{env_id}/users/{user_id}"]
+    },
+    {
+      "id": "wire.api.users.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.users.get"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/users/{user_id}"]
+    },
+    {
+      "id": "wire.api.users.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.users.get"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/users/{user_id}"]
+    },
+    {
+      "id": "wire.api.users.getAssignedRoles.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.users.getAssignedRoles"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/role_assignments"]
+    },
+    {
+      "id": "wire.api.users.getAssignedRoles.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.users.getAssignedRoles"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/role_assignments"]
+    },
+    {
+      "id": "wire.api.users.getById.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.users.getById"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/users/{user_id}"]
+    },
+    {
+      "id": "wire.api.users.getById.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.users.getById"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/users/{user_id}"]
+    },
+    {
+      "id": "wire.api.users.getByKey.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.users.getByKey"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/users/{user_id}"]
+    },
+    {
+      "id": "wire.api.users.getByKey.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.users.getByKey"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/users/{user_id}"]
+    },
+    {
+      "id": "wire.api.users.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.users.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/users"]
+    },
+    {
+      "id": "wire.api.users.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.users.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/users"]
+    },
+    {
+      "id": "wire.api.users.sync.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.users.sync"],
+      "operationKeys": [
+        "control-plane PUT /v2/facts/{proj_id}/{env_id}/users/{user_id}",
+        "pdp-container PUT /facts/users/{user_id}"
+      ]
+    },
+    {
+      "id": "wire.api.users.sync.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.users.sync"],
+      "operationKeys": [
+        "control-plane PUT /v2/facts/{proj_id}/{env_id}/users/{user_id}",
+        "pdp-container PUT /facts/users/{user_id}"
+      ]
+    },
+    {
+      "id": "wire.api.users.unassignRole.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.users.unassignRole"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/role_assignments",
+        "pdp-container DELETE /facts/role_assignments"
+      ]
+    },
+    {
+      "id": "wire.api.users.unassignRole.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.users.unassignRole"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/role_assignments",
+        "pdp-container DELETE /facts/role_assignments"
+      ]
+    },
+    {
+      "id": "wire.api.users.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.users.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/users/{user_id}",
+        "pdp-container PATCH /facts/users/{user_id}"
+      ]
+    },
+    {
+      "id": "wire.api.users.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.users.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/users/{user_id}",
+        "pdp-container PATCH /facts/users/{user_id}"
+      ]
+    },
+    {
+      "id": "package.api.users.waitForSync.esm",
+      "level": "package",
+      "methodNames": ["permit.api.users.waitForSync"],
+      "operationKeys": []
+    },
+    {
+      "id": "package.api.users.waitForSync.commonjs",
+      "level": "package",
+      "methodNames": ["permit.api.users.waitForSync"],
+      "operationKeys": []
+    },
+    {
+      "id": "wire.bulkCheck.esm",
+      "level": "wire",
+      "methodNames": ["permit.bulkCheck"],
+      "operationKeys": ["pdp-container POST /allowed/bulk"]
+    },
+    {
+      "id": "wire.bulkCheck.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.bulkCheck"],
+      "operationKeys": ["pdp-container POST /allowed/bulk"]
+    },
+    {
+      "id": "wire.check.esm",
+      "level": "wire",
+      "methodNames": ["permit.check"],
+      "operationKeys": ["pdp-container POST /allowed"]
+    },
+    {
+      "id": "wire.check.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.check"],
+      "operationKeys": ["pdp-container POST /allowed"]
+    },
+    {
+      "id": "wire.checkAllTenants.esm",
+      "level": "wire",
+      "methodNames": ["permit.checkAllTenants"],
+      "operationKeys": ["pdp-container POST /allowed/all-tenants"]
+    },
+    {
+      "id": "wire.checkAllTenants.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.checkAllTenants"],
+      "operationKeys": ["pdp-container POST /allowed/all-tenants"]
+    },
+    {
+      "id": "wire.elements.loginAs.esm",
+      "level": "wire",
+      "methodNames": ["permit.elements.loginAs"],
+      "operationKeys": []
+    },
+    {
+      "id": "wire.elements.loginAs.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.elements.loginAs"],
+      "operationKeys": []
+    },
+    {
+      "id": "wire.filterObjects.esm",
+      "level": "wire",
+      "methodNames": ["permit.filterObjects"],
+      "operationKeys": ["pdp-container POST /allowed/bulk"]
+    },
+    {
+      "id": "wire.filterObjects.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.filterObjects"],
+      "operationKeys": ["pdp-container POST /allowed/bulk"]
+    },
+    {
+      "id": "wire.getAuthorizedUsers.esm",
+      "level": "wire",
+      "methodNames": ["permit.getAuthorizedUsers"],
+      "operationKeys": ["pdp-container POST /authorized_users"]
+    },
+    {
+      "id": "wire.getAuthorizedUsers.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.getAuthorizedUsers"],
+      "operationKeys": ["pdp-container POST /authorized_users"]
+    },
+    {
+      "id": "wire.getUserPermissions.esm",
+      "level": "wire",
+      "methodNames": ["permit.getUserPermissions"],
+      "operationKeys": ["pdp-container POST /user-permissions"]
+    },
+    {
+      "id": "wire.getUserPermissions.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.getUserPermissions"],
+      "operationKeys": ["pdp-container POST /user-permissions"]
+    },
+    {
+      "id": "wire.getUserTenants.esm",
+      "level": "wire",
+      "methodNames": ["permit.getUserTenants"],
+      "operationKeys": ["pdp-container POST /user-tenants"]
+    },
+    {
+      "id": "wire.getUserTenants.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.getUserTenants"],
+      "operationKeys": ["pdp-container POST /user-tenants"]
+    },
+    {
+      "id": "api.legal-attribute-roundtrip",
+      "level": "api",
+      "methodNames": ["permit.api.users.create", "permit.api.users.get", "permit.api.users.update"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/users/{user_id}",
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/users/{user_id}",
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/users"
+      ]
+    },
+    {
+      "id": "pdp.shared-rbac-positive-negative",
+      "level": "pdp",
+      "methodNames": ["permit.check"],
+      "operationKeys": ["pdp-container POST /allowed"]
+    },
+    {
+      "id": "package.strict-entrypoints",
+      "level": "package",
+      "methodNames": [],
+      "operationKeys": []
+    },
+    {
+      "id": "ab.users.create-get-update",
+      "level": "api",
+      "methodNames": ["permit.api.users.create", "permit.api.users.get", "permit.api.users.update"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/users/{user_id}",
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/users/{user_id}",
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/users"
+      ]
+    },
+    {
+      "id": "ab.users.list-normalized",
+      "level": "api",
+      "methodNames": ["permit.api.users.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/users"]
+    },
+    {
+      "id": "ab.users.sync-normalized",
+      "level": "api",
+      "methodNames": ["permit.api.users.sync"],
+      "operationKeys": ["control-plane PUT /v2/facts/{proj_id}/{env_id}/users/{user_id}"]
+    },
+    {
+      "id": "ab.resource-instance-roundtrip",
+      "level": "api",
+      "methodNames": [
+        "permit.api.resourceInstances.create",
+        "permit.api.resourceInstances.get",
+        "permit.api.resourceInstances.delete"
+      ],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}",
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/resource_instances/{instance_id}",
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/resource_instances"
+      ]
+    },
+    {
+      "id": "ab.check.allow-deny",
+      "level": "pdp",
+      "methodNames": ["permit.check"],
+      "operationKeys": ["pdp-container POST /allowed"]
+    },
+    {
+      "id": "ab.bulk-check-order-context",
+      "level": "pdp",
+      "methodNames": ["permit.bulkCheck"],
+      "operationKeys": ["pdp-container POST /allowed/bulk"]
+    },
+    {
+      "id": "wire.supporting-scope.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.ensureAccessLevel", "permit.api.ensureContext"],
+      "operationKeys": ["control-plane GET /v2/api-key/scope"]
+    },
+    {
+      "id": "wire.supporting-scope.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.ensureAccessLevel", "permit.api.ensureContext"],
+      "operationKeys": ["control-plane GET /v2/api-key/scope"]
+    },
+    {
+      "id": "wire.api.userInvites.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites"]
+    },
+    {
+      "id": "wire.api.userInvites.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites"]
+    },
+    {
+      "id": "api.user-invites.list",
+      "level": "api",
+      "methodNames": ["permit.api.userInvites.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites"]
+    },
+    {
+      "id": "wire.api.userInvites.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites"]
+    },
+    {
+      "id": "wire.api.userInvites.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites"]
+    },
+    {
+      "id": "api.user-invites.create",
+      "level": "api",
+      "methodNames": ["permit.api.userInvites.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites"]
+    },
+    {
+      "id": "wire.api.userInvites.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.get"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userInvites.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.get"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "api.user-invites.get",
+      "level": "api",
+      "methodNames": ["permit.api.userInvites.get"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userInvites.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userInvites.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "api.user-invites.update",
+      "level": "api",
+      "methodNames": ["permit.api.userInvites.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userInvites.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userInvites.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "api.user-invites.delete",
+      "level": "api",
+      "methodNames": ["permit.api.userInvites.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userInvites.approve.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.approve"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}/approve"
+      ]
+    },
+    {
+      "id": "wire.api.userInvites.approve.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userInvites.approve"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}/approve"
+      ]
+    },
+    {
+      "id": "api.user-invites.approve",
+      "level": "api",
+      "methodNames": ["permit.api.userInvites.approve"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}/approve"
+      ]
+    },
+    {
+      "id": "api.user-invites.approval-refusals",
+      "level": "api",
+      "methodNames": ["permit.api.userInvites.approve"],
+      "operationKeys": [
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}/approve"
+      ]
+    },
+    {
+      "id": "api.user-invites.access",
+      "level": "api",
+      "methodNames": [
+        "permit.api.userInvites.list",
+        "permit.api.userInvites.create",
+        "permit.api.userInvites.get",
+        "permit.api.userInvites.update",
+        "permit.api.userInvites.delete",
+        "permit.api.userInvites.approve"
+      ],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites",
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites",
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}",
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}",
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}",
+        "control-plane POST /v2/facts/{proj_id}/{env_id}/user_invites/{user_invite_id}/approve"
+      ]
+    },
+    {
+      "id": "wire.api.userAttributes.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.list"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/users/attributes"]
+    },
+    {
+      "id": "wire.api.userAttributes.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.list"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/users/attributes"]
+    },
+    {
+      "id": "api.user-attributes.list",
+      "level": "api",
+      "methodNames": ["permit.api.userAttributes.list"],
+      "operationKeys": ["control-plane GET /v2/schema/{proj_id}/{env_id}/users/attributes"]
+    },
+    {
+      "id": "wire.api.userAttributes.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userAttributes.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "api.user-attributes.get",
+      "level": "api",
+      "methodNames": ["permit.api.userAttributes.get"],
+      "operationKeys": [
+        "control-plane GET /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userAttributes.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.create"],
+      "operationKeys": ["control-plane POST /v2/schema/{proj_id}/{env_id}/users/attributes"]
+    },
+    {
+      "id": "wire.api.userAttributes.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.create"],
+      "operationKeys": ["control-plane POST /v2/schema/{proj_id}/{env_id}/users/attributes"]
+    },
+    {
+      "id": "api.user-attributes.create",
+      "level": "api",
+      "methodNames": ["permit.api.userAttributes.create"],
+      "operationKeys": ["control-plane POST /v2/schema/{proj_id}/{env_id}/users/attributes"]
+    },
+    {
+      "id": "wire.api.userAttributes.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userAttributes.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "api.user-attributes.update",
+      "level": "api",
+      "methodNames": ["permit.api.userAttributes.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userAttributes.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "wire.api.userAttributes.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.userAttributes.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "api.user-attributes.delete",
+      "level": "api",
+      "methodNames": ["permit.api.userAttributes.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/schema/{proj_id}/{env_id}/users/attributes/{attribute_id}"
+      ]
+    },
+    {
+      "id": "api.user-attributes.access",
+      "level": "api",
+      "methodNames": [
+        "permit.api.userAttributes.list",
+        "permit.api.userAttributes.get",
+        "permit.api.userAttributes.create",
+        "permit.api.userAttributes.update",
+        "permit.api.userAttributes.delete"
+      ],
+      "operationKeys": []
+    },
+    {
+      "id": "wire.api.roles.bulkCreateOrReplace.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.bulkCreateOrReplace"],
+      "operationKeys": ["control-plane PUT /v2/schema/{proj_id}/{env_id}/bulk/roles"]
+    },
+    {
+      "id": "wire.api.roles.bulkCreateOrReplace.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.roles.bulkCreateOrReplace"],
+      "operationKeys": ["control-plane PUT /v2/schema/{proj_id}/{env_id}/bulk/roles"]
+    },
+    {
+      "id": "api.bulk-roles.create-replace",
+      "level": "api",
+      "methodNames": ["permit.api.roles.bulkCreateOrReplace"],
+      "operationKeys": ["control-plane PUT /v2/schema/{proj_id}/{env_id}/bulk/roles"]
+    },
+    {
+      "id": "api.bulk-roles.scope",
+      "level": "api",
+      "methodNames": ["permit.api.roles.bulkCreateOrReplace"],
+      "operationKeys": ["control-plane PUT /v2/schema/{proj_id}/{env_id}/bulk/roles"]
+    },
+    {
+      "id": "wire.checkUrl.esm",
+      "level": "wire",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "wire.checkUrl.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "mock-pdp.url-check-contract",
+      "level": "mock-pdp",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "mock-pdp.url-check-inputs",
+      "level": "mock-pdp",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "mock-pdp.url-check-errors",
+      "level": "mock-pdp",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "commonjs.mock-pdp.url-check-contract",
+      "level": "mock-pdp",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "commonjs.mock-pdp.url-check-inputs",
+      "level": "mock-pdp",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "commonjs.mock-pdp.url-check-errors",
+      "level": "mock-pdp",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "pdp.url-check-mapped-allow-and-deny",
+      "level": "pdp",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "pdp.url-check-mapping-removal",
+      "level": "pdp",
+      "methodNames": ["permit.checkUrl"],
+      "operationKeys": ["pdp-container POST /allowed_url"]
+    },
+    {
+      "id": "wire.permit.getLocalRoleAssignments.esm",
+      "level": "wire",
+      "methodNames": ["permit.getLocalRoleAssignments"],
+      "operationKeys": ["pdp-container GET /local/role_assignments"]
+    },
+    {
+      "id": "mock-pdp.local-role-assignments-invalid",
+      "level": "mock-pdp",
+      "methodNames": ["permit.getLocalRoleAssignments"],
+      "operationKeys": ["pdp-container GET /local/role_assignments"]
+    },
+    {
+      "id": "mock-pdp.local-role-assignments-errors",
+      "level": "mock-pdp",
+      "methodNames": ["permit.getLocalRoleAssignments"],
+      "operationKeys": ["pdp-container GET /local/role_assignments"]
+    },
+    {
+      "id": "wire.permit.getLocalRoleAssignments.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.getLocalRoleAssignments"],
+      "operationKeys": ["pdp-container GET /local/role_assignments"]
+    },
+    {
+      "id": "commonjs.mock-pdp.local-role-assignments-invalid",
+      "level": "mock-pdp",
+      "methodNames": ["permit.getLocalRoleAssignments"],
+      "operationKeys": ["pdp-container GET /local/role_assignments"]
+    },
+    {
+      "id": "commonjs.mock-pdp.local-role-assignments-errors",
+      "level": "mock-pdp",
+      "methodNames": ["permit.getLocalRoleAssignments"],
+      "operationKeys": ["pdp-container GET /local/role_assignments"]
+    },
+    {
+      "id": "pdp.local-role-assignments-filters-pagination",
+      "level": "pdp",
+      "methodNames": ["permit.getLocalRoleAssignments"],
+      "operationKeys": ["pdp-container GET /local/role_assignments"]
+    },
+    {
+      "id": "pdp.local-role-assignments-removal",
+      "level": "pdp",
+      "methodNames": ["permit.getLocalRoleAssignments"],
+      "operationKeys": ["pdp-container GET /local/role_assignments"]
+    },
+    {
+      "id": "wire.api.proxyConfigs.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/proxy_configs"]
+    },
+    {
+      "id": "wire.api.proxyConfigs.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/proxy_configs"]
+    },
+    {
+      "id": "api.proxy-configs.list",
+      "level": "api",
+      "methodNames": ["permit.api.proxyConfigs.list"],
+      "operationKeys": ["control-plane GET /v2/facts/{proj_id}/{env_id}/proxy_configs"]
+    },
+    {
+      "id": "wire.api.proxyConfigs.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.get"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "wire.api.proxyConfigs.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.get"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "api.proxy-configs.get",
+      "level": "api",
+      "methodNames": ["permit.api.proxyConfigs.get"],
+      "operationKeys": [
+        "control-plane GET /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "wire.api.proxyConfigs.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/proxy_configs"]
+    },
+    {
+      "id": "wire.api.proxyConfigs.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/proxy_configs"]
+    },
+    {
+      "id": "api.proxy-configs.create",
+      "level": "api",
+      "methodNames": ["permit.api.proxyConfigs.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/proxy_configs"]
+    },
+    {
+      "id": "wire.api.proxyConfigs.update.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "wire.api.proxyConfigs.update.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "api.proxy-configs.update",
+      "level": "api",
+      "methodNames": ["permit.api.proxyConfigs.update"],
+      "operationKeys": [
+        "control-plane PATCH /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "wire.api.proxyConfigs.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "wire.api.proxyConfigs.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.proxyConfigs.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "api.proxy-configs.delete",
+      "level": "api",
+      "methodNames": ["permit.api.proxyConfigs.delete"],
+      "operationKeys": [
+        "control-plane DELETE /v2/facts/{proj_id}/{env_id}/proxy_configs/{proxy_config_id}"
+      ]
+    },
+    {
+      "id": "wire.api.apiKeys.create.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.apiKeys.create"],
+      "operationKeys": ["control-plane POST /v2/api-key"]
+    },
+    {
+      "id": "wire.api.apiKeys.create.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.apiKeys.create"],
+      "operationKeys": ["control-plane POST /v2/api-key"]
+    },
+    {
+      "id": "api.api-keys.create",
+      "level": "api",
+      "methodNames": ["permit.api.apiKeys.create"],
+      "operationKeys": ["control-plane POST /v2/api-key"]
+    },
+    {
+      "id": "wire.api.apiKeys.delete.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.apiKeys.delete"],
+      "operationKeys": ["control-plane DELETE /v2/api-key/{api_key_id}"]
+    },
+    {
+      "id": "wire.api.apiKeys.delete.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.apiKeys.delete"],
+      "operationKeys": ["control-plane DELETE /v2/api-key/{api_key_id}"]
+    },
+    {
+      "id": "api.api-keys.delete",
+      "level": "api",
+      "methodNames": ["permit.api.apiKeys.delete"],
+      "operationKeys": ["control-plane DELETE /v2/api-key/{api_key_id}"]
+    },
+    {
+      "id": "wire.api.apiKeys.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.apiKeys.get"],
+      "operationKeys": ["control-plane GET /v2/api-key/{api_key_id}"]
+    },
+    {
+      "id": "wire.api.apiKeys.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.apiKeys.get"],
+      "operationKeys": ["control-plane GET /v2/api-key/{api_key_id}"]
+    },
+    {
+      "id": "api.api-keys.get",
+      "level": "api",
+      "methodNames": ["permit.api.apiKeys.get"],
+      "operationKeys": ["control-plane GET /v2/api-key/{api_key_id}"]
+    },
+    {
+      "id": "wire.api.apiKeys.getScope.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.apiKeys.getScope"],
+      "operationKeys": ["control-plane GET /v2/api-key/scope"]
+    },
+    {
+      "id": "wire.api.apiKeys.getScope.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.apiKeys.getScope"],
+      "operationKeys": ["control-plane GET /v2/api-key/scope"]
+    },
+    {
+      "id": "api.api-keys.getScope",
+      "level": "api",
+      "methodNames": ["permit.api.apiKeys.getScope"],
+      "operationKeys": ["control-plane GET /v2/api-key/scope"]
+    },
+    {
+      "id": "wire.api.apiKeys.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.apiKeys.list"],
+      "operationKeys": ["control-plane GET /v2/api-key"]
+    },
+    {
+      "id": "wire.api.apiKeys.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.apiKeys.list"],
+      "operationKeys": ["control-plane GET /v2/api-key"]
+    },
+    {
+      "id": "api.api-keys.list",
+      "level": "api",
+      "methodNames": ["permit.api.apiKeys.list"],
+      "operationKeys": ["control-plane GET /v2/api-key"]
+    },
+    {
+      "id": "wire.api.apiKeys.rotate.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.apiKeys.rotate"],
+      "operationKeys": ["control-plane POST /v2/api-key/{api_key_id}/rotate-secret"]
+    },
+    {
+      "id": "wire.api.apiKeys.rotate.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.apiKeys.rotate"],
+      "operationKeys": ["control-plane POST /v2/api-key/{api_key_id}/rotate-secret"]
+    },
+    {
+      "id": "api.api-keys.rotate",
+      "level": "api",
+      "methodNames": ["permit.api.apiKeys.rotate"],
+      "operationKeys": ["control-plane POST /v2/api-key/{api_key_id}/rotate-secret"]
+    },
+    {
+      "id": "wire.api.auditLogs.list.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.auditLogs.list"],
+      "operationKeys": ["control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs"]
+    },
+    {
+      "id": "wire.api.auditLogs.list.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.auditLogs.list"],
+      "operationKeys": ["control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs"]
+    },
+    {
+      "id": "api.audit-logs-ingestion-list",
+      "level": "api",
+      "methodNames": ["permit.api.auditLogs.list"],
+      "operationKeys": ["control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs"]
+    },
+    {
+      "id": "wire.api.auditLogs.get.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.auditLogs.get"],
+      "operationKeys": ["control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs/{log_id}"]
+    },
+    {
+      "id": "wire.api.auditLogs.get.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.auditLogs.get"],
+      "operationKeys": ["control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs/{log_id}"]
+    },
+    {
+      "id": "api.audit-logs-ingestion-detail",
+      "level": "api",
+      "methodNames": ["permit.api.auditLogs.get"],
+      "operationKeys": ["control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs/{log_id}"]
+    },
+    {
+      "id": "cloud.check",
+      "level": "pdp",
+      "methodNames": ["permit.check"],
+      "operationKeys": ["pdp-cloud POST /allowed"]
+    },
+    {
+      "id": "cloud.bulkCheck",
+      "level": "pdp",
+      "methodNames": ["permit.bulkCheck"],
+      "operationKeys": ["pdp-cloud POST /allowed/bulk"]
+    },
+    {
+      "id": "cloud.getAuthorizedUsers",
+      "level": "pdp",
+      "methodNames": ["permit.getAuthorizedUsers"],
+      "operationKeys": ["pdp-cloud POST /authorized_users"]
+    },
+    {
+      "id": "cloud.getUserPermissions",
+      "level": "pdp",
+      "methodNames": ["permit.getUserPermissions"],
+      "operationKeys": ["pdp-cloud POST /user-permissions"]
+    },
+    {
+      "id": "wire.api.users.inline-roles.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.users.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/users"]
+    },
+    {
+      "id": "wire.api.users.inline-roles.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.users.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/users"]
+    },
+    {
+      "id": "api.users.inline-roles-persisted",
+      "level": "api",
+      "methodNames": ["permit.api.users.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/users"]
+    },
+    {
+      "id": "wire.api.environments.copyAsync.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.copyAsync"],
+      "operationKeys": ["control-plane POST /v2/projects/{proj_id}/envs/{env_id}/copy/async"]
+    },
+    {
+      "id": "wire.api.environments.copyAsync.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.copyAsync"],
+      "operationKeys": ["control-plane POST /v2/projects/{proj_id}/envs/{env_id}/copy/async"]
+    },
+    {
+      "id": "wire.api.environments.getCopyResult.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.getCopyResult"],
+      "operationKeys": [
+        "control-plane GET /v2/projects/{proj_id}/envs/{env_id}/copy/async/{task_id}/result"
+      ]
+    },
+    {
+      "id": "wire.api.environments.getCopyResult.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.environments.getCopyResult"],
+      "operationKeys": [
+        "control-plane GET /v2/projects/{proj_id}/envs/{env_id}/copy/async/{task_id}/result"
+      ]
+    },
+    {
+      "id": "api.async-copy.new-target",
+      "level": "api",
+      "methodNames": ["permit.api.environments.copyAsync", "permit.api.environments.getCopyResult"],
+      "operationKeys": [
+        "control-plane POST /v2/projects/{proj_id}/envs/{env_id}/copy/async",
+        "control-plane GET /v2/projects/{proj_id}/envs/{env_id}/copy/async/{task_id}/result"
+      ]
+    },
+    {
+      "id": "api.async-copy.existing-target",
+      "level": "api",
+      "methodNames": ["permit.api.environments.copyAsync", "permit.api.environments.getCopyResult"],
+      "operationKeys": [
+        "control-plane POST /v2/projects/{proj_id}/envs/{env_id}/copy/async",
+        "control-plane GET /v2/projects/{proj_id}/envs/{env_id}/copy/async/{task_id}/result"
+      ]
+    }
+  ],
+  "abCaseIds": [
+    "ab.users.create-get-update",
+    "ab.users.list-normalized",
+    "ab.users.sync-normalized",
+    "ab.resource-instance-roundtrip",
+    "ab.check.allow-deny",
+    "ab.bulk-check-order-context"
+  ],
+  "intentionalDifferences": [
+    {
+      "id": "migration.flat-facade",
+      "changeId": "A1"
+    },
+    {
+      "id": "migration.flat-symbols-context-alias",
+      "changeId": "A2"
+    },
+    {
+      "id": "migration.facade-return-adaptations",
+      "changeId": "A3"
+    },
+    {
+      "id": "migration.configuration-validation",
+      "changeId": "F1"
+    },
+    {
+      "id": "migration.frozen-settings",
+      "changeId": "F2"
+    },
+    {
+      "id": "migration.sanitized-errors",
+      "changeId": "E2"
+    },
+    {
+      "id": "migration.strict-decisions",
+      "changeId": "W1"
+    },
+    {
+      "id": "migration.opa-json-input",
+      "changeId": "W2"
+    },
+    {
+      "id": "migration.all-tenants-fix",
+      "changeId": "W3"
+    },
+    {
+      "id": "migration.caller-axios-fix",
+      "changeId": "W5"
+    }
+  ],
+  "baseline": {
+    "version": "2.7.5",
+    "sha256": "917640ce20af73b9df1f93d6bf054c47a2beea2a03256317104128fe8cbc1661",
+    "integrity": "sha512-9HtUR6zkzyFTEYeM8AytKYIKyQfERy3zjjP4rvhnMwEn+Jaru5knZlBO2HdOXy9ohqmDI1n9Hhn2eV6R10n4dw=="
+  },
+  "phaseIds": [
+    "package.esm-and-commonjs",
+    "package.typescript-consumers",
+    "package.mixed-entry-contexts",
+    "package.mixed-entry-error-privacy",
+    "wire.mixed-axios.esm.esm.rest",
+    "wire.mixed-axios.esm.esm.opa",
+    "wire.mixed-axios.esm.commonjs.rest",
+    "wire.mixed-axios.esm.commonjs.opa",
+    "wire.mixed-axios.commonjs.esm.rest",
+    "wire.mixed-axios.commonjs.esm.opa",
+    "wire.mixed-axios.commonjs.commonjs.rest",
+    "wire.mixed-axios.commonjs.commonjs.opa",
+    "package.grouped-public-surface.esm",
+    "wire.condition-set-lists.esm",
+    "wire.condition-rule-lists.esm",
+    "package.grouped-public-surface.commonjs",
+    "wire.condition-set-lists.commonjs",
+    "wire.condition-rule-lists.commonjs",
+    "commonjs.mock-pdp.permission-context-contract",
+    "commonjs.mock-pdp.authorized-users-contract",
+    "commonjs.mock-pdp.user-tenants-contract",
+    "commonjs.mock-pdp.filter-object-identity-and-context",
+    "commonjs.mock-pdp.discovery-input-and-capability-errors",
+    "commonjs.mock-pdp.discovery-whole-response-validation",
+    "commonjs.mock-pdp.discovery-operational-failures",
+    "commonjs.mock-pdp.discovery-call-timeouts",
+    "wire.groups-contracts",
+    "wire.tenant-membership-contract",
+    "wire.dedicated-detailed-lists",
+    "wire.environment-refresh-contract",
+    "wire.detailed-api-selected-context",
+    "wire.membership-refresh-control-plane",
+    "mock-pdp.permission-context-contract",
+    "mock-pdp.authorized-users-contract",
+    "mock-pdp.user-tenants-contract",
+    "mock-pdp.filter-object-identity-and-context",
+    "mock-pdp.discovery-input-and-capability-errors",
+    "mock-pdp.discovery-whole-response-validation",
+    "mock-pdp.discovery-operational-failures",
+    "mock-pdp.discovery-call-timeouts",
+    "wire.api-crud",
+    "wire.pagination-and-scope",
+    "wire.configured-api-destinations",
+    "wire.list-response-contracts",
+    "wire.role-filter-contracts",
+    "mock-pdp.decisions-and-context",
+    "mock-pdp.bulk-and-empty",
+    "mock-pdp.all-tenants-and-permissions",
+    "mock-pdp.errors",
+    "mock-pdp.boolean-decisions",
+    "mock-pdp.bulk-response-cardinality",
+    "mock-pdp.dispatched-bulk-count",
+    "mock-pdp.permission-envelopes",
+    "mock-pdp.documented-response-defaults",
+    "mock-pdp.per-call-response-policy",
+    "mock-pdp.malformed-permissions",
+    "mock-pdp.malformed-tenants",
+    "wire.caller-client-hooks-and-defaults",
+    "wire.caller-basic-auth-isolation",
+    "wire.caller-transform-preservation",
+    "mock-pdp.shared-opa-routing",
+    "wire.non-idempotent-retry-restrictions",
+    "mock-pdp.retry-timeout-budget",
+    "wire.shared-client-retry-isolation",
+    "wire.constructor-validation",
+    "wire.stable-sdk-settings",
+    "wire.concurrent-scope-initialization",
+    "wire.failed-scope-recovery",
+    "wire.malformed-scope-rejection",
+    "wire.pending-context-selection",
+    "wire.nested-settings-ownership",
+    "wire.uninitialized-context-token-isolation",
+    "wire.supplied-context-ownership",
+    "package.caller-failure-privacy",
+    "wire.escaped-error-privacy",
+    "wire.deep-error-privacy",
+    "wire.credential-path-privacy",
+    "wire.rest-error-normalization",
+    "wire.rest-network-error",
+    "wire.rest-private-diagnostics",
+    "package.direct-error-causes",
+    "wire.scope-error-diagnostics",
+    "mock-pdp.private-error-diagnostics",
+    "mock-pdp.opa-private-error-diagnostics",
+    "wire.retry-safety",
+    "api.core-roundtrip",
+    "api.condition-set-roundtrip",
+    "api.resource-children",
+    "api.project-environment-context",
+    "pdp.rbac-grant-and-tenant-boundary",
+    "pdp.rbac-revoke",
+    "pdp.resource-role",
+    "pdp.opa",
+    "pdp.abac-generated-policy",
+    "pdp.groups-grants-and-membership",
+    "api.tenant-membership-without-role",
+    "api.dedicated-detailed-nested-lists",
+    "api.environment-refresh-acknowledgement",
+    "api.pdp-discovery-owned-fixtures",
+    "pdp.authorized-users-and-role-derived-tenants",
+    "pdp.discovery-context-abac",
+    "pdp.filter-objects-and-discovery-revoke",
+    "release.wire.observed.esm",
+    "release.wire.observed.commonjs",
+    "release.package.clone-helpers",
+    "release.api.legal-attributes",
+    "release.api.shared-baseline",
+    "release.pdp.shared-baseline",
+    "release.wire.enforcement.esm",
+    "release.wire.enforcement.commonjs",
+    "release.wire.grouped.esm",
+    "release.wire.grouped.commonjs",
+    "release.package.grouped.esm",
+    "release.package.grouped.commonjs",
+    "wire.user-invites.esm",
+    "wire.user-invites.commonjs",
+    "api.user-invites-lifecycle",
+    "api.user-invites-refusals",
+    "wire.user-attributes.esm",
+    "wire.user-attributes.commonjs",
+    "api.user-attributes-lifecycle",
+    "api.user-attributes-access",
+    "wire.bulk-roles.esm",
+    "wire.bulk-roles.commonjs",
+    "api.bulk-roles-lifecycle",
+    "api.bulk-roles-context-refusal",
+    "commonjs.mock-pdp.url-check-contract",
+    "commonjs.mock-pdp.url-check-inputs",
+    "commonjs.mock-pdp.url-check-errors",
+    "mock-pdp.url-check-contract",
+    "mock-pdp.url-check-inputs",
+    "mock-pdp.url-check-errors",
+    "api.url-check-owned-fixtures",
+    "pdp.url-check-mapped-allow-and-deny",
+    "pdp.url-check-mapping-removal",
+    "wire.local-role-assignments-contract",
+    "mock-pdp.local-role-assignments-invalid",
+    "mock-pdp.local-role-assignments-errors",
+    "commonjs.wire.local-role-assignments-contract",
+    "commonjs.mock-pdp.local-role-assignments-invalid",
+    "commonjs.mock-pdp.local-role-assignments-errors",
+    "api.local-role-assignments-owned-fixtures",
+    "pdp.local-role-assignments-filters-pagination",
+    "pdp.local-role-assignments-removal",
+    "wire.proxy-configs.esm",
+    "wire.proxy-configs.commonjs",
+    "api.proxy-configs-owned-fixtures",
+    "api.proxy-configs-lifecycle",
+    "wire.api-keys.esm",
+    "wire.api-keys.commonjs",
+    "api.api-keys-lifecycle",
+    "wire.audit-logs.esm",
+    "wire.audit-logs.commonjs",
+    "api.audit-logs-owned-fixtures",
+    "pdp.audit-logs-decisions",
+    "api.audit-logs-ingestion-list",
+    "api.audit-logs-ingestion-detail",
+    "wire.inline-roles.esm",
+    "wire.inline-roles.commonjs",
+    "api.inline-role-owned-fixtures",
+    "api.users.inline-roles-persisted",
+    "wire.async-copy.esm",
+    "wire.async-copy.commonjs",
+    "api.async-copy-owned-fixtures",
+    "api.async-copy.new-target",
+    "api.async-copy.existing-target"
+  ],
+  "runIds": [
+    "candidate.local.node22.13.0",
+    "candidate.offline.node22.13.0",
+    "baseline.local.node22.13.0",
+    "baseline.offline.node22.13.0",
+    "candidate.local.node22.23.3",
+    "candidate.offline.node22.23.3",
+    "baseline.local.node22.23.3",
+    "baseline.offline.node22.23.3",
+    "candidate.local.node24.0.0",
+    "candidate.offline.node24.0.0",
+    "baseline.local.node24.0.0",
+    "baseline.offline.node24.0.0",
+    "candidate.local.node24.21.0",
+    "candidate.offline.node24.21.0",
+    "baseline.local.node24.21.0",
+    "baseline.offline.node24.21.0",
+    "candidate.local.node26.11.0",
+    "candidate.offline.node26.11.0",
+    "baseline.local.node26.11.0",
+    "baseline.offline.node26.11.0"
+  ],
+  "cloud": {
+    "origin": "https://cloudpdp.api.permit.io",
+    "contractSha256": "8fb3ad79b93679b24ddd90596e17b7f6baa6b662e2c09a96f1a3ffc938292a29",
+    "caseIds": [
+      "cloud.check",
+      "cloud.bulkCheck",
+      "cloud.getAuthorizedUsers",
+      "cloud.getUserPermissions"
+    ],
+    "phaseIds": [
+      "cloud.check",
+      "cloud.bulkCheck",
+      "cloud.getAuthorizedUsers",
+      "cloud.getUserPermissions"
+    ],
+    "runIds": [
+      "candidate.cloud.node22.13.0",
+      "candidate.cloud.node22.23.3",
+      "candidate.cloud.node24.0.0",
+      "candidate.cloud.node24.21.0",
+      "candidate.cloud.node26.11.0"
+    ]
+  }
+}

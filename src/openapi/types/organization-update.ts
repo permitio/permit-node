@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface OrganizationUpdate
- */
 export interface OrganizationUpdate {
   /**
    * The name of the organization, usually it\'s your company\'s name.
-   * @type {string}
-   * @memberof OrganizationUpdate
    */
   name?: string;
   /**
    * the settings for this project
-   * @type {object}
-   * @memberof OrganizationUpdate
    */
   settings?: object;
 }

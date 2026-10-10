@@ -1,0 +1,11 @@
+{
+  "name": "@permitio/compiler-tools",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": "./index.mjs",
+  "dependencies": {
+    "typedoc": "0.28.20",
+    "typescript": "6.0.3"
+  }
+}

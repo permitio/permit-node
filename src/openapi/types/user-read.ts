@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,95 +11,58 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { UserInTenant } from './user-in-tenant';
+import type { UserInTenant } from './user-in-tenant';
 // May contain unused imports in some cases
-// @ts-ignore
-import { UserRole } from './user-role';
+import type { UserRole } from './user-role';
 
-/**
- *
- * @export
- * @interface UserRead
- */
 export interface UserRead {
   /**
    * A unique id by which Permit will identify the user for permission checks.
-   * @type {string}
-   * @memberof UserRead
    */
   key: string;
   /**
    * Unique id of the user
-   * @type {string}
-   * @memberof UserRead
    */
   id: string;
   /**
    * Unique id of the organization that the user belongs to.
-   * @type {string}
-   * @memberof UserRead
    */
   organization_id: string;
   /**
    * Unique id of the project that the user belongs to.
-   * @type {string}
-   * @memberof UserRead
    */
   project_id: string;
   /**
    * Unique id of the environment that the user belongs to.
-   * @type {string}
-   * @memberof UserRead
    */
   environment_id: string;
-  /**
-   *
-   * @type {Array<UserInTenant>}
-   * @memberof UserRead
-   */
   associated_tenants?: Array<UserInTenant>;
   /**
-   *
-   * @type {Array<UserRole>}
-   * @memberof UserRead
    * @deprecated
    */
   roles?: Array<UserRole>;
   /**
+   * Date and time when the user was created (ISO_8601 format).
+   */
+  created_at: string;
+  /**
+   * Date and time when the user was last updated/modified (ISO_8601 format).
+   */
+  updated_at: string;
+  /**
    * The email of the user. If synced, will be unique inside the environment.
-   * @type {string}
-   * @memberof UserRead
    */
   email?: string;
   /**
    * First name of the user.
-   * @type {string}
-   * @memberof UserRead
    */
   first_name?: string;
   /**
    * Last name of the user.
-   * @type {string}
-   * @memberof UserRead
    */
   last_name?: string;
   /**
    * Arbitrary user attributes that will be used to enforce attribute-based access control policies.
-   * @type {object}
-   * @memberof UserRead
    */
   attributes?: object;
-  /**
-   * The date the user was created.
-   * @type {string}
-   * @memberof UserRead
-   */
-  created_at: string;
-  /**
-   * The date the user was last updated.
-   * @type {string}
-   * @memberof UserRead
-   */
-  updated_at: string;
 }

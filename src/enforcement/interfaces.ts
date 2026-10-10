@@ -1,11 +1,20 @@
-import { Context } from '../utils/context';
-import { Dict } from '../utils/dict';
+import { type Context } from '#src/utils/context';
+import { type Dict } from '#src/utils/dict';
 
 export interface ICheckInput {
   user: IUser;
   action: IAction;
   resource: IResource;
   context?: Context;
+}
+
+/** The published container PDP URL authorization request. */
+export interface ICheckUrlInput {
+  user: IUser;
+  http_method: string;
+  url: string;
+  tenant: string;
+  context: Context;
 }
 
 export interface ICheckOpaInput {
@@ -90,6 +99,56 @@ export interface IResource {
   attributes?: Dict;
 }
 
+/** An object to filter, with request context that overrides the shared call context. */
+export interface IFilterObject extends IResource {
+  context?: Context;
+}
+
+/** Filters one page of role assignments cached by a compatible container PDP. */
+export interface ILocalRoleAssignmentsQuery {
+  /** User key; omission leaves users unfiltered. */
+  user?: string;
+  /** Role key; omission leaves roles unfiltered. */
+  role?: string;
+  /** Tenant key; omission does not select the configured default tenant. */
+  tenant?: string;
+  /** Resource type key. */
+  resource?: string;
+  /** Resource type:key identifier, forwarded unchanged. */
+  resourceInstance?: string;
+  /** Positive safe integer; defaults to 1. */
+  page?: number;
+  /** Page size from 1 through 100; defaults to 30. */
+  perPage?: number;
+}
+
+/** A local PDP assignment with keys, distinct from a control-plane assignment with IDs. */
+export interface ILocalRoleAssignment {
+  user: string;
+  role: string;
+  tenant: string;
+  /** Resource type:key identifier; absence and explicit null are preserved. */
+  resource_instance?: string | null;
+  [id: string]: unknown;
+}
+
+/** A role assignment explaining a user's access to a resource. */
+export interface IAuthorizedUserAssignment {
+  user: string;
+  tenant: string;
+  resource: string;
+  role: string;
+  [id: string]: unknown;
+}
+
+/** The complete authorized-user result, including arbitrary user-key dictionary entries. */
+export interface IAuthorizedUsersResult {
+  resource: string;
+  tenant: string;
+  users: Record<string, IAuthorizedUserAssignment[]>;
+  [id: string]: unknown;
+}
+
 /**
  * Represents the bulk decision made by a policy.
  */
@@ -138,11 +197,12 @@ export interface TenantDetails {
 }
 
 export interface AllTenantsCheckResponse {
+  allow: true;
   tenant: TenantDetails;
 }
 
 export interface AllTenantsResponse {
-  allowedTenants: AllTenantsCheckResponse[];
+  allowed_tenants: AllTenantsCheckResponse[];
 }
 
 interface TenantPermissions {
@@ -177,8 +237,4 @@ export interface GetUserPermissionsResult {
 
 export interface OpaGetUserPermissionsResult {
   result: GetUserPermissionsResult;
-}
-
-export function isOpaGetUserPermissionsResult(obj: any): obj is OpaGetUserPermissionsResult {
-  return 'result' in obj;
 }

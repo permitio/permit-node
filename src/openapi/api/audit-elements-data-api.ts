@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,31 +10,21 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PaginatedResultAuditLog } from '../types';
+import type { Configuration } from '../configuration';
+import type { LimitedPaginatedResultAuditLogModel } from '../types';
 /**
  * AuditElementsDataApi - axios parameter creator
- * @export
  */
 export const AuditElementsDataApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -50,7 +38,7 @@ export const AuditElementsDataApiAxiosParamCreator = function (configuration?: C
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     elementsListAuditLogs: async (
       projId: string,
@@ -59,7 +47,7 @@ export const AuditElementsDataApiAxiosParamCreator = function (configuration?: C
       search?: string,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('elementsListAuditLogs', 'projId', projId);
@@ -69,9 +57,9 @@ export const AuditElementsDataApiAxiosParamCreator = function (configuration?: C
       assertParamExists('elementsListAuditLogs', 'elementsConfigId', elementsConfigId);
       const localVarPath =
         `/v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/audit_logs`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'elements_config_id'}}`, encodeURIComponent(String(elementsConfigId)));
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)))
+          .replace('{elements_config_id}', encodeURIComponent(String(elementsConfigId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -99,6 +87,8 @@ export const AuditElementsDataApiAxiosParamCreator = function (configuration?: C
         localVarQueryParameter['per_page'] = perPage;
       }
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -117,7 +107,6 @@ export const AuditElementsDataApiAxiosParamCreator = function (configuration?: C
 
 /**
  * AuditElementsDataApi - functional programming interface
- * @export
  */
 export const AuditElementsDataApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = AuditElementsDataApiAxiosParamCreator(configuration);
@@ -132,7 +121,7 @@ export const AuditElementsDataApiFp = function (configuration?: Configuration) {
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async elementsListAuditLogs(
       projId: string,
@@ -141,9 +130,12 @@ export const AuditElementsDataApiFp = function (configuration?: Configuration) {
       search?: string,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResultAuditLog>
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<LimitedPaginatedResultAuditLogModel>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.elementsListAuditLogs(
         projId,
@@ -154,14 +146,24 @@ export const AuditElementsDataApiFp = function (configuration?: Configuration) {
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['AuditElementsDataApi.elementsListAuditLogs']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
 
 /**
  * AuditElementsDataApi - factory interface
- * @export
  */
 export const AuditElementsDataApiFactory = function (
   configuration?: Configuration,
@@ -173,26 +175,24 @@ export const AuditElementsDataApiFactory = function (
     /**
      * Lists audit logs for for specific elements config (tenant scope)
      * @summary List audit logs
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
-     * @param {string} [search] Text search for the email field
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {AuditElementsDataApiElementsListAuditLogsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     elementsListAuditLogs(
-      projId: string,
-      envId: string,
-      elementsConfigId: string,
-      search?: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
-    ): AxiosPromise<PaginatedResultAuditLog> {
+      requestParameters: AuditElementsDataApiElementsListAuditLogsRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<LimitedPaginatedResultAuditLogModel> {
       return localVarFp
-        .elementsListAuditLogs(projId, envId, elementsConfigId, search, page, perPage, options)
+        .elementsListAuditLogs(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.elementsConfigId,
+          requestParameters.search,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
@@ -200,58 +200,41 @@ export const AuditElementsDataApiFactory = function (
 
 /**
  * Request parameters for elementsListAuditLogs operation in AuditElementsDataApi.
- * @export
- * @interface AuditElementsDataApiElementsListAuditLogsRequest
  */
 export interface AuditElementsDataApiElementsListAuditLogsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof AuditElementsDataApiElementsListAuditLogs
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof AuditElementsDataApiElementsListAuditLogs
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof AuditElementsDataApiElementsListAuditLogs
    */
   readonly elementsConfigId: string;
 
   /**
    * Text search for the email field
-   * @type {string}
-   * @memberof AuditElementsDataApiElementsListAuditLogs
    */
   readonly search?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof AuditElementsDataApiElementsListAuditLogs
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
-   * @memberof AuditElementsDataApiElementsListAuditLogs
    */
   readonly perPage?: number;
 }
 
 /**
  * AuditElementsDataApi - object-oriented interface
- * @export
- * @class AuditElementsDataApi
- * @extends {BaseAPI}
  */
 export class AuditElementsDataApi extends BaseAPI {
   /**
@@ -259,12 +242,11 @@ export class AuditElementsDataApi extends BaseAPI {
    * @summary List audit logs
    * @param {AuditElementsDataApiElementsListAuditLogsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof AuditElementsDataApi
+   * @throws If a required parameter is missing.
    */
   public elementsListAuditLogs(
     requestParameters: AuditElementsDataApiElementsListAuditLogsRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return AuditElementsDataApiFp(this.configuration)
       .elementsListAuditLogs(

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,76 +11,19 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { OPALHttpFetcherConfig } from './opalhttp-fetcher-config';
+import type { OPALHttpFetcherConfig } from './opalhttp-fetcher-config';
 // May contain unused imports in some cases
-// @ts-ignore
-import { OPALUpdateCallback } from './opalupdate-callback';
+import type { OPALUpdateCallback } from './opalupdate-callback';
 
-/**
- *
- * @export
- * @interface OPALClient
- */
 export interface OPALClient {
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof OPALClient
-   */
   DATA_TOPICS: Array<string>;
-  /**
-   *
-   * @type {string}
-   * @memberof OPALClient
-   */
   CLIENT_TOKEN: string;
-  /**
-   *
-   * @type {string}
-   * @memberof OPALClient
-   */
   SERVER_URL: string;
-  /**
-   *
-   * @type {string}
-   * @memberof OPALClient
-   */
   SERVER_WS_URL: string;
-  /**
-   *
-   * @type {string}
-   * @memberof OPALClient
-   */
   SERVER_PUBSUB_URL: string;
-  /**
-   *
-   * @type {string}
-   * @memberof OPALClient
-   */
   DEFAULT_DATA_SOURCES_CONFIG_URL: string;
-  /**
-   *
-   * @type {string}
-   * @memberof OPALClient
-   */
   SCOPE_ID?: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof OPALClient
-   */
   SHOULD_REPORT_ON_DATA_UPDATES?: boolean;
-  /**
-   *
-   * @type {OPALUpdateCallback}
-   * @memberof OPALClient
-   */
   DEFAULT_UPDATE_CALLBACKS?: OPALUpdateCallback;
-  /**
-   *
-   * @type {OPALHttpFetcherConfig}
-   * @memberof OPALClient
-   */
   DEFAULT_UPDATE_CALLBACK_CONFIG?: OPALHttpFetcherConfig;
 }

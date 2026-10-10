@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,16 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface JwksObj
- */
 export interface JwksObj {
   /**
    * The keys to match against the request headers
-   * @type {Array<object>}
-   * @memberof JwksObj
    */
   keys: Array<object>;
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,28 +10,20 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface ResourceActionUpdate
- */
 export interface ResourceActionUpdate {
   /**
    * The name of the action
-   * @type {string}
-   * @memberof ResourceActionUpdate
    */
   name?: string;
   /**
    * An optional longer description of what this action respresents in your system
-   * @type {string}
-   * @memberof ResourceActionUpdate
    */
   description?: string;
   /**
    * optional dictionary of key-value pairs that can be used to store arbitrary metadata about this action. This metadata can be used to filter actions using query parameters with attr_ prefix
-   * @type {object}
-   * @memberof ResourceActionUpdate
    */
   attributes?: object;
+  v1compat_path?: string;
+  v1compat_is_built_in?: boolean;
+  v1compat_name?: string;
 }

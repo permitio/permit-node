@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,22 +10,7 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface FailedInvite
- */
 export interface FailedInvite {
-  /**
-   *
-   * @type {string}
-   * @memberof FailedInvite
-   */
   email: string;
-  /**
-   *
-   * @type {string}
-   * @memberof FailedInvite
-   */
   reason: string;
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,35 +10,22 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PolicyRepoCreate } from '../types';
-// @ts-ignore
-import { PolicyRepoRead } from '../types';
-// @ts-ignore
-import { ProjectRead } from '../types';
+import type { Configuration } from '../configuration';
+import type { PolicyRepoCreate, PolicyRepoRead, ProjectRead } from '../types';
 /**
  * PolicyGitRepositoriesApi - axios parameter creator
- * @export
  */
 export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -50,20 +35,20 @@ export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} repoId Either the unique id of the policy repo, or the URL-friendly key of the policy repo (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     activatePolicyRepo: async (
       projId: string,
       repoId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('activatePolicyRepo', 'projId', projId);
       // verify required parameter 'repoId' is not null or undefined
       assertParamExists('activatePolicyRepo', 'repoId', repoId);
       const localVarPath = `/v2/projects/{proj_id}/repos/{repo_id}/activate`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'repo_id'}}`, encodeURIComponent(String(repoId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{repo_id}', encodeURIComponent(String(repoId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -78,6 +63,8 @@ export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -98,19 +85,19 @@ export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {PolicyRepoCreate} policyRepoCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createPolicyRepo: async (
       projId: string,
       policyRepoCreate: PolicyRepoCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('createPolicyRepo', 'projId', projId);
       // verify required parameter 'policyRepoCreate' is not null or undefined
       assertParamExists('createPolicyRepo', 'policyRepoCreate', policyRepoCreate);
       const localVarPath = `/v2/projects/{proj_id}/repos`.replace(
-        `{${'proj_id'}}`,
+        '{proj_id}',
         encodeURIComponent(String(projId)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -129,6 +116,7 @@ export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -154,20 +142,20 @@ export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} repoId Either the unique id of the policy repo, or the URL-friendly key of the policy repo (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deletePolicyRepo: async (
       projId: string,
       repoId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('deletePolicyRepo', 'projId', projId);
       // verify required parameter 'repoId' is not null or undefined
       assertParamExists('deletePolicyRepo', 'repoId', repoId);
       const localVarPath = `/v2/projects/{proj_id}/repos/{repo_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'repo_id'}}`, encodeURIComponent(String(repoId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{repo_id}', encodeURIComponent(String(repoId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -182,6 +170,8 @@ export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -201,16 +191,16 @@ export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration
      * @summary Disable Active Policy Repo
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     disableActivePolicyRepo: async (
       projId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('disableActivePolicyRepo', 'projId', projId);
       const localVarPath = `/v2/projects/{proj_id}/repos/disable`.replace(
-        `{${'proj_id'}}`,
+        '{proj_id}',
         encodeURIComponent(String(projId)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -227,6 +217,8 @@ export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -246,16 +238,16 @@ export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration
      * @summary Get Active Policy Repo
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getActivePolicyRepo: async (
       projId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('getActivePolicyRepo', 'projId', projId);
       const localVarPath = `/v2/projects/{proj_id}/repos/active`.replace(
-        `{${'proj_id'}}`,
+        '{proj_id}',
         encodeURIComponent(String(projId)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -272,6 +264,8 @@ export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -292,20 +286,20 @@ export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} repoId Either the unique id of the policy repo, or the URL-friendly key of the policy repo (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getPolicyRepo: async (
       projId: string,
       repoId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('getPolicyRepo', 'projId', projId);
       // verify required parameter 'repoId' is not null or undefined
       assertParamExists('getPolicyRepo', 'repoId', repoId);
       const localVarPath = `/v2/projects/{proj_id}/repos/{repo_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'repo_id'}}`, encodeURIComponent(String(repoId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{repo_id}', encodeURIComponent(String(repoId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -320,6 +314,8 @@ export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -341,18 +337,18 @@ export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listPolicyRepos: async (
       projId: string,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('listPolicyRepos', 'projId', projId);
       const localVarPath = `/v2/projects/{proj_id}/repos`.replace(
-        `{${'proj_id'}}`,
+        '{proj_id}',
         encodeURIComponent(String(projId)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -378,6 +374,8 @@ export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration
         localVarQueryParameter['per_page'] = perPage;
       }
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -396,7 +394,6 @@ export const PolicyGitRepositoriesApiAxiosParamCreator = function (configuration
 
 /**
  * PolicyGitRepositoriesApi - functional programming interface
- * @export
  */
 export const PolicyGitRepositoriesApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = PolicyGitRepositoriesApiAxiosParamCreator(configuration);
@@ -407,19 +404,30 @@ export const PolicyGitRepositoriesApiFp = function (configuration?: Configuratio
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} repoId Either the unique id of the policy repo, or the URL-friendly key of the policy repo (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async activatePolicyRepo(
       projId: string,
       repoId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.activatePolicyRepo(
         projId,
         repoId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PolicyGitRepositoriesApi.activatePolicyRepo']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Creates a new policy repository configuration under a given project. The given repository is created with status \'pending\', it will be changed and used as the \'active\' repository for the policy only after a successful attempt to use it. The repository main branch must be present in the remote.
@@ -427,19 +435,30 @@ export const PolicyGitRepositoriesApiFp = function (configuration?: Configuratio
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {PolicyRepoCreate} policyRepoCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async createPolicyRepo(
       projId: string,
       policyRepoCreate: PolicyRepoCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRepoRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicyRepo(
         projId,
         policyRepoCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PolicyGitRepositoriesApi.createPolicyRepo']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Deletes an environment and all its related data.
@@ -447,53 +466,86 @@ export const PolicyGitRepositoriesApiFp = function (configuration?: Configuratio
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} repoId Either the unique id of the policy repo, or the URL-friendly key of the policy repo (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deletePolicyRepo(
       projId: string,
       repoId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deletePolicyRepo(
         projId,
         repoId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PolicyGitRepositoriesApi.deletePolicyRepo']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Disable the currently active policy repo, this action means to turn off the gitops feature. If there is no active policy repo, this action will do nothing.
      * @summary Disable Active Policy Repo
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async disableActivePolicyRepo(
       projId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.disableActivePolicyRepo(
         projId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PolicyGitRepositoriesApi.disableActivePolicyRepo']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Gets the currently active repository, if such repository exists.
      * @summary Get Active Policy Repo
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getActivePolicyRepo(
       projId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRepoRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getActivePolicyRepo(
         projId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PolicyGitRepositoriesApi.getActivePolicyRepo']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Gets a single repository matching the given repo_id, if such repository exists.
@@ -501,19 +553,29 @@ export const PolicyGitRepositoriesApiFp = function (configuration?: Configuratio
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} repoId Either the unique id of the policy repo, or the URL-friendly key of the policy repo (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getPolicyRepo(
       projId: string,
       repoId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRepoRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyRepo(
         projId,
         repoId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PolicyGitRepositoriesApi.getPolicyRepo']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists all the policy repositories under a given project.
@@ -522,13 +584,13 @@ export const PolicyGitRepositoriesApiFp = function (configuration?: Configuratio
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listPolicyRepos(
       projId: string,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PolicyRepoRead>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listPolicyRepos(
         projId,
@@ -536,14 +598,24 @@ export const PolicyGitRepositoriesApiFp = function (configuration?: Configuratio
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PolicyGitRepositoriesApi.listPolicyRepos']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
 
 /**
  * PolicyGitRepositoriesApi - factory interface
- * @export
  */
 export const PolicyGitRepositoriesApiFactory = function (
   configuration?: Configuration,
@@ -555,100 +627,111 @@ export const PolicyGitRepositoriesApiFactory = function (
     /**
      * Disable the currently active policy repo, this action means to turn off the gitops feature. If there is no active policy repo, this action will do nothing.
      * @summary Activate Policy Repo
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} repoId Either the unique id of the policy repo, or the URL-friendly key of the policy repo (i.e: the \&quot;slug\&quot;).
+     * @param {PolicyGitRepositoriesApiActivatePolicyRepoRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    activatePolicyRepo(projId: string, repoId: string, options?: any): AxiosPromise<ProjectRead> {
+    activatePolicyRepo(
+      requestParameters: PolicyGitRepositoriesApiActivatePolicyRepoRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ProjectRead> {
       return localVarFp
-        .activatePolicyRepo(projId, repoId, options)
+        .activatePolicyRepo(requestParameters.projId, requestParameters.repoId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Creates a new policy repository configuration under a given project. The given repository is created with status \'pending\', it will be changed and used as the \'active\' repository for the policy only after a successful attempt to use it. The repository main branch must be present in the remote.
      * @summary Create Policy Repo
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {PolicyRepoCreate} policyRepoCreate
+     * @param {PolicyGitRepositoriesApiCreatePolicyRepoRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createPolicyRepo(
-      projId: string,
-      policyRepoCreate: PolicyRepoCreate,
-      options?: any,
+      requestParameters: PolicyGitRepositoriesApiCreatePolicyRepoRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<PolicyRepoRead> {
       return localVarFp
-        .createPolicyRepo(projId, policyRepoCreate, options)
+        .createPolicyRepo(requestParameters.projId, requestParameters.policyRepoCreate, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes an environment and all its related data.
      * @summary Delete Policy Repo
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} repoId Either the unique id of the policy repo, or the URL-friendly key of the policy repo (i.e: the \&quot;slug\&quot;).
+     * @param {PolicyGitRepositoriesApiDeletePolicyRepoRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    deletePolicyRepo(projId: string, repoId: string, options?: any): AxiosPromise<void> {
+    deletePolicyRepo(
+      requestParameters: PolicyGitRepositoriesApiDeletePolicyRepoRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<void> {
       return localVarFp
-        .deletePolicyRepo(projId, repoId, options)
+        .deletePolicyRepo(requestParameters.projId, requestParameters.repoId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Disable the currently active policy repo, this action means to turn off the gitops feature. If there is no active policy repo, this action will do nothing.
      * @summary Disable Active Policy Repo
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {PolicyGitRepositoriesApiDisableActivePolicyRepoRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    disableActivePolicyRepo(projId: string, options?: any): AxiosPromise<ProjectRead> {
+    disableActivePolicyRepo(
+      requestParameters: PolicyGitRepositoriesApiDisableActivePolicyRepoRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ProjectRead> {
       return localVarFp
-        .disableActivePolicyRepo(projId, options)
+        .disableActivePolicyRepo(requestParameters.projId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Gets the currently active repository, if such repository exists.
      * @summary Get Active Policy Repo
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {PolicyGitRepositoriesApiGetActivePolicyRepoRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    getActivePolicyRepo(projId: string, options?: any): AxiosPromise<PolicyRepoRead> {
+    getActivePolicyRepo(
+      requestParameters: PolicyGitRepositoriesApiGetActivePolicyRepoRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PolicyRepoRead> {
       return localVarFp
-        .getActivePolicyRepo(projId, options)
+        .getActivePolicyRepo(requestParameters.projId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Gets a single repository matching the given repo_id, if such repository exists.
      * @summary Get Policy Repo
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} repoId Either the unique id of the policy repo, or the URL-friendly key of the policy repo (i.e: the \&quot;slug\&quot;).
+     * @param {PolicyGitRepositoriesApiGetPolicyRepoRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    getPolicyRepo(projId: string, repoId: string, options?: any): AxiosPromise<PolicyRepoRead> {
+    getPolicyRepo(
+      requestParameters: PolicyGitRepositoriesApiGetPolicyRepoRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PolicyRepoRead> {
       return localVarFp
-        .getPolicyRepo(projId, repoId, options)
+        .getPolicyRepo(requestParameters.projId, requestParameters.repoId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists all the policy repositories under a given project.
      * @summary List Policy Repos
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {PolicyGitRepositoriesApiListPolicyReposRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listPolicyRepos(
-      projId: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
+      requestParameters: PolicyGitRepositoriesApiListPolicyReposRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<Array<PolicyRepoRead>> {
       return localVarFp
-        .listPolicyRepos(projId, page, perPage, options)
+        .listPolicyRepos(
+          requestParameters.projId,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
@@ -656,149 +739,103 @@ export const PolicyGitRepositoriesApiFactory = function (
 
 /**
  * Request parameters for activatePolicyRepo operation in PolicyGitRepositoriesApi.
- * @export
- * @interface PolicyGitRepositoriesApiActivatePolicyRepoRequest
  */
 export interface PolicyGitRepositoriesApiActivatePolicyRepoRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof PolicyGitRepositoriesApiActivatePolicyRepo
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the policy repo, or the URL-friendly key of the policy repo (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof PolicyGitRepositoriesApiActivatePolicyRepo
    */
   readonly repoId: string;
 }
 
 /**
  * Request parameters for createPolicyRepo operation in PolicyGitRepositoriesApi.
- * @export
- * @interface PolicyGitRepositoriesApiCreatePolicyRepoRequest
  */
 export interface PolicyGitRepositoriesApiCreatePolicyRepoRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof PolicyGitRepositoriesApiCreatePolicyRepo
    */
   readonly projId: string;
 
-  /**
-   *
-   * @type {PolicyRepoCreate}
-   * @memberof PolicyGitRepositoriesApiCreatePolicyRepo
-   */
   readonly policyRepoCreate: PolicyRepoCreate;
 }
 
 /**
  * Request parameters for deletePolicyRepo operation in PolicyGitRepositoriesApi.
- * @export
- * @interface PolicyGitRepositoriesApiDeletePolicyRepoRequest
  */
 export interface PolicyGitRepositoriesApiDeletePolicyRepoRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof PolicyGitRepositoriesApiDeletePolicyRepo
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the policy repo, or the URL-friendly key of the policy repo (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof PolicyGitRepositoriesApiDeletePolicyRepo
    */
   readonly repoId: string;
 }
 
 /**
  * Request parameters for disableActivePolicyRepo operation in PolicyGitRepositoriesApi.
- * @export
- * @interface PolicyGitRepositoriesApiDisableActivePolicyRepoRequest
  */
 export interface PolicyGitRepositoriesApiDisableActivePolicyRepoRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof PolicyGitRepositoriesApiDisableActivePolicyRepo
    */
   readonly projId: string;
 }
 
 /**
  * Request parameters for getActivePolicyRepo operation in PolicyGitRepositoriesApi.
- * @export
- * @interface PolicyGitRepositoriesApiGetActivePolicyRepoRequest
  */
 export interface PolicyGitRepositoriesApiGetActivePolicyRepoRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof PolicyGitRepositoriesApiGetActivePolicyRepo
    */
   readonly projId: string;
 }
 
 /**
  * Request parameters for getPolicyRepo operation in PolicyGitRepositoriesApi.
- * @export
- * @interface PolicyGitRepositoriesApiGetPolicyRepoRequest
  */
 export interface PolicyGitRepositoriesApiGetPolicyRepoRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof PolicyGitRepositoriesApiGetPolicyRepo
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the policy repo, or the URL-friendly key of the policy repo (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof PolicyGitRepositoriesApiGetPolicyRepo
    */
   readonly repoId: string;
 }
 
 /**
  * Request parameters for listPolicyRepos operation in PolicyGitRepositoriesApi.
- * @export
- * @interface PolicyGitRepositoriesApiListPolicyReposRequest
  */
 export interface PolicyGitRepositoriesApiListPolicyReposRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof PolicyGitRepositoriesApiListPolicyRepos
    */
   readonly projId: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof PolicyGitRepositoriesApiListPolicyRepos
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
-   * @memberof PolicyGitRepositoriesApiListPolicyRepos
    */
   readonly perPage?: number;
 }
 
 /**
  * PolicyGitRepositoriesApi - object-oriented interface
- * @export
- * @class PolicyGitRepositoriesApi
- * @extends {BaseAPI}
  */
 export class PolicyGitRepositoriesApi extends BaseAPI {
   /**
@@ -806,12 +843,11 @@ export class PolicyGitRepositoriesApi extends BaseAPI {
    * @summary Activate Policy Repo
    * @param {PolicyGitRepositoriesApiActivatePolicyRepoRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof PolicyGitRepositoriesApi
+   * @throws If a required parameter is missing.
    */
   public activatePolicyRepo(
     requestParameters: PolicyGitRepositoriesApiActivatePolicyRepoRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return PolicyGitRepositoriesApiFp(this.configuration)
       .activatePolicyRepo(requestParameters.projId, requestParameters.repoId, options)
@@ -823,12 +859,11 @@ export class PolicyGitRepositoriesApi extends BaseAPI {
    * @summary Create Policy Repo
    * @param {PolicyGitRepositoriesApiCreatePolicyRepoRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof PolicyGitRepositoriesApi
+   * @throws If a required parameter is missing.
    */
   public createPolicyRepo(
     requestParameters: PolicyGitRepositoriesApiCreatePolicyRepoRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return PolicyGitRepositoriesApiFp(this.configuration)
       .createPolicyRepo(requestParameters.projId, requestParameters.policyRepoCreate, options)
@@ -840,12 +875,11 @@ export class PolicyGitRepositoriesApi extends BaseAPI {
    * @summary Delete Policy Repo
    * @param {PolicyGitRepositoriesApiDeletePolicyRepoRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof PolicyGitRepositoriesApi
+   * @throws If a required parameter is missing.
    */
   public deletePolicyRepo(
     requestParameters: PolicyGitRepositoriesApiDeletePolicyRepoRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return PolicyGitRepositoriesApiFp(this.configuration)
       .deletePolicyRepo(requestParameters.projId, requestParameters.repoId, options)
@@ -857,12 +891,11 @@ export class PolicyGitRepositoriesApi extends BaseAPI {
    * @summary Disable Active Policy Repo
    * @param {PolicyGitRepositoriesApiDisableActivePolicyRepoRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof PolicyGitRepositoriesApi
+   * @throws If a required parameter is missing.
    */
   public disableActivePolicyRepo(
     requestParameters: PolicyGitRepositoriesApiDisableActivePolicyRepoRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return PolicyGitRepositoriesApiFp(this.configuration)
       .disableActivePolicyRepo(requestParameters.projId, options)
@@ -874,12 +907,11 @@ export class PolicyGitRepositoriesApi extends BaseAPI {
    * @summary Get Active Policy Repo
    * @param {PolicyGitRepositoriesApiGetActivePolicyRepoRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof PolicyGitRepositoriesApi
+   * @throws If a required parameter is missing.
    */
   public getActivePolicyRepo(
     requestParameters: PolicyGitRepositoriesApiGetActivePolicyRepoRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return PolicyGitRepositoriesApiFp(this.configuration)
       .getActivePolicyRepo(requestParameters.projId, options)
@@ -891,12 +923,11 @@ export class PolicyGitRepositoriesApi extends BaseAPI {
    * @summary Get Policy Repo
    * @param {PolicyGitRepositoriesApiGetPolicyRepoRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof PolicyGitRepositoriesApi
+   * @throws If a required parameter is missing.
    */
   public getPolicyRepo(
     requestParameters: PolicyGitRepositoriesApiGetPolicyRepoRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return PolicyGitRepositoriesApiFp(this.configuration)
       .getPolicyRepo(requestParameters.projId, requestParameters.repoId, options)
@@ -908,12 +939,11 @@ export class PolicyGitRepositoriesApi extends BaseAPI {
    * @summary List Policy Repos
    * @param {PolicyGitRepositoriesApiListPolicyReposRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof PolicyGitRepositoriesApi
+   * @throws If a required parameter is missing.
    */
   public listPolicyRepos(
     requestParameters: PolicyGitRepositoriesApiListPolicyReposRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return PolicyGitRepositoriesApiFp(this.configuration)
       .listPolicyRepos(

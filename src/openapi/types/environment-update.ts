@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,37 +11,27 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { Jwks } from './jwks';
+import type { JwksConfig } from './jwks-config';
 
-/**
- *
- * @export
- * @interface EnvironmentUpdate
- */
 export interface EnvironmentUpdate {
   /**
    * The name of the environment
-   * @type {string}
-   * @memberof EnvironmentUpdate
    */
   name?: string;
   /**
    * an optional longer description of the environment
-   * @type {string}
-   * @memberof EnvironmentUpdate
    */
   description?: string;
   /**
    * when using gitops feature, an optional branch name for the environment
-   * @type {string}
-   * @memberof EnvironmentUpdate
    */
   custom_branch_name?: string;
   /**
-   *
-   * @type {Jwks}
-   * @memberof EnvironmentUpdate
+   * jwks for element frontend only login
    */
-  jwks?: Jwks;
+  jwks?: JwksConfig;
+  /**
+   * the settings for this environment
+   */
+  settings?: object;
 }

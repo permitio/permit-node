@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "dependencies": {
+    "permitio": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

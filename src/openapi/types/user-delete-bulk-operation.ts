@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,16 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface UserDeleteBulkOperation
- */
 export interface UserDeleteBulkOperation {
   /**
-   *
-   * @type {any}
-   * @memberof UserDeleteBulkOperation
+   * List of user idents to delete. Either the unique id or the key of the users.
    */
-  idents: any;
+  idents: Array<string>;
 }

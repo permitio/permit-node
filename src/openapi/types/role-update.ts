@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,49 +11,33 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { GrantedTo1 } from './granted-to1';
+import type { DerivedRoleBlockEdit } from './derived-role-block-edit';
 
-/**
- *
- * @export
- * @interface RoleUpdate
- */
 export interface RoleUpdate {
   /**
    * The name of the role
-   * @type {string}
-   * @memberof RoleUpdate
    */
   name?: string;
   /**
    * optional description string explaining what this role represents, or what permissions are granted to it.
-   * @type {string}
-   * @memberof RoleUpdate
    */
   description?: string;
   /**
    * list of action keys that define what actions this resource role is permitted to do
-   * @type {Array<string>}
-   * @memberof RoleUpdate
    */
   permissions?: Array<string>;
   /**
    * optional dictionary of key-value pairs that can be used to store arbitrary metadata about this role. This metadata can be used to filter role using query parameters with attr_ prefix, currently supports only \'equals\' operator
-   * @type {object}
-   * @memberof RoleUpdate
    */
   attributes?: object;
   /**
    * list of role keys that define what roles this role extends. In other words: this role will automatically inherit all the permissions of the given roles in this list.
-   * @type {Array<string>}
-   * @memberof RoleUpdate
    */
   extends?: Array<string>;
   /**
-   *
-   * @type {GrantedTo1}
-   * @memberof RoleUpdate
+   * Derived role that inherit will be applied on this role
    */
-  granted_to?: GrantedTo1;
+  granted_to?: DerivedRoleBlockEdit;
+  v1compat_settings?: object;
+  v1compat_attributes?: object;
 }
