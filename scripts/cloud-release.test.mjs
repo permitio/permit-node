@@ -13,6 +13,7 @@ const fixture = {
   role: 'reader-role-canary',
 };
 const canary = 'CLOUD_PROOF_RESPONSE_ONLY_CANARY';
+const qualifiedRole = `__tenant#${fixture.role}`;
 const operationFailure = 'Cloud SDK operation did not satisfy the owned fixture proof.';
 let network, outcomes, headers;
 beforeEach(() => {
@@ -89,7 +90,7 @@ function setup(overrides = {}) {
                   {
                     user: fixture.allowedUser,
                     tenant: fixture.tenant,
-                    role: fixture.role,
+                    role: qualifiedRole,
                     resource: `__tenant:${fixture.tenant}`,
                     additional: 'not-exported',
                   },
@@ -580,6 +581,8 @@ test.each([
   },
   { tenant: null, resource: null, roles: null },
   { roles: undefined },
+  { roles: [fixture.role] },
+  { roles: [qualifiedRole] },
 ])(
   'preserves contract-valid optional permission details without requiring their presence: %j',
   async (details) => {
@@ -646,7 +649,7 @@ const authorized = (change) => ({
               {
                 user: fixture.allowedUser,
                 tenant: fixture.tenant,
-                role: fixture.role,
+                role: qualifiedRole,
                 resource: `__tenant:${fixture.tenant}`,
               },
             ],
@@ -750,6 +753,28 @@ test.each([
     grant({ user: canary, tenant: `__tenant:${fixture.tenant}`, role: `team-${fixture.role}` }),
   ],
   ['authorized-users', '4:uok_tother_rother_sok', grant({ tenant: canary, role: canary })],
+  ['authorized-users', '4:uok_tok_rbare_sok', grant({ role: fixture.role })],
+  ['authorized-users', '4:uok_tok_rtencolon_sok', grant({ role: `__tenant:${fixture.role}` })],
+  [
+    'authorized-users',
+    '4:uok_tok_rtypehash_sok',
+    grant({ role: `${fixture.resource}#${fixture.role}` }),
+  ],
+  [
+    'authorized-users',
+    '4:uok_tok_rkeyhash_sok',
+    grant({ role: `${fixture.tenant}#${fixture.role}` }),
+  ],
+  [
+    'authorized-users',
+    '4:uabsent_tprefixed_rtencolon_stenantcolon',
+    grant({
+      user: null,
+      tenant: `__tenant:${fixture.tenant}`,
+      role: `__tenant:${fixture.role}`,
+      resource: `tenant:${fixture.tenant}`,
+    }),
+  ],
   [
     'authorized-users',
     '4:uabsent_tabsent_rabsent_sabsent',
@@ -815,6 +840,17 @@ test.each([
   ['user-permissions', '1:other', ownDetails({ permissions: canary })],
   ['user-permissions', '2:empty', ownDetails({ roles: [] })],
   ['user-permissions', '2:extra', ownDetails({ roles: [fixture.role, canary] })],
+  ['user-permissions', '2:extra', ownDetails({ roles: [qualifiedRole, fixture.role] })],
+  ['user-permissions', '2:extra', ownDetails({ roles: [qualifiedRole, canary] })],
+  ['user-permissions', '2:tencolon', ownDetails({ roles: [`__tenant:${fixture.role}`] })],
+  [
+    'user-permissions',
+    '2:typehash',
+    ownDetails({ roles: [`${fixture.resource}#${fixture.role}`] }),
+  ],
+  ['user-permissions', '2:keyhash', ownDetails({ roles: [`${fixture.tenant}#${fixture.role}`] })],
+  ['user-permissions', '2:absent', ownDetails({ roles: [null] })],
+  ['user-permissions', '2:nonstr', ownDetails({ roles: [7] })],
   ['user-permissions', '2:suffix', ownDetails({ roles: [`team-${fixture.role}`] })],
   ['user-permissions', '2:other', ownDetails({ roles: [canary] })],
   ['user-permissions', '2:other', ownDetails({ roles: fixture.role })],
@@ -871,4 +907,15 @@ test('the transport refuses a forbidden readiness response the SDK misreported a
   outcomes = [403];
   expect(await refusal(options)).toBe('cloud-proof:op:check:esm:observation:403');
   expect(options.pause).toHaveBeenCalledTimes(1);
+});
+
+test('the qualified tenant role is the exact authorized-users grant format', async () => {
+  const proof = await produceCloudProof(setup().options);
+  expect(proof.phaseResults.find((row) => row.id === 'cloud.getAuthorizedUsers')).toMatchObject({
+    status: 'PASSED',
+    assertions: 12,
+  });
+  expect(await refusal(setup(grant({ role: fixture.role })).options)).toBe(
+    'cloud-proof:op:authorized-users:esm:oracle:4:uok_tok_rbare_sok',
+  );
 });

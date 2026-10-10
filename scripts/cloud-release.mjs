@@ -113,13 +113,21 @@ function countClass(rows) {
   if (rows.length === 0) return '0';
   return rows.length === 2 ? '2' : 'many';
 }
+/** Classes a received role against the qualified `__tenant#<role>` grant format. */
+function roleClass(value, fixture) {
+  return textClass(value, `__tenant#${fixture.role}`, [
+    ['bare', equals(fixture.role)],
+    ['tencolon', equals(`__tenant:${fixture.role}`)],
+    ['typehash', equals(`${fixture.resource}#${fixture.role}`)],
+    ['keyhash', equals(`${fixture.tenant}#${fixture.role}`)],
+    ['suffix', (value) => value.endsWith(fixture.role)],
+  ]);
+}
 /** Summarizes grant user, tenant, role and resource classes as `u<c>_t<c>_r<c>_s<c>`. */
 function grantClass(grant, fixture) {
   const user = textClass(field(grant, 'user'), fixture.allowedUser);
   const tenant = tenantClass(field(grant, 'tenant'), fixture.tenant);
-  const role = textClass(field(grant, 'role'), fixture.role, [
-    ['suffix', (value) => value.endsWith(fixture.role)],
-  ]);
+  const role = roleClass(field(grant, 'role'), fixture);
   const resource = resourceClass(
     field(grant, 'resource'),
     `__tenant:${fixture.tenant}`,
@@ -157,10 +165,8 @@ function permissionsClass(permissions, fixture) {
 function rolesClass(roles, fixture) {
   if (!Array.isArray(roles)) return 'other';
   if (roles.length === 0) return 'empty';
-  if (roles.includes(fixture.role)) return 'extra';
-  return roles.length === 1 && typeof roles[0] === 'string' && roles[0].endsWith(fixture.role)
-    ? 'suffix'
-    : 'other';
+  if (roles.includes(fixture.role) || roles.includes(`__tenant#${fixture.role}`)) return 'extra';
+  return roles.length === 1 ? roleClass(roles[0], fixture) : 'other';
 }
 function tenantDetailClass(tenant, fixture) {
   return plain(tenant) ? tenantClass(tenant.key, fixture.tenant) : 'nonobject';
@@ -329,6 +335,8 @@ function fixtureKeys(fixture) {
  * Exercises four published managed-cloud operations through both installed package entries.
  * Only the first check's convergence loop treats timeouts, transient network errors and PDP
  * 404, 429 or 5xx responses as not ready; every other failure and every later request is strict.
+ * The managed cloud PDP reports tenant-level roles in authorized-users grants as `__tenant#<role>`,
+ * and the proof requires exactly that format.
  * @param options - Installed constructors and SDK error classes, scoped credential, independently
  * owned fixture keys and the bounded readiness wait.
  * @returns Allowlisted phase, case and HTTPS observations, with no credentials or response bodies.
@@ -467,7 +475,7 @@ export async function produceCloudProof({ entries, token, fixture, pause, attemp
           4,
           grants[0]?.user === fixture.allowedUser &&
             grants[0]?.tenant === fixture.tenant &&
-            grants[0]?.role === fixture.role &&
+            grants[0]?.role === `__tenant#${fixture.role}` &&
             grants[0]?.resource === `__tenant:${fixture.tenant}`,
           classified(authorized, 4, () => grantClass(grants[0], fixture)),
         );
@@ -506,7 +514,9 @@ export async function produceCloudProof({ entries, token, fixture, pause, attemp
         expect(
           permissions,
           2,
-          result[key]?.roles == null || isDeepStrictEqual(result[key].roles, [fixture.role]),
+          result[key]?.roles == null ||
+            isDeepStrictEqual(result[key].roles, [fixture.role]) ||
+            isDeepStrictEqual(result[key].roles, [`__tenant#${fixture.role}`]),
           classified(permissions, 2, () => rolesClass(result[key]?.roles, fixture)),
         );
         const details = result[key];
