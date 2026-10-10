@@ -14,6 +14,8 @@ const fixture = {
 };
 const canary = 'CLOUD_PROOF_RESPONSE_ONLY_CANARY';
 const qualifiedRole = `__tenant#${fixture.role}`;
+const association = 'tenant-association';
+const qualifiedAssociation = '__tenant#tenant-association';
 const operationFailure = 'Cloud SDK operation did not satisfy the owned fixture proof.';
 let network, outcomes, headers;
 beforeEach(() => {
@@ -585,6 +587,12 @@ test.each([
   { roles: [qualifiedRole] },
   { roles: [fixture.role, qualifiedRole] },
   { roles: [qualifiedRole, fixture.role] },
+  ...[fixture.role, qualifiedRole].flatMap((role) =>
+    [association, qualifiedAssociation].flatMap((companion) => [
+      { roles: [role, companion] },
+      { roles: [companion, role] },
+    ]),
+  ),
 ])(
   'preserves contract-valid optional permission details without requiring their presence: %j',
   async (details) => {
@@ -876,6 +884,28 @@ test.each([
   ['user-permissions', '2:plusmany', ownDetails({ roles: [canary, fixture.role, canary] })],
   ['user-permissions', '2:other', ownDetails({ roles: [fixture.role, qualifiedRole, canary] })],
   ['user-permissions', '2:other', ownDetails({ roles: [qualifiedRole, qualifiedRole, canary] })],
+  ['user-permissions', '2:assoc', ownDetails({ roles: [association] })],
+  ['user-permissions', '2:qassoc', ownDetails({ roles: [qualifiedAssociation] })],
+  ['user-permissions', '2:other', ownDetails({ roles: [association, association] })],
+  ['user-permissions', '2:other', ownDetails({ roles: [association, qualifiedAssociation] })],
+  ['user-permissions', '2:plusmany', ownDetails({ roles: [fixture.role, association, canary] })],
+  [
+    'user-permissions',
+    '2:other',
+    ownDetails({ roles: [fixture.role, qualifiedRole, qualifiedAssociation] }),
+  ],
+  ['user-permissions', '2:dup', ownDetails({ roles: [qualifiedRole, qualifiedRole] })],
+  [
+    'user-permissions',
+    '2:plusone-qother',
+    ownDetails({ roles: [fixture.role, `__tenant#${canary}`] }),
+  ],
+  ['user-permissions', '2:qother', ownDetails({ roles: [`__tenant#${canary}`] })],
+  [
+    'user-permissions',
+    '2:plusone-suffix',
+    ownDetails({ roles: [fixture.role, `__tenant#team-${fixture.role}`] }),
+  ],
   ['user-permissions', '2:tencolon', ownDetails({ roles: [`__tenant:${fixture.role}`] })],
   [
     'user-permissions',

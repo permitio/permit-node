@@ -105,10 +105,11 @@ Strict allow/deny, ordered/full received envelopes and filter exclusion oracles 
 HTTP 200 or a false/empty result alone does not. The managed cloud PDP reports tenant-level roles in
 authorized-users grants as `__tenant#<role>`, and the proof requires exactly that format.
 User-permissions roles may be absent or list the bare key, the qualified key, or both, each once.
-Actual X-Request-ID presence is observed without logging values or injecting a test-only header.
-Missing presence remains incomplete proof. Hosted observations must bind actual same-run
-source/archive/consumer lock and trusted CI identity with fresh observed time. Local execution
-cannot be relabeled hosted.
+One role form may instead appear once beside the built-in tenant-association role, bare or
+`__tenant#`-qualified. Actual X-Request-ID presence is observed without logging values or
+injecting a test-only header. Missing presence remains incomplete proof. Hosted observations must
+bind actual same-run source/archive/consumer lock and trusted CI identity with fresh observed time.
+Local execution cannot be relabeled hosted.
 
 A/B comparisons require actual matching baseline/candidate runtime/PDP cells and positive-count
 value comparisons of shared supported behavior. Two separate passes are insufficient. Semantic

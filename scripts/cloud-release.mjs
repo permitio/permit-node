@@ -113,14 +113,27 @@ function countClass(rows) {
   if (rows.length === 0) return '0';
   return rows.length === 2 ? '2' : 'many';
 }
-/** Classes a received role against the qualified `__tenant#<role>` grant format. */
-function roleClass(value, fixture) {
-  return textClass(value, `__tenant#${fixture.role}`, [
+const associationRoles = ['tenant-association', '__tenant#tenant-association'];
+function roleCandidates(fixture) {
+  return [
     ['bare', equals(fixture.role)],
     ['tencolon', equals(`__tenant:${fixture.role}`)],
     ['typehash', equals(`${fixture.resource}#${fixture.role}`)],
     ['keyhash', equals(`${fixture.tenant}#${fixture.role}`)],
     ['suffix', (value) => value.endsWith(fixture.role)],
+  ];
+}
+/** Classes a received role against the qualified `__tenant#<role>` grant format. */
+function roleClass(value, fixture) {
+  return textClass(value, `__tenant#${fixture.role}`, roleCandidates(fixture));
+}
+/** Classes an unrecognized roles entry, including the built-in tenant-association forms. */
+function entryClass(value, fixture) {
+  return textClass(value, `__tenant#${fixture.role}`, [
+    ['assoc', equals(associationRoles[0])],
+    ['qassoc', equals(associationRoles[1])],
+    ...roleCandidates(fixture),
+    ['qother', (value) => value.startsWith('__tenant#')],
   ]);
 }
 /** Summarizes grant user, tenant, role and resource classes as `u<c>_t<c>_r<c>_s<c>`. */
@@ -162,16 +175,19 @@ function permissionsClass(permissions, fixture) {
   if (isDeepStrictEqual(permissions, [`${fixture.resource}#read`])) return 'hash';
   return permissions.includes(`${fixture.resource}:read`) ? 'extra' : 'other';
 }
-/** Accepts absent roles, or the bare and qualified role keys alone or together, each once. */
+/**
+ * Accepts absent roles, one role form, both role forms, or one role form with one
+ * tenant-association form; each entry appears once, in either order.
+ */
 function acceptedRoles(roles, fixture) {
-  const bare = fixture.role,
-    qualified = `__tenant#${fixture.role}`;
-  return (
-    roles == null ||
-    [[bare], [qualified], [bare, qualified], [qualified, bare]].some((shape) =>
-      isDeepStrictEqual(roles, shape),
-    )
-  );
+  const forms = [fixture.role, `__tenant#${fixture.role}`];
+  const shapes = forms.map((form) => [form]);
+  for (const [first, second] of [
+    forms,
+    ...forms.flatMap((form) => associationRoles.map((association) => [form, association])),
+  ])
+    shapes.push([first, second], [second, first]);
+  return roles == null || shapes.some((shape) => isDeepStrictEqual(roles, shape));
 }
 /** Classifies refused roles; an accepted form beside unknown entries names how many it has. */
 function rolesClass(roles, fixture) {
@@ -180,10 +196,10 @@ function rolesClass(roles, fixture) {
   const forms = [fixture.role, `__tenant#${fixture.role}`];
   const known = roles.filter((role) => forms.includes(role)).length;
   const unknown = roles.filter((role) => !forms.includes(role));
-  if (known === 0) return roles.length === 1 ? roleClass(roles[0], fixture) : 'other';
+  if (known === 0) return roles.length === 1 ? entryClass(roles[0], fixture) : 'other';
   if (unknown.length === 0) return 'dup';
   if (known > 1) return 'other';
-  return unknown.length === 1 ? `plusone-${roleClass(unknown[0], fixture)}` : 'plusmany';
+  return unknown.length === 1 ? `plusone-${entryClass(unknown[0], fixture)}` : 'plusmany';
 }
 function tenantDetailClass(tenant, fixture) {
   return plain(tenant) ? tenantClass(tenant.key, fixture.tenant) : 'nonobject';
@@ -354,7 +370,8 @@ function fixtureKeys(fixture) {
  * 404, 429 or 5xx responses as not ready; every other failure and every later request is strict.
  * The managed cloud PDP reports tenant-level roles in authorized-users grants as `__tenant#<role>`,
  * and the proof requires exactly that format. User-permissions roles may be absent or list the
- * bare key, the qualified key, or both, each once.
+ * bare key, the qualified key, or both, each once. One role form may instead appear once beside the
+ * built-in tenant-association role, bare or `__tenant#`-qualified.
  * @param options - Installed constructors and SDK error classes, scoped credential, independently
  * owned fixture keys and the bounded readiness wait.
  * @returns Allowlisted phase, case and HTTPS observations, with no credentials or response bodies.
