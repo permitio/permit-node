@@ -242,6 +242,19 @@ test.each([
   expect(() => verifyCloudFixtureSettled(state, owner)).toThrow();
 });
 
+test.each([
+  ['an uncertain write', { unknownWrite: true }],
+  ['an active writer', { active: true }],
+])('a complete saved fixture state with %s cannot authorize cleanup', async (_name, change) => {
+  const f = boundary();
+  await run(f);
+  const state = f.states.at(-1);
+  expect(() => verifyCloudFixtureSettled(state, owner)).not.toThrow();
+  expect(() => verifyCloudFixtureSettled({ ...state, ...change }, owner)).toThrow(
+    'Cloud fixture writes remain unsettled or foreign; refuse environment cleanup.',
+  );
+});
+
 test.each([null, undefined])(
   'tenant-only grant accepts logical resource_instance %s',
   async (value) => {

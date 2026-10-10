@@ -90,7 +90,7 @@ test.each([false, true])(
   },
 );
 
-test.each(['', '  \t ', null, false, []])(
+test.each(['', '  \t ', '\u00a0', null, false, [], ['first', 'second']])(
   'generates an ID for unusable inherited value %j',
   async (value) => {
     const state = inherited(value);

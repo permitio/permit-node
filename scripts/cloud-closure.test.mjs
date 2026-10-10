@@ -103,6 +103,9 @@ function fixture(f) {
   }
   return { schema: 1, active: false, unknownWrite: false, records: owned };
 }
+const captureRefusal = 'Cloud initial child closure failed; retain the owned environment.';
+const settleRefusal = 'Cloud fixture child closure failed; retain the owned environment.';
+const pageRefusal = 'Cloud destructive closure is unverified; retain the environment.';
 async function settled(f) {
   const closure = await captureCloudClosure({ request: f.request, context }),
     owned = fixture(f);
@@ -216,7 +219,7 @@ test('defaults bind immutable IDs and nullable API-key snapshots', async () => {
     verifyCloudClosure({ request: f.request, closure, fixture: null }),
   ).resolves.toBeUndefined();
 });
-test.each(['birth', 'scope', 'owner', 'credential', 'detail', 'default'])(
+test.each(['birth', 'scope', 'owner', 'credential', 'detail', 'default', 'project'])(
   'unproven initial %s defaults never acquire a closure',
   async (fault) => {
     const f = boundary(),
@@ -233,7 +236,11 @@ test.each(['birth', 'scope', 'owner', 'credential', 'detail', 'default'])(
     if (fault === 'credential') detail.secret = 'different';
     if (fault === 'detail') f.details.clear();
     if (fault === 'default') f.groups.set('resources', [row({ key: 'foreign' })]);
-    await expect(captureCloudClosure({ request: f.request, context })).rejects.toThrow('retain');
+    if (fault === 'project')
+      f.groups.set('tenants', [row({ key: 'default', project_id: 'f'.repeat(32) })]);
+    await expect(captureCloudClosure({ request: f.request, context })).rejects.toThrow(
+      captureRefusal,
+    );
   },
 );
 
@@ -246,6 +253,49 @@ test('settling refuses to adopt a delayed child addition', async () => {
     'retain',
   );
   expect(closure.settled).toBeNull();
+});
+test.each([
+  [
+    'captured default',
+    (f) => {
+      f.groups.set(
+        'tenants',
+        f.groups.get('tenants').filter((entry) => entry.key !== 'default'),
+      );
+    },
+  ],
+  [
+    'captured fixture',
+    (f) => {
+      f.groups.get('users').pop();
+    },
+  ],
+])('settling refuses a %s row that disappeared after capture', async (_name, remove) => {
+  const f = boundary();
+  f.groups.set('tenants', [row({ key: 'default' })]);
+  const closure = await captureCloudClosure({ request: f.request, context }),
+    owned = fixture(f);
+  await expect(
+    settleCloudClosure({ request: f.request, closure, fixture: owned }),
+  ).resolves.toMatchObject({ settled: expect.any(Array) });
+  remove(f);
+  await expect(settleCloudClosure({ request: f.request, closure, fixture: owned })).rejects.toThrow(
+    settleRefusal,
+  );
+});
+test.each([
+  ['an uncertain write', { unknownWrite: true }],
+  ['an active writer', { active: true }],
+])('settling refuses a fixture state with %s', async (_name, change) => {
+  const f = boundary(),
+    closure = await captureCloudClosure({ request: f.request, context }),
+    owned = fixture(f);
+  await expect(
+    settleCloudClosure({ request: f.request, closure, fixture: owned }),
+  ).resolves.toMatchObject({ settled: expect.any(Array) });
+  await expect(
+    settleCloudClosure({ request: f.request, closure, fixture: { ...owned, ...change } }),
+  ).rejects.toThrow(settleRefusal);
 });
 test('unrelated mutations of builtin parent are rejected while settling role effects', async () => {
   const f = boundary(),
@@ -296,9 +346,57 @@ test.each([null, {}, { data: [], total_count: 1 }, { data: [], total_count: 0, p
   async (body) => {
     await expect(
       cloudClosurePages({ request: async () => ({ status: 200, body }), path: '/rows' }),
-    ).rejects.toThrow();
+    ).rejects.toThrow(pageRefusal);
   },
 );
+test.each([
+  [
+    'a total_count that changes between pages',
+    false,
+    (broken) => {
+      const rows = Array.from({ length: 101 }, () => row());
+      return [
+        { data: rows.slice(0, 100), total_count: broken ? 150 : 101 },
+        { data: rows.slice(100), total_count: 101 },
+      ];
+    },
+  ],
+  [
+    'an envelope without total_count',
+    false,
+    (broken) => {
+      const data = [row(), row()];
+      return [broken ? { data, page_count: null } : { data, total_count: 2, page_count: null }];
+    },
+  ],
+  [
+    'a bare array on an envelope route',
+    true,
+    (broken) => {
+      const data = [row(), row()];
+      return [broken ? data : { data, total_count: 2, page_count: null }];
+    },
+  ],
+  [
+    'a repeated ID within one short page',
+    false,
+    (broken) => {
+      const first = row();
+      return [[first, broken ? { ...first } : row()]];
+    },
+  ],
+])('the page reader refuses %s', async (_name, envelope, pages) => {
+  const replies = (bodies) => {
+    let index = 0;
+    return async () => ({ status: 200, body: bodies[index++] });
+  };
+  await expect(
+    cloudClosurePages({ path: '/rows', envelope, request: replies(pages(false)) }),
+  ).resolves.not.toHaveLength(0);
+  await expect(
+    cloudClosurePages({ path: '/rows', envelope, request: replies(pages(true)) }),
+  ).rejects.toThrow(pageRefusal);
+});
 test('complete envelope pagination accepts nullable page_count with exact totals', async () => {
   const rows = Array.from({ length: 101 }, () => row());
   let requests = 0;

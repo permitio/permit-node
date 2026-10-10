@@ -281,117 +281,146 @@ test.each([
     (v) => {
       v.artifact.sha256 = baselineHash;
     },
+    'Candidate artifact or lockfile differs from supplied bytes.',
   ],
   [
     'wrong file count',
     (v) => {
       v.artifact.fileCount++;
     },
+    'Candidate artifact or lockfile differs from supplied bytes.',
   ],
   [
     'wrong consumer lock',
     (v) => {
       v.artifact.lockSha256 = baselineHash;
     },
+    'Candidate artifact or lockfile differs from supplied bytes.',
   ],
   [
     'wrong source tree',
     (v) => {
       v.sdk.tree = '0'.repeat(40);
     },
+    'SDK source tree differs from the clean checkout.',
   ],
   [
     'wrong inventory hash',
     (v) => {
       v.sdk.inventorySha256 = baselineHash;
     },
+    'Inventory digest differs.',
   ],
   [
     'same-version development baseline',
     (v) => {
       v.ab.baseline.sha256 = candidateHash;
     },
+    'Released baseline or lockfile differs from supplied bytes.',
   ],
   [
     'wrong baseline integrity',
     (v) => {
       v.ab.baseline.integrity = `sha512-${'B'.repeat(86)}==`;
     },
+    'Released baseline or lockfile differs from supplied bytes.',
   ],
   [
     'baseline used for candidate cell',
     (v) => {
       v.runs[1].artifactSha256 = baselineHash;
+      v.runs[1].consumerLockSha256 = v.ab.baseline.lockSha256;
     },
+    'Missing local candidate cell: Node 22.13.0/pinned.',
+  ],
+  [
+    'different local consumer lock',
+    (v) => {
+      v.runs[1].consumerLockSha256 = '7'.repeat(64);
+    },
+    'Local consumer lock differs.',
   ],
   [
     'unknown artifact',
     (v) => {
       v.runs[1].artifactSha256 = '2'.repeat(64);
     },
+    'Unknown artifact in run candidate-22.13.0.',
   ],
   [
     'removed inventory method',
     (v) => {
       v.inventory.methods.pop();
     },
+    'Public inventory or decisions differ.',
   ],
   [
     'removed deferred operation',
     (v) => {
       v.inventory.operations.pop();
     },
+    'Public inventory or decisions differ.',
   ],
   [
     'changed source decision',
     (v) => {
       v.inventory.operations[0].decision = 'defer';
     },
+    'Public inventory or decisions differ.',
   ],
   [
     'unreviewed case',
     (v) => {
       v.runs[1].caseResults[0].id = 'invented.case';
     },
+    'Unreviewed case ID.',
   ],
   [
     'invented route credit',
     (v) => {
       v.runs[1].caseResults[0].operationKeys = [];
     },
+    'Case ab.users.edge-values: operation links differ.',
   ],
   [
     'invented method credit',
     (v) => {
       v.runs[1].caseResults[0].methodNames = [];
     },
+    'Case ab.users.edge-values: method links differ.',
   ],
   [
     'weaker evidence level',
     (v) => {
       v.runs[1].caseResults[0].level = 'wire';
     },
+    'Case ab.users.edge-values: evidence level differs.',
   ],
   [
     'missing phase link',
     (v) => {
       v.runs[1].caseResults[0].phaseId = 'missing.phase';
     },
+    'Case ab.users.edge-values: missing/mismatched phase.',
   ],
   [
     'missing case links',
     (v) => {
       v.inventory.methods[0].caseIds = [];
     },
+    'Case links differ: permit.api.users.create.',
   ],
   [
     'invented adoption',
     (v) => {
       v.gates.sharedTarget.status = 'ADOPTED';
     },
+    'Node deferrals differ from the adopted contract.',
   ],
-])('returns INVALID for %s', (_name, change) => {
-  expect(result(change)).toMatchObject({ exitCode: 2, releaseReady: false });
+])('returns INVALID for %s', (_name, change, message) => {
+  const report = result(change);
+  expect(report).toMatchObject({ exitCode: 2, releaseReady: false });
+  expect(report.incomplete).toContain(message);
 });
 
 test.each([
@@ -401,157 +430,214 @@ test.each([
       v.runs.splice(2);
       v.ab.cases.splice(1);
     },
+    'Missing local candidate cell: Node 24.0.0/pinned.',
   ],
   [
     'missing current PDP',
     (v) => {
-      v.runs.forEach((run) => {
-        run.pdp.roles = ['pinned'];
-      });
+      for (const run of v.runs.filter((row) => row.target === 'local')) run.pdp.roles = ['pinned'];
     },
+    'Missing local candidate cell: Node 22.13.0/current.',
   ],
   [
     'unreviewed current patch',
     (v) => {
       v.runs[0].node = '24.1.0';
     },
+    'Unreviewed runtime in run baseline-22.13.0.',
   ],
   [
     'wrong PDP bytes',
     (v) => {
       v.runs[0].pdp.digest = `sha256:${baselineHash}`;
     },
+    'Unreviewed PDP in run baseline-22.13.0.',
+  ],
+  [
+    'extra run on an unreviewed PDP',
+    (v, e) => {
+      const extra = structuredClone(v.runs[1]);
+      extra.id = 'candidate-extra';
+      extra.pdp.digest = `sha256:${'9'.repeat(64)}`;
+      e.requirements.runIds.push(extra.id);
+      v.runs.push(extra);
+    },
+    'Unreviewed PDP in run candidate-extra.',
   ],
   [
     'undated current image',
     (v) => {
       v.runs[0].pdp.resolvedAt = '';
     },
+    'run.pdp.resolvedAt: invalid value.',
   ],
   [
     'invalid date',
     (v) => {
       v.runs[0].pdp.resolvedAt = '2026-02-30';
     },
+    'run.pdp.resolvedAt: invalid value.',
   ],
   [
     'offline service evidence',
     (v) => {
       v.runs[0].target = 'offline';
     },
+    'Run baseline-22.13.0: offline phase claims service proof.',
   ],
   [
     'missing execution',
     (v) => {
       v.runs[0].caseResults = [];
     },
+    'A/B ab.users.edge-values: missing execution case.',
   ],
   [
     'phase counts alone',
     (v) => {
-      v.runs.forEach((run) => {
-        run.caseResults = [];
-      });
+      for (const run of v.runs.filter((row) => row.target === 'local')) run.caseResults = [];
     },
+    'Missing case ab.users.edge-values: Node 22.13.0/pinned.',
   ],
   [
     'zero-assertion case',
     (v) => {
       v.runs[0].caseResults[0].assertions = 0;
     },
+    'Case ab.users.edge-values: PASS has no successful phase assertions.',
   ],
   [
     'zero-assertion phase',
     (v) => {
       v.runs[0].phaseResults[0].assertions = 0;
     },
+    'Phase api.users: empty PASS.',
+  ],
+  [
+    'required phase reported as an empty PASS',
+    (v, e) => {
+      e.requirements.phaseIds.push('wire.empty');
+      for (const run of v.runs.filter((row) => row.target === 'local'))
+        run.phaseResults.push({ id: 'wire.empty', kind: 'wire', status: 'PASSED', assertions: 0 });
+    },
+    'Phase wire.empty: empty PASS.',
   ],
   [
     'zero-assertion comparison',
     (v) => {
       v.ab.cases[0].assertions = 0;
     },
+    'A/B ab.users.edge-values: PASS without successful execution and comparison assertions.',
+  ],
+  [
+    'A/B PASS over a failed execution case',
+    (v) => {
+      v.runs[1].caseResults.find((row) => row.id === sharedCase.id).status = 'FAILED';
+    },
+    'A/B ab.users.edge-values: PASS without successful execution and comparison assertions.',
   ],
   [
     'missing A/B',
     (v) => {
       v.ab.cases = [];
     },
+    'Missing A/B ab.users.edge-values: Node 22.13.0/pinned.',
   ],
   [
     'A/B runtime mismatch',
     (v) => {
       v.ab.cases[0].baselineRunId = 'baseline-24.0.0';
     },
+    'A/B ab.users.edge-values: missing or different artifact/runtime/PDP cells.',
   ],
   [
     'setup error',
     (v) => {
       v.runs[0].setupErrorCount++;
     },
+    'Run baseline-22.13.0: setup or cleanup is incomplete.',
   ],
   [
     'cleanup error',
     (v) => {
       v.runs[0].cleanupErrorCount++;
     },
+    'Run baseline-22.13.0: setup or cleanup is incomplete.',
   ],
   [
     'unverified cleanup',
     (v) => {
       v.runs[0].cleanup.verified--;
     },
+    'Run baseline-22.13.0: setup or cleanup is incomplete.',
   ],
   [
     'unexecuted cleanup',
     (v) => {
       v.runs[0].cleanup.completed--;
     },
+    'Run baseline-22.13.0: setup or cleanup is incomplete.',
+  ],
+  [
+    'registered cleanup never completed',
+    (v) => {
+      v.runs[1].cleanup = { registered: 2, completed: 1, verified: 1 };
+    },
+    'Run candidate-22.13.0: setup or cleanup is incomplete.',
   ],
   [
     'unreachable backend',
     (v) => {
       v.runs[0].phaseResults[0].status = 'INVALID';
     },
+    'baseline-22.13.0/api.users: INVALID.',
   ],
   [
     'not run',
     (v) => {
       v.runs[0].caseResults[0].status = 'NOT_RUN';
     },
+    'baseline-22.13.0/ab.users.edge-values: NOT_RUN.',
   ],
   [
     'duplicate run',
     (v) => {
       v.runs.push(structuredClone(v.runs[0]));
     },
+    'runs: duplicate entries.',
   ],
   [
     'duplicate case',
     (v) => {
       v.runs[0].caseResults.push(structuredClone(v.runs[0].caseResults[0]));
     },
+    'run.caseResults: duplicate entries.',
   ],
   [
     'negative assertions',
     (v) => {
       v.runs[0].caseResults[0].assertions = -1;
     },
+    'case.assertions: invalid value.',
   ],
   [
     'fractional assertions',
     (v) => {
       v.runs[0].caseResults[0].assertions = 1.2;
     },
+    'case.assertions: invalid value.',
   ],
   [
     'unsafe integer',
     (v) => {
       v.runs[0].cleanup.registered = Number.MAX_SAFE_INTEGER + 1;
     },
+    'run.cleanup.registered: invalid value.',
   ],
-])('cannot pass with %s', (_name, change) => {
-  expect(result(change)).toMatchObject({ exitCode: 2, releaseReady: false });
+])('cannot pass with %s', (_name, change, message) => {
+  const report = result(change);
+  expect(report).toMatchObject({ exitCode: 2, releaseReady: false });
+  expect(report.incomplete).toContain(message);
 });
 
 test('retains actual failures and gives incomplete cleanup precedence', () => {
@@ -737,18 +823,41 @@ test('package presence assertions cannot replace HTTP behavior evidence', () => 
   expect(report.incomplete).toContain('Required inline-role proof case differs.');
 });
 
-test.each(['empty phases', 'empty runs', 'missing floor', 'unmapped AB'])(
-  'does not accept an accidentally reduced reviewed policy: %s',
-  (change) => {
-    const report = result((_v, expected) => {
-      if (change === 'empty phases') expected.requirements.phaseIds = [];
-      else if (change === 'empty runs') expected.requirements.runIds = [];
-      else if (change === 'missing floor') expected.requirements.nodes = ['22.13.0'];
-      else expected.requirements.abCaseIds = ['missing.case'];
-    });
-    expect(report.exitCode).toBe(2);
-  },
-);
+test.each([
+  [
+    'empty phases',
+    (_v, e) => {
+      e.requirements.phaseIds = [];
+    },
+    'Reviewed run and phase registries must be nonempty and unique.',
+  ],
+  [
+    'empty runs',
+    (_v, e) => {
+      e.requirements.runIds = [];
+    },
+    'Reviewed run and phase registries must be nonempty and unique.',
+  ],
+  [
+    'missing floor',
+    (_v, e) => {
+      e.requirements.nodes = ['22.13.0'];
+      e.requirements.cloud.runIds = ['candidate.cloud.node22.13.0'];
+    },
+    'Reviewed runtime matrix must use supported Node versions and retain both test floors.',
+  ],
+  [
+    'unmapped AB',
+    (_v, e) => {
+      e.requirements.abCaseIds = ['missing.case'];
+    },
+    'Every reviewed A/B ID must have an execution case.',
+  ],
+])('does not accept an accidentally reduced reviewed policy: %s', (_name, change, message) => {
+  const report = result(change);
+  expect(report.exitCode).toBe(2);
+  expect(report.incomplete).toEqual([message]);
+});
 
 test('the committed plan preserves missing source-addition proof', async () => {
   const root = resolve(import.meta.dirname, '..');
@@ -1080,84 +1189,98 @@ test.each([
     (v) => {
       v.schema = 1;
     },
+    'evidence.schema: invalid value.',
   ],
   [
     'producer readiness Boolean',
     (v) => {
       v.releaseReady = true;
     },
+    'evidence: missing or unrecognized fields.',
   ],
   [
     'changed acceptance hash',
     (v) => {
       v.sdk.acceptanceSha256 = '0'.repeat(64);
     },
+    'Reviewed Node acceptance contract hash differs.',
   ],
   [
     'relabel local to cloud',
     (v) => {
       v.runs[1].target = 'hosted-ci';
     },
+    'run.pdp: missing or unrecognized fields.',
   ],
   [
     'relabel cloud to local',
     (v) => {
       cloudRun(v).target = 'local';
     },
+    'run.pdp: missing or unrecognized fields.',
   ],
   [
     'invented cloud container digest',
     (v) => {
       cloudRun(v).pdp.digest = pdpDigest;
     },
+    'run.pdp: missing or unrecognized fields.',
   ],
   [
     'wrong cloud origin',
     (v) => {
       cloudRun(v).pdp.origin = 'https://foreign.invalid';
     },
+    'run.pdp.origin: invalid value.',
   ],
   [
     'wrong public cloud contract',
     (v) => {
       cloudRun(v).pdp.contractSha256 = '0'.repeat(64);
     },
+    'run.pdp.contractSha256: invalid value.',
   ],
   [
     'wrong CI source commit',
     (v) => {
       cloudRun(v).pdp.ci.commit = '0'.repeat(40);
     },
+    'Cloud report differs from independently checked CI source.',
   ],
   [
     'wrong CI tree',
     (v) => {
       cloudRun(v).pdp.ci.tree = '0'.repeat(40);
     },
+    'Cloud report differs from independently checked CI source.',
   ],
   [
     'wrong CI attempt',
     (v) => {
       cloudRun(v).pdp.ci.runAttempt = '2';
     },
+    'Cloud report differs from independently checked CI source.',
   ],
   [
     'different cloud consumer lock',
     (v) => {
       cloudRun(v).consumerLockSha256 = '0'.repeat(64);
     },
+    'Cloud consumer lock differs from supplied bytes.',
   ],
   [
     'stale cloud observation',
     (v) => {
       cloudRun(v).pdp.observedAt = '2026-10-06T12:00:00Z';
     },
+    'Stale cloud observation.',
   ],
   [
     'future cloud observation',
     (v) => {
       cloudRun(v).pdp.observedAt = '2026-10-09T12:00:00Z';
     },
+    'Stale cloud observation.',
   ],
   [
     'missing CJS observation',
@@ -1166,60 +1289,70 @@ test.each([
         (row) => row.entry !== 'commonjs',
       );
     },
+    'Cloud case lacks successful actual HTTP observations for both entry points.',
   ],
   [
     'wrong observed method',
     (v) => {
       cloudRun(v).httpObservations[0].method = 'GET';
     },
+    'run.httpObservation.method: invalid value.',
   ],
   [
     'wrong observed path',
     (v) => {
       cloudRun(v).httpObservations[0].path = '/authorized_users';
     },
+    'Cloud case lacks successful actual HTTP observations for both entry points.',
   ],
   [
     'wrong observed origin',
     (v) => {
       cloudRun(v).httpObservations[0].origin = 'http://127.0.0.1:1';
     },
+    'run.httpObservation.origin: invalid value.',
   ],
   [
     'failed observed HTTP status',
     (v) => {
       cloudRun(v).httpObservations[0].status = 503;
     },
+    'run.httpObservation.status: invalid value.',
   ],
   [
     'zero observed requests',
     (v) => {
       cloudRun(v).httpObservations[0].requests = 0;
     },
+    'run.httpObservation.requests: invalid value.',
   ],
   [
     'duplicate cloud observation',
     (v) => {
       cloudRun(v).httpObservations.push(structuredClone(cloudRun(v).httpObservations[0]));
     },
+    'run.httpObservations: duplicate entries.',
   ],
   [
     'missing cloud cell',
     (v) => {
       v.runs = v.runs.filter((run) => run.target !== 'hosted-ci' || run.node !== '26.11.0');
     },
+    'Missing cloud phase cloud.check: Node 26.11.0.',
   ],
   [
     'cloud cleanup failure',
     (v) => {
       cloudRun(v).cleanupErrorCount = 1;
     },
+    'Run candidate.cloud.node22.13.0: setup or cleanup is incomplete.',
   ],
   [
     'cloud phase count without cases',
     (v) => {
       cloudRun(v).caseResults = [];
     },
+    'Cloud HTTP observation lacks an executed case.',
   ],
   [
     'wire-only cloud credit',
@@ -1227,12 +1360,14 @@ test.each([
       cloudRun(v).caseResults[0].level = 'wire';
       cloudRun(v).phaseResults[0].kind = 'wire';
     },
+    'Case cloud.check: evidence level differs.',
   ],
   [
     'removed required cloud operation',
     (_v, e) => {
       e.requirements.cloud.caseIds.pop();
     },
+    'Managed cloud matrix differs from the reviewed public contract.',
   ],
   [
     'removed cloud inventory decision',
@@ -1241,24 +1376,35 @@ test.each([
       e.inventory = structuredClone(v.inventory);
       v.sdk.inventorySha256 = digest(canonicalReleaseInventory(v.inventory));
     },
+    'Required managed cloud operations cannot be removed or deferred.',
   ],
   [
     'absent trusted CI context',
     (_v, e) => {
       delete e.ci;
     },
+    'Cloud report differs from independently checked CI source.',
   ],
   [
     'missing required CI job',
     (_v, e) => {
       delete e.gateResults['cloud-cleanup'];
     },
+    'Required acceptance job did not succeed: cloud-cleanup.',
+  ],
+  [
+    'absent CI gate results',
+    (_v, e) => {
+      e.gateResults = null;
+    },
+    'Required acceptance job did not succeed: candidate.',
   ],
   [
     'unknown required CI job',
     (_v, e) => {
       e.gateResults['invented-job'] = { result: 'success' };
     },
+    'Missing or unexpected acceptance job results.',
   ],
   [
     'unavailable backend rollout',
@@ -1266,13 +1412,27 @@ test.each([
       e.acceptance.dependencies[0].status = 'UNAVAILABLE';
       v.sdk.acceptanceSha256 = digest(e.acceptance);
     },
+    'Unverified acceptance dependency user-attribute-backend-rollout (PER-16954).',
   ],
   [
-    'unimplemented async feature',
+    'emptied async feature contract',
     (v, e) => {
       e.acceptance.features.find((row) => row.id === 'environment-async-copy').caseIds = [];
       v.sdk.acceptanceSha256 = digest(e.acceptance);
     },
+    'Required Node feature routes or owners differ from the adopted contract.',
+  ],
+  [
+    'unimplemented async feature',
+    (v, e) => {
+      const omitted = 'api.async-copy.existing-target';
+      e.requirements.cases = e.requirements.cases.filter((row) => row.id !== omitted);
+      for (const row of [...v.inventory.methods, ...v.inventory.operations])
+        row.caseIds = row.caseIds.filter((id) => id !== omitted);
+      for (const run of v.runs)
+        run.caseResults = run.caseResults.filter((row) => row.id !== omitted);
+    },
+    'Unimplemented required feature environment-async-copy (PER-16951).',
   ],
   [
     'only wire feature proof',
@@ -1283,13 +1443,16 @@ test.each([
         for (const item of run.caseResults)
           if (rows.some((row) => row.id === item.id)) item.level = 'wire';
     },
+    'Required async-copy proof case differs.',
   ],
-])('Node readiness refuses %s', (_name, change) => {
-  expect(result(change)).toMatchObject({
+])('Node readiness refuses %s', (_name, change, message) => {
+  const report = result(change);
+  expect(report).toMatchObject({
     exitCode: 2,
     nodeReleaseReady: false,
     releaseReady: false,
   });
+  expect(report.incomplete).toContain(message);
 });
 test.each(['failure', 'cancelled', 'skipped', 'pending', 'neutral', 'timed_out'])(
   'required CI result %s cannot grant Node readiness',
