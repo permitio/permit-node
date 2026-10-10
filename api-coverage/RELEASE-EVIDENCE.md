@@ -122,9 +122,12 @@ Forks and Dependabot cannot enter the trusted credential path.
 
 Separate cleanup always follows partial setup and candidate execution. It checks immutable physical
 parent/child identities, complete bounded destructive child inventories and captured defaults before
-cascade deletion, then verifies key/ID absence. Unknown/lost writes, failed initial capture, foreign
-or recycled/additive/changed children, incomplete pages or failed reads retain survivors and supply
-no fabricated cleanup credit. Only finite noncredential state and cleanup receipts cross jobs.
+cascade deletion, then verifies key/ID absence. API keys are not a complete inventory: the project
+credential reads the environment's primary key and checks it against the single PDP configuration,
+but a project-level credential cannot enumerate additional environment keys. Unknown/lost writes,
+failed initial capture, foreign or recycled/additive/changed children, incomplete pages or failed
+reads retain survivors and supply no fabricated cleanup credit. Only finite noncredential state and
+cleanup receipts cross jobs.
 
 Completion validates the received execution/native/run/cleanup/actual-lock bytes and emits a final
 set for each runtime, including original execution.json bytes. The pending producer receipt has

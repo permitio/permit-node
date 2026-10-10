@@ -387,7 +387,7 @@ jobs:
           import { isDeepStrictEqual } from 'node:util';
           var idPattern = /^[a-f0-9-]{32,36}$/u;
           var automaticRoles = ['admin', 'editor', 'viewer'];
-          var builtins = ['__user', '__tenant'];
+          var builtins = ['__role', '__user', '__tenant'];
           var limit = 128;
           function requireValid(value) {
             if (!value)
@@ -412,7 +412,7 @@ jobs:
             requireValid(reply && (reply.status === 200 || (singleton && reply.status === 404)));
             return reply;
           }
-          async function cloudClosurePages({ request, path, envelope = false }) {
+          async function cloudClosurePages({ request, path }) {
             const result = [],
               seen = /* @__PURE__ */ new Set();
             let total;
@@ -423,19 +423,13 @@ jobs:
               );
               const body = reply.body,
                 rows = Array.isArray(body) ? body : body?.data;
-              requireValid(
-                Array.isArray(rows) && rows.length <= 100 && (!envelope || !Array.isArray(body)),
-              );
+              requireValid(Array.isArray(rows) && rows.length <= 100);
               if (!Array.isArray(body)) {
                 requireValid(Number.isSafeInteger(body.total_count) && body.total_count >= 0);
                 requireValid(total === void 0 || total === body.total_count);
                 total = body.total_count;
                 if (body.page_count != null)
-                  requireValid(
-                    Number.isSafeInteger(body.page_count) &&
-                      body.page_count >= 0 &&
-                      body.page_count === Math.ceil(total / 100),
-                  );
+                  requireValid(Number.isSafeInteger(body.page_count) && body.page_count >= 0);
               } else requireValid(total === void 0);
               for (const row of rows) {
                 requireValid(
@@ -484,7 +478,6 @@ jobs:
               ['pdp_configs', `/v2/pdps/${context.project}/${context.environment}/configs`],
               ['elements_configs', `/v2/elements/${context.project}/${context.environment}/config`],
               ['email_templates', `${facts}/email_templates/`],
-              ['api_keys', `/v2/api-key?object_type=env&proj_id=${context.project}`],
             ];
           }
           function requireScope(row, context) {
@@ -540,28 +533,17 @@ jobs:
               digest: fingerprint(projection),
             };
           }
-          async function observe({ request, context }) {
+          async function observe({ request, projectRequest, context }) {
             requireValid(
-              idPattern.test(context.organization) &&
+              typeof projectRequest === 'function' &&
+                idPattern.test(context.organization) &&
                 idPattern.test(context.project) &&
                 idPattern.test(context.environment) &&
                 Number.isFinite(Date.parse(context.createdAt)),
             );
             const groups = /* @__PURE__ */ new Map();
-            for (const [kind, path] of surfaces(context)) {
-              let rows = await cloudClosurePages({ request, path, envelope: kind === 'api_keys' });
-              if (kind === 'api_keys') {
-                for (const row of rows)
-                  requireValid(
-                    row.organization_id === context.organization &&
-                      row.project_id === context.project &&
-                      row.object_type === 'env' &&
-                      typeof row.environment_id === 'string',
-                  );
-                rows = rows.filter((row) => row.environment_id === context.environment);
-              }
-              groups.set(kind, rows);
-            }
+            for (const [kind, path] of surfaces(context))
+              groups.set(kind, await cloudClosurePages({ request, path }));
             for (const [kind, path] of [
               [
                 'email_configuration',
@@ -572,6 +554,11 @@ jobs:
               const reply = await get(request, path, true);
               groups.set(kind, reply.status === 404 ? [] : [reply.body]);
             }
+            const environmentKey = await get(
+              projectRequest,
+              `/v2/api-key/${context.project}/${context.environment}`,
+            );
+            groups.set('api_keys', [environmentKey.body]);
             requireValid(groups.get('resources').length <= 8);
             for (const resource of groups.get('resources')) {
               requireScope(resource, context);
@@ -611,7 +598,7 @@ jobs:
               isDeepStrictEqual(row.conditions, { 'user.roles': { contains: role.key } })
             );
           }
-          async function baselinePolicy({ groups, request, context }) {
+          function baselinePolicy({ groups, context }) {
             const resources = groups.get('resources'),
               roles = groups.get('roles');
             requireValid(
@@ -642,29 +629,14 @@ jobs:
             );
             const pdps = groups.get('pdp_configs');
             requireValid(pdps.length <= 1);
-            for (const key of groups.get('api_keys')) {
-              requireValid(key.owner_type === 'pdp_config' && key.object_type === 'env');
-              let secret = key.secret;
-              if (secret == null) {
-                const detail = await get(request, `/v2/api-key/${key.id}`);
-                for (const field of [
-                  'id',
-                  'created_at',
-                  'organization_id',
-                  'project_id',
-                  'environment_id',
-                  'owner_type',
-                  'object_type',
-                ])
-                  requireValid(detail.body?.[field] === key[field]);
-                secret = detail.body.secret;
-              }
+            for (const key of groups.get('api_keys'))
               requireValid(
-                typeof secret === 'string' &&
-                  secret.length > 0 &&
-                  pdps.some((pdp) => pdp.client_secret === secret),
+                key.owner_type === 'pdp_config' &&
+                  key.object_type === 'env' &&
+                  typeof key.secret === 'string' &&
+                  key.secret.length > 0 &&
+                  pdps.some((pdp) => pdp.client_secret === key.secret),
               );
-            }
             for (const [kind, rows] of groups) {
               if (
                 [
@@ -687,6 +659,9 @@ jobs:
                       (child === 'attributes' && row.built_in === true) ||
                       (child === 'roles' &&
                         roles.some((role) => row.id === role.id && row.key === role.key)) ||
+                      (child === 'roles' &&
+                        resource.key === '__tenant' &&
+                        row.key === 'tenant-association') ||
                       (child === 'actions' && ['__user', '__tenant'].includes(resource.key)),
                   ),
                 );
@@ -695,10 +670,10 @@ jobs:
             requireValid(groups.get('api_keys').length === pdps.length);
             for (const rows of groups.values()) for (const row of rows) requireScope(row, context);
           }
-          async function captureCloudClosure({ request, context }) {
+          async function captureCloudClosure({ request, projectRequest, context }) {
             try {
-              const observed = await observe({ request, context });
-              await baselinePolicy({ ...observed, request, context });
+              const observed = await observe({ request, projectRequest, context });
+              baselinePolicy({ ...observed, context });
               return {
                 schema: 1,
                 context: { ...context },
@@ -753,7 +728,7 @@ jobs:
               }
             }
           }
-          async function settleCloudClosure({ request, closure, fixture }) {
+          async function settleCloudClosure({ request, projectRequest, closure, fixture }) {
             try {
               requireClosure(closure);
               requireValid(
@@ -766,7 +741,7 @@ jobs:
                   new Set(fixture.records.map((row) => `${row.kind}:${row.id}`)).size ===
                     fixture.records.length,
               );
-              const observed = await observe({ request, context: closure.context });
+              const observed = await observe({ request, projectRequest, context: closure.context });
               const baseline = new Map(
                 closure.baseline.map((row) => [`${row.kind}:${row.id}`, row]),
               );
@@ -1346,7 +1321,11 @@ jobs:
                 createdAt: scoped.state.identity.createdAt,
               };
               const childRequest = (input) => http({ ...input, credential: scoped.credential });
-              state.closure = await captureCloudClosure({ request: childRequest, context });
+              state.closure = await captureCloudClosure({
+                request: childRequest,
+                projectRequest: http,
+                context,
+              });
               savePrivateState(file, state);
               const fixture = await seedCloudFixture({
                 context: {
@@ -1364,6 +1343,7 @@ jobs:
               });
               state.closure = await settleCloudClosure({
                 request: childRequest,
+                projectRequest: http,
                 closure: state.closure,
                 fixture: state.fixture,
               });
@@ -2050,7 +2030,7 @@ jobs:
             requireValid(reply && (reply.status === 200 || (singleton && reply.status === 404)));
             return reply;
           }
-          async function cloudClosurePages({ request, path, envelope = false }) {
+          async function cloudClosurePages({ request, path }) {
             const result = [],
               seen = /* @__PURE__ */ new Set();
             let total;
@@ -2061,19 +2041,13 @@ jobs:
               );
               const body = reply.body,
                 rows = Array.isArray(body) ? body : body?.data;
-              requireValid(
-                Array.isArray(rows) && rows.length <= 100 && (!envelope || !Array.isArray(body)),
-              );
+              requireValid(Array.isArray(rows) && rows.length <= 100);
               if (!Array.isArray(body)) {
                 requireValid(Number.isSafeInteger(body.total_count) && body.total_count >= 0);
                 requireValid(total === void 0 || total === body.total_count);
                 total = body.total_count;
                 if (body.page_count != null)
-                  requireValid(
-                    Number.isSafeInteger(body.page_count) &&
-                      body.page_count >= 0 &&
-                      body.page_count === Math.ceil(total / 100),
-                  );
+                  requireValid(Number.isSafeInteger(body.page_count) && body.page_count >= 0);
               } else requireValid(total === void 0);
               for (const row of rows) {
                 requireValid(
@@ -2122,7 +2096,6 @@ jobs:
               ['pdp_configs', `/v2/pdps/${context.project}/${context.environment}/configs`],
               ['elements_configs', `/v2/elements/${context.project}/${context.environment}/config`],
               ['email_templates', `${facts}/email_templates/`],
-              ['api_keys', `/v2/api-key?object_type=env&proj_id=${context.project}`],
             ];
           }
           function requireScope(row, context) {
@@ -2178,28 +2151,17 @@ jobs:
               digest: fingerprint(projection),
             };
           }
-          async function observe({ request, context }) {
+          async function observe({ request, projectRequest, context }) {
             requireValid(
-              idPattern.test(context.organization) &&
+              typeof projectRequest === 'function' &&
+                idPattern.test(context.organization) &&
                 idPattern.test(context.project) &&
                 idPattern.test(context.environment) &&
                 Number.isFinite(Date.parse(context.createdAt)),
             );
             const groups = /* @__PURE__ */ new Map();
-            for (const [kind, path] of surfaces(context)) {
-              let rows = await cloudClosurePages({ request, path, envelope: kind === 'api_keys' });
-              if (kind === 'api_keys') {
-                for (const row of rows)
-                  requireValid(
-                    row.organization_id === context.organization &&
-                      row.project_id === context.project &&
-                      row.object_type === 'env' &&
-                      typeof row.environment_id === 'string',
-                  );
-                rows = rows.filter((row) => row.environment_id === context.environment);
-              }
-              groups.set(kind, rows);
-            }
+            for (const [kind, path] of surfaces(context))
+              groups.set(kind, await cloudClosurePages({ request, path }));
             for (const [kind, path] of [
               [
                 'email_configuration',
@@ -2210,6 +2172,11 @@ jobs:
               const reply = await get(request, path, true);
               groups.set(kind, reply.status === 404 ? [] : [reply.body]);
             }
+            const environmentKey = await get(
+              projectRequest,
+              `/v2/api-key/${context.project}/${context.environment}`,
+            );
+            groups.set('api_keys', [environmentKey.body]);
             requireValid(groups.get('resources').length <= 8);
             for (const resource of groups.get('resources')) {
               requireScope(resource, context);
@@ -2286,12 +2253,12 @@ jobs:
               }
             }
           }
-          async function verifyCloudClosure({ request, closure, fixture }) {
+          async function verifyCloudClosure({ request, projectRequest, closure, fixture }) {
             try {
               requireClosure(closure);
               const expected = fixture === null ? closure.baseline : closure.settled;
               requireValid(Array.isArray(expected));
-              const observed = await observe({ request, context: closure.context });
+              const observed = await observe({ request, projectRequest, context: closure.context });
               requireValid(isDeepStrictEqual(observed.records, expected));
               if (fixture !== null) {
                 for (const owned of fixture.records) {
@@ -2702,6 +2669,7 @@ jobs:
               requireValid4(scoped.organization === state.closure.context.organization);
               await verifyCloudClosure({
                 request: (input) => http({ ...input, credential: scoped.credential }),
+                projectRequest: http,
                 closure: state.closure,
                 fixture: state.fixture,
               });

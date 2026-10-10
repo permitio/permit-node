@@ -3,7 +3,7 @@ import { isDeepStrictEqual } from 'node:util';
 
 const idPattern = /^[a-f0-9-]{32,36}$/u;
 const automaticRoles = ['admin', 'editor', 'viewer'];
-const builtins = ['__user', '__tenant'];
+const builtins = ['__role', '__user', '__tenant'];
 const limit = 128;
 
 function requireValid(value) {
@@ -31,11 +31,13 @@ async function get(request, path, singleton = false) {
 
 /**
  * Reads complete bounded public pages, refusing partial totals, repeated IDs and malformed shapes.
- * @param options - Explicit GET boundary, committed public route and required envelope policy.
+ * Completeness comes from a consistent total_count and the received row count; page_count is only
+ * shape-checked because the public API does not derive it from total_count and the page size.
+ * @param options - Explicit GET boundary and committed public route.
  * @returns Received rows after complete enumeration, without altering caller-owned response bodies.
  * @throws With a constant diagnostic if complete enumeration cannot be established.
  */
-export async function cloudClosurePages({ request, path, envelope = false }) {
+export async function cloudClosurePages({ request, path }) {
   const result = [],
     seen = new Set();
   let total;
@@ -46,17 +48,13 @@ export async function cloudClosurePages({ request, path, envelope = false }) {
     );
     const body = reply.body,
       rows = Array.isArray(body) ? body : body?.data;
-    requireValid(Array.isArray(rows) && rows.length <= 100 && (!envelope || !Array.isArray(body)));
+    requireValid(Array.isArray(rows) && rows.length <= 100);
     if (!Array.isArray(body)) {
       requireValid(Number.isSafeInteger(body.total_count) && body.total_count >= 0);
       requireValid(total === undefined || total === body.total_count);
       total = body.total_count;
       if (body.page_count != null)
-        requireValid(
-          Number.isSafeInteger(body.page_count) &&
-            body.page_count >= 0 &&
-            body.page_count === Math.ceil(total / 100),
-        );
+        requireValid(Number.isSafeInteger(body.page_count) && body.page_count >= 0);
     } else requireValid(total === undefined);
     for (const row of rows) {
       requireValid(
@@ -100,7 +98,6 @@ function surfaces(context) {
     ['pdp_configs', `/v2/pdps/${context.project}/${context.environment}/configs`],
     ['elements_configs', `/v2/elements/${context.project}/${context.environment}/config`],
     ['email_templates', `${facts}/email_templates/`],
-    ['api_keys', `/v2/api-key?object_type=env&proj_id=${context.project}`],
   ];
 }
 function requireScope(row, context) {
@@ -155,28 +152,17 @@ function record(kind, row, context) {
   };
 }
 
-async function observe({ request, context }) {
+async function observe({ request, projectRequest, context }) {
   requireValid(
-    idPattern.test(context.organization) &&
+    typeof projectRequest === 'function' &&
+      idPattern.test(context.organization) &&
       idPattern.test(context.project) &&
       idPattern.test(context.environment) &&
       Number.isFinite(Date.parse(context.createdAt)),
   );
   const groups = new Map();
-  for (const [kind, path] of surfaces(context)) {
-    let rows = await cloudClosurePages({ request, path, envelope: kind === 'api_keys' });
-    if (kind === 'api_keys') {
-      for (const row of rows)
-        requireValid(
-          row.organization_id === context.organization &&
-            row.project_id === context.project &&
-            row.object_type === 'env' &&
-            typeof row.environment_id === 'string',
-        );
-      rows = rows.filter((row) => row.environment_id === context.environment);
-    }
-    groups.set(kind, rows);
-  }
+  for (const [kind, path] of surfaces(context))
+    groups.set(kind, await cloudClosurePages({ request, path }));
   for (const [kind, path] of [
     [
       'email_configuration',
@@ -187,6 +173,11 @@ async function observe({ request, context }) {
     const reply = await get(request, path, true);
     groups.set(kind, reply.status === 404 ? [] : [reply.body]);
   }
+  const environmentKey = await get(
+    projectRequest,
+    `/v2/api-key/${context.project}/${context.environment}`,
+  );
+  groups.set('api_keys', [environmentKey.body]);
   requireValid(groups.get('resources').length <= 8);
   for (const resource of groups.get('resources')) {
     requireScope(resource, context);
@@ -221,7 +212,7 @@ function ownSet(row, role) {
     isDeepStrictEqual(row.conditions, { 'user.roles': { contains: role.key } })
   );
 }
-async function baselinePolicy({ groups, request, context }) {
+function baselinePolicy({ groups, context }) {
   const resources = groups.get('resources'),
     roles = groups.get('roles');
   requireValid(
@@ -252,29 +243,14 @@ async function baselinePolicy({ groups, request, context }) {
   );
   const pdps = groups.get('pdp_configs');
   requireValid(pdps.length <= 1);
-  for (const key of groups.get('api_keys')) {
-    requireValid(key.owner_type === 'pdp_config' && key.object_type === 'env');
-    let secret = key.secret;
-    if (secret == null) {
-      const detail = await get(request, `/v2/api-key/${key.id}`);
-      for (const field of [
-        'id',
-        'created_at',
-        'organization_id',
-        'project_id',
-        'environment_id',
-        'owner_type',
-        'object_type',
-      ])
-        requireValid(detail.body?.[field] === key[field]);
-      secret = detail.body.secret;
-    }
+  for (const key of groups.get('api_keys'))
     requireValid(
-      typeof secret === 'string' &&
-        secret.length > 0 &&
-        pdps.some((pdp) => pdp.client_secret === secret),
+      key.owner_type === 'pdp_config' &&
+        key.object_type === 'env' &&
+        typeof key.secret === 'string' &&
+        key.secret.length > 0 &&
+        pdps.some((pdp) => pdp.client_secret === key.secret),
     );
-  }
   for (const [kind, rows] of groups) {
     if (
       [
@@ -297,6 +273,9 @@ async function baselinePolicy({ groups, request, context }) {
             (child === 'attributes' && row.built_in === true) ||
             (child === 'roles' &&
               roles.some((role) => row.id === role.id && row.key === role.key)) ||
+            (child === 'roles' &&
+              resource.key === '__tenant' &&
+              row.key === 'tenant-association') ||
             (child === 'actions' && ['__user', '__tenant'].includes(resource.key)),
         ),
       );
@@ -308,17 +287,19 @@ async function baselinePolicy({ groups, request, context }) {
 
 /**
  * Captures narrowly recognized defaults before fixture writes; no received body or credential is
- * saved.
- * @param options - Explicit HTTP boundary and captured organization/project/environment/birth
- * scope.
+ * saved. The environment's own API key is read through the project-level boundary and must match
+ * the single PDP configuration. A project-level credential verifies that primary key but cannot
+ * enumerate additional environment keys.
+ * @param options - Environment-scoped child HTTP boundary, project-level HTTP boundary for the
+ * environment key and captured organization/project/environment/birth scope.
  * @returns Finite identity and digest descriptors; a null settled inventory requires later proof.
  * @throws With a constant diagnostic when defaults, scope, credentials or pagination are
  * unverified.
  */
-export async function captureCloudClosure({ request, context }) {
+export async function captureCloudClosure({ request, projectRequest, context }) {
   try {
-    const observed = await observe({ request, context });
-    await baselinePolicy({ ...observed, request, context });
+    const observed = await observe({ request, projectRequest, context });
+    baselinePolicy({ ...observed, context });
     return { schema: 1, context: { ...context }, baseline: observed.records, settled: null };
   } catch {
     throw new Error('Cloud initial child closure failed; retain the owned environment.');
@@ -372,12 +353,12 @@ function requireClosure(closure) {
 
 /**
  * Admits captured fixture IDs and finite resource/role effects, preserving every initial default.
- * @param options - Public read boundary, initial closure and independently captured fixture
- * records.
+ * @param options - Environment-scoped child read boundary, project-level read boundary for the
+ * environment key, initial closure and independently captured fixture records.
  * @returns A new settled closure; the initial caller-owned closure remains intact on failure.
  * @throws With a constant diagnostic on additions, replacements or unrecognized effects.
  */
-export async function settleCloudClosure({ request, closure, fixture }) {
+export async function settleCloudClosure({ request, projectRequest, closure, fixture }) {
   try {
     requireClosure(closure);
     requireValid(
@@ -390,7 +371,7 @@ export async function settleCloudClosure({ request, closure, fixture }) {
         new Set(fixture.records.map((row) => `${row.kind}:${row.id}`)).size ===
           fixture.records.length,
     );
-    const observed = await observe({ request, context: closure.context });
+    const observed = await observe({ request, projectRequest, context: closure.context });
     const baseline = new Map(closure.baseline.map((row) => [`${row.kind}:${row.id}`, row]));
     const owned = new Map(fixture.records.map((row) => [`${row.kind}:${row.id}`, row]));
     for (const row of observed.records) {
@@ -444,16 +425,17 @@ export async function settleCloudClosure({ request, closure, fixture }) {
 
 /**
  * Rereads bounded inventories and exact captured child IDs before the parent deletion is attempted.
- * @param options - Explicit HTTP boundary, captured closure and fixture or known empty baseline.
+ * @param options - Environment-scoped child HTTP boundary, project-level HTTP boundary for the
+ * environment key, captured closure and fixture or known empty baseline.
  * @returns Nothing when all physical identities and definitions remain captured and complete.
  * @throws With a constant diagnostic to retain the environment on any ownership uncertainty.
  */
-export async function verifyCloudClosure({ request, closure, fixture }) {
+export async function verifyCloudClosure({ request, projectRequest, closure, fixture }) {
   try {
     requireClosure(closure);
     const expected = fixture === null ? closure.baseline : closure.settled;
     requireValid(Array.isArray(expected));
-    const observed = await observe({ request, context: closure.context });
+    const observed = await observe({ request, projectRequest, context: closure.context });
     requireValid(isDeepStrictEqual(observed.records, expected));
     if (fixture !== null) {
       for (const owned of fixture.records) {

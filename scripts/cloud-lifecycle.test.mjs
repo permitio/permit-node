@@ -47,35 +47,33 @@ function boundary(options = {}) {
     grant;
   const entities = new Map(),
     calls = [];
+  const scope = {
+    organization_id: organization,
+    project_id: project,
+    environment_id: environment,
+  };
+  const environmentKey = {
+    ...scope,
+    id: 'e'.repeat(32),
+    created_at: '2026-10-08T12:00:00Z',
+    object_type: 'env',
+    owner_type: 'pdp_config',
+    secret: credential,
+    last_used_at: null,
+  };
   const request = async (input) => {
     calls.push(structuredClone(input));
     const path = new URL(input.path, 'https://api.permit.io');
     if (input.path === '/v2/api-key/scope') {
       expect(input.credential).toBe(credential);
-      return {
-        status: 200,
-        body: {
-          organization_id: organization,
-          project_id: project,
-          environment_id: environment,
-          ...options.scope,
-        },
-      };
+      return { status: 200, body: { ...scope, ...options.scope } };
     }
-    if (path.pathname === '/v2/api-key') return { status: 200, body: { data: [], total_count: 0 } };
-    if (input.path.startsWith('/v2/api-key/')) {
+    if (input.path === `/v2/api-key/${project}/${environment}`) {
+      expect(input.credential).toBeUndefined();
       if (options.failedCredential) throw new Error(canary);
-      return {
-        status: 200,
-        body: {
-          secret: credential,
-          object_type: 'env',
-          organization_id: organization,
-          project_id: project,
-          environment_id: environment,
-        },
-      };
+      return { status: 200, body: structuredClone(environmentKey) };
     }
+    if (path.pathname.startsWith('/v2/api-key')) return { status: 403, body: { detail: canary } };
     if (input.path.startsWith(`/v2/projects/${project}/envs`)) {
       if (input.method === 'POST') {
         owner = {
@@ -94,6 +92,8 @@ function boundary(options = {}) {
       return { status: owner ? 200 : 404, body: structuredClone(owner) };
     }
     expect(input.credential).toBe(credential);
+    if (path.pathname === `/v2/pdps/${project}/${environment}/configs`)
+      return { status: 200, body: [{ ...scope, id: 'd'.repeat(32), client_secret: credential }] };
     const kind = path.pathname.split('/')[5];
     if (input.method === 'POST') {
       count += 1;
@@ -160,6 +160,7 @@ function boundary(options = {}) {
     },
     hasEnvironment: () => Boolean(owner),
     entities,
+    environmentKey,
   };
 }
 
@@ -189,6 +190,26 @@ test('trusted lifecycle stores only identifiers, masks handoff, and verifies abs
   expect(JSON.stringify(cleanup)).not.toMatch(/credential|CANARY/u);
   expect(f.calls.filter((call) => call.method === 'POST')).toHaveLength(8);
   expect(f.calls.filter((call) => call.method === 'DELETE')).toHaveLength(1);
+  const keyReads = f.calls.filter((call) => call.path === `/v2/api-key/${project}/${environment}`);
+  expect(keyReads).toHaveLength(6);
+  expect(keyReads.every((call) => call.method === 'GET' && call.credential === undefined)).toBe(
+    true,
+  );
+  expect(
+    f.calls.some((call) => new URL(call.path, 'https://api.permit.io').pathname === '/v2/api-key'),
+  ).toBe(false);
+});
+
+test.each([
+  ['replaced', { created_at: '2026-10-08T13:00:00Z' }],
+  ['reassigned', { owner_type: 'member' }],
+])('a %s environment key refuses cleanup before cascading', async (_name, change) => {
+  const f = boundary();
+  await setup(f);
+  Object.assign(f.environmentKey, change);
+  await expect(cleanupTrustedCloud(f)).rejects.toThrow('cleanup failed');
+  expect(f.hasEnvironment()).toBe(true);
+  expect(f.calls.filter((call) => call.method === 'DELETE')).toEqual([]);
 });
 
 test.each([

@@ -165,7 +165,11 @@ export async function setupTrustedCloud({ directory, env = process.env, request 
       createdAt: scoped.state.identity.createdAt,
     };
     const childRequest = (input) => http({ ...input, credential: scoped.credential });
-    state.closure = await captureCloudClosure({ request: childRequest, context });
+    state.closure = await captureCloudClosure({
+      request: childRequest,
+      projectRequest: http,
+      context,
+    });
     savePrivateState(file, state);
     const fixture = await seedCloudFixture({
       context: {
@@ -183,6 +187,7 @@ export async function setupTrustedCloud({ directory, env = process.env, request 
     });
     state.closure = await settleCloudClosure({
       request: childRequest,
+      projectRequest: http,
       closure: state.closure,
       fixture: state.fixture,
     });
@@ -262,6 +267,7 @@ export async function cleanupTrustedCloud({ directory, env = process.env, reques
     requireValid(scoped.organization === state.closure.context.organization);
     await verifyCloudClosure({
       request: (input) => http({ ...input, credential: scoped.credential }),
+      projectRequest: http,
       closure: state.closure,
       fixture: state.fixture,
     });
