@@ -1,9 +1,11 @@
 import {
+  mkdirSync,
   mkdtempSync,
   readFileSync,
   realpathSync,
   readdirSync,
   statSync,
+  symlinkSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -16,11 +18,14 @@ import {
   trustedCloudRun,
 } from '#scripts/cloud-lifecycle.mjs';
 
-const project = 'b'.repeat(32),
-  environment = 'c'.repeat(32),
-  organization = 'a'.repeat(32);
+const project = 'deadbeef'.repeat(4),
+  environment = 'facefeed'.repeat(4),
+  organization = 'c0ffee00'.repeat(4),
+  keyId = 'badcab1e'.repeat(4),
+  pdpId = '5ca1ab1e'.repeat(4);
 const credential = 'synthetic-env%credential';
 const canary = 'CLOUD_LIFECYCLE_RESPONSE_ONLY_CANARY';
+const diagnostic = (code) => `Cloud lifecycle diagnostic: ${code}`;
 function boundary(options = {}) {
   const temp = realpathSync(mkdtempSync(join(tmpdir(), 'public-cloud-lifecycle-')));
   const directory = join(temp, 'cloud-state'),
@@ -46,7 +51,8 @@ function boundary(options = {}) {
     count = 0,
     grant;
   const entities = new Map(),
-    calls = [];
+    calls = [],
+    lines = [];
   const scope = {
     organization_id: organization,
     project_id: project,
@@ -54,7 +60,7 @@ function boundary(options = {}) {
   };
   const environmentKey = {
     ...scope,
-    id: 'e'.repeat(32),
+    id: keyId,
     created_at: '2026-10-08T12:00:00Z',
     object_type: 'env',
     owner_type: 'pdp_config',
@@ -64,6 +70,8 @@ function boundary(options = {}) {
   const request = async (input) => {
     calls.push(structuredClone(input));
     const path = new URL(input.path, 'https://api.permit.io');
+    const responded = await options.respond?.(input, path.pathname);
+    if (responded !== undefined) return responded;
     if (input.path === '/v2/api-key/scope') {
       expect(input.credential).toBe(credential);
       return { status: 200, body: { ...scope, ...options.scope } };
@@ -93,7 +101,10 @@ function boundary(options = {}) {
     }
     expect(input.credential).toBe(credential);
     if (path.pathname === `/v2/pdps/${project}/${environment}/configs`)
-      return { status: 200, body: [{ ...scope, id: 'd'.repeat(32), client_secret: credential }] };
+      return {
+        status: 200,
+        body: [{ ...scope, id: pdpId, client_secret: options.pdpSecret ?? credential }],
+      };
     const kind = path.pathname.split('/')[5];
     if (input.method === 'POST') {
       count += 1;
@@ -161,6 +172,10 @@ function boundary(options = {}) {
     hasEnvironment: () => Boolean(owner),
     entities,
     environmentKey,
+    lines,
+    report: (line) => {
+      lines.push(line);
+    },
   };
 }
 
@@ -198,6 +213,7 @@ test('trusted lifecycle stores only identifiers, masks handoff, and verifies abs
   expect(
     f.calls.some((call) => new URL(call.path, 'https://api.permit.io').pathname === '/v2/api-key'),
   ).toBe(false);
+  expect(f.lines).toEqual([]);
 });
 
 test.each([
@@ -208,6 +224,7 @@ test.each([
   await setup(f);
   Object.assign(f.environmentKey, change);
   await expect(cleanupTrustedCloud(f)).rejects.toThrow('cleanup failed');
+  expect(f.lines).toEqual([diagnostic('closure:verify:changed:api_keys')]);
   expect(f.hasEnvironment()).toBe(true);
   expect(f.calls.filter((call) => call.method === 'DELETE')).toEqual([]);
 });
@@ -227,6 +244,7 @@ test.each([
   Object.assign(f.env, change);
   expect(() => trustedCloudRun(f.env)).toThrow();
   await expect(setup(f)).rejects.toThrow(/^Trusted cloud setup failed;/u);
+  expect(f.lines).toEqual([diagnostic('lifecycle:trusted-run')]);
   expect(f.calls).toEqual([]);
 });
 
@@ -240,7 +258,9 @@ test.each(['commit', 'runAttempt', 'repository'])(
     writeFileSync(join(f.directory, 'state.json'), JSON.stringify(state));
     const before = f.calls.length;
     await expect(handoffTrustedCloud({ ...f, mask: () => {} })).rejects.toThrow('handoff failed');
+    expect(f.lines).toEqual([]);
     await expect(cleanupTrustedCloud(f)).rejects.toThrow('cleanup failed');
+    expect(f.lines).toEqual([diagnostic('lifecycle:state')]);
     expect(f.calls.length).toBe(before);
     expect(readFileSync(f.output, 'utf8')).toBe('');
   },
@@ -252,6 +272,7 @@ test('recycled creation identity refuses candidate credential handoff and deleti
   f.replace({ created_at: '2026-10-08T13:00:00Z' });
   await expect(handoffTrustedCloud({ ...f, mask: () => {} })).rejects.toThrow('handoff failed');
   await expect(cleanupTrustedCloud(f)).rejects.toThrow('cleanup failed');
+  expect(f.lines).toEqual([diagnostic('environment:credential:ownership:by_key')]);
   expect(f.hasEnvironment()).toBe(true);
   expect(f.calls.filter((call) => call.method === 'DELETE')).toEqual([]);
   expect(readFileSync(f.output, 'utf8')).toBe('');
@@ -263,6 +284,10 @@ test('uncertain fixture write retains environment without cascade credit', async
   expect(f.read('state.json').fixture.unknownWrite).toBe(true);
   f.env.CLOUD_SETUP_RESULT = 'failure';
   await expect(cleanupTrustedCloud(f)).rejects.toThrow('cleanup failed');
+  expect(f.lines).toEqual([
+    diagnostic('fixture:write:tenants'),
+    diagnostic('fixture:settled:state'),
+  ]);
   expect(f.hasEnvironment()).toBe(true);
   expect(f.calls.filter((call) => call.method === 'DELETE')).toEqual([]);
 });
@@ -273,6 +298,10 @@ test('failed credential lookup keeps initial closure unverified', async () => {
   expect(f.read('state.json').fixture).toBeNull();
   f.env.CLOUD_SETUP_RESULT = 'failure';
   await expect(cleanupTrustedCloud(f)).rejects.toThrow('cleanup failed');
+  expect(f.lines).toEqual([
+    diagnostic('environment:transport:api_key'),
+    diagnostic('lifecycle:closure-context'),
+  ]);
   expect(f.hasEnvironment()).toBe(true);
   expect(f.calls.filter((call) => call.method === 'DELETE')).toEqual([]);
   await expect(handoffTrustedCloud({ ...f, mask: () => {} })).rejects.toThrow('handoff failed');
@@ -287,6 +316,10 @@ test('missing saved fixture or surviving deletion prevents positive cleanup', as
   state.fixture = null;
   writeFileSync(join(f.directory, 'state.json'), JSON.stringify(state));
   await expect(cleanupTrustedCloud(f)).rejects.toThrow('cleanup failed');
+  expect(f.lines).toEqual([
+    diagnostic('environment:cleanup:absence'),
+    diagnostic('lifecycle:fixture-missing'),
+  ]);
 });
 
 test('second setup refuses before replaying a create or overwriting ownership state', async () => {
@@ -294,6 +327,7 @@ test('second setup refuses before replaying a create or overwriting ownership st
   await setup(f);
   const before = f.calls.length;
   await expect(setup(f)).rejects.toThrow('setup failed');
+  expect(f.lines).toEqual([diagnostic('unclassified')]);
   expect(f.calls.length).toBe(before);
 });
 
@@ -307,6 +341,7 @@ test.each(['replace', 'add'])('cleanup refuses a %s child before cascading', asy
     f.entities.set(row.id, row);
   }
   await expect(cleanupTrustedCloud(f)).rejects.toThrow('cleanup failed');
+  expect(f.lines).toEqual([diagnostic('closure:verify:changed:resources')]);
   expect(f.hasEnvironment()).toBe(true);
   expect(f.calls.filter((call) => call.method === 'DELETE')).toEqual([]);
 });
@@ -325,6 +360,7 @@ test.each([
   expect(Object.hasOwn(resource.type_attributes, policyField)).toBe(true);
   resource.type_attributes[policyField] = 'changed';
   await expect(cleanupTrustedCloud(f)).rejects.toThrow('cleanup failed');
+  expect(f.lines).toEqual([diagnostic('closure:verify:changed:resources')]);
   expect(f.hasEnvironment()).toBe(true);
   expect(f.calls.filter((call) => call.method === 'DELETE')).toEqual([]);
 });
@@ -334,4 +370,272 @@ test('documented top-level updated_at metadata may change without changing owner
   for (const entity of new Set(f.entities.values())) entity.updated_at = '2026-10-08T13:00:00Z';
   expect((await cleanupTrustedCloud(f)).cleanup.verified).toBe(1);
   expect(f.hasEnvironment()).toBe(false);
+});
+
+const foreign = 'decafbad'.repeat(4),
+  child = 'feedface'.repeat(4);
+const schemaPath = `/v2/schema/${project}/${environment}`,
+  factsPath = `/v2/facts/${project}/${environment}`,
+  environmentsPath = `/v2/projects/${project}/envs`;
+const leakedBody = {
+  detail: canary,
+  id: keyId,
+  url: `https://api.permit.io${factsPath}/users`,
+  secret: credential,
+};
+const scopedRow = (fields) => ({
+  organization_id: organization,
+  project_id: project,
+  environment_id: environment,
+  created_at: '2026-10-08T12:00:00Z',
+  ...fields,
+});
+test.each([
+  [
+    'an unexpected surface status with a response body',
+    'closure:http:opal_scope:403',
+    {
+      respond: (_input, pathname) =>
+        pathname.endsWith('/opal_scope') ? { status: 403, body: leakedBody } : undefined,
+    },
+  ],
+  [
+    'a transport exception naming IDs, URLs and secrets',
+    'closure:transport:roles',
+    {
+      respond: (_input, pathname) => {
+        if (pathname === `${schemaPath}/roles`)
+          throw new Error(`${canary} ${keyId} https://api.permit.io${pathname} ${credential}`);
+      },
+    },
+  ],
+  [
+    'a default row from another project',
+    'closure:scope:tenants',
+    {
+      respond: (_input, pathname) =>
+        pathname === `${factsPath}/tenants`
+          ? { status: 200, body: [scopedRow({ id: foreign, key: 'default', project_id: child })] }
+          : undefined,
+    },
+  ],
+  [
+    'an unexpected group',
+    'closure:defaults:unexpected-rows:groups',
+    {
+      respond: (_input, pathname) =>
+        pathname === `${schemaPath}/groups`
+          ? { status: 200, body: [scopedRow({ id: foreign, key: canary })] }
+          : undefined,
+    },
+  ],
+  [
+    'an unmatched built-in resource role',
+    'closure:child:roles',
+    {
+      respond: (_input, pathname) => {
+        if (pathname === `${schemaPath}/resources`)
+          return { status: 200, body: [scopedRow({ id: foreign, key: '__tenant' })] };
+        if (pathname === `${schemaPath}/resources/${foreign}/roles`)
+          return {
+            status: 200,
+            body: [scopedRow({ id: child, key: canary, resource_id: foreign })],
+          };
+      },
+    },
+  ],
+  [
+    'a PDP secret that differs from the key',
+    'closure:api-key:secret-mismatch',
+    { pdpSecret: canary },
+  ],
+  [
+    'a rejected fixture write',
+    'fixture:http:tenants:409',
+    {
+      respond: (input, pathname) =>
+        input.method === 'POST' && pathname === `${factsPath}/tenants`
+          ? { status: 409, body: leakedBody }
+          : undefined,
+    },
+  ],
+  [
+    'a foreign create acknowledgment',
+    'environment:identity:create',
+    {
+      respond: (input, pathname) =>
+        input.method === 'POST' && pathname === environmentsPath
+          ? { status: 201, body: { ...input.body, id: environment, description: canary } }
+          : undefined,
+    },
+  ],
+  [
+    'an unexpected environment read',
+    'environment:http:by_key:500',
+    {
+      respond: (input, pathname) =>
+        input.method === 'GET' && pathname.startsWith(environmentsPath)
+          ? { status: 500, body: leakedBody }
+          : undefined,
+    },
+  ],
+  ['a key created before its environment', 'closure:created-at:api_keys', { keyBirth: true }],
+  ['a changed captured child at cleanup', 'closure:verify:changed:resources', { cleanup: true }],
+])('%s prints one static diagnostic without response data', async (_name, code, options) => {
+  const f = boundary(options);
+  if (options.keyBirth) f.environmentKey.created_at = '2026-10-08T11:00:00Z';
+  if (options.cleanup) {
+    await setup(f);
+    const resource = [...f.entities.values()].find((row) => row.kind === 'resources');
+    resource.type_attributes = { leaked: `${canary} ${keyId} ${credential}` };
+    await expect(cleanupTrustedCloud(f)).rejects.toThrow(/^Trusted cloud cleanup failed;/u);
+  } else await expect(setup(f)).rejects.toThrow(/^Trusted cloud setup failed;/u);
+  expect(f.lines).toEqual([diagnostic(code)]);
+  for (const secret of [
+    project,
+    environment,
+    organization,
+    keyId,
+    pdpId,
+    foreign,
+    child,
+    credential,
+    canary,
+    'https://',
+    '/v2/',
+    'node-acceptance',
+  ])
+    expect(f.lines.join('\n')).not.toContain(secret);
+});
+test.each([
+  ['closure:http:groups:403', 'closure:http:groups:403'],
+  ['closure:Upper', 'unclassified'],
+  [`closure:${'z'.repeat(40)}`, `closure:${'z'.repeat(40)}`],
+  [`closure:${'z'.repeat(41)}`, 'unclassified'],
+  ['area:a:b:c:d:e', 'unclassified'],
+  ['closure', 'unclassified'],
+  ['closure:http:groups:403\nforged: line', 'unclassified'],
+  [`closure:scope:${project}`, 'unclassified'],
+  ['closure:scope:6f1c2d3e-4b5a-6978-8a9b-0c1d2e3f4a5b', 'unclassified'],
+  [403, 'unclassified'],
+])('setup and cleanup print code %j as %s', async (code, printed) => {
+  for (const step of [setupTrustedCloud, cleanupTrustedCloud]) {
+    const f = boundary();
+    Object.defineProperty(f.env, 'GITHUB_ACTIONS', {
+      get() {
+        throw Object.assign(new Error(canary), { code });
+      },
+    });
+    await expect(step(f)).rejects.toThrow(/^Trusted cloud (setup|cleanup) failed;/u);
+    expect(f.lines).toEqual([diagnostic(printed)]);
+    expect(f.calls).toEqual([]);
+  }
+});
+test.each([
+  [
+    'a relative state directory',
+    'lifecycle:directory',
+    setupTrustedCloud,
+    (f) => {
+      f.directory = 'cloud-state';
+    },
+  ],
+  [
+    'a state directory outside the runner temporary directory',
+    'lifecycle:directory',
+    setupTrustedCloud,
+    (f) => {
+      f.directory = join(realpathSync(tmpdir()), 'foreign-cloud-state');
+    },
+  ],
+  [
+    'a symlinked state directory',
+    'lifecycle:directory',
+    setupTrustedCloud,
+    (f) => {
+      const target = join(f.env.RUNNER_TEMP, 'linked-state');
+      mkdirSync(target);
+      symlinkSync(target, f.directory);
+    },
+  ],
+  [
+    'a closure too large for private state',
+    'lifecycle:state-size',
+    setupTrustedCloud,
+    (_f, options) => {
+      const attributes = Array.from({ length: 120 }, (_value, index) =>
+        scopedRow({
+          id: (index + 1).toString(16).padStart(32, 'f'),
+          key: `${index}-${'k'.repeat(600)}`,
+          built_in: true,
+          resource_id: foreign,
+        }),
+      );
+      options.respond = (input, pathname) => {
+        if (input.method === 'GET' && pathname === `${schemaPath}/resources`)
+          return { status: 200, body: [scopedRow({ id: foreign, key: '__user' })] };
+        if (pathname === `${schemaPath}/resources/${foreign}/attributes`) {
+          const page = Number(
+            new URL(input.path, 'https://api.permit.io').searchParams.get('page'),
+          );
+          return { status: 200, body: attributes.slice((page - 1) * 100, page * 100) };
+        }
+      };
+    },
+  ],
+  [
+    'a state record that is not a regular file',
+    'lifecycle:file',
+    cleanupTrustedCloud,
+    (f) => {
+      mkdirSync(join(f.directory, 'state.json'), { recursive: true });
+    },
+  ],
+  [
+    'a foreign saved owner',
+    'lifecycle:owner',
+    cleanupTrustedCloud,
+    async (f) => {
+      await setup(f);
+      const state = f.read('state.json');
+      state.owner.key = 'node-acceptance-999-1';
+      writeFileSync(join(f.directory, 'state.json'), JSON.stringify(state));
+    },
+  ],
+  [
+    'an unknown setup result',
+    'lifecycle:setup-result',
+    cleanupTrustedCloud,
+    async (f) => {
+      await setup(f);
+      f.env.CLOUD_SETUP_RESULT = 'skipped';
+    },
+  ],
+  [
+    'changed fixture names',
+    'lifecycle:fixture-names',
+    cleanupTrustedCloud,
+    async (f) => {
+      await setup(f);
+      writeFileSync(join(f.directory, 'fixture.json'), JSON.stringify({ resource: 'foreign' }));
+    },
+  ],
+  [
+    'a credential scoped to another organization',
+    'lifecycle:organization',
+    cleanupTrustedCloud,
+    async (f, options) => {
+      await setup(f);
+      options.scope = { organization_id: foreign };
+      f.environmentKey.organization_id = foreign;
+    },
+  ],
+])('%s prints %s', async (_name, code, step, prepare) => {
+  const options = {},
+    f = boundary(options);
+  await prepare(f, options);
+  expect(f.lines).toEqual([]);
+  await expect(step(f)).rejects.toThrow(/^Trusted cloud (setup|cleanup) failed;/u);
+  expect(f.lines).toEqual([diagnostic(code)]);
+  expect(f.calls.filter((call) => call.method === 'DELETE')).toEqual([]);
 });

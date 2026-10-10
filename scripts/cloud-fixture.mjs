@@ -1,12 +1,34 @@
 import { isDeepStrictEqual } from 'node:util';
 
-function requireValid(value, message) {
-  if (!value) throw new Error(message);
+function refusal(message, code) {
+  return Object.assign(new Error(message), { code });
+}
+function requireValid(value, message, code) {
+  if (!value) throw refusal(message, code);
+}
+function diagnosticCode(error, fallback) {
+  return typeof error?.code === 'string' ? error.code : fallback;
+}
+function httpStatus(reply) {
+  return Number.isInteger(reply?.status) && reply.status >= 100 && reply.status <= 599
+    ? reply.status
+    : 'invalid';
+}
+/** Names an unestablished write by the create reply's failure status when one was received. */
+function writeCode(kind, reply) {
+  const status = httpStatus(reply);
+  return typeof status === 'number' && status >= 300
+    ? `fixture:http:${kind}:${status}`
+    : `fixture:write:${kind}`;
 }
 
 /** Returns the finite independently owned RBAC names used by the public cloud oracle. */
 export function cloudFixtureNames(key) {
-  requireValid(/^node-acceptance-[1-9]\d*-[1-9]\d*$/u.test(key), 'Cloud fixture key is invalid.');
+  requireValid(
+    /^node-acceptance-[1-9]\d*-[1-9]\d*$/u.test(key),
+    'Cloud fixture key is invalid.',
+    'fixture:names',
+  );
   return {
     allowedUser: `${key}_allowed`,
     deniedUser: `${key}_denied`,
@@ -35,20 +57,25 @@ function fixtureIdentity(row, context, definition) {
           ? row.type_attributes?.release_acceptance === context.marker
           : row.description === context.marker),
     'Cloud fixture response does not establish owned immutable identity.',
+    `fixture:identity:${definition.kind}`,
   );
   return { kind: definition.kind, key: definition.key, id: row.id, createdAt: row.created_at };
 }
 
-async function fixtureRead(request, path) {
+async function fixtureRead(request, kind, path) {
   let reply;
   try {
     reply = await request({ method: 'GET', path });
   } catch {
-    throw new Error('Cloud fixture read failed; retain its saved state.');
+    throw refusal(
+      'Cloud fixture read failed; retain its saved state.',
+      `fixture:transport:${kind}`,
+    );
   }
   requireValid(
     reply?.status === 200 || reply?.status === 404,
     'Cloud fixture read status is invalid.',
+    `fixture:http:${kind}:${httpStatus(reply)}`,
   );
   return reply;
 }
@@ -70,6 +97,7 @@ async function seedFixture({ request, context, save }) {
       context.organization.length > 0 &&
       context.marker === `permit-node:release-acceptance:${context.key}`,
     'Cloud fixture requires exact environment scope and durable state storage.',
+    'fixture:inputs',
   );
   const fixture = cloudFixtureNames(context.key);
   const state = {
@@ -127,11 +155,12 @@ async function seedFixture({ request, context, save }) {
         definition.kind,
       ].join('/');
       const path = `${collection}/${encodeURIComponent(definition.key)}`;
-      const before = await fixtureRead(request, path);
+      const before = await fixtureRead(request, definition.kind, path);
       if (before.status !== 404) safeFailure = false;
       requireValid(
         before.status === 404,
         'Cloud fixture namespace already exists; refuse to adopt it.',
+        `fixture:exists:${definition.kind}`,
       );
       state.unknownWrite = true;
       await save(structuredClone(state));
@@ -144,21 +173,24 @@ async function seedFixture({ request, context, save }) {
       let acknowledged;
       if (reply?.status === 200 || reply?.status === 201)
         acknowledged = fixtureIdentity(reply.body, context, definition);
-      const byKey = await fixtureRead(request, path);
+      const byKey = await fixtureRead(request, definition.kind, path);
       requireValid(
         byKey.status === 200,
         'Cloud fixture write has not established an owned record.',
+        writeCode(definition.kind, reply),
       );
       const captured = fixtureIdentity(byKey.body, context, definition);
       requireValid(
         !acknowledged || isDeepStrictEqual(acknowledged, captured),
         'Cloud fixture acknowledgment and readback differ.',
+        `fixture:ack:${definition.kind}`,
       );
-      const byId = await fixtureRead(request, `${collection}/${captured.id}`);
+      const byId = await fixtureRead(request, definition.kind, `${collection}/${captured.id}`);
       requireValid(
         byId.status === 200 &&
           isDeepStrictEqual(fixtureIdentity(byId.body, context, definition), captured),
         'Cloud fixture physical identity readback differs.',
+        `fixture:readback:${definition.kind}`,
       );
       state.records.push(captured);
       state.unknownWrite = false;
@@ -182,6 +214,7 @@ async function seedFixture({ request, context, save }) {
     }
     const read = await fixtureRead(
       request,
+      'role_assignments',
       collection +
         '?' +
         new URLSearchParams({
@@ -195,12 +228,19 @@ async function seedFixture({ request, context, save }) {
     );
     const envelope = read.body;
     const rows = Array.isArray(envelope) ? envelope : envelope?.data;
+    const inventory = 'Cloud fixture grant is absent, ambiguous or not exhaustively observed.';
+    requireValid(read.status === 200, inventory, `fixture:http:role_assignments:${read.status}`);
     requireValid(
-      read.status === 200 &&
-        Array.isArray(rows) &&
+      !Array.isArray(rows) || rows.length > 0,
+      inventory,
+      writeCode('role_assignments', reply),
+    );
+    requireValid(
+      Array.isArray(rows) &&
         rows.length === 1 &&
         (Array.isArray(envelope) || envelope.total_count === 1),
-      'Cloud fixture grant is absent, ambiguous or not exhaustively observed.',
+      inventory,
+      'fixture:grant:inventory',
     );
     const grant = rows[0];
     requireValid(
@@ -220,11 +260,13 @@ async function seedFixture({ request, context, save }) {
         grant.resource_instance_id == null &&
         grant.resource_instance == null,
       'Cloud fixture grant does not belong to the exact owned user, role and tenant.',
+      'fixture:grant:identity',
     );
     if (reply?.status === 200 || reply?.status === 201)
       requireValid(
         reply.body?.id === grant.id && reply.body.created_at === grant.created_at,
         'Cloud fixture grant acknowledgment differs from independent readback.',
+        'fixture:grant:ack',
       );
     state.records.push({
       kind: 'role_assignments',
@@ -236,12 +278,15 @@ async function seedFixture({ request, context, save }) {
     state.active = false;
     await save(structuredClone(state));
     return fixture;
-  } catch {
+  } catch (error) {
     if (!state.unknownWrite && safeFailure) {
       state.active = false;
       await save(structuredClone(state));
     }
-    throw new Error('Cloud fixture setup failed; cleanup must independently inspect its state.');
+    throw refusal(
+      'Cloud fixture setup failed; cleanup must independently inspect its state.',
+      error?.code,
+    );
   }
 }
 
@@ -249,13 +294,17 @@ async function seedFixture({ request, context, save }) {
  * Seeds the public RBAC oracle and hides arbitrary network or storage exception details.
  * @param options - Explicit environment scope, HTTP boundary and durable state writer.
  * @returns The six owned public logical names after all seven writes are independently captured.
- * @throws With a constant diagnostic when setup or durable capture fails.
+ * @throws With a constant message when setup or durable capture fails; its static `code` names the
+ * first failed check, fixture kind and any received HTTP status.
  */
 export async function seedCloudFixture(options) {
   try {
     return await seedFixture(options);
-  } catch {
-    throw new Error('Cloud fixture setup failed; retain saved state for independent cleanup.');
+  } catch (error) {
+    throw refusal(
+      'Cloud fixture setup failed; retain saved state for independent cleanup.',
+      diagnosticCode(error, 'fixture:seed:exception'),
+    );
   }
 }
 
@@ -283,6 +332,7 @@ export function verifyCloudFixtureSettled(state, owner) {
       Array.isArray(state.records) &&
       state.records.length <= 7,
     'Cloud fixture writes remain unsettled or foreign; refuse environment cleanup.',
+    'fixture:settled:state',
   );
   const names = cloudFixtureNames(owner.key);
   const kinds = new Map([
@@ -307,6 +357,7 @@ export function verifyCloudFixtureSettled(state, owner) {
         (kinds.get(row.key) === row.kind ||
           (row.key === names.allowedUser && row.kind === 'role_assignments')),
       'Cloud fixture capture is malformed or ambiguous; refuse environment cleanup.',
+      'fixture:settled:record',
     );
     ids.add(row.id);
     logical.add(`${row.kind}:${row.key}`);

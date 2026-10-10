@@ -27,8 +27,26 @@ import {
   verifyCloudFixtureSettled,
 } from '#scripts/cloud-fixture.mjs';
 
-function requireValid(value) {
-  if (!value) throw new Error('Trusted cloud lifecycle input or ownership is invalid.');
+const diagnosticPattern = /^[a-z]+(?::[a-z0-9_-]{1,40}){1,4}$/u;
+
+function requireValid(value, code) {
+  if (!value)
+    throw Object.assign(new Error('Trusted cloud lifecycle input or ownership is invalid.'), {
+      code,
+    });
+}
+
+/**
+ * Formats the single setup or cleanup diagnostic line from a refusal's static code.
+ * @param error - Any caught failure; only its `code` is read, never its message or other fields.
+ * @returns The code when it has the static shape and contains no identifier-like hexadecimal run;
+ * otherwise `unclassified`.
+ */
+function diagnosticLine(error) {
+  const code = error?.code;
+  const safe =
+    typeof code === 'string' && diagnosticPattern.test(code) && !/[a-f0-9]{12}/u.test(code);
+  return `Cloud lifecycle diagnostic: ${safe ? code : 'unclassified'}`;
 }
 
 /**
@@ -48,6 +66,7 @@ export function trustedCloudRun(env) {
       ((env.GITHUB_EVENT_NAME === 'push' && env.GITHUB_REF === 'refs/heads/main') ||
         (env.GITHUB_EVENT_NAME === 'pull_request' &&
           env.PR_HEAD_REPOSITORY === env.GITHUB_REPOSITORY)),
+    'lifecycle:trusted-run',
   );
   return {
     repository: env.GITHUB_REPOSITORY,
@@ -64,24 +83,28 @@ function cloudDirectory({ directory, env }) {
       isAbsolute(directory) &&
       typeof env.RUNNER_TEMP === 'string' &&
       isAbsolute(env.RUNNER_TEMP),
+    'lifecycle:directory',
   );
   const base = realpathSync(env.RUNNER_TEMP);
   const absolute = resolve(directory);
-  requireValid(absolute.startsWith(base + sep));
+  requireValid(absolute.startsWith(base + sep), 'lifecycle:directory');
   mkdirSync(absolute, { recursive: true, mode: 0o700 });
-  requireValid(realpathSync(absolute) === absolute && !lstatSync(absolute).isSymbolicLink());
+  requireValid(
+    realpathSync(absolute) === absolute && !lstatSync(absolute).isSymbolicLink(),
+    'lifecycle:directory',
+  );
   return absolute;
 }
 
 function regularBytes(file) {
   const stat = lstatSync(file);
-  requireValid(stat.isFile() && !stat.isSymbolicLink() && stat.size <= 64 * 1024);
+  requireValid(stat.isFile() && !stat.isSymbolicLink() && stat.size <= 64 * 1024, 'lifecycle:file');
   return readFileSync(file, 'utf8');
 }
 
 function savePrivateState(file, value, first = false) {
   const encoded = JSON.stringify(value) + '\n';
-  requireValid(Buffer.byteLength(encoded) <= 64 * 1024);
+  requireValid(Buffer.byteLength(encoded) <= 64 * 1024, 'lifecycle:state-size');
   if (first) {
     writeFileSync(file, encoded, { mode: 0o600, flag: 'wx' });
     return;
@@ -107,6 +130,7 @@ function readLifecycleState({ directory, env }) {
       ]) &&
       state.schema === 1 &&
       isDeepStrictEqual(state.ci, ci),
+    'lifecycle:state',
   );
   const key = `node-acceptance-${ci.runId}-${ci.runAttempt}`;
   requireValid(
@@ -126,6 +150,7 @@ function readLifecycleState({ directory, env }) {
       state.owner.project === env.PROJECT_ID &&
       typeof state.owner.attempted === 'boolean' &&
       ['verified', 'unverified'].includes(state.owner.capture),
+    'lifecycle:owner',
   );
   return { state, folder, ci };
 }
@@ -133,12 +158,19 @@ function readLifecycleState({ directory, env }) {
 /**
  * Creates and seeds one environment without executing candidate code or writing a credential
  * artifact.
- * @param options - Trusted Actions metadata, step credential, state directory and HTTP boundary.
+ * @param options - Trusted Actions metadata, step credential, state directory, HTTP boundary and
+ * the line writer for the single static failure diagnostic.
  * @returns A finite setup summary; operational state contains only owned identifiers and
  * timestamps.
- * @throws With a constant diagnostic; unresolved writes remain durable and block later deletion.
+ * @throws With a constant message after reporting one static diagnostic code; unresolved writes
+ * remain durable and block later deletion.
  */
-export async function setupTrustedCloud({ directory, env = process.env, request }) {
+export async function setupTrustedCloud({
+  directory,
+  env = process.env,
+  request,
+  report = (line) => console.error(line),
+}) {
   try {
     const ci = trustedCloudRun(env);
     const folder = cloudDirectory({ directory, env });
@@ -197,7 +229,8 @@ export async function setupTrustedCloud({ directory, env = process.env, request 
       flag: 'wx',
     });
     return { schema: 2, status: 'PASS', fixtureWriteCount: state.fixture.records.length };
-  } catch {
+  } catch (error) {
+    report(diagnosticLine(error));
     throw new Error('Trusted cloud setup failed; inspect retained ownership state privately.');
   }
 }
@@ -215,10 +248,10 @@ export async function handoffTrustedCloud({
   mask = (line) => console.log(line),
 }) {
   try {
-    requireValid(env.CLOUD_SETUP_RESULT === 'success');
+    requireValid(env.CLOUD_SETUP_RESULT === 'success', 'lifecycle:setup-result');
     const { state } = readLifecycleState({ directory, env });
     verifyCloudFixtureSettled(state.fixture, state.owner);
-    requireValid(state.fixture.records.length === 7);
+    requireValid(state.fixture.records.length === 7, 'lifecycle:fixture-count');
     const http = request ?? cloudControlRequest({ credential: env.PROJECT_API_KEY });
     const scoped = await fetchCloudEnvironmentCredential({ request: http, state: state.owner });
     const output = env.GITHUB_OUTPUT;
@@ -226,6 +259,7 @@ export async function handoffTrustedCloud({
       typeof output === 'string' &&
         isAbsolute(output) &&
         realpathSync(output).startsWith(realpathSync(env.RUNNER_TEMP) + sep),
+      'lifecycle:output',
     );
     regularBytes(output);
     mask('::add-mask::' + scoped.credential.replaceAll('%', '%25'));
@@ -237,17 +271,27 @@ export async function handoffTrustedCloud({
 
 /**
  * Performs independent immutable ownership checks and verified absence in the always-cleanup job.
- * @param options - Same-run durable state, step-only broader key and explicit HTTP boundary.
+ * @param options - Same-run durable state, step-only broader key, explicit HTTP boundary and the
+ * line writer for the single static failure diagnostic.
  * @returns A finite cleanup receipt; failed or unresolved fixture writes cannot authorize a
  * cascade.
- * @throws With a constant diagnostic instead of received bodies, exceptions or credentials.
+ * @throws With a constant message after reporting one static diagnostic code, instead of received
+ * bodies, exceptions or credentials.
  */
-export async function cleanupTrustedCloud({ directory, env = process.env, request }) {
+export async function cleanupTrustedCloud({
+  directory,
+  env = process.env,
+  request,
+  report = (line) => console.error(line),
+}) {
   try {
     const { state, folder, ci } = readLifecycleState({ directory, env });
-    requireValid(['success', 'failure', 'cancelled'].includes(env.CLOUD_SETUP_RESULT));
+    requireValid(
+      ['success', 'failure', 'cancelled'].includes(env.CLOUD_SETUP_RESULT),
+      'lifecycle:setup-result',
+    );
     if (state.fixture !== null) verifyCloudFixtureSettled(state.fixture, state.owner);
-    else requireValid(env.CLOUD_SETUP_RESULT !== 'success');
+    else requireValid(env.CLOUD_SETUP_RESULT !== 'success', 'lifecycle:fixture-missing');
     if (env.CLOUD_SETUP_RESULT === 'success')
       requireValid(
         state.fixture.records.length === 7 &&
@@ -255,6 +299,7 @@ export async function cleanupTrustedCloud({ directory, env = process.env, reques
             JSON.parse(regularBytes(join(folder, 'fixture.json'))),
             cloudFixtureNames(state.owner.key),
           ),
+        'lifecycle:fixture-names',
       );
     const http = request ?? cloudControlRequest({ credential: env.PROJECT_API_KEY });
     requireValid(
@@ -262,9 +307,13 @@ export async function cleanupTrustedCloud({ directory, env = process.env, reques
         state.closure.context.project === state.owner.project &&
         state.closure.context.environment === state.owner.identity?.id &&
         state.closure.context.createdAt === state.owner.identity?.createdAt,
+      'lifecycle:closure-context',
     );
     const scoped = await fetchCloudEnvironmentCredential({ request: http, state: state.owner });
-    requireValid(scoped.organization === state.closure.context.organization);
+    requireValid(
+      scoped.organization === state.closure.context.organization,
+      'lifecycle:organization',
+    );
     await verifyCloudClosure({
       request: (input) => http({ ...input, credential: scoped.credential }),
       projectRequest: http,
@@ -272,13 +321,14 @@ export async function cleanupTrustedCloud({ directory, env = process.env, reques
       fixture: state.fixture,
     });
     const cleanup = await cleanupCloudEnvironment({ request: http, state: state.owner });
-    const report = { schema: 2, ci, cleanup };
-    writeFileSync(join(folder, 'cleanup.json'), JSON.stringify(report) + '\n', {
+    const receipt = { schema: 2, ci, cleanup };
+    writeFileSync(join(folder, 'cleanup.json'), JSON.stringify(receipt) + '\n', {
       mode: 0o600,
       flag: 'wx',
     });
-    return report;
-  } catch {
+    return receipt;
+  } catch (error) {
+    report(diagnosticLine(error));
     throw new Error('Trusted cloud cleanup failed; ownership or verified absence is incomplete.');
   }
 }

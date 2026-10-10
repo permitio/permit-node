@@ -14,6 +14,19 @@ const context = {
 };
 const owner = { ...context, identity: { id: context.environment } };
 const canary = 'cloud-response-only-secret-canary';
+const seedRefusal = 'Cloud fixture setup failed; retain saved state for independent cleanup.';
+const unsettled = 'Cloud fixture writes remain unsettled or foreign; refuse environment cleanup.';
+const malformed = 'Cloud fixture capture is malformed or ambiguous; refuse environment cleanup.';
+const refused = (message, code) => ({ message, code });
+const writeKinds = [
+  'resources',
+  'roles',
+  'tenants',
+  'tenants',
+  'users',
+  'users',
+  'role_assignments',
+];
 
 function boundary(options = {}) {
   const entities = new Map(),
@@ -36,6 +49,7 @@ function boundary(options = {}) {
         created_at: '2026-10-08T12:00:00Z',
         secret: canary,
       };
+      if (options.rejectAt === writes) return { status: options.status, body: { detail: canary } };
       if (kind === 'role_assignments') {
         grant = {
           ...common,
@@ -57,12 +71,15 @@ function boundary(options = {}) {
       return { status: 201, body: options.malformedAck === writes ? { secret: canary } : body };
     }
     if (kind === 'role_assignments') {
-      expect(path.searchParams.get('user')).toBe(grant.user_id);
-      expect(path.searchParams.get('role')).toBe(grant.role_id);
-      expect(path.searchParams.get('tenant')).toBe(grant.tenant_id);
+      if (options.grantStatus) return { status: options.grantStatus, body: { detail: canary } };
+      if (grant) {
+        expect(path.searchParams.get('user')).toBe(grant.user_id);
+        expect(path.searchParams.get('role')).toBe(grant.role_id);
+        expect(path.searchParams.get('tenant')).toBe(grant.tenant_id);
+      }
       expect(path.searchParams.get('per_page')).toBe('100');
       const row = { ...grant, ...options.grantFields };
-      const rows = options.grantRows ?? [row];
+      const rows = options.grantRows ?? (grant ? [row] : []);
       return {
         status: 200,
         body: options.envelope
@@ -74,7 +91,10 @@ function boundary(options = {}) {
       };
     }
     if (options.readFault === writes && writes > 0) throw new Error(canary);
+    if (options.readStatusAt === writes && writes > 0)
+      return { status: options.status, body: { detail: canary } };
     const key = decodeURIComponent(path.pathname.split('/')[6]);
+    if (options.missingById === writes && /^[a-f0-9]{32}$/u.test(key)) return { status: 404 };
     let row = entities.get(key);
     if (!writes && options.preexisting) row = { id: 'd'.repeat(32), secret: canary };
     if (row && options.changedRead === writes) row = { ...row, ...options.readFields };
@@ -94,6 +114,14 @@ function boundary(options = {}) {
 
 async function run(f) {
   return seedCloudFixture({ request: f.request, save: f.save, context });
+}
+function thrown(action) {
+  try {
+    action();
+  } catch (error) {
+    return error;
+  }
+  throw new Error('Expected a refusal.');
 }
 
 test.each([false, true])(
@@ -135,13 +163,19 @@ test.each([1, 2, 3, 4, 5, 6])(
   'an unresolved entity write %s cannot grant cleanup before or after a late commit',
   async (noWrite) => {
     const f = boundary({ noWrite });
-    await expect(run(f)).rejects.toThrow('retain saved state');
+    await expect(run(f)).rejects.toMatchObject(
+      refused(seedRefusal, `fixture:write:${writeKinds[noWrite - 1]}`),
+    );
     const state = f.states.at(-1);
     expect(state.unknownWrite).toBe(true);
     expect(f.writes).toBe(noWrite);
-    expect(() => verifyCloudFixtureSettled(state, owner)).toThrow('unsettled');
+    expect(thrown(() => verifyCloudFixtureSettled(state, owner))).toMatchObject(
+      refused(unsettled, 'fixture:settled:state'),
+    );
     f.entities.set('late-commit', { id: 'e'.repeat(32) });
-    expect(() => verifyCloudFixtureSettled(state, owner)).toThrow('unsettled');
+    expect(thrown(() => verifyCloudFixtureSettled(state, owner))).toMatchObject(
+      refused(unsettled, 'fixture:settled:state'),
+    );
     expect(JSON.stringify(state)).not.toContain(canary);
   },
 );
@@ -150,24 +184,35 @@ test.each([1, 2, 3, 4, 5, 6, 7])(
   'malformed acknowledgment %s is retained without a fresh later adoption',
   async (malformedAck) => {
     const f = boundary({ malformedAck });
-    await expect(run(f)).rejects.toThrow('retain saved state');
+    await expect(run(f)).rejects.toMatchObject(
+      refused(
+        seedRefusal,
+        malformedAck === 7
+          ? 'fixture:grant:ack'
+          : `fixture:identity:${writeKinds[malformedAck - 1]}`,
+      ),
+    );
     expect(f.writes).toBe(malformedAck);
-    expect(() => verifyCloudFixtureSettled(f.states.at(-1), owner)).toThrow();
+    expect(thrown(() => verifyCloudFixtureSettled(f.states.at(-1), owner))).toMatchObject(
+      refused(unsettled, 'fixture:settled:state'),
+    );
   },
 );
 
 test.each([
-  { project_id: 'e'.repeat(32) },
-  { environment_id: 'e'.repeat(32) },
-  { organization_id: 'e'.repeat(32) },
-  { id: 'e'.repeat(32) },
-  { created_at: '2026-10-08T13:00:00Z' },
-  { type_attributes: {} },
-])('changed entity ownership is refused before later writes: %j', async (readFields) => {
+  [{ project_id: 'e'.repeat(32) }, 'fixture:identity:resources'],
+  [{ environment_id: 'e'.repeat(32) }, 'fixture:identity:resources'],
+  [{ organization_id: 'e'.repeat(32) }, 'fixture:identity:resources'],
+  [{ id: 'e'.repeat(32) }, 'fixture:ack:resources'],
+  [{ created_at: '2026-10-08T13:00:00Z' }, 'fixture:ack:resources'],
+  [{ type_attributes: {} }, 'fixture:identity:resources'],
+])('changed entity ownership is refused before later writes: %j', async (readFields, code) => {
   const f = boundary({ changedRead: 1, readFields });
-  await expect(run(f)).rejects.toThrow('retain saved state');
+  await expect(run(f)).rejects.toMatchObject(refused(seedRefusal, code));
   expect(f.writes).toBe(1);
-  expect(() => verifyCloudFixtureSettled(f.states.at(-1), owner)).toThrow();
+  expect(thrown(() => verifyCloudFixtureSettled(f.states.at(-1), owner))).toMatchObject(
+    refused(unsettled, 'fixture:settled:state'),
+  );
 });
 
 test.each([
@@ -182,64 +227,133 @@ test.each([
   { environment_id: 'e'.repeat(32) },
 ])('foreign grant cannot credit the positive RBAC oracle: %j', async (grantFields) => {
   const f = boundary({ grantFields });
-  await expect(run(f)).rejects.toThrow('retain saved state');
-  expect(() => verifyCloudFixtureSettled(f.states.at(-1), owner)).toThrow();
+  await expect(run(f)).rejects.toMatchObject(refused(seedRefusal, 'fixture:grant:identity'));
+  expect(thrown(() => verifyCloudFixtureSettled(f.states.at(-1), owner))).toMatchObject(
+    refused(unsettled, 'fixture:settled:state'),
+  );
 });
 
 test.each([
-  { grantRows: [] },
-  { grantRows: [{}, {}] },
-  { envelope: true, total: 2 },
-  { envelope: true, total: null },
-])('missing, ambiguous or partial grant inventory is unsettled: %j', async (options) => {
+  [{ grantRows: [] }, 'fixture:write:role_assignments'],
+  [{ grantRows: [{}, {}] }, 'fixture:grant:inventory'],
+  [{ envelope: true, total: 2 }, 'fixture:grant:inventory'],
+  [{ envelope: true, total: null }, 'fixture:grant:inventory'],
+  [{ grantStatus: 404 }, 'fixture:http:role_assignments:404'],
+])('missing, ambiguous or partial grant inventory is unsettled: %j', async (options, code) => {
   const f = boundary(options);
-  await expect(run(f)).rejects.toThrow('retain saved state');
-  expect(() => verifyCloudFixtureSettled(f.states.at(-1), owner)).toThrow();
+  await expect(run(f)).rejects.toMatchObject(refused(seedRefusal, code));
+  expect(thrown(() => verifyCloudFixtureSettled(f.states.at(-1), owner))).toMatchObject(
+    refused(unsettled, 'fixture:settled:state'),
+  );
 });
 
 test('preexisting namespace refuses writes and environment cascade', async () => {
   const f = boundary({ preexisting: true });
-  await expect(run(f)).rejects.toThrow('retain saved state');
+  await expect(run(f)).rejects.toMatchObject(refused(seedRefusal, 'fixture:exists:resources'));
   expect(f.writes).toBe(0);
-  expect(() => verifyCloudFixtureSettled(f.states.at(-1), owner)).toThrow();
+  expect(thrown(() => verifyCloudFixtureSettled(f.states.at(-1), owner))).toMatchObject(
+    refused(unsettled, 'fixture:settled:state'),
+  );
 });
 
 test('response-only read and durable-save exceptions stay outside diagnostics', async () => {
   const f = boundary({ readFault: 1 });
-  await expect(run(f)).rejects.toThrow('retain saved state');
-  await expect(
-    seedCloudFixture({
-      context,
-      request: f.request,
-      save: async () => {
-        throw new Error(canary);
-      },
-    }),
-  ).rejects.toThrow(/^Cloud fixture setup failed; retain saved state for independent cleanup\.$/u);
+  const read = await run(f).catch((error) => error);
+  expect(read).toMatchObject(refused(seedRefusal, 'fixture:transport:resources'));
+  const save = await seedCloudFixture({
+    context,
+    request: f.request,
+    save: async () => {
+      throw new Error(canary);
+    },
+  }).catch((error) => error);
+  expect(save).toMatchObject(refused(seedRefusal, 'fixture:seed:exception'));
+  const pending = await seedCloudFixture({
+    context,
+    request: boundary().request,
+    save: async (state) => {
+      if (state.unknownWrite) throw new Error(canary);
+    },
+  }).catch((error) => error);
+  expect(pending).toMatchObject(refused(seedRefusal, 'fixture:seed:exception'));
+  for (const error of [read, save, pending])
+    expect(JSON.stringify({ ...error, message: error.message })).not.toContain(canary);
 });
 
 test.each([
-  (s) => {
-    s.environment = 'e'.repeat(32);
-  },
-  (s) => {
-    s.records[0].kind = 'users';
-  },
-  (s) => {
-    s.records[0].createdAt = 0;
-  },
-  (s) => {
-    s.records.push(s.records[0]);
-  },
-  (s) => {
-    s.records[0].secret = canary;
-  },
-])('malformed saved fixture state cannot authorize cleanup', async (change) => {
+  [{ rejectAt: 3, status: 409 }, 'fixture:http:tenants:409'],
+  [{ rejectAt: 7, status: 422 }, 'fixture:http:role_assignments:422'],
+  [{ readStatusAt: 1, status: 500 }, 'fixture:http:resources:500'],
+  [{ missingById: 2 }, 'fixture:readback:roles'],
+])('a failed fixture write or read is classified by kind and status: %j', async (options, code) => {
+  const f = boundary(options);
+  const error = await run(f).catch((caught) => caught);
+  expect(error).toMatchObject(refused(seedRefusal, code));
+  expect(JSON.stringify({ ...error, message: error.message })).not.toContain(canary);
+});
+
+test('fixture inputs and names refuse before any HTTP', async () => {
+  const f = boundary();
+  await expect(
+    seedCloudFixture({ request: f.request, save: f.save, context: { ...context, marker: 'x' } }),
+  ).rejects.toMatchObject(refused(seedRefusal, 'fixture:inputs'));
+  expect(thrown(() => cloudFixtureNames('foreign-key'))).toMatchObject(
+    refused('Cloud fixture key is invalid.', 'fixture:names'),
+  );
+  expect(f.calls).toEqual([]);
+});
+
+test.each([
+  [
+    unsettled,
+    'fixture:settled:state',
+    (s) => {
+      s.environment = 'e'.repeat(32);
+    },
+  ],
+  [
+    malformed,
+    'fixture:settled:record',
+    (s) => {
+      s.records[0].kind = 'users';
+    },
+  ],
+  [
+    malformed,
+    'fixture:settled:record',
+    (s) => {
+      s.records[0].createdAt = 0;
+    },
+  ],
+  [
+    unsettled,
+    'fixture:settled:state',
+    (s) => {
+      s.records.push(s.records[0]);
+    },
+  ],
+  [
+    malformed,
+    'fixture:settled:record',
+    (s) => {
+      s.records[1] = s.records[0];
+    },
+  ],
+  [
+    malformed,
+    'fixture:settled:record',
+    (s) => {
+      s.records[0].secret = canary;
+    },
+  ],
+])('malformed saved fixture state cannot authorize cleanup', async (message, code, change) => {
   const f = boundary();
   await run(f);
   const state = structuredClone(f.states.at(-1));
   change(state);
-  expect(() => verifyCloudFixtureSettled(state, owner)).toThrow();
+  expect(thrown(() => verifyCloudFixtureSettled(state, owner))).toMatchObject(
+    refused(message, code),
+  );
 });
 
 test.each([
@@ -250,8 +364,8 @@ test.each([
   await run(f);
   const state = f.states.at(-1);
   expect(() => verifyCloudFixtureSettled(state, owner)).not.toThrow();
-  expect(() => verifyCloudFixtureSettled({ ...state, ...change }, owner)).toThrow(
-    'Cloud fixture writes remain unsettled or foreign; refuse environment cleanup.',
+  expect(thrown(() => verifyCloudFixtureSettled({ ...state, ...change }, owner))).toMatchObject(
+    refused(unsettled, 'fixture:settled:state'),
   );
 });
 

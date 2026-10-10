@@ -79,7 +79,10 @@ test.each(['SETUP', 'HANDOFF', 'CLEANUP'])(
     expect(result.error).toBeUndefined();
     expect(result.status).toBe(1);
     expect(result.stdout).toBe('http-count=0\n');
-    expect(result.stderr).toBe('Trusted cloud lifecycle failed; no cleanup credit.\n');
+    expect(result.stderr).toBe(
+      (name === 'HANDOFF' ? '' : 'Cloud lifecycle diagnostic: lifecycle:trusted-run\n') +
+        'Trusted cloud lifecycle failed; no cleanup credit.\n',
+    );
     expect(result.stdout + result.stderr).not.toContain('PRIVATE_CANARY');
   },
 );

@@ -389,9 +389,56 @@ jobs:
           var automaticRoles = ['admin', 'editor', 'viewer'];
           var builtins = ['__role', '__user', '__tenant'];
           var limit = 128;
-          function requireValid(value) {
-            if (!value)
-              throw new Error('Cloud destructive closure is unverified; retain the environment.');
+          var unverified = 'Cloud destructive closure is unverified; retain the environment.';
+          var inventories = [
+            ['resources', 'schema', 'resources?include_built_in=true&include_total_count=true'],
+            ['roles', 'schema', 'roles?include_total_count=true'],
+            ['user_attributes', 'schema', 'users/attributes'],
+            ['condition_sets', 'schema', 'condition_sets?include_total_count=true'],
+            ['condition_set_rules', 'facts', 'set_rules'],
+            ['users', 'facts', 'users'],
+            ['tenants', 'facts', 'tenants?include_total_count=true'],
+            ['groups', 'schema', 'groups'],
+            ['user_invites', 'facts', 'user_invites'],
+            [
+              'resource_instances',
+              'facts',
+              'resource_instances?detailed=true&include_total_count=true',
+            ],
+            [
+              'relationship_tuples',
+              'facts',
+              'relationship_tuples?detailed=true&include_total_count=true',
+            ],
+            ['role_assignments', 'facts', 'role_assignments?include_total_count=true'],
+            ['proxy_configs', 'facts', 'proxy_configs'],
+            ['pdp_configs', 'pdps', 'configs'],
+            ['elements_configs', 'elements', 'config'],
+            ['email_templates', 'facts', 'email_templates/'],
+          ];
+          var singletons = ['email_configuration', 'opal_scope', 'api_keys'];
+          var children = ['actions', 'attributes', 'roles', 'relations', 'action_groups'];
+          function refusal(message, code) {
+            return Object.assign(new Error(message), { code });
+          }
+          function requireValid(value, code) {
+            if (!value) throw refusal(unverified, code);
+          }
+          function diagnosticCode(error, fallback) {
+            return typeof error?.code === 'string' ? error.code : fallback;
+          }
+          function surface(kind) {
+            if (inventories.some(([name]) => name === kind) || singletons.includes(kind))
+              return kind;
+            const [scope, id, child] = typeof kind === 'string' ? kind.split(':') : [];
+            return scope === 'resource' && idPattern.test(id ?? '') && children.includes(child)
+              ? `resource_${child}`
+              : 'unknown';
+          }
+          function httpStatus(reply) {
+            return Number.isInteger(reply?.status) && reply.status >= 100 && reply.status <= 599
+              ? reply.status
+              : 'invalid';
           }
           function stable(value) {
             if (Array.isArray(value)) return value.map(stable);
@@ -407,94 +454,104 @@ jobs:
               .update(JSON.stringify(stable(value)))
               .digest('hex');
           }
-          async function get(request, path, singleton = false) {
-            const reply = await request({ method: 'GET', path });
-            requireValid(reply && (reply.status === 200 || (singleton && reply.status === 404)));
+          async function get(request, label, path, singleton = false) {
+            let reply;
+            try {
+              reply = await request({ method: 'GET', path });
+            } catch {
+              throw refusal(unverified, `closure:transport:${label}`);
+            }
+            requireValid(
+              reply && (reply.status === 200 || (singleton && reply.status === 404)),
+              `closure:http:${label}:${httpStatus(reply)}`,
+            );
             return reply;
           }
-          async function cloudClosurePages({ request, path }) {
+          async function cloudClosurePages({ request, path, kind }) {
             const result = [],
               seen = /* @__PURE__ */ new Set();
             let total;
             for (let page = 1; page <= 4; page += 1) {
               const reply = await get(
                 request,
+                kind,
                 `${path}${path.includes('?') ? '&' : '?'}page=${page}&per_page=100`,
               );
               const body = reply.body,
                 rows = Array.isArray(body) ? body : body?.data;
-              requireValid(Array.isArray(rows) && rows.length <= 100);
+              requireValid(
+                Array.isArray(rows) && rows.length <= 100,
+                `closure:pages:shape:${kind}`,
+              );
               if (!Array.isArray(body)) {
-                requireValid(Number.isSafeInteger(body.total_count) && body.total_count >= 0);
-                requireValid(total === void 0 || total === body.total_count);
+                requireValid(
+                  Number.isSafeInteger(body.total_count) && body.total_count >= 0,
+                  `closure:pages:total-invalid:${kind}`,
+                );
+                requireValid(
+                  total === void 0 || total === body.total_count,
+                  `closure:pages:total-changed:${kind}`,
+                );
                 total = body.total_count;
                 if (body.page_count != null)
-                  requireValid(Number.isSafeInteger(body.page_count) && body.page_count >= 0);
-              } else requireValid(total === void 0);
+                  requireValid(
+                    Number.isSafeInteger(body.page_count) && body.page_count >= 0,
+                    `closure:pages:page-count:${kind}`,
+                  );
+              } else requireValid(total === void 0, `closure:pages:shape:${kind}`);
               for (const row of rows) {
                 requireValid(
                   row &&
                     typeof row === 'object' &&
                     !Array.isArray(row) &&
                     typeof row.id === 'string' &&
-                    idPattern.test(row.id) &&
-                    !seen.has(row.id),
+                    idPattern.test(row.id),
+                  `closure:pages:row:${kind}`,
                 );
+                requireValid(!seen.has(row.id), `closure:pages:duplicate:${kind}`);
                 seen.add(row.id);
                 result.push(row);
-                requireValid(result.length <= limit);
+                requireValid(result.length <= limit, `closure:pages:limit:${kind}`);
               }
               if (rows.length < 100 || (total !== void 0 && result.length === total)) {
-                requireValid(total === void 0 || result.length === total);
+                requireValid(
+                  total === void 0 || result.length === total,
+                  `closure:pages:incomplete:${kind}`,
+                );
                 return result;
               }
-              requireValid(total === void 0 || result.length < total);
+              requireValid(
+                total === void 0 || result.length < total,
+                `closure:pages:incomplete:${kind}`,
+              );
             }
-            requireValid(false);
+            requireValid(false, `closure:pages:incomplete:${kind}`);
           }
           function surfaces(context) {
-            const schema = `/v2/schema/${context.project}/${context.environment}`;
-            const facts = `/v2/facts/${context.project}/${context.environment}`;
-            return [
-              ['resources', `${schema}/resources?include_built_in=true&include_total_count=true`],
-              ['roles', `${schema}/roles?include_total_count=true`],
-              ['user_attributes', `${schema}/users/attributes`],
-              ['condition_sets', `${schema}/condition_sets?include_total_count=true`],
-              ['condition_set_rules', `${facts}/set_rules`],
-              ['users', `${facts}/users`],
-              ['tenants', `${facts}/tenants?include_total_count=true`],
-              ['groups', `${schema}/groups`],
-              ['user_invites', `${facts}/user_invites`],
-              [
-                'resource_instances',
-                `${facts}/resource_instances?detailed=true&include_total_count=true`,
-              ],
-              [
-                'relationship_tuples',
-                `${facts}/relationship_tuples?detailed=true&include_total_count=true`,
-              ],
-              ['role_assignments', `${facts}/role_assignments?include_total_count=true`],
-              ['proxy_configs', `${facts}/proxy_configs`],
-              ['pdp_configs', `/v2/pdps/${context.project}/${context.environment}/configs`],
-              ['elements_configs', `/v2/elements/${context.project}/${context.environment}/config`],
-              ['email_templates', `${facts}/email_templates/`],
-            ];
+            return inventories.map(([kind, section, route]) => [
+              kind,
+              `/v2/${section}/${context.project}/${context.environment}/${route}`,
+            ]);
           }
-          function requireScope(row, context) {
+          function requireScope(row, context, label) {
             requireValid(
-              row.organization_id === context.organization &&
+              row &&
+                typeof row === 'object' &&
+                row.organization_id === context.organization &&
                 row.project_id === context.project &&
                 row.environment_id === context.environment &&
                 idPattern.test(row.id),
+              `closure:scope:${label}`,
             );
           }
           function record(kind, row, context) {
-            requireScope(row, context);
+            requireScope(row, context, surface(kind));
             if (kind !== 'pdp_configs')
               requireValid(
                 typeof row.created_at === 'string' &&
                   Number.isFinite(Date.parse(row.created_at)) &&
                   Date.parse(row.created_at) >= Date.parse(context.createdAt),
+                `closure:created-at:${surface(kind)}`,
               );
             const projection = structuredClone(row);
             const timestamped = [
@@ -534,16 +591,17 @@ jobs:
             };
           }
           async function observe({ request, projectRequest, context }) {
+            requireValid(typeof projectRequest === 'function', 'closure:project-request');
             requireValid(
-              typeof projectRequest === 'function' &&
-                idPattern.test(context.organization) &&
+              idPattern.test(context.organization) &&
                 idPattern.test(context.project) &&
                 idPattern.test(context.environment) &&
                 Number.isFinite(Date.parse(context.createdAt)),
+              'closure:context',
             );
             const groups = /* @__PURE__ */ new Map();
             for (const [kind, path] of surfaces(context))
-              groups.set(kind, await cloudClosurePages({ request, path }));
+              groups.set(kind, await cloudClosurePages({ request, path, kind }));
             for (const [kind, path] of [
               [
                 'email_configuration',
@@ -551,24 +609,19 @@ jobs:
               ],
               ['opal_scope', `/v2/projects/${context.project}/${context.environment}/opal_scope`],
             ]) {
-              const reply = await get(request, path, true);
+              const reply = await get(request, kind, path, true);
               groups.set(kind, reply.status === 404 ? [] : [reply.body]);
             }
             const environmentKey = await get(
               projectRequest,
+              'api_keys',
               `/v2/api-key/${context.project}/${context.environment}`,
             );
             groups.set('api_keys', [environmentKey.body]);
-            requireValid(groups.get('resources').length <= 8);
+            requireValid(groups.get('resources').length <= 8, 'closure:limit:resources');
             for (const resource of groups.get('resources')) {
-              requireScope(resource, context);
-              for (const child of [
-                'actions',
-                'attributes',
-                'roles',
-                'relations',
-                'action_groups',
-              ]) {
+              requireScope(resource, context, 'resources');
+              for (const child of children) {
                 const path = [
                   '/v2/schema',
                   context.project,
@@ -577,8 +630,12 @@ jobs:
                   resource.id,
                   child,
                 ].join('/');
-                const rows = await cloudClosurePages({ request, path });
-                for (const row of rows) requireValid(row.resource_id === resource.id);
+                const rows = await cloudClosurePages({ request, path, kind: `resource_${child}` });
+                for (const row of rows)
+                  requireValid(
+                    row.resource_id === resource.id,
+                    `closure:child-parent:resource_${child}`,
+                  );
                 groups.set(`resource:${resource.id}:${child}`, rows);
               }
             }
@@ -586,7 +643,7 @@ jobs:
             for (const [kind, rows] of groups)
               for (const row of rows) {
                 records.push(record(kind, row, context));
-                requireValid(records.length <= limit);
+                requireValid(records.length <= limit, 'closure:limit:records');
               }
             records.sort((a, b) => `${a.kind}:${a.id}`.localeCompare(`${b.kind}:${b.id}`));
             return { groups, records };
@@ -604,14 +661,17 @@ jobs:
             requireValid(
               resources.every((row) => builtins.includes(row.key)) &&
                 new Set(resources.map((row) => row.key)).size === resources.length,
+              'closure:defaults:resources',
             );
             requireValid(
               roles.every((row) => automaticRoles.includes(row.key)) &&
                 new Set(roles.map((row) => row.key)).size === roles.length,
+              'closure:defaults:roles',
             );
             requireValid(
               groups.get('tenants').every((row) => row.key === 'default') &&
                 groups.get('tenants').length <= 1,
+              'closure:defaults:tenants',
             );
             requireValid(
               groups
@@ -623,20 +683,27 @@ jobs:
                       (resource) => resource.key === '__user' && resource.id === row.resource_id,
                     ),
                 ),
+              'closure:defaults:user_attributes',
             );
             requireValid(
               groups.get('condition_sets').every((row) => roles.some((role) => ownSet(row, role))),
+              'closure:defaults:condition_sets',
             );
             const pdps = groups.get('pdp_configs');
-            requireValid(pdps.length <= 1);
-            for (const key of groups.get('api_keys'))
+            requireValid(pdps.length <= 1, 'closure:defaults:pdp_configs');
+            requireValid(groups.get('api_keys').length === pdps.length, 'closure:api-key:count');
+            for (const key of groups.get('api_keys')) {
+              requireValid(key.owner_type === 'pdp_config', 'closure:api-key:owner');
+              requireValid(key.object_type === 'env', 'closure:api-key:object');
               requireValid(
-                key.owner_type === 'pdp_config' &&
-                  key.object_type === 'env' &&
-                  typeof key.secret === 'string' &&
-                  key.secret.length > 0 &&
-                  pdps.some((pdp) => pdp.client_secret === key.secret),
+                typeof key.secret === 'string' && key.secret.length > 0,
+                'closure:api-key:secret',
               );
+              requireValid(
+                pdps.some((pdp) => pdp.client_secret === key.secret),
+                'closure:api-key:secret-mismatch',
+              );
+            }
             for (const [kind, rows] of groups) {
               if (
                 [
@@ -664,11 +731,16 @@ jobs:
                         row.key === 'tenant-association') ||
                       (child === 'actions' && ['__user', '__tenant'].includes(resource.key)),
                   ),
+                  `closure:child:${child}`,
                 );
-              } else requireValid(rows.length === 0);
+              } else
+                requireValid(
+                  rows.length === 0,
+                  `closure:defaults:unexpected-rows:${surface(kind)}`,
+                );
             }
-            requireValid(groups.get('api_keys').length === pdps.length);
-            for (const rows of groups.values()) for (const row of rows) requireScope(row, context);
+            for (const [kind, rows] of groups)
+              for (const row of rows) requireScope(row, context, surface(kind));
           }
           async function captureCloudClosure({ request, projectRequest, context }) {
             try {
@@ -680,8 +752,11 @@ jobs:
                 baseline: observed.records,
                 settled: null,
               };
-            } catch {
-              throw new Error('Cloud initial child closure failed; retain the owned environment.');
+            } catch (error) {
+              throw refusal(
+                'Cloud initial child closure failed; retain the owned environment.',
+                diagnosticCode(error, 'closure:capture:exception'),
+              );
             }
           }
           function requireClosure(closure) {
@@ -703,9 +778,10 @@ jobs:
                 ]) &&
                 Array.isArray(closure.baseline) &&
                 closure.baseline.length <= limit,
+              'closure:state',
             );
             for (const rows of [closure.baseline, closure.settled ?? []]) {
-              requireValid(Array.isArray(rows) && rows.length <= limit);
+              requireValid(Array.isArray(rows) && rows.length <= limit, 'closure:state');
               const seen = /* @__PURE__ */ new Set();
               for (const row of rows) {
                 requireValid(
@@ -723,6 +799,7 @@ jobs:
                     (row.key === null || typeof row.key === 'string') &&
                     (row.createdAt === null || Number.isFinite(Date.parse(row.createdAt))) &&
                     !seen.has(`${row.kind}:${row.id}`),
+                  'closure:state:record',
                 );
                 seen.add(`${row.kind}:${row.id}`);
               }
@@ -740,6 +817,7 @@ jobs:
                   fixture.records.length <= 7 &&
                   new Set(fixture.records.map((row) => `${row.kind}:${row.id}`)).size ===
                     fixture.records.length,
+                'closure:settle:fixture-state',
               );
               const observed = await observe({ request, projectRequest, context: closure.context });
               const baseline = new Map(
@@ -759,12 +837,19 @@ jobs:
                       builtins.includes(raw.key) &&
                       effect?.id === ownRole?.id &&
                       effect?.created_at === ownRole?.createdAt,
+                    `closure:settle:changed:${surface(row.kind)}`,
                   );
-                  requireScope(effect, closure.context);
+                  requireScope(effect, closure.context, 'role_effect');
                   delete trimmed.roles[ownRole.key];
-                  requireValid(record(row.kind, trimmed, closure.context).digest === prior.digest);
+                  requireValid(
+                    record(row.kind, trimmed, closure.context).digest === prior.digest,
+                    'closure:settle:builtin-changed',
+                  );
                 } else if (!prior && own)
-                  requireValid(own.key === row.key || row.kind === 'role_assignments');
+                  requireValid(
+                    own.key === row.key || row.kind === 'role_assignments',
+                    `closure:settle:fixture-key:${surface(row.kind)}`,
+                  );
                 else if (!prior) {
                   const resource = fixture.records.find((entry) => entry.kind === 'resources');
                   const role = fixture.records.find((entry) => entry.kind === 'roles');
@@ -782,23 +867,43 @@ jobs:
                         raw.id === role?.id &&
                         raw.key === role?.key &&
                         raw.created_at === role?.createdAt),
+                    `closure:settle:addition:${surface(row.kind)}`,
                   );
                 }
-                if (own) requireValid(own.createdAt === row.createdAt);
+                if (own)
+                  requireValid(
+                    own.createdAt === row.createdAt,
+                    `closure:settle:fixture-created-at:${surface(row.kind)}`,
+                  );
                 baseline.delete(`${row.kind}:${row.id}`);
                 owned.delete(`${row.kind}:${row.id}`);
               }
-              requireValid(baseline.size === 0 && owned.size === 0);
+              requireValid(baseline.size === 0, 'closure:settle:missing-default');
+              requireValid(owned.size === 0, 'closure:settle:missing-fixture');
               return { ...closure, settled: observed.records };
-            } catch {
-              throw new Error('Cloud fixture child closure failed; retain the owned environment.');
+            } catch (error) {
+              throw refusal(
+                'Cloud fixture child closure failed; retain the owned environment.',
+                diagnosticCode(error, 'closure:settle:exception'),
+              );
             }
           }
 
           // scripts/cloud-environment.mjs
           import { isDeepStrictEqual as isDeepStrictEqual2 } from 'node:util';
-          function requireValid2(value, message) {
-            if (!value) throw new Error(message);
+          function refusal2(message, code) {
+            return Object.assign(new Error(message), { code });
+          }
+          function requireValid2(value, message, code) {
+            if (!value) throw refusal2(message, code);
+          }
+          function diagnosticCode2(error, fallback) {
+            return typeof error?.code === 'string' ? error.code : fallback;
+          }
+          function httpStatus2(reply) {
+            return Number.isInteger(reply?.status) && reply.status >= 100 && reply.status <= 599
+              ? reply.status
+              : 'invalid';
           }
           function ownerInputs({ project, key, marker }) {
             requireValid2(
@@ -808,9 +913,10 @@ jobs:
                 /^node-acceptance-[1-9]\d*-[1-9]\d*$/u.test(key) &&
                 marker === `permit-node:release-acceptance:${key}`,
               'Cloud environment ownership inputs are invalid.',
+              'environment:inputs',
             );
           }
-          function ownedIdentity(body, owner) {
+          function ownedIdentity(body, owner, source) {
             requireValid2(
               body &&
                 typeof body === 'object' &&
@@ -823,19 +929,28 @@ jobs:
                 typeof body.created_at === 'string' &&
                 Number.isFinite(Date.parse(body.created_at)),
               'Cloud environment readback does not establish the exact owned identity.',
+              `environment:identity:${source}`,
             );
             return { id: body.id, createdAt: body.created_at };
           }
-          async function checkedRead(request, path) {
-            let response;
+          async function send(request, input, label, message) {
             try {
-              response = await request({ method: 'GET', path });
+              return await request(input);
             } catch {
-              throw new Error('Cloud environment ownership read failed before cleanup.');
+              throw refusal2(message, `environment:transport:${label}`);
             }
+          }
+          async function checkedRead(request, path, label) {
+            const response = await send(
+              request,
+              { method: 'GET', path },
+              label,
+              'Cloud environment ownership read failed before cleanup.',
+            );
             requireValid2(
               response?.status === 200 || response?.status === 404,
               'Cloud environment ownership read returned an unexpected HTTP status.',
+              `environment:http:${label}:${httpStatus2(response)}`,
             );
             return response;
           }
@@ -845,6 +960,7 @@ jobs:
             requireValid2(
               typeof request === 'function' && typeof save === 'function',
               'Cloud setup requires a public HTTP boundary and durable state storage.',
+              'environment:boundary',
             );
             const state = {
               schema: 1,
@@ -856,10 +972,11 @@ jobs:
             await save(structuredClone(state));
             const collection = `/v2/projects/${project}/envs`;
             const keyPath = `${collection}/${key}`;
-            const existing = await checkedRead(request, keyPath);
+            const existing = await checkedRead(request, keyPath, 'by_key');
             requireValid2(
               existing.status === 404,
               'Cloud environment namespace already exists; setup refused.',
+              'environment:exists',
             );
             state.attempted = true;
             await save(structuredClone(state));
@@ -875,34 +992,43 @@ jobs:
             }
             try {
               if (reply?.status === 200 || reply?.status === 201)
-                state.identity = ownedIdentity(reply.body, owner);
-              const recovered = await checkedRead(request, keyPath);
-              if (recovered.status === 404 && !state.identity) {
-                throw new Error('Cloud create did not establish an owned environment.');
-              }
+                state.identity = ownedIdentity(reply.body, owner, 'create');
+              const recovered = await checkedRead(request, keyPath, 'by_key');
+              const status = httpStatus2(reply);
+              requireValid2(
+                recovered.status !== 404 || state.identity,
+                'Cloud create did not establish an owned environment.',
+                typeof status === 'number' && status >= 300
+                  ? `environment:http:create:${status}`
+                  : 'environment:create',
+              );
               requireValid2(
                 recovered.status === 200,
                 'Cloud create acknowledgment is not independently visible.',
+                'environment:readback:by_key',
               );
-              const identity = ownedIdentity(recovered.body, owner);
+              const identity = ownedIdentity(recovered.body, owner, 'by_key');
               requireValid2(
                 !state.identity || isDeepStrictEqual2(state.identity, identity),
                 'Cloud create and readback identify different physical environments.',
+                'environment:identity-changed:by_key',
               );
               state.identity = identity;
-              const byId = await checkedRead(request, `${collection}/${identity.id}`);
+              const byId = await checkedRead(request, `${collection}/${identity.id}`, 'by_id');
               requireValid2(
                 byId.status === 200 &&
-                  isDeepStrictEqual2(ownedIdentity(byId.body, owner), identity),
+                  isDeepStrictEqual2(ownedIdentity(byId.body, owner, 'by_id'), identity),
                 'Cloud physical environment readback differs from its initial identity.',
+                'environment:readback:by_id',
               );
               state.capture = 'verified';
               await save(structuredClone(state));
-            } catch {
+            } catch (error) {
               state.capture = 'unverified';
               await save(structuredClone(state));
-              throw new Error(
+              throw refusal2(
                 'Cloud setup could not capture immutable ownership; retain the saved state.',
+                diagnosticCode2(error, 'environment:provision:exception'),
               );
             }
             const scoped = await fetchCloudEnvironmentCredential({ request, state });
@@ -918,53 +1044,81 @@ jobs:
                 typeof state.identity.createdAt === 'string' &&
                 Number.isFinite(Date.parse(state.identity.createdAt)),
               'Cloud credential handoff requires initially captured immutable ownership.',
+              'environment:credential:state',
             );
             const project = state.project;
             const collection = `/v2/projects/${project}/envs`;
             const reads = await Promise.all([
-              checkedRead(request, `${collection}/${state.key}`),
-              checkedRead(request, `${collection}/${state.identity.id}`),
+              checkedRead(request, `${collection}/${state.key}`, 'by_key'),
+              checkedRead(request, `${collection}/${state.identity.id}`, 'by_id'),
             ]);
-            requireValid2(
-              reads.every(
-                (row) =>
-                  row.status === 200 &&
-                  isDeepStrictEqual2(ownedIdentity(row.body, state), state.identity),
-              ),
-              'Cloud credential handoff refused changed or ambiguous environment ownership.',
-            );
+            for (const [read, label] of [
+              [reads[0], 'by_key'],
+              [reads[1], 'by_id'],
+            ])
+              requireValid2(
+                read.status === 200 &&
+                  isDeepStrictEqual2(ownedIdentity(read.body, state, label), state.identity),
+                'Cloud credential handoff refused changed or ambiguous environment ownership.',
+                `environment:credential:ownership:${label}`,
+              );
             let credential, organization;
             try {
-              const response = await request({
-                method: 'GET',
-                path: `/v2/api-key/${project}/${state.identity.id}`,
-              });
+              const unavailable = 'Scoped cloud credential is unavailable.';
+              const response = await send(
+                request,
+                { method: 'GET', path: `/v2/api-key/${project}/${state.identity.id}` },
+                'api_key',
+                unavailable,
+              );
               requireValid2(
-                response?.status === 200 &&
-                  typeof response.body?.secret === 'string' &&
-                  /^[\x21-\x7e]+$/u.test(response.body.secret) &&
-                  (response.body.project_id == null || response.body.project_id === project) &&
+                response?.status === 200,
+                unavailable,
+                `environment:http:api_key:${httpStatus2(response)}`,
+              );
+              requireValid2(
+                typeof response.body?.secret === 'string' &&
+                  /^[\x21-\x7e]+$/u.test(response.body.secret),
+                unavailable,
+                'environment:credential:secret',
+              );
+              requireValid2(
+                (response.body.project_id == null || response.body.project_id === project) &&
                   (response.body.environment_id == null ||
                     response.body.environment_id === state.identity.id) &&
                   (response.body.object_type == null || response.body.object_type === 'env'),
-                'Scoped cloud credential is unavailable.',
+                unavailable,
+                'environment:credential:metadata',
               );
               credential = response.body.secret;
-              const scope = await request({ method: 'GET', path: '/v2/api-key/scope', credential });
+              const foreign =
+                'Fetched cloud credential does not belong exclusively to the captured environment.';
+              const scope = await send(
+                request,
+                { method: 'GET', path: '/v2/api-key/scope', credential },
+                'api_key_scope',
+                foreign,
+              );
               requireValid2(
-                scope?.status === 200 &&
-                  typeof scope.body?.organization_id === 'string' &&
+                scope?.status === 200,
+                foreign,
+                `environment:http:api_key_scope:${httpStatus2(scope)}`,
+              );
+              requireValid2(
+                typeof scope.body?.organization_id === 'string' &&
                   scope.body.organization_id.length > 0 &&
                   (response.body.organization_id == null ||
                     response.body.organization_id === scope.body.organization_id) &&
                   scope.body.project_id === project &&
                   scope.body.environment_id === state.identity.id,
-                'Fetched cloud credential does not belong exclusively to the captured environment.',
+                foreign,
+                'environment:credential:scope',
               );
               organization = scope.body.organization_id;
-            } catch {
-              throw new Error(
+            } catch (error) {
+              throw refusal2(
                 'Scoped cloud credential lookup failed; owned cleanup remains required.',
+                diagnosticCode2(error, 'environment:credential:exception'),
               );
             }
             return { credential, organization };
@@ -972,13 +1126,31 @@ jobs:
 
           // scripts/cloud-fixture.mjs
           import { isDeepStrictEqual as isDeepStrictEqual3 } from 'node:util';
-          function requireValid3(value, message) {
-            if (!value) throw new Error(message);
+          function refusal3(message, code) {
+            return Object.assign(new Error(message), { code });
+          }
+          function requireValid3(value, message, code) {
+            if (!value) throw refusal3(message, code);
+          }
+          function diagnosticCode3(error, fallback) {
+            return typeof error?.code === 'string' ? error.code : fallback;
+          }
+          function httpStatus3(reply) {
+            return Number.isInteger(reply?.status) && reply.status >= 100 && reply.status <= 599
+              ? reply.status
+              : 'invalid';
+          }
+          function writeCode(kind, reply) {
+            const status = httpStatus3(reply);
+            return typeof status === 'number' && status >= 300
+              ? `fixture:http:${kind}:${status}`
+              : `fixture:write:${kind}`;
           }
           function cloudFixtureNames(key) {
             requireValid3(
               /^node-acceptance-[1-9]\d*-[1-9]\d*$/u.test(key),
               'Cloud fixture key is invalid.',
+              'fixture:names',
             );
             return {
               allowedUser: `${key}_allowed`,
@@ -1007,6 +1179,7 @@ jobs:
                     ? row.type_attributes?.release_acceptance === context.marker
                     : row.description === context.marker),
               'Cloud fixture response does not establish owned immutable identity.',
+              `fixture:identity:${definition.kind}`,
             );
             return {
               kind: definition.kind,
@@ -1015,16 +1188,20 @@ jobs:
               createdAt: row.created_at,
             };
           }
-          async function fixtureRead(request, path) {
+          async function fixtureRead(request, kind, path) {
             let reply;
             try {
               reply = await request({ method: 'GET', path });
             } catch {
-              throw new Error('Cloud fixture read failed; retain its saved state.');
+              throw refusal3(
+                'Cloud fixture read failed; retain its saved state.',
+                `fixture:transport:${kind}`,
+              );
             }
             requireValid3(
               reply?.status === 200 || reply?.status === 404,
               'Cloud fixture read status is invalid.',
+              `fixture:http:${kind}:${httpStatus3(reply)}`,
             );
             return reply;
           }
@@ -1039,6 +1216,7 @@ jobs:
                 context.organization.length > 0 &&
                 context.marker === `permit-node:release-acceptance:${context.key}`,
               'Cloud fixture requires exact environment scope and durable state storage.',
+              'fixture:inputs',
             );
             const fixture = cloudFixtureNames(context.key);
             const state = {
@@ -1098,11 +1276,12 @@ jobs:
                   definition.kind,
                 ].join('/');
                 const path = `${collection2}/${encodeURIComponent(definition.key)}`;
-                const before = await fixtureRead(request, path);
+                const before = await fixtureRead(request, definition.kind, path);
                 if (before.status !== 404) safeFailure = false;
                 requireValid3(
                   before.status === 404,
                   'Cloud fixture namespace already exists; refuse to adopt it.',
+                  `fixture:exists:${definition.kind}`,
                 );
                 state.unknownWrite = true;
                 await save(structuredClone(state));
@@ -1119,21 +1298,28 @@ jobs:
                 let acknowledged;
                 if (reply2?.status === 200 || reply2?.status === 201)
                   acknowledged = fixtureIdentity(reply2.body, context, definition);
-                const byKey = await fixtureRead(request, path);
+                const byKey = await fixtureRead(request, definition.kind, path);
                 requireValid3(
                   byKey.status === 200,
                   'Cloud fixture write has not established an owned record.',
+                  writeCode(definition.kind, reply2),
                 );
                 const captured = fixtureIdentity(byKey.body, context, definition);
                 requireValid3(
                   !acknowledged || isDeepStrictEqual3(acknowledged, captured),
                   'Cloud fixture acknowledgment and readback differ.',
+                  `fixture:ack:${definition.kind}`,
                 );
-                const byId = await fixtureRead(request, `${collection2}/${captured.id}`);
+                const byId = await fixtureRead(
+                  request,
+                  definition.kind,
+                  `${collection2}/${captured.id}`,
+                );
                 requireValid3(
                   byId.status === 200 &&
                     isDeepStrictEqual3(fixtureIdentity(byId.body, context, definition), captured),
                   'Cloud fixture physical identity readback differs.',
+                  `fixture:readback:${definition.kind}`,
                 );
                 state.records.push(captured);
                 state.unknownWrite = false;
@@ -1160,6 +1346,7 @@ jobs:
               }
               const read = await fixtureRead(
                 request,
+                'role_assignments',
                 collection +
                   '?' +
                   new URLSearchParams({
@@ -1173,12 +1360,24 @@ jobs:
               );
               const envelope = read.body;
               const rows = Array.isArray(envelope) ? envelope : envelope?.data;
+              const inventory =
+                'Cloud fixture grant is absent, ambiguous or not exhaustively observed.';
               requireValid3(
-                read.status === 200 &&
-                  Array.isArray(rows) &&
+                read.status === 200,
+                inventory,
+                `fixture:http:role_assignments:${read.status}`,
+              );
+              requireValid3(
+                !Array.isArray(rows) || rows.length > 0,
+                inventory,
+                writeCode('role_assignments', reply),
+              );
+              requireValid3(
+                Array.isArray(rows) &&
                   rows.length === 1 &&
                   (Array.isArray(envelope) || envelope.total_count === 1),
-                'Cloud fixture grant is absent, ambiguous or not exhaustively observed.',
+                inventory,
+                'fixture:grant:inventory',
               );
               const grant = rows[0];
               requireValid3(
@@ -1198,11 +1397,13 @@ jobs:
                   grant.resource_instance_id == null &&
                   grant.resource_instance == null,
                 'Cloud fixture grant does not belong to the exact owned user, role and tenant.',
+                'fixture:grant:identity',
               );
               if (reply?.status === 200 || reply?.status === 201)
                 requireValid3(
                   reply.body?.id === grant.id && reply.body.created_at === grant.created_at,
                   'Cloud fixture grant acknowledgment differs from independent readback.',
+                  'fixture:grant:ack',
                 );
               state.records.push({
                 kind: 'role_assignments',
@@ -1214,29 +1415,46 @@ jobs:
               state.active = false;
               await save(structuredClone(state));
               return fixture;
-            } catch {
+            } catch (error) {
               if (!state.unknownWrite && safeFailure) {
                 state.active = false;
                 await save(structuredClone(state));
               }
-              throw new Error(
+              throw refusal3(
                 'Cloud fixture setup failed; cleanup must independently inspect its state.',
+                error?.code,
               );
             }
           }
           async function seedCloudFixture(options) {
             try {
               return await seedFixture(options);
-            } catch {
-              throw new Error(
+            } catch (error) {
+              throw refusal3(
                 'Cloud fixture setup failed; retain saved state for independent cleanup.',
+                diagnosticCode3(error, 'fixture:seed:exception'),
               );
             }
           }
 
           // scripts/cloud-lifecycle.mjs
-          function requireValid4(value) {
-            if (!value) throw new Error('Trusted cloud lifecycle input or ownership is invalid.');
+          var diagnosticPattern = /^[a-z]+(?::[a-z0-9_-]{1,40}){1,4}$/u;
+          function requireValid4(value, code) {
+            if (!value)
+              throw Object.assign(
+                new Error('Trusted cloud lifecycle input or ownership is invalid.'),
+                {
+                  code,
+                },
+              );
+          }
+          function diagnosticLine(error) {
+            const code = error?.code;
+            const safe =
+              typeof code === 'string' &&
+              diagnosticPattern.test(code) &&
+              !/[a-f0-9]{12}/u.test(code);
+            return `Cloud lifecycle diagnostic: ${safe ? code : 'unclassified'}`;
           }
           function trustedCloudRun(env) {
             requireValid4(
@@ -1252,6 +1470,7 @@ jobs:
                 ((env.GITHUB_EVENT_NAME === 'push' && env.GITHUB_REF === 'refs/heads/main') ||
                   (env.GITHUB_EVENT_NAME === 'pull_request' &&
                     env.PR_HEAD_REPOSITORY === env.GITHUB_REPOSITORY)),
+              'lifecycle:trusted-run',
             );
             return {
               repository: env.GITHUB_REPOSITORY,
@@ -1267,24 +1486,29 @@ jobs:
                 isAbsolute(directory) &&
                 typeof env.RUNNER_TEMP === 'string' &&
                 isAbsolute(env.RUNNER_TEMP),
+              'lifecycle:directory',
             );
             const base = realpathSync(env.RUNNER_TEMP);
             const absolute = resolve(directory);
-            requireValid4(absolute.startsWith(base + sep));
+            requireValid4(absolute.startsWith(base + sep), 'lifecycle:directory');
             mkdirSync(absolute, { recursive: true, mode: 448 });
             requireValid4(
               realpathSync(absolute) === absolute && !lstatSync(absolute).isSymbolicLink(),
+              'lifecycle:directory',
             );
             return absolute;
           }
           function regularBytes(file) {
             const stat = lstatSync(file);
-            requireValid4(stat.isFile() && !stat.isSymbolicLink() && stat.size <= 64 * 1024);
+            requireValid4(
+              stat.isFile() && !stat.isSymbolicLink() && stat.size <= 64 * 1024,
+              'lifecycle:file',
+            );
             return readFileSync(file, 'utf8');
           }
           function savePrivateState(file, value, first = false) {
             const encoded = JSON.stringify(value) + '\n';
-            requireValid4(Buffer.byteLength(encoded) <= 64 * 1024);
+            requireValid4(Buffer.byteLength(encoded) <= 64 * 1024, 'lifecycle:state-size');
             if (first) {
               writeFileSync(file, encoded, { mode: 384, flag: 'wx' });
               return;
@@ -1294,7 +1518,12 @@ jobs:
             writeFileSync(pending, encoded, { mode: 384, flag: 'wx' });
             renameSync(pending, file);
           }
-          async function setupTrustedCloud({ directory, env = process.env, request }) {
+          async function setupTrustedCloud({
+            directory,
+            env = process.env,
+            request,
+            report = (line) => console.error(line),
+          }) {
             try {
               const ci = trustedCloudRun(env);
               const folder = cloudDirectory({ directory, env });
@@ -1353,7 +1582,8 @@ jobs:
                 flag: 'wx',
               });
               return { schema: 2, status: 'PASS', fixtureWriteCount: state.fixture.records.length };
-            } catch {
+            } catch (error) {
+              report(diagnosticLine(error));
               throw new Error(
                 'Trusted cloud setup failed; inspect retained ownership state privately.',
               );
@@ -1514,8 +1744,19 @@ jobs:
 
           // scripts/cloud-environment.mjs
           import { isDeepStrictEqual } from 'node:util';
-          function requireValid(value, message) {
-            if (!value) throw new Error(message);
+          function refusal(message, code) {
+            return Object.assign(new Error(message), { code });
+          }
+          function requireValid(value, message, code) {
+            if (!value) throw refusal(message, code);
+          }
+          function diagnosticCode(error, fallback) {
+            return typeof error?.code === 'string' ? error.code : fallback;
+          }
+          function httpStatus(reply) {
+            return Number.isInteger(reply?.status) && reply.status >= 100 && reply.status <= 599
+              ? reply.status
+              : 'invalid';
           }
           function ownerInputs({ project, key, marker }) {
             requireValid(
@@ -1525,9 +1766,10 @@ jobs:
                 /^node-acceptance-[1-9]\d*-[1-9]\d*$/u.test(key) &&
                 marker === `permit-node:release-acceptance:${key}`,
               'Cloud environment ownership inputs are invalid.',
+              'environment:inputs',
             );
           }
-          function ownedIdentity(body, owner) {
+          function ownedIdentity(body, owner, source) {
             requireValid(
               body &&
                 typeof body === 'object' &&
@@ -1540,19 +1782,28 @@ jobs:
                 typeof body.created_at === 'string' &&
                 Number.isFinite(Date.parse(body.created_at)),
               'Cloud environment readback does not establish the exact owned identity.',
+              `environment:identity:${source}`,
             );
             return { id: body.id, createdAt: body.created_at };
           }
-          async function checkedRead(request, path) {
-            let response;
+          async function send(request, input, label, message) {
             try {
-              response = await request({ method: 'GET', path });
+              return await request(input);
             } catch {
-              throw new Error('Cloud environment ownership read failed before cleanup.');
+              throw refusal(message, `environment:transport:${label}`);
             }
+          }
+          async function checkedRead(request, path, label) {
+            const response = await send(
+              request,
+              { method: 'GET', path },
+              label,
+              'Cloud environment ownership read failed before cleanup.',
+            );
             requireValid(
               response?.status === 200 || response?.status === 404,
               'Cloud environment ownership read returned an unexpected HTTP status.',
+              `environment:http:${label}:${httpStatus(response)}`,
             );
             return response;
           }
@@ -1566,53 +1817,81 @@ jobs:
                 typeof state.identity.createdAt === 'string' &&
                 Number.isFinite(Date.parse(state.identity.createdAt)),
               'Cloud credential handoff requires initially captured immutable ownership.',
+              'environment:credential:state',
             );
             const project = state.project;
             const collection = `/v2/projects/${project}/envs`;
             const reads = await Promise.all([
-              checkedRead(request, `${collection}/${state.key}`),
-              checkedRead(request, `${collection}/${state.identity.id}`),
+              checkedRead(request, `${collection}/${state.key}`, 'by_key'),
+              checkedRead(request, `${collection}/${state.identity.id}`, 'by_id'),
             ]);
-            requireValid(
-              reads.every(
-                (row) =>
-                  row.status === 200 &&
-                  isDeepStrictEqual(ownedIdentity(row.body, state), state.identity),
-              ),
-              'Cloud credential handoff refused changed or ambiguous environment ownership.',
-            );
+            for (const [read, label] of [
+              [reads[0], 'by_key'],
+              [reads[1], 'by_id'],
+            ])
+              requireValid(
+                read.status === 200 &&
+                  isDeepStrictEqual(ownedIdentity(read.body, state, label), state.identity),
+                'Cloud credential handoff refused changed or ambiguous environment ownership.',
+                `environment:credential:ownership:${label}`,
+              );
             let credential, organization;
             try {
-              const response = await request({
-                method: 'GET',
-                path: `/v2/api-key/${project}/${state.identity.id}`,
-              });
+              const unavailable = 'Scoped cloud credential is unavailable.';
+              const response = await send(
+                request,
+                { method: 'GET', path: `/v2/api-key/${project}/${state.identity.id}` },
+                'api_key',
+                unavailable,
+              );
               requireValid(
-                response?.status === 200 &&
-                  typeof response.body?.secret === 'string' &&
-                  /^[\x21-\x7e]+$/u.test(response.body.secret) &&
-                  (response.body.project_id == null || response.body.project_id === project) &&
+                response?.status === 200,
+                unavailable,
+                `environment:http:api_key:${httpStatus(response)}`,
+              );
+              requireValid(
+                typeof response.body?.secret === 'string' &&
+                  /^[\x21-\x7e]+$/u.test(response.body.secret),
+                unavailable,
+                'environment:credential:secret',
+              );
+              requireValid(
+                (response.body.project_id == null || response.body.project_id === project) &&
                   (response.body.environment_id == null ||
                     response.body.environment_id === state.identity.id) &&
                   (response.body.object_type == null || response.body.object_type === 'env'),
-                'Scoped cloud credential is unavailable.',
+                unavailable,
+                'environment:credential:metadata',
               );
               credential = response.body.secret;
-              const scope = await request({ method: 'GET', path: '/v2/api-key/scope', credential });
+              const foreign =
+                'Fetched cloud credential does not belong exclusively to the captured environment.';
+              const scope = await send(
+                request,
+                { method: 'GET', path: '/v2/api-key/scope', credential },
+                'api_key_scope',
+                foreign,
+              );
               requireValid(
-                scope?.status === 200 &&
-                  typeof scope.body?.organization_id === 'string' &&
+                scope?.status === 200,
+                foreign,
+                `environment:http:api_key_scope:${httpStatus(scope)}`,
+              );
+              requireValid(
+                typeof scope.body?.organization_id === 'string' &&
                   scope.body.organization_id.length > 0 &&
                   (response.body.organization_id == null ||
                     response.body.organization_id === scope.body.organization_id) &&
                   scope.body.project_id === project &&
                   scope.body.environment_id === state.identity.id,
-                'Fetched cloud credential does not belong exclusively to the captured environment.',
+                foreign,
+                'environment:credential:scope',
               );
               organization = scope.body.organization_id;
-            } catch {
-              throw new Error(
+            } catch (error) {
+              throw refusal(
                 'Scoped cloud credential lookup failed; owned cleanup remains required.',
+                diagnosticCode(error, 'environment:credential:exception'),
               );
             }
             return { credential, organization };
@@ -1620,13 +1899,17 @@ jobs:
 
           // scripts/cloud-fixture.mjs
           import { isDeepStrictEqual as isDeepStrictEqual2 } from 'node:util';
-          function requireValid2(value, message) {
-            if (!value) throw new Error(message);
+          function refusal2(message, code) {
+            return Object.assign(new Error(message), { code });
+          }
+          function requireValid2(value, message, code) {
+            if (!value) throw refusal2(message, code);
           }
           function cloudFixtureNames(key) {
             requireValid2(
               /^node-acceptance-[1-9]\d*-[1-9]\d*$/u.test(key),
               'Cloud fixture key is invalid.',
+              'fixture:names',
             );
             return {
               allowedUser: `${key}_allowed`,
@@ -1660,6 +1943,7 @@ jobs:
                 Array.isArray(state.records) &&
                 state.records.length <= 7,
               'Cloud fixture writes remain unsettled or foreign; refuse environment cleanup.',
+              'fixture:settled:state',
             );
             const names = cloudFixtureNames(owner.key);
             const kinds = /* @__PURE__ */ new Map([
@@ -1684,6 +1968,7 @@ jobs:
                   (kinds.get(row.key) === row.kind ||
                     (row.key === names.allowedUser && row.kind === 'role_assignments')),
                 'Cloud fixture capture is malformed or ambiguous; refuse environment cleanup.',
+                'fixture:settled:record',
               );
               ids.add(row.id);
               logical.add(`${row.kind}:${row.key}`);
@@ -1691,8 +1976,14 @@ jobs:
           }
 
           // scripts/cloud-lifecycle.mjs
-          function requireValid3(value) {
-            if (!value) throw new Error('Trusted cloud lifecycle input or ownership is invalid.');
+          function requireValid3(value, code) {
+            if (!value)
+              throw Object.assign(
+                new Error('Trusted cloud lifecycle input or ownership is invalid.'),
+                {
+                  code,
+                },
+              );
           }
           function trustedCloudRun(env) {
             requireValid3(
@@ -1708,6 +1999,7 @@ jobs:
                 ((env.GITHUB_EVENT_NAME === 'push' && env.GITHUB_REF === 'refs/heads/main') ||
                   (env.GITHUB_EVENT_NAME === 'pull_request' &&
                     env.PR_HEAD_REPOSITORY === env.GITHUB_REPOSITORY)),
+              'lifecycle:trusted-run',
             );
             return {
               repository: env.GITHUB_REPOSITORY,
@@ -1723,19 +2015,24 @@ jobs:
                 isAbsolute(directory) &&
                 typeof env.RUNNER_TEMP === 'string' &&
                 isAbsolute(env.RUNNER_TEMP),
+              'lifecycle:directory',
             );
             const base = realpathSync(env.RUNNER_TEMP);
             const absolute = resolve(directory);
-            requireValid3(absolute.startsWith(base + sep));
+            requireValid3(absolute.startsWith(base + sep), 'lifecycle:directory');
             mkdirSync(absolute, { recursive: true, mode: 448 });
             requireValid3(
               realpathSync(absolute) === absolute && !lstatSync(absolute).isSymbolicLink(),
+              'lifecycle:directory',
             );
             return absolute;
           }
           function regularBytes(file) {
             const stat = lstatSync(file);
-            requireValid3(stat.isFile() && !stat.isSymbolicLink() && stat.size <= 64 * 1024);
+            requireValid3(
+              stat.isFile() && !stat.isSymbolicLink() && stat.size <= 64 * 1024,
+              'lifecycle:file',
+            );
             return readFileSync(file, 'utf8');
           }
           function readLifecycleState({ directory, env }) {
@@ -1753,6 +2050,7 @@ jobs:
                 ]) &&
                 state.schema === 1 &&
                 isDeepStrictEqual3(state.ci, ci),
+              'lifecycle:state',
             );
             const key = `node-acceptance-${ci.runId}-${ci.runAttempt}`;
             requireValid3(
@@ -1772,6 +2070,7 @@ jobs:
                 state.owner.project === env.PROJECT_ID &&
                 typeof state.owner.attempted === 'boolean' &&
                 ['verified', 'unverified'].includes(state.owner.capture),
+              'lifecycle:owner',
             );
             return { state, folder, ci };
           }
@@ -1782,10 +2081,10 @@ jobs:
             mask = (line) => console.log(line),
           }) {
             try {
-              requireValid3(env.CLOUD_SETUP_RESULT === 'success');
+              requireValid3(env.CLOUD_SETUP_RESULT === 'success', 'lifecycle:setup-result');
               const { state } = readLifecycleState({ directory, env });
               verifyCloudFixtureSettled(state.fixture, state.owner);
-              requireValid3(state.fixture.records.length === 7);
+              requireValid3(state.fixture.records.length === 7, 'lifecycle:fixture-count');
               const http = request ?? cloudControlRequest({ credential: env.PROJECT_API_KEY });
               const scoped = await fetchCloudEnvironmentCredential({
                 request: http,
@@ -1796,6 +2095,7 @@ jobs:
                 typeof output === 'string' &&
                   isAbsolute(output) &&
                   realpathSync(output).startsWith(realpathSync(env.RUNNER_TEMP) + sep),
+                'lifecycle:output',
               );
               regularBytes(output);
               mask('::add-mask::' + scoped.credential.replaceAll('%', '%25'));
@@ -2007,9 +2307,57 @@ jobs:
           import { isDeepStrictEqual } from 'node:util';
           var idPattern = /^[a-f0-9-]{32,36}$/u;
           var limit = 128;
-          function requireValid(value) {
-            if (!value)
-              throw new Error('Cloud destructive closure is unverified; retain the environment.');
+          var unverified = 'Cloud destructive closure is unverified; retain the environment.';
+          var inventories = [
+            ['resources', 'schema', 'resources?include_built_in=true&include_total_count=true'],
+            ['roles', 'schema', 'roles?include_total_count=true'],
+            ['user_attributes', 'schema', 'users/attributes'],
+            ['condition_sets', 'schema', 'condition_sets?include_total_count=true'],
+            ['condition_set_rules', 'facts', 'set_rules'],
+            ['users', 'facts', 'users'],
+            ['tenants', 'facts', 'tenants?include_total_count=true'],
+            ['groups', 'schema', 'groups'],
+            ['user_invites', 'facts', 'user_invites'],
+            [
+              'resource_instances',
+              'facts',
+              'resource_instances?detailed=true&include_total_count=true',
+            ],
+            [
+              'relationship_tuples',
+              'facts',
+              'relationship_tuples?detailed=true&include_total_count=true',
+            ],
+            ['role_assignments', 'facts', 'role_assignments?include_total_count=true'],
+            ['proxy_configs', 'facts', 'proxy_configs'],
+            ['pdp_configs', 'pdps', 'configs'],
+            ['elements_configs', 'elements', 'config'],
+            ['email_templates', 'facts', 'email_templates/'],
+          ];
+          var singletons = ['email_configuration', 'opal_scope', 'api_keys'];
+          var children = ['actions', 'attributes', 'roles', 'relations', 'action_groups'];
+          var fixtureKinds = ['resources', 'roles', 'tenants', 'users'];
+          function refusal(message, code) {
+            return Object.assign(new Error(message), { code });
+          }
+          function requireValid(value, code) {
+            if (!value) throw refusal(unverified, code);
+          }
+          function diagnosticCode(error, fallback) {
+            return typeof error?.code === 'string' ? error.code : fallback;
+          }
+          function surface(kind) {
+            if (inventories.some(([name]) => name === kind) || singletons.includes(kind))
+              return kind;
+            const [scope, id, child] = typeof kind === 'string' ? kind.split(':') : [];
+            return scope === 'resource' && idPattern.test(id ?? '') && children.includes(child)
+              ? `resource_${child}`
+              : 'unknown';
+          }
+          function httpStatus(reply) {
+            return Number.isInteger(reply?.status) && reply.status >= 100 && reply.status <= 599
+              ? reply.status
+              : 'invalid';
           }
           function stable(value) {
             if (Array.isArray(value)) return value.map(stable);
@@ -2025,94 +2373,104 @@ jobs:
               .update(JSON.stringify(stable(value)))
               .digest('hex');
           }
-          async function get(request, path, singleton = false) {
-            const reply = await request({ method: 'GET', path });
-            requireValid(reply && (reply.status === 200 || (singleton && reply.status === 404)));
+          async function get(request, label, path, singleton = false) {
+            let reply;
+            try {
+              reply = await request({ method: 'GET', path });
+            } catch {
+              throw refusal(unverified, `closure:transport:${label}`);
+            }
+            requireValid(
+              reply && (reply.status === 200 || (singleton && reply.status === 404)),
+              `closure:http:${label}:${httpStatus(reply)}`,
+            );
             return reply;
           }
-          async function cloudClosurePages({ request, path }) {
+          async function cloudClosurePages({ request, path, kind }) {
             const result = [],
               seen = /* @__PURE__ */ new Set();
             let total;
             for (let page = 1; page <= 4; page += 1) {
               const reply = await get(
                 request,
+                kind,
                 `${path}${path.includes('?') ? '&' : '?'}page=${page}&per_page=100`,
               );
               const body = reply.body,
                 rows = Array.isArray(body) ? body : body?.data;
-              requireValid(Array.isArray(rows) && rows.length <= 100);
+              requireValid(
+                Array.isArray(rows) && rows.length <= 100,
+                `closure:pages:shape:${kind}`,
+              );
               if (!Array.isArray(body)) {
-                requireValid(Number.isSafeInteger(body.total_count) && body.total_count >= 0);
-                requireValid(total === void 0 || total === body.total_count);
+                requireValid(
+                  Number.isSafeInteger(body.total_count) && body.total_count >= 0,
+                  `closure:pages:total-invalid:${kind}`,
+                );
+                requireValid(
+                  total === void 0 || total === body.total_count,
+                  `closure:pages:total-changed:${kind}`,
+                );
                 total = body.total_count;
                 if (body.page_count != null)
-                  requireValid(Number.isSafeInteger(body.page_count) && body.page_count >= 0);
-              } else requireValid(total === void 0);
+                  requireValid(
+                    Number.isSafeInteger(body.page_count) && body.page_count >= 0,
+                    `closure:pages:page-count:${kind}`,
+                  );
+              } else requireValid(total === void 0, `closure:pages:shape:${kind}`);
               for (const row of rows) {
                 requireValid(
                   row &&
                     typeof row === 'object' &&
                     !Array.isArray(row) &&
                     typeof row.id === 'string' &&
-                    idPattern.test(row.id) &&
-                    !seen.has(row.id),
+                    idPattern.test(row.id),
+                  `closure:pages:row:${kind}`,
                 );
+                requireValid(!seen.has(row.id), `closure:pages:duplicate:${kind}`);
                 seen.add(row.id);
                 result.push(row);
-                requireValid(result.length <= limit);
+                requireValid(result.length <= limit, `closure:pages:limit:${kind}`);
               }
               if (rows.length < 100 || (total !== void 0 && result.length === total)) {
-                requireValid(total === void 0 || result.length === total);
+                requireValid(
+                  total === void 0 || result.length === total,
+                  `closure:pages:incomplete:${kind}`,
+                );
                 return result;
               }
-              requireValid(total === void 0 || result.length < total);
+              requireValid(
+                total === void 0 || result.length < total,
+                `closure:pages:incomplete:${kind}`,
+              );
             }
-            requireValid(false);
+            requireValid(false, `closure:pages:incomplete:${kind}`);
           }
           function surfaces(context) {
-            const schema = `/v2/schema/${context.project}/${context.environment}`;
-            const facts = `/v2/facts/${context.project}/${context.environment}`;
-            return [
-              ['resources', `${schema}/resources?include_built_in=true&include_total_count=true`],
-              ['roles', `${schema}/roles?include_total_count=true`],
-              ['user_attributes', `${schema}/users/attributes`],
-              ['condition_sets', `${schema}/condition_sets?include_total_count=true`],
-              ['condition_set_rules', `${facts}/set_rules`],
-              ['users', `${facts}/users`],
-              ['tenants', `${facts}/tenants?include_total_count=true`],
-              ['groups', `${schema}/groups`],
-              ['user_invites', `${facts}/user_invites`],
-              [
-                'resource_instances',
-                `${facts}/resource_instances?detailed=true&include_total_count=true`,
-              ],
-              [
-                'relationship_tuples',
-                `${facts}/relationship_tuples?detailed=true&include_total_count=true`,
-              ],
-              ['role_assignments', `${facts}/role_assignments?include_total_count=true`],
-              ['proxy_configs', `${facts}/proxy_configs`],
-              ['pdp_configs', `/v2/pdps/${context.project}/${context.environment}/configs`],
-              ['elements_configs', `/v2/elements/${context.project}/${context.environment}/config`],
-              ['email_templates', `${facts}/email_templates/`],
-            ];
+            return inventories.map(([kind, section, route]) => [
+              kind,
+              `/v2/${section}/${context.project}/${context.environment}/${route}`,
+            ]);
           }
-          function requireScope(row, context) {
+          function requireScope(row, context, label) {
             requireValid(
-              row.organization_id === context.organization &&
+              row &&
+                typeof row === 'object' &&
+                row.organization_id === context.organization &&
                 row.project_id === context.project &&
                 row.environment_id === context.environment &&
                 idPattern.test(row.id),
+              `closure:scope:${label}`,
             );
           }
           function record(kind, row, context) {
-            requireScope(row, context);
+            requireScope(row, context, surface(kind));
             if (kind !== 'pdp_configs')
               requireValid(
                 typeof row.created_at === 'string' &&
                   Number.isFinite(Date.parse(row.created_at)) &&
                   Date.parse(row.created_at) >= Date.parse(context.createdAt),
+                `closure:created-at:${surface(kind)}`,
               );
             const projection = structuredClone(row);
             const timestamped = [
@@ -2152,16 +2510,17 @@ jobs:
             };
           }
           async function observe({ request, projectRequest, context }) {
+            requireValid(typeof projectRequest === 'function', 'closure:project-request');
             requireValid(
-              typeof projectRequest === 'function' &&
-                idPattern.test(context.organization) &&
+              idPattern.test(context.organization) &&
                 idPattern.test(context.project) &&
                 idPattern.test(context.environment) &&
                 Number.isFinite(Date.parse(context.createdAt)),
+              'closure:context',
             );
             const groups = /* @__PURE__ */ new Map();
             for (const [kind, path] of surfaces(context))
-              groups.set(kind, await cloudClosurePages({ request, path }));
+              groups.set(kind, await cloudClosurePages({ request, path, kind }));
             for (const [kind, path] of [
               [
                 'email_configuration',
@@ -2169,24 +2528,19 @@ jobs:
               ],
               ['opal_scope', `/v2/projects/${context.project}/${context.environment}/opal_scope`],
             ]) {
-              const reply = await get(request, path, true);
+              const reply = await get(request, kind, path, true);
               groups.set(kind, reply.status === 404 ? [] : [reply.body]);
             }
             const environmentKey = await get(
               projectRequest,
+              'api_keys',
               `/v2/api-key/${context.project}/${context.environment}`,
             );
             groups.set('api_keys', [environmentKey.body]);
-            requireValid(groups.get('resources').length <= 8);
+            requireValid(groups.get('resources').length <= 8, 'closure:limit:resources');
             for (const resource of groups.get('resources')) {
-              requireScope(resource, context);
-              for (const child of [
-                'actions',
-                'attributes',
-                'roles',
-                'relations',
-                'action_groups',
-              ]) {
+              requireScope(resource, context, 'resources');
+              for (const child of children) {
                 const path = [
                   '/v2/schema',
                   context.project,
@@ -2195,8 +2549,12 @@ jobs:
                   resource.id,
                   child,
                 ].join('/');
-                const rows = await cloudClosurePages({ request, path });
-                for (const row of rows) requireValid(row.resource_id === resource.id);
+                const rows = await cloudClosurePages({ request, path, kind: `resource_${child}` });
+                for (const row of rows)
+                  requireValid(
+                    row.resource_id === resource.id,
+                    `closure:child-parent:resource_${child}`,
+                  );
                 groups.set(`resource:${resource.id}:${child}`, rows);
               }
             }
@@ -2204,7 +2562,7 @@ jobs:
             for (const [kind, rows] of groups)
               for (const row of rows) {
                 records.push(record(kind, row, context));
-                requireValid(records.length <= limit);
+                requireValid(records.length <= limit, 'closure:limit:records');
               }
             records.sort((a, b) => `${a.kind}:${a.id}`.localeCompare(`${b.kind}:${b.id}`));
             return { groups, records };
@@ -2228,9 +2586,10 @@ jobs:
                 ]) &&
                 Array.isArray(closure.baseline) &&
                 closure.baseline.length <= limit,
+              'closure:state',
             );
             for (const rows of [closure.baseline, closure.settled ?? []]) {
-              requireValid(Array.isArray(rows) && rows.length <= limit);
+              requireValid(Array.isArray(rows) && rows.length <= limit, 'closure:state');
               const seen = /* @__PURE__ */ new Set();
               for (const row of rows) {
                 requireValid(
@@ -2248,22 +2607,31 @@ jobs:
                     (row.key === null || typeof row.key === 'string') &&
                     (row.createdAt === null || Number.isFinite(Date.parse(row.createdAt))) &&
                     !seen.has(`${row.kind}:${row.id}`),
+                  'closure:state:record',
                 );
                 seen.add(`${row.kind}:${row.id}`);
               }
             }
           }
+          function firstMissing(rows, others) {
+            return rows.find((row) => !others.some((other) => isDeepStrictEqual(row, other)));
+          }
           async function verifyCloudClosure({ request, projectRequest, closure, fixture }) {
             try {
               requireClosure(closure);
               const expected = fixture === null ? closure.baseline : closure.settled;
-              requireValid(Array.isArray(expected));
+              requireValid(Array.isArray(expected), 'closure:verify:unsettled');
               const observed = await observe({ request, projectRequest, context: closure.context });
-              requireValid(isDeepStrictEqual(observed.records, expected));
+              if (!isDeepStrictEqual(observed.records, expected)) {
+                const changed =
+                  firstMissing(observed.records, expected) ??
+                  firstMissing(expected, observed.records);
+                throw refusal(unverified, `closure:verify:changed:${surface(changed?.kind)}`);
+              }
               if (fixture !== null) {
                 for (const owned of fixture.records) {
                   if (owned.kind === 'role_assignments') continue;
-                  requireValid(['resources', 'roles', 'tenants', 'users'].includes(owned.kind));
+                  requireValid(fixtureKinds.includes(owned.kind), 'closure:verify:fixture-kind');
                   const section = ['resources', 'roles'].includes(owned.kind) ? 'schema' : 'facts';
                   const path = [
                     '/v2',
@@ -2273,8 +2641,8 @@ jobs:
                     owned.kind,
                     owned.id,
                   ].join('/');
-                  const reply = await get(request, path);
-                  requireScope(reply.body, closure.context);
+                  const reply = await get(request, `detail_${owned.kind}`, path);
+                  requireScope(reply.body, closure.context, `detail_${owned.kind}`);
                   requireValid(
                     reply.body.id === owned.id &&
                       reply.body.created_at === owned.createdAt &&
@@ -2282,6 +2650,7 @@ jobs:
                       record(owned.kind, reply.body, closure.context).digest ===
                         expected.find((row) => row.kind === owned.kind && row.id === owned.id)
                           ?.digest,
+                    `closure:verify:detail:${owned.kind}`,
                   );
                 }
                 const grant = fixture.records.find((row) => row.kind === 'role_assignments');
@@ -2299,18 +2668,33 @@ jobs:
                       row.role_id === role?.id &&
                       row.resource_instance == null &&
                       row.resource_instance_id == null,
+                    'closure:verify:grant',
                   );
                 }
               }
-            } catch {
-              throw new Error('Cloud cleanup child closure failed; retain the owned environment.');
+            } catch (error) {
+              throw refusal(
+                'Cloud cleanup child closure failed; retain the owned environment.',
+                diagnosticCode(error, 'closure:verify:exception'),
+              );
             }
           }
 
           // scripts/cloud-environment.mjs
           import { isDeepStrictEqual as isDeepStrictEqual2 } from 'node:util';
-          function requireValid2(value, message) {
-            if (!value) throw new Error(message);
+          function refusal2(message, code) {
+            return Object.assign(new Error(message), { code });
+          }
+          function requireValid2(value, message, code) {
+            if (!value) throw refusal2(message, code);
+          }
+          function diagnosticCode2(error, fallback) {
+            return typeof error?.code === 'string' ? error.code : fallback;
+          }
+          function httpStatus2(reply) {
+            return Number.isInteger(reply?.status) && reply.status >= 100 && reply.status <= 599
+              ? reply.status
+              : 'invalid';
           }
           function ownerInputs({ project, key, marker }) {
             requireValid2(
@@ -2320,9 +2704,10 @@ jobs:
                 /^node-acceptance-[1-9]\d*-[1-9]\d*$/u.test(key) &&
                 marker === `permit-node:release-acceptance:${key}`,
               'Cloud environment ownership inputs are invalid.',
+              'environment:inputs',
             );
           }
-          function ownedIdentity(body, owner) {
+          function ownedIdentity(body, owner, source) {
             requireValid2(
               body &&
                 typeof body === 'object' &&
@@ -2335,19 +2720,28 @@ jobs:
                 typeof body.created_at === 'string' &&
                 Number.isFinite(Date.parse(body.created_at)),
               'Cloud environment readback does not establish the exact owned identity.',
+              `environment:identity:${source}`,
             );
             return { id: body.id, createdAt: body.created_at };
           }
-          async function checkedRead(request, path) {
-            let response;
+          async function send(request, input, label, message) {
             try {
-              response = await request({ method: 'GET', path });
+              return await request(input);
             } catch {
-              throw new Error('Cloud environment ownership read failed before cleanup.');
+              throw refusal2(message, `environment:transport:${label}`);
             }
+          }
+          async function checkedRead(request, path, label) {
+            const response = await send(
+              request,
+              { method: 'GET', path },
+              label,
+              'Cloud environment ownership read failed before cleanup.',
+            );
             requireValid2(
               response?.status === 200 || response?.status === 404,
               'Cloud environment ownership read returned an unexpected HTTP status.',
+              `environment:http:${label}:${httpStatus2(response)}`,
             );
             return response;
           }
@@ -2361,53 +2755,81 @@ jobs:
                 typeof state.identity.createdAt === 'string' &&
                 Number.isFinite(Date.parse(state.identity.createdAt)),
               'Cloud credential handoff requires initially captured immutable ownership.',
+              'environment:credential:state',
             );
             const project = state.project;
             const collection = `/v2/projects/${project}/envs`;
             const reads = await Promise.all([
-              checkedRead(request, `${collection}/${state.key}`),
-              checkedRead(request, `${collection}/${state.identity.id}`),
+              checkedRead(request, `${collection}/${state.key}`, 'by_key'),
+              checkedRead(request, `${collection}/${state.identity.id}`, 'by_id'),
             ]);
-            requireValid2(
-              reads.every(
-                (row) =>
-                  row.status === 200 &&
-                  isDeepStrictEqual2(ownedIdentity(row.body, state), state.identity),
-              ),
-              'Cloud credential handoff refused changed or ambiguous environment ownership.',
-            );
+            for (const [read, label] of [
+              [reads[0], 'by_key'],
+              [reads[1], 'by_id'],
+            ])
+              requireValid2(
+                read.status === 200 &&
+                  isDeepStrictEqual2(ownedIdentity(read.body, state, label), state.identity),
+                'Cloud credential handoff refused changed or ambiguous environment ownership.',
+                `environment:credential:ownership:${label}`,
+              );
             let credential, organization;
             try {
-              const response = await request({
-                method: 'GET',
-                path: `/v2/api-key/${project}/${state.identity.id}`,
-              });
+              const unavailable = 'Scoped cloud credential is unavailable.';
+              const response = await send(
+                request,
+                { method: 'GET', path: `/v2/api-key/${project}/${state.identity.id}` },
+                'api_key',
+                unavailable,
+              );
               requireValid2(
-                response?.status === 200 &&
-                  typeof response.body?.secret === 'string' &&
-                  /^[\x21-\x7e]+$/u.test(response.body.secret) &&
-                  (response.body.project_id == null || response.body.project_id === project) &&
+                response?.status === 200,
+                unavailable,
+                `environment:http:api_key:${httpStatus2(response)}`,
+              );
+              requireValid2(
+                typeof response.body?.secret === 'string' &&
+                  /^[\x21-\x7e]+$/u.test(response.body.secret),
+                unavailable,
+                'environment:credential:secret',
+              );
+              requireValid2(
+                (response.body.project_id == null || response.body.project_id === project) &&
                   (response.body.environment_id == null ||
                     response.body.environment_id === state.identity.id) &&
                   (response.body.object_type == null || response.body.object_type === 'env'),
-                'Scoped cloud credential is unavailable.',
+                unavailable,
+                'environment:credential:metadata',
               );
               credential = response.body.secret;
-              const scope = await request({ method: 'GET', path: '/v2/api-key/scope', credential });
+              const foreign =
+                'Fetched cloud credential does not belong exclusively to the captured environment.';
+              const scope = await send(
+                request,
+                { method: 'GET', path: '/v2/api-key/scope', credential },
+                'api_key_scope',
+                foreign,
+              );
               requireValid2(
-                scope?.status === 200 &&
-                  typeof scope.body?.organization_id === 'string' &&
+                scope?.status === 200,
+                foreign,
+                `environment:http:api_key_scope:${httpStatus2(scope)}`,
+              );
+              requireValid2(
+                typeof scope.body?.organization_id === 'string' &&
                   scope.body.organization_id.length > 0 &&
                   (response.body.organization_id == null ||
                     response.body.organization_id === scope.body.organization_id) &&
                   scope.body.project_id === project &&
                   scope.body.environment_id === state.identity.id,
-                'Fetched cloud credential does not belong exclusively to the captured environment.',
+                foreign,
+                'environment:credential:scope',
               );
               organization = scope.body.organization_id;
-            } catch {
-              throw new Error(
+            } catch (error) {
+              throw refusal2(
                 'Scoped cloud credential lookup failed; owned cleanup remains required.',
+                diagnosticCode2(error, 'environment:credential:exception'),
               );
             }
             return { credential, organization };
@@ -2429,16 +2851,22 @@ jobs:
                 typeof state.attempted === 'boolean' &&
                 ['unverified', 'verified'].includes(state.capture),
               'Cloud cleanup state is invalid.',
+              'environment:cleanup:state',
             );
             ownerInputs(state);
-            requireValid2(typeof request === 'function', 'Cloud cleanup HTTP boundary is missing.');
+            requireValid2(
+              typeof request === 'function',
+              'Cloud cleanup HTTP boundary is missing.',
+              'environment:cleanup:boundary',
+            );
             const collection = `/v2/projects/${state.project}/envs`;
             const keyPath = `${collection}/${state.key}`;
             if (!state.attempted || state.capture !== 'verified') {
-              const key2 = await checkedRead(request, keyPath);
+              const key2 = await checkedRead(request, keyPath, 'by_key');
               requireValid2(
                 key2.status === 404 && !state.attempted,
                 'Cloud cleanup cannot adopt a never-attempted or initially unverified identity.',
+                'environment:cleanup:adopt',
               );
               return { registered: 1, completed: 1, verified: 1 };
             }
@@ -2448,51 +2876,59 @@ jobs:
                 /^[a-f0-9-]{32,36}$/u.test(state.identity.id) &&
                 Number.isFinite(Date.parse(state.identity.createdAt)),
               'Cloud cleanup identity is invalid.',
+              'environment:cleanup:identity',
             );
             const idPath = `${collection}/${state.identity.id}`;
             const [id, key] = await Promise.all([
-              checkedRead(request, idPath),
-              checkedRead(request, keyPath),
+              checkedRead(request, idPath, 'by_id'),
+              checkedRead(request, keyPath, 'by_key'),
             ]);
             if (id.status === 404 && key.status === 404)
               return { registered: 1, completed: 1, verified: 1 };
             requireValid2(
               id.status === 200 &&
                 key.status === 200 &&
-                isDeepStrictEqual2(ownedIdentity(id.body, state), state.identity) &&
-                isDeepStrictEqual2(ownedIdentity(key.body, state), state.identity),
+                isDeepStrictEqual2(ownedIdentity(id.body, state, 'by_id'), state.identity) &&
+                isDeepStrictEqual2(ownedIdentity(key.body, state, 'by_key'), state.identity),
               'Cloud cleanup refused changed or ambiguous ownership.',
+              'environment:cleanup:ownership',
             );
-            let deleted;
-            try {
-              deleted = await request({ method: 'DELETE', path: idPath });
-            } catch {
-              throw new Error('Owned cloud environment deletion failed.');
-            }
+            const deleted = await send(
+              request,
+              { method: 'DELETE', path: idPath },
+              'delete',
+              'Owned cloud environment deletion failed.',
+            );
             requireValid2(
               [200, 204, 404].includes(deleted?.status),
               'Owned cloud environment deletion returned an unexpected HTTP status.',
+              `environment:http:delete:${httpStatus2(deleted)}`,
             );
             const absent = await Promise.all([
-              checkedRead(request, idPath),
-              checkedRead(request, keyPath),
+              checkedRead(request, idPath, 'by_id'),
+              checkedRead(request, keyPath, 'by_key'),
             ]);
             requireValid2(
               absent.every((response) => response.status === 404),
               'Owned cloud environment cleanup has not verified key and physical ID absence.',
+              'environment:cleanup:absence',
             );
             return { registered: 1, completed: 1, verified: 1 };
           }
 
           // scripts/cloud-fixture.mjs
           import { isDeepStrictEqual as isDeepStrictEqual3 } from 'node:util';
-          function requireValid3(value, message) {
-            if (!value) throw new Error(message);
+          function refusal3(message, code) {
+            return Object.assign(new Error(message), { code });
+          }
+          function requireValid3(value, message, code) {
+            if (!value) throw refusal3(message, code);
           }
           function cloudFixtureNames(key) {
             requireValid3(
               /^node-acceptance-[1-9]\d*-[1-9]\d*$/u.test(key),
               'Cloud fixture key is invalid.',
+              'fixture:names',
             );
             return {
               allowedUser: `${key}_allowed`,
@@ -2526,6 +2962,7 @@ jobs:
                 Array.isArray(state.records) &&
                 state.records.length <= 7,
               'Cloud fixture writes remain unsettled or foreign; refuse environment cleanup.',
+              'fixture:settled:state',
             );
             const names = cloudFixtureNames(owner.key);
             const kinds = /* @__PURE__ */ new Map([
@@ -2550,6 +2987,7 @@ jobs:
                   (kinds.get(row.key) === row.kind ||
                     (row.key === names.allowedUser && row.kind === 'role_assignments')),
                 'Cloud fixture capture is malformed or ambiguous; refuse environment cleanup.',
+                'fixture:settled:record',
               );
               ids.add(row.id);
               logical.add(`${row.kind}:${row.key}`);
@@ -2557,8 +2995,23 @@ jobs:
           }
 
           // scripts/cloud-lifecycle.mjs
-          function requireValid4(value) {
-            if (!value) throw new Error('Trusted cloud lifecycle input or ownership is invalid.');
+          var diagnosticPattern = /^[a-z]+(?::[a-z0-9_-]{1,40}){1,4}$/u;
+          function requireValid4(value, code) {
+            if (!value)
+              throw Object.assign(
+                new Error('Trusted cloud lifecycle input or ownership is invalid.'),
+                {
+                  code,
+                },
+              );
+          }
+          function diagnosticLine(error) {
+            const code = error?.code;
+            const safe =
+              typeof code === 'string' &&
+              diagnosticPattern.test(code) &&
+              !/[a-f0-9]{12}/u.test(code);
+            return `Cloud lifecycle diagnostic: ${safe ? code : 'unclassified'}`;
           }
           function trustedCloudRun(env) {
             requireValid4(
@@ -2574,6 +3027,7 @@ jobs:
                 ((env.GITHUB_EVENT_NAME === 'push' && env.GITHUB_REF === 'refs/heads/main') ||
                   (env.GITHUB_EVENT_NAME === 'pull_request' &&
                     env.PR_HEAD_REPOSITORY === env.GITHUB_REPOSITORY)),
+              'lifecycle:trusted-run',
             );
             return {
               repository: env.GITHUB_REPOSITORY,
@@ -2589,19 +3043,24 @@ jobs:
                 isAbsolute(directory) &&
                 typeof env.RUNNER_TEMP === 'string' &&
                 isAbsolute(env.RUNNER_TEMP),
+              'lifecycle:directory',
             );
             const base = realpathSync(env.RUNNER_TEMP);
             const absolute = resolve(directory);
-            requireValid4(absolute.startsWith(base + sep));
+            requireValid4(absolute.startsWith(base + sep), 'lifecycle:directory');
             mkdirSync(absolute, { recursive: true, mode: 448 });
             requireValid4(
               realpathSync(absolute) === absolute && !lstatSync(absolute).isSymbolicLink(),
+              'lifecycle:directory',
             );
             return absolute;
           }
           function regularBytes(file) {
             const stat = lstatSync(file);
-            requireValid4(stat.isFile() && !stat.isSymbolicLink() && stat.size <= 64 * 1024);
+            requireValid4(
+              stat.isFile() && !stat.isSymbolicLink() && stat.size <= 64 * 1024,
+              'lifecycle:file',
+            );
             return readFileSync(file, 'utf8');
           }
           function readLifecycleState({ directory, env }) {
@@ -2619,6 +3078,7 @@ jobs:
                 ]) &&
                 state.schema === 1 &&
                 isDeepStrictEqual4(state.ci, ci),
+              'lifecycle:state',
             );
             const key = `node-acceptance-${ci.runId}-${ci.runAttempt}`;
             requireValid4(
@@ -2638,15 +3098,24 @@ jobs:
                 state.owner.project === env.PROJECT_ID &&
                 typeof state.owner.attempted === 'boolean' &&
                 ['verified', 'unverified'].includes(state.owner.capture),
+              'lifecycle:owner',
             );
             return { state, folder, ci };
           }
-          async function cleanupTrustedCloud({ directory, env = process.env, request }) {
+          async function cleanupTrustedCloud({
+            directory,
+            env = process.env,
+            request,
+            report = (line) => console.error(line),
+          }) {
             try {
               const { state, folder, ci } = readLifecycleState({ directory, env });
-              requireValid4(['success', 'failure', 'cancelled'].includes(env.CLOUD_SETUP_RESULT));
+              requireValid4(
+                ['success', 'failure', 'cancelled'].includes(env.CLOUD_SETUP_RESULT),
+                'lifecycle:setup-result',
+              );
               if (state.fixture !== null) verifyCloudFixtureSettled(state.fixture, state.owner);
-              else requireValid4(env.CLOUD_SETUP_RESULT !== 'success');
+              else requireValid4(env.CLOUD_SETUP_RESULT !== 'success', 'lifecycle:fixture-missing');
               if (env.CLOUD_SETUP_RESULT === 'success')
                 requireValid4(
                   state.fixture.records.length === 7 &&
@@ -2654,6 +3123,7 @@ jobs:
                       JSON.parse(regularBytes(join(folder, 'fixture.json'))),
                       cloudFixtureNames(state.owner.key),
                     ),
+                  'lifecycle:fixture-names',
                 );
               const http = request ?? cloudControlRequest({ credential: env.PROJECT_API_KEY });
               requireValid4(
@@ -2661,12 +3131,16 @@ jobs:
                   state.closure.context.project === state.owner.project &&
                   state.closure.context.environment === state.owner.identity?.id &&
                   state.closure.context.createdAt === state.owner.identity?.createdAt,
+                'lifecycle:closure-context',
               );
               const scoped = await fetchCloudEnvironmentCredential({
                 request: http,
                 state: state.owner,
               });
-              requireValid4(scoped.organization === state.closure.context.organization);
+              requireValid4(
+                scoped.organization === state.closure.context.organization,
+                'lifecycle:organization',
+              );
               await verifyCloudClosure({
                 request: (input) => http({ ...input, credential: scoped.credential }),
                 projectRequest: http,
@@ -2674,13 +3148,14 @@ jobs:
                 fixture: state.fixture,
               });
               const cleanup = await cleanupCloudEnvironment({ request: http, state: state.owner });
-              const report = { schema: 2, ci, cleanup };
-              writeFileSync(join(folder, 'cleanup.json'), JSON.stringify(report) + '\n', {
+              const receipt = { schema: 2, ci, cleanup };
+              writeFileSync(join(folder, 'cleanup.json'), JSON.stringify(receipt) + '\n', {
                 mode: 384,
                 flag: 'wx',
               });
-              return report;
-            } catch {
+              return receipt;
+            } catch (error) {
+              report(diagnosticLine(error));
               throw new Error(
                 'Trusted cloud cleanup failed; ownership or verified absence is incomplete.',
               );
