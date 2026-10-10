@@ -28,6 +28,11 @@ import {
 } from '#scripts/cloud-fixture.mjs';
 
 const diagnosticPattern = /^[a-z]+(?::[a-z0-9_-]{1,40}){1,4}$/u;
+const censusEntry = '[a-z_]{1,40}=(?:12[0-8]|1[01]\\d|[1-9]?\\d|invalid)';
+const censusPattern = new RegExp(
+  `^Cloud closure census: ${censusEntry}(?:,${censusEntry}){0,40}$`,
+  'u',
+);
 
 function requireValid(value, code) {
   if (!value)
@@ -47,6 +52,18 @@ function diagnosticLine(error) {
   const safe =
     typeof code === 'string' && diagnosticPattern.test(code) && !/[a-f0-9]{12}/u.test(code);
   return `Cloud lifecycle diagnostic: ${safe ? code : 'unclassified'}`;
+}
+
+/**
+ * Formats the setup census line from a capture refusal's static surface counts.
+ * @param census - The refusal's `census` value; only its exact static entry shape is printed.
+ * @returns The census line, or `Cloud closure census: unavailable` for any other value.
+ */
+function censusLine(census) {
+  const line = `Cloud closure census: ${census}`;
+  return typeof census === 'string' && censusPattern.test(line) && !/[a-f0-9]{12}/u.test(census)
+    ? line
+    : 'Cloud closure census: unavailable';
 }
 
 /**
@@ -162,8 +179,9 @@ function readLifecycleState({ directory, env }) {
  * the line writer for the single static failure diagnostic.
  * @returns A finite setup summary; operational state contains only owned identifiers and
  * timestamps.
- * @throws With a constant message after reporting one static diagnostic code; unresolved writes
- * remain durable and block later deletion.
+ * @throws With a constant message after reporting one static diagnostic code, preceded by one
+ * static census line when closure capture refused a complete inventory; unresolved writes remain
+ * durable and block later deletion.
  */
 export async function setupTrustedCloud({
   directory,
@@ -230,6 +248,7 @@ export async function setupTrustedCloud({
     });
     return { schema: 2, status: 'PASS', fixtureWriteCount: state.fixture.records.length };
   } catch (error) {
+    if (error?.census !== undefined) report(censusLine(error.census));
     report(diagnosticLine(error));
     throw new Error('Trusted cloud setup failed; inspect retained ownership state privately.');
   }

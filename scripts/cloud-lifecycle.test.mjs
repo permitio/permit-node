@@ -26,6 +26,34 @@ const project = 'deadbeef'.repeat(4),
 const credential = 'synthetic-env%credential';
 const canary = 'CLOUD_LIFECYCLE_RESPONSE_ONLY_CANARY';
 const diagnostic = (code) => `Cloud lifecycle diagnostic: ${code}`;
+const censusKinds = [
+  'resources',
+  'roles',
+  'user_attributes',
+  'condition_sets',
+  'condition_set_rules',
+  'users',
+  'tenants',
+  'groups',
+  'user_invites',
+  'resource_instances',
+  'relationship_tuples',
+  'role_assignments',
+  'proxy_configs',
+  'pdp_configs',
+  'elements_configs',
+  'email_templates',
+  'email_configuration',
+  'opal_scope',
+  'api_keys',
+  'resource_actions',
+  'resource_attributes',
+  'resource_roles',
+  'resource_relations',
+  'resource_action_groups',
+];
+const censusLine = (counts) =>
+  `Cloud closure census: ${censusKinds.map((kind) => `${kind}=${counts[kind] ?? 0}`).join(',')}`;
 function boundary(options = {}) {
   const temp = realpathSync(mkdtempSync(join(tmpdir(), 'public-cloud-lifecycle-')));
   const directory = join(temp, 'cloud-state'),
@@ -103,7 +131,11 @@ function boundary(options = {}) {
     if (path.pathname === `/v2/pdps/${project}/${environment}/configs`)
       return {
         status: 200,
-        body: [{ ...scope, id: pdpId, client_secret: options.pdpSecret ?? credential }],
+        body: (options.pdpConfigs ?? [credential]).map((secret, index) => ({
+          ...scope,
+          id: index ? `${'5ca1ab1e'.repeat(3)}${index.toString(16).padStart(8, '0')}` : pdpId,
+          client_secret: secret,
+        })),
       };
     const kind = path.pathname.split('/')[5];
     if (input.method === 'POST') {
@@ -417,6 +449,7 @@ test.each([
         pathname === `${factsPath}/tenants`
           ? { status: 200, body: [scopedRow({ id: foreign, key: 'default', project_id: child })] }
           : undefined,
+      census: { tenants: 1 },
     },
   ],
   [
@@ -427,6 +460,7 @@ test.each([
         pathname === `${schemaPath}/groups`
           ? { status: 200, body: [scopedRow({ id: foreign, key: canary })] }
           : undefined,
+      census: { groups: 1 },
     },
   ],
   [
@@ -442,12 +476,13 @@ test.each([
             body: [scopedRow({ id: child, key: canary, resource_id: foreign })],
           };
       },
+      census: { resources: 1, resource_roles: 1 },
     },
   ],
   [
     'a PDP secret that differs from the key',
-    'closure:api-key:secret-mismatch',
-    { pdpSecret: canary },
+    'closure:api-key:secret-unmatched',
+    { pdpConfigs: [canary], census: {} },
   ],
   [
     'a rejected fixture write',
@@ -479,7 +514,11 @@ test.each([
           : undefined,
     },
   ],
-  ['a key created before its environment', 'closure:created-at:api_keys', { keyBirth: true }],
+  [
+    'a key created before its environment',
+    'closure:created-at:api_keys',
+    { keyBirth: true, census: {} },
+  ],
   ['a changed captured child at cleanup', 'closure:verify:changed:resources', { cleanup: true }],
 ])('%s prints one static diagnostic without response data', async (_name, code, options) => {
   const f = boundary(options);
@@ -490,7 +529,11 @@ test.each([
     resource.type_attributes = { leaked: `${canary} ${keyId} ${credential}` };
     await expect(cleanupTrustedCloud(f)).rejects.toThrow(/^Trusted cloud cleanup failed;/u);
   } else await expect(setup(f)).rejects.toThrow(/^Trusted cloud setup failed;/u);
-  expect(f.lines).toEqual([diagnostic(code)]);
+  expect(f.lines).toEqual(
+    options.census
+      ? [censusLine({ pdp_configs: 1, api_keys: 1, ...options.census }), diagnostic(code)]
+      : [diagnostic(code)],
+  );
   for (const secret of [
     project,
     environment,
@@ -638,4 +681,83 @@ test.each([
   await expect(step(f)).rejects.toThrow(/^Trusted cloud (setup|cleanup) failed;/u);
   expect(f.lines).toEqual([diagnostic(code)]);
   expect(f.calls.filter((call) => call.method === 'DELETE')).toEqual([]);
+});
+
+test('a production environment with two PDP configs completes setup, handoff and cleanup', async () => {
+  const f = boundary({ pdpConfigs: [`${canary}-other`, credential] });
+  expect(await setup(f)).toEqual({ schema: 2, status: 'PASS', fixtureWriteCount: 7 });
+  await handoffTrustedCloud({ ...f, mask: () => {} });
+  expect((await cleanupTrustedCloud(f)).cleanup.verified).toBe(1);
+  expect(f.hasEnvironment()).toBe(false);
+  expect(f.lines).toEqual([]);
+});
+test.each([
+  [
+    'a key matching none of two PDP configs',
+    [`${canary}-first`, `${canary}-second`],
+    'closure:api-key:secret-unmatched',
+  ],
+  ['a key matching two PDP configs', [credential, credential], 'closure:api-key:secret-ambiguous'],
+  [
+    'five PDP configs',
+    [credential, ...Array.from({ length: 4 }, (_value, index) => `${canary}-${index}`)],
+    'closure:defaults:pdp_configs',
+  ],
+])('%s prints the exact census before its diagnostic', async (_name, pdpConfigs, code) => {
+  const f = boundary({ pdpConfigs });
+  await expect(setup(f)).rejects.toThrow(/^Trusted cloud setup failed;/u);
+  expect(f.lines).toEqual([
+    censusLine({ pdp_configs: pdpConfigs.length, api_keys: 1 }),
+    diagnostic(code),
+  ]);
+  for (const secret of [project, environment, organization, keyId, pdpId, credential, canary])
+    expect(f.lines.join('\n')).not.toContain(secret);
+  f.env.CLOUD_SETUP_RESULT = 'failure';
+  await expect(cleanupTrustedCloud(f)).rejects.toThrow(/^Trusted cloud cleanup failed;/u);
+  expect(f.lines.at(-1)).toBe(diagnostic('lifecycle:closure-context'));
+  expect(f.lines.filter((line) => line.startsWith('Cloud closure census:'))).toHaveLength(1);
+});
+test('a capture refusal before the inventory is complete prints no census', async () => {
+  const f = boundary({
+    respond: (_input, pathname) =>
+      pathname.endsWith('/configs') ? { status: 403, body: { detail: canary } } : undefined,
+  });
+  await expect(setup(f)).rejects.toThrow(/^Trusted cloud setup failed;/u);
+  expect(f.lines).toEqual([diagnostic('closure:http:pdp_configs:403')]);
+});
+const fullCensus = censusKinds.map((kind) => `${kind}=0`).join(',');
+test.each([
+  ['pdp_configs=2,api_keys=1', 'Cloud closure census: pdp_configs=2,api_keys=1'],
+  [fullCensus, `Cloud closure census: ${fullCensus}`],
+  [`${'z'.repeat(40)}=128`, `Cloud closure census: ${'z'.repeat(40)}=128`],
+  [
+    Array(41).fill('kind=1').join(','),
+    `Cloud closure census: ${Array(41).fill('kind=1').join(',')}`,
+  ],
+  ['pdp_configs=invalid', 'Cloud closure census: pdp_configs=invalid'],
+  [Array(42).fill('kind=1').join(','), 'Cloud closure census: unavailable'],
+  [`${'z'.repeat(41)}=1`, 'Cloud closure census: unavailable'],
+  ['pdp_configs=129', 'Cloud closure census: unavailable'],
+  ['pdp_configs=007', 'Cloud closure census: unavailable'],
+  ['pdp_configs=-1', 'Cloud closure census: unavailable'],
+  ['Pdp_configs=1', 'Cloud closure census: unavailable'],
+  [`${project}=1`, 'Cloud closure census: unavailable'],
+  ['pdp_configs=1\nforged: line', 'Cloud closure census: unavailable'],
+  ['', 'Cloud closure census: unavailable'],
+  [2, 'Cloud closure census: unavailable'],
+  [null, 'Cloud closure census: unavailable'],
+])('setup prints census %j as %j and cleanup never prints it', async (census, printed) => {
+  const code = 'closure:defaults:pdp_configs';
+  for (const step of [setupTrustedCloud, cleanupTrustedCloud]) {
+    const f = boundary();
+    Object.defineProperty(f.env, 'GITHUB_ACTIONS', {
+      get() {
+        throw Object.assign(new Error(canary), { code, census });
+      },
+    });
+    await expect(step(f)).rejects.toThrow(/^Trusted cloud (setup|cleanup) failed;/u);
+    expect(f.lines).toEqual(
+      step === setupTrustedCloud ? [printed, diagnostic(code)] : [diagnostic(code)],
+    );
+  }
 });

@@ -105,6 +105,40 @@ function boundary() {
   };
 }
 const http = (f) => ({ request: f.request, projectRequest: f.projectRequest });
+function pdpConfig(secret) {
+  const config = row({ client_secret: secret });
+  delete config.created_at;
+  return config;
+}
+const pdpConfigs = (count) =>
+  Array.from({ length: count }, (_value, index) => pdpConfig(`other-${index}`));
+const censusKinds = [
+  'resources',
+  'roles',
+  'user_attributes',
+  'condition_sets',
+  'condition_set_rules',
+  'users',
+  'tenants',
+  'groups',
+  'user_invites',
+  'resource_instances',
+  'relationship_tuples',
+  'role_assignments',
+  'proxy_configs',
+  'pdp_configs',
+  'elements_configs',
+  'email_templates',
+  'email_configuration',
+  'opal_scope',
+  'api_keys',
+  'resource_actions',
+  'resource_attributes',
+  'resource_roles',
+  'resource_relations',
+  'resource_action_groups',
+];
+const census = (counts) => censusKinds.map((kind) => `${kind}=${counts[kind] ?? 0}`).join(',');
 function freshEnvironment(f, { role = true, association = true } = {}) {
   const resources = (role ? ['__role', '__user', '__tenant'] : ['__user', '__tenant']).map((key) =>
     row({ key, roles: {}, actions: {} }),
@@ -593,9 +627,24 @@ test.each([
   ],
   [
     'credential',
-    'closure:api-key:secret-mismatch',
+    'closure:api-key:secret-unmatched',
     (key) => {
       key.secret = 'different';
+    },
+  ],
+  [
+    'credential among three PDP configs',
+    'closure:api-key:secret-unmatched',
+    (key, _pdp, f) => {
+      f.groups.get('pdp_configs').push(...pdpConfigs(2));
+      key.secret = 'different';
+    },
+  ],
+  [
+    'credential shared by two PDP configs',
+    'closure:api-key:secret-ambiguous',
+    (_key, _pdp, f) => {
+      f.groups.get('pdp_configs').push(...pdpConfigs(1), pdpConfig(canary));
     },
   ],
   [
@@ -638,16 +687,16 @@ test.each([
   ],
   [
     'unconfigured PDP',
-    'closure:api-key:count',
+    'closure:defaults:pdp_configs',
     (_key, _pdp, f) => {
       f.groups.set('pdp_configs', []);
     },
   ],
   [
-    'second PDP',
+    'five PDP configs',
     'closure:defaults:pdp_configs',
     (_key, _pdp, f) => {
-      f.groups.get('pdp_configs').push(row({ client_secret: 'other' }));
+      f.groups.get('pdp_configs').push(...pdpConfigs(4));
     },
   ],
   [
@@ -1115,3 +1164,123 @@ test.each(['last_used_at', 'last_action_at'])(
     );
   },
 );
+
+test.each([2, 3, 4])(
+  'a production environment with %i PDP configs captures, settles and verifies',
+  async (count) => {
+    const f = boundary();
+    freshEnvironment(f);
+    f.groups.get('pdp_configs').push(...pdpConfigs(count - 1));
+    const result = await settled(f);
+    expect(result.closure.baseline.filter((entry) => entry.kind === 'pdp_configs')).toHaveLength(
+      count,
+    );
+    expect(JSON.stringify(result)).not.toContain(canary);
+    await expect(verifyCloudClosure({ ...http(f), ...result })).resolves.toBeUndefined();
+  },
+);
+test.each([
+  [
+    'added',
+    'closure:settle:addition:pdp_configs',
+    (f) => {
+      f.groups.get('pdp_configs').push(pdpConfig('late-config'));
+    },
+  ],
+  [
+    'removed',
+    'closure:settle:missing-default',
+    (f) => {
+      f.groups.get('pdp_configs').pop();
+    },
+  ],
+])('a PDP config %s after capture refuses settling and cleanup', async (_name, code, change) => {
+  const f = boundary();
+  f.groups.get('pdp_configs').push(...pdpConfigs(1));
+  const closure = await captureCloudClosure({ ...http(f), context }),
+    owned = fixture(f);
+  const final = await settleCloudClosure({ ...http(f), closure, fixture: owned });
+  change(f);
+  await expect(settleCloudClosure({ ...http(f), closure, fixture: owned })).rejects.toMatchObject(
+    refused(settleRefusal, code),
+  );
+  await expect(
+    verifyCloudClosure({ ...http(f), closure: final, fixture: owned }),
+  ).rejects.toMatchObject(refused(cleanupRefusal, 'closure:verify:changed:pdp_configs'));
+});
+test('a capture refusal after the inventory carries a static census of summed counts', async () => {
+  const f = boundary(),
+    defaults = freshEnvironment(f);
+  for (const resource of [defaults.user, defaults.tenant])
+    f.groups.set(`resource:${resource.id}:attributes`, [
+      row({ key: 'email', built_in: true, resource_id: resource.id }),
+    ]);
+  f.groups.get('pdp_configs').push(...pdpConfigs(4));
+  const error = await captureCloudClosure({ ...http(f), context }).catch((caught) => caught);
+  expect(error).toMatchObject(refused(captureRefusal, 'closure:defaults:pdp_configs'));
+  expect(error.census).toBe(
+    census({
+      resources: 3,
+      tenants: 1,
+      pdp_configs: 5,
+      api_keys: 1,
+      resource_attributes: 2,
+      resource_roles: 1,
+    }),
+  );
+  for (const value of [
+    canary,
+    context.organization,
+    context.project,
+    context.environment,
+    defaults.user.id,
+    defaults.tenant.id,
+    defaults.key.id,
+    'tenant-association',
+    '__tenant',
+  ])
+    expect(error.census).not.toContain(value);
+});
+test('a census count above the closure limit is reported as invalid', async () => {
+  const f = boundary(),
+    defaults = freshEnvironment(f);
+  f.groups.set(
+    `resource:${defaults.user.id}:attributes`,
+    Array.from({ length: 100 }, () => row({ built_in: true, resource_id: defaults.user.id })),
+  );
+  f.groups.set(
+    `resource:${defaults.tenant.id}:attributes`,
+    Array.from({ length: 29 }, () => row({ built_in: true, resource_id: defaults.tenant.id })),
+  );
+  const error = await captureCloudClosure({ ...http(f), context }).catch((caught) => caught);
+  expect(error).toMatchObject(refused(captureRefusal, 'closure:limit:records'));
+  expect(error.census).toBe(
+    census({
+      resources: 3,
+      tenants: 1,
+      pdp_configs: 1,
+      api_keys: 1,
+      resource_attributes: 'invalid',
+      resource_roles: 1,
+    }),
+  );
+});
+test('refusals before a complete inventory, and settle or cleanup refusals, carry no census', async () => {
+  const f = boundary();
+  f.setFault({ kind: 'pdp_configs', reply: { status: 403 } });
+  const early = await captureCloudClosure({ ...http(f), context }).catch((caught) => caught);
+  expect(early).toMatchObject(refused(captureRefusal, 'closure:http:pdp_configs:403'));
+  expect(Object.hasOwn(early, 'census')).toBe(false);
+  const g = boundary(),
+    result = await settled(g);
+  g.groups.get('pdp_configs').push(pdpConfig('late-config'));
+  const settle = await settleCloudClosure({
+    ...http(g),
+    closure: { ...result.closure, settled: null },
+    fixture: result.fixture,
+  }).catch((caught) => caught);
+  const verify = await verifyCloudClosure({ ...http(g), ...result }).catch((caught) => caught);
+  expect(settle).toMatchObject(refused(settleRefusal, 'closure:settle:addition:pdp_configs'));
+  expect(verify).toMatchObject(refused(cleanupRefusal, 'closure:verify:changed:pdp_configs'));
+  for (const error of [settle, verify]) expect(Object.hasOwn(error, 'census')).toBe(false);
+});

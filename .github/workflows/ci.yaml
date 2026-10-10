@@ -418,6 +418,11 @@ jobs:
           ];
           var singletons = ['email_configuration', 'opal_scope', 'api_keys'];
           var children = ['actions', 'attributes', 'roles', 'relations', 'action_groups'];
+          var censusLabels = [
+            ...inventories.map(([kind]) => kind),
+            ...singletons,
+            ...children.map((child) => `resource_${child}`),
+          ];
           function refusal(message, code) {
             return Object.assign(new Error(message), { code });
           }
@@ -590,7 +595,7 @@ jobs:
               digest: fingerprint(projection),
             };
           }
-          async function observe({ request, projectRequest, context }) {
+          async function inventory({ request, projectRequest, context }) {
             requireValid(typeof projectRequest === 'function', 'closure:project-request');
             requireValid(
               idPattern.test(context.organization) &&
@@ -639,6 +644,9 @@ jobs:
                 groups.set(`resource:${resource.id}:${child}`, rows);
               }
             }
+            return groups;
+          }
+          function recordsOf(groups, context) {
             const records = [];
             for (const [kind, rows] of groups)
               for (const row of rows) {
@@ -646,7 +654,25 @@ jobs:
                 requireValid(records.length <= limit, 'closure:limit:records');
               }
             records.sort((a, b) => `${a.kind}:${a.id}`.localeCompare(`${b.kind}:${b.id}`));
-            return { groups, records };
+            return records;
+          }
+          async function observe(options) {
+            const groups = await inventory(options);
+            return { groups, records: recordsOf(groups, options.context) };
+          }
+          function census(groups) {
+            const counts = new Map(censusLabels.map((label) => [label, 0]));
+            for (const [kind, rows] of groups) {
+              const label = surface(kind);
+              if (counts.has(label)) counts.set(label, counts.get(label) + rows.length);
+            }
+            return censusLabels
+              .map((label) => {
+                const count = counts.get(label);
+                const valid = Number.isSafeInteger(count) && count >= 0 && count <= limit;
+                return `${label}=${valid ? count : 'invalid'}`;
+              })
+              .join(',');
           }
           function ownSet(row, role) {
             return (
@@ -690,20 +716,17 @@ jobs:
               'closure:defaults:condition_sets',
             );
             const pdps = groups.get('pdp_configs');
-            requireValid(pdps.length <= 1, 'closure:defaults:pdp_configs');
-            requireValid(groups.get('api_keys').length === pdps.length, 'closure:api-key:count');
-            for (const key of groups.get('api_keys')) {
-              requireValid(key.owner_type === 'pdp_config', 'closure:api-key:owner');
-              requireValid(key.object_type === 'env', 'closure:api-key:object');
-              requireValid(
-                typeof key.secret === 'string' && key.secret.length > 0,
-                'closure:api-key:secret',
-              );
-              requireValid(
-                pdps.some((pdp) => pdp.client_secret === key.secret),
-                'closure:api-key:secret-mismatch',
-              );
-            }
+            requireValid(pdps.length >= 1 && pdps.length <= 4, 'closure:defaults:pdp_configs');
+            const [key] = groups.get('api_keys');
+            requireValid(key.owner_type === 'pdp_config', 'closure:api-key:owner');
+            requireValid(key.object_type === 'env', 'closure:api-key:object');
+            requireValid(
+              typeof key.secret === 'string' && key.secret.length > 0,
+              'closure:api-key:secret',
+            );
+            const matches = pdps.filter((pdp) => pdp.client_secret === key.secret).length;
+            requireValid(matches > 0, 'closure:api-key:secret-unmatched');
+            requireValid(matches === 1, 'closure:api-key:secret-ambiguous');
             for (const [kind, rows] of groups) {
               if (
                 [
@@ -743,20 +766,19 @@ jobs:
               for (const row of rows) requireScope(row, context, surface(kind));
           }
           async function captureCloudClosure({ request, projectRequest, context }) {
+            let groups;
             try {
-              const observed = await observe({ request, projectRequest, context });
-              baselinePolicy({ ...observed, context });
-              return {
-                schema: 1,
-                context: { ...context },
-                baseline: observed.records,
-                settled: null,
-              };
+              groups = await inventory({ request, projectRequest, context });
+              const records = recordsOf(groups, context);
+              baselinePolicy({ groups, context });
+              return { schema: 1, context: { ...context }, baseline: records, settled: null };
             } catch (error) {
-              throw refusal(
+              const failure = refusal(
                 'Cloud initial child closure failed; retain the owned environment.',
                 diagnosticCode(error, 'closure:capture:exception'),
               );
+              if (groups) failure.census = census(groups);
+              throw failure;
             }
           }
           function requireClosure(closure) {
@@ -1360,23 +1382,23 @@ jobs:
               );
               const envelope = read.body;
               const rows = Array.isArray(envelope) ? envelope : envelope?.data;
-              const inventory =
+              const inventory2 =
                 'Cloud fixture grant is absent, ambiguous or not exhaustively observed.';
               requireValid3(
                 read.status === 200,
-                inventory,
+                inventory2,
                 `fixture:http:role_assignments:${read.status}`,
               );
               requireValid3(
                 !Array.isArray(rows) || rows.length > 0,
-                inventory,
+                inventory2,
                 writeCode('role_assignments', reply),
               );
               requireValid3(
                 Array.isArray(rows) &&
                   rows.length === 1 &&
                   (Array.isArray(envelope) || envelope.total_count === 1),
-                inventory,
+                inventory2,
                 'fixture:grant:inventory',
               );
               const grant = rows[0];
@@ -1439,6 +1461,11 @@ jobs:
 
           // scripts/cloud-lifecycle.mjs
           var diagnosticPattern = /^[a-z]+(?::[a-z0-9_-]{1,40}){1,4}$/u;
+          var censusEntry = '[a-z_]{1,40}=(?:12[0-8]|1[01]\\d|[1-9]?\\d|invalid)';
+          var censusPattern = new RegExp(
+            `^Cloud closure census: ${censusEntry}(?:,${censusEntry}){0,40}$`,
+            'u',
+          );
           function requireValid4(value, code) {
             if (!value)
               throw Object.assign(
@@ -1455,6 +1482,14 @@ jobs:
               diagnosticPattern.test(code) &&
               !/[a-f0-9]{12}/u.test(code);
             return `Cloud lifecycle diagnostic: ${safe ? code : 'unclassified'}`;
+          }
+          function censusLine(census2) {
+            const line = `Cloud closure census: ${census2}`;
+            return typeof census2 === 'string' &&
+              censusPattern.test(line) &&
+              !/[a-f0-9]{12}/u.test(census2)
+              ? line
+              : 'Cloud closure census: unavailable';
           }
           function trustedCloudRun(env) {
             requireValid4(
@@ -1583,6 +1618,7 @@ jobs:
               });
               return { schema: 2, status: 'PASS', fixtureWriteCount: state.fixture.records.length };
             } catch (error) {
+              if (error?.census !== void 0) report(censusLine(error.census));
               report(diagnosticLine(error));
               throw new Error(
                 'Trusted cloud setup failed; inspect retained ownership state privately.',
@@ -1741,6 +1777,41 @@ jobs:
               }
             };
           }
+
+          // scripts/cloud-closure.mjs
+          var inventories = [
+            ['resources', 'schema', 'resources?include_built_in=true&include_total_count=true'],
+            ['roles', 'schema', 'roles?include_total_count=true'],
+            ['user_attributes', 'schema', 'users/attributes'],
+            ['condition_sets', 'schema', 'condition_sets?include_total_count=true'],
+            ['condition_set_rules', 'facts', 'set_rules'],
+            ['users', 'facts', 'users'],
+            ['tenants', 'facts', 'tenants?include_total_count=true'],
+            ['groups', 'schema', 'groups'],
+            ['user_invites', 'facts', 'user_invites'],
+            [
+              'resource_instances',
+              'facts',
+              'resource_instances?detailed=true&include_total_count=true',
+            ],
+            [
+              'relationship_tuples',
+              'facts',
+              'relationship_tuples?detailed=true&include_total_count=true',
+            ],
+            ['role_assignments', 'facts', 'role_assignments?include_total_count=true'],
+            ['proxy_configs', 'facts', 'proxy_configs'],
+            ['pdp_configs', 'pdps', 'configs'],
+            ['elements_configs', 'elements', 'config'],
+            ['email_templates', 'facts', 'email_templates/'],
+          ];
+          var singletons = ['email_configuration', 'opal_scope', 'api_keys'];
+          var children = ['actions', 'attributes', 'roles', 'relations', 'action_groups'];
+          var censusLabels = [
+            ...inventories.map(([kind]) => kind),
+            ...singletons,
+            ...children.map((child) => `resource_${child}`),
+          ];
 
           // scripts/cloud-environment.mjs
           import { isDeepStrictEqual } from 'node:util';
@@ -1976,6 +2047,11 @@ jobs:
           }
 
           // scripts/cloud-lifecycle.mjs
+          var censusEntry = '[a-z_]{1,40}=(?:12[0-8]|1[01]\\d|[1-9]?\\d|invalid)';
+          var censusPattern = new RegExp(
+            `^Cloud closure census: ${censusEntry}(?:,${censusEntry}){0,40}$`,
+            'u',
+          );
           function requireValid3(value, code) {
             if (!value)
               throw Object.assign(
@@ -2337,6 +2413,11 @@ jobs:
           var singletons = ['email_configuration', 'opal_scope', 'api_keys'];
           var children = ['actions', 'attributes', 'roles', 'relations', 'action_groups'];
           var fixtureKinds = ['resources', 'roles', 'tenants', 'users'];
+          var censusLabels = [
+            ...inventories.map(([kind]) => kind),
+            ...singletons,
+            ...children.map((child) => `resource_${child}`),
+          ];
           function refusal(message, code) {
             return Object.assign(new Error(message), { code });
           }
@@ -2509,7 +2590,7 @@ jobs:
               digest: fingerprint(projection),
             };
           }
-          async function observe({ request, projectRequest, context }) {
+          async function inventory({ request, projectRequest, context }) {
             requireValid(typeof projectRequest === 'function', 'closure:project-request');
             requireValid(
               idPattern.test(context.organization) &&
@@ -2558,6 +2639,9 @@ jobs:
                 groups.set(`resource:${resource.id}:${child}`, rows);
               }
             }
+            return groups;
+          }
+          function recordsOf(groups, context) {
             const records = [];
             for (const [kind, rows] of groups)
               for (const row of rows) {
@@ -2565,7 +2649,11 @@ jobs:
                 requireValid(records.length <= limit, 'closure:limit:records');
               }
             records.sort((a, b) => `${a.kind}:${a.id}`.localeCompare(`${b.kind}:${b.id}`));
-            return { groups, records };
+            return records;
+          }
+          async function observe(options) {
+            const groups = await inventory(options);
+            return { groups, records: recordsOf(groups, options.context) };
           }
           function requireClosure(closure) {
             requireValid(
@@ -2996,6 +3084,11 @@ jobs:
 
           // scripts/cloud-lifecycle.mjs
           var diagnosticPattern = /^[a-z]+(?::[a-z0-9_-]{1,40}){1,4}$/u;
+          var censusEntry = '[a-z_]{1,40}=(?:12[0-8]|1[01]\\d|[1-9]?\\d|invalid)';
+          var censusPattern = new RegExp(
+            `^Cloud closure census: ${censusEntry}(?:,${censusEntry}){0,40}$`,
+            'u',
+          );
           function requireValid4(value, code) {
             if (!value)
               throw Object.assign(

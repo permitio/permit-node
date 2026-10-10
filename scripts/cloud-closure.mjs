@@ -27,6 +27,11 @@ const inventories = [
 const singletons = ['email_configuration', 'opal_scope', 'api_keys'];
 const children = ['actions', 'attributes', 'roles', 'relations', 'action_groups'];
 const fixtureKinds = ['resources', 'roles', 'tenants', 'users'];
+const censusLabels = [
+  ...inventories.map(([kind]) => kind),
+  ...singletons,
+  ...children.map((child) => `resource_${child}`),
+];
 
 function refusal(message, code) {
   return Object.assign(new Error(message), { code });
@@ -205,7 +210,7 @@ function record(kind, row, context) {
   };
 }
 
-async function observe({ request, projectRequest, context }) {
+async function inventory({ request, projectRequest, context }) {
   requireValid(typeof projectRequest === 'function', 'closure:project-request');
   requireValid(
     idPattern.test(context.organization) &&
@@ -251,6 +256,9 @@ async function observe({ request, projectRequest, context }) {
       groups.set(`resource:${resource.id}:${child}`, rows);
     }
   }
+  return groups;
+}
+function recordsOf(groups, context) {
   const records = [];
   for (const [kind, rows] of groups)
     for (const row of rows) {
@@ -258,7 +266,30 @@ async function observe({ request, projectRequest, context }) {
       requireValid(records.length <= limit, 'closure:limit:records');
     }
   records.sort((a, b) => `${a.kind}:${a.id}`.localeCompare(`${b.kind}:${b.id}`));
-  return { groups, records };
+  return records;
+}
+async function observe(options) {
+  const groups = await inventory(options);
+  return { groups, records: recordsOf(groups, options.context) };
+}
+/**
+ * Summarizes a complete inventory as static surface labels and row counts in a fixed order.
+ * @param groups - Observed rows by record kind; resource child kinds are summed by child label.
+ * @returns `label=count` pairs; a count outside 0 to the closure limit is `invalid`.
+ */
+function census(groups) {
+  const counts = new Map(censusLabels.map((label) => [label, 0]));
+  for (const [kind, rows] of groups) {
+    const label = surface(kind);
+    if (counts.has(label)) counts.set(label, counts.get(label) + rows.length);
+  }
+  return censusLabels
+    .map((label) => {
+      const count = counts.get(label);
+      const valid = Number.isSafeInteger(count) && count >= 0 && count <= limit;
+      return `${label}=${valid ? count : 'invalid'}`;
+    })
+    .join(',');
 }
 
 function ownSet(row, role) {
@@ -303,17 +334,14 @@ function baselinePolicy({ groups, context }) {
     'closure:defaults:condition_sets',
   );
   const pdps = groups.get('pdp_configs');
-  requireValid(pdps.length <= 1, 'closure:defaults:pdp_configs');
-  requireValid(groups.get('api_keys').length === pdps.length, 'closure:api-key:count');
-  for (const key of groups.get('api_keys')) {
-    requireValid(key.owner_type === 'pdp_config', 'closure:api-key:owner');
-    requireValid(key.object_type === 'env', 'closure:api-key:object');
-    requireValid(typeof key.secret === 'string' && key.secret.length > 0, 'closure:api-key:secret');
-    requireValid(
-      pdps.some((pdp) => pdp.client_secret === key.secret),
-      'closure:api-key:secret-mismatch',
-    );
-  }
+  requireValid(pdps.length >= 1 && pdps.length <= 4, 'closure:defaults:pdp_configs');
+  const [key] = groups.get('api_keys');
+  requireValid(key.owner_type === 'pdp_config', 'closure:api-key:owner');
+  requireValid(key.object_type === 'env', 'closure:api-key:object');
+  requireValid(typeof key.secret === 'string' && key.secret.length > 0, 'closure:api-key:secret');
+  const matches = pdps.filter((pdp) => pdp.client_secret === key.secret).length;
+  requireValid(matches > 0, 'closure:api-key:secret-unmatched');
+  requireValid(matches === 1, 'closure:api-key:secret-ambiguous');
   for (const [kind, rows] of groups) {
     if (
       [
@@ -351,25 +379,31 @@ function baselinePolicy({ groups, context }) {
 
 /**
  * Captures narrowly recognized defaults before fixture writes; no received body or credential is
- * saved. The environment's own API key is read through the project-level boundary and must match
- * the single PDP configuration. A project-level credential verifies that primary key but cannot
- * enumerate additional environment keys.
+ * saved. The environment may have one to four PDP configurations. Its own API key is read through
+ * the project-level boundary, and its secret must equal the client secret of exactly one of them.
+ * A project-level credential verifies that primary key but cannot enumerate additional
+ * environment keys.
  * @param options - Environment-scoped child HTTP boundary, project-level HTTP boundary for the
  * environment key and captured organization/project/environment/birth scope.
  * @returns Finite identity and digest descriptors; a null settled inventory requires later proof.
  * @throws With a constant message when defaults, scope, credentials or pagination are unverified;
- * its static `code` names the first failed check without any received value.
+ * its static `code` names the first failed check without any received value. A refusal after the
+ * complete inventory was read also carries `census`: static surface labels with row counts.
  */
 export async function captureCloudClosure({ request, projectRequest, context }) {
+  let groups;
   try {
-    const observed = await observe({ request, projectRequest, context });
-    baselinePolicy({ ...observed, context });
-    return { schema: 1, context: { ...context }, baseline: observed.records, settled: null };
+    groups = await inventory({ request, projectRequest, context });
+    const records = recordsOf(groups, context);
+    baselinePolicy({ groups, context });
+    return { schema: 1, context: { ...context }, baseline: records, settled: null };
   } catch (error) {
-    throw refusal(
+    const failure = refusal(
       'Cloud initial child closure failed; retain the owned environment.',
       diagnosticCode(error, 'closure:capture:exception'),
     );
+    if (groups) failure.census = census(groups);
+    throw failure;
   }
 }
 
