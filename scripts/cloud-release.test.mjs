@@ -583,6 +583,8 @@ test.each([
   { roles: undefined },
   { roles: [fixture.role] },
   { roles: [qualifiedRole] },
+  { roles: [fixture.role, qualifiedRole] },
+  { roles: [qualifiedRole, fixture.role] },
 ])(
   'preserves contract-valid optional permission details without requiring their presence: %j',
   async (details) => {
@@ -839,9 +841,41 @@ test.each([
   ['user-permissions', '1:other', ownDetails({ permissions: [canary] })],
   ['user-permissions', '1:other', ownDetails({ permissions: canary })],
   ['user-permissions', '2:empty', ownDetails({ roles: [] })],
-  ['user-permissions', '2:extra', ownDetails({ roles: [fixture.role, canary] })],
-  ['user-permissions', '2:extra', ownDetails({ roles: [qualifiedRole, fixture.role] })],
-  ['user-permissions', '2:extra', ownDetails({ roles: [qualifiedRole, canary] })],
+  ['user-permissions', '2:dup', ownDetails({ roles: [fixture.role, fixture.role] })],
+  ['user-permissions', '2:dup', ownDetails({ roles: [qualifiedRole, qualifiedRole] })],
+  [
+    'user-permissions',
+    '2:dup',
+    ownDetails({ roles: [qualifiedRole, fixture.role, qualifiedRole] }),
+  ],
+  ['user-permissions', '2:plusone-other', ownDetails({ roles: [fixture.role, canary] })],
+  ['user-permissions', '2:plusone-other', ownDetails({ roles: [canary, qualifiedRole] })],
+  [
+    'user-permissions',
+    '2:plusone-tencolon',
+    ownDetails({ roles: [qualifiedRole, `__tenant:${fixture.role}`] }),
+  ],
+  [
+    'user-permissions',
+    '2:plusone-typehash',
+    ownDetails({ roles: [fixture.role, `${fixture.resource}#${fixture.role}`] }),
+  ],
+  [
+    'user-permissions',
+    '2:plusone-keyhash',
+    ownDetails({ roles: [qualifiedRole, `${fixture.tenant}#${fixture.role}`] }),
+  ],
+  [
+    'user-permissions',
+    '2:plusone-suffix',
+    ownDetails({ roles: [qualifiedRole, `team-${fixture.role}`] }),
+  ],
+  ['user-permissions', '2:plusone-absent', ownDetails({ roles: [qualifiedRole, null] })],
+  ['user-permissions', '2:plusone-nonstr', ownDetails({ roles: [qualifiedRole, 7] })],
+  ['user-permissions', '2:plusmany', ownDetails({ roles: [qualifiedRole, canary, `${canary}-2`] })],
+  ['user-permissions', '2:plusmany', ownDetails({ roles: [canary, fixture.role, canary] })],
+  ['user-permissions', '2:other', ownDetails({ roles: [fixture.role, qualifiedRole, canary] })],
+  ['user-permissions', '2:other', ownDetails({ roles: [qualifiedRole, qualifiedRole, canary] })],
   ['user-permissions', '2:tencolon', ownDetails({ roles: [`__tenant:${fixture.role}`] })],
   [
     'user-permissions',

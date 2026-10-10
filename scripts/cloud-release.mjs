@@ -162,11 +162,28 @@ function permissionsClass(permissions, fixture) {
   if (isDeepStrictEqual(permissions, [`${fixture.resource}#read`])) return 'hash';
   return permissions.includes(`${fixture.resource}:read`) ? 'extra' : 'other';
 }
+/** Accepts absent roles, or the bare and qualified role keys alone or together, each once. */
+function acceptedRoles(roles, fixture) {
+  const bare = fixture.role,
+    qualified = `__tenant#${fixture.role}`;
+  return (
+    roles == null ||
+    [[bare], [qualified], [bare, qualified], [qualified, bare]].some((shape) =>
+      isDeepStrictEqual(roles, shape),
+    )
+  );
+}
+/** Classifies refused roles; an accepted form beside unknown entries names how many it has. */
 function rolesClass(roles, fixture) {
   if (!Array.isArray(roles)) return 'other';
   if (roles.length === 0) return 'empty';
-  if (roles.includes(fixture.role) || roles.includes(`__tenant#${fixture.role}`)) return 'extra';
-  return roles.length === 1 ? roleClass(roles[0], fixture) : 'other';
+  const forms = [fixture.role, `__tenant#${fixture.role}`];
+  const known = roles.filter((role) => forms.includes(role)).length;
+  const unknown = roles.filter((role) => !forms.includes(role));
+  if (known === 0) return roles.length === 1 ? roleClass(roles[0], fixture) : 'other';
+  if (unknown.length === 0) return 'dup';
+  if (known > 1) return 'other';
+  return unknown.length === 1 ? `plusone-${roleClass(unknown[0], fixture)}` : 'plusmany';
 }
 function tenantDetailClass(tenant, fixture) {
   return plain(tenant) ? tenantClass(tenant.key, fixture.tenant) : 'nonobject';
@@ -336,7 +353,8 @@ function fixtureKeys(fixture) {
  * Only the first check's convergence loop treats timeouts, transient network errors and PDP
  * 404, 429 or 5xx responses as not ready; every other failure and every later request is strict.
  * The managed cloud PDP reports tenant-level roles in authorized-users grants as `__tenant#<role>`,
- * and the proof requires exactly that format.
+ * and the proof requires exactly that format. User-permissions roles may be absent or list the
+ * bare key, the qualified key, or both, each once.
  * @param options - Installed constructors and SDK error classes, scoped credential, independently
  * owned fixture keys and the bounded readiness wait.
  * @returns Allowlisted phase, case and HTTPS observations, with no credentials or response bodies.
@@ -514,9 +532,7 @@ export async function produceCloudProof({ entries, token, fixture, pause, attemp
         expect(
           permissions,
           2,
-          result[key]?.roles == null ||
-            isDeepStrictEqual(result[key].roles, [fixture.role]) ||
-            isDeepStrictEqual(result[key].roles, [`__tenant#${fixture.role}`]),
+          acceptedRoles(result[key]?.roles, fixture),
           classified(permissions, 2, () => rolesClass(result[key]?.roles, fixture)),
         );
         const details = result[key];
