@@ -1,6 +1,7 @@
 import { EventEmitter } from 'node:events';
 import https from 'node:https';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
+import { cloudProofDiagnostic } from '#scripts/cloud-release-cli.mjs';
 import { observeCloudHttps, produceCloudProof } from '#scripts/cloud-release.mjs';
 
 const fixture = {
@@ -394,7 +395,7 @@ test.each([
         return decide('/authorized_users', { resource: 'foreign:*', tenant: resource.tenant });
       },
     },
-    'cloud-proof:op:authorized-users:esm:oracle:0',
+    'cloud-proof:op:authorized-users:esm:oracle:0:other',
   ],
   [
     'empty authorized users',
@@ -407,7 +408,7 @@ test.each([
         });
       },
     },
-    'cloud-proof:op:authorized-users:esm:oracle:2',
+    'cloud-proof:op:authorized-users:esm:oracle:2:empty',
   ],
   [
     'wrong authorized role',
@@ -429,7 +430,7 @@ test.each([
         });
       },
     },
-    'cloud-proof:op:authorized-users:esm:oracle:4',
+    'cloud-proof:op:authorized-users:esm:oracle:4:uok_tok_rother_sok',
   ],
   [
     'extra permissions',
@@ -443,7 +444,7 @@ test.each([
         });
       },
     },
-    'cloud-proof:op:user-permissions:esm:oracle:1',
+    'cloud-proof:op:user-permissions:esm:oracle:1:extra',
   ],
 ])('rejects %s with its static operation code', async (_name, overrides, code) => {
   expect(await refusal(setup(overrides).options)).toBe(code);
@@ -590,14 +591,14 @@ test.each([
   },
 );
 test.each([
-  [{ tenant: { key: 'foreign-tenant', attributes: {} } }, 3],
-  [{ resource: { type: 'foreign-resource', key: fixture.tenant, attributes: {} } }, 4],
-  [{ resource: { type: '__tenant', key: 'foreign-instance', attributes: {} } }, 4],
+  [{ tenant: { key: 'foreign-tenant', attributes: {} } }, '3:other'],
+  [{ resource: { type: 'foreign-resource', key: fixture.tenant, attributes: {} } }, '4:yother_kok'],
+  [{ resource: { type: '__tenant', key: 'foreign-instance', attributes: {} } }, '4:yok_kother'],
 ])(
   'rejects valid-shaped permission details belonging to a different identity: %j',
-  async (details, index) => {
+  async (details, oracle) => {
     expect(await refusal(setup(permissionBoundary(details)).options)).toBe(
-      `cloud-proof:op:user-permissions:esm:oracle:${index}`,
+      `cloud-proof:op:user-permissions:esm:oracle:${oracle}`,
     );
   },
 );
@@ -672,60 +673,185 @@ const permissions = (change) => ({
     return decide('/user-permissions', change(body, { user, tenants, types }));
   },
 });
-test.each([
-  ['authorized users', 1, authorized((body) => ({ ...body, tenant: 'foreign-tenant' }))],
-  [
-    'authorized users',
-    3,
-    authorized((body) => ({
-      ...body,
-      users: body.users[fixture.allowedUser]
-        ? { [fixture.allowedUser]: [...body.users[fixture.allowedUser], {}] }
-        : body.users,
-    })),
-  ],
-  [
-    'authorized users',
-    5,
-    authorized((body, resource) =>
-      resource.tenant === fixture.otherTenant
-        ? { ...body, users: { [fixture.deniedUser]: [] } }
-        : body,
-    ),
-  ],
-  ['user permissions', 0, permissions((body) => ({ ...body, extra: {} }))],
-  [
-    'user permissions',
-    2,
-    permissions((body) =>
-      body[`__tenant:${fixture.tenant}`]
-        ? { [`__tenant:${fixture.tenant}`]: { ...body[`__tenant:${fixture.tenant}`], roles: [] } }
-        : body,
-    ),
-  ],
-  [
-    'user permissions',
-    5,
-    permissions((body, call) =>
-      call.user === fixture.allowedUser && !call.types.includes('__tenant') ? { leaked: {} } : body,
-    ),
-  ],
-  [
-    'user permissions',
-    6,
-    permissions((body, call) => (call.user === fixture.deniedUser ? { leaked: {} } : body)),
-  ],
-  [
-    'user permissions',
-    7,
-    permissions((body, call) => (call.tenants[0] === fixture.otherTenant ? { leaked: {} } : body)),
-  ],
-])('%s oracle %i failure carries its static index', async (name, index, overrides) => {
-  const label = name === 'authorized users' ? 'authorized-users' : 'user-permissions';
-  expect(await refusal(setup(overrides).options)).toBe(
-    `cloud-proof:op:${label}:esm:oracle:${index}`,
+const owned = (resource) => resource.tenant === fixture.tenant;
+const resultField = (field, value) =>
+  authorized((body, resource) => (owned(resource) ? { ...body, [field]: value } : body));
+const grant = (fields) =>
+  authorized((body) =>
+    body.users[fixture.allowedUser]
+      ? {
+          ...body,
+          users: { [fixture.allowedUser]: [{ ...body.users[fixture.allowedUser][0], ...fields }] },
+        }
+      : body,
   );
-});
+const grants = (value) => resultField('users', { [fixture.allowedUser]: value });
+const excludedFields = (fields) =>
+  authorized((body, resource) => (owned(resource) ? body : { ...body, ...fields }));
+const permissionKey = `__tenant:${fixture.tenant}`;
+const ownBody = (value) => permissions((body) => (body[permissionKey] ? value : body));
+const ownDetails = (fields) =>
+  permissions((body) =>
+    body[permissionKey] ? { [permissionKey]: { ...body[permissionKey], ...fields } } : body,
+  );
+const permissionCall = (matches, value) =>
+  permissions((body, call) => (matches(call) ? value : body));
+const filteredCall = (call) =>
+  call.user === fixture.allowedUser && !call.types.includes('__tenant');
+const deniedCall = (call) => call.user === fixture.deniedUser;
+const otherTenantCall = (call) => call.tenants[0] === fixture.otherTenant;
+const sample = { user: fixture.allowedUser, tenant: fixture.tenant, role: fixture.role };
+test.each([
+  ['authorized-users', '0:prefixed', resultField('resource', `__tenant:${fixture.tenant}`)],
+  ['authorized-users', '0:bare', resultField('resource', fixture.tenant)],
+  ['authorized-users', '0:tenantcolon', resultField('resource', `tenant:${fixture.tenant}`)],
+  ['authorized-users', '0:star', resultField('resource', '*')],
+  ['authorized-users', '0:tenantwild', resultField('resource', '__tenant:*')],
+  ['authorized-users', '0:type', resultField('resource', fixture.resource)],
+  ['authorized-users', '0:absent', resultField('resource', undefined)],
+  ['authorized-users', '0:nonstr', resultField('resource', 7)],
+  ['authorized-users', '0:other', resultField('resource', canary)],
+  ['authorized-users', '1:prefixed', resultField('tenant', `__tenant:${fixture.tenant}`)],
+  ['authorized-users', '1:absent', resultField('tenant', null)],
+  ['authorized-users', '1:nonstr', resultField('tenant', { key: fixture.tenant })],
+  ['authorized-users', '1:other', resultField('tenant', canary)],
+  ['authorized-users', '2:empty', resultField('users', {})],
+  [
+    'authorized-users',
+    '2:extra',
+    resultField('users', { [fixture.allowedUser]: [], [canary]: [] }),
+  ],
+  ['authorized-users', '2:missing', resultField('users', { [canary]: [] })],
+  ['authorized-users', '2:other', resultField('users', null)],
+  ['authorized-users', '3:0', grants([])],
+  ['authorized-users', '3:2', grants([sample, sample])],
+  ['authorized-users', '3:many', grants([sample, sample, sample])],
+  ['authorized-users', '3:nonarray', grants({ 0: sample })],
+  ['authorized-users', '4:uok_tok_rok_sbare', grant({ resource: fixture.tenant })],
+  [
+    'authorized-users',
+    '4:uok_tok_rok_stenantcolon',
+    grant({ resource: `tenant:${fixture.tenant}` }),
+  ],
+  ['authorized-users', '4:uok_tok_rok_stypewild', grant({ resource: `${fixture.resource}:*` })],
+  ['authorized-users', '4:uok_tok_rok_sstar', grant({ resource: '*' })],
+  ['authorized-users', '4:uok_tok_rok_stenantwild', grant({ resource: '__tenant:*' })],
+  ['authorized-users', '4:uok_tok_rok_stype', grant({ resource: fixture.resource })],
+  ['authorized-users', '4:uok_tok_rok_sabsent', grant({ resource: undefined })],
+  [
+    'authorized-users',
+    '4:uok_tok_rok_snonstr',
+    grant({ resource: { type: '__tenant', key: fixture.tenant } }),
+  ],
+  ['authorized-users', '4:uok_tok_rok_sother', grant({ resource: canary })],
+  [
+    'authorized-users',
+    '4:uother_tprefixed_rsuffix_sok',
+    grant({ user: canary, tenant: `__tenant:${fixture.tenant}`, role: `team-${fixture.role}` }),
+  ],
+  ['authorized-users', '4:uok_tother_rother_sok', grant({ tenant: canary, role: canary })],
+  [
+    'authorized-users',
+    '4:uabsent_tabsent_rabsent_sabsent',
+    grant({ user: undefined, tenant: undefined, role: undefined, resource: undefined }),
+  ],
+  ['authorized-users', '4:uabsent_tabsent_rabsent_sabsent', grants([null])],
+  [
+    'authorized-users',
+    '4:unonstr_tnonstr_rnonstr_snonstr',
+    grant({ user: 1, tenant: 2, role: 3, resource: 4 }),
+  ],
+  [
+    'authorized-users',
+    '4:uabsent_tprefixed_rsuffix_stenantcolon',
+    grant({
+      user: null,
+      tenant: `__tenant:${fixture.tenant}`,
+      role: `${canary}${fixture.role}`,
+      resource: `tenant:${fixture.tenant}`,
+    }),
+  ],
+  ['authorized-users', '5:sok_tok_unonempty', excludedFields({ users: { [canary]: [] } })],
+  ['authorized-users', '5:sok_tother_uok', excludedFields({ tenant: fixture.tenant })],
+  ['authorized-users', '5:sstar_tok_uok', excludedFields({ resource: '*' })],
+  [
+    'authorized-users',
+    '5:sprefixed_tprefixed_uother',
+    excludedFields({
+      resource: `__tenant:${fixture.otherTenant}`,
+      tenant: `__tenant:${fixture.otherTenant}`,
+      users: null,
+    }),
+  ],
+  [
+    'authorized-users',
+    '5:sabsent_tabsent_uother',
+    excludedFields({ resource: undefined, tenant: undefined, users: undefined }),
+  ],
+  [
+    'authorized-users',
+    '5:snonstr_tnonstr_uother',
+    excludedFields({ resource: 5, tenant: 6, users: [] }),
+  ],
+  ['user-permissions', '0:empty', ownBody({})],
+  ['user-permissions', '0:bare', ownBody({ [fixture.tenant]: { permissions: [] } })],
+  [
+    'user-permissions',
+    '0:extra',
+    permissions((body) => (body[permissionKey] ? { ...body, [canary]: {} } : body)),
+  ],
+  ['user-permissions', '0:other', ownBody({ [canary]: {} })],
+  ['user-permissions', '0:other', ownBody([canary])],
+  ['user-permissions', '1:absent', ownDetails({ permissions: undefined })],
+  ['user-permissions', '1:empty', ownDetails({ permissions: [] })],
+  ['user-permissions', '1:bare-action', ownDetails({ permissions: ['read'] })],
+  ['user-permissions', '1:hash', ownDetails({ permissions: [`${fixture.resource}#read`] })],
+  [
+    'user-permissions',
+    '1:extra',
+    ownDetails({ permissions: [`${fixture.resource}:read`, canary] }),
+  ],
+  ['user-permissions', '1:other', ownDetails({ permissions: [canary] })],
+  ['user-permissions', '1:other', ownDetails({ permissions: canary })],
+  ['user-permissions', '2:empty', ownDetails({ roles: [] })],
+  ['user-permissions', '2:extra', ownDetails({ roles: [fixture.role, canary] })],
+  ['user-permissions', '2:suffix', ownDetails({ roles: [`team-${fixture.role}`] })],
+  ['user-permissions', '2:other', ownDetails({ roles: [canary] })],
+  ['user-permissions', '2:other', ownDetails({ roles: fixture.role })],
+  ['user-permissions', '2:other', ownDetails({ roles: [`team-${fixture.role}`, canary] })],
+  ['user-permissions', '3:nonobject', ownDetails({ tenant: fixture.tenant })],
+  ['user-permissions', '3:prefixed', ownDetails({ tenant: { key: `__tenant:${fixture.tenant}` } })],
+  ['user-permissions', '3:absent', ownDetails({ tenant: { attributes: {} } })],
+  ['user-permissions', '3:nonstr', ownDetails({ tenant: { key: 1 } })],
+  ['user-permissions', '3:other', ownDetails({ tenant: { key: canary } })],
+  ['user-permissions', '4:nonobject', ownDetails({ resource: canary })],
+  [
+    'user-permissions',
+    '4:ytype_kok',
+    ownDetails({ resource: { type: fixture.resource, key: fixture.tenant } }),
+  ],
+  [
+    'user-permissions',
+    '4:yok_kprefixed',
+    ownDetails({ resource: { type: '__tenant', key: `__tenant:${fixture.tenant}` } }),
+  ],
+  ['user-permissions', '4:yabsent_kabsent', ownDetails({ resource: {} })],
+  ['user-permissions', '4:ynonstr_knonstr', ownDetails({ resource: { type: 1, key: 2 } })],
+  ['user-permissions', '4:yother_kother', ownDetails({ resource: { type: canary, key: canary } })],
+  ['user-permissions', '5:nonempty', permissionCall(filteredCall, { [canary]: {} })],
+  ['user-permissions', '5:other', permissionCall(filteredCall, [])],
+  ['user-permissions', '6:nonempty', permissionCall(deniedCall, { [canary]: {} })],
+  ['user-permissions', '6:other', permissionCall(deniedCall, null)],
+  ['user-permissions', '7:nonempty', permissionCall(otherTenantCall, { [canary]: {} })],
+  ['user-permissions', '7:other', permissionCall(otherTenantCall, [canary])],
+])(
+  '%s oracle %s names the mismatch class without received text',
+  async (label, oracle, overrides) => {
+    const code = `cloud-proof:op:${label}:esm:oracle:${oracle}`;
+    expect(await refusal(setup(overrides).options)).toBe(code);
+    expect(cloudProofDiagnostic({ code })).toBe(`Cloud proof diagnostic: ${code}`);
+  },
+);
 
 test('the transport refuses a forbidden readiness response the SDK misreported as transient', async () => {
   let first = true;

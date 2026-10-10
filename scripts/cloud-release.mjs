@@ -65,6 +65,113 @@ function transientFailure([kind, status]) {
   );
 }
 
+const plain = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
+const field = (value, key) => (plain(value) ? value[key] : undefined);
+const equals = (candidate) => (value) => value === candidate;
+/**
+ * Names how a received string differs from its fixture-derived expectation without copying it.
+ * Oracle mismatch classes compare received values only with fixture-derived candidates and type,
+ * length or count buckets, so a diagnostic never contains received text.
+ * @param value - The received value.
+ * @param expected - The fixture-derived value the oracle requires.
+ * @param candidates - Ordered `[token, predicate]` pairs over fixture-derived alternatives.
+ * @returns `ok`, `absent`, `nonstr`, the first matching candidate token, or `other`.
+ */
+function textClass(value, expected, candidates = []) {
+  if (value === expected) return 'ok';
+  if (value == null) return 'absent';
+  if (typeof value !== 'string') return 'nonstr';
+  return candidates.find(([, matches]) => matches(value))?.[0] ?? 'other';
+}
+function tenantClass(value, tenant) {
+  return textClass(value, tenant, [['prefixed', equals(`__tenant:${tenant}`)]]);
+}
+function resourceClass(value, expected, fixture, tenant) {
+  return textClass(value, expected, [
+    ['prefixed', equals(`__tenant:${tenant}`)],
+    ['bare', equals(tenant)],
+    ['tenantcolon', equals(`tenant:${tenant}`)],
+    ['typewild', equals(`${fixture.resource}:*`)],
+    ['star', equals('*')],
+    ['tenantwild', equals('__tenant:*')],
+    ['type', equals(fixture.resource)],
+  ]);
+}
+function emptyClass(value) {
+  if (isDeepStrictEqual(value, {})) return 'ok';
+  return plain(value) && Object.keys(value).length > 0 ? 'nonempty' : 'other';
+}
+// The single-field classifiers below run only after their oracle failed, so `ok` cannot occur.
+function usersClass(users, user) {
+  if (!plain(users)) return 'other';
+  const keys = Object.keys(users);
+  if (keys.length === 0) return 'empty';
+  return keys.includes(user) ? 'extra' : 'missing';
+}
+function countClass(rows) {
+  if (!Array.isArray(rows)) return 'nonarray';
+  if (rows.length === 0) return '0';
+  return rows.length === 2 ? '2' : 'many';
+}
+/** Summarizes grant user, tenant, role and resource classes as `u<c>_t<c>_r<c>_s<c>`. */
+function grantClass(grant, fixture) {
+  const user = textClass(field(grant, 'user'), fixture.allowedUser);
+  const tenant = tenantClass(field(grant, 'tenant'), fixture.tenant);
+  const role = textClass(field(grant, 'role'), fixture.role, [
+    ['suffix', (value) => value.endsWith(fixture.role)],
+  ]);
+  const resource = resourceClass(
+    field(grant, 'resource'),
+    `__tenant:${fixture.tenant}`,
+    fixture,
+    fixture.tenant,
+  );
+  return `u${user}_t${tenant}_r${role}_s${resource}`;
+}
+/** Summarizes excluded-tenant resource, tenant and users classes as `s<c>_t<c>_u<c>`. */
+function excludedClass(result, fixture) {
+  const resource = resourceClass(
+    field(result, 'resource'),
+    `${fixture.resource}:*`,
+    fixture,
+    fixture.otherTenant,
+  );
+  const tenant = tenantClass(field(result, 'tenant'), fixture.otherTenant);
+  return `s${resource}_t${tenant}_u${emptyClass(field(result, 'users'))}`;
+}
+function permissionKeyClass(result, fixture) {
+  if (!plain(result)) return 'other';
+  const keys = Object.keys(result);
+  if (keys.length === 0) return 'empty';
+  if (keys.length === 1 && keys[0] === fixture.tenant) return 'bare';
+  return keys.includes(`__tenant:${fixture.tenant}`) ? 'extra' : 'other';
+}
+function permissionsClass(permissions, fixture) {
+  if (permissions == null) return 'absent';
+  if (!Array.isArray(permissions)) return 'other';
+  if (permissions.length === 0) return 'empty';
+  if (isDeepStrictEqual(permissions, ['read'])) return 'bare-action';
+  if (isDeepStrictEqual(permissions, [`${fixture.resource}#read`])) return 'hash';
+  return permissions.includes(`${fixture.resource}:read`) ? 'extra' : 'other';
+}
+function rolesClass(roles, fixture) {
+  if (!Array.isArray(roles)) return 'other';
+  if (roles.length === 0) return 'empty';
+  if (roles.includes(fixture.role)) return 'extra';
+  return roles.length === 1 && typeof roles[0] === 'string' && roles[0].endsWith(fixture.role)
+    ? 'suffix'
+    : 'other';
+}
+function tenantDetailClass(tenant, fixture) {
+  return plain(tenant) ? tenantClass(tenant.key, fixture.tenant) : 'nonobject';
+}
+/** Classifies a permission resource detail as `nonobject` or `y<type class>_k<key class>`. */
+function resourceDetailClass(resource, fixture) {
+  if (!plain(resource)) return 'nonobject';
+  const type = textClass(resource.type, '__tenant', [['type', equals(fixture.resource)]]);
+  return `y${type}_k${tenantClass(resource.key, fixture.tenant)}`;
+}
+
 function requestDestination(args) {
   const first = args[0];
   const url = typeof first === 'string' || first instanceof URL ? new URL(first) : undefined;
@@ -261,10 +368,12 @@ export async function produceCloudProof({ entries, token, fixture, pause, attemp
   const other = { ...resource, tenant: fixture.otherTenant };
   for (const entry of entries) {
     const { name, Permit } = entry;
-    const expect = (id, index, value, code = operationCode(id, name, 'oracle', index)) => {
-      requireValid(value, 'Cloud response did not match the owned fixture oracle.', code);
+    const expect = (id, index, value, code = () => operationCode(id, name, 'oracle', index)) => {
+      if (!value) throw refusal('Cloud response did not match the owned fixture oracle.', code());
       totals.set(id, totals.get(id) + 1);
     };
+    const classified = (id, index, summary) => () =>
+      operationCode(id, name, 'oracle', index, summary());
     const permit = new Permit({
       token,
       pdp: CLOUD_ORIGIN,
@@ -299,7 +408,9 @@ export async function produceCloudProof({ entries, token, fixture, pause, attemp
           }
           if (attempt + 1 < attempts) await pause(2_000);
         }
-        expect('cloud.check', 1, ready, operationCode('cloud.check', name, 'not-ready', ...last));
+        expect('cloud.check', 1, ready, () =>
+          operationCode('cloud.check', name, 'not-ready', ...last),
+        );
         phase.ready();
         for (const [user, action, target] of [
           [fixture.deniedUser, 'read', resource],
@@ -323,30 +434,51 @@ export async function produceCloudProof({ entries, token, fixture, pause, attemp
       },
       async () => {
         const result = await permit.getAuthorizedUsers('read', resource, undefined, options);
-        expect('cloud.getAuthorizedUsers', 0, result?.resource === `${fixture.resource}:*`);
-        expect('cloud.getAuthorizedUsers', 1, result?.tenant === fixture.tenant);
+        const authorized = 'cloud.getAuthorizedUsers';
         expect(
-          'cloud.getAuthorizedUsers',
+          authorized,
+          0,
+          result?.resource === `${fixture.resource}:*`,
+          classified(authorized, 0, () =>
+            resourceClass(result?.resource, `${fixture.resource}:*`, fixture, fixture.tenant),
+          ),
+        );
+        expect(
+          authorized,
+          1,
+          result?.tenant === fixture.tenant,
+          classified(authorized, 1, () => tenantClass(result?.tenant, fixture.tenant)),
+        );
+        expect(
+          authorized,
           2,
           isDeepStrictEqual(Object.keys(result?.users ?? {}), [fixture.allowedUser]),
+          classified(authorized, 2, () => usersClass(result?.users, fixture.allowedUser)),
         );
         const grants = result.users[fixture.allowedUser];
-        expect('cloud.getAuthorizedUsers', 3, Array.isArray(grants) && grants.length === 1);
         expect(
-          'cloud.getAuthorizedUsers',
+          authorized,
+          3,
+          Array.isArray(grants) && grants.length === 1,
+          classified(authorized, 3, () => countClass(grants)),
+        );
+        expect(
+          authorized,
           4,
           grants[0]?.user === fixture.allowedUser &&
             grants[0]?.tenant === fixture.tenant &&
             grants[0]?.role === fixture.role &&
             grants[0]?.resource === `__tenant:${fixture.tenant}`,
+          classified(authorized, 4, () => grantClass(grants[0], fixture)),
         );
         const excluded = await permit.getAuthorizedUsers('read', other, undefined, options);
         expect(
-          'cloud.getAuthorizedUsers',
+          authorized,
           5,
           excluded?.resource === `${fixture.resource}:*` &&
             excluded?.tenant === fixture.otherTenant &&
             isDeepStrictEqual(excluded?.users, {}),
+          classified(authorized, 5, () => excludedClass(excluded, fixture)),
         );
       },
       async () => {
@@ -358,28 +490,38 @@ export async function produceCloudProof({ entries, token, fixture, pause, attemp
           options,
         );
         const key = `__tenant:${fixture.tenant}`;
-        expect('cloud.getUserPermissions', 0, isDeepStrictEqual(Object.keys(result), [key]));
+        const permissions = 'cloud.getUserPermissions';
         expect(
-          'cloud.getUserPermissions',
-          1,
-          isDeepStrictEqual(result[key]?.permissions, [`${fixture.resource}:read`]),
+          permissions,
+          0,
+          isDeepStrictEqual(Object.keys(result), [key]),
+          classified(permissions, 0, () => permissionKeyClass(result, fixture)),
         );
         expect(
-          'cloud.getUserPermissions',
+          permissions,
+          1,
+          isDeepStrictEqual(result[key]?.permissions, [`${fixture.resource}:read`]),
+          classified(permissions, 1, () => permissionsClass(result[key]?.permissions, fixture)),
+        );
+        expect(
+          permissions,
           2,
           result[key]?.roles == null || isDeepStrictEqual(result[key].roles, [fixture.role]),
+          classified(permissions, 2, () => rolesClass(result[key]?.roles, fixture)),
         );
         const details = result[key];
         expect(
-          'cloud.getUserPermissions',
+          permissions,
           3,
           details.tenant == null || details.tenant.key === fixture.tenant,
+          classified(permissions, 3, () => tenantDetailClass(details.tenant, fixture)),
         );
         expect(
-          'cloud.getUserPermissions',
+          permissions,
           4,
           details.resource == null ||
             (details.resource.type === '__tenant' && details.resource.key === fixture.tenant),
+          classified(permissions, 4, () => resourceDetailClass(details.resource, fixture)),
         );
         const filtered = await permit.getUserPermissions(
           fixture.allowedUser,
@@ -388,7 +530,12 @@ export async function produceCloudProof({ entries, token, fixture, pause, attemp
           [fixture.resource],
           options,
         );
-        expect('cloud.getUserPermissions', 5, isDeepStrictEqual(filtered, {}));
+        expect(
+          permissions,
+          5,
+          isDeepStrictEqual(filtered, {}),
+          classified(permissions, 5, () => emptyClass(filtered)),
+        );
         const denied = await permit.getUserPermissions(
           fixture.deniedUser,
           [fixture.tenant],
@@ -396,7 +543,12 @@ export async function produceCloudProof({ entries, token, fixture, pause, attemp
           ['__tenant'],
           options,
         );
-        expect('cloud.getUserPermissions', 6, isDeepStrictEqual(denied, {}));
+        expect(
+          permissions,
+          6,
+          isDeepStrictEqual(denied, {}),
+          classified(permissions, 6, () => emptyClass(denied)),
+        );
         const excluded = await permit.getUserPermissions(
           fixture.allowedUser,
           [fixture.otherTenant],
@@ -404,7 +556,12 @@ export async function produceCloudProof({ entries, token, fixture, pause, attemp
           ['__tenant'],
           options,
         );
-        expect('cloud.getUserPermissions', 7, isDeepStrictEqual(excluded, {}));
+        expect(
+          permissions,
+          7,
+          isDeepStrictEqual(excluded, {}),
+          classified(permissions, 7, () => emptyClass(excluded)),
+        );
       },
     ];
     for (let index = 0; index < operations.length; index++) {
