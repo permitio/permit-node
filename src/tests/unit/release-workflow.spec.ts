@@ -273,7 +273,7 @@ test('invalid prerelease metadata cannot publish', () => {
 const ci = readFileSync(join(root, '.github/workflows/ci.yaml'), 'utf8');
 const cleanupBlock = ci
   .split('      - name: Delete temp Permit envs\n')[1]
-  ?.split('\n  required-checks:')[0]
+  ?.split(/\n {2}[a-z][a-z0-9-]*:/u)[0]
   ?.split('        run: |\n')[1];
 if (!cleanupBlock) throw new Error('Cannot find owned-environment cleanup script.');
 const cleanupScript = cleanupBlock.replace(/^ {10}/gm, '');

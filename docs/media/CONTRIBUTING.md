@@ -58,7 +58,7 @@ configuration, then validates and normalizes the generated output before replaci
 `pnpm check:openapi` compares two clean generations with each other and the committed output.
 The separate `pnpm check:codegen`
 guard regenerates the historical fixture using the same pinned generator and configuration.
-See [the generation guide](../openapi/README.md) before refreshing the snapshot. Never replace the
+See [the generation guide][generation] before refreshing the snapshot. Never replace the
 historical fixture or change API shapes merely to make a tooling check pass.
 
 `test:integration` and `test:e2e` use a Permit backend. Run them locally only with explicit
@@ -77,7 +77,7 @@ authored runtime module, excluding generated clients and tests, without a percen
 omission decisions. `pnpm check:api-drift` also compares current public schema documentation with
 the pinned snapshots; it makes no backend operation calls. Reports distinguish local integrity,
 coverage gaps, the unavailable shared parity target and unmeasured backend behavior. See
-[the evidence guide](../api-coverage/README.md) before changing a baseline or exclusion.
+[the evidence guide][inventory] before changing a baseline or exclusion.
 
 ## Documentation and changes
 
@@ -124,7 +124,7 @@ The existing site is `https://permitio.github.io/permit-node/`. This rollout doe
 publisher settings or bypass npm's separate publication acceptance.
 
 Keep changes focused, preserve supported runtime behavior, and describe validation and remaining
-limitations in the PR. Check [AGENTS.md](../AGENTS.md) for repository development rules.
+limitations in the PR. Check [AGENTS.md][rules] for repository development rules.
 
 ## Dependency security
 
@@ -182,10 +182,18 @@ local checks; same-repository backend runs fail when their required secret is mi
 cleanup attempts every owned environment deletion, then fails the aggregate rather than warning
 and reporting success.
 
+The trusted cloud aggregate separately requires all five reviewed Node runtimes, both packed
+entries,
+all four published PDP operations and verified owned cleanup. Forks and Dependabot cannot execute
+trusted cloud setup. A successful PR cloud run does not establish publication readiness.
+
 The publisher receives the archive from the same workflow run. Its SHA-256, metadata and committed
-source identity must match before npm executes. Publication acceptance is separate: SDK71 has no
-`releaseReady=true` contract while the shared target and Curtain Call remain unresolved. There is
-no dispatch flag or manual approval boolean that substitutes for those contracts.
+source identity must match before npm executes. Computed Node publication acceptance also requires
+quality and security gates, exact local and trusted hosted evidence, migration comparisons,
+persisted inline user-role and async-copy proof, verified cleanup and backend rollout PER-16954.
+The exact local-evidence handoff and rollout remain unavailable until approved and proven. The
+shared five-SDK target remains UNAVAILABLE/PER-16345; Curtain Call is OWNER_DEFERRED/PER-16574
+and bulk counts are OWNER_DEFERRED/PER-9298. No dispatch flag or manual boolean replaces proof.
 
 The following owner rollout is proposed, not applied. First observe a successful GitHub Actions
 check named exactly `SDK required checks` on the final PR commit, including a fork run and a
@@ -209,3 +217,7 @@ workflow identity, but does not prove the current trust configuration. Read-only
 returned E401 in the audit; no authentication, ownership or publisher settings were changed.
 No credentials belong in the archive, validation evidence or workflow logs. Website reference
 publication remains separate from npm publication.
+
+[generation]: https://github.com/permitio/permit-node/blob/097f8e37008e/openapi/README.md
+[inventory]: https://github.com/permitio/permit-node/blob/097f8e37008e/api-coverage/README.md
+[rules]: https://github.com/permitio/permit-node/blob/097f8e37008e/AGENTS.md

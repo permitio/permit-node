@@ -41,7 +41,8 @@ requires collected files and executed tests in every selected suite, and rejects
 Backend commands exit with <code>UNAVAILABLE</code> and a nonzero status when <code>PDP_API_KEY</code> is absent.
 Absent optional organization/project keys and disabled direct OPA checks are named <code>UNAVAILABLE</code>
 limitations; a supplied key with the wrong scope fails. The known ABAC decision test remains
-<code>BLOCKED</code> by PER-16553. A run with these limitations reports <code>PARTIAL</code>, with passed execution counted
+<code>BLOCKED</code> by PER-16553. A run with these limitations reports <code>PARTIAL</code>, with passed execution
+counted
 separately. CI runs backend checks against the cloud control plane and a pinned local PDP; fork and
 Dependabot runs explicitly report unavailable backend coverage.</p>
 <p><code>pnpm coverage</code> measures all authored runtime TypeScript, including API wrappers, enforcement,
@@ -61,11 +62,18 @@ requires the resulting version to match the reviewed package version.
 Its production job downloads and revalidates the tested/scanned archive, then uses npm Trusted
 Publishing with lifecycle scripts disabled. It does not build, change the version or repack.
 Release candidates use the <code>rc</code> distribution tag.</p>
-<p><strong>Publication is currently blocked.</strong> SDK71's local release evidence has 13 unproved operations,
-its <code>releaseReady</code> remains false, and the shared target is unavailable (PER-16345).
-Shared acceptance and Curtain Call (PER-16561, PER-16574) must provide their reviewed acceptance
-contract before publication can proceed. Ordinary PR quality checks do not claim this external
-acceptance.</p>
+<p>PDP requests generate a request ID for each logical call and preserve it through SDK retries.
+A usable inherited ID is kept; unusable or blank IDs receive a generated UUID. Other inherited
+headers and caller defaults remain unchanged. OPA and control-plane requests keep their existing
+header behavior. This requires no additional configuration.</p>
+<p><strong>Publication is currently unavailable.</strong> The schema 2 Node release validator requires exact local
+and hosted evidence, all reviewed runtime/case/phase cells, quality/security jobs, migration
+comparisons and verified cleanup. The owned cloud producer checks both packed entries on all five
+Node runtimes; PR fixture checks are separate from publication acceptance. Required user-attribute
+backend rollout (PER-16954) and the owner-approved exact local evidence handoff remain pending.
+Shared five-SDK acceptance stays unavailable (PER-16345); Curtain Call (PER-16574) and bulk counts
+(PER-9298) remain owner-deferred and do not erase required Node proof. See
+<a href="media/RELEASE-EVIDENCE.md">Packed release evidence</a> for the exact contract and limits.</p>
 <p>Repository check, production approval, release tag and npm publisher settings require the separate
 owner rollout described in <a href="media/CONTRIBUTING.md">Contributing</a>. Workflow
 source alone does not configure those protections. Actual merge, tag creation and publication
@@ -95,17 +103,23 @@ they are <strong>off</strong> unless you pass a <code>retry</code> config (or <c
 <p>When enabled, the defaults are:</p>
 <ul>
 <li><strong>3 retries</strong> (up to 4 total attempts) with exponential backoff</li>
-<li>Retries on recognized transient network errors and status codes: <code>408</code>, <code>429</code>, <code>500</code>, <code>502</code>, <code>503</code>, <code>504</code></li>
+<li>Retries on recognized transient network errors and status codes: <code>408</code>, <code>429</code>, <code>500</code>, <code>502</code>,
+<code>503</code>, <code>504</code></li>
 <li>Respects <code>Retry-After</code> headers for rate limiting (429)</li>
 </ul>
-<p><code>maxRetries</code> is the number of retries <em>after</em> the initial request, so the default of <code>3</code> means up to 4 total requests.</p>
+<p><code>maxRetries</code> is the number of retries <em>after</em> the initial request, so the default of <code>3</code> means
+up to 4 total requests.</p>
 <blockquote>
 <p><strong>Behavioral note</strong></p>
 <ul>
-<li>Retries are opt-in — providing a <code>retry</code> config object turns them on; omitting it (or passing <code>retry: false</code>) leaves them off.</li>
-<li>When enabled, PDP/OPA calls additionally retry <code>POST</code> because authorization queries are idempotent.</li>
-<li>SDK retries never repeat REST <code>POST</code> or <code>PATCH</code>, even when listed in <code>retryMethods</code>. The default idempotent methods remain <code>GET</code>, <code>HEAD</code>, <code>OPTIONS</code>, <code>PUT</code> and <code>DELETE</code>.</li>
-<li>Cancellation and invalid request configuration are never retried, even with a custom predicate. Unclassified response-less errors are not retried by the default predicate.</li>
+<li>Retries are opt-in — providing a <code>retry</code> config object turns them on; omitting it (or
+passing <code>retry: false</code>) leaves them off.</li>
+<li>When enabled, PDP/OPA calls additionally retry <code>POST</code> because authorization queries are
+idempotent.</li>
+<li>SDK retries never repeat REST <code>POST</code> or <code>PATCH</code>, even when listed in <code>retryMethods</code>. The
+default idempotent methods remain <code>GET</code>, <code>HEAD</code>, <code>OPTIONS</code>, <code>PUT</code> and <code>DELETE</code>.</li>
+<li>Cancellation and invalid request configuration are never retried, even with a custom
+predicate. Unclassified response-less errors are not retried by the default predicate.</li>
 </ul>
 </blockquote>
 <p>Retry options are checked when the SDK is constructed. Counts must be nonnegative safe integers;
@@ -176,7 +190,8 @@ detached safe <code>cause</code> retain failure metadata. API-key scope failures
 with the same safe metadata.</p>
 <p>These are deliberate 3.0 error-property changes. <code>PermitApiError.originalError</code> is a detached Axios
 snapshot; <code>response.data</code> and <code>formattedAxiosError.error</code> have type <code>unknown</code> after redaction.
-<code>PermitApiError</code> no longer takes a response-body type parameter; narrow the sanitized data before use.
+<code>PermitApiError</code> no longer takes a response-body type parameter; narrow the sanitized data
+before use.
 <code>request</code> is always undefined. Snapshots omit request bodies, parameters, socket objects, hooks,
 original stacks and raw causes. Response diagnostics keep only <code>message</code>, <code>detail</code>, <code>msg</code>,
 <code>error_code</code>, <code>code</code> and <code>errors</code>; nested values, item counts and text lengths are bounded.
@@ -185,7 +200,8 @@ are redacted except content type, content length and retry timing. Credential UR
 (user information, query values and fragments) are removed. Known request credentials and private
 values are scrubbed from error descriptions; oversized or deeply nested requests cause descriptions
 to be redacted. Failures from caller adapters, interceptors and retry hooks follow the same rules;
-uninspectable primitive rejections use a useful operation fallback. Credentials and identity/permission
+uninspectable primitive rejections use a useful operation fallback. Credentials and
+identity/permission
 attributes are omitted from JSON and pretty
 SDK logs, including successful authorization calls.</p>
 <p>These rules apply to <code>check</code>, <code>bulkCheck</code>, <code>getUserPermissions</code>, <code>checkAllTenants</code>,
@@ -200,7 +216,8 @@ additive metadata and does not override the decision.</p>
 and resource details require string keys, resources also require a string type, and supplied
 attributes must be objects. The SDK applies the PDP's documented defaults: missing permissions
 become <code>[]</code>, missing attributes become <code>{}</code>, and nullable optional roles/tenant/resource fields are
-omitted. Null permissions or attributes are invalid. Extra fields are retained. Dictionary identifiers
+omitted. Null permissions or attributes are invalid. Extra fields are retained. Dictionary
+identifiers
 such as <code>result</code>, <code>permissions</code>, and <code>__proto__</code> remain valid; a valid direct map takes precedence
 over interpreting it as an OPA envelope.</p>
 <p>These are deliberate next-major response contract changes: malformed responses that previously
@@ -273,7 +290,8 @@ in non-throwing mode. A genuine empty page also returns <code>[]</code>.</p>
 container PDP's <code>POST /allowed_url</code> endpoint and its configured URL mapping rules. It returns
 only a literal boolean <code>allow</code>: <code>false</code> represents policy denial or no matching mapping.
 The cloud PDP snapshot does not publish this endpoint. See the
-<a href="https://docs.permit.io/how-to/enforce-permissions/url-mapping/regex-url-mapping-check/">public URL mapping guide</a>
+<a href="https://docs.permit.io/how-to/enforce-permissions/url-mapping/regex-url-mapping-check/">public URL mapping
+guide</a>
 for mapping configuration.</p>
 <pre><code class="typescript"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-5">type</span><span class="hl-1"> </span><span class="hl-0">CheckUrlConfig</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-3">&#39;permitio&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">urlOptions</span><span class="hl-1">: </span><span class="hl-9">CheckUrlConfig</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-0">tenant:</span><span class="hl-1"> </span><span class="hl-3">&#39;east&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">context:</span><span class="hl-1"> { </span><span class="hl-0">requestFlag:</span><span class="hl-1"> </span><span class="hl-4">true</span><span class="hl-1"> },</span><br/><span class="hl-1">  </span><span class="hl-0">timeout:</span><span class="hl-1"> </span><span class="hl-8">1000</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">throwOnError:</span><span class="hl-1"> </span><span class="hl-4">true</span><span class="hl-1">,</span><br/><span class="hl-1">};</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">allowed</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-2">checkUrl</span><span class="hl-1">(</span><br/><span class="hl-1">  { </span><span class="hl-0">key:</span><span class="hl-1"> </span><span class="hl-3">&#39;alice&#39;</span><span class="hl-1">, </span><span class="hl-0">attributes:</span><span class="hl-1"> { </span><span class="hl-0">eligible:</span><span class="hl-1"> </span><span class="hl-4">true</span><span class="hl-1"> } },</span><br/><span class="hl-1">  </span><span class="hl-3">&#39;GET&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-3">&#39;https://api.example.com/documents/report?version=1&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">urlOptions</span><span class="hl-1">,</span><br/><span class="hl-1">);</span>
 </code><button type="button">Copy</button></pre>
@@ -319,7 +337,8 @@ the control plane even when <code>proxyFactsViaPdp</code> is enabled and have no
 <p><code>permit.api.auditLogs.list</code> and <code>get</code> read the selected environment's authorization audit logs
 through the control-plane API, including when <code>proxyFactsViaPdp</code> is enabled. List returns the full
 <code>LimitedPaginatedResultAuditLogModel</code> envelope with <code>data</code>, <code>total_count</code>, <code>pagination_count</code> and
-optional nullable <code>page_count</code>. Get takes a log UUID and returns <code>DetailedAuditLogModel</code>, including its
+optional nullable <code>page_count</code>. Get takes a log UUID and returns <code>DetailedAuditLogModel</code>,
+including its
 required <code>raw_data</code> and optional nullable <code>objects</code>. Successful results preserve all received
 decision data, including nullable optional fields and nested objects.</p>
 <pre><code class="typescript"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">AuditLogQueryType</span><span class="hl-1">, </span><span class="hl-0">AuditLogSortKey</span><span class="hl-1">, </span><span class="hl-0">Permit</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-3">&#39;permitio&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">permit</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-2">Permit</span><span class="hl-1">({ </span><span class="hl-0">token:</span><span class="hl-1"> </span><span class="hl-0">process</span><span class="hl-1">.</span><span class="hl-0">env</span><span class="hl-1">.</span><span class="hl-7">PERMIT_API_KEY</span><span class="hl-1"> });</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">page</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">auditLogs</span><span class="hl-1">.</span><span class="hl-2">list</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-0">users:</span><span class="hl-1"> [</span><span class="hl-3">&#39;alice&#39;</span><span class="hl-1">, </span><span class="hl-3">&#39;bob&#39;</span><span class="hl-1">],</span><br/><span class="hl-1">  </span><span class="hl-0">resources:</span><span class="hl-1"> [</span><span class="hl-3">&#39;document&#39;</span><span class="hl-1">],</span><br/><span class="hl-1">  </span><span class="hl-0">tenant:</span><span class="hl-1"> </span><span class="hl-3">&#39;east&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">action:</span><span class="hl-1"> </span><span class="hl-3">&#39;read&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">decision:</span><span class="hl-1"> </span><span class="hl-4">false</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">query:</span><span class="hl-1"> </span><span class="hl-0">AuditLogQueryType</span><span class="hl-1">.</span><span class="hl-0">None</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">sortBy:</span><span class="hl-1"> </span><span class="hl-0">AuditLogSortKey</span><span class="hl-1">.</span><span class="hl-0">Timestamp</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">page:</span><span class="hl-1"> </span><span class="hl-8">1</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">perPage:</span><span class="hl-1"> </span><span class="hl-8">100</span><span class="hl-1">,</span><br/><span class="hl-1">});</span><br/><span class="hl-5">for</span><span class="hl-1"> (</span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">log</span><span class="hl-1"> </span><span class="hl-4">of</span><span class="hl-1"> </span><span class="hl-0">page</span><span class="hl-1">.</span><span class="hl-0">data</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">detail</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-0">permit</span><span class="hl-1">.</span><span class="hl-0">api</span><span class="hl-1">.</span><span class="hl-0">auditLogs</span><span class="hl-1">.</span><span class="hl-2">get</span><span class="hl-1">(</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-0">id</span><span class="hl-1">);</span><br/><span class="hl-1">  </span><span class="hl-5">if</span><span class="hl-1"> (</span><span class="hl-3">&#39;metrics&#39;</span><span class="hl-1"> </span><span class="hl-4">in</span><span class="hl-1"> </span><span class="hl-0">detail</span><span class="hl-1">.</span><span class="hl-0">raw_data</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-7">metrics</span><span class="hl-1"> = </span><span class="hl-0">detail</span><span class="hl-1">.</span><span class="hl-0">raw_data</span><span class="hl-1">.</span><span class="hl-0">metrics</span><span class="hl-1">;</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">}</span>
@@ -502,7 +521,8 @@ the request; they do not signal completion. Environment refresh does not accept 
 Individual-PDP refresh remains deferred. All five methods require a selected environment and
 an environment-level API key or broader access.</p>
 <h2 id="documentation" class="tsd-anchor-link">Documentation<a href="#documentation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
-<p><a href="https://docs.permit.io/sdk/nodejs/quickstart-nodejs#add-the-sdk-to-your-js-code">Read the documentation at Permit.io website</a></p>
+<p><a href="https://docs.permit.io/sdk/nodejs/quickstart-nodejs#add-the-sdk-to-your-js-code">Read the documentation at Permit.io
+website</a></p>
 <h2 id="api-reference" class="tsd-anchor-link">API Reference<a href="#api-reference" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>The <a href="https://permitio.github.io/permit-node/classes/Permit.html">API reference</a> is hosted on
 GitHub Pages. For this unreleased candidate, run <code>pnpm run docs</code> and inspect the generated
@@ -530,9 +550,8 @@ Expiration of a wait or caller transport timeout does not cancel an accepted bac
 Submission requires a project or organization API key in the SDK preflight. Result reads use the
 existing environment-read preflight; the server still determines permission for either request.</p>
 <p>The <a href="https://docs.permit.io/api/background-tasks/">public background-task guide</a> describes the
-wait and task responses. The
-<a href="https://github.com/permitio/docs/blob/6ec47cd3f04da6fa1bc9d48226ccbe781b304f77/docs/manage-your-account/creating-environments.mdx">copy guide</a> describes destination,
-conflict strategy and scope filters.</p>
+wait and task responses.</p>
+<p>The public copy contract describes destination, conflict strategy and scope filters.</p>
 </div></div>
 <div class="col-sidebar">
 <div class="page-menu">

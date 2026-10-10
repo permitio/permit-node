@@ -92,25 +92,28 @@ Once the SDK is initialized, the configuration is read-only.</p>
 <div class="tsd-comment tsd-typography"><p>The context object representing the context in which the action is performed.</p>
 </div></li>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">config</span>: <a href="CheckConfig.html" class="tsd-signature-type tsd-kind-interface">CheckConfig</a></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><p>array containing <code>true</code> if the user is authorized, <code>false</code> otherwise for each check request.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><p>array containing <code>true</code> if the user is authorized, <code>false</code> otherwise for each check
+request.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-throws">
-<h4 class="tsd-anchor-link" id="throws">Throws<a href="#throws" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p><a href="../classes/PermitConnectionError.html" class="tsd-kind-class">PermitConnectionError</a> if an error occurs while sending the authorization request to the PDP.</p>
+<h4 class="tsd-anchor-link" id="throws">Throws<a href="#throws" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p><a href="../classes/PermitConnectionError.html" class="tsd-kind-class">PermitConnectionError</a> if an error occurs while sending the authorization
+request to the PDP.</p>
 </div>
 <div class="tsd-tag-throws">
 <h4 class="tsd-anchor-link" id="throws-1">Throws<a href="#throws-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p><a href="../classes/PermitPDPStatusError.html" class="tsd-kind-class">PermitPDPStatusError</a> if the PDP's status code or response body is unexpected.</p>
 </div></div><aside class="tsd-sources">
 <p>Inherited from IEnforcer.bulkCheck</p>
 <ul>
-<li>Defined in src/enforcement/enforcer.ts:140</li></ul></aside></div></li></ul></section>
+<li>Defined in src/enforcement/enforcer.ts:145</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="check"><span>check</span><a href="#check" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
 <li class="tsd-is-inherited">
 <div class="tsd-signature tsd-anchor-link" id="check-1"><span class="tsd-kind-call-signature">check</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">user</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="IUser.html" class="tsd-signature-type tsd-kind-interface">IUser</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">action</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">resource</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="IResource.html" class="tsd-signature-type tsd-kind-interface">IResource</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">context</span><span class="tsd-signature-symbol">?:</span> <a href="Context.html" class="tsd-signature-type tsd-kind-interface">Context</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">config</span><span class="tsd-signature-symbol">?:</span> <a href="CheckConfig.html" class="tsd-signature-type tsd-kind-interface">CheckConfig</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><a href="#check-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Checks if a <code>user</code> is authorized to perform an <code>action</code> on a <code>resource</code> within the specified context.</p>
+<div class="tsd-comment tsd-typography"><p>Checks if a <code>user</code> is authorized to perform an <code>action</code> on a <code>resource</code> within the specified
+context.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -132,14 +135,15 @@ Once the SDK is initialized, the configuration is read-only.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-throws">
-<h4 class="tsd-anchor-link" id="throws-2">Throws<a href="#throws-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p><a href="../classes/PermitConnectionError.html" class="tsd-kind-class">PermitConnectionError</a> if an error occurs while sending the authorization request to the PDP.</p>
+<h4 class="tsd-anchor-link" id="throws-2">Throws<a href="#throws-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p><a href="../classes/PermitConnectionError.html" class="tsd-kind-class">PermitConnectionError</a> if an error occurs while sending the authorization
+request to the PDP.</p>
 </div>
 <div class="tsd-tag-throws">
 <h4 class="tsd-anchor-link" id="throws-3">Throws<a href="#throws-3" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p><a href="../classes/PermitPDPStatusError.html" class="tsd-kind-class">PermitPDPStatusError</a> if the PDP's status code or response body is unexpected.</p>
 </div></div><aside class="tsd-sources">
 <p>Inherited from IEnforcer.check</p>
 <ul>
-<li>Defined in src/enforcement/enforcer.ts:115</li></ul></aside></div></li></ul></section>
+<li>Defined in src/enforcement/enforcer.ts:118</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="checkalltenants"><span>check<wbr/>All<wbr/>Tenants</span><a href="#checkalltenants" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -160,7 +164,7 @@ Once the SDK is initialized, the configuration is read-only.</p>
 <aside class="tsd-sources">
 <p>Inherited from IEnforcer.checkAllTenants</p>
 <ul>
-<li>Defined in src/enforcement/enforcer.ts:200</li></ul></aside></div></li></ul></section>
+<li>Defined in src/enforcement/enforcer.ts:209</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="checkurl"><span>check<wbr/>Url</span><a href="#checkurl" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -179,7 +183,7 @@ Once the SDK is initialized, the configuration is read-only.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from IEnforcer.checkUrl</p>
 <ul>
-<li>Defined in src/enforcement/enforcer.ts:124</li></ul></aside></div></li></ul></section>
+<li>Defined in src/enforcement/enforcer.ts:127</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="filterobjects"><span>filter<wbr/>Objects</span><a href="#filterobjects" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -203,7 +207,7 @@ Once the SDK is initialized, the configuration is read-only.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#filterobjectst">T</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from IEnforcer.filterObjects</p>
 <ul>
-<li>Defined in src/enforcement/enforcer.ts:188</li></ul></aside></div></li></ul></section>
+<li>Defined in src/enforcement/enforcer.ts:197</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="getauthorizedusers"><span>get<wbr/>Authorized<wbr/>Users</span><a href="#getauthorizedusers" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -222,7 +226,7 @@ Once the SDK is initialized, the configuration is read-only.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="IAuthorizedUsersResult.html" class="tsd-signature-type tsd-kind-interface">IAuthorizedUsersResult</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from IEnforcer.getAuthorizedUsers</p>
 <ul>
-<li>Defined in src/enforcement/enforcer.ts:167</li></ul></aside></div></li></ul></section>
+<li>Defined in src/enforcement/enforcer.ts:176</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="getlocalroleassignments"><span>get<wbr/>Local<wbr/>Role<wbr/>Assignments</span><a href="#getlocalroleassignments" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -239,7 +243,7 @@ Once the SDK is initialized, the configuration is read-only.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="ILocalRoleAssignment.html" class="tsd-signature-type tsd-kind-interface">ILocalRoleAssignment</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from IEnforcer.getLocalRoleAssignments</p>
 <ul>
-<li>Defined in src/enforcement/enforcer.ts:182</li></ul></aside></div></li></ul></section>
+<li>Defined in src/enforcement/enforcer.ts:191</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="getuserpermissions"><span>get<wbr/>User<wbr/>Permissions</span><a href="#getuserpermissions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -258,26 +262,30 @@ Once the SDK is initialized, the configuration is read-only.</p>
 <div class="tsd-comment tsd-typography"><p>The list of tenants to filter the permissions on ( given by roles ).</p>
 </div></li>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">resources</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></span>
-<div class="tsd-comment tsd-typography"><p>The list of resources to filter the permissions on ( given by resource roles ).</p>
+<div class="tsd-comment tsd-typography"><p>The list of resources to filter the permissions on ( given by resource roles
+).</p>
 </div></li>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">resource_types</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></span>
-<div class="tsd-comment tsd-typography"><p>The list of resource types to filter the permissions on ( given by resource roles ).</p>
+<div class="tsd-comment tsd-typography"><p>The list of resource types to filter the permissions on ( given by
+resource roles ).</p>
 </div></li>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">config</span>: <a href="GetUserPermissionsConfig.html" class="tsd-signature-type tsd-kind-interface">GetUserPermissionsConfig</a></span>
 <div class="tsd-comment tsd-typography"><p>Timeout/error policy and request context overriding existing global context.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="IUserPermissions.html" class="tsd-signature-type tsd-kind-interface">IUserPermissions</a><span class="tsd-signature-symbol">&gt;</span></h4><p>object with key as the resource identifier and value as the resource details and permissions.</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="IUserPermissions.html" class="tsd-signature-type tsd-kind-interface">IUserPermissions</a><span class="tsd-signature-symbol">&gt;</span></h4><p>object with key as the resource identifier and value as the resource details and
+permissions.</p>
 
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-throws">
-<h4 class="tsd-anchor-link" id="throws-4">Throws<a href="#throws-4" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p><a href="../classes/PermitConnectionError.html" class="tsd-kind-class">PermitConnectionError</a> if an error occurs while sending the authorization request to the PDP.</p>
+<h4 class="tsd-anchor-link" id="throws-4">Throws<a href="#throws-4" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p><a href="../classes/PermitConnectionError.html" class="tsd-kind-class">PermitConnectionError</a> if an error occurs while sending the authorization
+request to the PDP.</p>
 </div>
 <div class="tsd-tag-throws">
 <h4 class="tsd-anchor-link" id="throws-5">Throws<a href="#throws-5" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p><a href="../classes/PermitPDPStatusError.html" class="tsd-kind-class">PermitPDPStatusError</a> if the PDP's status code or response body is unexpected.</p>
 </div></div><aside class="tsd-sources">
 <p>Inherited from IEnforcer.getUserPermissions</p>
 <ul>
-<li>Defined in src/enforcement/enforcer.ts:158</li></ul></aside></div></li></ul></section>
+<li>Defined in src/enforcement/enforcer.ts:167</li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="getusertenants"><span>get<wbr/>User<wbr/>Tenants</span><a href="#getusertenants" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -295,7 +303,7 @@ Once the SDK is initialized, the configuration is read-only.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="TenantDetails.html" class="tsd-signature-type tsd-kind-interface">TenantDetails</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from IEnforcer.getUserTenants</p>
 <ul>
-<li>Defined in src/enforcement/enforcer.ts:175</li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in src/enforcement/enforcer.ts:184</li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

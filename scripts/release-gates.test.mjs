@@ -1,10 +1,10 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { expect, onTestFinished, test } from 'vitest';
+import { expect, onTestFinished, test, vi } from 'vitest';
 import { checkGateResults } from '#scripts/check-release-gates.mjs';
 import { validateReviewedVersion } from '#scripts/check-release-tag.mjs';
-import { publicationBlockers } from '#scripts/check-publication-readiness.mjs';
+import { main as checkEvidence } from '#scripts/check-release-evidence.mjs';
 
 const names = [
   'lint',
@@ -40,7 +40,7 @@ test('actual candidate dependencies require docs before archive and aggregate su
   ).toContain('docs');
 });
 
-test('quality can pass while publication acceptance remains unavailable', () => {
+test('quality can pass while publication acceptance remains unavailable', async () => {
   expect(() => checkGateResults(good(), 'candidate')).not.toThrow();
   expect(() =>
     checkGateResults(
@@ -48,8 +48,19 @@ test('quality can pass while publication acceptance remains unavailable', () => 
       'publication',
     ),
   ).toThrow('did not succeed');
-  expect(publicationBlockers().join(' ')).toContain('PER-16345');
-  expect(publicationBlockers().join(' ')).toContain('PER-16574');
+  const root = mkdtempSync(join(tmpdir(), 'permit-readiness-quality-'));
+  onTestFinished(() => rmSync(root, { recursive: true, force: true }));
+  vi.spyOn(console, 'log').mockImplementation(() => {});
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  onTestFinished(() => vi.restoreAllMocks());
+  expect(await checkEvidence(['--output', join(root, 'output')], root)).toBe(2);
+  const report = JSON.parse(readFileSync(join(root, 'output/report.json'), 'utf8'));
+  expect(report).toMatchObject({
+    schema: 2,
+    scope: 'permit-node',
+    nodeReleaseReady: false,
+    releaseReady: false,
+  });
 });
 
 for (const name of names) {
@@ -95,12 +106,47 @@ test('prerelease flag must match the already reviewed version', () => {
   expect(() => validateReviewedVersion({ version: 'v3.0.0' })).toThrow('normalized');
 });
 
-test('changing an unavailable label cannot fabricate accepted publication evidence', () => {
+test('changing an unavailable label cannot fabricate accepted publication evidence', async () => {
   const root = mkdtempSync(join(tmpdir(), 'permit-readiness-'));
   onTestFinished(() => rmSync(root, { recursive: true, force: true }));
   mkdirSync(join(root, 'api-coverage'));
   const sources = JSON.parse(readFileSync('api-coverage/sources.json', 'utf8'));
   sources.unmeasuredCapabilities.sharedTarget.status = 'ADOPTED';
   writeFileSync(join(root, 'api-coverage/sources.json'), JSON.stringify(sources));
-  expect(publicationBlockers(root).join(' ')).toContain('reviewed acceptance contract');
+  vi.spyOn(console, 'log').mockImplementation(() => {});
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  onTestFinished(() => vi.restoreAllMocks());
+  expect(await checkEvidence(['--output', join(root, 'output')], root)).toBe(2);
+  expect(JSON.parse(readFileSync(join(root, 'output/report.json'), 'utf8')).releaseReady).toBe(
+    false,
+  );
 });
+
+const cloudNames = ['candidate', 'cloud-setup', 'cloud-test', 'cloud-cleanup'];
+function cloudGood() {
+  return Object.fromEntries(cloudNames.map((name) => [name, { result: 'success' }]));
+}
+test('PR cloud checks can pass without claiming full publication acceptance', () => {
+  expect(() => checkGateResults(cloudGood(), 'cloud')).not.toThrow();
+  expect(() =>
+    checkGateResults(
+      { candidate: { result: 'success' }, 'publication-acceptance': { result: 'skipped' } },
+      'publication',
+    ),
+  ).toThrow('did not succeed');
+});
+for (const name of cloudNames) {
+  test.each(['failure', 'cancelled', 'skipped', undefined])(
+    '%s prevents actual cloud completion for ' + name,
+    (result) => {
+      const jobs = cloudGood();
+      jobs[name] = { result };
+      expect(() => checkGateResults(jobs, 'cloud')).toThrow(name);
+    },
+  );
+  test('missing cloud ' + name + ' cannot gain execution or cleanup credit', () => {
+    const jobs = cloudGood();
+    delete jobs[name];
+    expect(() => checkGateResults(jobs, 'cloud')).toThrow('Missing');
+  });
+}

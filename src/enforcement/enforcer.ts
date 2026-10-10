@@ -1,4 +1,5 @@
-import axios, { AxiosError, type AxiosInstance, type AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosHeaders, type AxiosInstance, type AxiosResponse } from 'axios';
+import { randomUUID } from 'node:crypto';
 import { type Logger } from 'pino';
 
 import { type IPermitConfig } from '#src/config';
@@ -102,14 +103,16 @@ export class PermitPDPStatusError extends PermitConnectionError {
 
 export interface IEnforcer {
   /**
-   * Checks if a `user` is authorized to perform an `action` on a `resource` within the specified context.
+   * Checks if a `user` is authorized to perform an `action` on a `resource` within the specified
+   * context.
    *
    * @param user     - The user object representing the user.
    * @param action   - The action to be performed on the resource.
    * @param resource - The resource object representing the resource.
    * @param context  - The context object representing the context in which the action is performed.
    * @returns `true` if the user is authorized, `false` otherwise.
-   * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
+   * @throws {@link PermitConnectionError} if an error occurs while sending the authorization
+   * request to the PDP.
    * @throws {@link PermitPDPStatusError} if the PDP's status code or response body is unexpected.
    */
   check(
@@ -133,8 +136,10 @@ export interface IEnforcer {
    *
    * @param checks   - The check requests.
    * @param context  - The context object representing the context in which the action is performed.
-   * @returns array containing `true` if the user is authorized, `false` otherwise for each check request.
-   * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
+   * @returns array containing `true` if the user is authorized, `false` otherwise for each check
+   * request.
+   * @throws {@link PermitConnectionError} if an error occurs while sending the authorization
+   * request to the PDP.
    * @throws {@link PermitPDPStatusError} if the PDP's status code or response body is unexpected.
    */
   bulkCheck(
@@ -148,11 +153,15 @@ export interface IEnforcer {
    *
    * @param user     - The user object representing the user.
    * @param tenants  - The list of tenants to filter the permissions on ( given by roles ).
-   * @param resources - The list of resources to filter the permissions on ( given by resource roles ).
-   * @param resource_types - The list of resource types to filter the permissions on ( given by resource roles ).
+   * @param resources - The list of resources to filter the permissions on ( given by resource roles
+   * ).
+   * @param resource_types - The list of resource types to filter the permissions on ( given by
+   * resource roles ).
    * @param config - Timeout/error policy and request context overriding existing global context.
-   * @returns object with key as the resource identifier and value as the resource details and permissions.
-   * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
+   * @returns object with key as the resource identifier and value as the resource details and
+   * permissions.
+   * @throws {@link PermitConnectionError} if an error occurs while sending the authorization
+   * request to the PDP.
    * @throws {@link PermitPDPStatusError} if the PDP's status code or response body is unexpected.
    */
   getUserPermissions(
@@ -265,12 +274,51 @@ export class Enforcer implements IEnforcer {
       'X-Permit-SDK-Version': `node:${version}`,
       'Content-Type': 'application/json',
     };
+    const pdpCaller = axios.create();
+    pdpCaller.defaults.headers = { ...pdpCaller.defaults.headers };
+    for (const key of Object.keys(pdpCaller.defaults.headers))
+      if (key.toLowerCase() === 'x-request-id' && pdpCaller.defaults.headers[key] === false)
+        delete pdpCaller.defaults.headers[key];
+    // Axios treats false as a locked header. Clear unusable IDs only in our private copies.
+    for (const method of ['common', 'get', 'post', 'put', 'patch', 'delete', 'head'] as const) {
+      const inherited = { ...pdpCaller.defaults.headers[method] };
+      for (const key of Object.keys(inherited))
+        if (key.toLowerCase() === 'x-request-id' && inherited[key] === false) delete inherited[key];
+      pdpCaller.defaults.headers[method] = inherited;
+    }
     this.client = createOwnedTransport({
-      caller: axios.create(),
+      caller: pdpCaller,
       logger: this.logger,
       retry,
       name: 'PDP',
       defaults: { baseURL: `${this.config.pdp}/`, headers },
+    });
+    this.client.interceptors.request.use((request) => {
+      const method = (['get', 'post', 'put', 'patch', 'delete', 'head'] as const).find(
+        (name) => name === request.method?.toLowerCase(),
+      );
+      const inherited = new AxiosHeaders();
+      for (const group of [
+        pdpCaller.defaults.headers.common,
+        ...(method ? [pdpCaller.defaults.headers[method]] : []),
+      ])
+        for (const [key, value] of Object.entries(group))
+          if (value !== undefined) inherited.set(key, value);
+      const topLevelId = Object.keys(pdpCaller.defaults.headers).find(
+        (key) => key.toLowerCase() === 'x-request-id',
+      );
+      if (topLevelId) {
+        const value = pdpCaller.defaults.headers[topLevelId];
+        if (value !== undefined) inherited.set('X-Request-ID', value);
+      }
+      inherited.set(request.headers);
+      const id = inherited.get('X-Request-ID');
+      request.headers.set(
+        'X-Request-ID',
+        typeof id === 'string' && id.trim().length > 0 ? id : randomUUID(),
+        true,
+      );
+      return request;
     });
     this.opaClient = createOwnedTransport({
       caller: config.opaAxiosInstance ?? axios.create(),

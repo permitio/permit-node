@@ -130,7 +130,7 @@ test('invalid CLI inputs exit 2 and redact filesystem diagnostics', async () => 
   onTestFinished(() => vi.restoreAllMocks());
   expect(await main(['--output', output], root)).toBe(2);
   const report = readFileSync(join(output, 'report.json'), 'utf8');
-  expect(JSON.parse(report)).toMatchObject({ localEvidence: 'INVALID', releaseReady: false });
+  expect(JSON.parse(report)).toMatchObject({ nodeEvidence: 'INVALID', releaseReady: false });
   expect(report).not.toContain(root);
   expect(await main(['--unrecognized'], root)).toBe(2);
 });
@@ -160,3 +160,46 @@ test('reference packaging rebuilds from source and disables package lifecycle sc
   );
   expect(readFileSync(join(root, 'build/index.js'), 'utf8')).toBe('freshly built');
 }, 30_000);
+
+test.each(['argument', 'inspection'])(
+  'the actual CLI %s failure never echoes response/path canaries',
+  async (kind) => {
+    const root = directory(),
+      output = join(root, 'report-output'),
+      canary = 'RELEASE_CLI_PRIVATE_INPUT_CANARY';
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const logs = vi.spyOn(console, 'log').mockImplementation(() => {});
+    onTestFinished(() => vi.restoreAllMocks());
+    const args =
+      kind === 'argument'
+        ? ['--output', output, '--unrecognized-' + canary]
+        : [
+            '--output',
+            output,
+            ...[
+              'evidence',
+              'artifact',
+              'baseline',
+              'candidate-lock',
+              'baseline-lock',
+              'cloud-locks',
+            ].flatMap((flag) => ['--' + flag, join(root, canary)]),
+          ];
+    expect(await main(args, root)).toBe(2);
+    const serialized = JSON.stringify(errors.mock.calls) + JSON.stringify(logs.mock.calls);
+    expect(serialized).not.toContain(canary);
+    expect(serialized).not.toContain(root);
+    if (kind === 'inspection') {
+      const report = readFileSync(join(output, 'report.json'), 'utf8');
+      expect(report).not.toContain(canary);
+      expect(report).not.toContain(root);
+      expect(JSON.parse(report)).toMatchObject({
+        schema: 2,
+        scope: 'permit-node',
+        nodeReleaseReady: false,
+        releaseReady: false,
+        curtainCall: { status: 'OWNER_DEFERRED', owner: 'PER-16574' },
+      });
+    }
+  },
+);

@@ -9,6 +9,15 @@ import {
   expectedReleaseInventory,
   validateReleaseEvidence,
 } from '#scripts/release-evidence.mjs';
+import {
+  CLOUD_CASES,
+  INLINE_ROLE_CASES,
+  ASYNC_COPY_CASES,
+  CLOUD_ORIGIN,
+  CLOUD_CONTRACT_SHA256,
+  NODE_DEFERRALS,
+  readNodeAcceptance,
+} from '#scripts/node-acceptance.mjs';
 
 const candidateHash = 'a'.repeat(64);
 const baselineHash = 'b'.repeat(64);
@@ -20,26 +29,36 @@ const sharedCase = {
   operationKeys: ['control-plane POST /v2/facts/{proj_id}/{env_id}/users'],
 };
 
-function fixture(nodes = ['22.13.0', '24.0.0']) {
+function fixture(nodes = ['22.13.0', '22.23.3', '24.0.0', '24.21.0', '26.11.0']) {
+  const acceptance = readNodeAcceptance(resolve(import.meta.dirname, '..')).acceptance;
+  const featureCases = [...INLINE_ROLE_CASES, ...ASYNC_COPY_CASES];
+  acceptance.dependencies[0].status = 'VERIFIED';
+  const definitions = [sharedCase, ...featureCases, ...CLOUD_CASES];
+  const keys = [...new Set(definitions.flatMap((row) => row.operationKeys))];
+  const methodNames = [...new Set(definitions.flatMap((row) => row.methodNames))];
   const inventory = {
-    methods: [{ name: 'permit.api.users.create', caseIds: [sharedCase.id] }],
-    operations: [
-      {
-        source: 'control-plane',
-        method: 'POST',
-        path: '/v2/facts/{proj_id}/{env_id}/users',
+    methods: methodNames.map((name) => ({
+      name,
+      caseIds: definitions.filter((row) => row.methodNames.includes(name)).map((row) => row.id),
+    })),
+    operations: keys.map((key) => {
+      const [source, method, ...parts] = key.split(' ');
+      return {
+        source,
+        method,
+        path: parts.join(' '),
         decision: 'retain',
-        caseIds: [sharedCase.id],
-      },
-      {
-        source: 'pdp-container',
-        method: 'GET',
-        path: '/deferred',
-        decision: 'defer',
-        caseIds: [],
-      },
-    ],
+        caseIds: definitions.filter((row) => row.operationKeys.includes(key)).map((row) => row.id),
+      };
+    }),
   };
+  inventory.operations.push({
+    source: 'pdp-container',
+    method: 'GET',
+    path: '/deferred',
+    decision: 'defer',
+    caseIds: [],
+  });
   const artifact = {
     name: 'permitio',
     version: '3.0.0',
@@ -53,66 +72,159 @@ function fixture(nodes = ['22.13.0', '24.0.0']) {
     fileCount: 999,
     lockSha256: 'e'.repeat(64),
     kind: 'released-npm',
-    integrity: `sha512-${'A'.repeat(86)}==`,
+    integrity: 'sha512-' + 'A'.repeat(86) + '==',
   };
+  const ci = {
+    repository: 'permitio/permit-node',
+    workflowRef: 'permitio/permit-node/.github/workflows/ci.yaml@refs/heads/codex/release',
+    runId: '123',
+    runAttempt: '1',
+    commit: '9'.repeat(40),
+    tree: 'f'.repeat(40),
+  };
+  const now = Date.parse('2026-10-08T12:00:00Z');
   const requirements = {
     nodes,
-    runIds: nodes.flatMap((node) => [`baseline-${node}`, `candidate-${node}`]),
-    phaseIds: ['api.users'],
+    runIds: nodes.flatMap((node) => ['baseline-' + node, 'candidate-' + node]),
+    phaseIds: ['api.users', 'wire.users'],
     pdps: ['pinned', 'current'].map((role) => ({
       role,
       digest: pdpDigest,
-      resolvedAt: '2026-09-30',
+      resolvedAt: '2026-10-08',
     })),
-    cases: [sharedCase],
+    cases: definitions,
     abCaseIds: [sharedCase.id],
     intentionalDifferences: [{ id: 'migration.flat-facade', changeId: 'A1' }],
+    cloud: {
+      origin: CLOUD_ORIGIN,
+      contractSha256: CLOUD_CONTRACT_SHA256,
+      caseIds: CLOUD_CASES.map((row) => row.id),
+      phaseIds: CLOUD_CASES.map((row) => row.id),
+      runIds: nodes.map((node) => 'candidate.cloud.node' + node),
+    },
   };
   const expected = {
     artifact,
     baseline,
     inventory,
     requirements,
-    tree: 'f'.repeat(40),
-    methodLevels: { 'permit.api.users.create': 'wire' },
+    tree: ci.tree,
+    acceptance,
+    ci,
+    now,
+    cloudLocks: Object.fromEntries(nodes.map((node) => [node, '8'.repeat(64)])),
+    gateResults: Object.fromEntries(
+      acceptance.requiredGates.map((name) => [name, { result: 'success' }]),
+    ),
+    methodLevels: Object.fromEntries(methodNames.map((name) => [name, 'wire'])),
   };
-  const runs = requirements.nodes.flatMap((node) =>
+  const local = nodes.flatMap((node) =>
     ['baseline', 'candidate'].map((role) => ({
-      id: `${role}-${node}`,
+      id: role + '-' + node,
       artifactSha256: role === 'baseline' ? baselineHash : candidateHash,
       nativeReportSha256: '1'.repeat(64),
       node,
       target: 'local',
-      pdp: { digest: pdpDigest, roles: ['pinned', 'current'], resolvedAt: '2026-09-30' },
-      phaseResults: [{ id: 'api.users', kind: 'api', status: 'PASSED', assertions: 8 }],
-      caseResults: [{ ...sharedCase, phaseId: 'api.users', status: 'PASSED', assertions: 8 }],
+      consumerLockSha256: role === 'baseline' ? baseline.lockSha256 : artifact.lockSha256,
+      httpObservations: [],
+      pdp: {
+        kind: 'container',
+        digest: pdpDigest,
+        roles: ['pinned', 'current'],
+        resolvedAt: '2026-10-08',
+      },
+      phaseResults: [
+        {
+          id: 'api.users',
+          kind: 'api',
+          status: 'PASSED',
+          assertions: role === 'baseline' ? 24 : 32,
+        },
+        {
+          id: 'wire.users',
+          kind: 'wire',
+          status: 'PASSED',
+          assertions: role === 'baseline' ? 16 : 48,
+        },
+      ],
+      caseResults: (role === 'baseline' ? [sharedCase] : [sharedCase, ...featureCases]).map(
+        (row) => ({
+          ...row,
+          phaseId: row.level === 'wire' ? 'wire.users' : 'api.users',
+          status: 'PASSED',
+          assertions: 8,
+        }),
+      ),
       cleanup: { registered: 1, completed: 1, verified: 1 },
       setupErrorCount: 0,
       cleanupErrorCount: 0,
     })),
   );
+  const cloud = nodes.map((node) => ({
+    id: 'candidate.cloud.node' + node,
+    artifactSha256: candidateHash,
+    nativeReportSha256: '2'.repeat(64),
+    node,
+    target: 'hosted-ci',
+    consumerLockSha256: expected.cloudLocks[node],
+    httpObservations: CLOUD_CASES.flatMap((row) =>
+      ['esm', 'commonjs'].map((entry) => ({
+        caseId: row.id,
+        entry,
+        method: 'POST',
+        path: row.operationKeys[0].slice('pdp-cloud POST '.length),
+        origin: CLOUD_ORIGIN,
+        status: 200,
+        requests: 1,
+        requestIdPresent: true,
+      })),
+    ),
+    pdp: {
+      kind: 'managed-cloud',
+      origin: CLOUD_ORIGIN,
+      contractSha256: CLOUD_CONTRACT_SHA256,
+      observedAt: new Date(now).toISOString(),
+      ci,
+    },
+    phaseResults: CLOUD_CASES.map((row) => ({
+      id: row.id,
+      kind: 'pdp',
+      status: 'PASSED',
+      assertions: 8,
+    })),
+    caseResults: CLOUD_CASES.map((row) => ({
+      ...row,
+      phaseId: row.id,
+      status: 'PASSED',
+      assertions: 8,
+    })),
+    cleanup: { registered: 0, completed: 0, verified: 0 },
+    setupErrorCount: 0,
+    cleanupErrorCount: 0,
+  }));
   const evidence = {
-    schema: 1,
+    schema: 2,
     artifact,
     sdk: {
       tree: expected.tree,
       inventorySha256: digest(canonicalReleaseInventory(inventory)),
+      acceptanceSha256: digest(acceptance),
     },
     inventory,
-    runs,
+    runs: [...local, ...cloud],
     ab: {
       baseline,
       candidateSha256: candidateHash,
-      cases: requirements.nodes.map((node) => ({
+      cases: nodes.map((node) => ({
         id: sharedCase.id,
-        baselineRunId: `baseline-${node}`,
-        candidateRunId: `candidate-${node}`,
+        baselineRunId: 'baseline-' + node,
+        candidateRunId: 'candidate-' + node,
         status: 'PASSED',
         assertions: 1,
       })),
       intentionalDifferences: requirements.intentionalDifferences,
     },
-    gates: { sharedTarget: { status: 'UNAVAILABLE', owner: 'PER-16345' } },
+    gates: NODE_DEFERRALS,
   };
   return { evidence: structuredClone(evidence), expected: structuredClone(expected) };
 }
@@ -123,13 +235,15 @@ function result(change) {
   return validateReleaseEvidence(evidence, expected);
 }
 
-test('accepts only the reviewed local scope and keeps release readiness blocked', () => {
+test('computes Node readiness only from complete independently bound proof', () => {
   expect(result()).toEqual({
-    schema: 1,
-    localEvidence: 'PASS',
+    schema: 2,
+    scope: 'permit-node',
+    nodeEvidence: 'PASS',
     exitCode: 0,
-    releaseReady: false,
-    sharedTarget: { status: 'UNAVAILABLE', owner: 'PER-16345' },
+    nodeReleaseReady: true,
+    releaseReady: true,
+    ...NODE_DEFERRALS,
     incomplete: [],
     failures: [],
   });
@@ -443,11 +557,11 @@ test.each([
 test('retains actual failures and gives incomplete cleanup precedence', () => {
   const { evidence, expected } = fixture();
   evidence.runs[1].phaseResults[0].status = 'FAILED';
-  evidence.runs[1].caseResults[0].status = 'FAILED';
+  for (const row of evidence.runs[1].caseResults) row.status = 'FAILED';
   evidence.ab.cases[0].status = 'FAILED';
   expect(validateReleaseEvidence(evidence, expected)).toMatchObject({
     exitCode: 1,
-    localEvidence: 'FAIL',
+    nodeEvidence: 'FAIL',
     failures: expect.arrayContaining(['ab.cases[0]']),
   });
   evidence.runs[1].cleanup.verified = 0;
@@ -593,7 +707,8 @@ test('does not turn a single phase assertion into several independently passing 
   const report = result((v, expected) => {
     const extra = { ...sharedCase, id: 'api.another-observation' };
     expected.requirements.cases.push(extra);
-    for (const row of v.inventory.methods) row.caseIds.push(extra.id);
+    for (const row of v.inventory.methods)
+      if (extra.methodNames.includes(row.name)) row.caseIds.push(extra.id);
     v.inventory.operations[0].caseIds.push(extra.id);
     v.runs[1].caseResults.push({ ...extra, phaseId: 'api.users', status: 'PASSED', assertions: 8 });
   });
@@ -611,14 +726,15 @@ test('requires existing phase evidence even when newly mapped cases are present'
 
 test('package presence assertions cannot replace HTTP behavior evidence', () => {
   const report = result((v, expected) => {
-    expected.requirements.cases[0].level = 'package';
-    for (const run of v.runs) {
-      run.caseResults[0].level = 'package';
+    for (const row of expected.requirements.cases)
+      if (row.methodNames.includes('permit.api.users.create')) row.level = 'package';
+    for (const run of v.runs.filter((row) => row.target === 'local')) {
+      for (const row of run.caseResults) row.level = 'package';
       run.phaseResults[0].kind = 'package';
     }
   });
   expect(report.exitCode).toBe(2);
-  expect(report.incomplete).toContain('No reviewed case for permit.api.users.create.');
+  expect(report.incomplete).toContain('Required inline-role proof case differs.');
 });
 
 test.each(['empty phases', 'empty runs', 'missing floor', 'unmapped AB'])(
@@ -700,7 +816,7 @@ test('requires complete execution evidence in the current Node 26 cell', () => {
   expect(report.incomplete).toContain('Missing local candidate cell: Node 26.11.0/current.');
 });
 
-test('the real matrix accepts reviewed capability phases without granting fixture setup case credit', async () => {
+test('reviewed capability phases grant no fixture setup case credit', async () => {
   const root = resolve(import.meta.dirname, '..');
   const actual = await expectedReleaseInventory(root);
   const plan = JSON.parse(readFileSync(resolve(root, 'api-coverage/release-matrix.json'), 'utf8'));
@@ -807,6 +923,8 @@ test('the real matrix accepts reviewed capability phases without granting fixtur
   expected.inventory = actual.inventory;
   expected.methodLevels = actual.methodLevels;
   expected.requirements = plan;
+  expected.acceptance = readNodeAcceptance(root).acceptance;
+  evidence.sdk.acceptanceSha256 = digest(expected.acceptance);
   evidence.inventory = structuredClone(actual.inventory);
   for (const row of evidence.inventory.methods)
     row.caseIds = plan.cases
@@ -821,7 +939,11 @@ test('the real matrix accepts reviewed capability phases without granting fixtur
   evidence.runs = plan.nodes.flatMap((node) =>
     ['baseline', 'candidate'].map((role) => {
       const caseResults = plan.cases
-        .filter((entry) => role === 'candidate' || plan.abCaseIds.includes(entry.id))
+        .filter(
+          (entry) =>
+            !plan.cloud.caseIds.includes(entry.id) &&
+            (role === 'candidate' || plan.abCaseIds.includes(entry.id)),
+        )
         .map((entry) => ({
           ...entry,
           phaseId: capabilityPhases.some(([id]) => id === entry.id)
@@ -851,7 +973,10 @@ test('the real matrix accepts reviewed capability phases without granting fixtur
         id: `${role}.local.node${node}`,
         node,
         artifactSha256: role === 'candidate' ? candidateHash : baselineHash,
+        consumerLockSha256:
+          role === 'candidate' ? evidence.artifact.lockSha256 : evidence.ab.baseline.lockSha256,
         pdp: {
+          kind: 'container',
           digest: plan.pdps[0].digest,
           resolvedAt: plan.pdps[0].resolvedAt,
           roles: ['pinned', 'current'],
@@ -869,6 +994,7 @@ test('the real matrix accepts reviewed capability phases without granting fixtur
       };
     }),
   );
+  evidence.runs.push(...fixture().evidence.runs.filter((run) => run.target === 'hosted-ci'));
   evidence.ab.cases = plan.nodes.flatMap((node) =>
     plan.abCaseIds.map((id) => ({
       id,
@@ -880,9 +1006,13 @@ test('the real matrix accepts reviewed capability phases without granting fixtur
   );
   const report = validateReleaseEvidence(evidence, expected);
   expect(report.exitCode).toBe(2);
-  expect(report.incomplete).toHaveLength(4);
-  expect(report.incomplete.every((message) => message.startsWith('No reviewed case for '))).toBe(
-    true,
+  expect(
+    report.incomplete.filter((message) => message.startsWith('No reviewed case for ')),
+  ).toHaveLength(0);
+  expect(report.incomplete).toEqual(
+    expect.arrayContaining([
+      'Unverified acceptance dependency user-attribute-backend-rollout (PER-16954).',
+    ]),
   );
   expect(report.failures).toEqual([]);
   expect(report.releaseReady).toBe(false);
@@ -893,6 +1023,17 @@ test('the real matrix accepts reviewed capability phases without granting fixtur
   expect(plan.cases.some((entry) => entry.id === 'api.proxy-configs-owned-fixtures')).toBe(false);
   expect(plan.cases.some((entry) => entry.id === 'api.audit-logs-owned-fixtures')).toBe(false);
   expect(plan.cases.some((entry) => entry.id === 'pdp.audit-logs-decisions')).toBe(false);
+  expect(plan.cases.some((entry) => entry.id === 'api.inline-role-owned-fixtures')).toBe(false);
+  expect(report.incomplete).not.toContain(
+    'Unimplemented required feature create-user-inline-roles (PER-16573).',
+  );
+  expect(
+    plan.cases
+      .filter((row) => row.id.includes('inline-roles'))
+      .map((row) => row.id)
+      .sort(),
+  ).toEqual(INLINE_ROLE_CASES.map((row) => row.id).sort());
+
   expect(plan.cases.some((entry) => entry.id === 'api.async-copy-owned-fixtures')).toBe(false);
   const fixtureOnly = structuredClone(evidence);
   for (const run of fixtureOnly.runs) {
@@ -931,3 +1072,361 @@ test('the real matrix accepts reviewed capability phases without granting fixtur
   expect(rejected.incomplete).toEqual(['Unreviewed phase ID.']);
   expect(JSON.stringify(rejected)).not.toContain('api.unreviewed-url-phase');
 }, 20_000);
+
+const cloudRun = (evidence) => evidence.runs.find((run) => run.target === 'hosted-ci');
+test.each([
+  [
+    'legacy export',
+    (v) => {
+      v.schema = 1;
+    },
+  ],
+  [
+    'producer readiness Boolean',
+    (v) => {
+      v.releaseReady = true;
+    },
+  ],
+  [
+    'changed acceptance hash',
+    (v) => {
+      v.sdk.acceptanceSha256 = '0'.repeat(64);
+    },
+  ],
+  [
+    'relabel local to cloud',
+    (v) => {
+      v.runs[1].target = 'hosted-ci';
+    },
+  ],
+  [
+    'relabel cloud to local',
+    (v) => {
+      cloudRun(v).target = 'local';
+    },
+  ],
+  [
+    'invented cloud container digest',
+    (v) => {
+      cloudRun(v).pdp.digest = pdpDigest;
+    },
+  ],
+  [
+    'wrong cloud origin',
+    (v) => {
+      cloudRun(v).pdp.origin = 'https://foreign.invalid';
+    },
+  ],
+  [
+    'wrong public cloud contract',
+    (v) => {
+      cloudRun(v).pdp.contractSha256 = '0'.repeat(64);
+    },
+  ],
+  [
+    'wrong CI source commit',
+    (v) => {
+      cloudRun(v).pdp.ci.commit = '0'.repeat(40);
+    },
+  ],
+  [
+    'wrong CI tree',
+    (v) => {
+      cloudRun(v).pdp.ci.tree = '0'.repeat(40);
+    },
+  ],
+  [
+    'wrong CI attempt',
+    (v) => {
+      cloudRun(v).pdp.ci.runAttempt = '2';
+    },
+  ],
+  [
+    'different cloud consumer lock',
+    (v) => {
+      cloudRun(v).consumerLockSha256 = '0'.repeat(64);
+    },
+  ],
+  [
+    'stale cloud observation',
+    (v) => {
+      cloudRun(v).pdp.observedAt = '2026-10-06T12:00:00Z';
+    },
+  ],
+  [
+    'future cloud observation',
+    (v) => {
+      cloudRun(v).pdp.observedAt = '2026-10-09T12:00:00Z';
+    },
+  ],
+  [
+    'missing CJS observation',
+    (v) => {
+      cloudRun(v).httpObservations = cloudRun(v).httpObservations.filter(
+        (row) => row.entry !== 'commonjs',
+      );
+    },
+  ],
+  [
+    'wrong observed method',
+    (v) => {
+      cloudRun(v).httpObservations[0].method = 'GET';
+    },
+  ],
+  [
+    'wrong observed path',
+    (v) => {
+      cloudRun(v).httpObservations[0].path = '/authorized_users';
+    },
+  ],
+  [
+    'wrong observed origin',
+    (v) => {
+      cloudRun(v).httpObservations[0].origin = 'http://127.0.0.1:1';
+    },
+  ],
+  [
+    'failed observed HTTP status',
+    (v) => {
+      cloudRun(v).httpObservations[0].status = 503;
+    },
+  ],
+  [
+    'zero observed requests',
+    (v) => {
+      cloudRun(v).httpObservations[0].requests = 0;
+    },
+  ],
+  [
+    'duplicate cloud observation',
+    (v) => {
+      cloudRun(v).httpObservations.push(structuredClone(cloudRun(v).httpObservations[0]));
+    },
+  ],
+  [
+    'missing cloud cell',
+    (v) => {
+      v.runs = v.runs.filter((run) => run.target !== 'hosted-ci' || run.node !== '26.11.0');
+    },
+  ],
+  [
+    'cloud cleanup failure',
+    (v) => {
+      cloudRun(v).cleanupErrorCount = 1;
+    },
+  ],
+  [
+    'cloud phase count without cases',
+    (v) => {
+      cloudRun(v).caseResults = [];
+    },
+  ],
+  [
+    'wire-only cloud credit',
+    (v) => {
+      cloudRun(v).caseResults[0].level = 'wire';
+      cloudRun(v).phaseResults[0].kind = 'wire';
+    },
+  ],
+  [
+    'removed required cloud operation',
+    (_v, e) => {
+      e.requirements.cloud.caseIds.pop();
+    },
+  ],
+  [
+    'removed cloud inventory decision',
+    (v, e) => {
+      v.inventory.operations.find((row) => row.source === 'pdp-cloud').decision = 'defer';
+      e.inventory = structuredClone(v.inventory);
+      v.sdk.inventorySha256 = digest(canonicalReleaseInventory(v.inventory));
+    },
+  ],
+  [
+    'absent trusted CI context',
+    (_v, e) => {
+      delete e.ci;
+    },
+  ],
+  [
+    'missing required CI job',
+    (_v, e) => {
+      delete e.gateResults['cloud-cleanup'];
+    },
+  ],
+  [
+    'unknown required CI job',
+    (_v, e) => {
+      e.gateResults['invented-job'] = { result: 'success' };
+    },
+  ],
+  [
+    'unavailable backend rollout',
+    (v, e) => {
+      e.acceptance.dependencies[0].status = 'UNAVAILABLE';
+      v.sdk.acceptanceSha256 = digest(e.acceptance);
+    },
+  ],
+  [
+    'unimplemented async feature',
+    (v, e) => {
+      e.acceptance.features.find((row) => row.id === 'environment-async-copy').caseIds = [];
+      v.sdk.acceptanceSha256 = digest(e.acceptance);
+    },
+  ],
+  [
+    'only wire feature proof',
+    (v, e) => {
+      const rows = e.requirements.cases.filter((row) => row.id.startsWith('api.async-copy.'));
+      for (const row of rows) row.level = 'wire';
+      for (const run of v.runs.filter((run) => run.target === 'local'))
+        for (const item of run.caseResults)
+          if (rows.some((row) => row.id === item.id)) item.level = 'wire';
+    },
+  ],
+])('Node readiness refuses %s', (_name, change) => {
+  expect(result(change)).toMatchObject({
+    exitCode: 2,
+    nodeReleaseReady: false,
+    releaseReady: false,
+  });
+});
+test.each(['failure', 'cancelled', 'skipped', 'pending', 'neutral', 'timed_out'])(
+  'required CI result %s cannot grant Node readiness',
+  (status) => {
+    const report = result((_v, e) => {
+      e.gateResults['cloud-test'].result = status;
+    });
+    expect(report).toMatchObject({ exitCode: 2, nodeReleaseReady: false });
+    expect(report.incomplete).toContain('Required acceptance job did not succeed: cloud-test.');
+  },
+);
+test('complete local execution still cannot substitute for managed cloud runtime', () => {
+  const report = result((v) => {
+    v.runs = v.runs.filter((run) => run.target === 'local');
+  });
+  expect(report.nodeReleaseReady).toBe(false);
+  expect(report.incomplete).toContain('Missing cloud case cloud.check: Node 26.11.0.');
+});
+
+test('cloud cases cannot reuse one passing phase for all operations', () => {
+  const report = result((v) => {
+    const run = cloudRun(v);
+    run.phaseResults = run.phaseResults.slice(0, 1);
+    run.phaseResults[0].assertions = 32;
+    for (const row of run.caseResults) row.phaseId = run.phaseResults[0].id;
+  });
+  expect(report.exitCode).toBe(2);
+  expect(report.nodeReleaseReady).toBe(false);
+  expect(report.incomplete).toContain('Cloud case requires its own registered phase.');
+});
+test('every registered cloud phase must run for every required runtime', () => {
+  const report = result((v) => {
+    const run = cloudRun(v);
+    run.phaseResults = [];
+    run.caseResults = [];
+    run.httpObservations = [];
+  });
+  expect(report.exitCode).toBe(2);
+  expect(report.nodeReleaseReady).toBe(false);
+});
+test('ordinary user creation cannot replace persisted inline-role proof', () => {
+  const report = result((v, e) => {
+    e.acceptance.features[0].caseIds = [sharedCase.id];
+    v.sdk.acceptanceSha256 = digest(e.acceptance);
+  });
+  expect(report.exitCode).toBe(2);
+  expect(report.nodeReleaseReady).toBe(false);
+});
+
+test('one missing cloud phase remains visible with three valid nonempty phases', () => {
+  const report = result((v) => {
+    const run = cloudRun(v);
+    const missing = 'cloud.bulkCheck';
+    run.phaseResults = run.phaseResults.filter((row) => row.id !== missing);
+    run.caseResults = run.caseResults.filter((row) => row.id !== missing);
+    run.httpObservations = run.httpObservations.filter((row) => row.caseId !== missing);
+  });
+  expect(report.exitCode).toBe(2);
+  expect(
+    report.incomplete.some((message) => message.includes('Missing cloud phase cloud.bulkCheck')),
+  ).toBe(true);
+  expect(report.nodeReleaseReady).toBe(false);
+});
+
+test('actual absent required cloud header blocks readiness despite HTTP and oracles', () => {
+  const report = result((v) => {
+    cloudRun(v).httpObservations[0].requestIdPresent = false;
+  });
+  expect(report.nodeReleaseReady).toBe(false);
+  expect(
+    report.incomplete.some((message) => message.includes('omitted required X-Request-ID')),
+  ).toBe(true);
+});
+
+test('inherited current resolution blocks readiness despite complete shared cells', () => {
+  const { evidence, expected } = fixture();
+  expected.requirements.pdps = expected.requirements.pdps.map((row) => ({
+    ...row,
+    resolvedAt: row.role === 'pinned' ? '2026-09-30' : '2026-10-08',
+  }));
+  for (const run of evidence.runs.filter((row) => row.target !== 'hosted-ci')) {
+    run.pdp.roles = ['current'];
+    run.pdp.resolvedAt = '2026-10-08';
+  }
+  const stale = structuredClone(expected);
+  stale.requirements.pdps.find((row) => row.role === 'current').resolvedAt = '2026-09-30';
+  const inherited = structuredClone(evidence);
+  for (const run of inherited.runs.filter((row) => row.target !== 'hosted-ci')) {
+    run.pdp.roles = ['pinned', 'current'];
+    run.pdp.resolvedAt = '2026-09-30';
+  }
+  const report = validateReleaseEvidence(inherited, stale);
+  expect(report.nodeReleaseReady).toBe(false);
+  expect(report.incomplete.join(' ')).toContain('Current PDP image resolution is stale');
+});
+
+test.each([86_400_000, -60_001])('current-image freshness boundary %s refuses readiness', (age) => {
+  const { evidence, expected } = fixture();
+  expected.now = Date.parse(expected.requirements.pdps[1].resolvedAt) + age;
+  // Keep independent cloud observation current so this negative isolates image freshness.
+  for (const run of evidence.runs.filter((row) => row.target === 'hosted-ci'))
+    run.pdp.observedAt = new Date(expected.now).toISOString();
+  expect(validateReleaseEvidence(evidence, expected).incomplete.join(' ')).toContain(
+    'Current PDP image resolution is stale',
+  );
+});
+
+test('separate historical pinned and fresh current cells satisfy readiness', () => {
+  const { evidence, expected } = fixture();
+  expected.requirements.pdps.find((row) => row.role === 'pinned').resolvedAt = '2026-09-30';
+  const historical = evidence.runs
+    .filter((row) => row.target === 'local')
+    .map((run) => ({
+      ...structuredClone(run),
+      id: run.id + '-historical',
+      pdp: { ...run.pdp, roles: ['pinned'], resolvedAt: '2026-09-30' },
+    }));
+  for (const run of evidence.runs.filter((row) => row.target === 'local'))
+    run.pdp.roles = ['current'];
+  expected.requirements.runIds.push(...historical.map((run) => run.id));
+  evidence.runs.push(...historical);
+  evidence.ab.cases.push(
+    ...evidence.ab.cases.map((row) => ({
+      ...row,
+      baselineRunId: row.baselineRunId + '-historical',
+      candidateRunId: row.candidateRunId + '-historical',
+    })),
+  );
+  const report = validateReleaseEvidence(evidence, expected);
+  expect(report.incomplete).toEqual([]);
+  expect(report.nodeReleaseReady).toBe(true);
+});
+
+test('one shared runtime record cannot claim two different reviewed resolution dates', () => {
+  const { evidence, expected } = fixture();
+  expected.requirements.pdps.find((row) => row.role === 'pinned').resolvedAt = '2026-09-30';
+  const report = validateReleaseEvidence(evidence, expected);
+  expect(report.incomplete.join(' ')).toContain('Unreviewed PDP');
+  expect(report.nodeReleaseReady).toBe(false);
+});

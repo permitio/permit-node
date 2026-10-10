@@ -48,7 +48,8 @@ requires collected files and executed tests in every selected suite, and rejects
 Backend commands exit with `UNAVAILABLE` and a nonzero status when `PDP_API_KEY` is absent.
 Absent optional organization/project keys and disabled direct OPA checks are named `UNAVAILABLE`
 limitations; a supplied key with the wrong scope fails. The known ABAC decision test remains
-`BLOCKED` by PER-16553. A run with these limitations reports `PARTIAL`, with passed execution counted
+`BLOCKED` by PER-16553. A run with these limitations reports `PARTIAL`, with passed execution
+counted
 separately. CI runs backend checks against the cloud control plane and a pinned local PDP; fork and
 Dependabot runs explicitly report unavailable backend coverage.
 
@@ -73,11 +74,19 @@ Its production job downloads and revalidates the tested/scanned archive, then us
 Publishing with lifecycle scripts disabled. It does not build, change the version or repack.
 Release candidates use the `rc` distribution tag.
 
-**Publication is currently blocked.** SDK71's local release evidence has 13 unproved operations,
-its `releaseReady` remains false, and the shared target is unavailable (PER-16345).
-Shared acceptance and Curtain Call (PER-16561, PER-16574) must provide their reviewed acceptance
-contract before publication can proceed. Ordinary PR quality checks do not claim this external
-acceptance.
+PDP requests generate a request ID for each logical call and preserve it through SDK retries.
+A usable inherited ID is kept; unusable or blank IDs receive a generated UUID. Other inherited
+headers and caller defaults remain unchanged. OPA and control-plane requests keep their existing
+header behavior. This requires no additional configuration.
+
+**Publication is currently unavailable.** The schema 2 Node release validator requires exact local
+and hosted evidence, all reviewed runtime/case/phase cells, quality/security jobs, migration
+comparisons and verified cleanup. The owned cloud producer checks both packed entries on all five
+Node runtimes; PR fixture checks are separate from publication acceptance. Required user-attribute
+backend rollout (PER-16954) and the owner-approved exact local evidence handoff remain pending.
+Shared five-SDK acceptance stays unavailable (PER-16345); Curtain Call (PER-16574) and bulk counts
+(PER-9298) remain owner-deferred and do not erase required Node proof. See
+[Packed release evidence](api-coverage/RELEASE-EVIDENCE.md) for the exact contract and limits.
 
 Repository check, production approval, release tag and npm publisher settings require the separate
 owner rollout described in [Contributing](.github/CONTRIBUTING.md). Workflow
@@ -116,17 +125,23 @@ they are **off** unless you pass a `retry` config (or `retry: { enabled: true }`
 When enabled, the defaults are:
 
 - **3 retries** (up to 4 total attempts) with exponential backoff
-- Retries on recognized transient network errors and status codes: `408`, `429`, `500`, `502`, `503`, `504`
+- Retries on recognized transient network errors and status codes: `408`, `429`, `500`, `502`,
+  `503`, `504`
 - Respects `Retry-After` headers for rate limiting (429)
 
-`maxRetries` is the number of retries _after_ the initial request, so the default of `3` means up to 4 total requests.
+`maxRetries` is the number of retries _after_ the initial request, so the default of `3` means
+up to 4 total requests.
 
 > **Behavioral note**
 >
-> - Retries are opt-in — providing a `retry` config object turns them on; omitting it (or passing `retry: false`) leaves them off.
-> - When enabled, PDP/OPA calls additionally retry `POST` because authorization queries are idempotent.
-> - SDK retries never repeat REST `POST` or `PATCH`, even when listed in `retryMethods`. The default idempotent methods remain `GET`, `HEAD`, `OPTIONS`, `PUT` and `DELETE`.
-> - Cancellation and invalid request configuration are never retried, even with a custom predicate. Unclassified response-less errors are not retried by the default predicate.
+> - Retries are opt-in — providing a `retry` config object turns them on; omitting it (or
+>   passing `retry: false`) leaves them off.
+> - When enabled, PDP/OPA calls additionally retry `POST` because authorization queries are
+>   idempotent.
+> - SDK retries never repeat REST `POST` or `PATCH`, even when listed in `retryMethods`. The
+>   default idempotent methods remain `GET`, `HEAD`, `OPTIONS`, `PUT` and `DELETE`.
+> - Cancellation and invalid request configuration are never retried, even with a custom
+>   predicate. Unclassified response-less errors are not retried by the default predicate.
 
 Retry options are checked when the SDK is constructed. Counts must be nonnegative safe integers;
 delays must be finite milliseconds from 0 through 2,147,483,647; the backoff multiplier must be
@@ -253,7 +268,8 @@ with the same safe metadata.
 
 These are deliberate 3.0 error-property changes. `PermitApiError.originalError` is a detached Axios
 snapshot; `response.data` and `formattedAxiosError.error` have type `unknown` after redaction.
-`PermitApiError` no longer takes a response-body type parameter; narrow the sanitized data before use.
+`PermitApiError` no longer takes a response-body type parameter; narrow the sanitized data
+before use.
 `request` is always undefined. Snapshots omit request bodies, parameters, socket objects, hooks,
 original stacks and raw causes. Response diagnostics keep only `message`, `detail`, `msg`,
 `error_code`, `code` and `errors`; nested values, item counts and text lengths are bounded.
@@ -262,7 +278,8 @@ are redacted except content type, content length and retry timing. Credential UR
 (user information, query values and fragments) are removed. Known request credentials and private
 values are scrubbed from error descriptions; oversized or deeply nested requests cause descriptions
 to be redacted. Failures from caller adapters, interceptors and retry hooks follow the same rules;
-uninspectable primitive rejections use a useful operation fallback. Credentials and identity/permission
+uninspectable primitive rejections use a useful operation fallback. Credentials and
+identity/permission
 attributes are omitted from JSON and pretty
 SDK logs, including successful authorization calls.
 
@@ -279,7 +296,8 @@ Permission entries must contain string arrays when `permissions` or `roles` are 
 and resource details require string keys, resources also require a string type, and supplied
 attributes must be objects. The SDK applies the PDP's documented defaults: missing permissions
 become `[]`, missing attributes become `{}`, and nullable optional roles/tenant/resource fields are
-omitted. Null permissions or attributes are invalid. Extra fields are retained. Dictionary identifiers
+omitted. Null permissions or attributes are invalid. Extra fields are retained. Dictionary
+identifiers
 such as `result`, `permissions`, and `__proto__` remain valid; a valid direct map takes precedence
 over interpreting it as an OPA envelope.
 
@@ -384,7 +402,8 @@ in non-throwing mode. A genuine empty page also returns `[]`.
 container PDP's `POST /allowed_url` endpoint and its configured URL mapping rules. It returns
 only a literal boolean `allow`: `false` represents policy denial or no matching mapping.
 The cloud PDP snapshot does not publish this endpoint. See the
-[public URL mapping guide](https://docs.permit.io/how-to/enforce-permissions/url-mapping/regex-url-mapping-check/)
+[public URL mapping
+guide](https://docs.permit.io/how-to/enforce-permissions/url-mapping/regex-url-mapping-check/)
 for mapping configuration.
 
 ```typescript
@@ -478,7 +497,8 @@ the control plane even when `proxyFactsViaPdp` is enabled and have no `waitForSy
 `permit.api.auditLogs.list` and `get` read the selected environment's authorization audit logs
 through the control-plane API, including when `proxyFactsViaPdp` is enabled. List returns the full
 `LimitedPaginatedResultAuditLogModel` envelope with `data`, `total_count`, `pagination_count` and
-optional nullable `page_count`. Get takes a log UUID and returns `DetailedAuditLogModel`, including its
+optional nullable `page_count`. Get takes a log UUID and returns `DetailedAuditLogModel`,
+including its
 required `raw_data` and optional nullable `objects`. Successful results preserve all received
 decision data, including nullable optional fields and nested objects.
 
@@ -844,7 +864,8 @@ an environment-level API key or broader access.
 
 ## Documentation
 
-[Read the documentation at Permit.io website](https://docs.permit.io/sdk/nodejs/quickstart-nodejs#add-the-sdk-to-your-js-code)
+[Read the documentation at Permit.io
+website](https://docs.permit.io/sdk/nodejs/quickstart-nodejs#add-the-sdk-to-your-js-code)
 
 ## API Reference
 
@@ -897,6 +918,6 @@ Submission requires a project or organization API key in the SDK preflight. Resu
 existing environment-read preflight; the server still determines permission for either request.
 
 The [public background-task guide](https://docs.permit.io/api/background-tasks/) describes the
-wait and task responses. The
-[copy guide](https://github.com/permitio/docs/blob/6ec47cd3f04da6fa1bc9d48226ccbe781b304f77/docs/manage-your-account/creating-environments.mdx) describes destination,
-conflict strategy and scope filters.
+wait and task responses.
+
+The public copy contract describes destination, conflict strategy and scope filters.

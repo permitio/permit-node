@@ -416,6 +416,31 @@ async function auditLogs(client: SDK.IPermitApi) {
 }
 void auditLogs;
 
+function inlineRoleConsumer(client: SDK.IPermitClient): void {
+  const body: SDK.UserCreate = {
+    key: 'inline-user',
+    role_assignments: [
+      { role: 'role-a', tenant: 'tenant-a' },
+      { role: 'role-b', tenant: 'tenant-b' },
+    ],
+  };
+  const created: Promise<SDK.UserRead> = client.api.users.create(body);
+  void client.api.users.create({ key: 'inline-user', role_assignments: [] });
+  void client.api.users.create({ key: 'inline-user' });
+  // @ts-expect-error Nested inline assignments require role.
+  void client.api.users.create({ key: 'u', role_assignments: [{ tenant: 't' }] });
+  // @ts-expect-error Nested tenant is a key or ID string.
+  void client.api.users.create({ key: 'u', role_assignments: [{ role: 'r', tenant: 7 }] });
+  // @ts-expect-error Top-level roles shortcut is not a published create input.
+  void client.api.users.create({ key: 'u', roles: ['r'] });
+  // @ts-expect-error Top-level tenant shortcut is not a published create input.
+  void client.api.users.create({ key: 'u', tenant: 't' });
+  // @ts-expect-error Explicit undefined is not an optional nested tenant value.
+  void client.api.users.create({ key: 'u', role_assignments: [{ role: 'r', tenant: undefined }] });
+  void created;
+}
+void inlineRoleConsumer;
+
 async function asynchronousEnvironmentCopy(client: SDK.IPermitApi): Promise<void> {
   const api: SDK.IEnvironmentsApi = client.environments;
   const copy: SDK.EnvironmentCopy = {

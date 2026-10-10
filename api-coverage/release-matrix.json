@@ -4,12 +4,12 @@
     {
       "role": "pinned",
       "digest": "sha256:e3cf30794ec2d256636b4714641df46e51ee58a3f1f0d24c606e214e0bf8669a",
-      "resolvedAt": "2026-09-30"
+      "resolvedAt": "2026-10-10"
     },
     {
       "role": "current",
       "digest": "sha256:e3cf30794ec2d256636b4714641df46e51ee58a3f1f0d24c606e214e0bf8669a",
-      "resolvedAt": "2026-09-30"
+      "resolvedAt": "2026-10-10"
     }
   ],
   "cases": [
@@ -2882,6 +2882,48 @@
       "operationKeys": ["control-plane GET /v2/pdps/{proj_id}/{env_id}/audit_logs/{log_id}"]
     },
     {
+      "id": "cloud.check",
+      "level": "pdp",
+      "methodNames": ["permit.check"],
+      "operationKeys": ["pdp-cloud POST /allowed"]
+    },
+    {
+      "id": "cloud.bulkCheck",
+      "level": "pdp",
+      "methodNames": ["permit.bulkCheck"],
+      "operationKeys": ["pdp-cloud POST /allowed/bulk"]
+    },
+    {
+      "id": "cloud.getAuthorizedUsers",
+      "level": "pdp",
+      "methodNames": ["permit.getAuthorizedUsers"],
+      "operationKeys": ["pdp-cloud POST /authorized_users"]
+    },
+    {
+      "id": "cloud.getUserPermissions",
+      "level": "pdp",
+      "methodNames": ["permit.getUserPermissions"],
+      "operationKeys": ["pdp-cloud POST /user-permissions"]
+    },
+    {
+      "id": "wire.api.users.inline-roles.esm",
+      "level": "wire",
+      "methodNames": ["permit.api.users.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/users"]
+    },
+    {
+      "id": "wire.api.users.inline-roles.commonjs",
+      "level": "wire",
+      "methodNames": ["permit.api.users.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/users"]
+    },
+    {
+      "id": "api.users.inline-roles-persisted",
+      "level": "api",
+      "methodNames": ["permit.api.users.create"],
+      "operationKeys": ["control-plane POST /v2/facts/{proj_id}/{env_id}/users"]
+    },
+    {
       "id": "wire.api.environments.copyAsync.esm",
       "level": "wire",
       "methodNames": ["permit.api.environments.copyAsync"],
@@ -3141,6 +3183,10 @@
     "pdp.audit-logs-decisions",
     "api.audit-logs-ingestion-list",
     "api.audit-logs-ingestion-detail",
+    "wire.inline-roles.esm",
+    "wire.inline-roles.commonjs",
+    "api.inline-role-owned-fixtures",
+    "api.users.inline-roles-persisted",
     "wire.async-copy.esm",
     "wire.async-copy.commonjs",
     "api.async-copy-owned-fixtures",
@@ -3168,5 +3214,28 @@
     "candidate.offline.node26.11.0",
     "baseline.local.node26.11.0",
     "baseline.offline.node26.11.0"
-  ]
+  ],
+  "cloud": {
+    "origin": "https://cloudpdp.api.permit.io",
+    "contractSha256": "8fb3ad79b93679b24ddd90596e17b7f6baa6b662e2c09a96f1a3ffc938292a29",
+    "caseIds": [
+      "cloud.check",
+      "cloud.bulkCheck",
+      "cloud.getAuthorizedUsers",
+      "cloud.getUserPermissions"
+    ],
+    "phaseIds": [
+      "cloud.check",
+      "cloud.bulkCheck",
+      "cloud.getAuthorizedUsers",
+      "cloud.getUserPermissions"
+    ],
+    "runIds": [
+      "candidate.cloud.node22.13.0",
+      "candidate.cloud.node22.23.3",
+      "candidate.cloud.node24.0.0",
+      "candidate.cloud.node24.21.0",
+      "candidate.cloud.node26.11.0"
+    ]
+  }
 }

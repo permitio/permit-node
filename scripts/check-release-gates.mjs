@@ -14,6 +14,7 @@ const stages = {
     'dependency-security',
   ],
   ci: ['candidate', 'test', 'cleanup'],
+  cloud: ['candidate', 'cloud-setup', 'cloud-test', 'cloud-cleanup'],
   publication: ['candidate', 'publication-acceptance'],
 };
 

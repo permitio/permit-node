@@ -47,9 +47,9 @@ jobs:
         with:
           node-version: '22.13.0'
           package-manager-cache: false
-      # SDK71 has no releaseReady=true state. Shared adoption and Curtain Call must
-      # provide their reviewed acceptance contract before publication can proceed.
-      - name: Require the unresolved shared release acceptance
+      # Complete Node evidence is required. The owner-approved evidence handoff
+      # remains pending, so absent validator inputs fail closed before publication.
+      - name: Require complete Node release evidence
         run: node scripts/check-publication-readiness.mjs
 
   publish_node_sdk:

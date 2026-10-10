@@ -15,6 +15,11 @@ import { pathToFileURL } from 'node:url';
 import { isDeepStrictEqual, parseArgs } from 'node:util';
 
 import { inspectReleaseArchive } from '#scripts/release-artifact.mjs';
+import {
+  NODE_DEFERRALS,
+  readNodeAcceptance,
+  trustedCloudIdentity,
+} from '#scripts/node-acceptance.mjs';
 
 export { inspectReleaseArchive } from '#scripts/release-artifact.mjs';
 
@@ -85,6 +90,8 @@ export async function inspectReleaseInputs({
   baseline,
   candidateLock,
   baselineLock,
+  cloudLocks,
+  env = process.env,
 }) {
   const status = checked(
     'git',
@@ -117,11 +124,30 @@ export async function inspectReleaseInputs({
     'Candidate and baseline artifacts are identical.',
   );
   const { inventory, methodLevels } = await expectedReleaseInventory(root);
+  const { acceptance } = readNodeAcceptance(root);
+  const commit = checked('git', ['rev-parse', 'HEAD'], root).toString('utf8').trim();
+  const ci = trustedCloudIdentity(env, { commit, tree });
+  const locks = Object.fromEntries(
+    requirements.nodes.map((node) => [
+      node,
+      bytesSha256(
+        boundedBytes(
+          join(cloudLocks, `candidate-cloud-${node}`, 'consumer-lock.yaml'),
+          16 * 1024 * 1024,
+        ),
+      ),
+    ]),
+  );
+  const gateResults = JSON.parse(env['GATE_RESULTS'] ?? 'null');
   return {
     tree,
     inventory,
     methodLevels,
     requirements,
+    acceptance,
+    ci,
+    cloudLocks: locks,
+    gateResults,
     artifact: {
       name: 'permitio',
       version: manifest.version,
@@ -140,7 +166,9 @@ export async function inspectReleaseInputs({
   };
 }
 
-/** Validates a private runner's allowlisted export using local files; never contacts services. */
+/**
+ * Validates one allowlisted schema2 bundle against archive, source, locks and trusted CI inputs.
+ */
 export async function main(
   args = process.argv.slice(2),
   root = resolve(import.meta.dirname, '..'),
@@ -158,16 +186,17 @@ export async function main(
         baseline: { type: 'string' },
         'candidate-lock': { type: 'string' },
         'baseline-lock': { type: 'string' },
+        'cloud-locks': { type: 'string' },
         output: { type: 'string' },
       },
     });
     if (values.output) output = resolve(values.output);
     requireValid(
-      ['evidence', 'artifact', 'baseline', 'candidate-lock', 'baseline-lock'].every(
+      ['evidence', 'artifact', 'baseline', 'candidate-lock', 'baseline-lock', 'cloud-locks'].every(
         (key) => values[key],
       ),
       'Use --evidence FILE --artifact TGZ --baseline TGZ ' +
-        '--candidate-lock FILE --baseline-lock FILE.',
+        '--candidate-lock FILE --baseline-lock FILE --cloud-locks DIRECTORY.',
     );
     const expected = await inspectReleaseInputs({
       root,
@@ -175,17 +204,20 @@ export async function main(
       baseline: values.baseline,
       candidateLock: values['candidate-lock'],
       baselineLock: values['baseline-lock'],
+      cloudLocks: values['cloud-locks'],
     });
     const evidence = JSON.parse(boundedBytes(values.evidence, 16 * 1024 * 1024).toString('utf8'));
     report = validateReleaseEvidence(evidence, expected);
-  } catch (error) {
-    console.error(`Release evidence inspection failed: ${error.message}`);
+  } catch {
+    console.error('Release evidence inspection failed. Check the reviewed inputs and CI identity.');
     report = {
-      schema: 1,
-      localEvidence: 'INVALID',
+      schema: 2,
+      scope: 'permit-node',
+      nodeEvidence: 'INVALID',
+      nodeReleaseReady: false,
       exitCode: 2,
       releaseReady: false,
-      sharedTarget: { status: 'UNAVAILABLE', owner: 'PER-16345' },
+      ...NODE_DEFERRALS,
       incomplete: ['Independent input inspection failed; consult local diagnostics.'],
       failures: [],
     };
@@ -193,11 +225,13 @@ export async function main(
   try {
     mkdirSync(output, { recursive: true });
     writeFileSync(join(output, 'report.json'), `${JSON.stringify(report, null, 2)}\n`);
-  } catch (error) {
-    console.error(`Cannot save release evidence: ${error.message}`);
+  } catch {
+    console.error('Cannot save release evidence. Check the output directory permissions.');
     return 2;
   }
-  console.log(`Local release evidence: ${report.localEvidence}; release ready: false (PER-16345).`);
+  console.log(
+    `Node release evidence: ${report.nodeEvidence}; release ready: ${report.releaseReady}.`,
+  );
   return report.exitCode;
 }
 

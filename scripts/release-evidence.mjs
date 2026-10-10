@@ -5,6 +5,15 @@ import { gte, valid } from 'semver';
 
 import { compareStrings, digest, extractSdk } from '#scripts/api-contracts.mjs';
 import { inspectContracts } from '#scripts/check-api-contracts.mjs';
+import {
+  CLOUD_CASES,
+  INLINE_ROLE_CASES,
+  ASYNC_COPY_CASES,
+  CLOUD_ORIGIN,
+  CLOUD_CONTRACT_SHA256,
+  NODE_DEFERRALS,
+  validateNodeAcceptance,
+} from '#scripts/node-acceptance.mjs';
 
 const statuses = ['PASSED', 'FAILED', 'INVALID', 'NOT_RUN'];
 const levels = ['package', 'wire', 'mock-pdp', 'api', 'pdp'];
@@ -96,7 +105,7 @@ function validateSchema(evidence) {
   record(
     evidence,
     {
-      schema: (v) => v === 1,
+      schema: (v) => v === 2,
       artifact: object,
       sdk: object,
       inventory: object,
@@ -122,6 +131,7 @@ function validateSchema(evidence) {
     {
       tree: (v) => typeof v === 'string' && /^[a-f0-9]{40}$/.test(v),
       inventorySha256: hash,
+      acceptanceSha256: hash,
     },
     'sdk',
   );
@@ -148,7 +158,9 @@ function validateSchema(evidence) {
         artifactSha256: hash,
         nativeReportSha256: hash,
         node: supportedNodeVersion,
-        target: oneOf(['offline', 'local']),
+        target: oneOf(['offline', 'local', 'hosted-ci']),
+        consumerLockSha256: hash,
+        httpObservations: array,
         pdp: object,
         phaseResults: array,
         caseResults: array,
@@ -158,18 +170,64 @@ function validateSchema(evidence) {
       },
       'run',
     );
-    record(
-      run.pdp,
-      {
-        digest: (v) => typeof v === 'string' && /^sha256:[a-f0-9]{64}$/.test(v),
-        roles: (v) => strings(v, oneOf(['pinned', 'current'])) && v.length > 0,
-        resolvedAt: (v) =>
-          typeof v === 'string' &&
-          /^\d{4}-\d{2}-\d{2}$/.test(v) &&
-          new Date(v).toISOString().slice(0, 10) === v,
-      },
-      'run.pdp',
-    );
+    if (run.target === 'hosted-ci') {
+      record(
+        run.pdp,
+        {
+          kind: (v) => v === 'managed-cloud',
+          origin: (v) => v === CLOUD_ORIGIN,
+          contractSha256: (v) => v === CLOUD_CONTRACT_SHA256,
+          observedAt: (v) => typeof v === 'string' && Number.isFinite(Date.parse(v)),
+          ci: object,
+        },
+        'run.pdp',
+      );
+      record(
+        run.pdp.ci,
+        {
+          repository: (v) => v === 'permitio/permit-node',
+          workflowRef: text,
+          runId: (v) => typeof v === 'string' && /^[1-9]\d*$/.test(v),
+          runAttempt: (v) => typeof v === 'string' && /^[1-9]\d*$/.test(v),
+          commit: (v) => typeof v === 'string' && /^[a-f0-9]{40}$/.test(v),
+          tree: (v) => typeof v === 'string' && /^[a-f0-9]{40}$/.test(v),
+        },
+        'run.pdp.ci',
+      );
+    } else {
+      record(
+        run.pdp,
+        {
+          kind: (v) => v === 'container',
+          digest: (v) => typeof v === 'string' && /^sha256:[a-f0-9]{64}$/.test(v),
+          roles: (v) => strings(v, oneOf(['pinned', 'current'])) && v.length > 0,
+          resolvedAt: (v) =>
+            typeof v === 'string' &&
+            /^\d{4}-\d{2}-\d{2}$/.test(v) &&
+            new Date(v).toISOString().slice(0, 10) === v,
+        },
+        'run.pdp',
+      );
+    }
+    for (const observation of unique(
+      run.httpObservations,
+      (v) => v?.caseId + '/' + v?.entry,
+      'run.httpObservations',
+    ))
+      record(
+        observation,
+        {
+          caseId: label,
+          entry: oneOf(['esm', 'commonjs']),
+          method: (v) => v === 'POST',
+          path: oneOf(CLOUD_CASES.map((v) => v.operationKeys[0].slice('pdp-cloud POST '.length))),
+          origin: (v) => v === CLOUD_ORIGIN,
+          status: (v) => v === 200,
+          requests: positive,
+          requestIdPresent: (v) => typeof v === 'boolean',
+        },
+        'run.httpObservation',
+      );
     record(
       run.cleanup,
       { registered: integer, completed: integer, verified: integer },
@@ -244,7 +302,12 @@ function validateSchema(evidence) {
       { id: label, changeId: (v) => typeof v === 'string' && changeId.test(v) },
       'ab.difference',
     );
-  record(evidence.gates, { sharedTarget: object }, 'gates');
+  record(
+    evidence.gates,
+    { sharedTarget: object, curtainCall: object, bulkCounts: object },
+    'gates',
+  );
+  equal(evidence.gates, NODE_DEFERRALS, 'Node deferrals differ from the adopted contract.');
   record(
     evidence.gates.sharedTarget,
     {
@@ -261,6 +324,41 @@ function equal(actual, expected, message) {
 
 function validateRequirements(expected) {
   const plan = expected.requirements;
+  validateNodeAcceptance(expected.acceptance);
+  equal(
+    plan.cloud,
+    {
+      origin: CLOUD_ORIGIN,
+      contractSha256: CLOUD_CONTRACT_SHA256,
+      caseIds: CLOUD_CASES.map((v) => v.id),
+      phaseIds: CLOUD_CASES.map((v) => v.id),
+      runIds: plan.nodes.map((node) => 'candidate.cloud.node' + node),
+    },
+    'Managed cloud matrix differs from the reviewed public contract.',
+  );
+  for (const row of INLINE_ROLE_CASES) {
+    const actual = plan.cases.find((value) => value.id === row.id);
+    if (actual !== undefined) equal(actual, row, 'Required inline-role proof case differs.');
+  }
+  for (const row of ASYNC_COPY_CASES) {
+    const actual = plan.cases.find((value) => value.id === row.id);
+    if (actual !== undefined) equal(actual, row, 'Required async-copy proof case differs.');
+  }
+  const cloudKeys = expected.inventory.operations
+    .filter((row) => row.source === 'pdp-cloud' && ['add', 'retain'].includes(row.decision))
+    .map(operationKey)
+    .sort();
+  equal(
+    cloudKeys,
+    CLOUD_CASES.flatMap((v) => v.operationKeys).sort(),
+    'Required managed cloud operations cannot be removed or deferred.',
+  );
+  for (const row of CLOUD_CASES)
+    equal(
+      plan.cases.find((v) => v.id === row.id),
+      row,
+      'Required managed cloud case differs.',
+    );
   requireValid(
     strings(plan.nodes, supportedNodeVersion) &&
       plan.nodes.includes('22.13.0') &&
@@ -307,7 +405,8 @@ function validateRequirements(expected) {
     );
     requireValid(
       !['api', 'pdp'].includes(entry.level) ||
-        entry.operationKeys.every((key) => !key.startsWith('pdp-cloud ')),
+        entry.operationKeys.every((key) => !key.startsWith('pdp-cloud ')) ||
+        CLOUD_CASES.some((row) => isDeepStrictEqual(row, entry)),
       'Local service evidence cannot claim cloud PDP execution.',
     );
   }
@@ -321,6 +420,10 @@ function validateRequirements(expected) {
 
 function validateBindings(evidence, expected) {
   validateRequirements(expected);
+  requireValid(
+    evidence.sdk.acceptanceSha256 === digest(expected.acceptance),
+    'Reviewed Node acceptance contract hash differs.',
+  );
   equal(
     evidence.artifact,
     expected.artifact,
@@ -379,9 +482,17 @@ function validateBindings(evidence, expected) {
 
 function validateRun(run, context) {
   const { evidence, expected, cases, incomplete } = context;
-  requireValid(expected.requirements.runIds.includes(run.id), 'Unreviewed run ID.');
+  const cloud = run.target === 'hosted-ci';
   requireValid(
-    run.phaseResults.every((phase) => expected.requirements.phaseIds.includes(phase.id)),
+    (cloud ? expected.requirements.cloud.runIds : expected.requirements.runIds).includes(run.id),
+    'Unreviewed run ID.',
+  );
+  requireValid(
+    run.phaseResults.every((phase) =>
+      (cloud ? expected.requirements.cloud.phaseIds : expected.requirements.phaseIds).includes(
+        phase.id,
+      ),
+    ),
     'Unreviewed phase ID.',
   );
   requireValid(
@@ -392,7 +503,34 @@ function validateRun(run, context) {
     expected.requirements.nodes.includes(run.node),
     `Unreviewed runtime in run ${run.id}.`,
   );
-  for (const role of run.pdp.roles) {
+  if (cloud) {
+    requireValid(
+      run.artifactSha256 === evidence.artifact.sha256 &&
+        run.id === 'candidate.cloud.node' + run.node,
+      'Cloud cell is not the exact candidate.',
+    );
+    equal(run.pdp.ci, expected.ci, 'Cloud report differs from independently checked CI source.');
+    requireValid(
+      run.consumerLockSha256 === expected.cloudLocks?.[run.node],
+      'Cloud consumer lock differs from supplied bytes.',
+    );
+    if (run.httpObservations.some((row) => !row.requestIdPresent))
+      incomplete.push(
+        'Cloud default SDK request omitted required X-Request-ID: Node ' + run.node + '.',
+      );
+    const age = (expected.now ?? Date.now()) - Date.parse(run.pdp.observedAt);
+    requireValid(age >= -60_000 && age < 86_400_000, 'Stale cloud observation.');
+  } else {
+    requireValid(run.httpObservations.length === 0, 'Local evidence cannot claim cloud HTTP.');
+    requireValid(
+      run.consumerLockSha256 ===
+        (run.artifactSha256 === evidence.artifact.sha256
+          ? evidence.artifact.lockSha256
+          : evidence.ab.baseline.lockSha256),
+      'Local consumer lock differs.',
+    );
+  }
+  for (const role of run.pdp.roles ?? []) {
     const required = expected.requirements.pdps.find((entry) => entry.role === role);
     requireValid(
       required && required.digest === run.pdp.digest && required.resolvedAt === run.pdp.resolvedAt,
@@ -421,11 +559,15 @@ function validateRun(run, context) {
     if (['INVALID', 'NOT_RUN'].includes(phase.status))
       incomplete.push(`${run.id}/${phase.id}: ${phase.status}.`);
     requireValid(
-      run.target === 'local' || !['api', 'pdp'].includes(phase.kind),
+      run.target !== 'offline' || !['api', 'pdp'].includes(phase.kind),
       `Run ${run.id}: offline phase claims service proof.`,
     );
   }
   for (const entry of run.caseResults) {
+    requireValid(
+      cloud === expected.requirements.cloud.caseIds.includes(entry.id),
+      'Local and managed-cloud case credit cannot be relabeled.',
+    );
     const required = cases.get(entry.id);
     requireValid(required, 'Unreviewed case ID.');
     equal(entry.methodNames, required.methodNames, `Case ${entry.id}: method links differ.`);
@@ -441,9 +583,28 @@ function validateRun(run, context) {
         entry.assertions > 0 && phase.status === 'PASSED' && phase.assertions >= entry.assertions,
         `Case ${entry.id}: PASS has no successful phase assertions.`,
       );
+    if (cloud) {
+      requireValid(entry.phaseId === entry.id, 'Cloud case requires its own registered phase.');
+      for (const format of ['esm', 'commonjs']) {
+        const observation = run.httpObservations.find(
+          (v) => v.caseId === entry.id && v.entry === format,
+        );
+        requireValid(
+          observation &&
+            entry.operationKeys.includes(
+              'pdp-cloud ' + observation.method + ' ' + observation.path,
+            ),
+          'Cloud case lacks successful actual HTTP observations for both entry points.',
+        );
+      }
+    }
     if (['INVALID', 'NOT_RUN'].includes(entry.status))
       incomplete.push(`${run.id}/${entry.id}: ${entry.status}.`);
   }
+  requireValid(
+    run.httpObservations.every((v) => run.caseResults.some((c) => c.id === v.caseId)),
+    'Cloud HTTP observation lacks an executed case.',
+  );
 }
 
 function validateMatrix(evidence, expected, incomplete) {
@@ -473,10 +634,51 @@ function validateMatrix(evidence, expected, incomplete) {
       for (const id of requirements.phaseIds)
         if (!cells.some((run) => run.phaseResults.some((phase) => phase.id === id)))
           incomplete.push(`Missing phase ${id}: Node ${node}/${pdp.role}.`);
-      for (const entry of requirements.cases)
+      for (const entry of requirements.cases.filter(
+        (v) => !requirements.cloud.caseIds.includes(v.id),
+      ))
         if (!cells.some((run) => run.caseResults.some((item) => item.id === entry.id)))
           incomplete.push(`Missing case ${entry.id}: Node ${node}/${pdp.role}.`);
     }
+  for (const node of requirements.nodes) {
+    const cloud = evidence.runs.filter((run) => run.target === 'hosted-ci' && run.node === node);
+    for (const id of requirements.cloud.phaseIds)
+      if (!cloud.some((run) => run.phaseResults.some((row) => row.id === id)))
+        incomplete.push('Missing cloud phase ' + id + ': Node ' + node + '.');
+    for (const id of requirements.cloud.caseIds)
+      if (!cloud.some((run) => run.caseResults.some((row) => row.id === id)))
+        incomplete.push('Missing cloud case ' + id + ': Node ' + node + '.');
+  }
+  for (const feature of expected.acceptance.features) {
+    const implemented =
+      feature.caseIds.length > 0 &&
+      feature.caseIds.every((id) => requirements.cases.some((row) => row.id === id)) &&
+      feature.operationKeys.every((key) =>
+        feature.caseIds.some((id) =>
+          requirements.cases.some(
+            (row) => row.id === id && row.level === 'api' && row.operationKeys.includes(key),
+          ),
+        ),
+      );
+    if (!implemented)
+      incomplete.push('Unimplemented required feature ' + feature.id + ' (' + feature.owner + ').');
+  }
+  for (const dependency of expected.acceptance.dependencies)
+    if (dependency.status !== 'VERIFIED')
+      incomplete.push(
+        'Unverified acceptance dependency ' + dependency.id + ' (' + dependency.owner + ').',
+      );
+  for (const name of expected.acceptance.requiredGates)
+    if (expected.gateResults?.[name]?.result !== 'success')
+      incomplete.push('Required acceptance job did not succeed: ' + name + '.');
+  if (
+    expected.gateResults &&
+    !isDeepStrictEqual(
+      Object.keys(expected.gateResults).sort(),
+      [...expected.acceptance.requiredGates].sort(),
+    )
+  )
+    incomplete.push('Missing or unexpected acceptance job results.');
 }
 
 function validateAb(evidence, expected, incomplete) {
@@ -548,7 +750,7 @@ function reportedFailurePositions(evidence) {
  * Validates producer evidence against independently inspected inputs and a reviewed case catalog.
  * Returns 0 for complete local evidence, 1 for failures, or 2 for invalid/incomplete proof.
  * Integrity errors take precedence; producer-reported failure positions remain visible.
- * This never approves release.
+ * Node readiness also requires every adopted feature, trusted cloud cell, dependency and CI gate.
  */
 export function validateReleaseEvidence(evidence, expected) {
   const incomplete = [];
@@ -557,6 +759,13 @@ export function validateReleaseEvidence(evidence, expected) {
     validateSchema(evidence);
     const cases = validateBindings(evidence, expected);
     for (const run of evidence.runs) validateRun(run, { evidence, expected, cases, incomplete });
+    const current = expected.requirements.pdps.find((row) => row.role === 'current');
+    const currentAge = (expected.now ?? Date.now()) - Date.parse(current.resolvedAt);
+    // Current-image resolution is fresh for 24 hours; historical pinned resolution stays valid.
+    if (currentAge < -60_000 || currentAge >= 86_400_000)
+      incomplete.push(
+        'Current PDP image resolution is stale; independently refresh its registry identity.',
+      );
     validateMatrix(evidence, expected, incomplete);
     validateAb(evidence, expected, incomplete);
   } catch (error) {
@@ -564,11 +773,13 @@ export function validateReleaseEvidence(evidence, expected) {
   }
   const exitCode = incomplete.length ? 2 : failures.length ? 1 : 0;
   return {
-    schema: 1,
-    localEvidence: ['PASS', 'FAIL', 'INVALID'][exitCode],
+    schema: 2,
+    scope: 'permit-node',
+    nodeEvidence: ['PASS', 'FAIL', 'INVALID'][exitCode],
     exitCode,
-    releaseReady: false,
-    sharedTarget: { status: 'UNAVAILABLE', owner: 'PER-16345' },
+    nodeReleaseReady: exitCode === 0,
+    releaseReady: exitCode === 0,
+    ...NODE_DEFERRALS,
     incomplete,
     failures: [...new Set(failures)],
   };
