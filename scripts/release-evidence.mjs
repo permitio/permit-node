@@ -213,7 +213,7 @@ function validateSchema(evidence) {
       run.httpObservations,
       (v) => v?.caseId + '/' + v?.entry,
       'run.httpObservations',
-    ))
+    )) {
       record(
         observation,
         {
@@ -225,9 +225,15 @@ function validateSchema(evidence) {
           status: (v) => v === 200,
           requests: positive,
           requestIdPresent: (v) => typeof v === 'boolean',
+          readinessFailures: (v) => Number.isSafeInteger(v) && v >= 0 && v < 30,
         },
         'run.httpObservation',
       );
+      requireValid(
+        observation.readinessFailures === 0 || observation.caseId === 'cloud.check',
+        'Cloud readiness failures are allowed only while the first check waits for readiness.',
+      );
+    }
     record(
       run.cleanup,
       { registered: integer, completed: integer, verified: integer },

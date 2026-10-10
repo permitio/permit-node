@@ -62,7 +62,9 @@ executable contract is `scripts/release-evidence.mjs`; there is no schema 1 comp
 - Phase: `id`, `kind`, `status`, `assertions`.
 - Case: `id`, `phaseId`, `methodNames`, `operationKeys`, `level`, `status`, `assertions`.
 - HTTP observation: `caseId`, `entry`, `method`, `path`, public `origin`, `status`, `requests`,
-  `requestIdPresent`. Header values are never evidence fields.
+  `requestIdPresent`, `readinessFailures`. Header values are never evidence fields.
+  `readinessFailures` (0 to 29) counts timeouts, network errors and 404, 429 or 5xx responses
+  tolerated only while the first check waits for readiness; every other case records zero.
 - Cleanup: `registered`, `completed`, `verified`.
 - A/B: `baseline`, `candidateSha256`, `cases`, `intentionalDifferences`.
 - Baseline: `version`, `sha256`, `fileCount`, `lockSha256`, `kind:released-npm`, `integrity`.

@@ -177,6 +177,7 @@ function fixture(nodes = ['22.13.0', '22.23.3', '24.0.0', '24.21.0', '26.11.0'])
         status: 200,
         requests: 1,
         requestIdPresent: true,
+        readinessFailures: 0,
       })),
     ),
     pdp: {
@@ -1445,6 +1446,34 @@ test.each([
     },
     'Required async-copy proof case differs.',
   ],
+  [
+    'missing readiness failures',
+    (v) => {
+      delete cloudRun(v).httpObservations[0].readinessFailures;
+    },
+    'run.httpObservation: missing or unrecognized fields.',
+  ],
+  [
+    'negative readiness failures',
+    (v) => {
+      cloudRun(v).httpObservations[0].readinessFailures = -1;
+    },
+    'run.httpObservation.readinessFailures: invalid value.',
+  ],
+  [
+    'readiness failures beyond the bounded attempts',
+    (v) => {
+      cloudRun(v).httpObservations[0].readinessFailures = 30;
+    },
+    'run.httpObservation.readinessFailures: invalid value.',
+  ],
+  [
+    'readiness failures outside check readiness',
+    (v) => {
+      cloudRun(v).httpObservations[2].readinessFailures = 1;
+    },
+    'Cloud readiness failures are allowed only while the first check waits for readiness.',
+  ],
 ])('Node readiness refuses %s', (_name, change, message) => {
   const report = result(change);
   expect(report).toMatchObject({
@@ -1515,6 +1544,15 @@ test('one missing cloud phase remains visible with three valid nonempty phases',
     report.incomplete.some((message) => message.includes('Missing cloud phase cloud.bulkCheck')),
   ).toBe(true);
   expect(report.nodeReleaseReady).toBe(false);
+});
+
+test('tolerated check readiness failures keep complete cloud evidence', () => {
+  expect(
+    result((v) => {
+      cloudRun(v).httpObservations[0].readinessFailures = 2;
+      cloudRun(v).httpObservations[1].readinessFailures = 29;
+    }),
+  ).toEqual(result());
 });
 
 test('actual absent required cloud header blocks readiness despite HTTP and oracles', () => {

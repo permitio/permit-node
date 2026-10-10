@@ -43,6 +43,7 @@ async function fixture() {
         status: 200,
         requests: 4,
         requestIdPresent: true,
+        readinessFailures: 0,
       })),
     ),
   };
