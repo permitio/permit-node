@@ -92,6 +92,33 @@ export interface IPermitClient extends IEnforcer {
  * }
  * ```
  */
+// The URL's scheme, host and port: no user, password, path or query, which can carry
+// credentials.
+function urlOrigin(url: string): string {
+  try {
+    return new URL(url).origin;
+  } catch {
+    return '<invalid URL>';
+  }
+}
+
+// What the init line logs: the endpoints' origins and the settings that change the SDK's
+// behaviour. Not the config itself, whose token and axios instances stay out of logs.
+function initLogFields(config: IPermitConfig): Record<string, unknown> {
+  return {
+    pdp: urlOrigin(config.pdp),
+    apiUrl: urlOrigin(config.apiUrl),
+    timeout: config.timeout,
+    throwOnError: config.throwOnError,
+    multiTenancy: config.multiTenancy,
+    proxyFactsViaPdp: config.proxyFactsViaPdp,
+    factsSyncTimeout: config.factsSyncTimeout,
+    factsSyncTimeoutPolicy: config.factsSyncTimeoutPolicy,
+    retry: config.retry,
+    pdpRetry: config.pdpRetry,
+  };
+}
+
 export class Permit implements IPermitClient {
   private logger: pino.Logger;
   private enforcer: IEnforcer;
@@ -168,10 +195,7 @@ export class Permit implements IPermitClient {
     this.enforcer = new Enforcer(this.config, this.logger);
     this.elements = new ElementsClient(this.config, this.logger);
 
-    // The endpoints only, not the whole config.
-    this.logger.debug(
-      `Permit.io SDK initialized: pdp=${this.config.pdp}, apiUrl=${this.config.apiUrl}`,
-    );
+    this.logger.debug(initLogFields(this.config), 'Permit.io SDK initialized');
   }
 
   /**
