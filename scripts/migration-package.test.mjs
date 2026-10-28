@@ -219,8 +219,9 @@ describe('packed customer migration tooling', () => {
       [join(bare, 'scripts/scan.mjs'), join(fixtures, 'after')],
       { cwd: directory, encoding: 'utf8', env: { ...process.env, NODE_PATH: '' } },
     );
-    expect(result.status).not.toBe(0);
-    expect(result.stderr).toContain('Cannot find package');
+    // 2 = incomplete; a missing compiler must never look like 1 (complete with findings).
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain('Scanner prerequisite unavailable: typescript 6.0.3');
     expect(result.stdout).toBe('');
   });
 

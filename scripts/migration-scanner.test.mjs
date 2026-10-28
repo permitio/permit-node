@@ -6,14 +6,48 @@ import { spawnSync } from 'node:child_process';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 const sourceScript = resolve('skills/permit-node-3-migration/scripts/scan.mjs');
+const skillSource = resolve('skills/permit-node-3-migration');
 let script;
 let scan;
+let NOT_DETECTED;
+let decoyRoot;
 let toolDirectory;
 const directories = [];
 
+// Packages named like the scanner's prerequisites in an ancestor node_modules, where Node's
+// default resolution would find them if the skill's own install were missing. Loading one
+// writes the marker file and throws.
+async function plantDecoys(root) {
+  for (const name of ['typescript', 'semver']) {
+    const directory = join(root, 'node_modules', name);
+    await mkdir(directory, { recursive: true });
+    const version = name === 'typescript' ? '6.0.3' : '7.8.5';
+    await writeFile(
+      join(directory, 'package.json'),
+      JSON.stringify({ name, version, main: 'index.js' }),
+    );
+    await writeFile(
+      join(directory, 'index.js'),
+      "require('node:fs').writeFileSync(require('node:path').join(__dirname, '..', '..', " +
+        "'DECOY_LOADED'), 'yes'); throw new Error('DECOY_LOADED');\n",
+    );
+  }
+}
+
+async function copySkill(target) {
+  await mkdir(join(target, 'scripts'), { recursive: true });
+  for (const name of ['package.json', 'pnpm-workspace.yaml', 'compiler-lock.yaml']) {
+    await cp(join(skillSource, name), join(target, name));
+  }
+  await cp(sourceScript, join(target, 'scripts/scan.mjs'));
+}
+
 beforeAll(async () => {
-  toolDirectory = await mkdtemp(join(tmpdir(), 'permit-migration-scanner-tool-'));
-  const skill = resolve('skills/permit-node-3-migration');
+  decoyRoot = await mkdtemp(join(tmpdir(), 'permit-migration-scanner-root-'));
+  await plantDecoys(decoyRoot);
+  toolDirectory = join(decoyRoot, 'skill');
+  const skill = skillSource;
+  await mkdir(toolDirectory);
   for (const name of ['package.json', 'pnpm-workspace.yaml', 'compiler-lock.yaml']) {
     await cp(join(skill, name), join(toolDirectory, name));
   }
@@ -32,11 +66,17 @@ beforeAll(async () => {
         `${install.error?.message ?? install.stderr + install.stdout}`,
     );
   }
-  ({ scan } = await import(pathToFileURL(script).href));
+  ({ scan, NOT_DETECTED } = await import(pathToFileURL(script).href));
 }, 125_000);
 
 afterAll(async () => {
-  if (toolDirectory) await rm(toolDirectory, { recursive: true });
+  if (decoyRoot) {
+    // Every scan in this file ran beneath the decoys; none may have been loaded.
+    await expect(readFile(join(decoyRoot, 'DECOY_LOADED'))).rejects.toMatchObject({
+      code: 'ENOENT',
+    });
+    await rm(decoyRoot, { recursive: true });
+  }
 });
 
 async function project(files) {
@@ -477,6 +517,7 @@ from --platform=linux/amd64 docker.io/library/node:26.11.0-bookworm-slim AS fina
   it('does not follow symlinks or dependency/build exclusions', async () => {
     const path = await project({
       'customer.ts': 'const x = 1;',
+      'package.json': '{}',
       'node_modules/dep.ts': `${construct} p.api.getUser('u');`,
       'dist/bundle.js': `${construct} p.api.getUser('u');`,
     });
@@ -589,5 +630,244 @@ from --platform=linux/amd64 docker.io/library/node:26.11.0-bookworm-slim AS fina
     expect(result.status).toBe(1);
     expect(JSON.parse(result.stdout).status).toBe('COMPLETE');
     expect(result.stderr).toBe('');
+  });
+
+  it('excludes build output only at a package root and scans same-named source folders', async () => {
+    const sdk = `${construct} p.api.getUser('u');`;
+    const report = await scan(
+      await project({
+        'package.json': '{}',
+        'dist/bundle.js': sdk,
+        'src/build/helper.ts': sdk,
+        'packages/app/package.json': '{}',
+        'packages/app/coverage/report.js': sdk,
+        'packages/app/src/dist/tool.ts': sdk,
+      }),
+    );
+    expect(report.excluded.map((item) => item.path)).toEqual(['dist', 'packages/app/coverage']);
+    expect(new Set(report.findings.map((item) => item.path))).toEqual(
+      new Set(['src/build/helper.ts', 'packages/app/src/dist/tool.ts']),
+    );
+    const bare = await scan(await project({ 'dist/bundle.js': sdk }));
+    expect(bare.scanned).toEqual(['dist/bundle.js']);
+    expect(bare.findings.some((item) => item.id === 'A1')).toBe(true);
+  });
+
+  it('scans extensionless Node shebang scripts under their real path', async () => {
+    const report = await scan(
+      await project({
+        'bin/cli':
+          "#!/usr/bin/env node\nconst { Permit } = require('permitio');\n" +
+          "new Permit({ token: 'opaque' }).api.getUser('u');\n",
+        'bin/tool':
+          "#!/usr/bin/env -S npx tsx\nimport { Permit } from 'permitio';\n" +
+          "const p: Permit = new Permit({ token: 'opaque' }); p.api.listUsers();\n",
+        'bin/notes': 'plain text\n',
+        '.env': '#!/usr/bin/env node\nTOKEN=never-read\n',
+        LICENSE: 'MIT\n',
+      }),
+    );
+    expect(report.status).toBe('COMPLETE');
+    expect(report.scanned).toEqual(['bin/cli', 'bin/tool']);
+    expect(report.findings).toContainEqual(
+      expect.objectContaining({ id: 'A1', path: 'bin/cli', line: 3 }),
+    );
+    expect(report.findings).toContainEqual(expect.objectContaining({ id: 'A1', path: 'bin/tool' }));
+    expect(report.excluded.map((item) => item.path)).toEqual(['.env', 'bin/notes', 'LICENSE']);
+  });
+
+  it.each([
+    ['an MDX document', 'docs/page.mdx', "import { Permit } from 'permitio';\n\n# Page\n"],
+    ['inline HTML script', 'index.html', '<html><script type="module">run()</script></html>'],
+  ])('reports %s it cannot parse as incomplete coverage', async (_name, file, text) => {
+    const report = await scan(await project({ 'customer.ts': 'const x = 1;', [file]: text }));
+    expect(report.status).toBe('INCOMPLETE');
+    expect(report.exitCode).toBe(2);
+    expect(report.failures).toContainEqual(expect.objectContaining({ path: file }));
+  });
+
+  it('keeps HTML that only references external scripts out of the coverage status', async () => {
+    const report = await scan(
+      await project({
+        'customer.ts': 'const x = 1;',
+        'index.html': '<html><script type="module" src="./customer.js"></script></html>',
+      }),
+    );
+    expect(report.status).toBe('COMPLETE');
+    expect(report.excluded).toContainEqual(expect.objectContaining({ path: 'index.html' }));
+  });
+
+  it('records files over the size cap as incomplete without reading them', async () => {
+    const report = await scan(
+      await project({
+        'customer.ts': `${construct} p.api.getUser('u');`,
+        'large.ts': `const x = '${'x'.repeat(200)}';`,
+        'large-notes': 'y'.repeat(200),
+        'bin/large-cli': `#!/usr/bin/env node\n// ${'z'.repeat(200)}\n`,
+      }),
+      { maxFileBytes: 128 },
+    );
+    expect(report.status).toBe('INCOMPLETE');
+    expect(report.exitCode).toBe(2);
+    expect(report.failures.map((item) => item.path)).toEqual(['bin/large-cli', 'large.ts']);
+    expect(report.failures[0].reason).toContain('128-byte scan limit');
+    expect(report.excluded).toContainEqual(expect.objectContaining({ path: 'large-notes' }));
+    expect(report.scanned).toEqual(['customer.ts']);
+    expect(report.limitations.some((line) => line.includes('over 128 bytes'))).toBe(true);
+  });
+
+  it('ends an expired run as incomplete', async () => {
+    const report = await scan(
+      await project({ 'customer.ts': `${construct} p.api.getUser('u');` }),
+      { deadlineMs: -1 },
+    );
+    expect(report.status).toBe('INCOMPLETE');
+    expect(report.exitCode).toBe(2);
+    expect(report.failures).toContainEqual(
+      expect.objectContaining({ reason: expect.stringContaining('deadline') }),
+    );
+  });
+
+  it.each([
+    ['only a connection check', ['PermitConnectionError'], 1],
+    ['the status check first', ['PermitPDPStatusError', 'PermitConnectionError'], 0],
+    ['the connection check first', ['PermitConnectionError', 'PermitPDPStatusError'], 2],
+  ])('reviews PDP error checks with %s', async (_name, order, count) => {
+    const checks = order.map((name) => `if (error instanceof SDK.${name}) return 1;`).join(' ');
+    const report = await scan(
+      await project({
+        'customer.ts': `import * as SDK from 'permitio';
+        function handle(error: unknown) { ${checks} return 0; }`,
+      }),
+    );
+    expect(report.findings.filter((item) => item.id === 'E1')).toHaveLength(count);
+  });
+
+  it('reviews throwOnError: false only in SDK-bearing files', async () => {
+    const report = await scan(
+      await project({
+        'customer.ts': `${construct} await p.check('u', 'read', 'doc', {}, { throwOnError: false });`,
+        'other.ts': 'export const options = { throwOnError: false };',
+      }),
+    );
+    expect(report.findings.filter((item) => item.id === 'E1')).toEqual([
+      expect.objectContaining({ path: 'customer.ts' }),
+    ]);
+  });
+
+  it.each([
+    ['log: { json: false }', 1],
+    ['log: { level: "debug", json: process.env.JSON === "1" }', 1],
+    ['log: logOptions', 1],
+    ['log: { json: true }', 0],
+    ['log: { level: "silent" }', 0],
+  ])('reviews constructor log option %s', async (option, count) => {
+    const report = await scan(
+      await project({
+        'customer.ts': `import { Permit } from 'permitio'; const logOptions = {};
+        new Permit({ token: 'opaque', ${option} });`,
+      }),
+    );
+    expect(report.findings.filter((item) => item.id === 'F1')).toHaveLength(count);
+  });
+
+  it.each([
+    ["import merge from 'lodash/merge';", {}, ['lodash']],
+    ["const retry = require('axios-retry');", {}, ['axios-retry']],
+    ["import { x } from '@bitauth/libauth';", {}, ['@bitauth/libauth']],
+    ["export { pathToRegexp } from 'path-to-regexp';", {}, ['path-to-regexp']],
+    ["import parse = require('url-parse');", {}, ['url-parse']],
+    ["const hook = await import('require-in-the-middle');", {}, ['require-in-the-middle']],
+    ["import _ from 'lodash';", { 'package.json': '{"dependencies":{"lodash":"4.17.21"}}' }, []],
+    [
+      "import _ from 'lodash';",
+      {
+        'package.json': '{"devDependencies":{"lodash":"4.17.21"}}',
+        'packages/app/package.json': '{}',
+      },
+      [],
+    ],
+    ["import _ from 'lodash-es'; import x from './lodash';", {}, []],
+  ])('reviews former transitive package use: %s', async (source, extra, packages) => {
+    const file = Object.keys(extra).some((name) => name.startsWith('packages/'))
+      ? 'packages/app/customer.ts'
+      : 'customer.ts';
+    const report = await scan(await project({ ...extra, [file]: source }));
+    expect(
+      report.findings.filter((item) => item.id === 'C3').map((item) => item.action.split(' ')[1]),
+    ).toEqual(packages);
+  });
+
+  it('keeps the packed-tooling fixture expectations with the current rules', async () => {
+    const fixtures = resolve('scripts/fixtures/migration');
+    const before = await scan(join(fixtures, 'before'));
+    expect(before.status).toBe('COMPLETE');
+    expect(new Set(before.findings.map((item) => item.id))).toEqual(
+      new Set(['A1', 'A3', 'P1', 'C1']),
+    );
+    const after = await scan(join(fixtures, 'after'));
+    expect(after.status).toBe('COMPLETE');
+    expect(after.findings).toEqual([]);
+    expect(after.scanned).toEqual(['consumer.cts', 'consumer.mts', 'package.json']);
+  });
+
+  it('lists every migration ID without a scanner rule in the limitations', async () => {
+    const source = await readFile(sourceScript, 'utf8');
+    const guide = await readFile(resolve('MIGRATION.md'), 'utf8');
+    const ids = [...guide.matchAll(/^### ([A-Z]\d+) —/gmu)].map((match) => match[1]);
+    // IDs passed to add(node, 'ID', ...) or written as id: 'ID' in a finding.
+    const emitted = new Set(
+      [...source.matchAll(/\badd\(\s*[\w.]+,\s*'([A-Z]\d)'|\bid: '([A-Z]\d)'/gu)].map(
+        (match) => match[1] ?? match[2],
+      ),
+    );
+    const optional = ids.filter((id) => id.startsWith('N'));
+    expect(NOT_DETECTED).toEqual(ids.filter((id) => !emitted.has(id) && !optional.includes(id)));
+    const report = await scan(await project({ 'customer.ts': 'const x = 1;' }));
+    expect(report.limitations.join('\n')).toContain(NOT_DETECTED.join(', '));
+  });
+
+  it('exits 2 with a clear message instead of loading an ancestor compiler', async () => {
+    const bare = join(decoyRoot, 'bare-skill');
+    await copySkill(bare);
+    const path = await project({ 'customer.ts': 'const x = 1;' });
+    const result = spawnSync(process.execPath, [join(bare, 'scripts/scan.mjs'), path], {
+      encoding: 'utf8',
+      env: { PATH: process.env.PATH },
+    });
+    expect(result.status).toBe(2);
+    expect(result.stdout).toBe('');
+    expect(result.stderr).toContain('Scanner prerequisite unavailable: typescript');
+    expect(result.stderr).toContain("outside the skill's own node_modules");
+    await expect(readFile(join(decoyRoot, 'DECOY_LOADED'))).rejects.toMatchObject({
+      code: 'ENOENT',
+    });
+  });
+
+  it('exits 2 when the installed prerequisite differs from its pin', async () => {
+    const skewed = join(decoyRoot, 'skewed-skill');
+    await copySkill(skewed);
+    await plantDecoys(skewed);
+    const manifest = join(skewed, 'node_modules/typescript/package.json');
+    await writeFile(
+      manifest,
+      JSON.stringify({ name: 'typescript', version: '5.9.3', main: 'index.js' }),
+    );
+    const path = await project({ 'customer.ts': 'const x = 1;' });
+    const result = spawnSync(process.execPath, [join(skewed, 'scripts/scan.mjs'), path], {
+      encoding: 'utf8',
+      env: { PATH: process.env.PATH },
+    });
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain('typescript 5.9.3 is installed, but the skill pins 6.0.3');
+    await expect(readFile(join(skewed, 'DECOY_LOADED'))).rejects.toMatchObject({ code: 'ENOENT' });
+  });
+
+  it('rejects invalid CLI limits with the usage and status 2', () => {
+    const result = spawnSync(process.execPath, [script, '--deadline-ms', 'soon', '.'], {
+      encoding: 'utf8',
+    });
+    expect(result.status).toBe(2);
+    expect(result.stdout).toContain('--deadline-ms');
   });
 });
