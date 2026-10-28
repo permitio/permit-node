@@ -104,12 +104,19 @@ async function bulkFixture(fault) {
         if (path === tuplesPath && request.method === 'GET') {
           expect([...url.searchParams.keys()].sort()).toStrictEqual([
             'object',
+            'page',
+            'per_page',
             'relation',
             'subject',
             'tenant',
           ]);
+          // list() requests the first page of 100 unless the caller chooses a page.
+          expect(url.searchParams.get('page')).toBe('1');
+          expect(url.searchParams.get('per_page')).toBe('100');
           const values = tuples.filter((tuple) =>
-            [...url.searchParams].every(([key, value]) => tuple[key] === value),
+            [...url.searchParams]
+              .filter(([key]) => key !== 'page' && key !== 'per_page')
+              .every(([key, value]) => tuple[key] === value),
           );
           return reply(
             200,
@@ -140,7 +147,9 @@ async function bulkFixture(fault) {
           }
         }
         if (path === usersPath && request.method === 'GET') {
-          expect([...url.searchParams.keys()]).toStrictEqual(['search']);
+          expect([...url.searchParams.keys()]).toStrictEqual(['search', 'page', 'per_page']);
+          expect(url.searchParams.get('page')).toBe('1');
+          expect(url.searchParams.get('per_page')).toBe('100');
           const search = url.searchParams.get('search');
           expect(search).toMatch(/^bulk_user_maya_/);
           const data = [...users.values()].filter((user) => user.key.includes(search));
