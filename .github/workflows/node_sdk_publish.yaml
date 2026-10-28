@@ -98,6 +98,10 @@ jobs:
         env:
           DIST_TAG: ${{ steps.dist-tag.outputs.tag }}
         run: |
+          if [[ -z "$DIST_TAG" ]]; then
+            echo '::error::No npm dist-tag was chosen.' >&2
+            exit 1
+          fi
           npm publish .test-results/release-candidate/permitio.tgz \
             --ignore-scripts --access public --tag "$DIST_TAG"
         # npm OIDC trust remains bound to permitio/permit-node,

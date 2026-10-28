@@ -238,34 +238,30 @@ for (const result of ['failure', 'cancelled', 'skipped']) {
   });
 }
 
-for (const prerelease of ['true', 'false']) {
+for (const distTag of ['latest', 'latest-2', 'rc']) {
   for (const status of [0, 42]) {
-    test(`publish selects its dist-tag and propagates exit ${status} (${prerelease})`, () => {
+    test(`publish uses the chosen dist-tag ${distTag} and propagates exit ${status}`, () => {
       const f = fixture();
       f.stubNpm(`printf '%s\\n' "$@" > publish-args\nexit ${status}\n`);
-      const result = f.run(publishScript, { IS_PRERELEASE: prerelease });
+      const result = f.run(publishScript, { DIST_TAG: distTag });
       expect(result.status, result.stderr).toBe(status);
-      const args = [
+      expect(readFileSync(join(f.cwd, 'publish-args'), 'utf8').trim().split('\n')).toStrictEqual([
         'publish',
         '.test-results/release-candidate/permitio.tgz',
         '--ignore-scripts',
         '--access',
         'public',
-      ];
-      if (prerelease === 'true') {
-        args.push('--tag', 'rc');
-      }
-      expect(readFileSync(join(f.cwd, 'publish-args'), 'utf8').trim().split('\n')).toStrictEqual(
-        args,
-      );
+        '--tag',
+        distTag,
+      ]);
     });
   }
 }
 
-test('invalid prerelease metadata cannot publish', () => {
+test('publish without a chosen dist-tag cannot publish', () => {
   const f = fixture();
   f.stubNpm('touch published\n');
-  const result = f.run(publishScript, { IS_PRERELEASE: 'unknown' });
+  const result = f.run(publishScript, { DIST_TAG: '' });
   expect(result.status).toBe(1);
   expect(existsSync(join(f.cwd, 'published'))).toBe(false);
 });
