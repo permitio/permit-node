@@ -4,6 +4,7 @@ import { type Logger } from 'pino';
 import { type FactsSyncTimeoutPolicy, type IPermitConfig } from '#src/config';
 import { APIKeysApi, Configuration } from '#src/openapi/index';
 import { BASE_PATH } from '#src/openapi/base';
+import { SDK_VERSION } from '#src/version';
 
 import {
   diagnosticAxiosError,
@@ -114,13 +115,12 @@ export abstract class BasePermitApi {
     protected config: IPermitConfig,
     protected logger: Logger,
   ) {
-    const version = process.env['npm_package_version'] ?? 'unknown';
     this.openapiClientConfig = new Configuration({
       basePath: `${this.config.apiUrl}`,
       accessToken: this.config.token,
       baseOptions: {
         headers: {
-          'X-Permit-SDK-Version': `node:${version}`,
+          'X-Permit-SDK-Version': `node:${SDK_VERSION}`,
         },
       },
     });

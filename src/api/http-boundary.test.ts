@@ -4,6 +4,7 @@ import { expect, test, vi } from 'vitest';
 import { ApiContextLevel, ApiKeyLevel, PermitContextError } from '#src/api/context';
 import { Permit, PermitApiError } from '#src/index';
 import { startApi } from '#src/tests/helpers/api-test-server';
+import { SDK_VERSION } from '#src/version';
 
 const TOKEN = 'loopback-api-test-token';
 const SCOPE_PATH = '/v2/api-key/scope';
@@ -44,9 +45,7 @@ test('authored APIs discover scope once over HTTP before concurrent dependent re
   expect(permit.config.apiContext.permittedAccessLevel).toBe(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
   for (const request of api.requests) {
     expect(request.headers.authorization).toBe(`Bearer ${TOKEN}`);
-    expect(request.headers['x-permit-sdk-version']).toBe(
-      `node:${process.env['npm_package_version'] ?? 'unknown'}`,
-    );
+    expect(request.headers['x-permit-sdk-version']).toBe(`node:${SDK_VERSION}`);
     expect(request.headers.accept).toBe('application/json');
   }
 });

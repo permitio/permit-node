@@ -169,9 +169,6 @@ importers:
       axios:
         specifier: 1.20.0
         version: 1.20.0(debug@4.4.1(supports-color@9.4.0))(supports-color@9.4.0)
-      lodash:
-        specifier: 4.18.1
-        version: 4.18.1
       pino:
         specifier: 8.21.0
         version: 8.21.0
@@ -185,9 +182,6 @@ importers:
       '@permitio/compiler-tools':
         specifier: workspace:*
         version: link:tools/compiler
-      '@types/lodash':
-        specifier: 4.17.25
-        version: 4.17.25
       '@types/node':
         specifier: 22.20.4
         version: 22.20.4
@@ -856,9 +850,6 @@ packages:
   '@types/hast@3.0.5':
     resolution: {integrity: sha512-rp/ezSWaD1m44dPKICGhiskI13nVr7qTloFwDa/IYkhhf5nzwP+zIQcIJh3WIFSBOy/H1PzB40jPjMDksN4F+g==}
 
-  '@types/lodash@4.17.25':
-    resolution: {integrity: sha512-+K1NIO8I+F9/wNulfVvu23QYd0Pe9/OCqRrim4NoYIf1VoEDL90Ve4ClzpyqBLc7NpGGWRvYNCKZ1BE/Jpf8dQ==}
-
   '@types/node@22.20.4':
     resolution: {integrity: sha512-zJRE40jpHtKqE/C4fgHrAKQLJuSpzEnP9ff9Y7YtoR3Wd2pwqzlekDeEuUQXjRd+QCYnVnNwuJYmhdk9XV8gvA==}
 
@@ -1300,9 +1291,6 @@ packages:
 
   linkify-it@5.0.2:
     resolution: {integrity: sha512-ONTm2jCMAVZjgQa/Fy1kScXsuOoF5NPTsoFBdE1KVIZ2vAh/r9+Bqo+0jINCBYnavTPQZz38QzFTme79ENoN3Q==}
-
-  lodash@4.18.1:
-    resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
 
   lunr@2.3.9:
     resolution: {integrity: sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==}
@@ -1984,8 +1972,6 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
 
-  '@types/lodash@4.17.25': {}
-
   '@types/node@22.20.4':
     dependencies:
       undici-types: 6.21.0
@@ -2345,8 +2331,6 @@ snapshots:
   linkify-it@5.0.2:
     dependencies:
       uc.micro: 2.1.0
-
-  lodash@4.18.1: {}
 
   lunr@2.3.9: {}
 

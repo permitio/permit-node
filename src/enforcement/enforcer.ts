@@ -22,6 +22,7 @@ import {
   diagnosticUrl,
 } from '#src/utils/diagnostics';
 import { resolveRetryConfig } from '#src/utils/retry';
+import { SDK_VERSION } from '#src/version';
 
 import {
   type IAction,
@@ -239,7 +240,11 @@ export function buildOpaBaseUrl(pdp: string): string {
     );
   }
   opaBaseUrl.port = '8181';
-  opaBaseUrl.pathname = `${opaBaseUrl.pathname}v1/data/permit/`;
+  // A PDP path prefix is a directory: `/pdp` and `/pdp/` both give `/pdp/v1/data/permit/`.
+  const prefix = opaBaseUrl.pathname.endsWith('/')
+    ? opaBaseUrl.pathname
+    : `${opaBaseUrl.pathname}/`;
+  opaBaseUrl.pathname = `${prefix}v1/data/permit/`;
   return opaBaseUrl.toString();
 }
 
@@ -262,7 +267,6 @@ export class Enforcer implements IEnforcer {
     private logger: Logger,
   ) {
     const opaBaseUrl = buildOpaBaseUrl(this.config.pdp);
-    const version = process.env['npm_package_version'] ?? 'unknown';
     const resolvedRetry = resolveRetryConfig(
       config.pdpRetry === undefined ? config.retry : config.pdpRetry,
     );
@@ -271,7 +275,7 @@ export class Enforcer implements IEnforcer {
       retryMethods: [...new Set([...resolvedRetry.retryMethods, 'POST'])],
     };
     const headers = {
-      'X-Permit-SDK-Version': `node:${version}`,
+      'X-Permit-SDK-Version': `node:${SDK_VERSION}`,
       'Content-Type': 'application/json',
     };
     const pdpCaller = axios.create();
@@ -293,26 +297,26 @@ export class Enforcer implements IEnforcer {
       name: 'PDP',
       defaults: { baseURL: `${this.config.pdp}/`, headers },
     });
-    this.client.interceptors.request.use((request) => {
-      const method = (['get', 'post', 'put', 'patch', 'delete', 'head'] as const).find(
-        (name) => name === request.method?.toLowerCase(),
-      );
+    // pdpCaller is private and never changes after this, so the X-Request-ID it would add
+    // to each method is worked out once here.
+    const methods = ['get', 'post', 'put', 'patch', 'delete', 'head'] as const;
+    const inheritedIds = new Map<string, unknown>();
+    for (const method of methods) {
       const inherited = new AxiosHeaders();
-      for (const group of [
-        pdpCaller.defaults.headers.common,
-        ...(method ? [pdpCaller.defaults.headers[method]] : []),
-      ])
+      for (const group of [pdpCaller.defaults.headers.common, pdpCaller.defaults.headers[method]])
         for (const [key, value] of Object.entries(group))
           if (value !== undefined) inherited.set(key, value);
       const topLevelId = Object.keys(pdpCaller.defaults.headers).find(
         (key) => key.toLowerCase() === 'x-request-id',
       );
-      if (topLevelId) {
-        const value = pdpCaller.defaults.headers[topLevelId];
-        if (value !== undefined) inherited.set('X-Request-ID', value);
-      }
-      inherited.set(request.headers);
-      const id = inherited.get('X-Request-ID');
+      if (topLevelId && pdpCaller.defaults.headers[topLevelId] !== undefined)
+        inherited.set('X-Request-ID', pdpCaller.defaults.headers[topLevelId]);
+      inheritedIds.set(method, inherited.get('X-Request-ID'));
+    }
+    this.client.interceptors.request.use((request) => {
+      const id =
+        request.headers.get('X-Request-ID') ??
+        inheritedIds.get(request.method?.toLowerCase() ?? '');
       request.headers.set(
         'X-Request-ID',
         typeof id === 'string' && id.trim().length > 0 ? id : randomUUID(),

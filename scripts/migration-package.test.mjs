@@ -115,7 +115,7 @@ describe('packed customer migration tooling', () => {
     const sdk = JSON.parse(await readFile(join(consumer, 'node_modules/permitio/package.json')));
     const source = JSON.parse(await readFile(join(repo, 'package.json'), 'utf8'));
     expect(sdk.version).toBe(source.version);
-    expect(Object.keys(sdk.dependencies)).toEqual(['axios', 'lodash', 'pino', 'pino-pretty']);
+    expect(Object.keys(sdk.dependencies)).toEqual(['axios', 'pino', 'pino-pretty']);
     const files = command('tar', ['-tzf', artifact], directory);
     expect(files).not.toContain('/node_modules/');
     expect(files).not.toContain('/tools/compiler/');

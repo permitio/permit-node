@@ -1,5 +1,6 @@
 import { createServer, type IncomingHttpHeaders } from 'node:http';
 import { Socket } from 'node:net';
+import { SDK_VERSION } from '#src/version';
 
 export const TEST_TOKEN = 'permit-test-token-do-not-log';
 
@@ -119,9 +120,7 @@ export function assertPdpRequest(
   expect(request.method).toBe('POST');
   expect(request.path).toBe(expected.path);
   expect(request.headers.authorization).toBe(`Bearer ${TEST_TOKEN}`);
-  expect(request.headers['x-permit-sdk-version']).toBe(
-    `node:${process.env['npm_package_version'] ?? 'unknown'}`,
-  );
+  expect(request.headers['x-permit-sdk-version']).toBe(`node:${SDK_VERSION}`);
   expect(request.headers['x-permit-sdk-language']).toBe(expected.sdk);
   expect(request.headers['content-type']).toBe('application/json');
 }

@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import {
@@ -7,6 +8,9 @@ import {
 } from 'vitest/config';
 
 type ProjectOptions = NonNullable<TestProjectInlineConfiguration['test']>;
+
+// The SDK version src/version.ts reports, as scripts/build.mjs injects it.
+const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 
 // The integration and e2e suites share one Permit environment. A project with `isolate: true`,
 // `maxWorkers: 1` and the default `sequence.groupOrder` has its files placed in Vitest's single
@@ -51,6 +55,7 @@ const projects: TestProjectInlineConfiguration[] = [
 const test: TestUserConfig = {
   projects: projects.map((project) => ({
     ...project,
+    define: { __PERMIT_SDK_VERSION__: JSON.stringify(version) },
     resolve: {
       alias: {
         '#src': fileURLToPath(new URL('./src', import.meta.url)),

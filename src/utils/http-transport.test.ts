@@ -351,8 +351,10 @@ test('uses the first backoff delay and honors Retry-After through the transport 
 
 test('isolates SDK logging without intercepting the caller direct request', async () => {
   const caller = axios.create({ adapter: async (config) => success(config) });
-  const firstLogger = pino({ level: 'silent' });
-  const secondLogger = pino({ level: 'silent' });
+  // Debug level: the transport skips building debug lines a logger would drop.
+  const discard = { write: () => undefined };
+  const firstLogger = pino({ level: 'debug' }, discard);
+  const secondLogger = pino({ level: 'debug' }, discard);
   const firstLog = vi.spyOn(firstLogger, 'debug');
   const secondLog = vi.spyOn(secondLogger, 'debug');
   const first = createOwnedTransport({

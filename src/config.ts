@@ -194,7 +194,7 @@ export class ConfigFactory {
    * @returns Frozen SDK-owned settings with a mutable SDK-owned API context.
    * @throws TypeError When an effective option is invalid; errors never echo caller values.
    */
-  static build(options: IPermitOptions): IPermitConfig {
+  static build(options: IPermitOptions = {}): IPermitConfig {
     objectOption(options, 'options');
     if (options.log !== undefined) objectOption(options.log, 'log');
     if (options.multiTenancy !== undefined) objectOption(options.multiTenancy, 'multiTenancy');
@@ -203,8 +203,8 @@ export class ConfigFactory {
       token: options.token ?? defaults.token,
       pdp: options.pdp ?? defaults.pdp,
       apiUrl: options.apiUrl ?? defaults.apiUrl,
-      log: { ...defaults.log, ...options.log },
-      multiTenancy: { ...defaults.multiTenancy, ...options.multiTenancy },
+      log: { ...defaults.log, ...definedEntries(options.log) },
+      multiTenancy: { ...defaults.multiTenancy, ...definedEntries(options.multiTenancy) },
       timeout: options.timeout,
       throwOnError: options.throwOnError ?? defaults.throwOnError,
       proxyFactsViaPdp: options.proxyFactsViaPdp ?? defaults.proxyFactsViaPdp,
@@ -290,6 +290,15 @@ function defaultSettings() {
     factsSyncTimeout: null,
     factsSyncTimeoutPolicy: null,
   };
+}
+
+// A nested option left `undefined` keeps its default, as a top-level one does (`??`) and as
+// 2.x's merge did. `null` is kept, so validation still rejects it.
+function definedEntries<T extends object>(value: T | undefined): Partial<T> {
+  if (value === undefined) return {};
+  return Object.fromEntries(
+    Object.entries(value).filter(([, entry]) => entry !== undefined),
+  ) as Partial<T>;
 }
 
 function objectOption(value: unknown, name: string): void {

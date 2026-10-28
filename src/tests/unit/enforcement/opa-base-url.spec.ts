@@ -63,10 +63,10 @@ describe('buildOpaBaseUrl', () => {
     );
   });
 
-  it('preserves the existing concatenation behaviour for a path prefix', () => {
-    // Pre-existing url-parse quirk: a path with no trailing slash glues onto the data path.
+  it('joins a path prefix with a slash, with or without a trailing one', () => {
+    // 2.x glued a prefix without a trailing slash onto the data path (`/prefixv1/...`).
     expect(buildOpaBaseUrl('http://localhost:7766/prefix')).toBe(
-      'http://localhost:8181/prefixv1/data/permit/',
+      'http://localhost:8181/prefix/v1/data/permit/',
     );
     expect(buildOpaBaseUrl('http://localhost:7766/prefix/')).toBe(
       'http://localhost:8181/prefix/v1/data/permit/',

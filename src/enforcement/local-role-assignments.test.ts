@@ -11,6 +11,7 @@ import { parseLocalRoleAssignmentsResponse } from '#src/enforcement/responses';
 import { Permit, PermitConnectionError, PermitError, PermitPDPStatusError } from '#src/index';
 import { TEST_TOKEN } from '#src/tests/helpers/pdp-test-server';
 import { rejectionOf } from '#src/tests/helpers/rejection';
+import { SDK_VERSION } from '#src/version';
 
 const options = { token: TEST_TOKEN, retry: false as const, log: { level: 'silent' as const } };
 const tenantRow = { user: 'alice', role: 'reader', tenant: 'east' };
@@ -85,9 +86,7 @@ function requestQuery(request: Request | undefined): Record<string, string> {
   expect(request.method).toBe('GET');
   expect(request.body).toBe('');
   expect(request.headers.authorization).toBe(`Bearer ${TEST_TOKEN}`);
-  expect(request.headers['x-permit-sdk-version']).toBe(
-    `node:${process.env['npm_package_version'] ?? 'unknown'}`,
-  );
+  expect(request.headers['x-permit-sdk-version']).toBe(`node:${SDK_VERSION}`);
   return Object.fromEntries(new URL(request.path, 'http://fixture.invalid').searchParams);
 }
 

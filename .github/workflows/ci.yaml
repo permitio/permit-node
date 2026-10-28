@@ -20,8 +20,9 @@ defaults:
     shell: bash --noprofile --norc -euo pipefail {0}
 
 env:
-  # github actions project id (under 'Permit.io Tests' workspace)
-  PROJECT_ID: 7f55831d77c642739bc17733ab0af138
+  # The project the CI environments are created in. A secret, so it stays out of the
+  # source and is masked in run logs; fork PRs get no secrets and skip the backend suite.
+  PROJECT_ID: ${{ secrets.CI_PROJECT_ID }}
   # The integration and e2e tests run when the environment-provisioning secret
   # is available. Fork PRs and Dependabot PRs get no Actions secrets, so they
   # run only the unit and module-import tests.
@@ -50,6 +51,9 @@ jobs:
             node-version: '22.13.0'
           - node: '24'
             node-version: '24.0.0'
+          # The floors above, plus the current LTS consumers run.
+          - node: 'lts'
+            node-version: 'lts/*'
     env:
       # Known before the env is created, so the cleanup job can delete it by
       # key even when this job is cancelled while creating it.
@@ -237,7 +241,7 @@ jobs:
     timeout-minutes: 5
     env:
       # Keep in sync with the test job's node labels.
-      NODE_LABELS: 22 24
+      NODE_LABELS: 22 24 lts
     steps:
       # A 404 means the env was never created or is already gone. Attempt every
       # owned deletion and fail the gate if any environment still needs removal.

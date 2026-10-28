@@ -6,6 +6,7 @@ import { promisify } from 'node:util';
 import { build } from 'esbuild';
 
 import { TEST_TOKEN } from '#src/tests/helpers/pdp-test-server';
+import { SDK_VERSION } from '#src/version';
 
 export type LogMode = 'default' | 'json' | 'env' | 'pretty' | 'env-pretty';
 
@@ -38,6 +39,8 @@ export async function buildLoggerChild(): Promise<LoggerChild> {
       platform: 'node',
       target: 'node22',
       packages: 'external',
+      // As scripts/build.mjs does, so the child reports the SDK version (src/version.ts).
+      define: { __PERMIT_SDK_VERSION__: JSON.stringify(SDK_VERSION) },
     });
   } catch (error: unknown) {
     await remove();

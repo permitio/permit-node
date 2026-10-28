@@ -123,14 +123,16 @@ export class ResourceRelationsApi extends BasePermitApi implements IResourceRela
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
-      return (
+      const response = (
         await this.relationsApi.listResourceRelations({
           ...this.config.apiContext.environmentContext,
           resourceId: resourceKey,
           page,
           perPage,
         })
-      ).data.data;
+      ).data;
+      // A paginated envelope, or the raw array an older API returns (MIGRATION A3).
+      return Array.isArray(response) ? response : response.data;
     } catch (err) {
       this.handleApiError(err);
     }

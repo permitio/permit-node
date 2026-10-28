@@ -3,6 +3,12 @@ import axios, { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from
 const REDACTED = '[REDACTED]';
 const MAX_TEXT = 1024;
 const MAX_ITEMS = 8;
+// How many request values, and how much text, privacy collection holds before failing closed.
+const MAX_PRIVATE_VALUES = 512;
+const MAX_PRIVATE_CHARACTERS = 65_536;
+// A request value shorter than this is not treated as private: removing "1", "node" or "A"
+// from every diagnostic would garble it, or redact it whole when the marker holds the letter.
+const MIN_PRIVATE_VALUE_LENGTH = 8;
 const BODY_FIELDS = new Set(['message', 'detail', 'error_code', 'code', 'msg', 'errors']);
 const REQUEST_HEADERS = new Set([
   'accept',
@@ -62,7 +68,8 @@ function mergeDiagnosticSecrets(left: SecretContext, right: SecretContext): Coll
     for (const value of 'complete' in context ? context.values : context) {
       if (!value || seen.has(value)) continue;
       characters += value.length;
-      if (seen.size >= 512 || characters > 65_536) return { values: [], complete: false };
+      if (seen.size >= MAX_PRIVATE_VALUES || characters > MAX_PRIVATE_CHARACTERS)
+        return { values: [], complete: false };
       seen.add(value);
       result.values.push(value);
     }
@@ -186,8 +193,8 @@ export function diagnosticText(value: string, secrets: SecretContext = []): stri
 export function diagnosticSecrets(value: unknown): CollectedSecrets {
   const result: CollectedSecrets = { values: [], complete: true };
   const seen = new Set<object>();
-  let remaining = 512;
-  let characters = 65_536;
+  let remaining = MAX_PRIVATE_VALUES;
+  let characters = MAX_PRIVATE_CHARACTERS;
   function visit(item: unknown, depth: number): void {
     if (!result.complete) return;
     if (remaining-- <= 0 || depth > 12) {
@@ -198,7 +205,7 @@ export function diagnosticSecrets(value: unknown): CollectedSecrets {
     if (typeof item === 'string') {
       characters -= item.length;
       if (characters < 0) result.complete = false;
-      else if (item) result.values.push(item);
+      else if (item.length >= MIN_PRIVATE_VALUE_LENGTH) result.values.push(item);
       return;
     }
     if (item === null || typeof item !== 'object' || seen.has(item)) return;
@@ -211,7 +218,7 @@ export function diagnosticSecrets(value: unknown): CollectedSecrets {
     }
   }
   if (typeof value === 'string') {
-    if (value.length > 65_536) result.complete = false;
+    if (value.length > MAX_PRIVATE_CHARACTERS) result.complete = false;
     else {
       try {
         visit(JSON.parse(value), 0);
@@ -278,7 +285,7 @@ function omittedResponseSecrets(value: unknown, secrets: SecretContext): Collect
       else {
         const found = diagnosticSecrets(descriptor.value);
         privacy.values.push(...found.values);
-        privacy.complete &&= found.complete && privacy.values.length <= 512;
+        privacy.complete &&= found.complete && privacy.values.length <= MAX_PRIVATE_VALUES;
       }
     }
   }
@@ -435,7 +442,7 @@ export function diagnosticRequestSecrets(
   function collect(value: unknown): void {
     const found = diagnosticSecrets(value);
     result.values.push(...found.values);
-    result.complete &&= found.complete && result.values.length <= 512;
+    result.complete &&= found.complete && result.values.length <= MAX_PRIVATE_VALUES;
   }
   collect(config?.data);
   collect(config?.params);

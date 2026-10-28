@@ -173,7 +173,7 @@ export class Permit implements IPermitClient {
    * @param config - The configuration for the Permit SDK.
    * @throws TypeError When effective constructor options are invalid.
    */
-  constructor(config: IPermitOptions) {
+  constructor(config: IPermitOptions = {}) {
     this.config = ConfigFactory.build(config);
     Object.defineProperty(this, 'config', { writable: false, configurable: false });
     this.logger = LoggerFactory.createLogger(this.config);

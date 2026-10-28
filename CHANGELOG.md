@@ -53,3 +53,14 @@ See [the migration guide](MIGRATION.md) for affected callers, actions and retain
   method input/result types. `ApiContextLevel` and `PermitContextChangeError` are also named root
   exports. Generate linked group reference pages and validate local reference targets; building
   documentation does not publish the candidate.
+- `new Permit()` works without an options object, reading every setting from the environment, and
+  a nested `log` or `multiTenancy` field left `undefined` keeps its default, as in 2.x.
+- `X-Permit-SDK-Version` carries the SDK's own version; it carried the host application's
+  `npm_package_version`.
+- A PDP URL with a path prefix (`http://gateway/pdp`) gives the OPA URL
+  `http://gateway:8181/pdp/v1/data/permit/`; 2.x joined the prefix without a slash.
+- A PDP retry stops when less than a millisecond of the timeout budget is left, instead of sending
+  its last attempt with no timeout.
+- Request values shorter than 8 characters are no longer redacted out of error and log messages.
+- `resourceRelations.list` also accepts the raw-array response of older APIs.
+- Remove the unused `lodash` dependency.

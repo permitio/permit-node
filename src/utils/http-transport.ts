@@ -92,9 +92,16 @@ async function dispatch(
   ) {
     throw new TypeError('Invalid HTTP timeout: expected milliseconds between 0 and 2147483647.');
   }
-  const callerSecrets = diagnosticSecrets(options.caller.defaults.headers);
-  const privacy = diagnosticRequestSecrets({ config: forward }, callerSecrets);
-  const requestUrl = diagnosticUrl(forward.url, privacy) ?? '';
+  // Built on first use (a debug line, a retry warning or a failure), not on every request.
+  let privacy: ReturnType<typeof diagnosticRequestSecrets> | undefined;
+  const requestPrivacy = () =>
+    (privacy ??= diagnosticRequestSecrets(
+      { config: forward },
+      diagnosticSecrets(options.caller.defaults.headers),
+    ));
+  let safeUrl: string | undefined;
+  const requestUrl = () => (safeUrl ??= diagnosticUrl(forward.url, requestPrivacy()) ?? '');
+  const debug = options.logger.isLevelEnabled('debug');
   const started = performance.now();
   const method = (forward.method ?? 'GET').toUpperCase();
   const retry = options.retry;
@@ -115,26 +122,29 @@ async function dispatch(
           return data;
         },
       ];
-      options.logger.debug(
-        { transport: options.name, method, url: requestUrl },
-        `Sending HTTP request: ${method} ${requestUrl}`,
-      );
+      if (debug)
+        options.logger.debug(
+          { transport: options.name, method, url: requestUrl() },
+          `Sending HTTP request: ${method} ${requestUrl()}`,
+        );
       try {
         // Plain headers let a caller's other Axios module instance merge its live defaults.
         const response = await options.caller.request({
           ...forward,
           headers: { ...forward.headers },
         });
-        const status = diagnosticStatus(response.status);
-        options.logger.debug(
-          {
-            transport: options.name,
-            method,
-            url: requestUrl,
-            status,
-          },
-          `Received HTTP response: ${method} ${requestUrl}, status: ${status ?? 'unknown'}`,
-        );
+        if (debug) {
+          const status = diagnosticStatus(response.status);
+          options.logger.debug(
+            {
+              transport: options.name,
+              method,
+              url: requestUrl(),
+              status,
+            },
+            `Received HTTP response: ${method} ${requestUrl()}, status: ${status ?? 'unknown'}`,
+          );
+        }
         return response;
       } catch (error) {
         throwIfCancelled(forward);
@@ -167,24 +177,25 @@ async function dispatch(
           {
             transport: options.name,
             method,
-            url: requestUrl,
+            url: requestUrl(),
             retry: retries,
             status,
           },
           `[${options.name}] Request failed (${status ?? 'network error'}), ` +
-            `retry ${retries}/${retry.maxRetries}: ${method} ${requestUrl}`,
+            `retry ${retries}/${retry.maxRetries}: ${method} ${requestUrl()}`,
         );
         await waitForRetry(delay, [forward, cancellationConfig]);
         throwIfCancelled(cancellationConfig);
         if (timeout !== undefined && timeout > 0) {
-          const remaining = timeout - (performance.now() - started);
-          if (remaining <= 0) throw error;
+          // Whole milliseconds: Axios parseInt()s the timeout, and 0 would turn it off.
+          const remaining = Math.floor(timeout - (performance.now() - started));
+          if (remaining < 1) throw error;
           forward.timeout = remaining;
         }
       }
     }
   } catch (error) {
-    recordDiagnosticSecrets(error, privacy);
+    recordDiagnosticSecrets(error, requestPrivacy());
     throw error;
   }
 }
