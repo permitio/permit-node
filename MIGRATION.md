@@ -37,8 +37,9 @@ now named root exports. Use the grouped clients through `permit.api.resourceRela
 
 ### C3 — Direct use of former transitive dependencies
 
-The SDK no longer brings in `@bitauth/libauth`, `path-to-regexp`, `require-in-the-middle` or
-`url-parse`. If application code imports these packages, declare and review its own dependencies.
+The SDK no longer brings in `@bitauth/libauth`, `axios-retry`, `lodash`, `path-to-regexp`,
+`require-in-the-middle` or `url-parse`. If application code imports these packages, declare and
+review its own dependencies.
 Do not add them back to Permit. Review dependency changes through the application lock and audit.
 
 ## API migration
@@ -81,6 +82,18 @@ typed arguments and await calls as before. Read A3 before adapting consumers of 
 | `api.assignConditionSetRule(data)`           | `api.conditionSetRules.create(data)`              |
 | `api.unassignConditionSetRule(data)`         | `api.conditionSetRules.delete(data)`              |
 
+Routing differs for 14 of these replacements. The removed flat methods always called `apiUrl`,
+but the grouped `users` and `tenants` clients are facts clients. With `proxyFactsViaPdp` enabled,
+these calls go to `pdp` and send `X-Wait-Timeout` and `X-Timeout-Policy` from `factsSyncTimeout`
+and `factsSyncTimeoutPolicy`:
+
+- `users`: `get`, `list`, `create`, `sync`, `update`, `delete`, `assignRole`, `unassignRole` and
+  `getAssignedRoles`.
+- `tenants`: `get`, `list`, `create`, `update` and `delete`.
+
+If a migrated call must keep its 2.x route, make it through a separate `Permit` instance without
+`proxyFactsViaPdp`.
+
 ### A2 — Method bag, five legacy exports, and context alias
 
 Remove `api.getMethods()`. For callbacks keep the grouped method's receiver with a closure, such as
@@ -110,6 +123,9 @@ register an unused transform. Two additional removed root exports are covered un
   resolve `undefined`; they were declared void in 2.x but returned bodies. Other unchanged void
   wrappers can expose empty Axios response text for HTTP 204; do not require identical empty
   runtime values or treat them as substantive results.
+- `users.getAssignedRoles()` is typed like `roleAssignments.list()`: a runtime or optional boolean
+  `includeTotalCount` or `detailed` gives the union of both result shapes. Narrow with
+  `Array.isArray(result)`.
 - Ordinary condition-set, tenant, instance, tuple and resource-relation lists keep their declared
   array result, unwrapping a server pagination envelope when required. Do not add `.data` to these
   high-level array results. Generated-only clients can have different result unions.
@@ -138,8 +154,10 @@ expecting the SDK to strip them. Existing path prefixes and encoded path charact
 `%3F` and `%23` remain supported, including existing environment URL defaults. Logger levels,
 booleans, timeout and retry values are checked. Invalid effective options throw `TypeError`
 before HTTP, without echoing credentials.
-Use complete instances from `axios.create()` and a genuine current-version `ApiContext`, rather
-than partial mock objects. Explicit `undefined` is permitted for constructor options.
+Use complete instances from `axios.create()` of axios 1.0.0 or later and a genuine
+current-version `ApiContext`, rather than partial mock objects. The instance check requires the
+form helpers and interceptor `clear()` methods, which earlier axios releases lack. Explicit
+`undefined` is permitted for constructor options.
 
 Unset `PERMIT_LOG_JSON` now selects JSON lines. Explicit `log.json: false` produced JSON in 2.x
 and now selects pretty output. Environment value `false` also selects pretty output; case and
@@ -170,6 +188,9 @@ Stop matching raw/private error text or assuming raw request/body identity is re
 With `throwOnError: false`, check failure returns `false`, bulk failure returns one `false` per
 input rather than `[]`, permissions return `{}`, and all-tenants return `[]`. These are denial
 fallbacks, not proof a policy denied a healthy request. New discovery exceptions are covered in N3.
+A per-call `timeout` that is not a finite number from 0 to 2147483647 ms rejects with
+`PermitError` before any request in either mode, as does a `null` or primitive `bulkCheck()` slot
+in throwing mode.
 
 ### E2 — REST and scope error snapshots
 
@@ -190,6 +211,8 @@ bulk, permissions or all-tenant result; no partial allow result is accepted. All
 require `allow: true` and a string tenant key. Permission entries validate arrays/details, default
 missing permissions/attributes, and omit nullable optional members. Legal own dictionary keys and
 additive fields survive. Update truthy/incomplete fixtures and verify the live policy contract.
+An OPA `{ result: {} }` without `allow`, or a bulk entry without a boolean `allow`, was `false` in
+2.x and now raises `PermitPDPStatusError` (or the denial fallback in non-throwing mode).
 Sparse bulk slots reject before partial dispatch. `useOpa: true` on bulk/permission queries now
 rejects through their configured throw/deny policy instead of being ignored; only check supports it.
 
@@ -276,6 +299,13 @@ Downstream projects are not forced to adopt the SDK's compiler flags. Import `Ch
 for explicit call and result annotations. `FormattedAxiosError` describes sanitized REST
 diagnostics; its `error` body remains unknown until narrowed.
 
+Classes that implement the exported interfaces no longer compile until they add the new members.
+`IPermitClient` gains `checkUrl`, `getAuthorizedUsers`, `getUserTenants`,
+`getLocalRoleAssignments` and `filterObjects`, and its `config` is readonly. `IPermitApi` loses
+the flat methods (A1) and gains `apiKeys`, `auditLogs`, `proxyConfigs`, `userAttributes`,
+`userInvites`, `groups` and `pdps`. Prefer wrapping a real `Permit` instance to reimplementing
+these interfaces.
+
 ## Additions, not compulsory replacements
 
 ### N1 — Groups
@@ -303,7 +333,18 @@ authorized-user envelope, or empty tenant/filter arrays in non-throwing mode.
 `filterObjects()` evaluates one dense readonly array through bulk decisions, preserving original
 identity, order and duplicates. Only known resource fields are dispatched. Object request context
 overrides call context; extra application fields remain in returned objects only. Empty inputs do
-not bypass unsupported-option validation. URL checks and AuthZEN remain deferred.
+not bypass unsupported-option validation. AuthZEN remains deferred; `checkUrl()` is available on
+container PDPs.
+
+### Other additions
+
+These additions are also optional; see the changelog and README for details:
+`getLocalRoleAssignments()` for container PDPs; `permit.api.apiKeys`,
+`proxyConfigs`, `userAttributes`, `auditLogs` and `userInvites` (whose `approve()` reports every
+HTTP 400 with a generic message); `roles.bulkCreateOrReplace()`;
+`environments.copyAsync()` and `getCopyResult()`; the `users.list()` options `searchOperator` and
+`includeResourceInstanceRoles`; and `tenants.list({ includeTotalCount: true })`, which returns
+the complete page.
 
 ## What scanning cannot certify
 

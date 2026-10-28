@@ -211,6 +211,13 @@ const permitPdp = new Permit({
 });
 ```
 
+A custom `retryCondition` receives the raw Axios error. Its `config.headers` include the
+`Authorization` header with your API key, and its `config.data` and `response` hold request and
+response bodies, so read only what the decision needs, such as `error.code` or
+`error.response?.status`, and do not log or retain the error. With REST retries enabled, a
+retried PUT can replay a request the server already applied, so `users.sync()`'s `created` flag
+and `roles.bulkCreateOrReplace()`'s created/updated split are reliable only with retries off.
+
 ## Logging and errors
 
 `log.level` controls the SDK's log level (default: `warn`). Set it to `debug` to include HTTP
@@ -732,7 +739,8 @@ does not revoke membership or roles created by approval.
 
 `permit.api.tenants.list()` returns a tenant array. Pass `includeTotalCount: true` to keep the
 complete API page, including `data`, `total_count` and optional `page_count`. False or omitted
-flags preserve the array result. Search, page and perPage are forwarded without new defaults.
+flags preserve the array result. Search, page and perPage are forwarded; pagination defaults to
+page 1 and perPage 100, rather than the API's own default of 30.
 
 ```typescript
 interface TenantAttributes {
