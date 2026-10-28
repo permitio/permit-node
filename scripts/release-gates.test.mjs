@@ -41,7 +41,7 @@ test('actual candidate dependencies require docs before archive and aggregate su
   ).toContain('docs');
 });
 
-test('quality can pass while publication acceptance remains unavailable', () => {
+test('publication acceptance is an explicit failing placeholder in the publish workflow', () => {
   expect(() => checkGateResults(good(), 'candidate')).not.toThrow();
   expect(() =>
     checkGateResults(
@@ -54,29 +54,46 @@ test('quality can pass while publication acceptance remains unavailable', () => 
     workflow.indexOf('\n  publication-acceptance:\n'),
     workflow.indexOf('\n  publish_node_sdk:\n'),
   );
-  const steps = [...job.matchAll(/^ {8}run: (.+)$/gmu)].map((match) => match[1]);
-  expect(steps).toEqual(['node scripts/check-publication-readiness.mjs']);
+  // The job checks nothing out and installs nothing; its only step is the inline script below.
+  expect(job).not.toContain('uses:');
+  const [, script] = /^ {8}run: \|\n((?: {10}.*\n)+)/mu.exec(job);
+  const run = spawnSync('/bin/bash', ['--noprofile', '--norc', '-euo', 'pipefail', '-c', script], {
+    encoding: 'utf8',
+    timeout: 10_000,
+    env: { PATH: process.env.PATH },
+  });
+  expect(run.status).toBe(1);
+  expect(run.stderr).toContain('::error::Publication acceptance is not wired yet');
+});
+
+// Not the publish workflow's invocation (that job is a placeholder above): with its dependencies
+// installed and every gate reported successful, the validator still refuses absent evidence.
+test('the readiness validator fails closed without release evidence', () => {
   const output = mkdtempSync(join(tmpdir(), 'permit-readiness-quality-'));
   onTestFinished(() => rmSync(output, { recursive: true, force: true }));
   const { requiredGates } = JSON.parse(readFileSync('api-coverage/node-acceptance.json', 'utf8'));
-  const run = spawnSync(process.execPath, [steps[0].replace(/^node /u, ''), '--output', output], {
-    encoding: 'utf8',
-    timeout: 60_000,
-    env: {
-      ...process.env,
-      GITHUB_ACTIONS: 'true',
-      GITHUB_REPOSITORY: 'permitio/permit-node',
-      GITHUB_EVENT_NAME: 'release',
-      GITHUB_ACTOR: 'release-maintainer',
-      GITHUB_WORKFLOW_REF:
-        'permitio/permit-node/.github/workflows/node_sdk_publish.yaml@refs/tags/v3.0.0',
-      GITHUB_RUN_ID: '1',
-      GITHUB_RUN_ATTEMPT: '1',
-      GATE_RESULTS: JSON.stringify(
-        Object.fromEntries(requiredGates.map((name) => [name, { result: 'success' }])),
-      ),
+  const run = spawnSync(
+    process.execPath,
+    ['scripts/check-publication-readiness.mjs', '--output', output],
+    {
+      encoding: 'utf8',
+      timeout: 60_000,
+      env: {
+        ...process.env,
+        GITHUB_ACTIONS: 'true',
+        GITHUB_REPOSITORY: 'permitio/permit-node',
+        GITHUB_EVENT_NAME: 'release',
+        GITHUB_ACTOR: 'release-maintainer',
+        GITHUB_WORKFLOW_REF:
+          'permitio/permit-node/.github/workflows/node_sdk_publish.yaml@refs/tags/v3.0.0',
+        GITHUB_RUN_ID: '1',
+        GITHUB_RUN_ATTEMPT: '1',
+        GATE_RESULTS: JSON.stringify(
+          Object.fromEntries(requiredGates.map((name) => [name, { result: 'success' }])),
+        ),
+      },
     },
-  });
+  );
   expect(run.status, run.stderr).toBe(2);
   expect(run.stderr).toContain(
     'Release evidence inspection failed. Check the reviewed inputs and CI identity.',

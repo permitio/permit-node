@@ -24,33 +24,22 @@ jobs:
       release-tag: ${{ github.event.release.tag_name }}
       prerelease: ${{ github.event.release.prerelease }}
 
+  # Placeholder that blocks publication on purpose. scripts/check-publication-readiness.mjs
+  # validates the complete Node release evidence, but this workflow does not yet install its
+  # dependencies or download that evidence, so the job states that instead of failing on a
+  # missing module. Wiring it means: install, download the evidence, then run the script
+  # with --output and GATE_RESULTS.
   publication-acceptance:
     name: Publication acceptance
     needs: candidate
     runs-on: ubuntu-24.04
     timeout-minutes: 5
-    permissions:
-      contents: read
+    permissions: {}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Setup pnpm
-        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
-        env:
-          npm_config_ignore_scripts: 'true'
-        with:
-          run_install: false
-      - name: Setup Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: '22.13.0'
-          package-manager-cache: false
-      # Complete Node evidence is required. The owner-approved evidence handoff
-      # remains pending, so absent validator inputs fail closed before publication.
-      - name: Require complete Node release evidence
-        run: node scripts/check-publication-readiness.mjs
+      - name: Publication acceptance is not wired yet
+        run: |
+          echo '::error::Publication acceptance is not wired yet: this workflow does not yet provide the Node release evidence that scripts/check-publication-readiness.mjs validates, so npm publication is blocked.' >&2
+          exit 1
 
   publish_node_sdk:
     needs: [candidate, publication-acceptance]
@@ -71,7 +60,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '24'
+          # Bundles npm 11.x, which Trusted Publishing needs; Node 22.13.0 and 24.0.0 do not.
+          # The same exact version as the packed-consumer and cloud matrices.
+          node-version: '24.21.0'
           registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false
       - name: Require all publication dependencies
@@ -92,20 +83,22 @@ jobs:
         run: >-
           node scripts/release-artifact.mjs --artifact .test-results/release-candidate/permitio.tgz
           --identity .test-results/release-candidate/identity.json --sha256 "$EXPECTED_SHA256"
+      # Stable versions get `latest` only when newer than the registry's current latest,
+      # otherwise `latest-<major>`; prereleases get their identifier (alpha, beta or rc).
+      # See scripts/npm-dist-tag.mjs.
+      - name: Choose the npm dist-tag
+        id: dist-tag
+        timeout-minutes: 2
+        env:
+          RELEASE_VERSION: ${{ needs.candidate.outputs.version }}
+          IS_PRERELEASE: ${{ github.event.release.prerelease }}
+        run: node scripts/npm-dist-tag.mjs
       - name: Publish package to NPM
         timeout-minutes: 15
         env:
-          IS_PRERELEASE: ${{ github.event.release.prerelease }}
+          DIST_TAG: ${{ steps.dist-tag.outputs.tag }}
         run: |
-          if [[ "$IS_PRERELEASE" == "true" ]]; then
-            npm publish .test-results/release-candidate/permitio.tgz \
-              --ignore-scripts --access public --tag rc
-          elif [[ "$IS_PRERELEASE" == "false" ]]; then
-            npm publish .test-results/release-candidate/permitio.tgz \
-              --ignore-scripts --access public
-          else
-            echo '::error::Release prerelease metadata is invalid.' >&2
-            exit 1
-          fi
+          npm publish .test-results/release-candidate/permitio.tgz \
+            --ignore-scripts --access public --tag "$DIST_TAG"
         # npm OIDC trust remains bound to permitio/permit-node,
         # node_sdk_publish.yaml and production. No NPM_TOKEN is used.
