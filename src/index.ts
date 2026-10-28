@@ -249,6 +249,8 @@ export class Permit implements IPermitClient {
    * @param checks   - The check requests.
    * @param context  - The context object representing the context in which the action is performed.
    * @returns array containing `true` if the user is authorized, `false` otherwise for each check request.
+   * @throws {@link PermitError} if an array position holds no check object (a hole, `null` or a
+   * primitive); in non-throwing mode every position is denied instead.
    * @throws {@link PermitConnectionError} if an error occurs while sending the authorization request to the PDP.
    * @throws {@link PermitPDPStatusError} if the PDP returned an unexpected status code or response body.
    */

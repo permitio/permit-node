@@ -57,6 +57,25 @@ function isString(x: unknown): x is string {
   return typeof x === 'string';
 }
 
+/**
+ * Rejects a per-call timeout Axios cannot use, so it never surfaces as a connection failure.
+ *
+ * @param method - Public method name used in the message.
+ * @param timeout - Per-call timeout in milliseconds; undefined keeps the configured default.
+ * @throws {PermitError} Unless the timeout is undefined or a finite number from 0 to 2147483647.
+ */
+function validateCallTimeout(method: string, timeout: unknown): void {
+  if (
+    timeout !== undefined &&
+    (typeof timeout !== 'number' ||
+      !Number.isFinite(timeout) ||
+      timeout < 0 ||
+      timeout > 2_147_483_647)
+  ) {
+    throw new PermitError(`Permit.${method}() timeout must be between 0 and 2147483647 ms.`);
+  }
+}
+
 export class PermitError extends Error {
   constructor(message: string, options?: ErrorOptions) {
     const privacy = diagnosticErrorSecrets(options?.cause);
@@ -342,6 +361,7 @@ export class Enforcer implements IEnforcer {
     resource_types?: string[],
     config: GetUserPermissionsConfig = {},
   ): Promise<IUserPermissions> {
+    validateCallTimeout('getUserPermissions', config.timeout);
     return await this.getUserPermissionsWithExceptions(
       user,
       tenants,
@@ -426,6 +446,7 @@ export class Enforcer implements IEnforcer {
     context: Context = {},
     config: CheckConfig = {},
   ): Promise<IAuthorizedUsersResult> {
+    validateCallTimeout('getAuthorizedUsers', config.timeout);
     if (config.useOpa) {
       throw new PermitError('The useOpa option is supported only by permit.check()');
     }
@@ -486,6 +507,7 @@ export class Enforcer implements IEnforcer {
     context: Context = {},
     config: CheckConfig = {},
   ): Promise<TenantDetails[]> {
+    validateCallTimeout('getUserTenants', config.timeout);
     if (config.useOpa) {
       throw new PermitError('The useOpa option is supported only by permit.check()');
     }
@@ -605,17 +627,7 @@ export class Enforcer implements IEnforcer {
     if (config.useOpa) {
       throw new PermitError('The useOpa option is supported only by permit.check()');
     }
-    if (
-      config.timeout !== undefined &&
-      (typeof config.timeout !== 'number' ||
-        !Number.isFinite(config.timeout) ||
-        config.timeout < 0 ||
-        config.timeout > 2_147_483_647)
-    ) {
-      throw new PermitError(
-        'Permit.getLocalRoleAssignments() timeout must be between 0 and 2147483647 ms.',
-      );
-    }
+    validateCallTimeout('getLocalRoleAssignments', config.timeout);
     const params: Record<string, string | number> = {};
     for (const field of ['user', 'role', 'tenant', 'resource', 'resourceInstance'] as const) {
       const value = query[field];
@@ -672,6 +684,7 @@ export class Enforcer implements IEnforcer {
     context: Context = {},
     config: CheckConfig = {},
   ): Promise<T[]> {
+    validateCallTimeout('filterObjects', config.timeout);
     if (config.useOpa) {
       throw new PermitError('The useOpa option is supported only by permit.check()');
     }
@@ -706,6 +719,7 @@ export class Enforcer implements IEnforcer {
     context: Context = {}, // context provided specifically for this query
     config: CheckConfig = {},
   ): Promise<Array<boolean>> {
+    validateCallTimeout('bulkCheck', config.timeout);
     const checkCount = checks.length;
     return await this.bulkCheckWithExceptions(checks, context, config).catch((err) => {
       const shouldThrow =
@@ -754,8 +768,9 @@ export class Enforcer implements IEnforcer {
     }
     const inputs: Array<ICheckInput> = [];
     for (const check of checks) {
-      if (check === undefined) {
-        throw new PermitError('permit.bulkCheck() requires a check at every array position');
+      // A hole, null or primitive slot would otherwise surface as a raw TypeError.
+      if (check == null || typeof check !== 'object') {
+        throw new PermitError('permit.bulkCheck() requires a check object at every array position');
       }
       const input = this.buildCheckInput(check.user, check.action, check.resource, {
         ...context,
@@ -905,15 +920,7 @@ export class Enforcer implements IEnforcer {
     if (config.useOpa) {
       throw new PermitError('The useOpa option is supported only by permit.check()');
     }
-    if (
-      config.timeout !== undefined &&
-      (typeof config.timeout !== 'number' ||
-        !Number.isFinite(config.timeout) ||
-        config.timeout < 0 ||
-        config.timeout > 2_147_483_647)
-    ) {
-      throw new PermitError('Permit.checkUrl() timeout must be between 0 and 2147483647 ms.');
-    }
+    validateCallTimeout('checkUrl', config.timeout);
     const normalizedUser = isString(user) ? { key: user } : user;
     if (
       normalizedUser === null ||
@@ -1007,6 +1014,7 @@ export class Enforcer implements IEnforcer {
     context: Context = {}, // context provided specifically for this query
     config: CheckConfig = {},
   ): Promise<boolean> {
+    validateCallTimeout('check', config.timeout);
     return await this.checkWithExceptions(user, action, resource, context, config).catch((err) => {
       const shouldThrow =
         config.throwOnError === undefined ? this.config.throwOnError : config.throwOnError;

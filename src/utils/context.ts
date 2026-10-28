@@ -8,7 +8,11 @@ export interface CheckConfig {
    * Existing bulk/permission queries retain their configured throw/deny policy.
    */
   useOpa?: boolean;
-  /** Request timeout in milliseconds; zero disables the timeout for this call. */
+  /**
+   * Request timeout in milliseconds; zero disables the timeout for this call. A value that is not
+   * a finite number from 0 to 2147483647 rejects with `PermitError` before any request is sent,
+   * regardless of `throwOnError`.
+   */
   timeout?: number;
   throwOnError?: boolean;
 }
