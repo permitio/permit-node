@@ -68,8 +68,8 @@
       "src/api/api-client.ts:ApiClient": "df687bd8d749332a4f3b7ea096cf6d9147be47002e03c027c4a7b737dc130cd5",
       "src/api/api-keys.ts:ApiKeysApi": "cbd94ec83da3b52872cd370bae2e28cb39d11dbdb53f4bbc07114eb9d0193954",
       "src/api/audit-logs.ts:AuditLogsApi": "b4cb11d373c4a133e5ab9873f130ac8d2a1997479e7cbf6f9af9284983dd2b6b",
-      "src/api/base.ts:BaseFactsPermitAPI": "d54abe08baf1c3cf60b7c2dcc6de5daa886d258067988490df118b6f042e7c40",
-      "src/api/base.ts:BasePermitApi": "cef06516956c7afbbd52eb15065d04f5fba2c9c8e5e1cca3dcb290136dcd9088",
+      "src/api/base.ts:BaseFactsPermitAPI": "0c3d20239e269bdb980e77baca9f42f56e36a47c810f38d74e133e8af2ef66b4",
+      "src/api/base.ts:BasePermitApi": "ecc2a38d8b032c8556a56f5d76560aa256e075bb5a4ddd80252ff42e32bf8d28",
       "src/api/base.ts:PermitApiError": "6aa8dbec715101edd3fe8b7835cc023149bf80f041964aa6f18783d1daa47f9a",
       "src/api/condition-set-rules.ts:ConditionSetRulesApi": "4cc9ae3de9b9fa0cb6e4f781479330b9bd279f615202af4abe8adb8db47ea76e",
       "src/api/condition-sets.ts:ConditionSetsApi": "b1c3e6d605536a286a0b5b4051d90e08d4f91dc99886073f3300d5eac42524d2",
@@ -82,26 +82,26 @@
       "src/api/pdps.ts:PdpsApi": "017e9bcd53ea41fc029b18c453cbf349c731613c9a994f236cb4029e5a1ae4b4",
       "src/api/projects.ts:ProjectsApi": "6160a88ca2873cb03fdbbf74aa80af386412ecf951a9d55ecc208f391c0f38e1",
       "src/api/proxy-configs.ts:ProxyConfigsApi": "2d7c1ee5dba03a851f25ac2b3b4373cc01b7304cf8ab76ec0553d42b0559da31",
-      "src/api/relationship-tuples.ts:RelationshipTuplesApi": "d00e5554087790967f936173301c40375b73bfe31e178ab12eb760b4a7fc104d",
+      "src/api/relationship-tuples.ts:RelationshipTuplesApi": "a0fd1b54ef3f8a4715cbeba99620b21599d1e9444ea8db443de850e847712578",
       "src/api/resource-action-groups.ts:ResourceActionGroupsApi": "8cb11d18e3a92d70b411e8c32f705494dea95fcef42b4f3c45c7eb3c7a4449bc",
       "src/api/resource-actions.ts:ResourceActionsApi": "77cb8378b7803934e8e54aab9c6df3d012938bae4084e376df08b4d5a897604c",
       "src/api/resource-attributes.ts:ResourceAttributesApi": "c05611f87b6590869bd74c170c0895e9bf2bb804353b6dcfe06353371ef44587",
-      "src/api/resource-instances.ts:ResourceInstancesApi": "f739afcf7dbf4bd649ad0e8770446723374060fa23acef3f5d8287d5e3cd3e3f",
+      "src/api/resource-instances.ts:ResourceInstancesApi": "56e87839e1c2cde75a82c0521ff754de23f86cba8fa6125de2219f49231fd01b",
       "src/api/resource-relations.ts:ResourceRelationsApi": "26bbc188a17e9de9d56f40ba4b27d362fd2eb1b5122c8d2a4cdb2e0182de8c51",
       "src/api/resource-roles.ts:ResourceRolesApi": "d3e78d2175b02561645930a8a575795b2a8caaab9a212cf72675b8c135287701",
       "src/api/resources.ts:ResourcesApi": "3c35f246b7fa105b504d69d77ae1e57228c934b8b6ddc7488eed378ca2f56145",
-      "src/api/role-assignments.ts:RoleAssignmentsApi": "48903ae8fa791d37fd53fd3402388a36b34dc0d60a21b53e9cb4e99dbdf18618",
+      "src/api/role-assignments.ts:RoleAssignmentsApi": "826a4a8bb63c3f0251c13dc5252f3e1ed464f71f7d33c177092a7cc018ca2ca5",
       "src/api/roles.ts:RolesApi": "64e3a5eebe7c7c1e674fa6a0e8757c892de1a17ae60df8253f802a32bb174485",
-      "src/api/tenants.ts:TenantsApi": "0d1b4b8ebd111804a89aa027043091ea95d5d8c2c3011aac016d3057e7c3d9bf",
+      "src/api/tenants.ts:TenantsApi": "a304dc210eb2490c495b5969bcbca16dde30d3ab7650d3df0993a569ddafc753",
       "src/api/user-attributes.ts:UserAttributesApi": "5e0081bc92454c12785e3ab3b97882b2547d257da6d078c507bd2a22511c96e8",
       "src/api/user-invites.ts:UserInvitesApi": "0f000adabfee6953fe5ce7944e11adbf952c901f86b7163755918c733b1c7e6e",
-      "src/api/users.ts:UsersApi": "a777e0965c966b00d2fe916374b924251aa75c406c6dec78f21830b6d79f4e2a",
-      "src/config.ts:ConfigFactory": "c8dd252fba3ecec135ec90d26b2043a5a13582fb777bc61b118d27d2296f342f",
-      "src/enforcement/enforcer.ts:Enforcer": "c467e47c00da7418334e27fe8b555bcf64926947f45e19ec1284384b4256bb88",
+      "src/api/users.ts:UsersApi": "2bedf1f7f3601869d61360c2d368c5316f5c87722b7f866b1a721b47965380e6",
+      "src/config.ts:ConfigFactory": "3a7c65f7d9656ec31a8db72e29663bb0e30c6c7c76bd2235c2016ce4f6975292",
+      "src/enforcement/enforcer.ts:Enforcer": "c8e44cf6dc42dcf7f48f4f883fd77f32086c93fbc101097adcc2c2ab0948c6a8",
       "src/enforcement/enforcer.ts:PermitConnectionError": "86cd79f9aa748daf1d8324a63993215e2aa1d7b7a05fdb71229666d5ad98dffb",
       "src/enforcement/enforcer.ts:PermitError": "93daac3739a0e4feefad07b32fd3817ddfd0682880874c0783c9ffd8d528e8c9",
       "src/enforcement/enforcer.ts:PermitPDPStatusError": "25fff480295bb4b4afaca85625891e5ea3e98c8767a68333a2a246f3a4acd82a",
-      "src/index.ts:Permit": "3f0fe97d56386fe3c6c0e08c39413e8cc75ed966af4749ae40111515e750886d",
+      "src/index.ts:Permit": "e753795188074ff377915f406d88af5d202ee23b30a141647341c6b8ed685b96",
       "src/logger.ts:LoggerFactory": "ac4bd9886641019a5aa3fb64bfe2d4baac7b8904c854afcbcda48af87fb35974",
       "src/utils/context.ts:ContextStore": "0a94c1379b87bea55588ee5624ef329a97befe0e32988588dce84847798c2d09"
     },
@@ -806,7 +806,7 @@
       },
       "src/api/users.ts:ReturnIGetUserRolesType": {
         "kind": "type",
-        "type": "T extends IGetUserRolesWithTotalCount ? T extends IGetUserRolesWithDetails ? PaginatedResultRoleAssignmentDetailedRead : PaginatedResultRoleAssignmentRead : T extends IGetUserRolesWithDetails ? RoleAssignmentDetailedRead[] : RoleAssignmentRead[]"
+        "type": "ReturnListRoleAssignments<T>"
       },
       "src/api/users.ts:UserRead": {
         "extends": [" extends GeneratedUserRead"],
@@ -1160,6 +1160,21 @@
       }
     },
     "functionShapes": {
+      "src/api/base.ts:sdkConfiguration": {
+        "implementationSha256": "f7a2085184ce0db023d16387d8c597278e3e6dfa73760b873035d35945fe2b0d",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "parameters",
+              "optional": false,
+              "type": "ConfigurationParameters"
+            }
+          ],
+          "returns": "Configuration"
+        }
+      },
       "src/api/context.ts:defaultSelection": {
         "implementationSha256": "dd72bbae285c4b6cf4837997c32987ef46328b8042d70f05911dbdd38c3af56f",
         "signature": {
@@ -1378,6 +1393,21 @@
           "returns": "{ token: string; pdp: string; apiUrl: string; log: { level: string; label: string; json: boolean; }; multiTenancy: { defaultTenant: string; useDefaultTenantIfEmpty: boolean; }; timeout: undefined; throwOnError: boolean; proxyFactsViaPdp: boolean; factsSyncTimeout: null; factsSyncTimeoutPolicy: null; }"
         }
       },
+      "src/config.ts:definedEntries": {
+        "implementationSha256": "a25ebd8f0f999d40ce24628eb8a2e0ec400c81fd2a32384520cfb555f3abeddb",
+        "signature": {
+          "generics": ["T extends object"],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "value",
+              "optional": false,
+              "type": "T | undefined"
+            }
+          ],
+          "returns": "Partial<T>"
+        }
+      },
       "src/config.ts:logJsonFromEnv": {
         "implementationSha256": "2a1e21c34028374c7e22151b9be6f93be86a1053bbdb9d96b90c70c7f4e3f506",
         "signature": {
@@ -1497,6 +1527,27 @@
           "returns": "void"
         }
       },
+      "src/config.ts:withRedactedField": {
+        "implementationSha256": "c6bc95510456019fd6515d6415a31ba91d21a932a1c400ef5dc4873d808ae318",
+        "signature": {
+          "generics": ["T extends object"],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "target",
+              "optional": false,
+              "type": "T"
+            },
+            {
+              "initializer": null,
+              "name": "field",
+              "optional": false,
+              "type": "keyof T & string"
+            }
+          ],
+          "returns": "T"
+        }
+      },
       "src/enforcement/enforcer.ts:buildOpaBaseUrl": {
         "implementationSha256": "e830b95bd95b8c373528178154dc478d5027d4d2e3cc2935d972f4c3521dfc2a",
         "signature": {
@@ -1525,6 +1576,27 @@
             }
           ],
           "returns": "x is string"
+        }
+      },
+      "src/enforcement/enforcer.ts:validateCallTimeout": {
+        "implementationSha256": "382a0628d4f1046fc244f962ea8bafa70ea7adc98569db06da09b952e39fcbae",
+        "signature": {
+          "generics": [],
+          "parameters": [
+            {
+              "initializer": null,
+              "name": "method",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "initializer": null,
+              "name": "timeout",
+              "optional": false,
+              "type": "unknown"
+            }
+          ],
+          "returns": "void"
         }
       },
       "src/enforcement/responses.ts:decisionEnvelope": {
@@ -1885,7 +1957,7 @@
         }
       },
       "src/utils/diagnostics.ts:diagnosticMessage": {
-        "implementationSha256": "1b3bd02600d26ff373547ddaa66741f0186ecb49ec042d7e853ff3bf1753d8f8",
+        "implementationSha256": "0486362894f1758d0c272c9268f953139854fc0c3dd4a2b6d96993281ba0c650",
         "signature": {
           "generics": [],
           "parameters": [
@@ -1906,7 +1978,7 @@
         }
       },
       "src/utils/diagnostics.ts:diagnosticMetadata": {
-        "implementationSha256": "dd245b592303a29ab7f1cc2684e2574ea121d204ccfcc5fd9fae4c54fec42aaa",
+        "implementationSha256": "294690ba6a36530d99ba5abdeca97a7209de8b073db6ee56dc6b8a22e9659ffb",
         "signature": {
           "generics": [],
           "parameters": [
@@ -1927,7 +1999,7 @@
         }
       },
       "src/utils/diagnostics.ts:diagnosticRequestSecrets": {
-        "implementationSha256": "769fec404dbfe37fa4463747f04b5ef45509f73156e7d4313da15d97948e558c",
+        "implementationSha256": "981730821b0b0b4159d54e3e063efacd304975b8adc76ab526d485846b9d4b13",
         "signature": {
           "generics": [],
           "parameters": [
@@ -1948,7 +2020,7 @@
         }
       },
       "src/utils/diagnostics.ts:diagnosticSecrets": {
-        "implementationSha256": "9d838b8ee14b758cc7f856f19d8b8e5226a96b5a9e7d818a7e006c9217b13068",
+        "implementationSha256": "d0336d04611851a0343e034c250aaeba7ee48be3900b29161e69a838f2182416",
         "signature": {
           "generics": [],
           "parameters": [
@@ -2020,7 +2092,7 @@
         }
       },
       "src/utils/diagnostics.ts:mergeDiagnosticSecrets": {
-        "implementationSha256": "119e4d7503d32c1cf572d446dd62030371e436bbf6344e7d38122bf2507cf8ca",
+        "implementationSha256": "06535039c28e75ab80331a46802a872d5e89b580de33b0ddad1435598bbf6cba",
         "signature": {
           "generics": [],
           "parameters": [
@@ -2083,7 +2155,7 @@
         }
       },
       "src/utils/diagnostics.ts:redactPrivateValues": {
-        "implementationSha256": "28bd84300e3299f34e9537e4509f9367b52448e9a2a1abb1430742480997af71",
+        "implementationSha256": "29164134a0e8a9bdc00776c1e738268ae0928d977925d86959988be62c97fac1",
         "signature": {
           "generics": [],
           "parameters": [
@@ -2283,21 +2355,6 @@
             }
           ],
           "returns": "void"
-        }
-      },
-      "src/config.ts:definedEntries": {
-        "implementationSha256": "a25ebd8f0f999d40ce24628eb8a2e0ec400c81fd2a32384520cfb555f3abeddb",
-        "signature": {
-          "generics": ["T extends object"],
-          "parameters": [
-            {
-              "initializer": null,
-              "name": "value",
-              "optional": false,
-              "type": "T | undefined"
-            }
-          ],
-          "returns": "Partial<T>"
         }
       }
     },
@@ -21202,7 +21259,7 @@
       "src/api/relationship-tuples.ts:RelationshipTuplesApi.bulkUnRelationshipTuples": "6ec1992d989f3d9168bacf5886037d38a8c46032930af1af4d0eec6e3939fdbc",
       "src/api/relationship-tuples.ts:RelationshipTuplesApi.create": "55e771b38c0fe9f1f7d1da723f71e5e1cd35df8c7ddc854dc56f6a911f9414d7",
       "src/api/relationship-tuples.ts:RelationshipTuplesApi.delete": "393f12ebc32d57c34156326cd4db2cec45cc29657c706a8f6b557465251a50c5",
-      "src/api/relationship-tuples.ts:RelationshipTuplesApi.list": "8c16dc57c39a3846cb6640d2b5ebc81928e3b08fb76f6e8d3e4e73960c02af71",
+      "src/api/relationship-tuples.ts:RelationshipTuplesApi.list": "722e8951aa88a64446beaba75179e08b477a9f4364da78223dbabef06cc30296",
       "src/api/relationship-tuples.ts:RelationshipTuplesApi.listDetailed": "4e845baceee7a2a0ff3fc96e661fd572039fcde7a6d358161390dfdc2e25e833",
       "src/api/resource-action-groups.ts:ResourceActionGroupsApi.create": "7d936f3c1589adda9ef3606270c6f1767db8553d03fee20c18a8ca088b7f6d15",
       "src/api/resource-action-groups.ts:ResourceActionGroupsApi.delete": "d40fd5a06bd47ae221867787d5574c5d4dde8840183ba13058b051b7b812aeb6",
@@ -21230,7 +21287,7 @@
       "src/api/resource-instances.ts:ResourceInstancesApi.get": "ac499824752e0af91597616a7b02a7699bd65c70c8dd38f194b12a1b24915177",
       "src/api/resource-instances.ts:ResourceInstancesApi.getById": "98ec3006093dcad5008aaed9bf622b2f55415f090a6552638718b0571c1e3227",
       "src/api/resource-instances.ts:ResourceInstancesApi.getByKey": "ee191491e083070238bd3a076acffc69f25815a0becb5ac19688d5b52c1b712a",
-      "src/api/resource-instances.ts:ResourceInstancesApi.list": "554efa93d8af1b4dbd41eb136f495430b37fefddeec18a20b04d1904f743b9e6",
+      "src/api/resource-instances.ts:ResourceInstancesApi.list": "bc3c5fae9e272605a9803818db532f248e04c42838bc46974f4aa21713b74e01",
       "src/api/resource-instances.ts:ResourceInstancesApi.listDetailed": "751b263e706a811cc1ca40affbb8628d3be3d62dfcdf716e6689507172e594ac",
       "src/api/resource-instances.ts:ResourceInstancesApi.update": "ac6c4da46ba29de478cc21196ecc28311c82a630050ed5ce49fff550c43dff77",
       "src/api/resource-relations.ts:ResourceRelationsApi.create": "89de09c7ab730db2e3dfae909a2f8e1c4b3f3145cfe62b003e6b76c572663678",
@@ -21282,8 +21339,8 @@
       "src/api/tenants.ts:TenantsApi.get": "dbe6a53fefc4119a694869f154ea32ca1dc21dcb0247ab32594ec4efdc998be1",
       "src/api/tenants.ts:TenantsApi.getById": "eb5535113531bbd7e116607840e3876da89654290262105b4bd3b5847a45f4de",
       "src/api/tenants.ts:TenantsApi.getByKey": "7be9cebc6011a2c544a2c84653b33bda71b30c2b4f014cacc83f51add60e6658",
-      "src/api/tenants.ts:TenantsApi.list": "d73563fa6af5fa334a3ca279858d3ef1be75f93c59e3602f61709858a6bd936d",
-      "src/api/tenants.ts:TenantsApi.listTenantUsers": "b8d46dd85f47691c41684a7348a5012bf2269f23d34142defa38d2ca61be6d38",
+      "src/api/tenants.ts:TenantsApi.list": "1c5ca4f21fade6f1d886691f6522b0d398342a7f58c4f5c82173e9101118dad5",
+      "src/api/tenants.ts:TenantsApi.listTenantUsers": "0dd0676ae68d5a542ff8117337d8079ef5bb837eb171da123ecabc8cc67443ee",
       "src/api/tenants.ts:TenantsApi.update": "227c4505187e9a97ebfb47c0dd668f7865d97b673f9814c11159d8db3772fecb",
       "src/api/user-attributes.ts:UserAttributesApi.create": "932b48ff594da0fbe79e465f4b787085c948657f72ee8e3100ff792df814ce42",
       "src/api/user-attributes.ts:UserAttributesApi.delete": "a332fc1121104734f296009a0d782b0da06cbb7402d05645b8108a2e858e17c3",
@@ -21306,31 +21363,32 @@
       "src/api/users.ts:UsersApi.getAssignedRoles": "187438aa7778392f767f54e884d19d2c7774a9351c321837f784547d839fa4a6",
       "src/api/users.ts:UsersApi.getById": "89fea1104904f87ff35cf56726963288de0d4ea47b425454026140e0bca9dde6",
       "src/api/users.ts:UsersApi.getByKey": "3a7c29764360f841ccea9f9845b8813b259404180f704615184cfc9daa22b3e2",
-      "src/api/users.ts:UsersApi.list": "ec3763c9a28333c92c620053bb25c890eefdf51609d4b2de03b412a6f90e67fc",
+      "src/api/users.ts:UsersApi.list": "20c46818ea7e00f45df94532151c388e99d6b0077e911061908b7871b17d07e3",
       "src/api/users.ts:UsersApi.sync": "43059d47516ffa3f49e462687516356fdc5abac7cca71c6394e0e0896319da2f",
       "src/api/users.ts:UsersApi.unassignRole": "10c70ca8cf7256fdf92be249de1f35ff0ff246b75d5c44eb121026ff64f79814",
       "src/api/users.ts:UsersApi.update": "a14a9d18eaafdf987355da4699e9197ac1b608a931d84ef2faefdb07496153d2",
       "src/enforcement/enforcer.ts:.isString": "6809b400b07b7344d876bfa38d90a150c171ad47969b53e4014dd01a607b81e4",
+      "src/enforcement/enforcer.ts:.validateCallTimeout": "7b5ba23c9f99cd029b5d1c6c86d138b570da6527a22a816628293a847c2b9f51",
       "src/enforcement/enforcer.ts:Enforcer.buildCheckInput": "0efb94d0ecaf599f8f17da7a6e205414703e1a99c74dc87f616de239b849a4c5",
-      "src/enforcement/enforcer.ts:Enforcer.buildCheckUrlInput": "c9f8b97da6b1c10cf73a2ad63ed42c1393736b8855ee024c3c307b8f169b694c",
-      "src/enforcement/enforcer.ts:Enforcer.buildLocalRoleAssignmentsQuery": "aa53215610785d4706537c56358d387487d0d078eec151648f053067ecaa15fd",
-      "src/enforcement/enforcer.ts:Enforcer.bulkCheck": "4f6aa0b3ea11aa46b60f46bf87454e822bf07b6072f65d4b5e2ae1f353f5cdf6",
-      "src/enforcement/enforcer.ts:Enforcer.bulkCheckWithExceptions": "ce5417cfc7b224ef982df888ad24b381b24dab8218fc1ace3686aaf1c014c3f3",
-      "src/enforcement/enforcer.ts:Enforcer.check": "fe2aadd9ee38992788a98629a092000ef302c6a1e37025395447804ee499af39",
+      "src/enforcement/enforcer.ts:Enforcer.buildCheckUrlInput": "0de6851b42807e9544c702476f6d1f256e9f76da2fa57215859680b92e7899a4",
+      "src/enforcement/enforcer.ts:Enforcer.buildLocalRoleAssignmentsQuery": "f67d6256324166d004343116c1f73dd4f22022804dd8efcb2523ae4c3b3b1b95",
+      "src/enforcement/enforcer.ts:Enforcer.bulkCheck": "fef6e66b953339d30900c0714e2abc2ca092e6f84d935a34bf71a8b22d91a485",
+      "src/enforcement/enforcer.ts:Enforcer.bulkCheckWithExceptions": "56fd275041b5ae009625e1ec9a8d96d7baef1b8fca3eae35b84faae5f12567a0",
+      "src/enforcement/enforcer.ts:Enforcer.check": "0d11e52dda38b2f335c0761d4c2765411e521154b4d41630e3534f172f747b10",
       "src/enforcement/enforcer.ts:Enforcer.checkAllTenants": "aade4c8b413526c58d096401f27bb1b5ad34901ab9c4ff55896cf00eca4e8aee",
       "src/enforcement/enforcer.ts:Enforcer.checkAllTenantsWithExceptions": "13d4497c3bf0269461a6ada2160503cf5110d72b6ed5336ef7120a70a0a2016f",
       "src/enforcement/enforcer.ts:Enforcer.checkUrl": "30be35cf9d91585d3a9dc090ce16249246f659870ab3e41c0c7da921a8b84c27",
       "src/enforcement/enforcer.ts:Enforcer.checkUrlWithExceptions": "f328efa9780095dedaf6ab5165c7edcbe72e6d98532f6ef1a9c2bb4810470f2d",
       "src/enforcement/enforcer.ts:Enforcer.checkWithExceptions": "4ddb948f534525d6cac7e8575d9851f3e27d44b4e8e289e707665d84040381c8",
-      "src/enforcement/enforcer.ts:Enforcer.filterObjects": "285f705d1fdee426fd673ce214362ddeccf6f04e75fb4f7e8e4d96c106cdc98d",
-      "src/enforcement/enforcer.ts:Enforcer.getAuthorizedUsers": "db7b2035003c51858f61300726d007521efa459eaf8ca3c10e0e0781d8165a92",
+      "src/enforcement/enforcer.ts:Enforcer.filterObjects": "2bcc01e659a5f4d0f5bd72d4ccdf000baa5714ad0c7d18ac5eddc6492c269168",
+      "src/enforcement/enforcer.ts:Enforcer.getAuthorizedUsers": "0656c12c8435ddcc2511ef175776e92b11712f73c506afb7b496bec6d9fa45ea",
       "src/enforcement/enforcer.ts:Enforcer.getAuthorizedUsersWithExceptions": "a5d75fbda4e7fadcefa14a9a20793bcceb6c83153c357560bf328389392c4de5",
       "src/enforcement/enforcer.ts:Enforcer.getLocalRoleAssignments": "0d715704d42f64b29e70e97654b4fc118a4dcf3348ecaa1d58951e207c5ca0c7",
-      "src/enforcement/enforcer.ts:Enforcer.getUserPermissions": "8486e109b4f2866f7f33948a26951520e5edb2e36ec547540ed27e11f8aa3e36",
+      "src/enforcement/enforcer.ts:Enforcer.getUserPermissions": "ef6505aabd6124f5838632536b6cde36c86aecf60d4bad50a18adb3278f90d55",
       "src/enforcement/enforcer.ts:Enforcer.getUserPermissionsWithExceptions": "b088d13931a7c1cd2ea8e275a38f781708af5896ef02d50f90e38ab01b681959",
-      "src/enforcement/enforcer.ts:Enforcer.getUserTenants": "3e94f803def7e980bbc686cb3eb3391f274c9e61f2b3ab5f99c36a8f2526897f",
+      "src/enforcement/enforcer.ts:Enforcer.getUserTenants": "79b064d691ec3686300103eefca7c1155fe5e43f28d8ab242b8e00b314b0b520",
       "src/enforcement/enforcer.ts:Enforcer.getUserTenantsWithExceptions": "d5cdf4d301aba94dc14de9502aea88bfe74caaec0570ce1d4afbf536c9227c9a",
-      "src/enforcement/enforcer.ts:Enforcer.handlePDPError": "f131004953b9e0d9f2f0dd2b1e34bbdb3f2616bc1ede2572f1dae228f191073e",
+      "src/enforcement/enforcer.ts:Enforcer.handlePDPError": "176802700ca9374ca515d508658b1e8c048e0ba261a4de45d86e5d95889c407d",
       "src/enforcement/enforcer.ts:Enforcer.normalizeResource": "01287f313beea5f524091e1f6462e791cc06224b846aa0ce026bbfd5b7fd2a40",
       "src/enforcement/enforcer.ts:Enforcer.parsePdpResponse": "d695d7623e025411e93099861e180269dc692911469b815e5ccd9b2fd3bfc487",
       "src/enforcement/enforcer.ts:Enforcer.pdpStatusError": "995a87e540e4bc0a5c4ce35be9b69c49a3edc5f3d37317453b2dd6c7a0550b39",
@@ -21349,31 +21407,31 @@
       "src/index.ts:Permit.getUserPermissions": "561f30ed436101ac0cc9ed0a564ecda55aae4acb218849179b69d73cca5ebc4a",
       "src/index.ts:Permit.getUserTenants": "7afb862bc0123cd6e54c5e4c265ddd93d0212bfa146e80ce54f2cafdbd0e3669",
       "src/utils/context.ts:ContextStore.getDerivedContext": "f01adc283f3dc4a6c1fa5457f4a2044d7b22572f36640ef4ea22eb8bede62760",
-      "src/utils/diagnostics.ts:.collect": "756f898996a54b5aec2c087f8dd8f112fa6032f93b83a60668b79047f50e20e1",
+      "src/utils/diagnostics.ts:.collect": "b7333a65c32e739d07f6912a8b5c68db60106a2d75bddab21a598f6318ec01c9",
       "src/utils/diagnostics.ts:.collectOmitted": "4529ceb7c29b1a5cfe6f31217415f6ee7f03dda18e7cef065f88ec750560af2d",
       "src/utils/diagnostics.ts:.diagnosticAxiosError": "300e2c04e3c0f0185b2f38cfc78e45cf2636c1d46a478eae157542736d4eb0df",
       "src/utils/diagnostics.ts:.diagnosticBody": "8ef8c820bac67ec0d3cdd751167f1130ccd04b216b9a612741d0a94fbf815bf0",
       "src/utils/diagnostics.ts:.diagnosticCause": "bb5795dc71ec4a4b6901868286cf502e4daeae04f3f5a3af93b1934c174b7770",
       "src/utils/diagnostics.ts:.diagnosticErrorSecrets": "3cc5649307ba8c3570816716d09bbc012201cebeeb19f4b1aed33eebc535dd55",
-      "src/utils/diagnostics.ts:.diagnosticMessage": "e57beb1ed6d83714325aae856052a18fc2bdff7c0b2a05d3d7c14c41935cbe36",
-      "src/utils/diagnostics.ts:.diagnosticMetadata": "b9dbdd375488d63ebaf91388344d9c843fd4dd0f90c9eb7672490814c2c89679",
-      "src/utils/diagnostics.ts:.diagnosticRequestSecrets": "4fcaf0367d44b9892776cfa19055d7224cc639d14d61d2b10f1f0032b71c90a9",
-      "src/utils/diagnostics.ts:.diagnosticSecrets": "d3d68c4cccbfa6118671136f9023a0c678ae63dfc6c225e20b75bd04a2780da1",
+      "src/utils/diagnostics.ts:.diagnosticMessage": "cfff71c68f1252ae033a5eece3e25f0dece18dd02a9a8d9c080be8d7ca6b3af9",
+      "src/utils/diagnostics.ts:.diagnosticMetadata": "828f5143fbdb9ebff52c057d20a6f32f14af280991e58cfe9baca3e59aad8e96",
+      "src/utils/diagnostics.ts:.diagnosticRequestSecrets": "c836570537792e95d9e3b0c29de6ca2c29c94b0f509032e5b7eee79ae01f928b",
+      "src/utils/diagnostics.ts:.diagnosticSecrets": "d6551a79764012d99171feb591d5edf1f01eab8f95ccca63ef397973685781e4",
       "src/utils/diagnostics.ts:.diagnosticStatus": "97b6f29383823549b819c45a4e304ec8f082d191f13c695f2cb489333c680122",
       "src/utils/diagnostics.ts:.diagnosticText": "1a57977142ac798fda682db0f80a55c6c95adafbab651491abea4669f3a16092",
       "src/utils/diagnostics.ts:.diagnosticUrl": "78d8cf425e1b44fa3a56ce2e68e303ed30eb6e701070898090d540fdebff02e7",
-      "src/utils/diagnostics.ts:.mergeDiagnosticSecrets": "3658a44f61931c8940820a6319c85c3b4ce3a4d8a7f7b0ed1f5c6c4b6f231e6f",
+      "src/utils/diagnostics.ts:.mergeDiagnosticSecrets": "aba9cd8559daa759685eb1efaf805d99ed7a95ea6715eaa5ee96c06d846ed81c",
       "src/utils/diagnostics.ts:.message": "bbf7417c49d38fc88c0da86cd23c7d7f32c88bc7d4aba7b8b10fada989deefb0",
       "src/utils/diagnostics.ts:.omittedResponseSecrets": "19a5b887435a4a1d7a5fd2175e76880918588a6f44964b69c22d6b9a08772692",
-      "src/utils/diagnostics.ts:.redactPrivateValues": "2845c5c8ab8d26308fec121a6d98fca804194dabbac636eb4dd41a1cd2eef259",
+      "src/utils/diagnostics.ts:.redactPrivateValues": "b8f83010993f64b6cb84514fa126b01b33fea012e487222a3d4b65c5c088fde1",
       "src/utils/diagnostics.ts:.visit": "df37b433c55e9eb2529dae6ffbcedc3329fdf8e01a379c33030fcb81f63d0873"
     },
     "initializationShapes": {
       "src/api/api-client.ts:ApiClient.constructor": "4f138b7d207032a9d67b2cbb1512e9345daee21a1e9af590a5215acac2c691ae",
       "src/api/api-keys.ts:ApiKeysApi.constructor": "9fc07806f1fd9b01e15ce74ae4f3fa383842077545c86cf17f0a577339681004",
       "src/api/audit-logs.ts:AuditLogsApi.constructor": "a7a55498c8c53b1bddcdfde2a1ebfce0aaf61a5d4340744f980eab643607c9a3",
-      "src/api/base.ts:BaseFactsPermitAPI.constructor": "6e36d36e49b99ff53949668d767e5dc630e0f849e693aa48b8b6d75ecdaacad1",
-      "src/api/base.ts:BasePermitApi.constructor": "8f6eca00b1a1c7389674c8281449b39463a49ce5a55a03c7d0eda0115970f76c",
+      "src/api/base.ts:BaseFactsPermitAPI.constructor": "9a3b235538fcb56cdd4da4275e18cb5169255d952ff38c06c01fb93e96c2c3d6",
+      "src/api/base.ts:BasePermitApi.constructor": "6dd31c6a51dde3418f10bf136f12aab149e5e5ee86333037a232407224d5b86b",
       "src/api/base.ts:PermitApiError.constructor": "2ca0da89f1fe278121953aab7b5adf980a90905b1dfde38c413a0191b56f9436",
       "src/api/condition-set-rules.ts:ConditionSetRulesApi.constructor": "f00624544d62ec2c914a3bb190f6b07cd27306c96e3a4866d6e34dab7f86c759",
       "src/api/condition-sets.ts:ConditionSetsApi.constructor": "0f2d9665eda7fba31431d66eb565dbfe8156ef5afe695f3d2274e0aa26a37bdb",
@@ -21389,17 +21447,17 @@
       "src/api/pdps.ts:PdpsApi.constructor": "36d4fbcd74f7a7bdbabd64ddd3120c972aeb022350161fcd7dbdf6b71bc24515",
       "src/api/projects.ts:ProjectsApi.constructor": "b45a7ef29f86ff5ae56ed928934ce538ac06a36ac6b32c689ec1a66b3faa2156",
       "src/api/proxy-configs.ts:ProxyConfigsApi.constructor": "a1100d72b3c6fec0b420a692d37dfc1174eefa989ca4635c13ba5b1121f1dee5",
-      "src/api/relationship-tuples.ts:RelationshipTuplesApi.constructor": "8ba333e5f23a9048a00198da14d8db7b739a8ad959c3dc9e8488ba8814d53c8d",
+      "src/api/relationship-tuples.ts:RelationshipTuplesApi.constructor": "2bf31f8ae23250520eb91264077df898b139ca7e2eec9de72030633629fb1228",
       "src/api/resource-action-groups.ts:ResourceActionGroupsApi.constructor": "46e8644f311c6f9951ffe60cf6336ea948fc6bdd4b0773befa0a46045cb1b3b2",
       "src/api/resource-actions.ts:ResourceActionsApi.constructor": "dc9f80ab3f4d3e9b740860f404e2c2ffe61fe0875455a77b0fc7336e4be797e8",
       "src/api/resource-attributes.ts:ResourceAttributesApi.constructor": "5f36c88616959e0babf9e813eea37f0a9b501b894c5cdd0c7de54fdff41ddf42",
-      "src/api/resource-instances.ts:ResourceInstancesApi.constructor": "fd61f7c37465e3dedb1cda677cee6d445cbc36a2e6ba10d5f8f481b54b1aa820",
+      "src/api/resource-instances.ts:ResourceInstancesApi.constructor": "c6b07915e7f992add6575b32f7c4a37f9ccd5fa30b4693ef5c90f8b4f6147b8d",
       "src/api/resource-relations.ts:ResourceRelationsApi.constructor": "5ec452fbc267f2d375279e914488587a5cb69c767913e269e3e97c1b4d13f4ba",
       "src/api/resource-roles.ts:ResourceRolesApi.constructor": "4e3e46b06c9871c197e01c4043d092cecde8a7f2768c54c1af2d29ba83a127bb",
       "src/api/resources.ts:ResourcesApi.constructor": "e8cbda0ccfb439c4b1229f93250e5c5d3001b21089f65249d7d93239dd19448d",
-      "src/api/role-assignments.ts:RoleAssignmentsApi.constructor": "6b97701130a940e825f879d7815bca3b46712e0dd6159e29bde8269d87b70ce5",
+      "src/api/role-assignments.ts:RoleAssignmentsApi.constructor": "499379468ae4267f8ea35366c95273f2626a0117e7de46dbe56ea02d8a63fc32",
       "src/api/roles.ts:RolesApi.constructor": "82dccad0baded1f1f9807e4941c2afc1dbdd2bf61ad3f036360cb2e50d0ad30f",
-      "src/api/tenants.ts:TenantsApi.constructor": "8d6f8741c4b964c78d7ec07ac7e92c6b5b761b6317ce656afc099f64f9bba747",
+      "src/api/tenants.ts:TenantsApi.constructor": "3b4987aee008a2f3c0968880eed71b457d719416e0bab91960815ee4894cd200",
       "src/api/user-attributes.ts:UserAttributesApi.constructor": "9df99cd50dfd82a45b3f497d9888e06f489097b81de4a68018270e3845eefa73",
       "src/api/user-invites.ts:UserInvitesApi.constructor": "b7d9171211725879e89c774ff6da0010d46415896fde5e569ce82ba4a15d4861",
       "src/api/users.ts:UsersApi.constructor": "c3f53ff93453caac14ceb493c097cdf551654434a54b8c4ebea2ed01db1d620f",
@@ -21408,14 +21466,21 @@
       "src/enforcement/enforcer.ts:PermitError.constructor": "a8d51a5d6e781bfaf7dfadcafcd82b022e184ae22cb292b7f348b17813484b39",
       "src/enforcement/enforcer.ts:PermitPDPStatusError.constructor": "ce81b6aa208ad9ce0f3d6a6f4387135ac18dcd04f718163f6d119f990058f54f",
       "src/enforcement/enforcer.ts:RESOURCE_DELIMITER": "84621939eae999affeb1c6c48d23371c99a953b6c56aa67ebd94e3b541a3cfd1",
-      "src/index.ts:Permit.constructor": "b18d7321209d03b1c680d0d6908f7a982f97c82affc7db6c53fadeabc4c32611",
+      "src/index.ts:Permit.constructor": "83060f82890634adfc1c1e42ea31cdc28995e374828dec9a709b9cbcc5a00739",
       "src/utils/context.ts:ContextStore.baseContext": "e55a3d84c22b3b144eb4ab9b68731dd74c2e3e92b54db022740dfdcfd3c5cd96",
       "src/utils/diagnostics.ts:BODY_FIELDS": "8533027b452b98b0291789bf46f339c6f5859afb5ac9677d9972407b2cc19a15",
       "src/utils/diagnostics.ts:MAX_ITEMS": "398841861d5adf4b8d8506135b8c3a6c12f0d8c0eae339acda51987a25e19973",
+      "src/utils/diagnostics.ts:MAX_PRIVATE_CHARACTERS": "77cf0448996a94a4c41cb4305e358e18780a3998254266d3587db83611796993",
+      "src/utils/diagnostics.ts:MAX_PRIVATE_INPUT": "d2826bb431422e7a8f380148d18765de909c99cfbe4cf4abe67463d88dc3a922",
+      "src/utils/diagnostics.ts:MAX_PRIVATE_NODES": "3e67797c567ba511495b6b549b869c0f13fa306acbe77717e981812d42103400",
+      "src/utils/diagnostics.ts:MAX_PRIVATE_VALUES": "dc124dde66103df70098f7e563e8b31c24b7902c6c5e56fac231478f59338ba5",
       "src/utils/diagnostics.ts:MAX_TEXT": "d2b99e5d79584fb70f0ff4109296d92e10dd1cf4f0239bcb02221d2977d81ec4",
+      "src/utils/diagnostics.ts:MIN_PRIVATE_VALUE_LENGTH": "35c60edf5414b7a7fbb7ad274118600fa4210d57ca3e859b68a5251def67ce53",
       "src/utils/diagnostics.ts:REDACTED": "cbc83d74db05dc5da1d6bdfb77e4df00b57567f6272844f3f5efe0b7afd50d73",
       "src/utils/diagnostics.ts:REQUEST_HEADERS": "e9b84eec43ed1026803dc038026ea5403c5359e1dfce03b6c26b865fa308c6b6",
       "src/utils/diagnostics.ts:RESPONSE_HEADERS": "b3505ed26eade60624be8c3291885d7cc37cf4afb297e257cdf98bb526ae2b05",
+      "src/utils/diagnostics.ts:TRANSPORT_CODE": "7d759d71fdb566611d14c0bac7231b96be3c44656743eae446f8fac66b96982a",
+      "src/utils/diagnostics.ts:TRANSPORT_CODES": "49e97af521de6c091c2bfdd166d244ff937f0812adc0976d6f439c2b2dbaa11c",
       "src/utils/diagnostics.ts:failurePrivacy": "68f72d0f4506fc0e6571c58e563f506403dd27896e8f9a8963f90d4abc4f1464",
       "src/utils/diagnostics.ts:failurePrivacyKey": "98c132a2ec6bf02f3b491cbc63f995da0b4783423b00c31b883e3886c24cdc0c",
       "src/utils/retry.ts:DEFAULT_RETRY_CONFIG": "a124e39640a8af9b5972e0913062592cd4e8c5b4d370c343476c0f43fef9e4ac",
@@ -21425,9 +21490,6 @@
       "src/utils/retry.ts:maximumTimerDelay": "4947b585ee731c61bd9a008ba1016e23c06be3ad1aa5770f561ab23aab338e66",
       "src/utils/retry.ts:permanentErrorCodes": "ce4cccfdfe51f554290c473da0979da371faa4bdc8f4b10dbee66c878d759ced",
       "src/utils/retry.ts:transientNetworkCodes": "2cdb83120b7946d946f283ace219d13f1001bd369c5062fa8bf7032f9c8bee1c",
-      "src/utils/diagnostics.ts:MAX_PRIVATE_CHARACTERS": "77cf0448996a94a4c41cb4305e358e18780a3998254266d3587db83611796993",
-      "src/utils/diagnostics.ts:MAX_PRIVATE_VALUES": "dc124dde66103df70098f7e563e8b31c24b7902c6c5e56fac231478f59338ba5",
-      "src/utils/diagnostics.ts:MIN_PRIVATE_VALUE_LENGTH": "35c60edf5414b7a7fbb7ad274118600fa4210d57ca3e859b68a5251def67ce53",
       "src/version.ts:SDK_VERSION": "2929e5d7ae8841f2a3d2836d22f12372587b08222fd79b6991b6b2b226dda45a",
       "src/version.ts:__PERMIT_SDK_VERSION__": "60e700f96ac35a839cbc8982dfc7b91a5a613ded3d48ffbdf1ba299ea5777139"
     },
@@ -26354,7 +26416,7 @@
           "parameters": [
             {
               "initializer": null,
-              "name": "{ tenantKey, ...params }",
+              "name": "{ tenantKey, page = 1, perPage = 100, ...params }",
               "optional": false,
               "type": "IListTenantUsers"
             }
@@ -27023,7 +27085,7 @@
         "deprecated": false,
         "factsProxy": true,
         "publicSignatures": [
-          "<T extends IGetUserRoles>(params: T): Promise<ReturnIGetUserRolesType<T>>"
+          "<T extends IGetUserRoles>(params: T): Promise<ReturnListRoleAssignments<T>>"
         ],
         "routes": [
           {

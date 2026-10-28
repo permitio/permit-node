@@ -595,8 +595,8 @@ for (const [name, file, before, after, pathPart] of [
   [
     'wrapper body mapping',
     'src/api/users.ts',
-    '          ...params,',
-    '          ...params, page: 999,',
+    '          page,\n          perPage,',
+    '          page: 999,\n          perPage,',
     '/implementationShapes/',
   ],
   [
@@ -1091,6 +1091,16 @@ test('unreviewed transport factories cannot inherit a known facade classificatio
     "'#src/utils/unreviewed-transport'",
   );
   expect(() => extractSdk(copy)).toThrow(/Unknown HTTP client/);
+}, 20_000);
+
+test('a configuration factory that stops forwarding its parameters rejects extraction', () => {
+  const copy = sourceCopy();
+  replace(
+    join(copy, 'src/api/base.ts'),
+    'new Configuration(parameters)',
+    'new Configuration({ ...parameters, basePath: BASE_PATH })',
+  );
+  expect(() => extractSdk(copy)).toThrow(/must construct the generated Configuration/);
 }, 20_000);
 
 test('dynamic facade routing defaults cannot silently receive static route evidence', () => {

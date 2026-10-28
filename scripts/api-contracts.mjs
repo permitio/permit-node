@@ -236,6 +236,48 @@ export function extractSdk(root) {
     if (symbol?.flags & ts.SymbolFlags.Alias) symbol = checker.getAliasedSymbol(symbol);
     return symbol?.valueDeclaration ?? symbol?.declarations?.[0];
   };
+  const generatedConfiguration = (expression) => {
+    const declaration = symbolDeclaration(expression);
+    return Boolean(
+      declaration &&
+      ts.isClassDeclaration(declaration) &&
+      location(declaration).file === 'src/openapi/configuration.ts',
+    );
+  };
+  // Returns the options of a generated-client Configuration built directly or through the
+  // reviewed sdkConfiguration() factory, which must pass its own parameter to that constructor.
+  function configurationOptions(expression) {
+    if (!expression) return undefined;
+    if (ts.isNewExpression(expression))
+      return generatedConfiguration(expression.expression) ? expression.arguments?.[0] : undefined;
+    if (!ts.isCallExpression(expression)) return undefined;
+    const factory = symbolDeclaration(expression.expression);
+    if (
+      !factory ||
+      !ts.isFunctionDeclaration(factory) ||
+      factory.name?.text !== 'sdkConfiguration' ||
+      location(factory).file !== 'src/api/base.ts'
+    )
+      return undefined;
+    const parameter = factory.parameters.length === 1 ? factory.parameters[0].name : undefined;
+    let constructs = false;
+    if (parameter && ts.isIdentifier(parameter) && factory.body)
+      visit(factory.body, (node) => {
+        if (
+          ts.isNewExpression(node) &&
+          generatedConfiguration(node.expression) &&
+          node.arguments?.length === 1 &&
+          ts.isIdentifier(node.arguments[0]) &&
+          symbolDeclaration(node.arguments[0]) === factory.parameters[0]
+        )
+          constructs = true;
+      });
+    if (!constructs)
+      throw new Error(
+        'sdkConfiguration() must construct the generated Configuration from its parameter.',
+      );
+    return expression.arguments[0];
+  }
   const instances = new Map();
   const controlPlaneClients = new Set();
   const controlPlaneRoutes = new WeakSet();
@@ -254,12 +296,7 @@ export function extractSdk(root) {
         if (target && ts.isClassDeclaration(target)) {
           const clientKey = `${clazz.name.text}.${node.left.name.text}`;
           instances.set(clientKey, target);
-          const configuration = node.right.arguments?.[0];
-          const configurationClass =
-            configuration && ts.isNewExpression(configuration)
-              ? symbolDeclaration(configuration.expression)
-              : undefined;
-          const options = configuration?.arguments?.[0];
+          const options = configurationOptions(node.right.arguments?.[0]);
           const base =
             options && ts.isObjectLiteralExpression(options)
               ? options.properties.find(
@@ -269,9 +306,6 @@ export function extractSdk(root) {
               : undefined;
           if (
             location(target).file.startsWith('src/openapi/api/') &&
-            configurationClass &&
-            ts.isClassDeclaration(configurationClass) &&
-            location(configurationClass).file === 'src/openapi/configuration.ts' &&
             base &&
             ts.isPropertyAccessExpression(base) &&
             base.name.text === 'apiUrl' &&
@@ -286,8 +320,14 @@ export function extractSdk(root) {
   }
   for (const clazz of authored) {
     visit(clazz, (node) => {
-      if (ts.isNewExpression(node) && node.expression.getText() === 'Configuration') {
-        const base = node.arguments?.[0]?.properties?.find(
+      const configuration =
+        ts.isNewExpression(node) && node.expression.getText() === 'Configuration'
+          ? node.arguments?.[0]
+          : ts.isCallExpression(node)
+            ? configurationOptions(node)
+            : undefined;
+      if (configuration) {
+        const base = configuration.properties?.find(
           (property) => property.name && propertyName(property.name) === 'basePath',
         );
         if (base?.initializer) transports[`${clazz.name.text}.basePath`] = print(base.initializer);
