@@ -1,13 +1,19 @@
 import { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import pino from 'pino';
 
+import { redactUrl } from './redact-url';
+
 export class AxiosLoggingInterceptor {
   static setupInterceptor(axiosInstance: AxiosInstance, logger: pino.Logger): void {
     // Add a request interceptor
     axiosInstance.interceptors.request.use(
       function (request: InternalAxiosRequestConfig) {
         request.headers = request.headers || {}; // Ensure headers are not undefined
-        logger.debug(`Sending HTTP request: ${request?.method?.toUpperCase()} ${request?.url}`);
+        logger.debug(
+          `Sending HTTP request: ${request?.method?.toUpperCase()} ${redactUrl(
+            request?.url ?? '',
+          )}`,
+        );
         return request;
       },
       function (error: any) {
@@ -20,9 +26,9 @@ export class AxiosLoggingInterceptor {
     axiosInstance.interceptors.response.use(
       function (response: AxiosResponse<any>) {
         logger.debug(
-          `Received HTTP response: ${response?.config?.method?.toUpperCase()} ${
-            response?.config?.url
-          }, status: ${response?.status}`,
+          `Received HTTP response: ${response?.config?.method?.toUpperCase()} ${redactUrl(
+            response?.config?.url ?? '',
+          )}, status: ${response?.status}`,
         );
         return response;
       },

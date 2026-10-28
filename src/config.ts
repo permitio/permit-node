@@ -19,7 +19,9 @@ interface ILoggerConfig {
   label: string;
 
   /**
-   * Sets whether the SDK log output should be in JSON format.
+   * Has no effect: the SDK log output is always JSON.
+   *
+   * @deprecated pino 8 dropped the pretty-print option this used to set.
    */
   json: boolean;
 }
@@ -154,8 +156,10 @@ export class ConfigFactory {
         level: _.get(process.env, 'PERMIT_LOG_LEVEL', 'warn'),
         // Label added to logs
         label: _.get(process.env, 'PERMIT_LOG_LABEL', 'Permit.io'),
-        // When logging - dump full data to console as JSON
-        json: JSON.parse(_.get(process.env, 'PERMIT_LOG_JSON', 'false')),
+        // Read leniently: the option has no effect, so no value may stop the client starting.
+        json: ['true', '1'].includes(
+          _.get(process.env, 'PERMIT_LOG_JSON', 'false').trim().toLowerCase(),
+        ),
       },
       multiTenancy: {
         defaultTenant: 'default',

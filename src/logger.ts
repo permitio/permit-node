@@ -1,11 +1,30 @@
 import util from 'util';
 
+import axios from 'axios';
 import pino from 'pino';
 
 import { IPermitConfig } from './config';
+import { redactUrl } from './utils/redact-url';
 
 export function prettyConsoleLog(label: string, data: any) {
   console.log(label, util.inspect(data, false, 12, true));
+}
+
+// pino's standard error serializer copies every field of an error, and an axios error's
+// config, request and response hold the Authorization header (the request even as raw
+// header text). An axios error is logged as what identifies the failure, and nothing else.
+export function serializeError(error: unknown): unknown {
+  if (axios.isAxiosError(error)) {
+    return {
+      type: error.name,
+      message: error.message,
+      code: error.code,
+      status: error.response?.status,
+      method: error.config?.method?.toUpperCase(),
+      url: error.config?.url === undefined ? undefined : redactUrl(error.config.url),
+    };
+  }
+  return pino.stdSerializers.err(error as Error);
 }
 
 export class LoggerFactory {
@@ -16,6 +35,7 @@ export class LoggerFactory {
       level: config.log.level,
       base: { label: config.log.label },
       timestamp: pino.stdTimeFunctions.isoTime,
+      serializers: { err: serializeError },
       // A backstop for a credential that a log call passes in an object.
       redact: {
         paths: [

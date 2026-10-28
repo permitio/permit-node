@@ -24,6 +24,8 @@ function initLog(config: Record<string, unknown>, env: Record<string, string> = 
   const result = spawnSync(process.execPath, ['-e', script], {
     encoding: 'utf8',
     env: { ...childEnv, ...env },
+    // A hung child fails here, with the reason, rather than at ava's inactivity timeout.
+    timeout: 20000,
   });
   if (result.error || result.status !== 0) {
     throw new Error(
@@ -79,5 +81,7 @@ test('the trace level does not print the token either', (t) => {
 
 test('log.json no longer stops the client from starting', (t) => {
   t.notThrows(() => initLog({ log: { json: true } }));
-  t.notThrows(() => initLog({}, { PERMIT_LOG_JSON: 'true' }));
+  for (const value of ['true', 'True', '', 'yes', '1']) {
+    t.notThrows(() => initLog({}, { PERMIT_LOG_JSON: value }), value);
+  }
 });

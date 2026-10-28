@@ -5,6 +5,7 @@ import URL from 'url-parse';
 import { IPermitConfig } from '../config';
 import { CheckConfig, Context, ContextStore } from '../utils/context';
 import { AxiosLoggingInterceptor } from '../utils/http-logger';
+import { redactUrl } from '../utils/redact-url';
 import { resolveRetryConfig } from '../utils/retry';
 import { AxiosRetryInterceptor } from '../utils/retry-interceptor';
 
@@ -253,7 +254,7 @@ export class Enforcer implements IEnforcer {
         }
         throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
           and cannot connect to the PDP, please check your configuration and make sure the
-          PDP is running at ${this.config.pdp} and accepting requests. \n
+          PDP is running at ${redactUrl(this.config.pdp)} and accepting requests. \n
           Read more about setting up the PDP at https://docs.permit.io`);
       });
   }
@@ -350,7 +351,7 @@ export class Enforcer implements IEnforcer {
         }
         throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
           and cannot connect to the PDP, please check your configuration and make sure the
-          PDP is running at ${this.config.pdp} and accepting requests. \n
+          PDP is running at ${redactUrl(this.config.pdp)} and accepting requests. \n
           Read more about setting up the PDP at https://docs.permit.io`);
       });
   }
@@ -454,7 +455,9 @@ export class Enforcer implements IEnforcer {
           this.logger.error(`${errorMessage}\n${error}`);
         }
         throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
-          and cannot connect to the PDP, please check your configuration and make sure the PDP is running at ${this.config.pdp} and accepting requests. \n
+          and cannot connect to the PDP, please check your configuration and make sure the PDP is running at ${redactUrl(
+            this.config.pdp,
+          )} and accepting requests. \n
           Read more about setting up the PDP at https://docs.permit.io`);
       });
   }
