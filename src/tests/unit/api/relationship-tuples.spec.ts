@@ -22,7 +22,7 @@ describe('RelationshipTuplesApi (unit)', () => {
   });
 
   describe('list', () => {
-    it('GETs the env-scoped collection with no params when none are given', async () => {
+    it('GETs the env-scoped collection with default pagination when none is given', async () => {
       const tuples = [{ subject: 'user:alice', relation: 'parent', object: 'folder:root' }];
       rest.resolveWith(tuples);
 
@@ -31,9 +31,9 @@ describe('RelationshipTuplesApi (unit)', () => {
       expect(result).toEqual(tuples);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(COLLECTION);
-      // The SDK does not default pagination here, so omitted filters are absent.
-      expect(rest.last?.params).not.toHaveProperty('page');
-      expect(rest.last?.params).not.toHaveProperty('tenant');
+      // Pagination defaults to page 1 of 100, as the IPagination docs state; omitted
+      // filters are absent.
+      expect(rest.last?.params).toEqual({ page: '1', per_page: '100' });
     });
 
     it('forwards filters and pagination as snake_case wire params', async () => {

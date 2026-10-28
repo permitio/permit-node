@@ -229,13 +229,16 @@ export class ResourceInstancesApi extends BaseFactsPermitAPI implements IResourc
   public async list<Attributes extends object = object>(
     params?: IListResourceInstanceParams,
   ): Promise<ResourceInstanceRead<Attributes>[]> {
+    const { page = 1, perPage = 100, ...filters } = { ...params };
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = (
         await this.instances.listResourceInstances({
-          ...params,
+          ...filters,
           ...this.config.apiContext.environmentContext,
+          page,
+          perPage,
         })
       ).data;
       return (

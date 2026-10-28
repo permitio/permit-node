@@ -63,4 +63,8 @@ See [the migration guide](MIGRATION.md) for affected callers, actions and retain
   its last attempt with no timeout.
 - Request values shorter than 8 characters are no longer redacted out of error and log messages.
 - `resourceRelations.list` also accepts the raw-array response of older APIs.
+- `users.list`, `tenants.list`, `tenants.listTenantUsers`, `resourceInstances.list` and
+  `relationshipTuples.list` default to `page: 1, perPage: 100`, as their pagination
+  documentation and the `listDetailed()` methods already did. They sent no pagination before, so
+  the API returned its own default of 30 records. Pass `perPage` to keep a smaller page.
 - Remove the unused `lodash` dependency.

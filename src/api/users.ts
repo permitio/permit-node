@@ -328,13 +328,16 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
   public async list<Attributes extends object = object>(
     params?: IUsersListParams,
   ): Promise<PaginatedResultUserRead<Attributes>> {
+    const { page = 1, perPage = 100, ...filters } = { ...params };
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       return (
         await this.users.listUsers({
-          ...params,
+          ...filters,
           ...this.config.apiContext.environmentContext,
+          page,
+          perPage,
         })
       ).data as PaginatedResultUserRead<Attributes>;
     } catch (err) {

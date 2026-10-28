@@ -113,6 +113,10 @@ register an unused transform. Two additional removed root exports are covered un
 - Ordinary condition-set, tenant, instance, tuple and resource-relation lists keep their declared
   array result, unwrapping a server pagination envelope when required. Do not add `.data` to these
   high-level array results. Generated-only clients can have different result unions.
+- `users.list()`, `tenants.list()`, `tenants.listTenantUsers()`, `resourceInstances.list()` and
+  `relationshipTuples.list()` now request page 1 of 100 records when pagination is omitted, as
+  documented. They previously sent no pagination and received the API's default of 30 records.
+  Pass `perPage` explicitly if a consumer depends on the smaller page.
 
 ### A4 — Condition filters
 

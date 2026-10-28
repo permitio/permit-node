@@ -232,7 +232,7 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
   public async list<Attributes extends object = object>(
     params?: IListTenantsParams,
   ): Promise<TenantRead<Attributes>[] | PaginatedResultTenantRead<Attributes>> {
-    const options = { ...params };
+    const { page = 1, perPage = 100, ...options } = { ...params };
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
@@ -240,6 +240,8 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
         await this.tenants.listTenants({
           ...options,
           ...this.config.apiContext.environmentContext,
+          page,
+          perPage,
         })
       ).data;
       if (options.includeTotalCount === true) {
@@ -291,6 +293,8 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
    */
   public async listTenantUsers<Attributes extends object = object>({
     tenantKey,
+    page = 1,
+    perPage = 100,
     ...params
   }: IListTenantUsers): Promise<PaginatedResultUserRead<Attributes>> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
@@ -301,6 +305,8 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
           ...params,
           ...this.config.apiContext.environmentContext,
           tenantId: tenantKey,
+          page,
+          perPage,
         })
       ).data as PaginatedResultUserRead<Attributes>;
     } catch (err) {

@@ -25,7 +25,7 @@ describe('UsersApi (unit)', () => {
   });
 
   describe('list', () => {
-    it('GETs the env-scoped collection without pagination params by default', async () => {
+    it('GETs the env-scoped collection with default pagination', async () => {
       const response = { data: [{ key: 'bob', id: 'user-1' }], total_count: 1, page_count: 1 };
       rest.resolveWith(response);
 
@@ -35,11 +35,9 @@ describe('UsersApi (unit)', () => {
       expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(USERS);
-      // Unlike resources.list, users.list does not inject default page/per_page.
-      expect(rest.last?.params).not.toHaveProperty('page');
-      expect(rest.last?.params).not.toHaveProperty('per_page');
-      expect(rest.last?.params).not.toHaveProperty('search_operator');
-      expect(rest.last?.params).not.toHaveProperty('include_resource_instance_roles');
+      // Like listDetailed(), users.list defaults to page 1 of 100 rather than the API's own
+      // smaller page size; omitted filters are absent.
+      expect(rest.last?.params).toEqual({ page: '1', per_page: '100' });
     });
 
     it('forwards search, role and pagination as wire params', async () => {
@@ -121,6 +119,8 @@ describe('UsersApi (unit)', () => {
       expect(rest.last?.params).toEqual({
         search_operator: 'contains',
         include_resource_instance_roles: 'false',
+        page: '1',
+        per_page: '100',
       });
     });
   });

@@ -24,7 +24,7 @@ describe('TenantsApi (unit)', () => {
   });
 
   describe('list', () => {
-    it('GETs the env-scoped collection without injecting pagination defaults', async () => {
+    it('GETs the env-scoped collection with default pagination', async () => {
       const response = [{ key: 't1', id: 'tenant-1' }];
       rest.resolveWith(response);
 
@@ -33,11 +33,9 @@ describe('TenantsApi (unit)', () => {
       expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(COLLECTION);
-      // Unlike resources, tenants.list() forwards only the params it is given,
-      // so page/per_page are absent when the caller omits them.
-      expect(rest.last?.params).not.toHaveProperty('page');
-      expect(rest.last?.params).not.toHaveProperty('per_page');
-      expect(rest.last?.params).not.toHaveProperty('include_total_count');
+      // Pagination defaults to page 1 of 100, as the IPagination docs state, rather
+      // than the API's own smaller page size.
+      expect(rest.last?.params).toEqual({ page: '1', per_page: '100' });
     });
 
     it.each([true, false])('forwards explicit count=%s with immutable filters', async (count) => {
@@ -75,7 +73,11 @@ describe('TenantsApi (unit)', () => {
       ]) {
         rest.resolveWith(page);
         expect(await permit.api.tenants.list({ includeTotalCount: true })).toEqual(page);
-        expect(rest.last?.params).toEqual({ include_total_count: 'true' });
+        expect(rest.last?.params).toEqual({
+          include_total_count: 'true',
+          page: '1',
+          per_page: '100',
+        });
       }
       expect(rest.requests).toHaveLength(2);
     });
@@ -85,7 +87,11 @@ describe('TenantsApi (unit)', () => {
       for (const options of [undefined, { includeTotalCount: false }] as const) {
         rest.resolveWith({ data: rows, total_count: 19, page_count: 1 });
         expect(await permit.api.tenants.list(options)).toEqual(rows);
-        expect(rest.last?.params).toEqual(options ? { include_total_count: 'false' } : {});
+        expect(rest.last?.params).toEqual(
+          options
+            ? { include_total_count: 'false', page: '1', per_page: '100' }
+            : { page: '1', per_page: '100' },
+        );
       }
       expect(rest.requests).toHaveLength(2);
     });
@@ -125,7 +131,11 @@ describe('TenantsApi (unit)', () => {
       expect(await synced.list({ includeTotalCount: true })).toEqual(page);
       expect(proxied.rest.last?.origin).toBe(MOCK_PDP_ORIGIN);
       expect(proxied.rest.last?.path).toBe(COLLECTION);
-      expect(proxied.rest.last?.params).toEqual({ include_total_count: 'true' });
+      expect(proxied.rest.last?.params).toEqual({
+        include_total_count: 'true',
+        page: '1',
+        per_page: '100',
+      });
       expect(synced).not.toBe(original);
       expect(proxied.rest.requests).toHaveLength(1);
     });
@@ -136,7 +146,11 @@ describe('TenantsApi (unit)', () => {
         permit.api.tenants.list({ includeTotalCount: true, page: 0 }),
       ).rejects.toMatchObject({ name: 'PermitApiError', status: 422 });
       expect(rest.requests).toHaveLength(1);
-      expect(rest.last?.params).toEqual({ include_total_count: 'true', page: '0' });
+      expect(rest.last?.params).toEqual({
+        include_total_count: 'true',
+        page: '0',
+        per_page: '100',
+      });
     });
 
     it('forwards search, page and perPage as wire params', async () => {
@@ -164,7 +178,7 @@ describe('TenantsApi (unit)', () => {
       expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(`${COLLECTION}/t1/users`);
-      expect(rest.last?.params).not.toHaveProperty('page');
+      expect(rest.last?.params).toEqual({ page: '1', per_page: '100' });
     });
 
     it('forwards pagination and the search/role filters as wire params', async () => {

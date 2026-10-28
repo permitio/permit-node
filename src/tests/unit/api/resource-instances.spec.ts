@@ -27,7 +27,7 @@ describe('ResourceInstancesApi (unit)', () => {
   });
 
   describe('list', () => {
-    it('GETs the env-scoped collection without injecting pagination defaults', async () => {
+    it('GETs the env-scoped collection with default pagination', async () => {
       const response = [{ key: 'inst-1', resource: 'document' }];
       rest.resolveWith(response);
 
@@ -36,11 +36,9 @@ describe('ResourceInstancesApi (unit)', () => {
       expect(result).toEqual(response);
       expect(rest.last?.method).toBe('GET');
       expect(rest.last?.path).toBe(COLLECTION);
-      // list() forwards only the params it is given, so page/per_page and the
-      // tenant/resource filters are absent when the caller omits them.
-      expect(rest.last?.params).not.toHaveProperty('page');
-      expect(rest.last?.params).not.toHaveProperty('tenant');
-      expect(rest.last?.params).not.toHaveProperty('resource');
+      // Pagination defaults to page 1 of 100, like listDetailed(); the tenant/resource
+      // filters are absent when the caller omits them.
+      expect(rest.last?.params).toEqual({ page: '1', per_page: '100' });
     });
 
     it('forwards the tenant and resource filters plus pagination as wire params', async () => {

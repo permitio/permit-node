@@ -199,13 +199,16 @@ export class RelationshipTuplesApi extends BaseFactsPermitAPI implements IRelati
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
   public async list(params: IListRelationshipTuples): Promise<RelationshipTupleRead[]> {
+    const { page = 1, perPage = 100, ...filters } = { ...params };
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
       const response = (
         await this.relationshipTuples.listRelationshipTuples({
-          ...params,
+          ...filters,
           ...this.config.apiContext.environmentContext,
+          page,
+          perPage,
         })
       ).data;
       return Array.isArray(response) ? response : response.data;
