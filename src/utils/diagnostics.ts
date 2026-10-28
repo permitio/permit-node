@@ -518,7 +518,8 @@ export function diagnosticAxiosError(
     snapshot.stack = snapshot.stack.split('\n').slice(0, 5).join('\n');
   if (error.response && metadata.status !== undefined) {
     const responseHeaders = new AxiosHeaders();
-    for (const [name, value] of Object.entries(error.response.headers).slice(0, 32)) {
+    // A hand-built AxiosError (an interceptor or a mock) may have a response without headers.
+    for (const [name, value] of Object.entries(error.response.headers ?? {}).slice(0, 32)) {
       responseHeaders.set(
         diagnosticText(name, privateValues),
         RESPONSE_HEADERS.has(name.toLowerCase())

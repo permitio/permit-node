@@ -7,7 +7,7 @@ import { afterEach, expect, test, vi } from 'vitest';
 import { ConfigFactory, type IPermitOptions } from '#src/config';
 import { Permit } from '#src/index';
 import { createMockPermit } from '#src/tests/helpers/mock-api';
-import { diagnosticSecrets, diagnosticText } from '#src/utils/diagnostics';
+import { diagnosticAxiosError, diagnosticSecrets, diagnosticText } from '#src/utils/diagnostics';
 import { createOwnedTransport } from '#src/utils/http-transport';
 import { resolveRetryConfig } from '#src/utils/retry';
 import { SDK_VERSION } from '#src/version';
@@ -74,4 +74,12 @@ test('resource relations list accepts a raw array as well as a paginated envelop
   const rows = [{ key: 'owner' }];
   rest.resolveWith(rows);
   expect(await permit.api.resourceRelations.list({ resourceKey: 'document' })).toEqual(rows);
+});
+
+test('an Axios error whose response has no headers still gets a safe snapshot', () => {
+  const error = new AxiosError('rejected', 'ERR_BAD_RESPONSE');
+  error.response = { status: 503, statusText: '', data: {} } as unknown as NonNullable<
+    AxiosError['response']
+  >;
+  expect(() => diagnosticAxiosError(error)).not.toThrow();
 });
