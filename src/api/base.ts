@@ -13,9 +13,36 @@ interface FormattedAxiosError<T> {
   error?: T;
   status?: number;
 }
+// An axios error keeps the request's headers, the Authorization header with the API key
+// included, in its config and in the raw request's header text. Replace that header's value
+// in place, so neither the error nor anything logging it shows the key.
+export function redactAuthorization(error: AxiosError): void {
+  for (const config of [error.config, error.response?.config]) {
+    const headers = config?.headers as Record<string, unknown> | undefined;
+    if (!headers) {
+      continue;
+    }
+    for (const name of Object.keys(headers)) {
+      if (name.toLowerCase() === 'authorization') {
+        headers[name] = '[REDACTED]';
+      }
+    }
+  }
+  const request = error.request as { _header?: unknown } | undefined;
+  if (request && typeof request._header === 'string') {
+    request._header = request._header.replace(/^(authorization:[ \t]*).*$/gim, '$1[REDACTED]');
+  }
+}
+
 export class PermitApiError<T> extends Error {
-  constructor(message: string, public originalError: AxiosError<T>) {
+  // Not enumerable, so logging or inspecting the error prints the message, not the whole
+  // axios error. Still readable as before; its Authorization header is redacted.
+  public readonly originalError!: AxiosError<T>;
+
+  constructor(message: string, originalError: AxiosError<T>) {
     super(message);
+    redactAuthorization(originalError);
+    Object.defineProperty(this, 'originalError', { value: originalError, enumerable: false });
   }
 
   public get formattedAxiosError(): FormattedAxiosError<T> {

@@ -363,20 +363,25 @@ export class Enforcer implements IEnforcer {
     context: Context = {}, // default to empty context if not provided
     sdk = 'node', // default to "node" if not provided
   ): Promise<TenantDetails[]> {
+    // The query goes in the body, as for check(), and the key in the Authorization header.
+    // The resource keeps the tenant it names: the answer lists every tenant it is allowed in,
+    // so the default tenant is not filled in.
+    const resourceObj = isString(resource) ? Enforcer.resourceFromString(resource) : resource;
+    const input: ICheckInput = {
+      user: isString(user) ? { key: user } : user,
+      action,
+      resource: resourceObj,
+      context: this.contextStore.getDerivedContext(context),
+    };
     try {
-      const response = await this.client.post<AllTenantsResponse>('/allowed/all-tenants', {
+      const response = await this.client.post<AllTenantsResponse>('allowed/all-tenants', input, {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
           'X-Permit-Sdk-Language': sdk,
         },
-        params: {
-          user,
-          action,
-          resource,
-          context,
-        },
+        timeout: this.config.timeout,
       });
-      return response.data.allowedTenants.map((item) => item.tenant);
+      return response.data.allowed_tenants.map((item) => item.tenant);
     } catch (error) {
       this.logger.error('Error fetching all tenants:', error);
       throw error;
