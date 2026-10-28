@@ -430,8 +430,11 @@ describe('PER-16565: safe diagnostics at public boundaries', () => {
       );
       assertSafe([...lines, ...representations(error)]);
       if (phase > 1) {
+        // The description is withheld, but a fixed transport code is kept.
+        expect(error.message).not.toContain('Caller failed');
+        expect(error.message).toContain('transport code ECONNRESET');
         expect(error.message).toContain('check connectivity and configuration');
-        expect((error as PermitApiError).code).toBeUndefined();
+        expect((error as PermitApiError).code).toBe('ECONNRESET');
       }
       expect(JSON.stringify(error).length).toBeLessThan(10_000);
     }

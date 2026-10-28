@@ -1,11 +1,16 @@
 import axios, { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
+import { constants } from 'node:os';
 
 const REDACTED = '[REDACTED]';
 const MAX_TEXT = 1024;
 const MAX_ITEMS = 8;
-// How many request values, and how much text, privacy collection holds before failing closed.
+// How many distinct request values, and how much of their text, privacy collection holds before
+// failing closed. Containers, duplicates and values too short to be private are not counted.
 const MAX_PRIVATE_VALUES = 512;
 const MAX_PRIVATE_CHARACTERS = 65_536;
+// How many nodes privacy collection walks, and the longest serialized request body it parses.
+const MAX_PRIVATE_NODES = 16_384;
+const MAX_PRIVATE_INPUT = 1_048_576;
 // A request value shorter than this is not treated as private: removing "1", "node" or "A"
 // from every diagnostic would garble it, or redact it whole when the marker holds the letter.
 const MIN_PRIVATE_VALUE_LENGTH = 8;
@@ -21,6 +26,38 @@ const REQUEST_HEADERS = new Set([
   'x-wait-timeout',
 ]);
 const RESPONSE_HEADERS = new Set(['content-type', 'content-length', 'retry-after']);
+const TRANSPORT_CODE = /^[A-Z][A-Z0-9_]{0,63}$/;
+// Codes Node, its DNS/TLS layers and Axios set on transport failures. They are fixed constants,
+// so they are kept even when request privacy could not be collected completely.
+const TRANSPORT_CODES = new Set([
+  ...Object.keys(constants.errno),
+  'EAI_AGAIN',
+  'EAI_FAIL',
+  'EAI_NODATA',
+  'EAI_NONAME',
+  'ENOTFOUND',
+  'ETIMEOUT',
+  'ESERVFAIL',
+  'ECONNREFUSED',
+  'ERR_BAD_OPTION',
+  'ERR_BAD_OPTION_VALUE',
+  'ERR_BAD_REQUEST',
+  'ERR_BAD_RESPONSE',
+  'ERR_CANCELED',
+  'ERR_DEPRECATED',
+  'ERR_FR_TOO_MANY_REDIRECTS',
+  'ERR_INVALID_URL',
+  'ERR_NETWORK',
+  'ERR_NOT_SUPPORT',
+  'ERR_SOCKET_CONNECTION_TIMEOUT',
+  'ERR_STREAM_PREMATURE_CLOSE',
+  'ERR_TLS_CERT_ALTNAME_INVALID',
+  'CERT_HAS_EXPIRED',
+  'DEPTH_ZERO_SELF_SIGNED_CERT',
+  'SELF_SIGNED_CERT_IN_CHAIN',
+  'UNABLE_TO_GET_ISSUER_CERT_LOCALLY',
+  'UNABLE_TO_VERIFY_LEAF_SIGNATURE',
+]);
 
 interface CollectedSecrets {
   values: string[];
@@ -66,7 +103,7 @@ function mergeDiagnosticSecrets(left: SecretContext, right: SecretContext): Coll
   for (const context of [left, right]) {
     if ('complete' in context && !context.complete) return { values: [], complete: false };
     for (const value of 'complete' in context ? context.values : context) {
-      if (!value || seen.has(value)) continue;
+      if (!value || value === REDACTED || seen.has(value)) continue;
       characters += value.length;
       if (seen.size >= MAX_PRIVATE_VALUES || characters > MAX_PRIVATE_CHARACTERS)
         return { values: [], complete: false };
@@ -117,7 +154,8 @@ function redactPrivateValues(value: string, secrets: SecretContext): string {
   const values = 'complete' in secrets ? secrets.values : secrets;
   let text = value;
   for (const secret of [...new Set(values)].sort((left, right) => right.length - left.length)) {
-    if (!secret) continue;
+    // An earlier sanitizing pass leaves the marker in its output; it is never a private value.
+    if (!secret || secret === REDACTED) continue;
     const spellings = new Set([secret, JSON.stringify(secret).slice(1, -1)]);
     try {
       spellings.add(encodeURIComponent(secret));
@@ -126,6 +164,7 @@ function redactPrivateValues(value: string, secrets: SecretContext): string {
       // Lone surrogates have no valid URI spelling; the literal secret is still removed.
     }
     for (const spelling of spellings) text = text.split(spelling).join(REDACTED);
+    if (!text.includes('%')) continue;
     const decoded = text.replace(/(?:%[0-9a-f]{2})+/gi, (encoded) =>
       Buffer.from(encoded.replaceAll('%', ''), 'hex').toString('utf8'),
     );
@@ -193,19 +232,26 @@ export function diagnosticText(value: string, secrets: SecretContext = []): stri
 export function diagnosticSecrets(value: unknown): CollectedSecrets {
   const result: CollectedSecrets = { values: [], complete: true };
   const seen = new Set<object>();
-  let remaining = MAX_PRIVATE_VALUES;
+  const collected = new Set<string>();
+  let nodes = MAX_PRIVATE_NODES;
   let characters = MAX_PRIVATE_CHARACTERS;
   function visit(item: unknown, depth: number): void {
     if (!result.complete) return;
-    if (remaining-- <= 0 || depth > 12) {
+    if (nodes-- <= 0 || depth > 12) {
       result.complete = false;
       return;
     }
     if (typeof item === 'number' && Number.isFinite(item)) item = String(item);
     if (typeof item === 'string') {
+      // The marker is what an earlier sanitizing pass left, never a request value.
+      if (item.length < MIN_PRIVATE_VALUE_LENGTH || item === REDACTED || collected.has(item))
+        return;
       characters -= item.length;
-      if (characters < 0) result.complete = false;
-      else if (item.length >= MIN_PRIVATE_VALUE_LENGTH) result.values.push(item);
+      if (characters < 0 || collected.size >= MAX_PRIVATE_VALUES) result.complete = false;
+      else {
+        collected.add(item);
+        result.values.push(item);
+      }
       return;
     }
     if (item === null || typeof item !== 'object' || seen.has(item)) return;
@@ -218,7 +264,7 @@ export function diagnosticSecrets(value: unknown): CollectedSecrets {
     }
   }
   if (typeof value === 'string') {
-    if (value.length > MAX_PRIVATE_CHARACTERS) result.complete = false;
+    if (value.length > MAX_PRIVATE_INPUT) result.complete = false;
     else {
       try {
         visit(JSON.parse(value), 0);
@@ -369,8 +415,8 @@ export function diagnosticMetadata(
   return {
     ...(status !== undefined ? { status } : {}),
     ...(typeof code === 'string' &&
-    /^[A-Z][A-Z0-9_]{0,63}$/.test(code) &&
-    diagnosticText(code, secrets) === code
+    TRANSPORT_CODE.test(code) &&
+    (TRANSPORT_CODES.has(code) || diagnosticText(code, secrets) === code)
       ? { code }
       : {}),
   };
@@ -408,6 +454,10 @@ export function diagnosticMessage(error: unknown, secrets: SecretContext = []): 
     const description = diagnosticText(error, secrets);
     if (description !== REDACTED) return description;
   }
+  const code = diagnosticMetadata(error, secrets).code;
+  if (code !== undefined) {
+    return `Permit request failed with transport code ${code}; check connectivity and configuration.`;
+  }
   return 'Permit request failed without an error description; check connectivity and configuration.';
 }
 
@@ -438,11 +488,9 @@ export function diagnosticRequestSecrets(
   secrets: SecretContext = [],
 ): CollectedSecrets {
   const config = error.config;
-  const result = mergeDiagnosticSecrets(secrets, failurePrivacy.get(error) ?? []);
+  let result = mergeDiagnosticSecrets(secrets, failurePrivacy.get(error) ?? []);
   function collect(value: unknown): void {
-    const found = diagnosticSecrets(value);
-    result.values.push(...found.values);
-    result.complete &&= found.complete && result.values.length <= MAX_PRIVATE_VALUES;
+    result = mergeDiagnosticSecrets(result, diagnosticSecrets(value));
   }
   collect(config?.data);
   collect(config?.params);

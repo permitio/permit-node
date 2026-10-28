@@ -1136,9 +1136,16 @@ export class Enforcer implements IEnforcer {
       const cause = axios.isAxiosError<unknown>(error)
         ? diagnosticAxiosError(error, [this.config.token])
         : diagnosticCause(error, [this.config.token]);
+      // The PDP address is configuration, not request data. When a large request overflows
+      // privacy collection, show it with credentials, query and fragment removed rather than
+      // hiding the one value the guidance is about.
+      const pdpUrl = diagnosticUrl(
+        this.config.pdp,
+        privacy.complete ? privacy : [this.config.token],
+      );
       failure = new PermitConnectionError(
         `Permit SDK got error: ${cause.message} and cannot connect to the PDP. ` +
-          `Check your configuration and make sure the PDP is running at ${diagnosticUrl(this.config.pdp, privacy)} ` +
+          `Check your configuration and make sure the PDP is running at ${pdpUrl} ` +
           'and accepting requests. Read more about setting up the PDP at https://docs.permit.io',
         { cause },
       );
