@@ -63,6 +63,11 @@ export interface IRetryConfig {
    * Custom function to determine if a request should be retried.
    * If not provided, retries recognized transient network errors and retryable status codes.
    * Cancellation, invalid request configuration and unsafe REST methods cannot be overridden.
+   *
+   * The callback receives the raw Axios error, unsanitized: its `config.headers` include the
+   * `Authorization` header with the API key, and its `config.data` and `response` hold request and
+   * response bodies. Do not log or retain the error; read only what the decision needs, such as
+   * `error.code` or `error.response?.status`.
    */
   retryCondition?: RetryConditionFn;
 

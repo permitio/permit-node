@@ -51,7 +51,9 @@ export interface ICreateOrUpdateUserResult<Attributes extends object = object> {
   user: UserRead<Attributes>;
 
   /**
-   * whether the user was newly created
+   * Whether the API answered HTTP 201 (created) rather than 200 (replaced). With REST retries
+   * enabled, a retried PUT can replay a request the server already applied, so the final attempt
+   * reports 200 for a user the first attempt created. Treat it as reliable only with retries off.
    */
   created: boolean;
 }
@@ -199,6 +201,9 @@ export interface IUsersApi extends IWaitForSync {
 
   /**
    * Synchronizes user data by creating or updating a user.
+   *
+   * `created` reports the status of the final attempt: with REST retries enabled, a replayed PUT
+   * can report `false` for a user an earlier attempt created. It is reliable only with retries off.
    *
    * @param userData - The data of the user to be synchronized.
    * @returns A promise that resolves with the result of the user creation or update operation.
@@ -453,6 +458,9 @@ export class UsersApi extends BaseFactsPermitAPI implements IUsersApi {
 
   /**
    * Synchronizes user data by creating or updating a user.
+   *
+   * `created` reports the status of the final attempt: with REST retries enabled, a replayed PUT
+   * can report `false` for a user an earlier attempt created. It is reliable only with retries off.
    *
    * @param userData - The data of the user to be synchronized.
    * @returns A promise that resolves with the result of the user creation or update operation.

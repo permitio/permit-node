@@ -83,6 +83,8 @@ export interface IRolesApi {
 
   /**
    * Creates or replaces tenant and resource roles in the selected environment.
+   * With REST retries enabled, a retried PUT can replay a request the server already applied, so
+   * the `created` and `updated` classification is reliable only with retries off.
    * @param roles - Role definitions; omit resource for a tenant role, or supply its resource key.
    * @returns The complete published result containing created and updated string arrays.
    * @throws {@link PermitApiError} If the API rejects the definitions or denies write access.
