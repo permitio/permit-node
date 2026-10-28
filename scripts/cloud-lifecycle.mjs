@@ -7,6 +7,7 @@ import {
   renameSync,
   writeFileSync,
 } from 'node:fs';
+import { createCipheriv, createDecipheriv, hkdfSync, randomBytes } from 'node:crypto';
 import { isAbsolute, join, resolve, sep } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 
@@ -67,7 +68,7 @@ function censusLine(census) {
 }
 
 /**
- * Binds no-checkout steps to this repository, source commit, trusted event and exact run attempt.
+ * Binds no-checkout steps to this repository, source commit, trusted event and run attempt.
  */
 export function trustedCloudRun(env) {
   requireValid(
@@ -113,29 +114,121 @@ function cloudDirectory({ directory, env }) {
   return absolute;
 }
 
-function regularBytes(file) {
+function regularBytes(file, maximum = 64 * 1024) {
   const stat = lstatSync(file);
-  requireValid(stat.isFile() && !stat.isSymbolicLink() && stat.size <= 64 * 1024, 'lifecycle:file');
+  requireValid(stat.isFile() && !stat.isSymbolicLink() && stat.size <= maximum, 'lifecycle:file');
   return readFileSync(file, 'utf8');
 }
 
-function savePrivateState(file, value, first = false) {
-  const encoded = JSON.stringify(value) + '\n';
-  requireValid(Buffer.byteLength(encoded) <= 64 * 1024, 'lifecycle:state-size');
+// The state file is uploaded as a workflow artifact so the later jobs can read it. It is stored
+// sealed with AES-256-GCM, so the artifact carries no readable project, organization or
+// environment identifier, under a key derived from the project credential, which every step
+// that reads or writes the state already holds. The derivation is bound to the run, not the
+// attempt, so a re-run attempt can open state an earlier attempt saved.
+const sealedStateSize = 96 * 1024;
+const plainStateSize = 64 * 1024;
+
+function stateKey(env, ci) {
+  requireValid(
+    typeof env.PROJECT_API_KEY === 'string' && env.PROJECT_API_KEY.length > 0,
+    'lifecycle:state-key',
+  );
+  return {
+    key: Buffer.from(
+      hkdfSync(
+        'sha256',
+        env.PROJECT_API_KEY,
+        `${ci.repository}:${ci.runId}`,
+        'permit-node:cloud-owned-state:1',
+        32,
+      ),
+    ),
+    aad: Buffer.from(`${ci.repository}:${ci.runId}`),
+  };
+}
+
+function sealState(value, seal) {
+  const encoded = JSON.stringify(value);
+  requireValid(Buffer.byteLength(encoded) <= plainStateSize, 'lifecycle:state-size');
+  const iv = randomBytes(12);
+  const cipher = createCipheriv('aes-256-gcm', seal.key, iv);
+  cipher.setAAD(seal.aad);
+  const data = Buffer.concat([cipher.update(encoded, 'utf8'), cipher.final()]);
+  return (
+    JSON.stringify({
+      schema: 2,
+      sealed: 'aes-256-gcm',
+      iv: iv.toString('base64'),
+      tag: cipher.getAuthTag().toString('base64'),
+      data: data.toString('base64'),
+    }) + '\n'
+  );
+}
+
+function openState(text, seal) {
+  let envelope, opened;
+  try {
+    envelope = JSON.parse(text);
+  } catch {
+    envelope = undefined;
+  }
+  requireValid(
+    envelope &&
+      isDeepStrictEqual(Object.keys(envelope).sort(), ['data', 'iv', 'schema', 'sealed', 'tag']) &&
+      envelope.schema === 2 &&
+      envelope.sealed === 'aes-256-gcm' &&
+      [envelope.iv, envelope.tag, envelope.data].every((part) => typeof part === 'string'),
+    'lifecycle:state',
+  );
+  try {
+    const decipher = createDecipheriv('aes-256-gcm', seal.key, Buffer.from(envelope.iv, 'base64'));
+    decipher.setAAD(seal.aad);
+    decipher.setAuthTag(Buffer.from(envelope.tag, 'base64'));
+    opened = Buffer.concat([
+      decipher.update(Buffer.from(envelope.data, 'base64')),
+      decipher.final(),
+    ]).toString('utf8');
+  } catch {
+    opened = undefined;
+  }
+  requireValid(opened !== undefined, 'lifecycle:state-seal');
+  return JSON.parse(opened);
+}
+
+function savePrivateState(file, value, seal, first = false) {
+  const encoded = sealState(value, seal);
   if (first) {
     writeFileSync(file, encoded, { mode: 0o600, flag: 'wx' });
     return;
   }
-  regularBytes(file);
+  regularBytes(file, sealedStateSize);
   const pending = file + '.next';
   writeFileSync(pending, encoded, { mode: 0o600, flag: 'wx' });
   renameSync(pending, file);
 }
 
+/**
+ * Accepts state saved by this run's current or an earlier attempt, so "Re-run failed jobs" can
+ * hand off or clean up the environment an earlier attempt's setup created.
+ */
+function sameRun(saved, ci) {
+  return (
+    saved &&
+    typeof saved === 'object' &&
+    isDeepStrictEqual(Object.keys(saved).sort(), Object.keys(ci).sort()) &&
+    Object.keys(ci).every((name) => name === 'runAttempt' || saved[name] === ci[name]) &&
+    /^[1-9]\d{0,8}$/u.test(saved.runAttempt) &&
+    Number(saved.runAttempt) <= Number(ci.runAttempt)
+  );
+}
+
 function readLifecycleState({ directory, env }) {
   const ci = trustedCloudRun(env);
   const folder = cloudDirectory({ directory, env });
-  const state = JSON.parse(regularBytes(join(folder, 'state.json')));
+  const state = openState(
+    regularBytes(join(folder, 'state.json'), sealedStateSize),
+    stateKey(env, ci),
+  );
   requireValid(
     state &&
       isDeepStrictEqual(Object.keys(state).sort(), [
@@ -146,10 +239,10 @@ function readLifecycleState({ directory, env }) {
         'schema',
       ]) &&
       state.schema === 1 &&
-      isDeepStrictEqual(state.ci, ci),
+      sameRun(state.ci, ci),
     'lifecycle:state',
   );
-  const key = `node-acceptance-${ci.runId}-${ci.runAttempt}`;
+  const key = `node-acceptance-${state.ci.runId}-${state.ci.runAttempt}`;
   requireValid(
     state.owner &&
       isDeepStrictEqual(Object.keys(state.owner).sort(), [
@@ -192,6 +285,7 @@ export async function setupTrustedCloud({
   try {
     const ci = trustedCloudRun(env);
     const folder = cloudDirectory({ directory, env });
+    const seal = stateKey(env, ci);
     const http = request ?? cloudControlRequest({ credential: env.PROJECT_API_KEY });
     const key = `node-acceptance-${ci.runId}-${ci.runAttempt}`;
     const state = { schema: 1, ci, owner: null, fixture: null, closure: null };
@@ -204,7 +298,7 @@ export async function setupTrustedCloud({
       marker: `permit-node:release-acceptance:${key}`,
       save: async (owner) => {
         state.owner = owner;
-        savePrivateState(file, state, first);
+        savePrivateState(file, state, seal, first);
         first = false;
       },
     });
@@ -220,7 +314,7 @@ export async function setupTrustedCloud({
       projectRequest: http,
       context,
     });
-    savePrivateState(file, state);
+    savePrivateState(file, state, seal);
     const fixture = await seedCloudFixture({
       context: {
         organization: scoped.organization,
@@ -232,7 +326,7 @@ export async function setupTrustedCloud({
       request: childRequest,
       save: async (captured) => {
         state.fixture = captured;
-        savePrivateState(file, state);
+        savePrivateState(file, state, seal);
       },
     });
     state.closure = await settleCloudClosure({
@@ -241,7 +335,7 @@ export async function setupTrustedCloud({
       closure: state.closure,
       fixture: state.fixture,
     });
-    savePrivateState(file, state);
+    savePrivateState(file, state, seal);
     writeFileSync(join(folder, 'fixture.json'), JSON.stringify(fixture) + '\n', {
       mode: 0o600,
       flag: 'wx',

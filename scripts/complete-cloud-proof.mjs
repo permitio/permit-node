@@ -19,6 +19,18 @@ function exactKeys(value, keys) {
   requireValid(value && typeof value === 'object' && !Array.isArray(value));
   requireValid(isDeepStrictEqual(Object.keys(value).sort(), keys.toSorted()));
 }
+/**
+ * Accepts CI metadata from this run's current or an earlier attempt. "Re-run failed jobs" keeps
+ * the passing jobs' outputs from the earlier attempt, so only the attempt may be lower.
+ */
+function sameRun(observed, ci, keys) {
+  exactKeys(observed, keys);
+  for (const key of keys) if (key !== 'runAttempt') requireValid(observed[key] === ci[key]);
+  requireValid(
+    /^[1-9]\d{0,8}$/u.test(observed.runAttempt) &&
+      Number(observed.runAttempt) <= Number(ci.runAttempt),
+  );
+}
 function fileBytes(path, maximum = 1024 * 1024) {
   const stat = lstatSync(path);
   requireValid(stat.isFile() && !stat.isSymbolicLink() && stat.size <= maximum);
@@ -48,7 +60,7 @@ export function completeCloudExecution({
     requireValid(typeof node === 'string' && /^\d+\.\d+\.\d+$/u.test(node));
     exactKeys(ci, ['repository', 'workflowRef', 'runId', 'runAttempt', 'commit', 'tree']);
     requireValid(ci.repository === 'permitio/permit-node');
-    requireValid(/^[1-9]\d*$/u.test(ci.runId) && /^[1-9]\d*$/u.test(ci.runAttempt));
+    requireValid(/^[1-9]\d*$/u.test(ci.runId) && /^[1-9]\d{0,8}$/u.test(ci.runAttempt));
     const workflow = 'permitio/permit-node/.github/workflows/';
     requireValid(typeof ci.workflowRef === 'string' && ci.workflowRef.startsWith(workflow));
     requireValid(
@@ -79,7 +91,7 @@ export function completeCloudExecution({
     exactKeys(execution.pdp, ['kind', 'origin', 'contractSha256', 'observedAt', 'ci']);
     requireValid(execution.pdp.kind === 'managed-cloud' && execution.pdp.origin === CLOUD_ORIGIN);
     requireValid(execution.pdp.contractSha256 === CLOUD_CONTRACT_SHA256);
-    requireValid(isDeepStrictEqual(execution.pdp.ci, ci));
+    sameRun(execution.pdp.ci, ci, Object.keys(ci));
     requireValid(ci.commit === identity.commit && ci.tree === identity.tree);
     const observedAt = Date.parse(execution.pdp.observedAt);
     requireValid(Number.isFinite(observedAt) && now - observedAt >= -60_000);
@@ -103,7 +115,10 @@ export function completeCloudExecution({
     requireValid(isDeepStrictEqual(run, expectedRun));
     exactKeys(cleanup, ['schema', 'ci', 'cleanup']);
     const { tree: _tree, ...cleanupCi } = ci;
-    requireValid(cleanup.schema === 2 && isDeepStrictEqual(cleanup.ci, cleanupCi));
+    requireValid(cleanup.schema === 2);
+    sameRun(cleanup.ci, cleanupCi, Object.keys(cleanupCi));
+    // Cleanup must not predate the execution it covers.
+    requireValid(Number(execution.pdp.ci.runAttempt) <= Number(cleanup.ci.runAttempt));
     requireValid(isDeepStrictEqual(cleanup.cleanup, { registered: 1, completed: 1, verified: 1 }));
     const native = {
       ...execution,

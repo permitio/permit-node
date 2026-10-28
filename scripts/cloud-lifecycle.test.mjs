@@ -8,6 +8,7 @@ import {
   symlinkSync,
   writeFileSync,
 } from 'node:fs';
+import { createCipheriv, createDecipheriv, hkdfSync, randomBytes } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { expect, test } from 'vitest';
@@ -24,6 +25,44 @@ const project = 'deadbeef'.repeat(4),
   keyId = 'badcab1e'.repeat(4),
   pdpId = '5ca1ab1e'.repeat(4);
 const credential = 'synthetic-env%credential';
+const projectCredential = 'synthetic-project-credential';
+// The documented state seal, implemented independently of the lifecycle module.
+function sealFor(env) {
+  const run = `${env.GITHUB_REPOSITORY}:${env.GITHUB_RUN_ID}`;
+  return {
+    key: Buffer.from(
+      hkdfSync('sha256', env.PROJECT_API_KEY, run, 'permit-node:cloud-owned-state:1', 32),
+    ),
+    aad: Buffer.from(run),
+  };
+}
+function openSealed(text, env) {
+  const envelope = JSON.parse(text);
+  const { key, aad } = sealFor(env);
+  const decipher = createDecipheriv('aes-256-gcm', key, Buffer.from(envelope.iv, 'base64'));
+  decipher.setAAD(aad);
+  decipher.setAuthTag(Buffer.from(envelope.tag, 'base64'));
+  return JSON.parse(
+    Buffer.concat([
+      decipher.update(Buffer.from(envelope.data, 'base64')),
+      decipher.final(),
+    ]).toString('utf8'),
+  );
+}
+function sealed(value, env) {
+  const { key, aad } = sealFor(env);
+  const iv = randomBytes(12);
+  const cipher = createCipheriv('aes-256-gcm', key, iv);
+  cipher.setAAD(aad);
+  const data = Buffer.concat([cipher.update(JSON.stringify(value), 'utf8'), cipher.final()]);
+  return JSON.stringify({
+    schema: 2,
+    sealed: 'aes-256-gcm',
+    iv: iv.toString('base64'),
+    tag: cipher.getAuthTag().toString('base64'),
+    data: data.toString('base64'),
+  });
+}
 const canary = 'CLOUD_LIFECYCLE_RESPONSE_ONLY_CANARY';
 const diagnostic = (code) => `Cloud lifecycle diagnostic: ${code}`;
 const censusKinds = [
@@ -72,6 +111,7 @@ function boundary(options = {}) {
     GITHUB_WORKFLOW_REF: 'permitio/permit-node/.github/workflows/ci.yaml@refs/pull/123/merge',
     RUNNER_TEMP: temp,
     PROJECT_ID: project,
+    PROJECT_API_KEY: projectCredential,
     GITHUB_OUTPUT: output,
     CLOUD_SETUP_RESULT: 'success',
   };
@@ -190,12 +230,17 @@ function boundary(options = {}) {
     const row = entities.get(decodeURIComponent(path.pathname.split('/')[6]));
     return { status: row ? 200 : 404, body: structuredClone(row) };
   };
-  const read = (name) => JSON.parse(readFileSync(join(directory, name), 'utf8'));
+  const read = (name) => {
+    const text = readFileSync(join(directory, name), 'utf8');
+    return name === 'state.json' ? openSealed(text, env) : JSON.parse(text);
+  };
+  const writeState = (state) => writeFileSync(join(directory, 'state.json'), sealed(state, env));
   return {
     directory,
     env,
     request,
     read,
+    writeState,
     calls,
     output,
     replace: (change) => {
@@ -248,6 +293,97 @@ test('trusted lifecycle stores only identifiers, masks handoff, and verifies abs
   expect(f.lines).toEqual([]);
 });
 
+test('the uploaded state file holds no project, organization or environment identifier', async () => {
+  const f = boundary();
+  await setup(f);
+  const bytes = readFileSync(join(f.directory, 'state.json'), 'utf8');
+  for (const id of [project, organization, environment]) expect(bytes).not.toContain(id);
+  expect(Object.keys(JSON.parse(bytes)).sort()).toEqual(['data', 'iv', 'schema', 'sealed', 'tag']);
+  const state = f.read('state.json');
+  expect(state.owner.project).toBe(project);
+  expect(state.closure.context).toMatchObject({ organization, project, environment });
+});
+
+test.each([
+  [
+    'a changed sealed byte',
+    (f) => {
+      const envelope = JSON.parse(readFileSync(join(f.directory, 'state.json'), 'utf8'));
+      const data = Buffer.from(envelope.data, 'base64');
+      data[0] ^= 1;
+      envelope.data = data.toString('base64');
+      writeFileSync(join(f.directory, 'state.json'), JSON.stringify(envelope));
+    },
+  ],
+  [
+    'another project credential',
+    (f) => {
+      f.env.PROJECT_API_KEY = 'rotated-project-credential';
+    },
+  ],
+  [
+    'another run',
+    (f) => {
+      const state = f.read('state.json');
+      writeFileSync(
+        join(f.directory, 'state.json'),
+        sealed(state, { ...f.env, GITHUB_RUN_ID: '124' }),
+      );
+    },
+  ],
+  [
+    'plaintext state',
+    (f) => {
+      writeFileSync(join(f.directory, 'state.json'), JSON.stringify(f.read('state.json')));
+    },
+  ],
+])('%s cannot be opened for cleanup', async (_name, tamper) => {
+  const f = boundary();
+  await setup(f);
+  tamper(f);
+  const before = f.calls.length;
+  await expect(cleanupTrustedCloud(f)).rejects.toThrow('cleanup failed');
+  expect(f.lines).toEqual([
+    diagnostic(_name === 'plaintext state' ? 'lifecycle:state' : 'lifecycle:state-seal'),
+  ]);
+  expect(f.calls.length).toBe(before);
+  expect(f.hasEnvironment()).toBe(true);
+});
+
+test('setup without the project credential refuses before any HTTP', async () => {
+  const f = boundary();
+  delete f.env.PROJECT_API_KEY;
+  await expect(setup(f)).rejects.toThrow('setup failed');
+  expect(f.lines).toEqual([diagnostic('lifecycle:state-key')]);
+  expect(f.calls).toEqual([]);
+});
+
+test('a re-run attempt hands off and cleans up the environment an earlier attempt created', async () => {
+  const f = boundary();
+  await setup(f);
+  f.env.GITHUB_RUN_ATTEMPT = '2';
+  await handoffTrustedCloud({ ...f, mask: () => {} });
+  expect(readFileSync(f.output, 'utf8')).toBe(`api_key=${credential}\n`);
+  const receipt = await cleanupTrustedCloud(f);
+  expect(receipt.ci.runAttempt).toBe('2');
+  expect(receipt.cleanup).toEqual({ registered: 1, completed: 1, verified: 1 });
+  expect(f.hasEnvironment()).toBe(false);
+  expect(f.calls.filter((call) => call.method === 'DELETE').map((call) => call.path)).toEqual([
+    `/v2/projects/${project}/envs/${environment}`,
+  ]);
+});
+
+test('state from a later attempt than the current one refuses broad-key use', async () => {
+  const f = boundary();
+  f.env.GITHUB_RUN_ATTEMPT = '2';
+  await setup(f);
+  f.env.GITHUB_RUN_ATTEMPT = '1';
+  const before = f.calls.length;
+  await expect(cleanupTrustedCloud(f)).rejects.toThrow('cleanup failed');
+  expect(f.lines).toEqual([diagnostic('lifecycle:state')]);
+  expect(f.calls.length).toBe(before);
+});
+
 test.each([
   ['replaced', { created_at: '2026-10-08T13:00:00Z' }],
   ['reassigned', { owner_type: 'member' }],
@@ -287,7 +423,7 @@ test.each(['commit', 'runAttempt', 'repository'])(
     await setup(f);
     const state = f.read('state.json');
     state.ci[field] = 'foreign-value';
-    writeFileSync(join(f.directory, 'state.json'), JSON.stringify(state));
+    f.writeState(state);
     const before = f.calls.length;
     await expect(handoffTrustedCloud({ ...f, mask: () => {} })).rejects.toThrow('handoff failed');
     expect(f.lines).toEqual([]);
@@ -346,7 +482,7 @@ test('missing saved fixture or surviving deletion prevents positive cleanup', as
   expect(f.hasEnvironment()).toBe(true);
   const state = f.read('state.json');
   state.fixture = null;
-  writeFileSync(join(f.directory, 'state.json'), JSON.stringify(state));
+  f.writeState(state);
   await expect(cleanupTrustedCloud(f)).rejects.toThrow('cleanup failed');
   expect(f.lines).toEqual([
     diagnostic('environment:cleanup:absence'),
@@ -642,7 +778,7 @@ test.each([
       await setup(f);
       const state = f.read('state.json');
       state.owner.key = 'node-acceptance-999-1';
-      writeFileSync(join(f.directory, 'state.json'), JSON.stringify(state));
+      f.writeState(state);
     },
   ],
   [

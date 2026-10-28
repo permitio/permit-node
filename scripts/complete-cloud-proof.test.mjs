@@ -180,6 +180,27 @@ test.each([
   expect(() => completeCloudExecution(options)).toThrow('no verified execution credit');
 });
 
+test.each([
+  ['cells and cleanup from the earlier attempt', '1'],
+  ['cleanup re-run in the current attempt', '2'],
+])('a re-run attempt accepts %s', async (_name, cleanupAttempt) => {
+  const options = await fixture();
+  options.ci = { ...options.ci, runAttempt: '2' };
+  options.cleanupBytes = change(options.cleanupBytes, (c) => (c.ci.runAttempt = cleanupAttempt));
+  expect(completeCloudExecution(options).run.cleanup.verified).toBe(1);
+});
+
+test.each([
+  ['a cell from a later attempt', '3', '2'],
+  ['cleanup older than the execution it covers', '2', '1'],
+])('a re-run refuses %s', async (_name, cellAttempt, cleanupAttempt) => {
+  const options = await fixture();
+  options.ci = { ...options.ci, runAttempt: '2' };
+  linkExecution(options, (n) => (n.pdp.ci.runAttempt = cellAttempt));
+  options.cleanupBytes = change(options.cleanupBytes, (c) => (c.ci.runAttempt = cleanupAttempt));
+  expect(() => completeCloudExecution(options)).toThrow('no verified execution credit');
+});
+
 test('preserves missing request-ID after successful cleanup', async () => {
   const options = await fixture();
   linkExecution(options, (n) => (n.httpObservations[2].requestIdPresent = false));
