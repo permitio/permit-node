@@ -21,6 +21,7 @@ import { BASE_PATH } from '#src/openapi/base';
 
 import { BaseFactsPermitAPI, type IPagination, type IWaitForSync } from '#src/api/base';
 import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
+import { type ReturnListRoleAssignments } from '#src/api/role-assignments';
 
 export {
   type RoleAssignmentCreate,
@@ -105,15 +106,12 @@ export type IGetUserRoles =
   | IGetUserRolesWithTotalCount
   | IGetUserRolesWithDetails;
 
-export type ReturnIGetUserRolesType<T extends IGetUserRoles> = T extends IGetUserRolesWithTotalCount
-  ? // with total count
-    T extends IGetUserRolesWithDetails
-    ? PaginatedResultRoleAssignmentDetailedRead
-    : PaginatedResultRoleAssignmentRead
-  : // without total count
-    T extends IGetUserRolesWithDetails
-    ? RoleAssignmentDetailedRead[]
-    : RoleAssignmentRead[];
+/**
+ * The getAssignedRoles() result for its detail and count flags. A literal `true` selects the
+ * detailed rows or the counted page; a runtime or optional boolean gives the union of both shapes,
+ * as for roleAssignments.list().
+ */
+export type ReturnIGetUserRolesType<T extends IGetUserRoles> = ReturnListRoleAssignments<T>;
 
 export interface IUsersListParams extends IPagination {
   search?: string;
