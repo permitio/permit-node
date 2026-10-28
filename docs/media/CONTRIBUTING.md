@@ -195,26 +195,16 @@ The exact local-evidence handoff and rollout remain unavailable until approved a
 shared five-SDK target remains UNAVAILABLE/PER-16345; Curtain Call is OWNER_DEFERRED/PER-16574
 and bulk counts are OWNER_DEFERRED/PER-9298. No dispatch flag or manual boolean replaces proof.
 
-The following owner rollout is proposed, not applied. First observe a successful GitHub Actions
-check named exactly `SDK required checks` on the final PR commit, including a fork run and a
-trusted backend run. In active ruleset `main2` (24216899), add that exact context with GitHub
-Actions integration ID 15368 to `required_status_checks`; preserve every other field, including
-strict checks, no bypass actors, approval and thread-resolution requirements. Verify a
-missing/failing check blocks merge before relying on the setting. The 2026-10-01 read-only audit
-found the list empty; legacy branch-protection lookup returned 404 because the repository uses
-rulesets.
+Owner steps for the release path, each applied only with a separate owner approval: once a
+check named exactly `SDK required checks` has been seen green on the final PR commit (a fork run
+and a trusted backend run), make it a required status check on the default branch, and confirm a
+missing or failing check blocks merge. Keep release publication behind the `production`
+environment's reviewers and the repository's release-tag rules, and never grant a bypass to get a
+release through.
 
-After the acceptance blockers are resolved, propose production environment reviewers, prevent
-self-review, restrict deployment to the approved release tags, and create tag rules restricting
-creation, updates and deletion to the owner's release process. The same audit found no production
-protection rules/deployment policy and no tag rulesets. These settings require a separate concrete
-owner approval; retain existing branch rules and do not grant a bypass to get a release through.
-
-Before an authorized release, an npm package owner must verify the active Trusted Publisher binds
+Before an authorized release, an npm package owner verifies that the active Trusted Publisher binds
 `permitio/permit-node`, `node_sdk_publish.yaml` and `production`, with publication permission and
-appropriate account protection. Public registry provenance for 2.7.6 confirms that historical
-workflow identity, but does not prove the current trust configuration. Read-only `npm trust list`
-returned E401 in the audit; no authentication, ownership or publisher settings were changed.
+appropriate account protection.
 No credentials belong in the archive, validation evidence or workflow logs. Website reference
 publication remains separate from npm publication.
 
