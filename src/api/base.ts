@@ -30,7 +30,16 @@ export function redactAuthorization(error: AxiosError): void {
   }
   const request = error.request as { _header?: unknown } | undefined;
   if (request && typeof request._header === 'string') {
-    request._header = request._header.replace(/^(authorization:[ \t]*).*$/gim, '$1[REDACTED]');
+    // Line by line, not by regex: a pattern with two adjacent wildcards can backtrack
+    // polynomially on long header text.
+    request._header = request._header
+      .split('\n')
+      .map((line) =>
+        line.toLowerCase().startsWith('authorization:')
+          ? `Authorization: [REDACTED]${line.endsWith('\r') ? '\r' : ''}`
+          : line,
+      )
+      .join('\n');
   }
 }
 
