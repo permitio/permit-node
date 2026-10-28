@@ -1,4 +1,5 @@
 import globalAxios, { type AxiosInstance } from 'axios';
+import { inspect } from 'node:util';
 import { ApiContext, snapshotApiContext } from '#src/api/context';
 import { type IRetryConfig, resolveRetryConfig } from '#src/utils/retry';
 
@@ -37,6 +38,7 @@ interface IMultiTenancyConfig {
 export interface IPermitConfig {
   /**
    * The token (API Key) used for authorization against the PDP and the Permit REST API.
+   * `util.inspect()` and `JSON.stringify()` of the SDK's configuration render it as `[REDACTED]`.
    */
   readonly token: string;
 
@@ -260,17 +262,48 @@ export class ConfigFactory {
     const pdpRetry = snapshotRetry(options.pdpRetry);
     const apiContext =
       options.apiContext === undefined ? new ApiContext() : snapshotApiContext(options.apiContext);
-    return Object.freeze({
-      ...settings,
-      log: Object.freeze(settings.log),
-      multiTenancy: Object.freeze(settings.multiTenancy),
-      apiContext,
-      axiosInstance: options.axiosInstance ?? globalAxios.create(),
-      ...(options.opaAxiosInstance !== undefined && { opaAxiosInstance: options.opaAxiosInstance }),
-      ...(retry !== undefined && { retry }),
-      ...(pdpRetry !== undefined && { pdpRetry }),
-    });
+    return Object.freeze(
+      withRedactedField(
+        {
+          ...settings,
+          log: Object.freeze(settings.log),
+          multiTenancy: Object.freeze(settings.multiTenancy),
+          apiContext,
+          axiosInstance: options.axiosInstance ?? globalAxios.create(),
+          ...(options.opaAxiosInstance !== undefined && {
+            opaAxiosInstance: options.opaAxiosInstance,
+          }),
+          ...(retry !== undefined && { retry }),
+          ...(pdpRetry !== undefined && { pdpRetry }),
+        },
+        'token',
+      ),
+    );
   }
+}
+
+/**
+ * Makes `util.inspect()` and `JSON.stringify()` render an SDK-held object with one credential
+ * field replaced by `[REDACTED]`, including `inspect()` with `showHidden`.
+ *
+ * The field stays an ordinary enumerable property, so `permit.config.token` reads it and
+ * `new Permit({ ...permit.config, pdp })` still carries the token into a new client; a hidden
+ * token would make that copy fall back to `PERMIT_API_KEY`. The two renderers are
+ * non-enumerable, so a spread copy is a plain object.
+ *
+ * @internal
+ * @param target - Object owned by the SDK, before it is frozen.
+ * @param field - Name of the credential field.
+ * @returns The same object.
+ */
+export function withRedactedField<T extends object>(target: T, field: keyof T & string): T {
+  const redacted = function (this: T): Record<string, unknown> {
+    return { ...this, [field]: '[REDACTED]' };
+  };
+  return Object.defineProperties(target, {
+    toJSON: { value: redacted },
+    [inspect.custom]: { value: redacted },
+  });
 }
 
 function defaultSettings() {

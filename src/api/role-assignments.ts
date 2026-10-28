@@ -3,7 +3,6 @@ import { type Logger } from 'pino';
 import { type IPermitConfig } from '#src/config';
 import {
   RoleAssignmentsApi as AutogenRoleAssignmentsApi,
-  Configuration,
   type BulkRoleAssignmentReport,
   type BulkRoleUnAssignmentReport,
   type PaginatedResultRoleAssignmentDetailedRead,
@@ -15,7 +14,12 @@ import {
 } from '#src/openapi/index';
 import { BASE_PATH } from '#src/openapi/base';
 
-import { BaseFactsPermitAPI, type IBasePaginationExtended, type IWaitForSync } from '#src/api/base';
+import {
+  BaseFactsPermitAPI,
+  type IBasePaginationExtended,
+  type IWaitForSync,
+  sdkConfiguration,
+} from '#src/api/base';
 import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
 export {
@@ -169,7 +173,7 @@ export class RoleAssignmentsApi extends BaseFactsPermitAPI implements IRoleAssig
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
     this.detailedRoleAssignments = new AutogenRoleAssignmentsApi(
-      new Configuration({
+      sdkConfiguration({
         basePath: this.config.apiUrl,
         accessToken: this.config.token,
         baseOptions: {

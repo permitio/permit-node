@@ -3,7 +3,6 @@ import { type Logger } from 'pino';
 import { type IPermitConfig } from '#src/config';
 import {
   TenantsApi as AutogenTenantsApi,
-  Configuration,
   type UserCreate,
   type TenantCreate,
   type TenantRead as GeneratedTenantRead,
@@ -13,7 +12,12 @@ import {
 import { BASE_PATH } from '#src/openapi/base';
 import type { UserRead, PaginatedResultUserRead } from '#src/api/users';
 
-import { BaseFactsPermitAPI, type IPagination, type IWaitForSync } from '#src/api/base';
+import {
+  BaseFactsPermitAPI,
+  type IPagination,
+  type IWaitForSync,
+  sdkConfiguration,
+} from '#src/api/base';
 import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
 export { type TenantCreate, type TenantUpdate } from '#src/openapi/index';
@@ -191,7 +195,7 @@ export class TenantsApi extends BaseFactsPermitAPI implements ITenantsApi {
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
     this.membership = new AutogenTenantsApi(
-      new Configuration({
+      sdkConfiguration({
         basePath: this.config.apiUrl,
         accessToken: this.config.token,
         baseOptions: {

@@ -3,7 +3,6 @@ import { type Logger } from 'pino';
 import { type IPermitConfig } from '#src/config';
 import {
   RelationshipTuplesApi as AutogenRelationshipTuplesApi,
-  Configuration,
   type RelationshipTupleCreate,
   type RelationshipTupleDelete,
   type RelationshipTupleRead,
@@ -11,7 +10,12 @@ import {
 } from '#src/openapi/index';
 import { BASE_PATH } from '#src/openapi/base';
 
-import { BaseFactsPermitAPI, type IPagination, type IWaitForSync } from '#src/api/base';
+import {
+  BaseFactsPermitAPI,
+  type IPagination,
+  type IWaitForSync,
+  sdkConfiguration,
+} from '#src/api/base';
 import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
 export {
@@ -141,7 +145,7 @@ export class RelationshipTuplesApi extends BaseFactsPermitAPI implements IRelati
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
     this.detailedRelationshipTuples = new AutogenRelationshipTuplesApi(
-      new Configuration({
+      sdkConfiguration({
         basePath: this.config.apiUrl,
         accessToken: this.config.token,
         baseOptions: {

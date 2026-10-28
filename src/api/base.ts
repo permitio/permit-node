@@ -1,8 +1,8 @@
 import axios, { type AxiosError, type AxiosResponse } from 'axios';
 import { type Logger } from 'pino';
 
-import { type FactsSyncTimeoutPolicy, type IPermitConfig } from '#src/config';
-import { APIKeysApi, Configuration } from '#src/openapi/index';
+import { type FactsSyncTimeoutPolicy, type IPermitConfig, withRedactedField } from '#src/config';
+import { APIKeysApi, Configuration, type ConfigurationParameters } from '#src/openapi/index';
 import { BASE_PATH } from '#src/openapi/base';
 import { SDK_VERSION } from '#src/version';
 
@@ -23,6 +23,18 @@ import {
   initializeApiContext,
   PermitContextError,
 } from '#src/api/context';
+
+/**
+ * Builds a generated-client configuration that `util.inspect()` and `JSON.stringify()` render
+ * with its access token replaced by `[REDACTED]`.
+ *
+ * @internal
+ * @param parameters - Generated-client configuration parameters.
+ * @returns The configuration.
+ */
+export function sdkConfiguration(parameters: ConfigurationParameters): Configuration {
+  return withRedactedField(new Configuration(parameters), 'accessToken');
+}
 
 export interface FormattedAxiosError {
   code?: string | undefined;
@@ -115,7 +127,7 @@ export abstract class BasePermitApi {
     protected config: IPermitConfig,
     protected logger: Logger,
   ) {
-    this.openapiClientConfig = new Configuration({
+    this.openapiClientConfig = sdkConfiguration({
       basePath: `${this.config.apiUrl}`,
       accessToken: this.config.token,
       baseOptions: {
@@ -240,7 +252,7 @@ export abstract class BaseFactsPermitAPI extends BasePermitApi implements IWaitF
   ) {
     super(config, logger);
     if (config.proxyFactsViaPdp) {
-      this.openapiClientConfig = new Configuration({
+      this.openapiClientConfig = sdkConfiguration({
         basePath: `${this.config.pdp}`,
         accessToken: this.config.token,
         baseOptions: {

@@ -3,7 +3,12 @@ import pino from 'pino';
 
 import { ApiClient, type IPermitApi } from '#src/api/api-client';
 import { ElementsClient, type IPermitElementsApi } from '#src/api/elements';
-import { ConfigFactory, type IPermitConfig, type IPermitOptions } from '#src/config';
+import {
+  ConfigFactory,
+  type IPermitConfig,
+  type IPermitOptions,
+  withRedactedField,
+} from '#src/config';
 import { Enforcer, type IEnforcer } from '#src/enforcement/enforcer';
 import {
   type ICheckQuery,
@@ -178,20 +183,24 @@ export class Permit implements IPermitClient {
     Object.defineProperty(this, 'config', { writable: false, configurable: false });
     this.logger = LoggerFactory.createLogger(this.config);
     const resolvedRetryConfig = resolveRetryConfig(this.config.retry);
-    const restConfig = {
-      ...this.config,
-      axiosInstance: createOwnedTransport({
-        caller: this.config.axiosInstance,
-        logger: this.logger,
-        retry: {
-          ...resolvedRetryConfig,
-          retryMethods: resolvedRetryConfig.retryMethods.filter(
-            (method) => method !== 'POST' && method !== 'PATCH',
-          ),
-        },
-        name: 'API',
-      }),
-    };
+    // Spread skips the non-enumerable renderers, so the REST copy defines them again.
+    const restConfig = withRedactedField(
+      {
+        ...this.config,
+        axiosInstance: createOwnedTransport({
+          caller: this.config.axiosInstance,
+          logger: this.logger,
+          retry: {
+            ...resolvedRetryConfig,
+            retryMethods: resolvedRetryConfig.retryMethods.filter(
+              (method) => method !== 'POST' && method !== 'PATCH',
+            ),
+          },
+          name: 'API',
+        }),
+      },
+      'token',
+    );
     this.api = new ApiClient(restConfig, this.logger);
     this.enforcer = new Enforcer(this.config, this.logger);
     this.elements = new ElementsClient(restConfig, this.logger);

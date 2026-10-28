@@ -3,7 +3,6 @@ import { type Logger } from 'pino';
 import { type IPermitConfig } from '#src/config';
 import {
   ResourceInstancesApi as AutogenResourceInstancesApi,
-  Configuration,
   type ResourceInstanceCreate,
   type ResourceInstanceRead as GeneratedResourceInstanceRead,
   type PaginatedResultResourceInstanceDetailedRead as GeneratedDetailedPage,
@@ -12,7 +11,12 @@ import {
 } from '#src/openapi/index';
 import { BASE_PATH } from '#src/openapi/base';
 
-import { BaseFactsPermitAPI, type IPagination, type IWaitForSync } from '#src/api/base';
+import {
+  BaseFactsPermitAPI,
+  type IPagination,
+  type IWaitForSync,
+  sdkConfiguration,
+} from '#src/api/base';
 import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
 export { type ResourceInstanceCreate, type ResourceInstanceUpdate } from '#src/openapi/index';
@@ -170,7 +174,7 @@ export class ResourceInstancesApi extends BaseFactsPermitAPI implements IResourc
   constructor(config: IPermitConfig, logger: Logger) {
     super(config, logger);
     this.detailedInstances = new AutogenResourceInstancesApi(
-      new Configuration({
+      sdkConfiguration({
         basePath: this.config.apiUrl,
         accessToken: this.config.token,
         baseOptions: {
