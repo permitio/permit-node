@@ -20,15 +20,14 @@ defaults:
     shell: bash --noprofile --norc -euo pipefail {0}
 
 env:
-  # The project the CI environments are created in. A secret, so it stays out of the
-  # source and is masked in run logs; fork PRs get no secrets and skip the backend suite.
-  PROJECT_ID: ${{ secrets.CI_PROJECT_ID }}
-  # The integration and e2e tests run when the environment-provisioning secret
-  # is available. Fork PRs and Dependabot PRs get no Actions secrets, so they
-  # run only the unit and module-import tests.
-  RUN_BACKEND: ${{ secrets.PROJECT_API_KEY != '' }}
-  # Pushes and PRs from this repository, other than Dependabot's, must run the
-  # backend suite; the test job fails them if the secret is missing.
+  # Secrets are not set here: workflow-level env reaches every step of every job,
+  # including the ones that run PR and dependency code. Each secret is named only
+  # by the steps that use it.
+  #
+  # Whether the backend suite runs is decided from the event alone, never from a
+  # secret. Pushes and PRs from this repository, other than Dependabot's, run it
+  # and fail if its secrets are missing. Fork and Dependabot PRs run only the unit
+  # and module-import tests.
   BACKEND_REQUIRED: ${{ github.event_name == 'push' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]') }}
   PDP_IMAGE: permitio/pdp-v2:0.9.16@sha256:e3cf30794ec2d256636b4714641df46e51ee58a3f1f0d24c606e214e0bf8669a
 
@@ -60,26 +59,37 @@ jobs:
       ENV_KEY: node-sdk-ci-${{ github.run_id }}-${{ github.run_attempt }}-n${{ matrix.node }}
     steps:
       # Fail instead of reporting green on the unit and module-import tests alone.
-      - name: Require backend secret on same-repo runs
-        if: env.BACKEND_REQUIRED == 'true' && env.RUN_BACKEND != 'true'
+      # Only whether each secret is set reaches this step, not its value.
+      - name: Require backend secrets on same-repo runs
+        if: env.BACKEND_REQUIRED == 'true'
+        env:
+          HAS_PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY != '' }}
+          HAS_PROJECT_ID: ${{ secrets.CI_PROJECT_ID != '' }}
         run: |
-          echo "::error::UNAVAILABLE: PROJECT_API_KEY is not set for a same-repo run; integration and e2e tests cannot run." >&2
-          exit 1
+          if [[ "$HAS_PROJECT_API_KEY" != 'true' || "$HAS_PROJECT_ID" != 'true' ]]; then
+            echo "::error::UNAVAILABLE: PROJECT_API_KEY or CI_PROJECT_ID is not set for a same-repo run; integration and e2e tests cannot run." >&2
+            exit 1
+          fi
 
       - name: Report unavailable backend coverage on untrusted runs
-        if: env.BACKEND_REQUIRED != 'true' && env.RUN_BACKEND != 'true'
+        if: env.BACKEND_REQUIRED != 'true'
         run: |
-          echo "::notice::UNAVAILABLE: integration and e2e coverage require PROJECT_API_KEY; no backend tests execute on this run."
+          echo "::notice::UNAVAILABLE: integration and e2e coverage run only on pushes and same-repo PRs; no backend tests execute on this run."
 
       # ---------- Backend setup ----------
-      # PROJECT_API_KEY is used only in the next two steps. They run before
-      # checkout, so no repository or dependency code runs while it is in use.
+      # PROJECT_API_KEY and CI_PROJECT_ID are set only in the next two steps. They
+      # run before checkout, so no repository or dependency code is running while
+      # those values are in a step's environment. That is ordering, not isolation:
+      # every later step in this job runs PR and dependency code on the same runner,
+      # so these steps leave nothing behind except the environment-scoped key, which
+      # the tests are meant to use.
       - name: Provision temp Permit env
         id: provision
-        if: env.RUN_BACKEND == 'true'
+        if: env.BACKEND_REQUIRED == 'true'
         timeout-minutes: 2
         env:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
+          PROJECT_ID: ${{ secrets.CI_PROJECT_ID }}
         run: |
           response=$(curl -sS --max-time 30 -w '\n%{http_code}' -X POST \
             "https://api.permit.io/v2/projects/${PROJECT_ID}/envs" \
@@ -103,10 +113,11 @@ jobs:
       # name it get it: the PDP, and the integration and e2e tests.
       - name: Fetch env API key
         id: env_api_key
-        if: env.RUN_BACKEND == 'true'
+        if: env.BACKEND_REQUIRED == 'true'
         timeout-minutes: 2
         env:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
+          PROJECT_ID: ${{ secrets.CI_PROJECT_ID }}
           ENV_ID: ${{ steps.provision.outputs.env_id }}
         run: |
           response=$(curl -sS --max-time 30 --retry 3 -w '\n%{http_code}' \
@@ -131,7 +142,7 @@ jobs:
       # 7766 is the PDP API. 8181 is the PDP's OPA, which the SDK derives from
       # the PDP URL for the rbac spec's useOpa checks.
       - name: Start local PDP
-        if: env.RUN_BACKEND == 'true'
+        if: env.BACKEND_REQUIRED == 'true'
         timeout-minutes: 5
         env:
           PDP_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
@@ -175,7 +186,7 @@ jobs:
 
       # ---------- Backend tests ----------
       - name: Wait for PDP to be ready
-        if: env.RUN_BACKEND == 'true'
+        if: env.BACKEND_REQUIRED == 'true'
         timeout-minutes: 3
         run: |
           curl -fsS -o /dev/null --max-time 2 \
@@ -183,7 +194,7 @@ jobs:
             http://127.0.0.1:7766/healthy
 
       - name: Run integration tests
-        if: env.RUN_BACKEND == 'true'
+        if: env.BACKEND_REQUIRED == 'true'
         timeout-minutes: 10
         env:
           PDP_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
@@ -196,7 +207,7 @@ jobs:
         run: pnpm test:integration
 
       - name: Run e2e tests
-        if: env.RUN_BACKEND == 'true'
+        if: env.BACKEND_REQUIRED == 'true'
         timeout-minutes: 20
         env:
           PDP_API_KEY: ${{ steps.env_api_key.outputs.api_key }}
@@ -213,7 +224,7 @@ jobs:
       # invisible; this captures container state and logs to tell a transient
       # restart/readiness blip apart from a crashed/exited container.
       - name: Dump PDP diagnostics on failure
-        if: failure() && env.RUN_BACKEND == 'true'
+        if: failure() && env.BACKEND_REQUIRED == 'true'
         timeout-minutes: 2
         run: |
           echo "::group::docker ps -a"
@@ -231,8 +242,10 @@ jobs:
           curl -sv --max-time 5 http://127.0.0.1:7766/healthy || true
           echo "::endgroup::"
 
-  # Runs after every test leg, including failed and cancelled ones, with no
-  # checkout, so the project API key never shares a job with repository code.
+  # Runs after every test leg, including failed and cancelled ones. This job has
+  # no checkout and runs only curl, so no repository or dependency code runs in
+  # the job that holds the project key. (In the test job, the provisioning steps
+  # share a job with repository code; only step order separates them there.)
   cleanup:
     name: Delete temp Permit envs
     needs: test
@@ -246,11 +259,17 @@ jobs:
       # A 404 means the env was never created or is already gone. Attempt every
       # owned deletion and fail the gate if any environment still needs removal.
       - name: Delete temp Permit envs
-        if: env.RUN_BACKEND == 'true'
+        if: env.BACKEND_REQUIRED == 'true'
         env:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
+          PROJECT_ID: ${{ secrets.CI_PROJECT_ID }}
           ENV_KEY_PREFIX: node-sdk-ci-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
+          # Without both secrets the test job fails before provisioning anything.
+          if [[ -z "$PROJECT_API_KEY" || -z "$PROJECT_ID" ]]; then
+            echo "::notice::Backend secrets are not set; no temp env was provisioned."
+            exit 0
+          fi
           failures=0
           for node_label in $NODE_LABELS; do
             env_key="${ENV_KEY_PREFIX}-n${node_label}"
@@ -292,6 +311,7 @@ jobs:
       - name: Provision and verify public cloud fixture before checkout
         env:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
+          PROJECT_ID: ${{ secrets.CI_PROJECT_ID }}
         run: |
           # BEGIN TRUSTED_CLOUD_SETUP
           set -euo pipefail
@@ -1687,6 +1707,7 @@ jobs:
         id: cloud-key
         env:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
+          PROJECT_ID: ${{ secrets.CI_PROJECT_ID }}
         run: |
           # BEGIN TRUSTED_CLOUD_HANDOFF
           set -euo pipefail
@@ -2287,6 +2308,7 @@ jobs:
       - name: Verify every owned child and physical parent before cascade deletion
         env:
           PROJECT_API_KEY: ${{ secrets.PROJECT_API_KEY }}
+          PROJECT_ID: ${{ secrets.CI_PROJECT_ID }}
         run: |
           # BEGIN TRUSTED_CLOUD_CLEANUP
           set -euo pipefail
