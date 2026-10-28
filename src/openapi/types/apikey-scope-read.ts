@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,28 +10,17 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface APIKeyScopeRead
- */
 export interface APIKeyScopeRead {
   /**
    * Unique id of the organization that the api_key belongs to.
-   * @type {string}
-   * @memberof APIKeyScopeRead
    */
   organization_id: string;
   /**
    * Unique id of the project that the api_key belongs to.
-   * @type {string}
-   * @memberof APIKeyScopeRead
    */
-  project_id?: string;
+  project_id?: string | null;
   /**
    * Unique id of the environment that the api_key belongs to.
-   * @type {string}
-   * @memberof APIKeyScopeRead
    */
-  environment_id?: string;
+  environment_id?: string | null;
 }

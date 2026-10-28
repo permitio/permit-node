@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,73 +11,52 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { Jwks } from './jwks';
+import type { JwksConfig } from './jwks-config';
 
-/**
- *
- * @export
- * @interface EnvironmentRead
- */
 export interface EnvironmentRead {
   /**
    * A URL-friendly name of the environment (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the environment.
-   * @type {string}
-   * @memberof EnvironmentRead
    */
   key: string;
   /**
    * Unique id of the environment
-   * @type {string}
-   * @memberof EnvironmentRead
    */
   id: string;
   /**
    * Unique id of the organization that the environment belongs to.
-   * @type {string}
-   * @memberof EnvironmentRead
    */
   organization_id: string;
   /**
    * Unique id of the project that the environment belongs to.
-   * @type {string}
-   * @memberof EnvironmentRead
    */
   project_id: string;
   /**
    * Date and time when the environment was created (ISO_8601 format).
-   * @type {string}
-   * @memberof EnvironmentRead
    */
   created_at: string;
   /**
    * Date and time when the environment was last updated/modified (ISO_8601 format).
-   * @type {string}
-   * @memberof EnvironmentRead
    */
   updated_at: string;
+  avp_policy_store_id?: string;
   /**
    * The name of the environment
-   * @type {string}
-   * @memberof EnvironmentRead
    */
   name: string;
   /**
    * an optional longer description of the environment
-   * @type {string}
-   * @memberof EnvironmentRead
    */
   description?: string;
   /**
    * when using gitops feature, an optional branch name for the environment
-   * @type {string}
-   * @memberof EnvironmentRead
    */
   custom_branch_name?: string;
   /**
-   *
-   * @type {Jwks}
-   * @memberof EnvironmentRead
+   * jwks for element frontend only login
    */
-  jwks?: Jwks;
+  jwks?: JwksConfig;
+  /**
+   * the settings for this environment
+   */
+  settings?: object;
 }

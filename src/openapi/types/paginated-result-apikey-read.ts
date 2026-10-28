@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,31 +11,13 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { APIKeyRead } from './apikey-read';
+import type { APIKeyRead } from './apikey-read';
 
-/**
- *
- * @export
- * @interface PaginatedResultAPIKeyRead
- */
 export interface PaginatedResultAPIKeyRead {
   /**
    * List of Api Keys
-   * @type {Array<APIKeyRead>}
-   * @memberof PaginatedResultAPIKeyRead
    */
   data: Array<APIKeyRead>;
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedResultAPIKeyRead
-   */
   total_count: number;
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedResultAPIKeyRead
-   */
-  page_count?: number;
+  page_count?: number | null;
 }

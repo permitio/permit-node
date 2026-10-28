@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,61 +10,52 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { ResourceActionGroupCreate } from '../types';
-// @ts-ignore
-import { ResourceActionGroupRead } from '../types';
-// @ts-ignore
-import { ResourceActionGroupUpdate } from '../types';
+import type { Configuration } from '../configuration';
+import type {
+  ResourceActionGroupCreate,
+  ResourceActionGroupRead,
+  ResourceActionGroupUpdate,
+} from '../types';
 /**
  * ResourceActionGroupsApi - axios parameter creator
- * @export
  */
 export const ResourceActionGroupsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
      * Creates a new action group that can affect the resource.
      * @summary Create Resource Action Group
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {ResourceActionGroupCreate} resourceActionGroupCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createResourceActionGroup: async (
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       resourceActionGroupCreate: ResourceActionGroupCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'resourceId' is not null or undefined
+      assertParamExists('createResourceActionGroup', 'resourceId', resourceId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('createResourceActionGroup', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('createResourceActionGroup', 'envId', envId);
-      // verify required parameter 'resourceId' is not null or undefined
-      assertParamExists('createResourceActionGroup', 'resourceId', resourceId);
       // verify required parameter 'resourceActionGroupCreate' is not null or undefined
       assertParamExists(
         'createResourceActionGroup',
@@ -74,9 +63,9 @@ export const ResourceActionGroupsApiAxiosParamCreator = function (configuration?
         resourceActionGroupCreate,
       );
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)));
+        .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -93,6 +82,7 @@ export const ResourceActionGroupsApiAxiosParamCreator = function (configuration?
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -115,34 +105,34 @@ export const ResourceActionGroupsApiAxiosParamCreator = function (configuration?
     /**
      * Deletes the action and all its related data. This includes any permissions granted to perform the action.
      * @summary Delete Resource Action Group
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} actionGroupId Either the unique id of the action group, or the URL-friendly key of the action group (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteResourceActionGroup: async (
-      projId: string,
-      envId: string,
       resourceId: string,
       actionGroupId: string,
-      options: AxiosRequestConfig = {},
+      projId: string,
+      envId: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('deleteResourceActionGroup', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('deleteResourceActionGroup', 'envId', envId);
       // verify required parameter 'resourceId' is not null or undefined
       assertParamExists('deleteResourceActionGroup', 'resourceId', resourceId);
       // verify required parameter 'actionGroupId' is not null or undefined
       assertParamExists('deleteResourceActionGroup', 'actionGroupId', actionGroupId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('deleteResourceActionGroup', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('deleteResourceActionGroup', 'envId', envId);
       const localVarPath =
         `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups/{action_group_id}`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-          .replace(`{${'action_group_id'}}`, encodeURIComponent(String(actionGroupId)));
+          .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+          .replace('{action_group_id}', encodeURIComponent(String(actionGroupId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -157,6 +147,8 @@ export const ResourceActionGroupsApiAxiosParamCreator = function (configuration?
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -174,34 +166,34 @@ export const ResourceActionGroupsApiAxiosParamCreator = function (configuration?
     /**
      * Gets a single action group defined on the resource, if such action exists.
      * @summary Get Resource Action Group
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} actionGroupId Either the unique id of the action group, or the URL-friendly key of the action group (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getResourceActionGroup: async (
-      projId: string,
-      envId: string,
       resourceId: string,
       actionGroupId: string,
-      options: AxiosRequestConfig = {},
+      projId: string,
+      envId: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('getResourceActionGroup', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('getResourceActionGroup', 'envId', envId);
       // verify required parameter 'resourceId' is not null or undefined
       assertParamExists('getResourceActionGroup', 'resourceId', resourceId);
       // verify required parameter 'actionGroupId' is not null or undefined
       assertParamExists('getResourceActionGroup', 'actionGroupId', actionGroupId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('getResourceActionGroup', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('getResourceActionGroup', 'envId', envId);
       const localVarPath =
         `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups/{action_group_id}`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-          .replace(`{${'action_group_id'}}`, encodeURIComponent(String(actionGroupId)));
+          .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+          .replace('{action_group_id}', encodeURIComponent(String(actionGroupId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -216,6 +208,8 @@ export const ResourceActionGroupsApiAxiosParamCreator = function (configuration?
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -233,32 +227,32 @@ export const ResourceActionGroupsApiAxiosParamCreator = function (configuration?
     /**
      * Lists all the action groups defined on the resource.
      * @summary List Resource Action Groups
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listResourceActionGroups: async (
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'resourceId' is not null or undefined
+      assertParamExists('listResourceActionGroups', 'resourceId', resourceId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('listResourceActionGroups', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('listResourceActionGroups', 'envId', envId);
-      // verify required parameter 'resourceId' is not null or undefined
-      assertParamExists('listResourceActionGroups', 'resourceId', resourceId);
       const localVarPath = `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)));
+        .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -282,6 +276,8 @@ export const ResourceActionGroupsApiAxiosParamCreator = function (configuration?
         localVarQueryParameter['per_page'] = perPage;
       }
 
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -304,7 +300,7 @@ export const ResourceActionGroupsApiAxiosParamCreator = function (configuration?
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ResourceActionGroupUpdate} resourceActionGroupUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateResourceActionGroup: async (
       resourceId: string,
@@ -312,7 +308,7 @@ export const ResourceActionGroupsApiAxiosParamCreator = function (configuration?
       projId: string,
       envId: string,
       resourceActionGroupUpdate: ResourceActionGroupUpdate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'resourceId' is not null or undefined
       assertParamExists('updateResourceActionGroup', 'resourceId', resourceId);
@@ -330,10 +326,10 @@ export const ResourceActionGroupsApiAxiosParamCreator = function (configuration?
       );
       const localVarPath =
         `/v2/schema/{proj_id}/{env_id}/resources/{resource_id}/action_groups/{action_group_id}`
-          .replace(`{${'resource_id'}}`, encodeURIComponent(String(resourceId)))
-          .replace(`{${'action_group_id'}}`, encodeURIComponent(String(actionGroupId)))
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+          .replace('{resource_id}', encodeURIComponent(String(resourceId)))
+          .replace('{action_group_id}', encodeURIComponent(String(actionGroupId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -350,6 +346,7 @@ export const ResourceActionGroupsApiAxiosParamCreator = function (configuration?
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -374,7 +371,6 @@ export const ResourceActionGroupsApiAxiosParamCreator = function (configuration?
 
 /**
  * ResourceActionGroupsApi - functional programming interface
- * @export
  */
 export const ResourceActionGroupsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ResourceActionGroupsApiAxiosParamCreator(configuration);
@@ -382,115 +378,159 @@ export const ResourceActionGroupsApiFp = function (configuration?: Configuration
     /**
      * Creates a new action group that can affect the resource.
      * @summary Create Resource Action Group
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {ResourceActionGroupCreate} resourceActionGroupCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async createResourceActionGroup(
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       resourceActionGroupCreate: ResourceActionGroupCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceActionGroupRead>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createResourceActionGroup(
+        resourceId,
         projId,
         envId,
-        resourceId,
         resourceActionGroupCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceActionGroupsApi.createResourceActionGroup']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Deletes the action and all its related data. This includes any permissions granted to perform the action.
      * @summary Delete Resource Action Group
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} actionGroupId Either the unique id of the action group, or the URL-friendly key of the action group (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deleteResourceActionGroup(
-      projId: string,
-      envId: string,
       resourceId: string,
       actionGroupId: string,
-      options?: AxiosRequestConfig,
+      projId: string,
+      envId: string,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteResourceActionGroup(
-        projId,
-        envId,
         resourceId,
         actionGroupId,
+        projId,
+        envId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceActionGroupsApi.deleteResourceActionGroup']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Gets a single action group defined on the resource, if such action exists.
      * @summary Get Resource Action Group
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} actionGroupId Either the unique id of the action group, or the URL-friendly key of the action group (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getResourceActionGroup(
-      projId: string,
-      envId: string,
       resourceId: string,
       actionGroupId: string,
-      options?: AxiosRequestConfig,
+      projId: string,
+      envId: string,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceActionGroupRead>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getResourceActionGroup(
-        projId,
-        envId,
         resourceId,
         actionGroupId,
+        projId,
+        envId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceActionGroupsApi.getResourceActionGroup']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists all the action groups defined on the resource.
      * @summary List Resource Action Groups
+     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listResourceActionGroups(
+      resourceId: string,
       projId: string,
       envId: string,
-      resourceId: string,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ResourceActionGroupRead>>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listResourceActionGroups(
+        resourceId,
         projId,
         envId,
-        resourceId,
         page,
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceActionGroupsApi.listResourceActionGroups']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Partially updates the action defined on a resource. Fields that will be provided will be completely overwritten.
@@ -501,7 +541,7 @@ export const ResourceActionGroupsApiFp = function (configuration?: Configuration
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ResourceActionGroupUpdate} resourceActionGroupUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async updateResourceActionGroup(
       resourceId: string,
@@ -509,7 +549,7 @@ export const ResourceActionGroupsApiFp = function (configuration?: Configuration
       projId: string,
       envId: string,
       resourceActionGroupUpdate: ResourceActionGroupUpdate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResourceActionGroupRead>
     > {
@@ -521,14 +561,24 @@ export const ResourceActionGroupsApiFp = function (configuration?: Configuration
         resourceActionGroupUpdate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ResourceActionGroupsApi.updateResourceActionGroup']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
 
 /**
  * ResourceActionGroupsApi - factory interface
- * @export
  */
 export const ResourceActionGroupsApiFactory = function (
   configuration?: Configuration,
@@ -540,115 +590,106 @@ export const ResourceActionGroupsApiFactory = function (
     /**
      * Creates a new action group that can affect the resource.
      * @summary Create Resource Action Group
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {ResourceActionGroupCreate} resourceActionGroupCreate
+     * @param {ResourceActionGroupsApiCreateResourceActionGroupRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createResourceActionGroup(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      resourceActionGroupCreate: ResourceActionGroupCreate,
-      options?: any,
+      requestParameters: ResourceActionGroupsApiCreateResourceActionGroupRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceActionGroupRead> {
       return localVarFp
-        .createResourceActionGroup(projId, envId, resourceId, resourceActionGroupCreate, options)
+        .createResourceActionGroup(
+          requestParameters.resourceId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.resourceActionGroupCreate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes the action and all its related data. This includes any permissions granted to perform the action.
      * @summary Delete Resource Action Group
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} actionGroupId Either the unique id of the action group, or the URL-friendly key of the action group (i.e: the \&quot;slug\&quot;).
+     * @param {ResourceActionGroupsApiDeleteResourceActionGroupRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteResourceActionGroup(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      actionGroupId: string,
-      options?: any,
+      requestParameters: ResourceActionGroupsApiDeleteResourceActionGroupRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<void> {
       return localVarFp
-        .deleteResourceActionGroup(projId, envId, resourceId, actionGroupId, options)
+        .deleteResourceActionGroup(
+          requestParameters.resourceId,
+          requestParameters.actionGroupId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Gets a single action group defined on the resource, if such action exists.
      * @summary Get Resource Action Group
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} actionGroupId Either the unique id of the action group, or the URL-friendly key of the action group (i.e: the \&quot;slug\&quot;).
+     * @param {ResourceActionGroupsApiGetResourceActionGroupRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getResourceActionGroup(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      actionGroupId: string,
-      options?: any,
+      requestParameters: ResourceActionGroupsApiGetResourceActionGroupRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceActionGroupRead> {
       return localVarFp
-        .getResourceActionGroup(projId, envId, resourceId, actionGroupId, options)
+        .getResourceActionGroup(
+          requestParameters.resourceId,
+          requestParameters.actionGroupId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists all the action groups defined on the resource.
      * @summary List Resource Action Groups
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {ResourceActionGroupsApiListResourceActionGroupsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listResourceActionGroups(
-      projId: string,
-      envId: string,
-      resourceId: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
+      requestParameters: ResourceActionGroupsApiListResourceActionGroupsRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<Array<ResourceActionGroupRead>> {
       return localVarFp
-        .listResourceActionGroups(projId, envId, resourceId, page, perPage, options)
+        .listResourceActionGroups(
+          requestParameters.resourceId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Partially updates the action defined on a resource. Fields that will be provided will be completely overwritten.
      * @summary Update Resource Action Group
-     * @param {string} resourceId Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-     * @param {string} actionGroupId Either the unique id of the action group, or the URL-friendly key of the action group (i.e: the \&quot;slug\&quot;).
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {ResourceActionGroupUpdate} resourceActionGroupUpdate
+     * @param {ResourceActionGroupsApiUpdateResourceActionGroupRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateResourceActionGroup(
-      resourceId: string,
-      actionGroupId: string,
-      projId: string,
-      envId: string,
-      resourceActionGroupUpdate: ResourceActionGroupUpdate,
-      options?: any,
+      requestParameters: ResourceActionGroupsApiUpdateResourceActionGroupRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResourceActionGroupRead> {
       return localVarFp
         .updateResourceActionGroup(
-          resourceId,
-          actionGroupId,
-          projId,
-          envId,
-          resourceActionGroupUpdate,
+          requestParameters.resourceId,
+          requestParameters.actionGroupId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.resourceActionGroupUpdate,
           options,
         )
         .then((request) => request(axios, basePath));
@@ -658,198 +699,135 @@ export const ResourceActionGroupsApiFactory = function (
 
 /**
  * Request parameters for createResourceActionGroup operation in ResourceActionGroupsApi.
- * @export
- * @interface ResourceActionGroupsApiCreateResourceActionGroupRequest
  */
 export interface ResourceActionGroupsApiCreateResourceActionGroupRequest {
   /**
+   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
+   */
+  readonly resourceId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiCreateResourceActionGroup
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiCreateResourceActionGroup
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiCreateResourceActionGroup
-   */
-  readonly resourceId: string;
-
-  /**
-   *
-   * @type {ResourceActionGroupCreate}
-   * @memberof ResourceActionGroupsApiCreateResourceActionGroup
-   */
   readonly resourceActionGroupCreate: ResourceActionGroupCreate;
 }
 
 /**
  * Request parameters for deleteResourceActionGroup operation in ResourceActionGroupsApi.
- * @export
- * @interface ResourceActionGroupsApiDeleteResourceActionGroupRequest
  */
 export interface ResourceActionGroupsApiDeleteResourceActionGroupRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiDeleteResourceActionGroup
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiDeleteResourceActionGroup
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiDeleteResourceActionGroup
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the action group, or the URL-friendly key of the action group (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiDeleteResourceActionGroup
    */
   readonly actionGroupId: string;
+
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
 }
 
 /**
  * Request parameters for getResourceActionGroup operation in ResourceActionGroupsApi.
- * @export
- * @interface ResourceActionGroupsApiGetResourceActionGroupRequest
  */
 export interface ResourceActionGroupsApiGetResourceActionGroupRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiGetResourceActionGroup
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiGetResourceActionGroup
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiGetResourceActionGroup
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the action group, or the URL-friendly key of the action group (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiGetResourceActionGroup
    */
   readonly actionGroupId: string;
-}
 
-/**
- * Request parameters for listResourceActionGroups operation in ResourceActionGroupsApi.
- * @export
- * @interface ResourceActionGroupsApiListResourceActionGroupsRequest
- */
-export interface ResourceActionGroupsApiListResourceActionGroupsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiListResourceActionGroups
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiListResourceActionGroups
    */
   readonly envId: string;
+}
 
+/**
+ * Request parameters for listResourceActionGroups operation in ResourceActionGroupsApi.
+ */
+export interface ResourceActionGroupsApiListResourceActionGroupsRequest {
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiListResourceActionGroups
    */
   readonly resourceId: string;
 
   /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
+  /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof ResourceActionGroupsApiListResourceActionGroups
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
-   * @memberof ResourceActionGroupsApiListResourceActionGroups
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateResourceActionGroup operation in ResourceActionGroupsApi.
- * @export
- * @interface ResourceActionGroupsApiUpdateResourceActionGroupRequest
  */
 export interface ResourceActionGroupsApiUpdateResourceActionGroupRequest {
   /**
    * Either the unique id of the resource, or the URL-friendly key of the resource (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiUpdateResourceActionGroup
    */
   readonly resourceId: string;
 
   /**
    * Either the unique id of the action group, or the URL-friendly key of the action group (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiUpdateResourceActionGroup
    */
   readonly actionGroupId: string;
 
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiUpdateResourceActionGroup
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof ResourceActionGroupsApiUpdateResourceActionGroup
    */
   readonly envId: string;
 
-  /**
-   *
-   * @type {ResourceActionGroupUpdate}
-   * @memberof ResourceActionGroupsApiUpdateResourceActionGroup
-   */
   readonly resourceActionGroupUpdate: ResourceActionGroupUpdate;
 }
 
 /**
  * ResourceActionGroupsApi - object-oriented interface
- * @export
- * @class ResourceActionGroupsApi
- * @extends {BaseAPI}
  */
 export class ResourceActionGroupsApi extends BaseAPI {
   /**
@@ -857,18 +835,17 @@ export class ResourceActionGroupsApi extends BaseAPI {
    * @summary Create Resource Action Group
    * @param {ResourceActionGroupsApiCreateResourceActionGroupRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ResourceActionGroupsApi
+   * @throws If a required parameter is missing.
    */
   public createResourceActionGroup(
     requestParameters: ResourceActionGroupsApiCreateResourceActionGroupRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceActionGroupsApiFp(this.configuration)
       .createResourceActionGroup(
+        requestParameters.resourceId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.resourceId,
         requestParameters.resourceActionGroupCreate,
         options,
       )
@@ -880,19 +857,18 @@ export class ResourceActionGroupsApi extends BaseAPI {
    * @summary Delete Resource Action Group
    * @param {ResourceActionGroupsApiDeleteResourceActionGroupRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ResourceActionGroupsApi
+   * @throws If a required parameter is missing.
    */
   public deleteResourceActionGroup(
     requestParameters: ResourceActionGroupsApiDeleteResourceActionGroupRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceActionGroupsApiFp(this.configuration)
       .deleteResourceActionGroup(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.actionGroupId,
+        requestParameters.projId,
+        requestParameters.envId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -903,19 +879,18 @@ export class ResourceActionGroupsApi extends BaseAPI {
    * @summary Get Resource Action Group
    * @param {ResourceActionGroupsApiGetResourceActionGroupRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ResourceActionGroupsApi
+   * @throws If a required parameter is missing.
    */
   public getResourceActionGroup(
     requestParameters: ResourceActionGroupsApiGetResourceActionGroupRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceActionGroupsApiFp(this.configuration)
       .getResourceActionGroup(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.resourceId,
         requestParameters.actionGroupId,
+        requestParameters.projId,
+        requestParameters.envId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -926,18 +901,17 @@ export class ResourceActionGroupsApi extends BaseAPI {
    * @summary List Resource Action Groups
    * @param {ResourceActionGroupsApiListResourceActionGroupsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ResourceActionGroupsApi
+   * @throws If a required parameter is missing.
    */
   public listResourceActionGroups(
     requestParameters: ResourceActionGroupsApiListResourceActionGroupsRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceActionGroupsApiFp(this.configuration)
       .listResourceActionGroups(
+        requestParameters.resourceId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.resourceId,
         requestParameters.page,
         requestParameters.perPage,
         options,
@@ -950,12 +924,11 @@ export class ResourceActionGroupsApi extends BaseAPI {
    * @summary Update Resource Action Group
    * @param {ResourceActionGroupsApiUpdateResourceActionGroupRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ResourceActionGroupsApi
+   * @throws If a required parameter is missing.
    */
   public updateResourceActionGroup(
     requestParameters: ResourceActionGroupsApiUpdateResourceActionGroupRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return ResourceActionGroupsApiFp(this.configuration)
       .updateResourceActionGroup(

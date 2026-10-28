@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,43 +11,6 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { OrganizationObj } from './organization-obj';
+import type { OrganizationObj } from './organization-obj';
 
-/**
- *
- * @export
- * @interface OrganizationObject
- */
-export interface OrganizationObject {
-  /**
-   *
-   * @type {string}
-   * @memberof OrganizationObject
-   */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof OrganizationObject
-   */
-  key: string;
-  /**
-   *
-   * @type {string}
-   * @memberof OrganizationObject
-   */
-  name?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof OrganizationObject
-   */
-  created_at: string;
-  /**
-   *
-   * @type {string}
-   * @memberof OrganizationObject
-   */
-  updated_at: string;
-}
+export type OrganizationObject = OrganizationObj | object;

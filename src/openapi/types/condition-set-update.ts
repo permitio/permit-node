@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,37 +11,20 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { ParentId } from './parent-id';
+import type { ParentId } from './parent-id';
 
-/**
- *
- * @export
- * @interface ConditionSetUpdate
- */
 export interface ConditionSetUpdate {
   /**
    * A descriptive name for the set, i.e: \'US based employees\' or \'Users behind VPN\'
-   * @type {string}
-   * @memberof ConditionSetUpdate
    */
   name?: string;
   /**
    * an optional longer description of the set
-   * @type {string}
-   * @memberof ConditionSetUpdate
    */
   description?: string;
   /**
    * a boolean expression that consists of multiple conditions, with and/or logic.
-   * @type {object}
-   * @memberof ConditionSetUpdate
    */
   conditions?: object;
-  /**
-   *
-   * @type {ParentId}
-   * @memberof ConditionSetUpdate
-   */
   parent_id?: ParentId;
 }

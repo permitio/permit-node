@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,34 +10,9 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface RoleAssignmentTenant
- */
 export interface RoleAssignmentTenant {
-  /**
-   *
-   * @type {string}
-   * @memberof RoleAssignmentTenant
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof RoleAssignmentTenant
-   */
   key: string;
-  /**
-   *
-   * @type {string}
-   * @memberof RoleAssignmentTenant
-   */
   name: string;
-  /**
-   *
-   * @type {Record<string, unknown>}
-   * @memberof RoleAssignmentTenant
-   */
-  attributes?: Record<string, unknown>;
+  attributes?: object;
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,28 +11,17 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { DerivedRoleRuleCreate } from './derived-role-rule-create';
+import type { DerivedRoleRuleCreate } from './derived-role-rule-create';
 // May contain unused imports in some cases
-// @ts-ignore
-import { When } from './when';
+import type { PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings } from './permit-backend-schemas-schema-derived-role-rule-derivation-settings';
 
-/**
- *
- * @export
- * @interface DerivedRoleBlockEdit
- */
 export interface DerivedRoleBlockEdit {
   /**
-   *
-   * @type {When}
-   * @memberof DerivedRoleBlockEdit
+   * the settings of the derived role
    */
-  when?: When;
+  when?: PermitBackendSchemasSchemaDerivedRoleRuleDerivationSettings;
   /**
    * the rules of the derived role
-   * @type {Array<DerivedRoleRuleCreate>}
-   * @memberof DerivedRoleBlockEdit
    */
   users_with_role?: Array<DerivedRoleRuleCreate>;
 }

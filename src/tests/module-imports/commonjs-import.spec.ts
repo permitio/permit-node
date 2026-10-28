@@ -1,42 +1,32 @@
-import test from 'ava';
+import { builtFile, probePackage } from '#src/tests/module-imports/package-probe';
 
-test('CommonJS require() import works correctly', async (t) => {
-  // This test will be compiled to JS and can use require() at runtime
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { Permit } = require('../../index');
-
-  t.is(typeof Permit, 'function');
-  t.is(Permit.name, 'Permit');
-
-  // Test creating a Permit instance
-  const permit = new Permit({
-    token: 'test-token',
-    pdp: 'http://localhost:7766',
+// Validates the BUILT package the way a CommonJS consumer loads it:
+// `require('permitio')` in a separate Node process, resolved through the
+// package.json `exports` map. This is a packaging-regression guard.
+describe('CommonJS require of the built package', () => {
+  it('resolves through the exports map to build/index.js', async () => {
+    expect(await probePackage('cjs')).toHaveProperty('resolved', builtFile('index.js'));
   });
 
-  t.truthy(permit);
-  t.is(typeof permit.check, 'function');
-  t.is(typeof permit.api, 'object');
-  t.is(typeof permit.elements, 'object');
-  t.is(typeof permit.config, 'object');
-});
+  it('exposes Permit and the public API classes', async () => {
+    expect(await probePackage('cjs')).toHaveProperty('names', {
+      Permit: 'Permit',
+      ApiClient: 'ApiClient',
+      ElementsClient: 'ElementsClient',
+    });
+  });
 
-test('CommonJS require() imports individual modules', async (t) => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { Enforcer } = require('../../enforcement/enforcer');
+  it('constructs a Permit with the given config and its API modules', async () => {
+    const probe = await probePackage('cjs');
 
-  t.is(typeof Enforcer, 'function');
-  t.is(Enforcer.name, '_Enforcer');
-});
-
-test('CommonJS require() imports API modules', async (t) => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { ApiClient } = require('../../api/api-client');
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { ElementsClient } = require('../../api/elements');
-
-  t.is(typeof ApiClient, 'function');
-  t.is(ApiClient.name, 'ApiClient');
-  t.is(typeof ElementsClient, 'function');
-  t.is(ElementsClient.name, 'ElementsClient');
+    expect(probe).toHaveProperty('members', {
+      check: 'function',
+      api: 'object',
+      elements: 'object',
+      users: 'object',
+      resources: 'object',
+      roles: 'object',
+    });
+    expect(probe).toHaveProperty('config', { token: 'test-token', pdp: 'http://localhost:7766' });
+  });
 });

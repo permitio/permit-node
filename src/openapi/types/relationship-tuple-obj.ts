@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,28 +10,8 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface RelationshipTupleObj
- */
 export interface RelationshipTupleObj {
-  /**
-   *
-   * @type {string}
-   * @memberof RelationshipTupleObj
-   */
   subject_str: string;
-  /**
-   *
-   * @type {string}
-   * @memberof RelationshipTupleObj
-   */
   relation_str: string;
-  /**
-   *
-   * @type {string}
-   * @memberof RelationshipTupleObj
-   */
   object_str: string;
 }

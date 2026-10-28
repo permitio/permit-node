@@ -1,0 +1,77 @@
+{
+  "source": "https://github.com/permitio/permit-python/blob/ef80ae2393b4c74e400fdd40ca838d589ee43709/permit/api/models.py",
+  "fields": {
+    "AVPEngineDecisionLog": ["engine", "process_time_ms"],
+    "ActionObj": ["name"],
+    "AuditLogModel": [
+      "raw_data",
+      "created_at",
+      "query",
+      "user_key",
+      "user_email",
+      "user_name",
+      "resource_type",
+      "tenant",
+      "action",
+      "decision",
+      "reason",
+      "pdp_config_id"
+    ],
+    "AuditLogObjectsModel": [
+      "id",
+      "organization_object",
+      "project_object",
+      "environment_object",
+      "pdp_config_object",
+      "user_object",
+      "action_object",
+      "resource_type_object",
+      "tenant_object",
+      "created_at"
+    ],
+    "DetailedAuditLogModel": [
+      "created_at",
+      "query",
+      "user_key",
+      "user_email",
+      "user_name",
+      "resource_type",
+      "tenant",
+      "action",
+      "decision",
+      "reason",
+      "pdp_config_id",
+      "objects"
+    ],
+    "DummyEngineModel": ["engine", "timestamp"],
+    "EnvironmentObj": ["name"],
+    "GenericEngineDecisionLog": [
+      "engine",
+      "decision_id",
+      "process_time_ms",
+      "query",
+      "user_key",
+      "user_email",
+      "user_name",
+      "action",
+      "resource_type",
+      "tenant"
+    ],
+    "LimitedPaginatedResult_AuditLogModel_": ["page_count"],
+    "OPAEngineDecisionLog": ["engine"],
+    "OPAMetrics": [
+      "timer_rego_input_parse_ns",
+      "timer_rego_query_parse_ns",
+      "timer_rego_query_compile_ns",
+      "timer_rego_query_eval_ns",
+      "timer_rego_module_parse_ns",
+      "timer_rego_module_compile_ns",
+      "timer_server_handler_ns"
+    ],
+    "OrganizationObj": ["name"],
+    "ProjectObj": ["name"],
+    "ResourceTypeObj": ["name", "attributes"],
+    "TenantObj": ["name", "attributes"],
+    "UserObj": ["email", "first_name", "last_name", "attributes", "roles", "assigned_roles"]
+  }
+}

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,46 +10,36 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface ProjectCreate
- */
+// May contain unused imports in some cases
+import type { EnvironmentCreate } from './environment-create';
+
 export interface ProjectCreate {
   /**
    * A URL-friendly name of the project (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the project.
-   * @type {string}
-   * @memberof ProjectCreate
    */
   key: string;
   /**
    * Optional namespace for URNs. If empty, URNs will be generated from project key.
-   * @type {string}
-   * @memberof ProjectCreate
    */
   urn_namespace?: string;
   /**
    * The name of the project
-   * @type {string}
-   * @memberof ProjectCreate
    */
   name: string;
   /**
    * a longer description outlining the project objectives
-   * @type {string}
-   * @memberof ProjectCreate
    */
   description?: string;
   /**
    * the settings for this project
-   * @type {object}
-   * @memberof ProjectCreate
    */
   settings?: object;
   /**
    * the id of the policy repo to use for this project
-   * @type {string}
-   * @memberof ProjectCreate
    */
   active_policy_repo_id?: string;
+  /**
+   * The initial environments to create for this project. By default, \'Development\' and \'Production\' are created, specify [] (empty list) to skip that.
+   */
+  initial_environments?: Array<EnvironmentCreate>;
 }

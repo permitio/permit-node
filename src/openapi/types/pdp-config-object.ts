@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,25 +11,6 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { PdpConfigObj } from './pdp-config-obj';
+import type { PdpConfigObj } from './pdp-config-obj';
 
-/**
- *
- * @export
- * @interface PdpConfigObject
- */
-export interface PdpConfigObject {
-  /**
-   *
-   * @type {string}
-   * @memberof PdpConfigObject
-   */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof PdpConfigObject
-   */
-  name: string;
-}
+export type PdpConfigObject = PdpConfigObj | object;

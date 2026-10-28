@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "permitio": "^2.7.5"
+  },
+  "engines": {
+    "node": ">=10"
+  }
+}

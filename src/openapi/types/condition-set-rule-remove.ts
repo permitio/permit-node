@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,40 +10,25 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface ConditionSetRuleRemove
- */
 export interface ConditionSetRuleRemove {
   /**
    * The userset that will be unassigned these permission, i.e: all the users matching this rule will lose the specified permission
-   * @type {string}
-   * @memberof ConditionSetRuleRemove
    */
   user_set: string;
   /**
    * The permission that will be removed from the userset *on* the resourceset. The permission can be either a resource action id, or `{resource_key}:{action_key}`, i.e: the \"permission name\".
-   * @type {string}
-   * @memberof ConditionSetRuleRemove
    */
   permission: string;
   /**
    * The resourceset that represents the resources that are no longer granted for access, i.e: all the resources matching this rule can no longer be accessed by the userset, and will be revoked the specified *permission*
-   * @type {string}
-   * @memberof ConditionSetRuleRemove
    */
   resource_set: string;
   /**
    * if True, will set the condition set rule to the role\'s autogen user-set.
-   * @type {boolean}
-   * @memberof ConditionSetRuleRemove
    */
   is_role?: boolean;
   /**
    * if True, will set the condition set rule to the resource\'s autogen resource-set.
-   * @type {boolean}
-   * @memberof ConditionSetRuleRemove
    */
   is_resource?: boolean;
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,58 +11,28 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { PolicyRepoStatus } from './policy-repo-status';
+import type { PolicyRepoStatus } from './policy-repo-status';
 // May contain unused imports in some cases
-// @ts-ignore
-import { SSHAuthData } from './sshauth-data';
+import type { SSHAuthDataRead } from './sshauth-data-read';
 
-/**
- *
- * @export
- * @interface PolicyRepoRead
- */
 export interface PolicyRepoRead {
   /**
    * Unique id of the policy repo
-   * @type {string}
-   * @memberof PolicyRepoRead
    */
   id: string;
-  /**
-   *
-   * @type {PolicyRepoStatus}
-   * @memberof PolicyRepoRead
-   */
   status: PolicyRepoStatus;
   /**
    * A URL-friendly name of the policy repo (i.e: slug). You will be able to query later using this key instead of the id (UUID) of the policy repo.
-   * @type {string}
-   * @memberof PolicyRepoRead
    */
   key: string;
   /**
-   *
-   * @type {string}
-   * @memberof PolicyRepoRead
+   * The SSH URL of the git repository (e.g. git@github.com:username/repository.git)
    */
   url: string;
-  /**
-   *
-   * @type {string}
-   * @memberof PolicyRepoRead
-   */
   main_branch_name?: string;
-  /**
-   *
-   * @type {SSHAuthData}
-   * @memberof PolicyRepoRead
-   */
-  credentials: SSHAuthData;
+  credentials: SSHAuthDataRead;
   /**
    * if you want to change your policy repository to this repo right after it is validated
-   * @type {boolean}
-   * @memberof PolicyRepoRead
    */
   activate_when_validated?: boolean;
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,43 +11,6 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { EnvironmentObj } from './environment-obj';
+import type { EnvironmentObj } from './environment-obj';
 
-/**
- *
- * @export
- * @interface EnvironmentObject
- */
-export interface EnvironmentObject {
-  /**
-   *
-   * @type {string}
-   * @memberof EnvironmentObject
-   */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof EnvironmentObject
-   */
-  key: string;
-  /**
-   *
-   * @type {string}
-   * @memberof EnvironmentObject
-   */
-  name?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof EnvironmentObject
-   */
-  created_at: string;
-  /**
-   *
-   * @type {string}
-   * @memberof EnvironmentObject
-   */
-  updated_at: string;
-}
+export type EnvironmentObject = EnvironmentObj | object;

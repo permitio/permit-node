@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface UserLoginRequestInput
- */
 export interface UserLoginRequestInput {
   /**
    * ID or key of the user for whom to generate a token
-   * @type {string}
-   * @memberof UserLoginRequestInput
    */
   user_id: string;
   /**
    * ID or key of the tenant to which access is requested
-   * @type {string}
-   * @memberof UserLoginRequestInput
    */
   tenant_id: string;
 }

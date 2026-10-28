@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,28 +11,11 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { ElementsConfigRead } from './elements-config-read';
+import type { ElementsConfigRead } from './elements-config-read';
 // May contain unused imports in some cases
-// @ts-ignore
-import { ElementsPermissionLevel } from './elements-permission-level';
+import type { ElementsPermissionLevel } from './elements-permission-level';
 
-/**
- *
- * @export
- * @interface ElementsConfigRuntimeRead
- */
 export interface ElementsConfigRuntimeRead {
-  /**
-   *
-   * @type {ElementsConfigRead}
-   * @memberof ElementsConfigRuntimeRead
-   */
   config: ElementsConfigRead;
-  /**
-   *
-   * @type {ElementsPermissionLevel}
-   * @memberof ElementsConfigRuntimeRead
-   */
   current_permission_level: ElementsPermissionLevel;
 }

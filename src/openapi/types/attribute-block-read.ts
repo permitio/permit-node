@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,37 +11,23 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { AttributeType } from './attribute-type';
+import type { AttributeType } from './attribute-type';
 
-/**
- *
- * @export
- * @interface AttributeBlockRead
- */
 export interface AttributeBlockRead {
   /**
    * The type of the attribute, we currently support: `bool`, `number` (ints, floats), `time` (a timestamp), `string`, and `json`.
-   * @type {AttributeType}
-   * @memberof AttributeBlockRead
    */
   type: AttributeType;
   /**
    * optional description string explaining what data this attribute will store
-   * @type {string}
-   * @memberof AttributeBlockRead
    */
   description?: string;
   /**
    * Unique id of the attribute
-   * @type {string}
-   * @memberof AttributeBlockRead
    */
   id: string;
   /**
    * action key
-   * @type {string}
-   * @memberof AttributeBlockRead
    */
   key?: string;
 }

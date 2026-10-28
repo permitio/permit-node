@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,42 +11,23 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { Scope } from './scope';
+import type { EnvironmentCopyConflictStrategy } from './environment-copy-conflict-strategy';
 // May contain unused imports in some cases
-// @ts-ignore
-import { TargetEnv } from './target-env';
+import type { EnvironmentCopyScope } from './environment-copy-scope';
+// May contain unused imports in some cases
+import type { EnvironmentCopyTarget } from './environment-copy-target';
 
-/**
- *
- * @export
- * @interface EnvironmentCopy
- */
 export interface EnvironmentCopy {
   /**
-   *
-   * @type {TargetEnv}
-   * @memberof EnvironmentCopy
+   * If copying a new environment, the environment configuration. If copying to an existing environment, the environment identifier
    */
-  target_env: TargetEnv;
+  target_env: EnvironmentCopyTarget;
   /**
    * Action to take when detecting a conflict when copying. Only applies to copying into an existing environment
-   * @type {string}
-   * @memberof EnvironmentCopy
    */
-  conflict_strategy?: EnvironmentCopyConflictStrategyEnum;
+  conflict_strategy?: EnvironmentCopyConflictStrategy;
   /**
-   *
-   * @type {Scope}
-   * @memberof EnvironmentCopy
+   * Filters to include and exclude copied objects
    */
-  scope?: Scope;
+  scope?: EnvironmentCopyScope;
 }
-
-export const EnvironmentCopyConflictStrategyEnum = {
-  Fail: 'fail',
-  Overwrite: 'overwrite',
-} as const;
-
-export type EnvironmentCopyConflictStrategyEnum =
-  (typeof EnvironmentCopyConflictStrategyEnum)[keyof typeof EnvironmentCopyConflictStrategyEnum];

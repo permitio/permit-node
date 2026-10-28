@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,73 +10,64 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { ElementsRoleRead } from '../types';
-// @ts-ignore
-import { ElementsUserCreate } from '../types';
-// @ts-ignore
-import { ElementsUserRoleCreate } from '../types';
-// @ts-ignore
-import { ElementsUserRoleRemove } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PaginatedResultUserRead } from '../types';
-// @ts-ignore
-import { RoleAssignmentRead } from '../types';
-// @ts-ignore
-import { UserRead } from '../types';
+import type { Configuration } from '../configuration';
+import type {
+  ElementsRoleRead,
+  ElementsUserCreate,
+  ElementsUserRoleCreate,
+  ElementsUserRoleRemove,
+  PaginatedResultElementsUserInviteRead,
+  PaginatedResultUserRead,
+  ResponseElementsCreateUserV2ElementsProjIdEnvIdConfigElementsConfigIdDataUsersPost,
+  RoleAssignmentRead,
+  UserInviteStatus,
+} from '../types';
 /**
  * UsersElementsDataApi - axios parameter creator
- * @export
  */
 export const UsersElementsDataApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
      * Assigns a role to the user within the tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.
      * @summary Assign role to user
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ElementsUserRoleCreate} elementsUserRoleCreate
+     * @param {string} [resourceInstanceId] For ReBAC Elements, the resource instance ID or key to work on
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     elementsAssignRoleToUser: async (
-      projId: string,
-      envId: string,
       elementsConfigId: string,
       userId: string,
+      projId: string,
+      envId: string,
       elementsUserRoleCreate: ElementsUserRoleCreate,
-      options: AxiosRequestConfig = {},
+      resourceInstanceId?: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('elementsAssignRoleToUser', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('elementsAssignRoleToUser', 'envId', envId);
       // verify required parameter 'elementsConfigId' is not null or undefined
       assertParamExists('elementsAssignRoleToUser', 'elementsConfigId', elementsConfigId);
       // verify required parameter 'userId' is not null or undefined
       assertParamExists('elementsAssignRoleToUser', 'userId', userId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('elementsAssignRoleToUser', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('elementsAssignRoleToUser', 'envId', envId);
       // verify required parameter 'elementsUserRoleCreate' is not null or undefined
       assertParamExists(
         'elementsAssignRoleToUser',
@@ -87,10 +76,10 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
       );
       const localVarPath =
         `/v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/users/{user_id}/roles`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'elements_config_id'}}`, encodeURIComponent(String(elementsConfigId)))
-          .replace(`{${'user_id'}}`, encodeURIComponent(String(userId)));
+          .replace('{elements_config_id}', encodeURIComponent(String(elementsConfigId)))
+          .replace('{user_id}', encodeURIComponent(String(userId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -106,7 +95,12 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
+      if (resourceInstanceId !== undefined) {
+        localVarQueryParameter['resource_instance_id'] = resourceInstanceId;
+      }
+
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -129,32 +123,34 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
     /**
      * Creates a new user inside the Permit.io system, from that point forward you may run permission checks on that user.  If the user is already created: will return 200 instead of 201, and will return the existing user object in the response body.
      * @summary Create user
+     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {ElementsUserCreate} elementsUserCreate
+     * @param {string} [resourceInstanceId] For ReBAC Elements, the resource instance ID or key to work on
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     elementsCreateUser: async (
+      elementsConfigId: string,
       projId: string,
       envId: string,
-      elementsConfigId: string,
       elementsUserCreate: ElementsUserCreate,
-      options: AxiosRequestConfig = {},
+      resourceInstanceId?: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'elementsConfigId' is not null or undefined
+      assertParamExists('elementsCreateUser', 'elementsConfigId', elementsConfigId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('elementsCreateUser', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('elementsCreateUser', 'envId', envId);
-      // verify required parameter 'elementsConfigId' is not null or undefined
-      assertParamExists('elementsCreateUser', 'elementsConfigId', elementsConfigId);
       // verify required parameter 'elementsUserCreate' is not null or undefined
       assertParamExists('elementsCreateUser', 'elementsUserCreate', elementsUserCreate);
       const localVarPath = `/v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/users`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'elements_config_id'}}`, encodeURIComponent(String(elementsConfigId)));
+        .replace('{elements_config_id}', encodeURIComponent(String(elementsConfigId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -170,7 +166,12 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
+      if (resourceInstanceId !== undefined) {
+        localVarQueryParameter['resource_instance_id'] = resourceInstanceId;
+      }
+
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -197,15 +198,17 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+     * @param {string} [resourceInstanceId] For ReBAC Elements, the resource instance ID or key to work on
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     elementsDeleteUser: async (
       projId: string,
       envId: string,
       elementsConfigId: string,
       userId: string,
-      options: AxiosRequestConfig = {},
+      resourceInstanceId?: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('elementsDeleteUser', 'projId', projId);
@@ -217,10 +220,10 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
       assertParamExists('elementsDeleteUser', 'userId', userId);
       const localVarPath =
         `/v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/users/{user_id}`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'elements_config_id'}}`, encodeURIComponent(String(elementsConfigId)))
-          .replace(`{${'user_id'}}`, encodeURIComponent(String(userId)));
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)))
+          .replace('{elements_config_id}', encodeURIComponent(String(elementsConfigId)))
+          .replace('{user_id}', encodeURIComponent(String(userId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -235,6 +238,12 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (resourceInstanceId !== undefined) {
+        localVarQueryParameter['resource_instance_id'] = resourceInstanceId;
+      }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -252,34 +261,36 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
     /**
      * Lists all the users defined within an environment.
      * @summary List roles
+     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} [search] Text search for the email field
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
+     * @param {string} [resourceInstanceId] For ReBAC Elements, the resource instance ID or key to work on
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     elementsListRoles: async (
+      elementsConfigId: string,
       projId: string,
       envId: string,
-      elementsConfigId: string,
       search?: string,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      resourceInstanceId?: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'elementsConfigId' is not null or undefined
+      assertParamExists('elementsListRoles', 'elementsConfigId', elementsConfigId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('elementsListRoles', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('elementsListRoles', 'envId', envId);
-      // verify required parameter 'elementsConfigId' is not null or undefined
-      assertParamExists('elementsListRoles', 'elementsConfigId', elementsConfigId);
       const localVarPath = `/v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/roles`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'elements_config_id'}}`, encodeURIComponent(String(elementsConfigId)));
+        .replace('{elements_config_id}', encodeURIComponent(String(elementsConfigId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -306,6 +317,12 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
       if (perPage !== undefined) {
         localVarQueryParameter['per_page'] = perPage;
       }
+
+      if (resourceInstanceId !== undefined) {
+        localVarQueryParameter['resource_instance_id'] = resourceInstanceId;
+      }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -323,34 +340,36 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
     /**
      * Lists all the users defined within an environment.
      * @summary List users
+     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} [search] Text search for the email field
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
+     * @param {string} [resourceInstanceId] For ReBAC Elements, the resource instance ID or key to work on
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     elementsListUsers: async (
+      elementsConfigId: string,
       projId: string,
       envId: string,
-      elementsConfigId: string,
       search?: string,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      resourceInstanceId?: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'elementsConfigId' is not null or undefined
+      assertParamExists('elementsListUsers', 'elementsConfigId', elementsConfigId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('elementsListUsers', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('elementsListUsers', 'envId', envId);
-      // verify required parameter 'elementsConfigId' is not null or undefined
-      assertParamExists('elementsListUsers', 'elementsConfigId', elementsConfigId);
       const localVarPath = `/v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/users`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'elements_config_id'}}`, encodeURIComponent(String(elementsConfigId)));
+        .replace('{elements_config_id}', encodeURIComponent(String(elementsConfigId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -378,6 +397,12 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
         localVarQueryParameter['per_page'] = perPage;
       }
 
+      if (resourceInstanceId !== undefined) {
+        localVarQueryParameter['resource_instance_id'] = resourceInstanceId;
+      }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -394,30 +419,32 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
     /**
      * Unassigns the role from the user within the tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.  If the role is not actually assigned, will return 404.
      * @summary Unassign role from user
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ElementsUserRoleRemove} elementsUserRoleRemove
+     * @param {string} [resourceInstanceId] For ReBAC Elements, the resource instance ID or key to work on
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     elementsUnassignRoleFromUser: async (
-      projId: string,
-      envId: string,
       elementsConfigId: string,
       userId: string,
+      projId: string,
+      envId: string,
       elementsUserRoleRemove: ElementsUserRoleRemove,
-      options: AxiosRequestConfig = {},
+      resourceInstanceId?: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('elementsUnassignRoleFromUser', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('elementsUnassignRoleFromUser', 'envId', envId);
       // verify required parameter 'elementsConfigId' is not null or undefined
       assertParamExists('elementsUnassignRoleFromUser', 'elementsConfigId', elementsConfigId);
       // verify required parameter 'userId' is not null or undefined
       assertParamExists('elementsUnassignRoleFromUser', 'userId', userId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('elementsUnassignRoleFromUser', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('elementsUnassignRoleFromUser', 'envId', envId);
       // verify required parameter 'elementsUserRoleRemove' is not null or undefined
       assertParamExists(
         'elementsUnassignRoleFromUser',
@@ -426,10 +453,10 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
       );
       const localVarPath =
         `/v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/users/{user_id}/roles`
-          .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-          .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-          .replace(`{${'elements_config_id'}}`, encodeURIComponent(String(elementsConfigId)))
-          .replace(`{${'user_id'}}`, encodeURIComponent(String(userId)));
+          .replace('{elements_config_id}', encodeURIComponent(String(elementsConfigId)))
+          .replace('{user_id}', encodeURIComponent(String(userId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -445,7 +472,12 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
+      if (resourceInstanceId !== undefined) {
+        localVarQueryParameter['resource_instance_id'] = resourceInstanceId;
+      }
+
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -466,19 +498,105 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
       };
     },
     /**
+     * List all Elements User Invites for the current environment and tenant.
+     * @summary List all Elements User Invites
+     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} [search] Text search for the email field
+     * @param {UserInviteStatus} [status] Status of the user invite
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {string} [resourceInstanceId] For ReBAC Elements, the resource instance ID or key to work on
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    listElementsUserInvites: async (
+      elementsConfigId: string,
+      projId: string,
+      envId: string,
+      search?: string,
+      status?: UserInviteStatus,
+      page?: number,
+      perPage?: number,
+      resourceInstanceId?: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'elementsConfigId' is not null or undefined
+      assertParamExists('listElementsUserInvites', 'elementsConfigId', elementsConfigId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('listElementsUserInvites', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('listElementsUserInvites', 'envId', envId);
+      const localVarPath =
+        `/v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/user-invites`
+          .replace('{elements_config_id}', encodeURIComponent(String(elementsConfigId)))
+          .replace('{proj_id}', encodeURIComponent(String(projId)))
+          .replace('{env_id}', encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      if (search !== undefined) {
+        localVarQueryParameter['search'] = search;
+      }
+
+      if (status !== undefined) {
+        localVarQueryParameter['status'] = status;
+      }
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (perPage !== undefined) {
+        localVarQueryParameter['per_page'] = perPage;
+      }
+
+      if (resourceInstanceId !== undefined) {
+        localVarQueryParameter['resource_instance_id'] = resourceInstanceId;
+      }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Updates the embed_config.
      * @summary Set Config Active
      * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     setConfigActive: async (
       elementsConfigId: string,
       projId: string,
       envId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'elementsConfigId' is not null or undefined
       assertParamExists('setConfigActive', 'elementsConfigId', elementsConfigId);
@@ -487,9 +605,9 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('setConfigActive', 'envId', envId);
       const localVarPath = `/v2/elements/{proj_id}/{env_id}/config/{elements_config_id}/data/active`
-        .replace(`{${'elements_config_id'}}`, encodeURIComponent(String(elementsConfigId)))
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{elements_config_id}', encodeURIComponent(String(elementsConfigId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -504,6 +622,8 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -523,7 +643,6 @@ export const UsersElementsDataApiAxiosParamCreator = function (configuration?: C
 
 /**
  * UsersElementsDataApi - functional programming interface
- * @export
  */
 export const UsersElementsDataApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = UsersElementsDataApiAxiosParamCreator(configuration);
@@ -531,57 +650,90 @@ export const UsersElementsDataApiFp = function (configuration?: Configuration) {
     /**
      * Assigns a role to the user within the tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.
      * @summary Assign role to user
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ElementsUserRoleCreate} elementsUserRoleCreate
+     * @param {string} [resourceInstanceId] For ReBAC Elements, the resource instance ID or key to work on
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async elementsAssignRoleToUser(
-      projId: string,
-      envId: string,
       elementsConfigId: string,
       userId: string,
+      projId: string,
+      envId: string,
       elementsUserRoleCreate: ElementsUserRoleCreate,
-      options?: AxiosRequestConfig,
+      resourceInstanceId?: string,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleAssignmentRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.elementsAssignRoleToUser(
-        projId,
-        envId,
         elementsConfigId,
         userId,
+        projId,
+        envId,
         elementsUserRoleCreate,
+        resourceInstanceId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UsersElementsDataApi.elementsAssignRoleToUser']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Creates a new user inside the Permit.io system, from that point forward you may run permission checks on that user.  If the user is already created: will return 200 instead of 201, and will return the existing user object in the response body.
      * @summary Create user
+     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {ElementsUserCreate} elementsUserCreate
+     * @param {string} [resourceInstanceId] For ReBAC Elements, the resource instance ID or key to work on
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async elementsCreateUser(
+      elementsConfigId: string,
       projId: string,
       envId: string,
-      elementsConfigId: string,
       elementsUserCreate: ElementsUserCreate,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserRead>> {
+      resourceInstanceId?: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ResponseElementsCreateUserV2ElementsProjIdEnvIdConfigElementsConfigIdDataUsersPost>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.elementsCreateUser(
+        elementsConfigId,
         projId,
         envId,
-        elementsConfigId,
         elementsUserCreate,
+        resourceInstanceId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UsersElementsDataApi.elementsCreateUser']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      *
@@ -590,121 +742,229 @@ export const UsersElementsDataApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+     * @param {string} [resourceInstanceId] For ReBAC Elements, the resource instance ID or key to work on
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async elementsDeleteUser(
       projId: string,
       envId: string,
       elementsConfigId: string,
       userId: string,
-      options?: AxiosRequestConfig,
+      resourceInstanceId?: string,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.elementsDeleteUser(
         projId,
         envId,
         elementsConfigId,
         userId,
+        resourceInstanceId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UsersElementsDataApi.elementsDeleteUser']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists all the users defined within an environment.
      * @summary List roles
+     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} [search] Text search for the email field
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
+     * @param {string} [resourceInstanceId] For ReBAC Elements, the resource instance ID or key to work on
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async elementsListRoles(
+      elementsConfigId: string,
       projId: string,
       envId: string,
-      elementsConfigId: string,
       search?: string,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      resourceInstanceId?: string,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ElementsRoleRead>>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.elementsListRoles(
+        elementsConfigId,
         projId,
         envId,
-        elementsConfigId,
         search,
         page,
         perPage,
+        resourceInstanceId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UsersElementsDataApi.elementsListRoles']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists all the users defined within an environment.
      * @summary List users
+     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} [search] Text search for the email field
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
+     * @param {string} [resourceInstanceId] For ReBAC Elements, the resource instance ID or key to work on
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async elementsListUsers(
+      elementsConfigId: string,
       projId: string,
       envId: string,
-      elementsConfigId: string,
       search?: string,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      resourceInstanceId?: string,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResultUserRead>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.elementsListUsers(
+        elementsConfigId,
         projId,
         envId,
-        elementsConfigId,
         search,
         page,
         perPage,
+        resourceInstanceId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UsersElementsDataApi.elementsListUsers']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Unassigns the role from the user within the tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.  If the role is not actually assigned, will return 404.
      * @summary Unassign role from user
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {ElementsUserRoleRemove} elementsUserRoleRemove
+     * @param {string} [resourceInstanceId] For ReBAC Elements, the resource instance ID or key to work on
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async elementsUnassignRoleFromUser(
-      projId: string,
-      envId: string,
       elementsConfigId: string,
       userId: string,
+      projId: string,
+      envId: string,
       elementsUserRoleRemove: ElementsUserRoleRemove,
-      options?: AxiosRequestConfig,
+      resourceInstanceId?: string,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.elementsUnassignRoleFromUser(
-        projId,
-        envId,
         elementsConfigId,
         userId,
+        projId,
+        envId,
         elementsUserRoleRemove,
+        resourceInstanceId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UsersElementsDataApi.elementsUnassignRoleFromUser']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * List all Elements User Invites for the current environment and tenant.
+     * @summary List all Elements User Invites
+     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {string} [search] Text search for the email field
+     * @param {UserInviteStatus} [status] Status of the user invite
+     * @param {number} [page] Page number of the results to fetch, starting at 1.
+     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {string} [resourceInstanceId] For ReBAC Elements, the resource instance ID or key to work on
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    async listElementsUserInvites(
+      elementsConfigId: string,
+      projId: string,
+      envId: string,
+      search?: string,
+      status?: UserInviteStatus,
+      page?: number,
+      perPage?: number,
+      resourceInstanceId?: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<PaginatedResultElementsUserInviteRead>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.listElementsUserInvites(
+        elementsConfigId,
+        projId,
+        envId,
+        search,
+        status,
+        page,
+        perPage,
+        resourceInstanceId,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UsersElementsDataApi.listElementsUserInvites']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Updates the embed_config.
@@ -713,13 +973,13 @@ export const UsersElementsDataApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async setConfigActive(
       elementsConfigId: string,
       projId: string,
       envId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.setConfigActive(
         elementsConfigId,
@@ -727,14 +987,23 @@ export const UsersElementsDataApiFp = function (configuration?: Configuration) {
         envId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UsersElementsDataApi.setConfigActive']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
 
 /**
  * UsersElementsDataApi - factory interface
- * @export
  */
 export const UsersElementsDataApiFactory = function (
   configuration?: Configuration,
@@ -746,29 +1015,22 @@ export const UsersElementsDataApiFactory = function (
     /**
      * Assigns a role to the user within the tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.
      * @summary Assign role to user
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-     * @param {ElementsUserRoleCreate} elementsUserRoleCreate
+     * @param {UsersElementsDataApiElementsAssignRoleToUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     elementsAssignRoleToUser(
-      projId: string,
-      envId: string,
-      elementsConfigId: string,
-      userId: string,
-      elementsUserRoleCreate: ElementsUserRoleCreate,
-      options?: any,
+      requestParameters: UsersElementsDataApiElementsAssignRoleToUserRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<RoleAssignmentRead> {
       return localVarFp
         .elementsAssignRoleToUser(
-          projId,
-          envId,
-          elementsConfigId,
-          userId,
-          elementsUserRoleCreate,
+          requestParameters.elementsConfigId,
+          requestParameters.userId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.elementsUserRoleCreate,
+          requestParameters.resourceInstanceId,
           options,
         )
         .then((request) => request(axios, basePath));
@@ -776,121 +1038,139 @@ export const UsersElementsDataApiFactory = function (
     /**
      * Creates a new user inside the Permit.io system, from that point forward you may run permission checks on that user.  If the user is already created: will return 200 instead of 201, and will return the existing user object in the response body.
      * @summary Create user
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
-     * @param {ElementsUserCreate} elementsUserCreate
+     * @param {UsersElementsDataApiElementsCreateUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     elementsCreateUser(
-      projId: string,
-      envId: string,
-      elementsConfigId: string,
-      elementsUserCreate: ElementsUserCreate,
-      options?: any,
-    ): AxiosPromise<UserRead> {
+      requestParameters: UsersElementsDataApiElementsCreateUserRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ResponseElementsCreateUserV2ElementsProjIdEnvIdConfigElementsConfigIdDataUsersPost> {
       return localVarFp
-        .elementsCreateUser(projId, envId, elementsConfigId, elementsUserCreate, options)
+        .elementsCreateUser(
+          requestParameters.elementsConfigId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.elementsUserCreate,
+          requestParameters.resourceInstanceId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Delete user
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+     * @param {UsersElementsDataApiElementsDeleteUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     elementsDeleteUser(
-      projId: string,
-      envId: string,
-      elementsConfigId: string,
-      userId: string,
-      options?: any,
+      requestParameters: UsersElementsDataApiElementsDeleteUserRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<void> {
       return localVarFp
-        .elementsDeleteUser(projId, envId, elementsConfigId, userId, options)
+        .elementsDeleteUser(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.elementsConfigId,
+          requestParameters.userId,
+          requestParameters.resourceInstanceId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists all the users defined within an environment.
      * @summary List roles
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
-     * @param {string} [search] Text search for the email field
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {UsersElementsDataApiElementsListRolesRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     elementsListRoles(
-      projId: string,
-      envId: string,
-      elementsConfigId: string,
-      search?: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
+      requestParameters: UsersElementsDataApiElementsListRolesRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<Array<ElementsRoleRead>> {
       return localVarFp
-        .elementsListRoles(projId, envId, elementsConfigId, search, page, perPage, options)
+        .elementsListRoles(
+          requestParameters.elementsConfigId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.search,
+          requestParameters.page,
+          requestParameters.perPage,
+          requestParameters.resourceInstanceId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists all the users defined within an environment.
      * @summary List users
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
-     * @param {string} [search] Text search for the email field
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {UsersElementsDataApiElementsListUsersRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     elementsListUsers(
-      projId: string,
-      envId: string,
-      elementsConfigId: string,
-      search?: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
+      requestParameters: UsersElementsDataApiElementsListUsersRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<PaginatedResultUserRead> {
       return localVarFp
-        .elementsListUsers(projId, envId, elementsConfigId, search, page, perPage, options)
+        .elementsListUsers(
+          requestParameters.elementsConfigId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.search,
+          requestParameters.page,
+          requestParameters.perPage,
+          requestParameters.resourceInstanceId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Unassigns the role from the user within the tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.  If the role is not actually assigned, will return 404.
      * @summary Unassign role from user
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-     * @param {ElementsUserRoleRemove} elementsUserRoleRemove
+     * @param {UsersElementsDataApiElementsUnassignRoleFromUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     elementsUnassignRoleFromUser(
-      projId: string,
-      envId: string,
-      elementsConfigId: string,
-      userId: string,
-      elementsUserRoleRemove: ElementsUserRoleRemove,
-      options?: any,
+      requestParameters: UsersElementsDataApiElementsUnassignRoleFromUserRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<void> {
       return localVarFp
         .elementsUnassignRoleFromUser(
-          projId,
-          envId,
-          elementsConfigId,
-          userId,
-          elementsUserRoleRemove,
+          requestParameters.elementsConfigId,
+          requestParameters.userId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.elementsUserRoleRemove,
+          requestParameters.resourceInstanceId,
+          options,
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * List all Elements User Invites for the current environment and tenant.
+     * @summary List all Elements User Invites
+     * @param {UsersElementsDataApiListElementsUserInvitesRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    listElementsUserInvites(
+      requestParameters: UsersElementsDataApiListElementsUserInvitesRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PaginatedResultElementsUserInviteRead> {
+      return localVarFp
+        .listElementsUserInvites(
+          requestParameters.elementsConfigId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.search,
+          requestParameters.status,
+          requestParameters.page,
+          requestParameters.perPage,
+          requestParameters.resourceInstanceId,
           options,
         )
         .then((request) => request(axios, basePath));
@@ -898,20 +1178,21 @@ export const UsersElementsDataApiFactory = function (
     /**
      * Updates the embed_config.
      * @summary Set Config Active
-     * @param {string} elementsConfigId Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {UsersElementsDataApiSetConfigActiveRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     setConfigActive(
-      elementsConfigId: string,
-      projId: string,
-      envId: string,
-      options?: any,
+      requestParameters: UsersElementsDataApiSetConfigActiveRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<void> {
       return localVarFp
-        .setConfigActive(elementsConfigId, projId, envId, options)
+        .setConfigActive(
+          requestParameters.elementsConfigId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
@@ -919,289 +1200,272 @@ export const UsersElementsDataApiFactory = function (
 
 /**
  * Request parameters for elementsAssignRoleToUser operation in UsersElementsDataApi.
- * @export
- * @interface UsersElementsDataApiElementsAssignRoleToUserRequest
  */
 export interface UsersElementsDataApiElementsAssignRoleToUserRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsAssignRoleToUser
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsAssignRoleToUser
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsAssignRoleToUser
    */
   readonly elementsConfigId: string;
 
   /**
    * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsAssignRoleToUser
    */
   readonly userId: string;
 
   /**
-   *
-   * @type {ElementsUserRoleCreate}
-   * @memberof UsersElementsDataApiElementsAssignRoleToUser
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
   readonly elementsUserRoleCreate: ElementsUserRoleCreate;
+
+  /**
+   * For ReBAC Elements, the resource instance ID or key to work on
+   */
+  readonly resourceInstanceId?: string;
 }
 
 /**
  * Request parameters for elementsCreateUser operation in UsersElementsDataApi.
- * @export
- * @interface UsersElementsDataApiElementsCreateUserRequest
  */
 export interface UsersElementsDataApiElementsCreateUserRequest {
   /**
+   * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
+   */
+  readonly elementsConfigId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsCreateUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsCreateUser
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsCreateUser
-   */
-  readonly elementsConfigId: string;
+  readonly elementsUserCreate: ElementsUserCreate;
 
   /**
-   *
-   * @type {ElementsUserCreate}
-   * @memberof UsersElementsDataApiElementsCreateUser
+   * For ReBAC Elements, the resource instance ID or key to work on
    */
-  readonly elementsUserCreate: ElementsUserCreate;
+  readonly resourceInstanceId?: string;
 }
 
 /**
  * Request parameters for elementsDeleteUser operation in UsersElementsDataApi.
- * @export
- * @interface UsersElementsDataApiElementsDeleteUserRequest
  */
 export interface UsersElementsDataApiElementsDeleteUserRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsDeleteUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsDeleteUser
    */
   readonly envId: string;
 
   /**
    * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsDeleteUser
    */
   readonly elementsConfigId: string;
 
   /**
    * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsDeleteUser
    */
   readonly userId: string;
+
+  /**
+   * For ReBAC Elements, the resource instance ID or key to work on
+   */
+  readonly resourceInstanceId?: string;
 }
 
 /**
  * Request parameters for elementsListRoles operation in UsersElementsDataApi.
- * @export
- * @interface UsersElementsDataApiElementsListRolesRequest
  */
 export interface UsersElementsDataApiElementsListRolesRequest {
   /**
+   * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
+   */
+  readonly elementsConfigId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsListRoles
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsListRoles
    */
   readonly envId: string;
 
   /**
-   * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsListRoles
-   */
-  readonly elementsConfigId: string;
-
-  /**
    * Text search for the email field
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsListRoles
    */
   readonly search?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof UsersElementsDataApiElementsListRoles
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
-   * @memberof UsersElementsDataApiElementsListRoles
    */
   readonly perPage?: number;
+
+  /**
+   * For ReBAC Elements, the resource instance ID or key to work on
+   */
+  readonly resourceInstanceId?: string;
 }
 
 /**
  * Request parameters for elementsListUsers operation in UsersElementsDataApi.
- * @export
- * @interface UsersElementsDataApiElementsListUsersRequest
  */
 export interface UsersElementsDataApiElementsListUsersRequest {
   /**
+   * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
+   */
+  readonly elementsConfigId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsListUsers
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsListUsers
    */
   readonly envId: string;
 
   /**
-   * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsListUsers
-   */
-  readonly elementsConfigId: string;
-
-  /**
    * Text search for the email field
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsListUsers
    */
   readonly search?: string;
 
   /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof UsersElementsDataApiElementsListUsers
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
-   * @memberof UsersElementsDataApiElementsListUsers
    */
   readonly perPage?: number;
+
+  /**
+   * For ReBAC Elements, the resource instance ID or key to work on
+   */
+  readonly resourceInstanceId?: string;
 }
 
 /**
  * Request parameters for elementsUnassignRoleFromUser operation in UsersElementsDataApi.
- * @export
- * @interface UsersElementsDataApiElementsUnassignRoleFromUserRequest
  */
 export interface UsersElementsDataApiElementsUnassignRoleFromUserRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsUnassignRoleFromUser
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsUnassignRoleFromUser
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsUnassignRoleFromUser
    */
   readonly elementsConfigId: string;
 
   /**
    * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiElementsUnassignRoleFromUser
    */
   readonly userId: string;
 
   /**
-   *
-   * @type {ElementsUserRoleRemove}
-   * @memberof UsersElementsDataApiElementsUnassignRoleFromUser
-   */
-  readonly elementsUserRoleRemove: ElementsUserRoleRemove;
-}
-
-/**
- * Request parameters for setConfigActive operation in UsersElementsDataApi.
- * @export
- * @interface UsersElementsDataApiSetConfigActiveRequest
- */
-export interface UsersElementsDataApiSetConfigActiveRequest {
-  /**
-   * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiSetConfigActive
-   */
-  readonly elementsConfigId: string;
-
-  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiSetConfigActive
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersElementsDataApiSetConfigActive
+   */
+  readonly envId: string;
+
+  readonly elementsUserRoleRemove: ElementsUserRoleRemove;
+
+  /**
+   * For ReBAC Elements, the resource instance ID or key to work on
+   */
+  readonly resourceInstanceId?: string;
+}
+
+/**
+ * Request parameters for listElementsUserInvites operation in UsersElementsDataApi.
+ */
+export interface UsersElementsDataApiListElementsUserInvitesRequest {
+  /**
+   * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
+   */
+  readonly elementsConfigId: string;
+
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
+  /**
+   * Text search for the email field
+   */
+  readonly search?: string;
+
+  /**
+   * Status of the user invite
+   */
+  readonly status?: UserInviteStatus;
+
+  /**
+   * Page number of the results to fetch, starting at 1.
+   */
+  readonly page?: number;
+
+  /**
+   * The number of results per page (max 100).
+   */
+  readonly perPage?: number;
+
+  /**
+   * For ReBAC Elements, the resource instance ID or key to work on
+   */
+  readonly resourceInstanceId?: string;
+}
+
+/**
+ * Request parameters for setConfigActive operation in UsersElementsDataApi.
+ */
+export interface UsersElementsDataApiSetConfigActiveRequest {
+  /**
+   * Either the unique id of the elements_config, or the URL-friendly key of the elements_config (i.e: the \&quot;slug\&quot;).
+   */
+  readonly elementsConfigId: string;
+
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
    */
   readonly envId: string;
 }
 
 /**
  * UsersElementsDataApi - object-oriented interface
- * @export
- * @class UsersElementsDataApi
- * @extends {BaseAPI}
  */
 export class UsersElementsDataApi extends BaseAPI {
   /**
@@ -1209,20 +1473,20 @@ export class UsersElementsDataApi extends BaseAPI {
    * @summary Assign role to user
    * @param {UsersElementsDataApiElementsAssignRoleToUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UsersElementsDataApi
+   * @throws If a required parameter is missing.
    */
   public elementsAssignRoleToUser(
     requestParameters: UsersElementsDataApiElementsAssignRoleToUserRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return UsersElementsDataApiFp(this.configuration)
       .elementsAssignRoleToUser(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.elementsConfigId,
         requestParameters.userId,
+        requestParameters.projId,
+        requestParameters.envId,
         requestParameters.elementsUserRoleCreate,
+        requestParameters.resourceInstanceId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1233,19 +1497,19 @@ export class UsersElementsDataApi extends BaseAPI {
    * @summary Create user
    * @param {UsersElementsDataApiElementsCreateUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UsersElementsDataApi
+   * @throws If a required parameter is missing.
    */
   public elementsCreateUser(
     requestParameters: UsersElementsDataApiElementsCreateUserRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return UsersElementsDataApiFp(this.configuration)
       .elementsCreateUser(
+        requestParameters.elementsConfigId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.elementsConfigId,
         requestParameters.elementsUserCreate,
+        requestParameters.resourceInstanceId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1256,12 +1520,11 @@ export class UsersElementsDataApi extends BaseAPI {
    * @summary Delete user
    * @param {UsersElementsDataApiElementsDeleteUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UsersElementsDataApi
+   * @throws If a required parameter is missing.
    */
   public elementsDeleteUser(
     requestParameters: UsersElementsDataApiElementsDeleteUserRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return UsersElementsDataApiFp(this.configuration)
       .elementsDeleteUser(
@@ -1269,6 +1532,7 @@ export class UsersElementsDataApi extends BaseAPI {
         requestParameters.envId,
         requestParameters.elementsConfigId,
         requestParameters.userId,
+        requestParameters.resourceInstanceId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1279,21 +1543,21 @@ export class UsersElementsDataApi extends BaseAPI {
    * @summary List roles
    * @param {UsersElementsDataApiElementsListRolesRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UsersElementsDataApi
+   * @throws If a required parameter is missing.
    */
   public elementsListRoles(
     requestParameters: UsersElementsDataApiElementsListRolesRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return UsersElementsDataApiFp(this.configuration)
       .elementsListRoles(
+        requestParameters.elementsConfigId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.elementsConfigId,
         requestParameters.search,
         requestParameters.page,
         requestParameters.perPage,
+        requestParameters.resourceInstanceId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1304,21 +1568,21 @@ export class UsersElementsDataApi extends BaseAPI {
    * @summary List users
    * @param {UsersElementsDataApiElementsListUsersRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UsersElementsDataApi
+   * @throws If a required parameter is missing.
    */
   public elementsListUsers(
     requestParameters: UsersElementsDataApiElementsListUsersRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return UsersElementsDataApiFp(this.configuration)
       .elementsListUsers(
+        requestParameters.elementsConfigId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.elementsConfigId,
         requestParameters.search,
         requestParameters.page,
         requestParameters.perPage,
+        requestParameters.resourceInstanceId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1329,20 +1593,46 @@ export class UsersElementsDataApi extends BaseAPI {
    * @summary Unassign role from user
    * @param {UsersElementsDataApiElementsUnassignRoleFromUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UsersElementsDataApi
+   * @throws If a required parameter is missing.
    */
   public elementsUnassignRoleFromUser(
     requestParameters: UsersElementsDataApiElementsUnassignRoleFromUserRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return UsersElementsDataApiFp(this.configuration)
       .elementsUnassignRoleFromUser(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.elementsConfigId,
         requestParameters.userId,
+        requestParameters.projId,
+        requestParameters.envId,
         requestParameters.elementsUserRoleRemove,
+        requestParameters.resourceInstanceId,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * List all Elements User Invites for the current environment and tenant.
+   * @summary List all Elements User Invites
+   * @param {UsersElementsDataApiListElementsUserInvitesRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws If a required parameter is missing.
+   */
+  public listElementsUserInvites(
+    requestParameters: UsersElementsDataApiListElementsUserInvitesRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return UsersElementsDataApiFp(this.configuration)
+      .listElementsUserInvites(
+        requestParameters.elementsConfigId,
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.search,
+        requestParameters.status,
+        requestParameters.page,
+        requestParameters.perPage,
+        requestParameters.resourceInstanceId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1353,12 +1643,11 @@ export class UsersElementsDataApi extends BaseAPI {
    * @summary Set Config Active
    * @param {UsersElementsDataApiSetConfigActiveRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UsersElementsDataApi
+   * @throws If a required parameter is missing.
    */
   public setConfigActive(
     requestParameters: UsersElementsDataApiSetConfigActiveRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return UsersElementsDataApiFp(this.configuration)
       .setConfigActive(

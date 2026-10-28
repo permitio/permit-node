@@ -1,32 +1,32 @@
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 import {
   ResourcesApi as AutogenResourcesApi,
-  PaginatedResultResourceRead,
-  ResourceCreate,
-  ResourceRead,
-  ResourceReplace,
-  ResourceUpdate,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+  type PaginatedResultResourceRead,
+  type ResourceCreate,
+  type ResourceRead,
+  type ResourceReplace,
+  type ResourceUpdate,
+} from '#src/openapi/index';
+import { BASE_PATH } from '#src/openapi/base';
 
-import { BasePermitApi, IPaginationExtended, ReturnPaginationType } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BasePermitApi, type IPaginationExtended, type ReturnPaginationType } from '#src/api/base';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
 export {
-  ResourceCreate,
-  ResourceRead,
-  ResourceReplace,
-  ResourceUpdate,
-  PaginatedResultResourceRead,
-} from '../openapi';
+  type ResourceCreate,
+  type ResourceRead,
+  type ResourceReplace,
+  type ResourceUpdate,
+  type PaginatedResultResourceRead,
+} from '#src/openapi/index';
 
 export interface IResourcesApi {
   /**
    * Retrieves a list of resources.
    *
-   * @param pagination The pagination options, @see {@link IPaginationExtended}
+   * Accepts optional pagination settings; see {@link IPaginationExtended}.
    * @returns A promise that resolves to an array of resources.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
@@ -134,7 +134,7 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
   /**
    * Retrieves a list of resources.
    *
-   * @param pagination The pagination options, @see {@link IPaginationExtended}
+   * Accepts optional pagination settings; see {@link IPaginationExtended}.
    * @returns A promise that resolves to an array of resources.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
@@ -155,7 +155,7 @@ export class ResourcesApi extends BasePermitApi implements IResourcesApi {
           ...this.config.apiContext.environmentContext,
           page,
           perPage,
-          includeTotalCount,
+          ...(includeTotalCount !== undefined && { includeTotalCount }),
         })
       ).data;
     } catch (err) {

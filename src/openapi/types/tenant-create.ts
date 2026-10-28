@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,34 +10,21 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface TenantCreate
- */
 export interface TenantCreate {
   /**
    * A unique id by which Permit will identify the tenant. The tenant key must be url-friendly (slugified).
-   * @type {string}
-   * @memberof TenantCreate
    */
   key: string;
   /**
    * A descriptive name for the tenant
-   * @type {string}
-   * @memberof TenantCreate
    */
   name: string;
   /**
    * an optional longer description of the tenant
-   * @type {string}
-   * @memberof TenantCreate
    */
   description?: string;
   /**
    * Arbitraty tenant attributes that will be used to enforce attribute-based access control policies.
-   * @type {object}
-   * @memberof TenantCreate
    */
   attributes?: object;
 }

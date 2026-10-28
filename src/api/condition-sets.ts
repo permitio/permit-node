@@ -1,29 +1,44 @@
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 import {
   ConditionSetsApi as AutogenConditionSetsApi,
-  ConditionSetCreate,
-  ConditionSetRead,
-  ConditionSetUpdate,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+  type ConditionSetCreate,
+  type ConditionSetRead,
+  type ConditionSetUpdate,
+  type ConditionSetType,
+} from '#src/openapi/index';
+import { BASE_PATH } from '#src/openapi/base';
 
-import { BasePermitApi, IPagination, PermitApiError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ApiContext, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { BasePermitApi, type IPagination } from '#src/api/base';
+// oxlint-disable-next-line no-unused-vars -- Type imports resolve public TSDoc error/context links.
+import type { PermitApiError } from '#src/api/base';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
+// oxlint-disable-next-line no-unused-vars -- Type imports resolve public TSDoc error/context links.
+import type { ApiContext, PermitContextError } from '#src/api/context';
 
-export { ConditionSetCreate, ConditionSetRead, ConditionSetUpdate } from '../openapi';
+export {
+  type ConditionSetCreate,
+  type ConditionSetRead,
+  type ConditionSetUpdate,
+} from '#src/openapi/index';
+
+/** Filters and pagination for condition-set listing. */
+export interface IListConditionSets extends IPagination {
+  /** Return only user sets or resource sets; omitted means both kinds. */
+  type?: ConditionSetType;
+}
 
 export interface IConditionSetsApi {
   /**
    * Retrieves a list of condition sets.
    *
-   * @param pagination The pagination options, @see {@link IPagination}
+   * @param params - Optional type filter and pagination, @see {@link IListConditionSets}
    * @returns A promise that resolves to an array of condition sets.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  list(pagination?: IPagination): Promise<ConditionSetRead[]>;
+  list(params?: IListConditionSets): Promise<ConditionSetRead[]>;
 
   /**
    * Retrieves a condition set by its key.
@@ -112,23 +127,25 @@ export class ConditionSetsApi extends BasePermitApi implements IConditionSetsApi
   /**
    * Retrieves a list of condition sets.
    *
-   * @param pagination The pagination options, @see {@link IPagination}
+   * @param params - Optional type filter and pagination, @see {@link IListConditionSets}
    * @returns A promise that resolves to an array of condition sets.
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async list(pagination?: IPagination): Promise<ConditionSetRead[]> {
-    const { page = 1, perPage = 100 } = pagination ?? {};
+  public async list(params?: IListConditionSets): Promise<ConditionSetRead[]> {
+    const { type, page = 1, perPage = 100 } = params ?? {};
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
-      return (
+      const response = (
         await this.conditionSets.listConditionSets({
           ...this.config.apiContext.environmentContext,
+          ...(type !== undefined && { type }),
           page,
           perPage,
         })
       ).data;
+      return Array.isArray(response) ? response : response.data;
     } catch (err) {
       this.handleApiError(err);
     }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,64 +10,62 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PaginatedResultUserRead } from '../types';
-// @ts-ignore
-import { TenantCreate } from '../types';
-// @ts-ignore
-import { TenantRead } from '../types';
-// @ts-ignore
-import { TenantUpdate } from '../types';
+import type { Configuration } from '../configuration';
+import type {
+  PaginatedResultUserRead,
+  ResponseListTenantsV2FactsProjIdEnvIdTenantsGet,
+  TenantCreate,
+  TenantRead,
+  TenantUpdate,
+  UserCreate,
+  UserRead,
+} from '../types';
 /**
  * TenantsApi - axios parameter creator
- * @export
  */
 export const TenantsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * Creates a new tenant inside the Permit.io system.  If the tenant is already created: will return 200 instead of 201, and will return the existing tenant object in the response body.
-     * @summary Create Tenant
+     * Create and add user to a tenant.
+     * @summary Add User To Tenant
+     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {TenantCreate} tenantCreate
+     * @param {UserCreate} userCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    createTenant: async (
+    addUserToTenant: async (
+      tenantId: string,
       projId: string,
       envId: string,
-      tenantCreate: TenantCreate,
-      options: AxiosRequestConfig = {},
+      userCreate: UserCreate,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'tenantId' is not null or undefined
+      assertParamExists('addUserToTenant', 'tenantId', tenantId);
       // verify required parameter 'projId' is not null or undefined
-      assertParamExists('createTenant', 'projId', projId);
+      assertParamExists('addUserToTenant', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
-      assertParamExists('createTenant', 'envId', envId);
-      // verify required parameter 'tenantCreate' is not null or undefined
-      assertParamExists('createTenant', 'tenantCreate', tenantCreate);
-      const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+      assertParamExists('addUserToTenant', 'envId', envId);
+      // verify required parameter 'userCreate' is not null or undefined
+      assertParamExists('addUserToTenant', 'userCreate', userCreate);
+      const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users`
+        .replace('{tenant_id}', encodeURIComponent(String(tenantId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -86,6 +82,67 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        userCreate,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Creates a new tenant inside the Permit.io system.  If the tenant is already created: will return 200 instead of 201, and will return the existing tenant object in the response body.
+     * @summary Create Tenant
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {TenantCreate} tenantCreate
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    createTenant: async (
+      projId: string,
+      envId: string,
+      tenantCreate: TenantCreate,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('createTenant', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('createTenant', 'envId', envId);
+      // verify required parameter 'tenantCreate' is not null or undefined
+      assertParamExists('createTenant', 'tenantCreate', tenantCreate);
+      const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants`
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication HTTPBearer required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -108,28 +165,28 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
     /**
      * Deletes the tenant and all its related data.
      * @summary Delete Tenant
+     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteTenant: async (
+      tenantId: string,
       projId: string,
       envId: string,
-      tenantId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'tenantId' is not null or undefined
+      assertParamExists('deleteTenant', 'tenantId', tenantId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('deleteTenant', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('deleteTenant', 'envId', envId);
-      // verify required parameter 'tenantId' is not null or undefined
-      assertParamExists('deleteTenant', 'tenantId', tenantId);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'tenant_id'}}`, encodeURIComponent(String(tenantId)));
+        .replace('{tenant_id}', encodeURIComponent(String(tenantId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -144,6 +201,8 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -161,33 +220,33 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
     /**
      * Deletes a user under a tenant.
      * @summary Delete Tenant User
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteTenantUser: async (
-      projId: string,
-      envId: string,
       tenantId: string,
       userId: string,
-      options: AxiosRequestConfig = {},
+      projId: string,
+      envId: string,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('deleteTenantUser', 'projId', projId);
-      // verify required parameter 'envId' is not null or undefined
-      assertParamExists('deleteTenantUser', 'envId', envId);
       // verify required parameter 'tenantId' is not null or undefined
       assertParamExists('deleteTenantUser', 'tenantId', tenantId);
       // verify required parameter 'userId' is not null or undefined
       assertParamExists('deleteTenantUser', 'userId', userId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('deleteTenantUser', 'projId', projId);
+      // verify required parameter 'envId' is not null or undefined
+      assertParamExists('deleteTenantUser', 'envId', envId);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users/{user_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'tenant_id'}}`, encodeURIComponent(String(tenantId)))
-        .replace(`{${'user_id'}}`, encodeURIComponent(String(userId)));
+        .replace('{tenant_id}', encodeURIComponent(String(tenantId)))
+        .replace('{user_id}', encodeURIComponent(String(userId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -202,6 +261,8 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -219,28 +280,28 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
     /**
      * Gets a tenant, if such tenant exists. Otherwise returns 404.
      * @summary Get Tenant
+     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getTenant: async (
+      tenantId: string,
       projId: string,
       envId: string,
-      tenantId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'tenantId' is not null or undefined
+      assertParamExists('getTenant', 'tenantId', tenantId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('getTenant', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('getTenant', 'envId', envId);
-      // verify required parameter 'tenantId' is not null or undefined
-      assertParamExists('getTenant', 'tenantId', tenantId);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'tenant_id'}}`, encodeURIComponent(String(tenantId)));
+        .replace('{tenant_id}', encodeURIComponent(String(tenantId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -255,6 +316,8 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -272,36 +335,38 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
     /**
      *
      * @summary List Tenant Users
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} [search] Text search for the email field
      * @param {string} [role] Match users with a specific role
+     * @param {boolean} [includeResourceInstanceRoles] Should add resource instance roles
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listTenantUsers: async (
-      projId: string,
       tenantId: string,
+      projId: string,
       envId: string,
       search?: string,
       role?: string,
+      includeResourceInstanceRoles?: boolean,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'projId' is not null or undefined
-      assertParamExists('listTenantUsers', 'projId', projId);
       // verify required parameter 'tenantId' is not null or undefined
       assertParamExists('listTenantUsers', 'tenantId', tenantId);
+      // verify required parameter 'projId' is not null or undefined
+      assertParamExists('listTenantUsers', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('listTenantUsers', 'envId', envId);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}/users`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'tenant_id'}}`, encodeURIComponent(String(tenantId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{tenant_id}', encodeURIComponent(String(tenantId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -325,6 +390,10 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
         localVarQueryParameter['role'] = role;
       }
 
+      if (includeResourceInstanceRoles !== undefined) {
+        localVarQueryParameter['include_resource_instance_roles'] = includeResourceInstanceRoles;
+      }
+
       if (page !== undefined) {
         localVarQueryParameter['page'] = page;
       }
@@ -332,6 +401,8 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       if (perPage !== undefined) {
         localVarQueryParameter['per_page'] = perPage;
       }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -347,31 +418,33 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     * Lists all the tenants defined within an environment.
+     * Lists all the tenants defined within an env.
      * @summary List Tenants
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} [search] Text search for the tenant name or key
+     * @param {boolean} [includeTotalCount] Include total count in response
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listTenants: async (
       projId: string,
       envId: string,
       search?: string,
+      includeTotalCount?: boolean,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('listTenants', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('listTenants', 'envId', envId);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -391,6 +464,10 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
         localVarQueryParameter['search'] = search;
       }
 
+      if (includeTotalCount !== undefined) {
+        localVarQueryParameter['include_total_count'] = includeTotalCount;
+      }
+
       if (page !== undefined) {
         localVarQueryParameter['page'] = page;
       }
@@ -398,6 +475,8 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       if (perPage !== undefined) {
         localVarQueryParameter['per_page'] = perPage;
       }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -415,32 +494,32 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
     /**
      * Partially updates the tenant definition. Fields that will be provided will be completely overwritten.
      * @summary Update Tenant
+     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {TenantUpdate} tenantUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateTenant: async (
+      tenantId: string,
       projId: string,
       envId: string,
-      tenantId: string,
       tenantUpdate: TenantUpdate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'tenantId' is not null or undefined
+      assertParamExists('updateTenant', 'tenantId', tenantId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('updateTenant', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('updateTenant', 'envId', envId);
-      // verify required parameter 'tenantId' is not null or undefined
-      assertParamExists('updateTenant', 'tenantId', tenantId);
       // verify required parameter 'tenantUpdate' is not null or undefined
       assertParamExists('updateTenant', 'tenantUpdate', tenantUpdate);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/tenants/{tenant_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'tenant_id'}}`, encodeURIComponent(String(tenantId)));
+        .replace('{tenant_id}', encodeURIComponent(String(tenantId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -457,6 +536,7 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -481,11 +561,45 @@ export const TenantsApiAxiosParamCreator = function (configuration?: Configurati
 
 /**
  * TenantsApi - functional programming interface
- * @export
  */
 export const TenantsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = TenantsApiAxiosParamCreator(configuration);
   return {
+    /**
+     * Create and add user to a tenant.
+     * @summary Add User To Tenant
+     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {UserCreate} userCreate
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    async addUserToTenant(
+      tenantId: string,
+      projId: string,
+      envId: string,
+      userCreate: UserCreate,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserRead>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.addUserToTenant(
+        tenantId,
+        projId,
+        envId,
+        userCreate,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['TenantsApi.addUserToTenant']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
     /**
      * Creates a new tenant inside the Permit.io system.  If the tenant is already created: will return 200 instead of 201, and will return the existing tenant object in the response body.
      * @summary Create Tenant
@@ -493,13 +607,13 @@ export const TenantsApiFp = function (configuration?: Configuration) {
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {TenantCreate} tenantCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async createTenant(
       projId: string,
       envId: string,
       tenantCreate: TenantCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TenantRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createTenant(
         projId,
@@ -507,178 +621,251 @@ export const TenantsApiFp = function (configuration?: Configuration) {
         tenantCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['TenantsApi.createTenant']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Deletes the tenant and all its related data.
      * @summary Delete Tenant
+     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deleteTenant(
+      tenantId: string,
       projId: string,
       envId: string,
-      tenantId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteTenant(
+        tenantId,
         projId,
         envId,
-        tenantId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['TenantsApi.deleteTenant']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Deletes a user under a tenant.
      * @summary Delete Tenant User
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deleteTenantUser(
-      projId: string,
-      envId: string,
       tenantId: string,
       userId: string,
-      options?: AxiosRequestConfig,
+      projId: string,
+      envId: string,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteTenantUser(
-        projId,
-        envId,
         tenantId,
         userId,
+        projId,
+        envId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['TenantsApi.deleteTenantUser']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Gets a tenant, if such tenant exists. Otherwise returns 404.
      * @summary Get Tenant
+     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getTenant(
+      tenantId: string,
       projId: string,
       envId: string,
-      tenantId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TenantRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getTenant(
+        tenantId,
         projId,
         envId,
-        tenantId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['TenantsApi.getTenant']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      *
      * @summary List Tenant Users
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} [search] Text search for the email field
      * @param {string} [role] Match users with a specific role
+     * @param {boolean} [includeResourceInstanceRoles] Should add resource instance roles
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listTenantUsers(
-      projId: string,
       tenantId: string,
+      projId: string,
       envId: string,
       search?: string,
       role?: string,
+      includeResourceInstanceRoles?: boolean,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResultUserRead>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listTenantUsers(
-        projId,
         tenantId,
+        projId,
         envId,
         search,
         role,
+        includeResourceInstanceRoles,
         page,
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['TenantsApi.listTenantUsers']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * Lists all the tenants defined within an environment.
+     * Lists all the tenants defined within an env.
      * @summary List Tenants
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {string} [search] Text search for the tenant name or key
+     * @param {boolean} [includeTotalCount] Include total count in response
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listTenants(
       projId: string,
       envId: string,
       search?: string,
+      includeTotalCount?: boolean,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TenantRead>>> {
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ResponseListTenantsV2FactsProjIdEnvIdTenantsGet>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listTenants(
         projId,
         envId,
         search,
+        includeTotalCount,
         page,
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['TenantsApi.listTenants']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Partially updates the tenant definition. Fields that will be provided will be completely overwritten.
      * @summary Update Tenant
+     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
      * @param {TenantUpdate} tenantUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async updateTenant(
+      tenantId: string,
       projId: string,
       envId: string,
-      tenantId: string,
       tenantUpdate: TenantUpdate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TenantRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateTenant(
+        tenantId,
         projId,
         envId,
-        tenantId,
         tenantUpdate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['TenantsApi.updateTenant']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
 
 /**
  * TenantsApi - factory interface
- * @export
  */
 export const TenantsApiFactory = function (
   configuration?: Configuration,
@@ -688,427 +875,421 @@ export const TenantsApiFactory = function (
   const localVarFp = TenantsApiFp(configuration);
   return {
     /**
+     * Create and add user to a tenant.
+     * @summary Add User To Tenant
+     * @param {TenantsApiAddUserToTenantRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws If a required parameter is missing.
+     */
+    addUserToTenant(
+      requestParameters: TenantsApiAddUserToTenantRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<UserRead> {
+      return localVarFp
+        .addUserToTenant(
+          requestParameters.tenantId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.userCreate,
+          options,
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
      * Creates a new tenant inside the Permit.io system.  If the tenant is already created: will return 200 instead of 201, and will return the existing tenant object in the response body.
      * @summary Create Tenant
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {TenantCreate} tenantCreate
+     * @param {TenantsApiCreateTenantRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createTenant(
-      projId: string,
-      envId: string,
-      tenantCreate: TenantCreate,
-      options?: any,
+      requestParameters: TenantsApiCreateTenantRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<TenantRead> {
       return localVarFp
-        .createTenant(projId, envId, tenantCreate, options)
+        .createTenant(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.tenantCreate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes the tenant and all its related data.
      * @summary Delete Tenant
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {TenantsApiDeleteTenantRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteTenant(
-      projId: string,
-      envId: string,
-      tenantId: string,
-      options?: any,
+      requestParameters: TenantsApiDeleteTenantRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<void> {
       return localVarFp
-        .deleteTenant(projId, envId, tenantId, options)
+        .deleteTenant(
+          requestParameters.tenantId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes a user under a tenant.
      * @summary Delete Tenant User
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+     * @param {TenantsApiDeleteTenantUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteTenantUser(
-      projId: string,
-      envId: string,
-      tenantId: string,
-      userId: string,
-      options?: any,
+      requestParameters: TenantsApiDeleteTenantUserRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<void> {
       return localVarFp
-        .deleteTenantUser(projId, envId, tenantId, userId, options)
+        .deleteTenantUser(
+          requestParameters.tenantId,
+          requestParameters.userId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Gets a tenant, if such tenant exists. Otherwise returns 404.
      * @summary Get Tenant
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+     * @param {TenantsApiGetTenantRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getTenant(
-      projId: string,
-      envId: string,
-      tenantId: string,
-      options?: any,
+      requestParameters: TenantsApiGetTenantRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<TenantRead> {
       return localVarFp
-        .getTenant(projId, envId, tenantId, options)
+        .getTenant(
+          requestParameters.tenantId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary List Tenant Users
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [search] Text search for the email field
-     * @param {string} [role] Match users with a specific role
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {TenantsApiListTenantUsersRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listTenantUsers(
-      projId: string,
-      tenantId: string,
-      envId: string,
-      search?: string,
-      role?: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
+      requestParameters: TenantsApiListTenantUsersRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<PaginatedResultUserRead> {
       return localVarFp
-        .listTenantUsers(projId, tenantId, envId, search, role, page, perPage, options)
+        .listTenantUsers(
+          requestParameters.tenantId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.search,
+          requestParameters.role,
+          requestParameters.includeResourceInstanceRoles,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
-     * Lists all the tenants defined within an environment.
+     * Lists all the tenants defined within an env.
      * @summary List Tenants
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [search] Text search for the tenant name or key
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {TenantsApiListTenantsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listTenants(
-      projId: string,
-      envId: string,
-      search?: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
-    ): AxiosPromise<Array<TenantRead>> {
+      requestParameters: TenantsApiListTenantsRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ResponseListTenantsV2FactsProjIdEnvIdTenantsGet> {
       return localVarFp
-        .listTenants(projId, envId, search, page, perPage, options)
+        .listTenants(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.search,
+          requestParameters.includeTotalCount,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Partially updates the tenant definition. Fields that will be provided will be completely overwritten.
      * @summary Update Tenant
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} tenantId Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-     * @param {TenantUpdate} tenantUpdate
+     * @param {TenantsApiUpdateTenantRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateTenant(
-      projId: string,
-      envId: string,
-      tenantId: string,
-      tenantUpdate: TenantUpdate,
-      options?: any,
+      requestParameters: TenantsApiUpdateTenantRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<TenantRead> {
       return localVarFp
-        .updateTenant(projId, envId, tenantId, tenantUpdate, options)
+        .updateTenant(
+          requestParameters.tenantId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.tenantUpdate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
 };
 
 /**
- * Request parameters for createTenant operation in TenantsApi.
- * @export
- * @interface TenantsApiCreateTenantRequest
+ * Request parameters for addUserToTenant operation in TenantsApi.
  */
-export interface TenantsApiCreateTenantRequest {
+export interface TenantsApiAddUserToTenantRequest {
+  /**
+   * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+   */
+  readonly tenantId: string;
+
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiCreateTenant
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiCreateTenant
    */
   readonly envId: string;
 
+  readonly userCreate: UserCreate;
+}
+
+/**
+ * Request parameters for createTenant operation in TenantsApi.
+ */
+export interface TenantsApiCreateTenantRequest {
   /**
-   *
-   * @type {TenantCreate}
-   * @memberof TenantsApiCreateTenant
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
    */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
+
   readonly tenantCreate: TenantCreate;
 }
 
 /**
  * Request parameters for deleteTenant operation in TenantsApi.
- * @export
- * @interface TenantsApiDeleteTenantRequest
  */
 export interface TenantsApiDeleteTenantRequest {
   /**
+   * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+   */
+  readonly tenantId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiDeleteTenant
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiDeleteTenant
    */
   readonly envId: string;
-
-  /**
-   * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiDeleteTenant
-   */
-  readonly tenantId: string;
 }
 
 /**
  * Request parameters for deleteTenantUser operation in TenantsApi.
- * @export
- * @interface TenantsApiDeleteTenantUserRequest
  */
 export interface TenantsApiDeleteTenantUserRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiDeleteTenantUser
-   */
-  readonly projId: string;
-
-  /**
-   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiDeleteTenantUser
-   */
-  readonly envId: string;
-
-  /**
    * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiDeleteTenantUser
    */
   readonly tenantId: string;
 
   /**
    * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiDeleteTenantUser
    */
   readonly userId: string;
+
+  /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
+   * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+   */
+  readonly envId: string;
 }
 
 /**
  * Request parameters for getTenant operation in TenantsApi.
- * @export
- * @interface TenantsApiGetTenantRequest
  */
 export interface TenantsApiGetTenantRequest {
   /**
+   * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+   */
+  readonly tenantId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiGetTenant
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiGetTenant
    */
   readonly envId: string;
-
-  /**
-   * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiGetTenant
-   */
-  readonly tenantId: string;
 }
 
 /**
  * Request parameters for listTenantUsers operation in TenantsApi.
- * @export
- * @interface TenantsApiListTenantUsersRequest
  */
 export interface TenantsApiListTenantUsersRequest {
   /**
-   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiListTenantUsers
-   */
-  readonly projId: string;
-
-  /**
    * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiListTenantUsers
    */
   readonly tenantId: string;
 
   /**
+   * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
+   */
+  readonly projId: string;
+
+  /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiListTenantUsers
    */
   readonly envId: string;
 
   /**
    * Text search for the email field
-   * @type {string}
-   * @memberof TenantsApiListTenantUsers
    */
   readonly search?: string;
 
   /**
    * Match users with a specific role
-   * @type {string}
-   * @memberof TenantsApiListTenantUsers
    */
   readonly role?: string;
 
   /**
+   * Should add resource instance roles
+   */
+  readonly includeResourceInstanceRoles?: boolean;
+
+  /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof TenantsApiListTenantUsers
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
-   * @memberof TenantsApiListTenantUsers
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for listTenants operation in TenantsApi.
- * @export
- * @interface TenantsApiListTenantsRequest
  */
 export interface TenantsApiListTenantsRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiListTenants
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiListTenants
    */
   readonly envId: string;
 
   /**
    * Text search for the tenant name or key
-   * @type {string}
-   * @memberof TenantsApiListTenants
    */
   readonly search?: string;
 
   /**
+   * Include total count in response
+   */
+  readonly includeTotalCount?: boolean;
+
+  /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof TenantsApiListTenants
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
-   * @memberof TenantsApiListTenants
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for updateTenant operation in TenantsApi.
- * @export
- * @interface TenantsApiUpdateTenantRequest
  */
 export interface TenantsApiUpdateTenantRequest {
   /**
+   * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
+   */
+  readonly tenantId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiUpdateTenant
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiUpdateTenant
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the tenant, or the URL-friendly key of the tenant (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof TenantsApiUpdateTenant
-   */
-  readonly tenantId: string;
-
-  /**
-   *
-   * @type {TenantUpdate}
-   * @memberof TenantsApiUpdateTenant
-   */
   readonly tenantUpdate: TenantUpdate;
 }
 
 /**
  * TenantsApi - object-oriented interface
- * @export
- * @class TenantsApi
- * @extends {BaseAPI}
  */
 export class TenantsApi extends BaseAPI {
+  /**
+   * Create and add user to a tenant.
+   * @summary Add User To Tenant
+   * @param {TenantsApiAddUserToTenantRequest} requestParameters Request parameters.
+   * @param {*} [options] Override http request option.
+   * @throws If a required parameter is missing.
+   */
+  public addUserToTenant(
+    requestParameters: TenantsApiAddUserToTenantRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return TenantsApiFp(this.configuration)
+      .addUserToTenant(
+        requestParameters.tenantId,
+        requestParameters.projId,
+        requestParameters.envId,
+        requestParameters.userCreate,
+        options,
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
   /**
    * Creates a new tenant inside the Permit.io system.  If the tenant is already created: will return 200 instead of 201, and will return the existing tenant object in the response body.
    * @summary Create Tenant
    * @param {TenantsApiCreateTenantRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @throws If a required parameter is missing.
    */
   public createTenant(
     requestParameters: TenantsApiCreateTenantRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return TenantsApiFp(this.configuration)
       .createTenant(
@@ -1125,18 +1306,17 @@ export class TenantsApi extends BaseAPI {
    * @summary Delete Tenant
    * @param {TenantsApiDeleteTenantRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @throws If a required parameter is missing.
    */
   public deleteTenant(
     requestParameters: TenantsApiDeleteTenantRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return TenantsApiFp(this.configuration)
       .deleteTenant(
+        requestParameters.tenantId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.tenantId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1147,19 +1327,18 @@ export class TenantsApi extends BaseAPI {
    * @summary Delete Tenant User
    * @param {TenantsApiDeleteTenantUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @throws If a required parameter is missing.
    */
   public deleteTenantUser(
     requestParameters: TenantsApiDeleteTenantUserRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return TenantsApiFp(this.configuration)
       .deleteTenantUser(
-        requestParameters.projId,
-        requestParameters.envId,
         requestParameters.tenantId,
         requestParameters.userId,
+        requestParameters.projId,
+        requestParameters.envId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1170,15 +1349,14 @@ export class TenantsApi extends BaseAPI {
    * @summary Get Tenant
    * @param {TenantsApiGetTenantRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @throws If a required parameter is missing.
    */
-  public getTenant(requestParameters: TenantsApiGetTenantRequest, options?: AxiosRequestConfig) {
+  public getTenant(requestParameters: TenantsApiGetTenantRequest, options?: RawAxiosRequestConfig) {
     return TenantsApiFp(this.configuration)
       .getTenant(
+        requestParameters.tenantId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.tenantId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1189,20 +1367,20 @@ export class TenantsApi extends BaseAPI {
    * @summary List Tenant Users
    * @param {TenantsApiListTenantUsersRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @throws If a required parameter is missing.
    */
   public listTenantUsers(
     requestParameters: TenantsApiListTenantUsersRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return TenantsApiFp(this.configuration)
       .listTenantUsers(
-        requestParameters.projId,
         requestParameters.tenantId,
+        requestParameters.projId,
         requestParameters.envId,
         requestParameters.search,
         requestParameters.role,
+        requestParameters.includeResourceInstanceRoles,
         requestParameters.page,
         requestParameters.perPage,
         options,
@@ -1211,22 +1389,22 @@ export class TenantsApi extends BaseAPI {
   }
 
   /**
-   * Lists all the tenants defined within an environment.
+   * Lists all the tenants defined within an env.
    * @summary List Tenants
    * @param {TenantsApiListTenantsRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @throws If a required parameter is missing.
    */
   public listTenants(
     requestParameters: TenantsApiListTenantsRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return TenantsApiFp(this.configuration)
       .listTenants(
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.search,
+        requestParameters.includeTotalCount,
         requestParameters.page,
         requestParameters.perPage,
         options,
@@ -1239,18 +1417,17 @@ export class TenantsApi extends BaseAPI {
    * @summary Update Tenant
    * @param {TenantsApiUpdateTenantRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TenantsApi
+   * @throws If a required parameter is missing.
    */
   public updateTenant(
     requestParameters: TenantsApiUpdateTenantRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return TenantsApiFp(this.configuration)
       .updateTenant(
+        requestParameters.tenantId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.tenantId,
         requestParameters.tenantUpdate,
         options,
       )

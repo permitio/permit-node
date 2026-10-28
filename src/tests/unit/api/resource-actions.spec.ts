@@ -1,0 +1,143 @@
+import { PermitApiError } from '#src/api/base';
+import { type ResourceActionCreate, type ResourceActionUpdate } from '#src/api/resource-actions';
+import { Permit } from '#src/index';
+import { createMockPermit, type MockTransport } from '#src/tests/helpers/mock-api';
+
+// The mock seeds an environment-level context with these defaults, so every
+// actions URL is nested under `/v2/schema/{proj}/{env}/resources/{resourceKey}/actions`.
+const PROJ = 'proj';
+const ENV = 'env';
+const RESOURCE = 'document';
+const COLLECTION = `/v2/schema/${PROJ}/${ENV}/resources/${RESOURCE}/actions`;
+
+describe('ResourceActionsApi (unit)', () => {
+  let permit: Permit;
+  let rest: MockTransport;
+
+  beforeEach(() => {
+    ({ permit, rest } = createMockPermit());
+  });
+
+  describe('list', () => {
+    it('GETs the resource-scoped actions collection with default pagination', async () => {
+      const response = [{ key: 'item-1', id: 'item-id-1' }];
+      rest.resolveWith(response);
+
+      const result = await permit.api.resourceActions.list({ resourceKey: RESOURCE });
+
+      expect(result).toEqual(response);
+      expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(COLLECTION);
+      expect(rest.last?.params).toMatchObject({ page: '1', per_page: '100' });
+    });
+
+    it('forwards page and perPage as wire params', async () => {
+      rest.resolveWith([]);
+
+      await permit.api.resourceActions.list({ resourceKey: RESOURCE, page: 3, perPage: 7 });
+
+      expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(COLLECTION);
+      expect(rest.last?.params).toMatchObject({ page: '3', per_page: '7' });
+    });
+  });
+
+  describe('get / getByKey / getById', () => {
+    it('GETs a single action with the resource key and action key in the path', async () => {
+      const response = { key: 'read' };
+      rest.resolveWith(response);
+
+      const result = await permit.api.resourceActions.get(RESOURCE, 'read');
+
+      expect(result).toEqual(response);
+      expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(`${COLLECTION}/read`);
+    });
+
+    it('getByKey is an alias for get', async () => {
+      const response = { key: 'read' };
+      rest.resolveWith(response);
+
+      const result = await permit.api.resourceActions.getByKey(RESOURCE, 'read');
+
+      expect(result).toEqual(response);
+      expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(`${COLLECTION}/read`);
+    });
+
+    it('getById is an alias for get', async () => {
+      const response = { key: 'action-1' };
+      rest.resolveWith(response);
+
+      const result = await permit.api.resourceActions.getById(RESOURCE, 'action-1');
+
+      expect(result).toEqual(response);
+      expect(rest.last?.method).toBe('GET');
+      expect(rest.last?.path).toBe(`${COLLECTION}/action-1`);
+    });
+  });
+
+  describe('create', () => {
+    const payload: ResourceActionCreate = { key: 'read', name: 'Read' };
+
+    it('POSTs the action body to the resource-scoped collection', async () => {
+      const response = { ...payload, id: 'action-1' };
+      rest.resolveWith(response);
+
+      const result = await permit.api.resourceActions.create(RESOURCE, payload);
+
+      expect(result).toEqual(response);
+      expect(rest.last?.method).toBe('POST');
+      expect(rest.last?.path).toBe(COLLECTION);
+      expect(rest.last?.data).toEqual(payload);
+    });
+  });
+
+  describe('update', () => {
+    it('PATCHes the action body to the keyed path', async () => {
+      const body: ResourceActionUpdate = { name: 'Read renamed' };
+      const response = { key: 'read', name: 'Read renamed' };
+      rest.resolveWith(response);
+
+      const result = await permit.api.resourceActions.update(RESOURCE, 'read', body);
+
+      expect(result).toEqual(response);
+      expect(rest.last?.method).toBe('PATCH');
+      expect(rest.last?.path).toBe(`${COLLECTION}/read`);
+      expect(rest.last?.data).toEqual(body);
+    });
+  });
+
+  describe('delete', () => {
+    it('DELETEs the keyed path', async () => {
+      rest.resolveWith({});
+
+      await permit.api.resourceActions.delete(RESOURCE, 'read');
+
+      expect(rest.last?.method).toBe('DELETE');
+      expect(rest.last?.path).toBe(`${COLLECTION}/read`);
+    });
+  });
+
+  describe('error mapping', () => {
+    it('maps a 404 to PermitApiError carrying the upstream response', async () => {
+      rest.rejectWith(404, { message: 'not found' });
+
+      const error = await permit.api.resourceActions.get(RESOURCE, 'missing').catch((err) => err);
+
+      expect(error).toBeInstanceOf(PermitApiError);
+      expect(error.response?.status).toBe(404);
+    });
+
+    it('maps a 409 conflict on create to PermitApiError', async () => {
+      rest.rejectWith(409, { message: 'already exists' });
+
+      const error = await permit.api.resourceActions
+        .create(RESOURCE, { key: 'read', name: 'Read' })
+        .catch((err) => err);
+
+      expect(error).toBeInstanceOf(PermitApiError);
+      expect(error.response?.status).toBe(409);
+    });
+  });
+});

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,34 +10,21 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface RelationshipTupleCreate
- */
 export interface RelationshipTupleCreate {
   /**
    * the resource instance assigned the new relation (accepts either the resource instance id or resource_key:resource_instance_key)
-   * @type {string}
-   * @memberof RelationshipTupleCreate
    */
   subject: string;
   /**
    * the relation to assign between the subject and object
-   * @type {string}
-   * @memberof RelationshipTupleCreate
    */
   relation: string;
   /**
    * the resource instance on which the new relation is assigned (accepts either the resource instance id or resource_key:resource_instance_key)
-   * @type {string}
-   * @memberof RelationshipTupleCreate
    */
   object: string;
   /**
-   * The tenant the subject and object belong to, if the resource instances don\'t exist yet, the tenant is required to create them. otherwise it is ignored
-   * @type {string}
-   * @memberof RelationshipTupleCreate
+   * The tenant the subject and object belong to. Required when neither resource instance exists yet - both are created in it. When exactly one exists, a tenant that disagrees with that instance\'s tenant is rejected; when both exist it is ignored, since each instance\'s tenant is taken from storage. Either way both instances must end up in the same tenant or the request is rejected. Accepts a tenant key, or a tenant id except on the bulk endpoint when neither instance exists yet (there a key is required).
    */
   tenant?: string;
 }

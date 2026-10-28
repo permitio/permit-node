@@ -1,0 +1,6 @@
+packages: []
+engineStrict: true
+ignoreScripts: true
+minimumReleaseAge: 1440
+savePrefix: ''
+autoInstallPeers: false

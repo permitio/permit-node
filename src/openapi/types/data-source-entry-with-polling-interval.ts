@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,55 +11,35 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { Data } from './data';
+import type { Data } from './data';
 
 /**
  * Data source configuration - where client\'s should retrieve data from and how they should store it
- * @export
- * @interface DataSourceEntryWithPollingInterval
  */
 export interface DataSourceEntryWithPollingInterval {
   /**
    * Url source to query for data
-   * @type {string}
-   * @memberof DataSourceEntryWithPollingInterval
    */
   url: string;
   /**
-   *
-   * @type {Data}
-   * @memberof DataSourceEntryWithPollingInterval
-   */
-  data?: Data;
-  /**
    * Suggested fetcher configuration (e.g. auth or method) to fetch data with
-   * @type {object}
-   * @memberof DataSourceEntryWithPollingInterval
    */
   config?: object;
   /**
    * topics the data applies to
-   * @type {Array<string>}
-   * @memberof DataSourceEntryWithPollingInterval
    */
   topics?: Array<string>;
   /**
    * OPA data api path to store the document at
-   * @type {string}
-   * @memberof DataSourceEntryWithPollingInterval
    */
   dst_path?: string;
   /**
-   * Method used to write into OPA - PUT/PATCH
-   * @type {string}
-   * @memberof DataSourceEntryWithPollingInterval
+   * Method used to write into OPA - PUT/PATCH, when using the PATCH method the data field should conform to the JSON patch schema defined in RFC 6902(https://datatracker.ietf.org/doc/html/rfc6902#section-3)
    */
   save_method?: string;
+  data?: Data;
   /**
    * Polling interval to refresh data from data source
-   * @type {number}
-   * @memberof DataSourceEntryWithPollingInterval
    */
   periodic_update_interval?: number;
 }

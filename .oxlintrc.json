@@ -1,0 +1,46 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "import", "unicorn"],
+  "categories": {
+    "correctness": "error"
+  },
+  "ignorePatterns": ["build/**", "docs/**", "coverage/**", "node_modules/**", ".openapi-*/**"],
+  "env": {
+    "builtin": true,
+    "node": true,
+    "vitest": true
+  },
+  "rules": {
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/**/*.ts", "scripts/**/*.mjs", "tools/**/*.mjs"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["./*", "../*"],
+                "message": "Use #src/ or #scripts/ absolute authored imports."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/openapi/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ]
+}

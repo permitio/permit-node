@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,25 +11,15 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { OnboardingStep } from './onboarding-step';
+import type { OnboardingStep } from './onboarding-step';
 
-/**
- *
- * @export
- * @interface OrgMemberUpdate
- */
 export interface OrgMemberUpdate {
   /**
    * Custom permit.io dashboard settings, such as preferred theme, etc.
-   * @type {object}
-   * @memberof OrgMemberUpdate
    */
   settings?: object;
   /**
    * updates the onboarding step (optional)
-   * @type {OnboardingStep}
-   * @memberof OrgMemberUpdate
    */
   onboarding_step?: OnboardingStep;
 }

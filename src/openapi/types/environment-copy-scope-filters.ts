@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface EnvironmentCopyScopeFilters
- */
 export interface EnvironmentCopyScopeFilters {
   /**
    * Objects to include (use * as wildcard)
-   * @type {Array<string>}
-   * @memberof EnvironmentCopyScopeFilters
    */
   include?: Array<string>;
   /**
    * Object to exclude (use * as wildcard)
-   * @type {Array<string>}
-   * @memberof EnvironmentCopyScopeFilters
    */
   exclude?: Array<string>;
 }

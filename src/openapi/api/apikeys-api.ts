@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,39 +10,28 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { APIKeyCreate } from '../types';
-// @ts-ignore
-import { APIKeyRead } from '../types';
-// @ts-ignore
-import { APIKeyScopeRead } from '../types';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { MemberAccessObj } from '../types';
-// @ts-ignore
-import { PaginatedResultAPIKeyRead } from '../types';
+import type { Configuration } from '../configuration';
+import type {
+  APIKeyCreate,
+  APIKeyRead,
+  APIKeyScopeRead,
+  MemberAccessObj,
+  PaginatedResultAPIKeyRead,
+} from '../types';
 /**
  * APIKeysApi - axios parameter creator
- * @export
  */
 export const APIKeysApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
@@ -53,11 +40,11 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
      * @summary Create Api Key
      * @param {APIKeyCreate} aPIKeyCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createApiKey: async (
       aPIKeyCreate: APIKeyCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'aPIKeyCreate' is not null or undefined
       assertParamExists('createApiKey', 'aPIKeyCreate', aPIKeyCreate);
@@ -78,6 +65,7 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -102,16 +90,16 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
      * @summary Delete Api Key
      * @param {string} apiKeyId The unique id of the API key
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteApiKey: async (
       apiKeyId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'apiKeyId' is not null or undefined
       assertParamExists('deleteApiKey', 'apiKeyId', apiKeyId);
       const localVarPath = `/v2/api-key/{api_key_id}`.replace(
-        `{${'api_key_id'}}`,
+        '{api_key_id}',
         encodeURIComponent(String(apiKeyId)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -128,6 +116,8 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -147,13 +137,16 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
      * @summary Get Api Key
      * @param {string} apiKeyId The unique id of the API key
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    getApiKey: async (apiKeyId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    getApiKey: async (
+      apiKeyId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
       // verify required parameter 'apiKeyId' is not null or undefined
       assertParamExists('getApiKey', 'apiKeyId', apiKeyId);
       const localVarPath = `/v2/api-key/{api_key_id}`.replace(
-        `{${'api_key_id'}}`,
+        '{api_key_id}',
         encodeURIComponent(String(apiKeyId)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -170,6 +163,8 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -188,9 +183,9 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
      *
      * @summary Get Api Key Scope
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    getApiKeyScope: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    getApiKeyScope: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/v2/api-key/scope`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -206,6 +201,8 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -226,20 +223,20 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getEnvironmentApiKey: async (
       projId: string,
       envId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('getEnvironmentApiKey', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('getEnvironmentApiKey', 'envId', envId);
       const localVarPath = `/v2/api-key/{proj_id}/{env_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -254,6 +251,8 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -272,16 +271,18 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
      * Lists all the api_keys under the active organization.
      * @summary List Api Keys
      * @param {MemberAccessObj} [objectType]
+     * @param {string} [projId] Optional project filter by project id or key
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listApiKeys: async (
       objectType?: MemberAccessObj,
+      projId?: string,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/v2/api-key`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -303,6 +304,10 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
         localVarQueryParameter['object_type'] = objectType;
       }
 
+      if (projId !== undefined) {
+        localVarQueryParameter['proj_id'] = projId;
+      }
+
       if (page !== undefined) {
         localVarQueryParameter['page'] = page;
       }
@@ -310,6 +315,8 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
       if (perPage !== undefined) {
         localVarQueryParameter['per_page'] = perPage;
       }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -329,16 +336,16 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
      * @summary Rotate API Key
      * @param {string} apiKeyId The unique id of the API key
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     rotateApiKey: async (
       apiKeyId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'apiKeyId' is not null or undefined
       assertParamExists('rotateApiKey', 'apiKeyId', apiKeyId);
       const localVarPath = `/v2/api-key/{api_key_id}/rotate-secret`.replace(
-        `{${'api_key_id'}}`,
+        '{api_key_id}',
         encodeURIComponent(String(apiKeyId)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -355,6 +362,8 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -374,7 +383,6 @@ export const APIKeysApiAxiosParamCreator = function (configuration?: Configurati
 
 /**
  * APIKeysApi - functional programming interface
- * @export
  */
 export const APIKeysApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = APIKeysApiAxiosParamCreator(configuration);
@@ -384,54 +392,90 @@ export const APIKeysApiFp = function (configuration?: Configuration) {
      * @summary Create Api Key
      * @param {APIKeyCreate} aPIKeyCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async createApiKey(
       aPIKeyCreate: APIKeyCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIKeyRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createApiKey(aPIKeyCreate, options);
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['APIKeysApi.createApiKey']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Deletes the api_key and all its related data.
      * @summary Delete Api Key
      * @param {string} apiKeyId The unique id of the API key
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deleteApiKey(
       apiKeyId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteApiKey(apiKeyId, options);
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['APIKeysApi.deleteApiKey']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Gets a single api_key matching the given api_key_id, if such api_key exists.
      * @summary Get Api Key
      * @param {string} apiKeyId The unique id of the API key
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getApiKey(
       apiKeyId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIKeyRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getApiKey(apiKeyId, options);
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['APIKeysApi.getApiKey']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      *
      * @summary Get Api Key Scope
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getApiKeyScope(
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIKeyScopeRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getApiKeyScope(options);
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['APIKeysApi.getApiKeyScope']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      *
@@ -439,65 +483,94 @@ export const APIKeysApiFp = function (configuration?: Configuration) {
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getEnvironmentApiKey(
       projId: string,
       envId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIKeyRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getEnvironmentApiKey(
         projId,
         envId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['APIKeysApi.getEnvironmentApiKey']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists all the api_keys under the active organization.
      * @summary List Api Keys
      * @param {MemberAccessObj} [objectType]
+     * @param {string} [projId] Optional project filter by project id or key
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listApiKeys(
       objectType?: MemberAccessObj,
+      projId?: string,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResultAPIKeyRead>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listApiKeys(
         objectType,
+        projId,
         page,
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['APIKeysApi.listApiKeys']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Rotates the API key of the PDP container with id `pdp_id`.  The rotation of the API key revokes the old API key and issues a new API key to the PDP.
      * @summary Rotate API Key
      * @param {string} apiKeyId The unique id of the API key
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async rotateApiKey(
       apiKeyId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIKeyRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.rotateApiKey(apiKeyId, options);
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['APIKeysApi.rotateApiKey']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
 
 /**
  * APIKeysApi - factory interface
- * @export
  */
 export const APIKeysApiFactory = function (
   configuration?: Configuration,
@@ -509,199 +582,187 @@ export const APIKeysApiFactory = function (
     /**
      * Creates a new api_key under the active organization.
      * @summary Create Api Key
-     * @param {APIKeyCreate} aPIKeyCreate
+     * @param {APIKeysApiCreateApiKeyRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    createApiKey(aPIKeyCreate: APIKeyCreate, options?: any): AxiosPromise<APIKeyRead> {
+    createApiKey(
+      requestParameters: APIKeysApiCreateApiKeyRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<APIKeyRead> {
       return localVarFp
-        .createApiKey(aPIKeyCreate, options)
+        .createApiKey(requestParameters.aPIKeyCreate, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes the api_key and all its related data.
      * @summary Delete Api Key
-     * @param {string} apiKeyId The unique id of the API key
+     * @param {APIKeysApiDeleteApiKeyRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    deleteApiKey(apiKeyId: string, options?: any): AxiosPromise<void> {
-      return localVarFp.deleteApiKey(apiKeyId, options).then((request) => request(axios, basePath));
+    deleteApiKey(
+      requestParameters: APIKeysApiDeleteApiKeyRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<void> {
+      return localVarFp
+        .deleteApiKey(requestParameters.apiKeyId, options)
+        .then((request) => request(axios, basePath));
     },
     /**
      * Gets a single api_key matching the given api_key_id, if such api_key exists.
      * @summary Get Api Key
-     * @param {string} apiKeyId The unique id of the API key
+     * @param {APIKeysApiGetApiKeyRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    getApiKey(apiKeyId: string, options?: any): AxiosPromise<APIKeyRead> {
-      return localVarFp.getApiKey(apiKeyId, options).then((request) => request(axios, basePath));
+    getApiKey(
+      requestParameters: APIKeysApiGetApiKeyRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<APIKeyRead> {
+      return localVarFp
+        .getApiKey(requestParameters.apiKeyId, options)
+        .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Get Api Key Scope
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    getApiKeyScope(options?: any): AxiosPromise<APIKeyScopeRead> {
+    getApiKeyScope(options?: RawAxiosRequestConfig): AxiosPromise<APIKeyScopeRead> {
       return localVarFp.getApiKeyScope(options).then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Get Environment Api Key
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
+     * @param {APIKeysApiGetEnvironmentApiKeyRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    getEnvironmentApiKey(projId: string, envId: string, options?: any): AxiosPromise<APIKeyRead> {
+    getEnvironmentApiKey(
+      requestParameters: APIKeysApiGetEnvironmentApiKeyRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<APIKeyRead> {
       return localVarFp
-        .getEnvironmentApiKey(projId, envId, options)
+        .getEnvironmentApiKey(requestParameters.projId, requestParameters.envId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists all the api_keys under the active organization.
      * @summary List Api Keys
-     * @param {MemberAccessObj} [objectType]
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {APIKeysApiListApiKeysRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listApiKeys(
-      objectType?: MemberAccessObj,
-      page?: number,
-      perPage?: number,
-      options?: any,
+      requestParameters: APIKeysApiListApiKeysRequest = {},
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<PaginatedResultAPIKeyRead> {
       return localVarFp
-        .listApiKeys(objectType, page, perPage, options)
+        .listApiKeys(
+          requestParameters.objectType,
+          requestParameters.projId,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Rotates the API key of the PDP container with id `pdp_id`.  The rotation of the API key revokes the old API key and issues a new API key to the PDP.
      * @summary Rotate API Key
-     * @param {string} apiKeyId The unique id of the API key
+     * @param {APIKeysApiRotateApiKeyRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    rotateApiKey(apiKeyId: string, options?: any): AxiosPromise<APIKeyRead> {
-      return localVarFp.rotateApiKey(apiKeyId, options).then((request) => request(axios, basePath));
+    rotateApiKey(
+      requestParameters: APIKeysApiRotateApiKeyRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<APIKeyRead> {
+      return localVarFp
+        .rotateApiKey(requestParameters.apiKeyId, options)
+        .then((request) => request(axios, basePath));
     },
   };
 };
 
 /**
  * Request parameters for createApiKey operation in APIKeysApi.
- * @export
- * @interface APIKeysApiCreateApiKeyRequest
  */
 export interface APIKeysApiCreateApiKeyRequest {
-  /**
-   *
-   * @type {APIKeyCreate}
-   * @memberof APIKeysApiCreateApiKey
-   */
   readonly aPIKeyCreate: APIKeyCreate;
 }
 
 /**
  * Request parameters for deleteApiKey operation in APIKeysApi.
- * @export
- * @interface APIKeysApiDeleteApiKeyRequest
  */
 export interface APIKeysApiDeleteApiKeyRequest {
   /**
    * The unique id of the API key
-   * @type {string}
-   * @memberof APIKeysApiDeleteApiKey
    */
   readonly apiKeyId: string;
 }
 
 /**
  * Request parameters for getApiKey operation in APIKeysApi.
- * @export
- * @interface APIKeysApiGetApiKeyRequest
  */
 export interface APIKeysApiGetApiKeyRequest {
   /**
    * The unique id of the API key
-   * @type {string}
-   * @memberof APIKeysApiGetApiKey
    */
   readonly apiKeyId: string;
 }
 
 /**
  * Request parameters for getEnvironmentApiKey operation in APIKeysApi.
- * @export
- * @interface APIKeysApiGetEnvironmentApiKeyRequest
  */
 export interface APIKeysApiGetEnvironmentApiKeyRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof APIKeysApiGetEnvironmentApiKey
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof APIKeysApiGetEnvironmentApiKey
    */
   readonly envId: string;
 }
 
 /**
  * Request parameters for listApiKeys operation in APIKeysApi.
- * @export
- * @interface APIKeysApiListApiKeysRequest
  */
 export interface APIKeysApiListApiKeysRequest {
-  /**
-   *
-   * @type {MemberAccessObj}
-   * @memberof APIKeysApiListApiKeys
-   */
   readonly objectType?: MemberAccessObj;
 
   /**
+   * Optional project filter by project id or key
+   */
+  readonly projId?: string;
+
+  /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof APIKeysApiListApiKeys
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
-   * @memberof APIKeysApiListApiKeys
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for rotateApiKey operation in APIKeysApi.
- * @export
- * @interface APIKeysApiRotateApiKeyRequest
  */
 export interface APIKeysApiRotateApiKeyRequest {
   /**
    * The unique id of the API key
-   * @type {string}
-   * @memberof APIKeysApiRotateApiKey
    */
   readonly apiKeyId: string;
 }
 
 /**
  * APIKeysApi - object-oriented interface
- * @export
- * @class APIKeysApi
- * @extends {BaseAPI}
  */
 export class APIKeysApi extends BaseAPI {
   /**
@@ -709,12 +770,11 @@ export class APIKeysApi extends BaseAPI {
    * @summary Create Api Key
    * @param {APIKeysApiCreateApiKeyRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof APIKeysApi
+   * @throws If a required parameter is missing.
    */
   public createApiKey(
     requestParameters: APIKeysApiCreateApiKeyRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return APIKeysApiFp(this.configuration)
       .createApiKey(requestParameters.aPIKeyCreate, options)
@@ -726,12 +786,11 @@ export class APIKeysApi extends BaseAPI {
    * @summary Delete Api Key
    * @param {APIKeysApiDeleteApiKeyRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof APIKeysApi
+   * @throws If a required parameter is missing.
    */
   public deleteApiKey(
     requestParameters: APIKeysApiDeleteApiKeyRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return APIKeysApiFp(this.configuration)
       .deleteApiKey(requestParameters.apiKeyId, options)
@@ -743,10 +802,9 @@ export class APIKeysApi extends BaseAPI {
    * @summary Get Api Key
    * @param {APIKeysApiGetApiKeyRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof APIKeysApi
+   * @throws If a required parameter is missing.
    */
-  public getApiKey(requestParameters: APIKeysApiGetApiKeyRequest, options?: AxiosRequestConfig) {
+  public getApiKey(requestParameters: APIKeysApiGetApiKeyRequest, options?: RawAxiosRequestConfig) {
     return APIKeysApiFp(this.configuration)
       .getApiKey(requestParameters.apiKeyId, options)
       .then((request) => request(this.axios, this.basePath));
@@ -756,10 +814,9 @@ export class APIKeysApi extends BaseAPI {
    *
    * @summary Get Api Key Scope
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof APIKeysApi
+   * @throws If a required parameter is missing.
    */
-  public getApiKeyScope(options?: AxiosRequestConfig) {
+  public getApiKeyScope(options?: RawAxiosRequestConfig) {
     return APIKeysApiFp(this.configuration)
       .getApiKeyScope(options)
       .then((request) => request(this.axios, this.basePath));
@@ -770,12 +827,11 @@ export class APIKeysApi extends BaseAPI {
    * @summary Get Environment Api Key
    * @param {APIKeysApiGetEnvironmentApiKeyRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof APIKeysApi
+   * @throws If a required parameter is missing.
    */
   public getEnvironmentApiKey(
     requestParameters: APIKeysApiGetEnvironmentApiKeyRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return APIKeysApiFp(this.configuration)
       .getEnvironmentApiKey(requestParameters.projId, requestParameters.envId, options)
@@ -787,16 +843,16 @@ export class APIKeysApi extends BaseAPI {
    * @summary List Api Keys
    * @param {APIKeysApiListApiKeysRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof APIKeysApi
+   * @throws If a required parameter is missing.
    */
   public listApiKeys(
     requestParameters: APIKeysApiListApiKeysRequest = {},
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return APIKeysApiFp(this.configuration)
       .listApiKeys(
         requestParameters.objectType,
+        requestParameters.projId,
         requestParameters.page,
         requestParameters.perPage,
         options,
@@ -809,12 +865,11 @@ export class APIKeysApi extends BaseAPI {
    * @summary Rotate API Key
    * @param {APIKeysApiRotateApiKeyRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof APIKeysApi
+   * @throws If a required parameter is missing.
    */
   public rotateApiKey(
     requestParameters: APIKeysApiRotateApiKeyRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return APIKeysApiFp(this.configuration)
       .rotateApiKey(requestParameters.apiKeyId, options)

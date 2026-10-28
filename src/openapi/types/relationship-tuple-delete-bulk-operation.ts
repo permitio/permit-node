@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,16 +10,12 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface RelationshipTupleDeleteBulkOperation
- */
+// May contain unused imports in some cases
+import type { RelationshipTupleDelete } from './relationship-tuple-delete';
+
 export interface RelationshipTupleDeleteBulkOperation {
   /**
-   *
-   * @type {any}
-   * @memberof RelationshipTupleDeleteBulkOperation
+   * List of relationship tuples objects to delete
    */
-  idents: any;
+  idents: Array<RelationshipTupleDelete>;
 }

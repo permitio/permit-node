@@ -1,7 +1,8 @@
-import test from 'ava';
+import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import {
   copyFileSync,
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -15,15 +16,88 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { expect, onTestFinished, test } from 'vitest';
+
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const packageJson = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+const generatorConfig = JSON.parse(readFileSync(join(root, 'openapi/generator.json'), 'utf8'));
+const groupDescription =
+  'Either the unique id of the resource instance that the group belongs to, or the ' +
+  'URL-friendly key of the <resource_key:resource_instance_key> (i.e: file:my_file)';
+const correctedComments = Object.fromEntries(
+  [
+    [
+      'data-generator-lib-schemas-schema-opal-data-derivation-settings',
+      'superseded_by_direct_role',
+      'boolean',
+      'If True, the derived role is superseded by a direct role. Meaning role derivation is ' +
+        'not considered if the user has a direct role.',
+    ],
+    ...['group-assignment', 'group-create', 'group-read-schema'].map((file) => [
+      file,
+      'group_instance_key',
+      'string',
+      groupDescription,
+    ]),
+    [
+      'tenant-block-read',
+      'attributes',
+      'object',
+      'Arbitrary tenant attributes that will be used to enforce attribute-based ' +
+        'access control policies.',
+    ],
+  ].map(([file, property, type, description]) => [
+    file + '.ts',
+    `export interface Model {
+    /**
+     * ${description}
+     */
+    '${property}'?: ${type};
+}`,
+  ]),
+);
 const cleanTypes = {
+  'task-result-environment-read.ts': `export interface TaskResultEnvironmentRead {
+    task_id: string;
+    status: TaskStatus;
+    result?: EnvironmentRead | null;
+    error?: ErrorDetails | null;
+  }`,
+  'apikey-read.ts': `export interface APIKeyRead {
+    organization_id: string;
+    owner_type: APIKeyOwnerType;
+    id: string;
+    created_at: string;
+    project_id?: string | null;
+    environment_id?: string | null;
+    object_type?: MemberAccessObj | null;
+    access_level?: MemberAccessLevel | null;
+    name?: string | null;
+    secret?: string | null;
+    created_by_member?: OrgMemberRead | null;
+    last_used_at?: string | null;
+    env?: EnvironmentRead | null;
+    project?: ProjectRead | null;
+  }`,
+  'paginated-result-apikey-read.ts': `export interface PaginatedResultAPIKeyRead {
+    data: Array<APIKeyRead>;
+    total_count: number;
+    page_count?: number | null;
+  }`,
+
+  'apikey-scope-read.ts': `export interface APIKeyScopeRead {
+    organization_id: string;
+    project_id?: string | null;
+    environment_id?: string | null;
+  }`,
+  ...correctedComments,
+  'callbacks-inner.ts': 'export type CallbacksInner = Array<any> | string;',
   'role-create.ts': "export interface RoleCreate { 'key': string; 'extends'?: Array<string>; }",
   'resource-role-create.ts': "export interface ResourceRoleCreate { 'extends'?: Array<string>; }",
   'group-assign-user.ts': "export interface GroupAssignUser { 'tenant': string; }",
   'tenant-obj.ts': "export interface TenantObj { 'id': string; }",
   'user-obj.ts': "export interface UserObj { 'id': string; }",
   'action-obj.ts': "export interface ActionObj { 'id': string; }",
+  'monthly-usage.ts': "export interface MonthlyUsage { 'monthly_tenants'?: Array<string>; }",
   'codegen-probe.ts': `export interface CodegenProbe {
     'nullable_string'?: string | null;
     'nullable_any_of'?: string | null;
@@ -33,12 +107,14 @@ const cleanTypes = {
 };
 
 // Only the external generator is mocked; the CLI, filesystem and type checks are real.
-const wrapper = `#!/usr/bin/env node
+const javaFixture = `#!${process.execPath}
 const fs = require('fs');
 const path = require('path');
 const config = JSON.parse(fs.readFileSync('mock-generator.json'));
 fs.writeFileSync('invocation.json', JSON.stringify({args: process.argv.slice(2),
   cwd: process.cwd(), pwd: process.env.PWD, initCwd: process.env.INIT_CWD}));
+if (config.warning) console.warn(config.warning);
+if (config.stderr) console.error(config.stderr);
 if (config.exit) process.exit(config.exit);
 if (config.signal) process.kill(process.pid, config.signal);
 const out = process.argv[process.argv.indexOf('-o') + 1];
@@ -49,33 +125,59 @@ for (const [name, source] of Object.entries(config.types)) {
   fs.writeFileSync(path.join(types, name), source);
 }
 for (let i = Object.keys(config.types).length; i < 344; i++) {
-  fs.writeFileSync(path.join(types, 'filler-' + i + '.ts'), 'export interface Filler {}');
+  fs.writeFileSync(path.join(types, 'filler-' + i + '.ts'), 'export interface Filler { value: string; }');
 }
+fs.writeFileSync(path.join(out, 'common.ts'), "export const createRequestFunction = () => { return <T, R>(axios, basePath): Promise<R> => { const url = (axios.defaults.baseURL ? '' : configuration?.basePath ?? basePath) + axiosArgs.url; return axios.request<T, R>(axiosRequestArgs) as Promise<R>; }; };");
 const meta = path.join(out, '.openapi-generator');
 fs.mkdirSync(meta, {recursive: true});
 if (!config.noVersion) fs.writeFileSync(path.join(meta, 'VERSION'), config.version || '7.25.0');
 if (!config.noManifest) {
-  const entries = fs.readdirSync(types).map(f => modelPackage + '/' + f);
+  const entries = ['common.ts', ...fs.readdirSync(types).map(f => modelPackage + '/' + f)];
   if (config.missingFile) entries.push(modelPackage + '/missing.ts');
   fs.writeFileSync(path.join(meta, 'FILES'), config.emptyManifest ? '' : entries.join('\\n'));
 }
 `;
 
-function setup(t, changes = {}) {
+function setup(changes = {}) {
   const dir = realpathSync(mkdtempSync(join(tmpdir(), 'codegen test ')));
-  t.teardown(() => rmSync(dir, { recursive: true, force: true }));
-  for (const name of ['scripts', 'src/tests/codegen/fixtures', 'node_modules/.bin']) {
+  onTestFinished(() => rmSync(dir, { recursive: true, force: true }));
+  for (const name of ['scripts', 'openapi', 'src/tests/codegen/fixtures', 'mock-java/bin']) {
     mkdirSync(join(dir, name), { recursive: true });
   }
-  copyFileSync(join(root, 'scripts/check-codegen.mjs'), join(dir, 'scripts/check-codegen.mjs'));
-  symlinkSync(join(root, 'node_modules/typescript'), join(dir, 'node_modules/typescript'), 'dir');
-  const wrapperDir = join(dir, 'node_modules/@openapitools/openapi-generator-cli');
-  mkdirSync(wrapperDir, { recursive: true });
-  writeFileSync(join(wrapperDir, 'main.js'), wrapper, { mode: 0o755 });
-  symlinkSync(join(wrapperDir, 'main.js'), join(dir, 'node_modules/.bin/openapi-generator-cli'));
-  writeFileSync(join(dir, 'package.json'), JSON.stringify(packageJson));
+  for (const file of [
+    'check-codegen.mjs',
+    'openapi-generator.mjs',
+    'openapi-shapes.mjs',
+    'openapi-source.mjs',
+    'package.json',
+  ]) {
+    copyFileSync(join(root, 'scripts', file), join(dir, 'scripts', file));
+  }
+  writeFileSync(join(dir, 'openapi/generator.json'), JSON.stringify(generatorConfig));
+  mkdirSync(join(dir, 'node_modules/@permitio'), { recursive: true });
+  symlinkSync(
+    join(root, 'tools/compiler'),
+    join(dir, 'node_modules/@permitio/compiler-tools'),
+    'dir',
+  );
+  const cache = join(dir, 'node_modules/.cache/openapi-generator');
+  mkdirSync(cache, { recursive: true });
+  const jar = 'reviewed fixture JAR';
+  writeFileSync(join(cache, '7.25.0.jar'), jar);
+  writeFileSync(
+    join(dir, 'openapi/provenance.json'),
+    JSON.stringify({
+      generator: '7.25.0',
+      generatorSha256: createHash('sha256').update(jar).digest('hex'),
+    }),
+  );
+  writeFileSync(join(dir, 'mock-java/bin/java'), javaFixture, { mode: 0o755 });
+  writeFileSync(join(dir, 'package.json'), '{"type":"commonjs"}');
   writeFileSync(join(dir, 'openapitools.json'), '{"generator-cli":{"version":"7.25.0"}}');
-  writeFileSync(join(dir, 'src/tests/codegen/fixtures/openapi-3.1.0.json'), '{"openapi":"3.1.0"}');
+  copyFileSync(
+    join(root, 'src/tests/codegen/fixtures/openapi-3.1.0.json'),
+    join(dir, 'src/tests/codegen/fixtures/openapi-3.1.0.json'),
+  );
   const config = { types: { ...cleanTypes }, ...changes };
   writeFileSync(join(dir, 'mock-generator.json'), JSON.stringify(config));
   return dir;
@@ -84,56 +186,90 @@ function setup(t, changes = {}) {
 function run(dir, env = {}) {
   const result = spawnSync(process.execPath, [join(dir, 'scripts/check-codegen.mjs')], {
     cwd: tmpdir(),
-    env: { ...process.env, PWD: tmpdir(), INIT_CWD: tmpdir(), ...env },
+    env: {
+      ...process.env,
+      PWD: tmpdir(),
+      INIT_CWD: tmpdir(),
+      JAVA_HOME: join(dir, 'mock-java'),
+      ...env,
+    },
     encoding: 'utf8',
   });
   return { ...result, output: result.stdout + result.stderr };
 }
 
-function fails(t, dir, pattern) {
+function fails(dir, pattern) {
   const result = run(dir);
-  t.is(result.status, 1, result.output);
-  t.regex(result.output, pattern);
-  t.false(result.output.includes('codegen guard OK'));
-  t.deepEqual(
+  expect(result.status, result.output).toBe(1);
+  expect(result.output).toMatch(pattern);
+  expect(result.output.includes('codegen guard OK')).toBe(false);
+  expect(
     readdirSync(join(dir, 'node_modules')).filter((f) => f.startsWith('.codegen-')),
-    [],
-  );
+  ).toStrictEqual([]);
 }
 
-test('uses the repository pin from another directory and relative paths with spaces', (t) => {
-  const dir = setup(t);
+test('uses the repository pin from another directory and relative paths with spaces', () => {
+  const dir = setup();
   const result = run(dir, { TMPDIR: dir });
-  t.is(result.status, 0, result.output);
-  t.regex(result.output, /7\.25\.0/);
+  expect(result.status, result.output).toBe(0);
+  expect(result.output).toMatch(/7\.25\.0/);
   const invocation = JSON.parse(readFileSync(join(dir, 'invocation.json'), 'utf8'));
-  t.is(invocation.pwd, dir);
-  t.is(invocation.initCwd, dir);
+  expect(invocation.pwd).toBe(dir);
+  expect(invocation.initCwd).toBe(dir);
+  expect(invocation.args.slice(0, 3)).toEqual([
+    '-jar',
+    'node_modules/.cache/openapi-generator/7.25.0.jar',
+    'generate',
+  ]);
   for (const flag of ['-i', '-o']) {
-    t.false(invocation.args[invocation.args.indexOf(flag) + 1].includes(' '));
+    expect(invocation.args[invocation.args.indexOf(flag) + 1].includes(' ')).toBe(false);
   }
-  t.deepEqual(
+  expect(
     readdirSync(join(dir, 'node_modules')).filter((f) => f.startsWith('.codegen-')),
-    [],
-  );
+  ).toStrictEqual([]);
 });
 
-test('invokes the Node entry point without requiring a platform-specific bin shim', (t) => {
-  const dir = setup(t);
-  rmSync(join(dir, 'node_modules/.bin/openapi-generator-cli'));
-  t.is(run(dir).status, 0);
+test('uses Java from PATH when JAVA_HOME is unset', () => {
+  const dir = setup();
+  const result = run(dir, {
+    JAVA_HOME: '',
+    PATH: join(dir, 'mock-java/bin') + ':' + process.env.PATH,
+  });
+  expect(result.status, result.output).toBe(0);
+  expect(existsSync(join(dir, 'invocation.json'))).toBe(true);
+});
+
+test('reports a missing Java executable with an actionable fix', () => {
+  const dir = setup();
+  rmSync(join(dir, 'mock-java/bin/java'));
+  fails(dir, /Cannot execute Java.*ENOENT.*install Java 17.*JAVA_HOME or PATH/);
+  expect(existsSync(join(dir, 'invocation.json'))).toBe(false);
+});
+
+test('a failed Java invocation retains its exit status and diagnostic', () => {
+  const dir = setup({ exit: 17, stderr: 'fixture Java failure' });
+  fails(dir, /exit 17/);
+  expect(run(dir).output).toMatch(/fixture Java failure/);
+});
+
+test('changed artifact provenance prevents Java execution', () => {
+  const dir = setup();
+  const file = join(dir, 'openapi/provenance.json');
+  const provenance = JSON.parse(readFileSync(file, 'utf8'));
+  writeFileSync(file, JSON.stringify({ ...provenance, generator: '7.26.0' }));
+  fails(dir, /pin and reviewed artifact provenance disagree/);
+  expect(existsSync(join(dir, 'invocation.json'))).toBe(false);
 });
 
 for (const [label, file, pattern] of [
   ['fixture', 'src/tests/codegen/fixtures/openapi-3.1.0.json', /fixture.*not found/i],
-  ['wrapper', 'node_modules/@openapitools/openapi-generator-cli/main.js', /yarn install/],
   ['pin', 'openapitools.json', /openapitools.json/],
 ]) {
-  test(`reports a missing ${label} without blaming generator compatibility`, (t) => {
-    const dir = setup(t);
+  test(`reports a missing ${label} without blaming generator compatibility`, () => {
+    const dir = setup();
     rmSync(join(dir, file));
-    fails(t, dir, pattern);
-    t.notRegex(run(dir).output, /must pin a 3.1-native/);
+    fails(dir, pattern);
+    expect(run(dir).output).not.toMatch(/must pin a 3.1-native/);
   });
 }
 
@@ -146,7 +282,7 @@ for (const [label, changes, pattern] of [
   ['missing generated file', { missingFile: true }, /missing\.ts/],
   ['wrong generator version', { version: '6.2.1' }, /6\.2\.1.*7\.25\.0/],
 ]) {
-  test(`rejects ${label}`, (t) => fails(t, setup(t, changes), pattern));
+  test(`rejects ${label}`, () => fails(setup(changes), pattern));
 }
 
 for (const [label, source] of [
@@ -155,22 +291,22 @@ for (const [label, source] of [
   ['array of any', "export interface ProjectObj { 'id': Array<any>; }"],
   ['whole-model collapse', 'export interface ProjectObj {\n    [key: string]: any;\n}'],
 ]) {
-  test(`rejects ${label} outside the original canaries`, (t) => {
+  test(`rejects ${label} outside the original canaries`, () => {
     const types = { ...cleanTypes, 'project-obj.ts': source };
-    fails(t, setup(t, { types }), /project-obj\.ts/);
+    fails(setup({ types }), /project-obj\.ts/);
   });
 }
 
-test('names the pinned generator when type shapes regress', (t) => {
+test('names the pinned generator when type shapes regress', () => {
   const types = { ...cleanTypes, 'project-obj.ts': "export interface ProjectObj { 'id': any; }" };
-  const dir = setup(t, { types });
-  fails(t, dir, /FAILED \(generator 7\.25\.0\)/);
+  const dir = setup({ types });
+  fails(dir, /FAILED \(generator 7\.25\.0\)/);
 });
 
 for (const file of ['role-create.ts', 'resource-role-create.ts']) {
-  test(`rejects degraded inheritance in ${file}`, (t) => {
+  test(`rejects degraded inheritance in ${file}`, () => {
     const types = { ...cleanTypes, [file]: cleanTypes[file].replace('Array<string>', 'any') };
-    fails(t, setup(t, { types }), /extends/);
+    fails(setup({ types }), /extends/);
   });
 }
 
@@ -180,68 +316,87 @@ for (const [label, value] of [
   ['degraded', "export interface TenantObj { 'id': any; }"],
   ['wrong scalar', "export interface TenantObj { 'id': number; }"],
 ]) {
-  test(`rejects a ${label} canary`, (t) => {
+  test(`rejects a ${label} canary`, () => {
     const types = { ...cleanTypes, 'tenant-obj.ts': value };
-    fails(t, setup(t, { types }), /tenant-obj\.ts/);
+    fails(setup({ types }), /tenant-obj\.ts/);
   });
 }
 
-test('rejects lost OpenAPI 3.1 nullability', (t) => {
+test('rejects lost OpenAPI 3.1 nullability', () => {
   const types = {
     ...cleanTypes,
     'codegen-probe.ts': cleanTypes['codegen-probe.ts'].replace('string | null', 'string'),
   };
-  fails(t, setup(t, { types }), /nullable_string/);
+  fails(setup({ types }), /nullable_string/);
 });
 
-test('allows nested free-form dictionaries and comments mentioning index signatures', (t) => {
+test('rejects Set output for the monthly tenants JSON array', () => {
+  const types = {
+    ...cleanTypes,
+    'monthly-usage.ts': "export interface MonthlyUsage { 'monthly_tenants'?: Set<string>; }",
+  };
+  fails(setup({ types }), /monthly-usage\.ts:monthly_tenants: expected Array<string>/);
+});
+
+test('allows nested free-form dictionaries and comments mentioning index signatures', () => {
   const types = {
     ...cleanTypes,
     'metadata.ts': `/** [key: string]: any; */
       export interface Metadata { 'key': string; 'metadata'?: { [key: string]: any; }; }`,
     'audit-log-model.ts': "export interface AuditLogModel { 'input': any; }",
   };
-  const result = run(setup(t, { types }));
-  t.is(result.status, 0, result.output);
-  t.notRegex(result.output, /fully typed/);
+  const result = run(setup({ types }));
+  expect(result.status, result.output).toBe(0);
+  expect(result.output).not.toMatch(/fully typed/);
 });
 
-test('reads additional properties and validation flags from the package script', (t) => {
-  const dir = setup(t, { modelPackage: 'models' });
-  const pkg = structuredClone(packageJson);
-  pkg.scripts['generate-openapi-client'] = pkg.scripts['generate-openapi-client']
-    .replace('modelPackage=types', 'modelPackage=models,stringEnums=true')
-    .replace(' --skip-validate-spec', '');
-  writeFileSync(join(dir, 'package.json'), JSON.stringify(pkg));
+test('reads the shared generator configuration with validation enabled', () => {
+  const dir = setup({ modelPackage: 'models' });
+  const config = structuredClone(generatorConfig);
+  config.additionalProperties.modelPackage = 'models';
+  config.additionalProperties.stringEnums = true;
+  writeFileSync(join(dir, 'openapi/generator.json'), JSON.stringify(config));
   const result = run(dir);
-  t.is(result.status, 0, result.output);
+  expect(result.status, result.output).toBe(0);
   const { args } = JSON.parse(readFileSync(join(dir, 'invocation.json'), 'utf8'));
-  t.true(args.some((arg) => arg.includes('modelPackage=models,stringEnums=true')));
-  t.false(args.includes('--skip-validate-spec'));
+  expect(args[args.indexOf('-c') + 1]).toBe('openapi/generator.json');
+  expect(args[args.indexOf('-t') + 1]).toBe('openapi/templates');
+  expect(args.includes('--skip-validate-spec')).toBe(false);
 });
 
-for (const [label, transform, pattern] of [
-  ['generator flag', (s) => s.replace('-g typescript-axios', ''), /generate-openapi-client/],
-  ['additional properties', (s) => s.replace(/--additional-properties=\S+/, ''), /additional/],
-  ['unknown flag', (s) => s.replace(' -g ', ' --unknown-option -g '), /unsupported|unknown/i],
+for (const [label, changes, pattern] of [
+  ['generator', { generatorName: 'java' }, /typescript-axios/],
+  ['additional properties', { additionalProperties: undefined }, /apiPackage/],
+  ['unknown option', { unknown: true }, /unsupported/i],
+  [
+    'unsafe model directory',
+    { additionalProperties: { apiPackage: 'api', modelPackage: '$HOME' } },
+    /modelPackage/,
+  ],
+  [
+    'nested model directory',
+    { additionalProperties: { apiPackage: 'api', modelPackage: '..' } },
+    /modelPackage/,
+  ],
 ]) {
-  test(`rejects an unsupported package script: ${label}`, (t) => {
-    const dir = setup(t);
-    const pkg = structuredClone(packageJson);
-    pkg.scripts['generate-openapi-client'] = transform(pkg.scripts['generate-openapi-client']);
-    writeFileSync(join(dir, 'package.json'), JSON.stringify(pkg));
-    fails(t, dir, pattern);
+  test(`rejects unsupported generator configuration: ${label}`, () => {
+    const dir = setup();
+    writeFileSync(
+      join(dir, 'openapi/generator.json'),
+      JSON.stringify({ ...generatorConfig, ...changes }),
+    );
+    fails(dir, pattern);
   });
 }
 
-test('rejects a downgraded fixture header', (t) => {
-  const dir = setup(t);
+test('rejects a downgraded fixture header', () => {
+  const dir = setup();
   writeFileSync(join(dir, 'src/tests/codegen/fixtures/openapi-3.1.0.json'), '{"openapi":"3.0.3"}');
-  fails(t, dir, /3\.1\.0/);
+  fails(dir, /3\.1\.0/);
 });
 
 for (const [label, file, content, pattern] of [
-  ['invalid JSON', 'openapitools.json', '{', /Cannot read JSON.*openapitools.json/],
+  ['invalid JSON', 'openapitools.json', '{', /JSON/],
   ['missing version', 'openapitools.json', '{}', /explicit stable generator version/],
   [
     'non-numeric version',
@@ -249,63 +404,172 @@ for (const [label, file, content, pattern] of [
     '{"generator-cli":{"version":"latest"}}',
     /explicit stable generator version/,
   ],
-  ['missing script', 'package.json', '{}', /generate-openapi-client/],
+  ['missing generator', 'openapi/generator.json', '{}', /typescript-axios/],
 ]) {
-  test(`rejects ${label} before generation`, (t) => {
-    const dir = setup(t);
+  test(`rejects ${label} before generation`, () => {
+    const dir = setup();
     writeFileSync(join(dir, file), content);
-    fails(t, dir, pattern);
-  });
-}
-
-for (const [label, transform, pattern] of [
-  ['unsafe options', (s) => s.replace('modelPackage=types', 'modelPackage=$HOME'), /syntax/],
-  ['missing model directory', (s) => s.replace(',modelPackage=types', ''), /modelPackage/],
-  [
-    'nested model directory',
-    (s) => s.replace('modelPackage=types', 'modelPackage=..'),
-    /modelPackage/,
-  ],
-]) {
-  test(`rejects ${label}`, (t) => {
-    const dir = setup(t);
-    const pkg = structuredClone(packageJson);
-    pkg.scripts['generate-openapi-client'] = transform(pkg.scripts['generate-openapi-client']);
-    writeFileSync(join(dir, 'package.json'), JSON.stringify(pkg));
-    fails(t, dir, pattern);
+    fails(dir, pattern);
   });
 }
 
 for (const [label, source, pattern] of [
+  ['empty interface', 'export interface Example {}', /empty interface/],
   ['type alias collapse', 'export type Example = any;', /type alias Example/],
   ['untyped property', 'export interface Example { key; }', /example.ts:key/],
   ['invalid TypeScript', 'export interface Example {', /Invalid generated TypeScript/],
 ]) {
-  test(`rejects ${label}`, (t) => {
+  test(`rejects ${label}`, () => {
     const types = { ...cleanTypes, 'example.ts': source };
-    fails(t, setup(t, { types }), pattern);
+    fails(setup({ types }), pattern);
   });
 }
 
-test('rejects model files missing from the completion manifest', (t) => {
-  const dir = setup(t);
-  const path = join(dir, 'node_modules/@openapitools/openapi-generator-cli/main.js');
-  writeFileSync(path, wrapper + "\nfs.writeFileSync(path.join(types, 'unlisted.ts'), '');");
-  fails(t, dir, /differ from the completion manifest/);
+test('rejects model files missing from the completion manifest', () => {
+  const dir = setup();
+  const path = join(dir, 'mock-java/bin/java');
+  writeFileSync(path, javaFixture + "\nfs.writeFileSync(path.join(types, 'unlisted.ts'), '');");
+  fails(dir, /differ from the completion manifest/);
 });
 
-test('rejects a missing model directory after reported completion', (t) => {
-  const dir = setup(t);
-  const path = join(dir, 'node_modules/@openapitools/openapi-generator-cli/main.js');
-  writeFileSync(path, wrapper + '\nfs.rmSync(types, {recursive: true});');
-  fails(t, dir, /Incomplete generation/);
+test('rejects a missing model directory after reported completion', () => {
+  const dir = setup();
+  const path = join(dir, 'mock-java/bin/java');
+  writeFileSync(path, javaFixture + '\nfs.rmSync(types, {recursive: true});');
+  fails(dir, /Incomplete generation/);
 });
 
-test('reports yarn install when all node dependencies are missing', (t) => {
-  const dir = setup(t);
+test('reports pnpm install when all node dependencies are missing', () => {
+  const dir = setup();
   rmSync(join(dir, 'node_modules'), { recursive: true });
   const result = run(dir);
-  t.is(result.status, 1);
-  t.regex(result.output, /yarn install/);
-  t.notRegex(result.output, /ERR_MODULE_NOT_FOUND/);
+  expect(result.status).toBe(1);
+  expect(result.output).toMatch(/pnpm install/);
+  expect(result.output).not.toMatch(/ERR_MODULE_NOT_FOUND/);
 });
+
+test('rejects an unexpected successful generator warning', () => {
+  fails(
+    setup({ warning: '[main] WARN unsupported schema keyword' }),
+    /Unexpected generator diagnostic/,
+  );
+});
+
+test('does not accept a known diagnostic promoted to an error', () => {
+  fails(
+    setup({ warning: '[main] ERROR Failed to get the schema name: null' }),
+    /Unexpected generator diagnostic/,
+  );
+});
+
+test('rejects changed tuple output instead of applying a stale repair', () => {
+  fails(
+    setup({
+      types: { ...cleanTypes, 'callbacks-inner.ts': 'export type CallbacksInner = string;' },
+    }),
+    /tuple generator behavior changed/,
+  );
+});
+
+test('rejects changed routing output instead of applying a stale compatibility correction', () => {
+  const dir = setup();
+  const path = join(dir, 'mock-java/bin/java');
+  writeFileSync(
+    path,
+    javaFixture +
+      "\nfs.writeFileSync(require('path').join(out, 'common.ts'), 'export const changed = true;');",
+  );
+  fails(dir, /Generated request routing changed/);
+});
+
+test('a mismatched cached JAR never executes the generator', () => {
+  const dir = setup();
+  writeFileSync(join(dir, 'node_modules/.cache/openapi-generator/7.25.0.jar'), 'wrong archive');
+  fails(dir, /Generator JAR hash differs/);
+  expect(existsSync(join(dir, 'invocation.json'))).toBe(false);
+});
+
+test('rejects changed generic return code instead of concealing its type', () => {
+  const dir = setup();
+  const path = join(dir, 'mock-java/bin/java');
+  writeFileSync(
+    path,
+    javaFixture +
+      "\nconst file = require('path').join(out, 'common.ts'); fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace('as Promise<R>', 'as any'));",
+  );
+  fails(dir, /Generated Axios return type changed/);
+});
+
+test.each(['project_id', 'environment_id'])(
+  'rejects lost API-key scope %s nullability in generated output',
+  (field) => {
+    const types = {
+      ...cleanTypes,
+      'apikey-scope-read.ts': cleanTypes['apikey-scope-read.ts'].replace(
+        `${field}?: string | null`,
+        `${field}?: string`,
+      ),
+    };
+    fails(setup({ types }), new RegExp(`apikey-scope-read\\.ts:${field}: expected string\\|null`));
+  },
+);
+test.each(['organization_id', 'project_id', 'environment_id'])(
+  'rejects changed API-key scope %s requiredness in generated output',
+  (field) => {
+    const original = cleanTypes['apikey-scope-read.ts'];
+    const types = {
+      ...cleanTypes,
+      'apikey-scope-read.ts':
+        field === 'organization_id'
+          ? original.replace('organization_id:', 'organization_id?:')
+          : original.replace(`${field}?:`, `${field}:`),
+    };
+    fails(setup({ types }), new RegExp(`apikey-scope-read\\.ts:${field}: expected .* field`));
+  },
+);
+
+test.each([
+  ...[
+    'project_id',
+    'environment_id',
+    'object_type',
+    'access_level',
+    'name',
+    'secret',
+    'created_by_member',
+    'last_used_at',
+    'env',
+    'project',
+  ].map((field) => ['apikey-read.ts', field]),
+  ['paginated-result-apikey-read.ts', 'page_count'],
+])('rejects lost %s:%s readonly nullability in generated output', (file, field) => {
+  const types = {
+    ...cleanTypes,
+    [file]: cleanTypes[file].replace(new RegExp(`(${field}\\?: [^;]+) \\| null;`), '$1;'),
+  };
+  fails(setup({ types }), new RegExp(`${file}:${field}: expected`));
+});
+
+for (const field of ['result', 'error']) {
+  test(`rejects lost environment task ${field} nullability at the generator boundary`, () => {
+    const file = 'task-result-environment-read.ts';
+    const types = {
+      ...cleanTypes,
+      [file]: cleanTypes[file].replace(new RegExp(`(${field}\\?: [^;]+) \\| null;`), '$1;'),
+    };
+    fails(setup({ types }), new RegExp(`${file}:${field}: expected`));
+  });
+}
+for (const field of ['task_id', 'status', 'result', 'error']) {
+  test(`rejects changed environment task ${field} requiredness at the generator boundary`, () => {
+    const file = 'task-result-environment-read.ts';
+    const original = cleanTypes[file];
+    const types = {
+      ...cleanTypes,
+      [file]: ['result', 'error'].includes(field)
+        ? original.replace(`${field}?:`, `${field}:`)
+        : original.replace(`${field}:`, `${field}?:`),
+    };
+    fails(setup({ types }), new RegExp(`${file}:${field}: expected .* field`));
+  });
+}

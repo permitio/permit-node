@@ -1,335 +1,318 @@
-import anyTest, { TestInterface } from 'ava';
+import pino from 'pino';
 
-import { UserCreate, UserRead } from '../../openapi';
-import { printBreak, provideTestExecutionContext, TestContext } from '../fixtures';
+import { type IPermitClient } from '#src/index';
+import { type UserRead } from '#src/openapi/index';
+import { cleanUp, createTestClient, expectNotFound } from '#src/tests/fixtures';
+import { waitFor, waitForCheck } from '#src/tests/helpers/wait-for';
 
-const sleepTimeMs = 10000;
+// Direct-OPA (`useOpa`) checks need the PDP's OPA port (8181) reachable on the PDP_URL host.
+// They run in their own test, which is reported as skipped unless PERMIT_RUN_OPA_E2E=true.
+const RUN_OPA_E2E = process.env['PERMIT_RUN_OPA_E2E'] === 'true';
 
-const test = anyTest as TestInterface<TestContext>;
-test.before(provideTestExecutionContext);
+// Keys unique to this run, so entities left by another spec or an earlier run can't change the
+// results, and the assertions below look only at what this spec created.
+const RUN_ID = `${process.pid}_${Date.now()}`;
+const DOCUMENT = `rbac_document_${RUN_ID}`;
+const ADMIN = `rbac_admin_${RUN_ID}`;
+const VIEWER = `rbac_viewer_${RUN_ID}`;
+const TENANT = `rbac_tesla_${RUN_ID}`;
+const ELON = `auth0|elon_${RUN_ID}`;
+const JAMES = `auth0|james_${RUN_ID}`;
 
-test('Permission check e2e test', async (t) => {
-  const permit = t.context.permit;
-  const logger = t.context.logger;
+// The main test's propagation waits all draw on this budget, so together they end inside the
+// project's 300s test timeout, leaving time for the API calls around them.
+const WAIT_BUDGET_MS = 240_000;
 
-  try {
-    logger.info('initial setup of objects');
-    const document = await permit.api.resources.create({
-      key: 'document',
-      name: 'Document',
-      urn: 'prn:gdrive:document',
-      description: 'google drive document',
-      actions: {
-        create: {},
-        read: {},
-        update: {},
-        delete: {},
-      },
-      attributes: {
-        private: {
-          type: 'bool',
-          description: 'whether the document is private',
-        },
-      },
-    });
+const documentInTenant = { type: DOCUMENT, tenant: TENANT };
 
-    // verify create output
-    t.not(document, null);
-    t.not(document.id, null);
-    t.is(document.key, 'document');
-    t.is(document.name, 'Document');
-    t.is(document.description, 'google drive document');
-    t.is(document.urn, 'prn:gdrive:document');
-    t.is(Object.keys(document.actions ?? {}).length, 4);
-    t.not((document.actions ?? {})['create'], undefined);
-    t.not((document.actions ?? {})['read'], undefined);
-    t.not((document.actions ?? {})['update'], undefined);
-    t.not((document.actions ?? {})['delete'], undefined);
+let permit: IPermitClient;
+let logger: pino.Logger;
+// The user object users.sync() returned for elon, email and attributes included. The main test
+// sets it and the useOpa test checks with it.
+let syncedElon: UserRead | undefined;
 
-    // verify list output
-    const resources = await permit.api.resources.list();
-    t.true(Array.isArray(resources));
-    t.is(resources.length, 1);
-    t.is(resources[0].id, document.id);
-    t.is(resources[0].key, document.key);
-    t.is(resources[0].name, document.name);
-    t.is(resources[0].description, document.description);
-    t.is(resources[0].urn, document.urn);
-
-    const resourcesWithTotalCount = await permit.api.resources.list({ includeTotalCount: true });
-    t.not(resourcesWithTotalCount, null);
-    t.not(resourcesWithTotalCount.data, null);
-    t.is(resourcesWithTotalCount.data.length, 1);
-    t.is(resourcesWithTotalCount.total_count, 1);
-    t.is(resourcesWithTotalCount.page_count, 1);
-
-    // create admin role
-    const admin = await permit.api.roles.create({
-      key: 'admin',
-      name: 'Admin',
-      description: 'an admin role',
-      permissions: ['document:create', 'document:read'],
-    });
-
-    t.not(admin, null);
-    t.is(admin.key, 'admin');
-    t.is(admin.name, 'Admin');
-    t.is(admin.description, 'an admin role');
-    t.not(admin.permissions, undefined);
-    t.true(admin.permissions?.includes('document:create'));
-    t.true(admin.permissions?.includes('document:read'));
-
-    // create viewer role
-    const viewer = await permit.api.roles.create({
-      key: 'viewer',
-      name: 'Viewer',
-      description: 'an viewer role',
-    });
-
-    t.not(viewer, null);
-    t.is(viewer.key, 'viewer');
-    t.is(viewer.name, 'Viewer');
-    t.is(viewer.description, 'an viewer role');
-    t.not(viewer.permissions, undefined);
-    t.is(viewer.permissions?.length, 0);
-
-    const roles = await permit.api.roles.list();
-    t.true(Array.isArray(roles));
-    t.is(roles.length, 2);
-
-    // assign permissions to roles
-    const assignedViewer = await permit.api.roles.assignPermissions('viewer', ['document:read']);
-
-    t.is(assignedViewer.key, 'viewer');
-    t.is(assignedViewer.permissions?.length, 1);
-    t.true(assignedViewer.permissions?.includes('document:read'));
-    t.false(assignedViewer.permissions?.includes('document:create'));
-
-    // create a tenant
-    const tenant = await permit.api.tenants.create({
-      key: 'tesla',
-      name: 'Tesla Inc',
-      description: 'The car company',
-    });
-
-    t.is(tenant.key, 'tesla');
-    t.is(tenant.name, 'Tesla Inc');
-    t.is(tenant.description, 'The car company');
-    t.is(tenant.attributes, null);
-
-    // create a user
-    const { user } = await permit.api.users.sync({
-      key: 'auth0|elon',
-      email: 'elonmusk@tesla.com',
-      first_name: 'Elon',
-      last_name: 'Musk',
-      attributes: {
-        age: 50,
-        favoriteColor: 'red',
-      },
-    });
-
-    t.is(user.key, 'auth0|elon');
-    t.is(user.email, 'elonmusk@tesla.com');
-    t.is(user.first_name, 'Elon');
-    t.is(user.last_name, 'Musk');
-    t.is(Object.keys(user.attributes ?? {}).length, 2);
-    t.is((user.attributes as any)['age'], 50);
-    t.is((user.attributes as any)['favoriteColor'], 'red');
-
-    // assign role to user in tenant
-    const ra = await permit.api.users.assignRole({
-      user: user.key,
-      role: viewer.key,
-      tenant: tenant.key,
-    });
-
-    t.is(ra.user_id, user.id);
-    t.is(ra.role_id, viewer.id);
-    t.is(ra.tenant_id, tenant.id);
-    t.is(ra.user, user.key);
-    t.is(ra.role, viewer.key);
-    t.is(ra.tenant, tenant.key);
-
-    // create a user
-    const newUser: UserRead = await permit.api.users.create({
-      key: 'auth0|james',
-      email: 'james@undos.com',
-      first_name: 'James',
-      last_name: 'Undos',
-      attributes: {
-        age: 50,
-        favoriteColor: 'red',
-      },
-      role_assignments: [
-        {
-          role: viewer.key,
-          tenant: tenant.key,
-        },
-      ],
-    });
-
-    t.is(newUser.roles![0].role, viewer.key);
-
-    logger.info(
-      `sleeping ${sleepTimeMs} ms before permit.check() to make sure all writes propagated from cloud to PDP`,
-    );
-    await new Promise((resolve) => setTimeout(resolve, sleepTimeMs));
-
-    // positive permission check (will be true because elon is a viewer, and a viewer can read a document)
-    logger.info('testing positive permission check');
-    const resourceAttributes = { secret: true };
-
-    t.true(
-      await permit.check(
-        'auth0|elon',
-        'read',
-        // a 'document' belonging to 'tesla' (ownership based on tenant)
-        { type: 'document', tenant: 'tesla', attributes: resourceAttributes },
-      ),
-    );
-
-    printBreak();
-
-    // use opa directly
-    t.true(
-      await permit.check(
-        'auth0|elon',
-        'read',
-        // a 'document' belonging to 'tesla' (ownership based on tenant)
-        { type: 'document', tenant: 'tesla', attributes: resourceAttributes },
-        {},
-        { useOpa: true },
-      ),
-    );
-
-    printBreak();
-
-    t.false(
-      await permit.check(
-        'auth0|elon',
-        'control the usa',
-        // a 'document' belonging to 'tesla' (ownership based on tenant)
-        { type: 'document', tenant: 'tesla', attributes: resourceAttributes },
-        {},
-        { useOpa: true },
-      ),
-    );
-
-    printBreak();
-
-    logger.info('testing positive permission check with complete user object');
-    t.true(await permit.check(user, 'read', { type: document.key, tenant: tenant.key }));
-
-    printBreak();
-
-    // use opa directly
-    logger.info('testing positive permission check with complete user object');
-    t.true(
-      await permit.check(
-        user,
-        'read',
-        { type: document.key, tenant: tenant.key },
-        {},
-        { useOpa: true },
-      ),
-    );
-
-    printBreak();
-
-    // negative permission check (will be false because a viewer cannot create a document)
-    logger.info('testing negative permission check');
-    t.false(await permit.check(user, 'create', { type: document.key, tenant: tenant.key }));
-
-    printBreak();
-
-    logger.info('testing bulk check permissions');
-    const decisions = await permit.bulkCheck([
-      { user: user, action: 'read', resource: { type: document.key, tenant: tenant.key } },
-      { user: user, action: 'create', resource: { type: document.key, tenant: tenant.key } },
-    ]);
-    t.true(decisions.length === 2);
-    t.true(decisions[0]);
-    t.false(decisions[1]);
-
-    logger.info('testing get user permissions matches assigned roles permissions');
-    const userPermissions = await permit.getUserPermissions(user.key);
-    t.true(
-      `__tenant:${tenant.key}` in userPermissions,
-      `tenant key not found in
-      user permissions:\n${JSON.stringify(userPermissions, null, 2)}`,
-    );
-    viewer.permissions?.forEach((permission) => {
-      t.true(userPermissions[tenant.key].permissions.includes(permission));
-    });
-
-    logger.info('changing the user roles');
-
-    // change the user role - assign admin role
-    await permit.api.users.assignRole({
-      user: user.key,
-      role: admin.key,
-      tenant: tenant.key,
-    });
-    // change the user role - remove viewer role
-    await permit.api.users.unassignRole({
-      user: user.key,
-      role: viewer.key,
-      tenant: tenant.key,
-    });
-
-    // list user roles in all tenants
-    const assignedRoles = await permit.api.users.getAssignedRoles({ user: user.key });
-
-    t.is(assignedRoles.length, 1);
-    t.is(assignedRoles[0].user_id, user.id);
-    t.is(assignedRoles[0].role_id, admin.id);
-    t.is(assignedRoles[0].tenant_id, tenant.id);
-
-    logger.info(
-      `sleeping ${sleepTimeMs} ms before permit.check() to make sure all writes propagated from cloud to PDP`,
-    );
-    await new Promise((resolve) => setTimeout(resolve, sleepTimeMs));
-
-    // run the same negative permission check again, this time it's true
-    logger.info('testing previously negative permission check, should now be positive');
-    t.true(await permit.check(user, 'create', { type: document.key, tenant: tenant.key }));
-    //use opa directly
-    t.true(
-      await permit.check(
-        user,
-        'create',
-        { type: document.key, tenant: tenant.key },
-        {},
-        { useOpa: true },
-      ),
-    );
-
-    printBreak();
-  } catch (error) {
-    logger.error(`GOT ERROR: ${error}`);
-    t.fail(`got error: ${error}`);
-  } finally {
-    // cleanup
-    try {
-      await permit.api.users.delete('auth0|elon');
-      await permit.api.users.delete('auth0|james');
-      await permit.api.tenants.delete('tesla');
-      await permit.api.roles.delete('admin');
-      await permit.api.roles.delete('viewer');
-      await permit.api.resources.delete('document');
-      t.is((await permit.api.resources.list()).length, 0);
-
-      const roles = await permit.api.roles.list();
-
-      t.true(Array.isArray(roles));
-      t.is(roles.length, 0);
-
-      t.is((await permit.api.tenants.list()).length, 1); // the default tenant
-      t.is((await permit.api.users.list()).data.length, 0);
-    } catch (error) {
-      logger.error(`GOT ERROR: ${error}`);
-      t.fail(`got error: ${error}`);
-    }
-  }
+beforeAll(() => {
+  ({ permit, logger } = createTestClient());
 });
+
+afterAll(async () => {
+  if (!permit) return; // beforeAll never initialized the client (e.g. missing key)
+  // Deleting the users and the tenant removes their role assignments; deleting the resource
+  // removes its permissions from the roles.
+  await cleanUp({
+    [`user ${ELON}`]: () => permit.api.users.delete(ELON),
+    [`user ${JAMES}`]: () => permit.api.users.delete(JAMES),
+    [`tenant ${TENANT}`]: () => permit.api.tenants.delete(TENANT),
+    [`role ${ADMIN}`]: () => permit.api.roles.delete(ADMIN),
+    [`role ${VIEWER}`]: () => permit.api.roles.delete(VIEWER),
+    [`resource ${DOCUMENT}`]: () => permit.api.resources.delete(DOCUMENT),
+  });
+  await expectNotFound(permit.api.users.get(ELON), `user ${ELON}`);
+  await expectNotFound(permit.api.users.get(JAMES), `user ${JAMES}`);
+  await expectNotFound(permit.api.tenants.get(TENANT), `tenant ${TENANT}`);
+  await expectNotFound(permit.api.roles.get(ADMIN), `role ${ADMIN}`);
+  await expectNotFound(permit.api.roles.get(VIEWER), `role ${VIEWER}`);
+  await expectNotFound(permit.api.resources.get(DOCUMENT), `resource ${DOCUMENT}`);
+});
+
+it('Permission check e2e test', async () => {
+  const deadline = Date.now() + WAIT_BUDGET_MS;
+  const remainingBudget = () => ({ timeoutMs: Math.max(0, deadline - Date.now()) });
+
+  logger.info('initial setup of objects');
+  const document = await permit.api.resources.create({
+    key: DOCUMENT,
+    name: 'Document',
+    urn: `prn:gdrive:${DOCUMENT}`,
+    description: 'google drive document',
+    actions: {
+      create: {},
+      read: {},
+      update: {},
+      delete: {},
+    },
+    attributes: {
+      private: {
+        type: 'bool',
+        description: 'whether the document is private',
+      },
+    },
+  });
+
+  // verify create output
+  expect(document.id).toBeTruthy();
+  expect(document.key).toBe(DOCUMENT);
+  expect(document.name).toBe('Document');
+  expect(document.description).toBe('google drive document');
+  expect(document.urn).toBe(`prn:gdrive:${DOCUMENT}`);
+  expect(Object.keys(document.actions ?? {}).sort()).toEqual([
+    'create',
+    'delete',
+    'read',
+    'update',
+  ]);
+
+  // verify list output
+  const resources = await permit.api.resources.list();
+  expect(resources.filter((resource) => resource.key === DOCUMENT)).toEqual([
+    expect.objectContaining({
+      id: document.id,
+      key: document.key,
+      name: document.name,
+      description: document.description,
+      urn: document.urn,
+    }),
+  ]);
+
+  const resourcesWithTotalCount = await permit.api.resources.list({ includeTotalCount: true });
+  expect(resourcesWithTotalCount.data.map((resource) => resource.key)).toContain(DOCUMENT);
+  expect(resourcesWithTotalCount.total_count).toBeGreaterThanOrEqual(
+    resourcesWithTotalCount.data.length,
+  );
+  // resources.list() asks for 100 resources per page by default
+  expect(resourcesWithTotalCount.page_count).toBe(
+    Math.ceil(resourcesWithTotalCount.total_count / 100),
+  );
+
+  // create admin role
+  const admin = await permit.api.roles.create({
+    key: ADMIN,
+    name: 'Admin',
+    description: 'an admin role',
+    permissions: [`${DOCUMENT}:create`, `${DOCUMENT}:read`],
+  });
+
+  expect(admin.key).toBe(ADMIN);
+  expect(admin.name).toBe('Admin');
+  expect(admin.description).toBe('an admin role');
+  expect(admin.permissions).toEqual(
+    expect.arrayContaining([`${DOCUMENT}:create`, `${DOCUMENT}:read`]),
+  );
+
+  // create viewer role
+  const viewer = await permit.api.roles.create({
+    key: VIEWER,
+    name: 'Viewer',
+    description: 'an viewer role',
+  });
+
+  expect(viewer.key).toBe(VIEWER);
+  expect(viewer.name).toBe('Viewer');
+  expect(viewer.description).toBe('an viewer role');
+  expect(viewer.permissions).toEqual([]);
+
+  const roles = await permit.api.roles.list();
+  expect(roles.map((role) => role.key)).toEqual(expect.arrayContaining([ADMIN, VIEWER]));
+
+  // assign permissions to roles
+  const assignedViewer = await permit.api.roles.assignPermissions(VIEWER, [`${DOCUMENT}:read`]);
+
+  expect(assignedViewer.key).toBe(VIEWER);
+  expect(assignedViewer.permissions).toEqual([`${DOCUMENT}:read`]);
+
+  // create a tenant
+  const tenant = await permit.api.tenants.create({
+    key: TENANT,
+    name: 'Tesla Inc',
+    description: 'The car company',
+  });
+
+  expect(tenant.key).toBe(TENANT);
+  expect(tenant.name).toBe('Tesla Inc');
+  expect(tenant.description).toBe('The car company');
+  expect(tenant.attributes).toBe(null);
+
+  // create a user
+  const { user } = await permit.api.users.sync({
+    key: ELON,
+    email: 'elonmusk@tesla.com',
+    first_name: 'Elon',
+    last_name: 'Musk',
+    attributes: {
+      age: 50,
+      favoriteColor: 'red',
+    },
+  });
+
+  expect(user.key).toBe(ELON);
+  expect(user.email).toBe('elonmusk@tesla.com');
+  expect(user.first_name).toBe('Elon');
+  expect(user.last_name).toBe('Musk');
+  expect(user.attributes).toEqual({ age: 50, favoriteColor: 'red' });
+  syncedElon = user;
+
+  // assign role to user in tenant
+  const ra = await permit.api.users.assignRole({
+    user: user.key,
+    role: viewer.key,
+    tenant: tenant.key,
+  });
+
+  expect(ra.user_id).toBe(user.id);
+  expect(ra.role_id).toBe(viewer.id);
+  expect(ra.tenant_id).toBe(tenant.id);
+  expect(ra.user).toBe(user.key);
+  expect(ra.role).toBe(viewer.key);
+  expect(ra.tenant).toBe(tenant.key);
+
+  // create a user
+  const newUser: UserRead = await permit.api.users.create({
+    key: JAMES,
+    email: 'james@undos.com',
+    first_name: 'James',
+    last_name: 'Undos',
+    attributes: {
+      age: 50,
+      favoriteColor: 'red',
+    },
+    role_assignments: [
+      {
+        role: viewer.key,
+        tenant: tenant.key,
+      },
+    ],
+  });
+
+  expect(newUser.roles?.[0]?.role).toBe(viewer.key);
+
+  // Positive permission check (elon is a viewer, and a viewer can read a document). It is polled
+  // until the writes above have propagated from the cloud to the PDP.
+  logger.info('testing positive permission check');
+  await waitForCheck(
+    () =>
+      permit.check(ELON, 'read', {
+        ...documentInTenant,
+        attributes: { secret: true },
+      }),
+    true,
+    remainingBudget(),
+  );
+
+  logger.info('testing positive permission check with complete user object');
+  // Gate on the complete-user object's read propagating before the multi-result
+  // reads below (bulkCheck / getUserPermissions), which query separate PDP
+  // endpoints that can lag behind a single check.
+  await waitForCheck(() => permit.check(user, 'read', documentInTenant), true, remainingBudget());
+
+  // negative permission check (will be false because a viewer cannot create a document)
+  logger.info('testing negative permission check');
+  expect(await permit.check(user, 'create', documentInTenant)).toBe(false);
+
+  logger.info('testing bulk check permissions');
+  const bulkQueries = [
+    { user, action: 'read', resource: documentInTenant },
+    { user, action: 'create', resource: documentInTenant },
+  ];
+  await waitFor(
+    () => permit.bulkCheck(bulkQueries),
+    (decisions) => decisions.length === 2 && decisions[0] === true && decisions[1] === false,
+    { ...remainingBudget(), message: 'bulkCheck did not return [true, false] for read and create' },
+  );
+
+  logger.info('testing get user permissions matches assigned roles permissions');
+  const tenantPermissionsKey = `__tenant:${tenant.key}`;
+  const viewerPermissions = assignedViewer.permissions ?? [];
+  await waitFor(
+    () => permit.getUserPermissions(user.key),
+    (permissions) =>
+      viewerPermissions.every((permission) =>
+        permissions[tenantPermissionsKey]?.permissions.includes(permission),
+      ),
+    {
+      ...remainingBudget(),
+      message: `getUserPermissions did not list ${viewerPermissions} under ${tenantPermissionsKey}`,
+      describe: (permissions) => JSON.stringify(permissions[tenantPermissionsKey] ?? permissions),
+    },
+  );
+
+  logger.info('changing the user roles');
+
+  // change the user role - assign admin role
+  await permit.api.users.assignRole({
+    user: user.key,
+    role: admin.key,
+    tenant: tenant.key,
+  });
+  // change the user role - remove viewer role
+  await permit.api.users.unassignRole({
+    user: user.key,
+    role: viewer.key,
+    tenant: tenant.key,
+  });
+
+  // list user roles in all tenants
+  const assignedRoles = await permit.api.users.getAssignedRoles({ user: user.key });
+
+  expect(assignedRoles).toHaveLength(1);
+  expect(assignedRoles[0]?.user_id).toBe(user.id);
+  expect(assignedRoles[0]?.role_id).toBe(admin.id);
+  expect(assignedRoles[0]?.tenant_id).toBe(tenant.id);
+
+  // The previously negative check becomes positive once the role swap has propagated.
+  logger.info('testing previously negative permission check, should now be positive');
+  await waitForCheck(() => permit.check(user, 'create', documentInTenant), true, remainingBudget());
+});
+
+// Uses the state the test above leaves behind: elon holds the admin role and james the viewer
+// role in the tenant, and syncedElon holds elon's synced user object.
+it.skipIf(!RUN_OPA_E2E)(
+  'useOpa checks go to OPA directly (PERMIT_RUN_OPA_E2E=true)',
+  {
+    meta: {
+      coverageUnavailable: 'PERMIT_RUN_OPA_E2E is not true; direct OPA coverage unavailable',
+    },
+  },
+  async () => {
+    if (!syncedElon) {
+      throw new Error('the permission check test did not sync elon, so this test cannot run');
+    }
+    const useOpa = { useOpa: true };
+    const secretDocument = { ...documentInTenant, attributes: { secret: true } };
+    await waitForCheck(() => permit.check(JAMES, 'read', secretDocument), true);
+
+    expect(await permit.check(JAMES, 'read', secretDocument, {}, useOpa)).toBe(true);
+    expect(await permit.check(JAMES, 'create', secretDocument, {}, useOpa)).toBe(false);
+    expect(await permit.check(syncedElon, 'create', documentInTenant, {}, useOpa)).toBe(true);
+    expect(await permit.check(ELON, 'control the usa', secretDocument, {}, useOpa)).toBe(false);
+  },
+);

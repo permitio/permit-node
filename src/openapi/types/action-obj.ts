@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,40 +10,10 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface ActionObj
- */
 export interface ActionObj {
-  /**
-   *
-   * @type {string}
-   * @memberof ActionObj
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ActionObj
-   */
   key: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ActionObj
-   */
-  name?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ActionObj
-   */
+  name?: string | null;
   created_at: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ActionObj
-   */
   updated_at: string;
 }

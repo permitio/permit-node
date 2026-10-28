@@ -1,3 +1,10 @@
+import {
+  diagnosticCause,
+  diagnosticErrorSecrets,
+  diagnosticMetadata,
+  diagnosticText,
+} from '#src/utils/diagnostics';
+
 /**
  * The `ApiKeyLevel` enum represents the access level of a Permit API Key.
  */
@@ -65,8 +72,17 @@ export enum ApiContextLevel {
  * If the context is missing some data required for a method - the API call will fail.
  */
 export class PermitContextError extends Error {
-  constructor(message: string) {
-    super(message);
+  public readonly status: number | undefined;
+  public readonly code: string | undefined;
+
+  constructor(message: string, options?: ErrorOptions) {
+    const privacy = diagnosticErrorSecrets(options?.cause);
+    const cause = options?.cause === undefined ? undefined : diagnosticCause(options.cause);
+    super(diagnosticText(message, privacy), cause === undefined ? undefined : { cause });
+    this.name = 'PermitContextError';
+    const metadata = diagnosticMetadata(cause);
+    this.status = metadata.status;
+    this.code = metadata.code;
   }
 }
 
@@ -76,204 +92,430 @@ export class PermitContextError extends Error {
  * such API calls will result in 401). Instead, the SDK throws this exception.
  */
 export class PermitContextChangeError extends Error {
-  constructor(message: string) {
-    super(message);
+  public readonly status: number | undefined;
+  public readonly code: string | undefined;
+
+  constructor(message: string, options?: ErrorOptions) {
+    const privacy = diagnosticErrorSecrets(options?.cause);
+    const cause = options?.cause === undefined ? undefined : diagnosticCause(options.cause);
+    super(diagnosticText(message, privacy), cause === undefined ? undefined : { cause });
+    this.name = 'PermitContextChangeError';
+    const metadata = diagnosticMetadata(cause);
+    this.status = metadata.status;
+    this.code = metadata.code;
+  }
+}
+
+type Scope =
+  | {
+      level: ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY;
+      organization: string;
+      project: null;
+      environment: null;
+    }
+  | {
+      level: ApiKeyLevel.PROJECT_LEVEL_API_KEY;
+      organization: string;
+      project: string;
+      environment: null;
+    }
+  | {
+      level: ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY;
+      organization: string;
+      project: string;
+      environment: string;
+    };
+
+type Selection =
+  | { level: ApiContextLevel.WAIT_FOR_INIT; organization: null; project: null; environment: null }
+  | { level: ApiContextLevel.ORGANIZATION; organization: string; project: null; environment: null }
+  | { level: ApiContextLevel.PROJECT; organization: string; project: string; environment: null }
+  | {
+      level: ApiContextLevel.ENVIRONMENT;
+      organization: string;
+      project: string;
+      environment: string;
+    };
+
+interface ContextState {
+  scope: Scope | null;
+  selection: Selection;
+  revision: number;
+  initialization: Promise<void> | undefined;
+}
+
+interface ContextSnapshot {
+  readonly scope: Scope | null;
+  readonly selection: Selection;
+}
+
+const contextStates = new WeakMap<ApiContext, ContextState>();
+const contextSnapshotKey = Symbol.for('permitio.ApiContext.snapshot');
+
+function stateOf(context: ApiContext): ContextState {
+  const state = contextStates.get(context);
+  if (state === undefined) {
+    throw new PermitContextError('Invalid API context: use an ApiContext instance.');
+  }
+  return state;
+}
+
+function identifier(value: unknown, field: string): string {
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    throw new PermitContextError(`Invalid API scope ${field}: expected a nonempty string.`);
+  }
+  return value;
+}
+
+function parseScope(value: unknown): Scope {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    throw new PermitContextError('Invalid API scope response: expected an object.');
+  }
+  const organization = identifier(Reflect.get(value, 'organization_id'), 'organization_id');
+  const projectValue: unknown = Reflect.get(value, 'project_id');
+  const environmentValue: unknown = Reflect.get(value, 'environment_id');
+  const project = projectValue == null ? null : identifier(projectValue, 'project_id');
+  const environment =
+    environmentValue == null ? null : identifier(environmentValue, 'environment_id');
+  if (environment !== null && project === null) {
+    throw new PermitContextError('Invalid API scope response: environment_id requires project_id.');
+  }
+  if (project !== null && environment !== null) {
+    return { level: ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY, organization, project, environment };
+  }
+  if (project !== null) {
+    return { level: ApiKeyLevel.PROJECT_LEVEL_API_KEY, organization, project, environment: null };
+  }
+  return {
+    level: ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY,
+    organization,
+    project: null,
+    environment: null,
+  };
+}
+
+function defaultSelection(scope: Scope): Selection {
+  switch (scope.level) {
+    case ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY:
+      return { ...scope, level: ApiContextLevel.ORGANIZATION };
+    case ApiKeyLevel.PROJECT_LEVEL_API_KEY:
+      return { ...scope, level: ApiContextLevel.PROJECT };
+    case ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY:
+      return { ...scope, level: ApiContextLevel.ENVIRONMENT };
+  }
+}
+
+function verifySelection(scope: Scope | null, selection: Selection): void {
+  if (selection.level === ApiContextLevel.WAIT_FOR_INIT) return;
+  if (
+    !scope ||
+    selection.organization !== scope.organization ||
+    (selection.project !== null && scope.project !== null && selection.project !== scope.project) ||
+    (selection.environment !== null &&
+      scope.environment !== null &&
+      selection.environment !== scope.environment)
+  ) {
+    throw new PermitContextChangeError(
+      'Cannot select an API context outside the API key permissions.',
+    );
+  }
+}
+
+function readApiContextSnapshot(this: ApiContext): ContextSnapshot {
+  const state = stateOf(this);
+  return {
+    scope: state.scope === null ? null : { ...state.scope },
+    selection: { ...state.selection },
+  };
+}
+
+function parseSelection(value: unknown): Selection {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    throw new PermitContextError('Invalid API context snapshot selection.');
+  }
+  const level: unknown = Reflect.get(value, 'level');
+  const organization: unknown = Reflect.get(value, 'organization');
+  const project: unknown = Reflect.get(value, 'project');
+  const environment: unknown = Reflect.get(value, 'environment');
+  switch (level) {
+    case ApiContextLevel.WAIT_FOR_INIT:
+      if (organization === null && project === null && environment === null) {
+        return { level, organization, project, environment };
+      }
+      break;
+    case ApiContextLevel.ORGANIZATION:
+      if (project === null && environment === null) {
+        return {
+          level,
+          organization: identifier(organization, 'organization'),
+          project,
+          environment,
+        };
+      }
+      break;
+    case ApiContextLevel.PROJECT:
+      if (environment === null) {
+        return {
+          level,
+          organization: identifier(organization, 'organization'),
+          project: identifier(project, 'project'),
+          environment,
+        };
+      }
+      break;
+    case ApiContextLevel.ENVIRONMENT:
+      return {
+        level,
+        organization: identifier(organization, 'organization'),
+        project: identifier(project, 'project'),
+        environment: identifier(environment, 'environment'),
+      };
+  }
+  throw new PermitContextError('Invalid API context snapshot selection hierarchy.');
+}
+
+function parseContextSnapshot(value: unknown): ContextSnapshot {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    throw new PermitContextError('Invalid API context snapshot.');
+  }
+  const permissions: unknown = Reflect.get(value, 'scope');
+  let scope: Scope | null = null;
+  if (permissions !== null) {
+    if (typeof permissions !== 'object' || Array.isArray(permissions)) {
+      throw new PermitContextError('Invalid API context snapshot permissions.');
+    }
+    const project: unknown = Reflect.get(permissions, 'project');
+    const environment: unknown = Reflect.get(permissions, 'environment');
+    if (
+      (project !== null && typeof project !== 'string') ||
+      (environment !== null && typeof environment !== 'string')
+    ) {
+      throw new PermitContextError('Invalid API context snapshot permission hierarchy.');
+    }
+    scope = parseScope({
+      organization_id: Reflect.get(permissions, 'organization'),
+      project_id: project,
+      environment_id: environment,
+    });
+    if (Reflect.get(permissions, 'level') !== scope.level) {
+      throw new PermitContextError('Invalid API context snapshot permission level.');
+    }
+  }
+  const selection = parseSelection(Reflect.get(value, 'selection'));
+  verifySelection(scope, selection);
+  return { scope, selection };
+}
+
+/** Stores checked API-key permissions and the mutable routing selection for API methods. */
+export class ApiContext {
+  constructor() {
+    contextStates.set(this, {
+      scope: null,
+      selection: {
+        level: ApiContextLevel.WAIT_FOR_INIT,
+        organization: null,
+        project: null,
+        environment: null,
+      },
+      revision: 0,
+      initialization: undefined,
+    });
+    Object.defineProperty(this, contextSnapshotKey, { value: readApiContextSnapshot });
+  }
+
+  /**
+   * Records validated API-key permissions for internal SDK use.
+   *
+   * @param org - Accessible organization key or ID.
+   * @param project - Accessible project key or ID, if restricted to a project.
+   * @param environment - Accessible environment key or ID, requiring a project.
+   * @throws PermitContextError When scope identifiers or hierarchy are invalid.
+   * @throws PermitContextChangeError When new permissions exclude the existing selection.
+   */
+  public _saveApiKeyAccessibleScope(org: string, project?: string, environment?: string): void {
+    const scope = parseScope({
+      organization_id: org,
+      project_id: project,
+      environment_id: environment,
+    });
+    const state = stateOf(this);
+    verifySelection(scope, state.selection);
+    state.scope = scope;
+    state.revision += 1;
+  }
+
+  /** Returns the API key's permission level. */
+  public get permittedAccessLevel(): ApiKeyLevel {
+    return stateOf(this).scope?.level ?? ApiKeyLevel.WAIT_FOR_INIT;
+  }
+
+  /** Returns the current context level. */
+  public get contextLevel(): ApiContextLevel {
+    return stateOf(this).selection.level;
+  }
+
+  /** Returns the selected organization, or null before initialization. */
+  public get organization(): string | null {
+    return stateOf(this).selection.organization;
+  }
+
+  /** Returns the selected project, or null outside project/environment context. */
+  public get project(): string | null {
+    return stateOf(this).selection.project;
+  }
+
+  /** Returns the selected environment, or null outside environment context. */
+  public get environment(): string | null {
+    return stateOf(this).selection.environment;
+  }
+
+  private select(selection: Selection): void {
+    const state = stateOf(this);
+    verifySelection(state.scope, selection);
+    state.selection = selection;
+    state.revision += 1;
+  }
+
+  /**
+   * Selects an organization allowed by the API key, clearing project and environment.
+   *
+   * @param org - Organization key or ID.
+   * @throws PermitContextError When the identifier is invalid.
+   * @throws PermitContextChangeError When permissions have not loaded or exclude the organization.
+   */
+  public setOrganizationLevelContext(org: string): void {
+    this.select({
+      level: ApiContextLevel.ORGANIZATION,
+      organization: identifier(org, 'organization'),
+      project: null,
+      environment: null,
+    });
+  }
+
+  /**
+   * Selects an allowed project, clearing the environment.
+   *
+   * @param org - Organization key or ID.
+   * @param project - Project key or ID.
+   * @throws PermitContextError When an identifier is invalid.
+   * @throws PermitContextChangeError When permissions have not loaded or exclude the project.
+   */
+  public setProjectLevelContext(org: string, project: string): void {
+    this.select({
+      level: ApiContextLevel.PROJECT,
+      organization: identifier(org, 'organization'),
+      project: identifier(project, 'project'),
+      environment: null,
+    });
+  }
+
+  /**
+   * Selects an environment allowed by the API key.
+   *
+   * @param org - Organization key or ID.
+   * @param project - Project key or ID.
+   * @param environment - Environment key or ID.
+   * @throws PermitContextError When an identifier is invalid.
+   * @throws PermitContextChangeError When permissions have not loaded or exclude the environment.
+   */
+  public setEnvironmentLevelContext(org: string, project: string, environment: string): void {
+    this.select({
+      level: ApiContextLevel.ENVIRONMENT,
+      organization: identifier(org, 'organization'),
+      project: identifier(project, 'project'),
+      environment: identifier(environment, 'environment'),
+    });
+  }
+
+  /** Returns routing parameters for the selected environment; throws when none is selected. */
+  public get environmentContext(): { projId: string; envId: string } {
+    const selected = stateOf(this).selection;
+    if (selected.level !== ApiContextLevel.ENVIRONMENT) {
+      throw new PermitContextError(
+        `Cannot get environment context at level ${ApiContextLevel[selected.level]}.`,
+      );
+    }
+    return { projId: selected.project, envId: selected.environment };
   }
 }
 
 /**
- * The `ApiContext` class represents the required known context for an API method.
- * Since the Permit API hierarchy is deeply nested, it is less convenient to specify
- * the full object hierarchy in every request.
- * For example, in order to list roles, the user needs to specify the (id or key) of the:
- * - the org
- * - the project
- * - then environment
- * in which the roles are located under.
- * Instead, the SDK can "remember" the current context and "auto-complete" the details
- * from that context.
- * We then get this kind of experience:
- * ```
- * await permit.api.roles.list()
- * ```
- * We can only run this function if the current context already knows the org, project,
- * and environments that we want to run under, and that is why this method assumes
- * we are running under a `ApiContextLevel.ENVIRONMENT` context.
+ * Copies validated initial state without sharing mutable selection or an in-flight lookup.
+ *
+ * @internal
+ * @param source - Context whose initial permissions and selection should be preserved.
+ * @returns An independent context for one SDK instance.
+ * @throws TypeError When source lacks a checked snapshot bridge or its snapshot is invalid.
  */
-export class ApiContext {
-  private _level: ApiKeyLevel;
-  // org, project and environment the API Key is allowed to access
-  private _permittedOrganization: string | null;
-  private _permittedProject: string | null;
-  private _permittedEnvironment: string | null;
-
-  // current known context
-  private _contextLevel: ApiContextLevel;
-  private _organization: string | null;
-  private _project: string | null;
-  private _environment: string | null;
-
-  constructor() {
-    this._level = ApiKeyLevel.WAIT_FOR_INIT;
-    this._permittedOrganization = null;
-    this._permittedProject = null;
-    this._permittedEnvironment = null;
-
-    this._contextLevel = ApiContextLevel.WAIT_FOR_INIT;
-    this._organization = null;
-    this._project = null;
-    this._environment = null;
-  }
-
-  /**
-   * Do not call this method directly!
-   */
-  public _saveApiKeyAccessibleScope(org: string, project?: string, environment?: string): void {
-    this._permittedOrganization = org; // cannot be null
-
-    if (project && environment) {
-      this._permittedProject = project;
-      this._permittedEnvironment = environment;
-      this._level = ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY;
-    } else if (project) {
-      this._permittedProject = project;
-      this._permittedEnvironment = null;
-      this._level = ApiKeyLevel.PROJECT_LEVEL_API_KEY;
-    } else {
-      this._permittedProject = null;
-      this._permittedEnvironment = null;
-      this._level = ApiKeyLevel.ORGANIZATION_LEVEL_API_KEY;
+export function snapshotApiContext(source: ApiContext): ApiContext {
+  let snapshot: ContextSnapshot;
+  try {
+    if (source === null || typeof source !== 'object' || Array.isArray(source)) {
+      throw new TypeError();
     }
-  }
-
-  /**
-   * Get the current API key access level.
-   */
-  public get permittedAccessLevel(): ApiKeyLevel {
-    return this._level;
-  }
-
-  /**
-   * Get the current API key level.
-   * @deprecated replaced with permit.config.apiContext.permittedAccessLevel
-   */
-  public get level(): ApiKeyLevel {
-    return this._level;
-  }
-
-  /**
-   * Get the current SDK context level.
-   */
-  public get contextLevel(): ApiContextLevel {
-    return this._contextLevel;
-  }
-
-  /**
-   * Get the current organization in the context.
-   */
-  public get organization(): string | null {
-    return this._organization;
-  }
-
-  /**
-   * Get the current project in the context.
-   */
-  public get project(): string | null {
-    return this._project;
-  }
-
-  /**
-   * Get the current environment in the context.
-   */
-  public get environment(): string | null {
-    return this._environment;
-  }
-
-  private verifyCanAccessOrg(org: string): void {
-    if (org !== this._permittedOrganization) {
-      throw new PermitContextChangeError(
-        `You cannot set an SDK context with org '${org}' due to insufficient API Key permissions`,
-      );
+    const methods = [
+      '_saveApiKeyAccessibleScope',
+      'setOrganizationLevelContext',
+      'setProjectLevelContext',
+      'setEnvironmentLevelContext',
+    ];
+    if (methods.some((method) => typeof Reflect.get(source, method) !== 'function')) {
+      throw new TypeError();
     }
+    const properties = [
+      'permittedAccessLevel',
+      'contextLevel',
+      'organization',
+      'project',
+      'environment',
+      'environmentContext',
+    ];
+    if (properties.some((property) => !(property in source))) throw new TypeError();
+    const bridge: unknown = Reflect.get(source, contextSnapshotKey);
+    if (typeof bridge !== 'function') throw new TypeError();
+    snapshot = parseContextSnapshot(Reflect.apply(bridge, source, []));
+  } catch {
+    throw new TypeError(
+      'Invalid apiContext: expected an ApiContext with valid permissions and selection.',
+    );
   }
+  const target = new ApiContext();
+  const copy = stateOf(target);
+  copy.scope = snapshot.scope;
+  copy.selection = snapshot.selection;
+  return target;
+}
 
-  private verifyCanAccessProject(org: string, project: string): void {
-    this.verifyCanAccessOrg(org);
-    if (this._permittedProject !== null && project !== this._permittedProject) {
-      throw new PermitContextChangeError(
-        `You cannot set an SDK context with project '${project}' due to insufficient API Key permissions`,
-      );
-    }
-  }
-
-  private verifyCanAccessEnvironment(org: string, project: string, environment: string): void {
-    this.verifyCanAccessProject(org, project);
-    if (this._permittedEnvironment !== null && environment !== this._permittedEnvironment) {
-      throw new PermitContextChangeError(
-        `You cannot set an SDK context with environment '${environment}' due to insufficient API Key permissions`,
-      );
-    }
-  }
-
-  /**
-   * Set the context to organization level.
-   * @param org The organization key.
-   */
-  public setOrganizationLevelContext(org: string) {
-    this.verifyCanAccessOrg(org);
-    this._contextLevel = ApiContextLevel.ORGANIZATION;
-    this._organization = org;
-    this._project = null;
-    this._environment = null;
-  }
-
-  /**
-   * Set the context to project level.
-   * @param org The organization key.
-   * @param project The project key.
-   */
-  public setProjectLevelContext(org: string, project: string) {
-    this.verifyCanAccessProject(org, project);
-    this._contextLevel = ApiContextLevel.PROJECT;
-    this._organization = org;
-    this._project = project;
-    this._environment = null;
-  }
-
-  /**
-   * Set the context to environment level.
-   * @param org The organization key.
-   * @param project The project key.
-   * @param environment The environment key.
-   */
-  public setEnvironmentLevelContext(org: string, project: string, environment: string) {
-    this.verifyCanAccessEnvironment(org, project, environment);
-    this._contextLevel = ApiContextLevel.ENVIRONMENT;
-    this._organization = org;
-    this._project = project;
-    this._environment = environment;
-  }
-
-  /**
-   * Get the API project and environment parameters from an environment-level context.
-   * @returns An object containing the project and environment IDs.
-   * @throws {@link PermitContextError} If the API context is not set to environment level or the project or environment is null.
-   */
-  public get environmentContext(): { projId: string; envId: string } {
-    if (
-      this._contextLevel !== ApiContextLevel.ENVIRONMENT ||
-      this._project === null ||
-      this._environment === null
-    ) {
-      throw new PermitContextError(
-        `You cannot get environment context, current api context is: ${
-          ApiContextLevel[this._contextLevel]
-        }`,
-      );
-    }
-    return {
-      projId: this._project,
-      envId: this._environment,
-    };
-  }
+/**
+ * Shares one scope lookup among wrappers, publishing complete state only while it is current.
+ *
+ * @internal
+ * @param context - The SDK-owned context shared by this SDK's wrappers.
+ * @param load - Fetches the API key scope without committing it.
+ * @returns Completion of the shared lookup; rejected lookups permit a later retry.
+ * @throws PermitContextError When the scope response is malformed.
+ */
+export function initializeApiContext(
+  context: ApiContext,
+  load: () => Promise<unknown>,
+): Promise<void> {
+  const state = stateOf(context);
+  if (state.scope !== null && state.selection.level !== ApiContextLevel.WAIT_FOR_INIT)
+    return Promise.resolve();
+  if (state.initialization) return state.initialization;
+  const revision = state.revision;
+  const pending = Promise.resolve()
+    .then(async () => {
+      const scope = state.scope ?? parseScope(await load());
+      if (state.revision !== revision) return;
+      const selection = defaultSelection(scope);
+      state.scope = scope;
+      state.selection = selection;
+      state.revision += 1;
+    })
+    .finally(() => {
+      if (state.initialization === pending) state.initialization = undefined;
+    });
+  state.initialization = pending;
+  return pending;
 }

@@ -1,124 +1,134 @@
-import anyTest, { TestInterface } from 'ava';
-import pino from 'pino';
+import { type IPermitClient, type IResource } from '#src/index';
+import { cleanUp, createTestClient } from '#src/tests/fixtures';
+import { waitForCheck } from '#src/tests/helpers/wait-for';
 
-import { Permit } from '../../index';
-import { LoggerFactory } from '../../logger';
+let permit: IPermitClient;
 
-interface TestContext {
-  permit: Permit;
-  logger: pino.Logger;
+// Keys unique to this run, so entities left by another spec or an earlier run can't change the
+// results.
+const RUN_ID = `${process.pid}_${Date.now()}`;
+const unique = (key: string) => `local_facts_${key}_${RUN_ID}`;
+const ADMIN = unique('admin');
+const REPO = unique('repo');
+const EDITOR = 'editor';
+const TENANT = 'default';
+
+// With proxyFactsViaPdp, a write sent with waitForSync(FACT_SYNC_TIMEOUT_S, 'fail') returns
+// only after the PDP has applied it, and fails with 424 if that takes longer. A check made right
+// after the write must therefore see it; these tests assert exactly that, without polling.
+const FACT_SYNC_TIMEOUT_S = 30;
+
+// Keys this spec creates at runtime, tracked so afterAll can delete exactly what was created.
+const createdUserKeys: string[] = [];
+const createdTenantKeys: string[] = [];
+
+beforeAll(async () => {
+  if (process.env['CLOUD_PDP'] === 'true') {
+    throw new Error('This test is not supported with cloud PDP');
+  }
+  ({ permit } = createTestClient({ proxyFactsViaPdp: true }));
+  await setupSchema(permit);
+  await waitForSchema(permit);
+});
+
+afterAll(async () => {
+  if (!permit) return; // beforeAll never initialized the client (e.g. missing key)
+  // Deleting the resource removes its resource role and instances.
+  const steps: Record<string, () => Promise<unknown>> = {};
+  for (const key of createdUserKeys) {
+    steps[`user ${key}`] = () => permit.api.users.delete(key);
+  }
+  for (const key of createdTenantKeys) {
+    steps[`tenant ${key}`] = () => permit.api.tenants.delete(key);
+  }
+  steps[`resource ${REPO}`] = () => permit.api.resources.delete(REPO);
+  steps[`role ${ADMIN}`] = () => permit.api.roles.delete(ADMIN);
+  await cleanUp(steps);
+});
+
+const setupSchema = async (client: IPermitClient) => {
+  await client.api.roles.create({ key: ADMIN, name: 'admin' });
+  await client.api.resources.create({
+    key: REPO,
+    name: 'Repository',
+    actions: { create: {}, read: {}, update: {}, delete: {} },
+  });
+  await client.api.roles.assignPermissions(ADMIN, [
+    `${REPO}:create`,
+    `${REPO}:read`,
+    `${REPO}:update`,
+    `${REPO}:delete`,
+  ]);
+  await client.api.resourceRoles.create(REPO, { key: EDITOR, name: 'editor' });
+  await client.api.resourceRoles.assignPermissions(REPO, EDITOR, ['update']);
+};
+
+/** Creates a user through the PDP, returning once the PDP has applied it. */
+async function createUser(client: IPermitClient, key: string): Promise<void> {
+  createdUserKeys.push(key);
+  await client.api.users.waitForSync(FACT_SYNC_TIMEOUT_S, 'fail').create({ key });
 }
 
-const test = anyTest as TestInterface<TestContext>;
+/** Creates a tenant and a repo instance in it through the PDP, returning once both apply. */
+async function createRepoInstance(client: IPermitClient, name: string): Promise<IResource> {
+  const tenant = unique(`${name}_tenant`);
+  const key = unique(`${name}_repo`);
+  createdTenantKeys.push(tenant);
+  await client.api.tenants
+    .waitForSync(FACT_SYNC_TIMEOUT_S, 'fail')
+    .create({ key: tenant, name: 'My Tenant' });
+  await client.api.resourceInstances
+    .waitForSync(FACT_SYNC_TIMEOUT_S, 'fail')
+    .create({ key, resource: REPO, tenant });
+  return { type: REPO, key, tenant };
+}
 
-test.before(async (t) => {
-  if (process.env.CLOUD_PDP === 'true') {
-    t.fail('This test is not supported with cloud PDP');
-  }
-  const defaultPDPAddress = 'http://localhost:7766';
-  const defaultApiAddress =
-    process.env.API_TIER === 'prod' ? 'https://api.permit.io' : 'http://localhost:8000';
-
-  const token: string = process.env.PDP_API_KEY || '';
-  const pdpAddress: string = process.env.PDP_URL || defaultPDPAddress;
-  const apiUrl = process.env.PDP_CONTROL_PLANE || defaultApiAddress;
-
-  if (!token) {
-    t.fail('PDP_API_KEY is not configured, test cannot run!');
-  }
-
-  t.context.permit = new Permit({
-    token,
-    pdp: pdpAddress,
-    apiUrl,
-    log: {
-      level: 'debug',
-    },
-    proxyFactsViaPdp: true,
+/**
+ * The schema reaches the PDP on its own schedule, unlike the facts the tests write. Wait for it
+ * once, through one user per role, so each test can check right after its own writes.
+ */
+async function waitForSchema(client: IPermitClient): Promise<void> {
+  const admin = unique('schema_admin');
+  await createUser(client, admin);
+  await client.api.users
+    .waitForSync(FACT_SYNC_TIMEOUT_S, 'fail')
+    .assignRole({ user: admin, role: ADMIN, tenant: TENANT });
+  await waitForCheck(() => client.check(admin, 'create', REPO), true, {
+    message: `the ${ADMIN} role did not reach the PDP`,
   });
 
-  t.context.logger = LoggerFactory.createLogger(t.context.permit.config);
-
-  await setupSchema(t.context.permit);
-});
-
-const setupSchema = async (permit: Permit) => {
-  await permit.api.roles.create({ key: 'admin', name: 'admin' }).catch(() => null);
-
-  await permit.api.resources
-    .create({
-      key: 'repo',
-      name: 'Repository',
-      actions: { create: {}, read: {}, update: {}, delete: {} },
-    })
-    .catch(() => null);
-
-  await permit.api.roles
-    .assignPermissions('admin', ['repo:create', 'repo:read', 'repo:update', 'repo:delete'])
-    .catch(() => null);
-  await permit.api.resourceRoles
-    .create('repo', {
-      key: 'editor',
-      name: 'editor',
-    })
-    .catch(() => null);
-  await permit.api.resourceRoles.assignPermissions('repo', 'editor', ['update']).catch(() => null);
-
-  await sleep(10); // wait for schema to sync
-};
-
-const sleep = async (seconds: number) => await new Promise((r) => setTimeout(r, seconds * 1000));
-
-const makeRandomId = (prefix: string) => {
-  const num = Math.floor(Math.random() * 1_000_000);
-  return `${prefix}-${num}`;
-};
-
-test('Check assign role', async (t) => {
-  const permit = t.context.permit;
-  const adminUserId = makeRandomId('user');
-  await permit.api.users.create({ key: adminUserId });
-  await permit.api.users.assignRole({ user: adminUserId, role: 'admin', tenant: 'default' });
-  t.true(await permit.check(adminUserId, 'create', 'repo'));
-});
-
-test('Check assign resource instance role', async (t) => {
-  const permit = t.context.permit;
-  const editorUserId = makeRandomId('user');
-  await permit.api.users.create({ key: editorUserId });
-
-  const tenantId = makeRandomId('tenant');
-  await permit.api.tenants.create({ key: tenantId, name: 'My Tenant' });
-
-  const resourceInstanceId = makeRandomId('repo');
-  await permit.api.resourceInstances.create({
-    key: resourceInstanceId,
-    resource: 'repo',
-    tenant: tenantId,
+  const editor = unique('schema_editor');
+  await createUser(client, editor);
+  const repo = await createRepoInstance(client, 'schema');
+  await client.api.users
+    .waitForSync(FACT_SYNC_TIMEOUT_S, 'fail')
+    .assignRole({ user: editor, role: EDITOR, resource_instance: `${REPO}:${repo.key}` });
+  await waitForCheck(() => client.check(editor, 'update', repo), true, {
+    message: `the ${REPO} ${EDITOR} role did not reach the PDP`,
   });
-  await permit.api.users.assignRole({
+}
+
+it('Check assign role', async () => {
+  const adminUserId = unique('user');
+  await createUser(permit, adminUserId);
+
+  await permit.api.users
+    .waitForSync(FACT_SYNC_TIMEOUT_S, 'fail')
+    .assignRole({ user: adminUserId, role: ADMIN, tenant: TENANT });
+
+  expect(await permit.check(adminUserId, 'create', REPO)).toBe(true);
+});
+
+it('Check assign resource instance role', async () => {
+  const editorUserId = unique('editor_user');
+  await createUser(permit, editorUserId);
+  const repo = await createRepoInstance(permit, 'test');
+
+  await permit.api.users.waitForSync(FACT_SYNC_TIMEOUT_S, 'fail').assignRole({
     user: editorUserId,
-    role: 'editor',
-    resource_instance: `repo:${resourceInstanceId}`,
+    role: EDITOR,
+    resource_instance: `${REPO}:${repo.key}`,
   });
-  t.true(
-    await permit.check(editorUserId, 'update', {
-      key: resourceInstanceId,
-      type: 'repo',
-      tenant: tenantId,
-    }),
-  );
-});
 
-test('Check skip wait', async (t) => {
-  const permit = t.context.permit;
-  const userId = makeRandomId('user');
-  await permit.api.users.create({ key: userId });
-  // explicitly skip wait for role assignment to sync
-  await permit.api.users.waitForSync(0).assignRole({
-    user: userId,
-    role: 'admin',
-    tenant: 'default',
-  });
-  t.false(await permit.check(userId, 'create', 'repo'));
+  expect(await permit.check(editorUserId, 'update', repo)).toBe(true);
 });

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,32 +11,11 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { ActivityDetailsObjectData } from './activity-details-object-data';
+import type { ActivityDetailsObjectData } from './activity-details-object-data';
 
-/**
- *
- * @export
- * @interface ActivityDetailsList
- */
 export interface ActivityDetailsList {
-  /**
-   *
-   * @type {string}
-   * @memberof ActivityDetailsList
-   */
   kind?: ActivityDetailsListKindEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof ActivityDetailsList
-   */
   type: string;
-  /**
-   *
-   * @type {Array<ActivityDetailsObjectData>}
-   * @memberof ActivityDetailsList
-   */
   items: Array<ActivityDetailsObjectData>;
 }
 

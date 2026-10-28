@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,75 +10,63 @@
  * Do not edit the class manually.
  */
 
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { Configuration } from '../configuration';
-// Some imports not used depending on template conditions
-// @ts-ignore
+import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+import { BASE_PATH, BaseAPI, operationServerMap, type RequestArgs } from '../base';
 import {
   DUMMY_BASE_URL,
   assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
   createRequestFunction,
+  serializeDataIfNeeded,
+  setBearerAuthToObject,
+  setSearchParams,
+  toPathString,
 } from '../common';
-// @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-// @ts-ignore
-import { HTTPValidationError } from '../types';
-// @ts-ignore
-import { PaginatedResultUserRead } from '../types';
-// @ts-ignore
-import { RoleAssignmentRead } from '../types';
-// @ts-ignore
-import { UserCreate } from '../types';
-// @ts-ignore
-import { UserRead } from '../types';
-// @ts-ignore
-import { UserRoleCreate } from '../types';
-// @ts-ignore
-import { UserRoleRemove } from '../types';
-// @ts-ignore
-import { UserUpdate } from '../types';
+import type { Configuration } from '../configuration';
+import type {
+  PaginatedResultUserRead,
+  RoleAssignmentRead,
+  SearchOperator,
+  UserCreate,
+  UserRead,
+  UserRoleCreate,
+  UserRoleRemove,
+  UserUpdate,
+} from '../types';
 /**
  * UsersApi - axios parameter creator
- * @export
  */
 export const UsersApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
      * Assigns a role to the user within the tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.
      * @summary Assign Role To User
+     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserRoleCreate} userRoleCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     assignRoleToUser: async (
+      userId: string,
       projId: string,
       envId: string,
-      userId: string,
       userRoleCreate: UserRoleCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'userId' is not null or undefined
+      assertParamExists('assignRoleToUser', 'userId', userId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('assignRoleToUser', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('assignRoleToUser', 'envId', envId);
-      // verify required parameter 'userId' is not null or undefined
-      assertParamExists('assignRoleToUser', 'userId', userId);
       // verify required parameter 'userRoleCreate' is not null or undefined
       assertParamExists('assignRoleToUser', 'userRoleCreate', userRoleCreate);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/users/{user_id}/roles`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'user_id'}}`, encodeURIComponent(String(userId)));
+        .replace('{user_id}', encodeURIComponent(String(userId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -97,6 +83,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -117,19 +104,19 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     * Creates a new user inside the Permit.io system, from that point forward you may run permission checks on that user.  If the user is already created: will return 200 instead of 201, and will return the existing user object in the response body.
+     * Creates a new user inside the Permit.io system, from that point forward you may run permission checks on that user.  Returns 201 if the user is created, 409 if the user already exists or if an inline role assignment names a tenant other than the one its resource instance already exists in. User is identified by its key, and you can only create one user with the same key inside a Permit environment.
      * @summary Create User
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {UserCreate} userCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createUser: async (
       projId: string,
       envId: string,
       userCreate: UserCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('createUser', 'projId', projId);
@@ -138,8 +125,8 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       // verify required parameter 'userCreate' is not null or undefined
       assertParamExists('createUser', 'userCreate', userCreate);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/users`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -156,6 +143,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -178,28 +166,28 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
     /**
      * Deletes the user and all its related data.
      * @summary Delete User
+     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     deleteUser: async (
+      userId: string,
       projId: string,
       envId: string,
-      userId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'userId' is not null or undefined
+      assertParamExists('deleteUser', 'userId', userId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('deleteUser', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('deleteUser', 'envId', envId);
-      // verify required parameter 'userId' is not null or undefined
-      assertParamExists('deleteUser', 'userId', userId);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/users/{user_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'user_id'}}`, encodeURIComponent(String(userId)));
+        .replace('{user_id}', encodeURIComponent(String(userId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -214,6 +202,8 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -231,28 +221,28 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
     /**
      * Gets a user, if such user exists. Otherwise returns 404.
      * @summary Get User
+     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     getUser: async (
+      userId: string,
       projId: string,
       envId: string,
-      userId: string,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'userId' is not null or undefined
+      assertParamExists('getUser', 'userId', userId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('getUser', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('getUser', 'envId', envId);
-      // verify required parameter 'userId' is not null or undefined
-      assertParamExists('getUser', 'userId', userId);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/users/{user_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'user_id'}}`, encodeURIComponent(String(userId)));
+        .replace('{user_id}', encodeURIComponent(String(userId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -267,6 +257,8 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       // authentication HTTPBearer required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -286,29 +278,33 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
      * @summary List Users
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [search] Text search for the email field
-     * @param {string} [role] Match users with a specific role
+     * @param {string} [search] Text search for the user
+     * @param {SearchOperator} [searchOperator] The search operator to use. &#x60;contains&#x60; performs a substring match on email, key, first_name, and last_name. &#x60;startswith&#x60; performs a prefix match on email, key, first_name, and last_name.
+     * @param {string} [role] Match users with a specific role. To filter users without any roles, send an empty string.
+     * @param {boolean} [includeResourceInstanceRoles] Should add resource instance roles
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listUsers: async (
       projId: string,
       envId: string,
       search?: string,
+      searchOperator?: SearchOperator,
       role?: string,
+      includeResourceInstanceRoles?: boolean,
       page?: number,
       perPage?: number,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('listUsers', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('listUsers', 'envId', envId);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/users`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)));
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -328,8 +324,16 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
         localVarQueryParameter['search'] = search;
       }
 
+      if (searchOperator !== undefined) {
+        localVarQueryParameter['search_operator'] = searchOperator;
+      }
+
       if (role !== undefined) {
         localVarQueryParameter['role'] = role;
+      }
+
+      if (includeResourceInstanceRoles !== undefined) {
+        localVarQueryParameter['include_resource_instance_roles'] = includeResourceInstanceRoles;
       }
 
       if (page !== undefined) {
@@ -339,6 +343,8 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       if (perPage !== undefined) {
         localVarQueryParameter['per_page'] = perPage;
       }
+
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -354,34 +360,34 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     *
+     * Replace User / Sync User upsert a user in the system. If the user already exists, it will update the user with the new data. If the user does not exist, it will create a new user with the provided data.  The user is identified by its key, and you can only create one user with the same key inside a Permit environment. A 200 status code will be returned if the user already exists, and a 201 status code will be returned if the user is created.
      * @summary Replace User
+     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserCreate} userCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     replaceUser: async (
+      userId: string,
       projId: string,
       envId: string,
-      userId: string,
       userCreate: UserCreate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'userId' is not null or undefined
+      assertParamExists('replaceUser', 'userId', userId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('replaceUser', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('replaceUser', 'envId', envId);
-      // verify required parameter 'userId' is not null or undefined
-      assertParamExists('replaceUser', 'userId', userId);
       // verify required parameter 'userCreate' is not null or undefined
       assertParamExists('replaceUser', 'userCreate', userCreate);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/users/{user_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'user_id'}}`, encodeURIComponent(String(userId)));
+        .replace('{user_id}', encodeURIComponent(String(userId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -398,6 +404,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -420,32 +427,34 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
     /**
      * Unassigns the role from the user within the tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.  If the role is not actually assigned, will return 404.
      * @summary Unassign Role From User
+     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserRoleRemove} userRoleRemove
+     * @param {boolean} [returnDeleted] Whether to return the deleted role assignment, status code will be 200 instead of the default 204 if true
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     unassignRoleFromUser: async (
+      userId: string,
       projId: string,
       envId: string,
-      userId: string,
       userRoleRemove: UserRoleRemove,
-      options: AxiosRequestConfig = {},
+      returnDeleted?: boolean,
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'userId' is not null or undefined
+      assertParamExists('unassignRoleFromUser', 'userId', userId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('unassignRoleFromUser', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('unassignRoleFromUser', 'envId', envId);
-      // verify required parameter 'userId' is not null or undefined
-      assertParamExists('unassignRoleFromUser', 'userId', userId);
       // verify required parameter 'userRoleRemove' is not null or undefined
       assertParamExists('unassignRoleFromUser', 'userRoleRemove', userRoleRemove);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/users/{user_id}/roles`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'user_id'}}`, encodeURIComponent(String(userId)));
+        .replace('{user_id}', encodeURIComponent(String(userId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -461,7 +470,12 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
+      if (returnDeleted !== undefined) {
+        localVarQueryParameter['return_deleted'] = returnDeleted;
+      }
+
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -484,32 +498,32 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
     /**
      * Partially updates the user definition. Fields that will be provided will be completely overwritten.
      * @summary Update User
+     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserUpdate} userUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateUser: async (
+      userId: string,
       projId: string,
       envId: string,
-      userId: string,
       userUpdate: UserUpdate,
-      options: AxiosRequestConfig = {},
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'userId' is not null or undefined
+      assertParamExists('updateUser', 'userId', userId);
       // verify required parameter 'projId' is not null or undefined
       assertParamExists('updateUser', 'projId', projId);
       // verify required parameter 'envId' is not null or undefined
       assertParamExists('updateUser', 'envId', envId);
-      // verify required parameter 'userId' is not null or undefined
-      assertParamExists('updateUser', 'userId', userId);
       // verify required parameter 'userUpdate' is not null or undefined
       assertParamExists('updateUser', 'userUpdate', userUpdate);
       const localVarPath = `/v2/facts/{proj_id}/{env_id}/users/{user_id}`
-        .replace(`{${'proj_id'}}`, encodeURIComponent(String(projId)))
-        .replace(`{${'env_id'}}`, encodeURIComponent(String(envId)))
-        .replace(`{${'user_id'}}`, encodeURIComponent(String(userId)));
+        .replace('{user_id}', encodeURIComponent(String(userId)))
+        .replace('{proj_id}', encodeURIComponent(String(projId)))
+        .replace('{env_id}', encodeURIComponent(String(envId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -526,6 +540,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
+      localVarHeaderParameter['Accept'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -550,7 +565,6 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
 
 /**
  * UsersApi - functional programming interface
- * @export
  */
 export const UsersApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = UsersApiAxiosParamCreator(configuration);
@@ -558,43 +572,52 @@ export const UsersApiFp = function (configuration?: Configuration) {
     /**
      * Assigns a role to the user within the tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.
      * @summary Assign Role To User
+     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserRoleCreate} userRoleCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async assignRoleToUser(
+      userId: string,
       projId: string,
       envId: string,
-      userId: string,
       userRoleCreate: UserRoleCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleAssignmentRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.assignRoleToUser(
+        userId,
         projId,
         envId,
-        userId,
         userRoleCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UsersApi.assignRoleToUser']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * Creates a new user inside the Permit.io system, from that point forward you may run permission checks on that user.  If the user is already created: will return 200 instead of 201, and will return the existing user object in the response body.
+     * Creates a new user inside the Permit.io system, from that point forward you may run permission checks on that user.  Returns 201 if the user is created, 409 if the user already exists or if an inline role assignment names a tenant other than the one its resource instance already exists in. User is identified by its key, and you can only create one user with the same key inside a Permit environment.
      * @summary Create User
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
      * @param {UserCreate} userCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async createUser(
       projId: string,
       envId: string,
       userCreate: UserCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createUser(
         projId,
@@ -602,74 +625,105 @@ export const UsersApiFp = function (configuration?: Configuration) {
         userCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UsersApi.createUser']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Deletes the user and all its related data.
      * @summary Delete User
+     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async deleteUser(
+      userId: string,
       projId: string,
       envId: string,
-      userId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteUser(
+        userId,
         projId,
         envId,
-        userId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UsersApi.deleteUser']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Gets a user, if such user exists. Otherwise returns 404.
      * @summary Get User
+     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async getUser(
+      userId: string,
       projId: string,
       envId: string,
-      userId: string,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getUser(
+        userId,
         projId,
         envId,
-        userId,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UsersApi.getUser']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Lists all the users defined within an environment.
      * @summary List Users
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [search] Text search for the email field
-     * @param {string} [role] Match users with a specific role
+     * @param {string} [search] Text search for the user
+     * @param {SearchOperator} [searchOperator] The search operator to use. &#x60;contains&#x60; performs a substring match on email, key, first_name, and last_name. &#x60;startswith&#x60; performs a prefix match on email, key, first_name, and last_name.
+     * @param {string} [role] Match users with a specific role. To filter users without any roles, send an empty string.
+     * @param {boolean} [includeResourceInstanceRoles] Should add resource instance roles
      * @param {number} [page] Page number of the results to fetch, starting at 1.
      * @param {number} [perPage] The number of results per page (max 100).
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async listUsers(
       projId: string,
       envId: string,
       search?: string,
+      searchOperator?: SearchOperator,
       role?: string,
+      includeResourceInstanceRoles?: boolean,
       page?: number,
       perPage?: number,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResultUserRead>
     > {
@@ -677,97 +731,137 @@ export const UsersApiFp = function (configuration?: Configuration) {
         projId,
         envId,
         search,
+        searchOperator,
         role,
+        includeResourceInstanceRoles,
         page,
         perPage,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UsersApi.listUsers']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *
+     * Replace User / Sync User upsert a user in the system. If the user already exists, it will update the user with the new data. If the user does not exist, it will create a new user with the provided data.  The user is identified by its key, and you can only create one user with the same key inside a Permit environment. A 200 status code will be returned if the user already exists, and a 201 status code will be returned if the user is created.
      * @summary Replace User
+     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserCreate} userCreate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async replaceUser(
+      userId: string,
       projId: string,
       envId: string,
-      userId: string,
       userCreate: UserCreate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.replaceUser(
+        userId,
         projId,
         envId,
-        userId,
         userCreate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UsersApi.replaceUser']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Unassigns the role from the user within the tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.  If the role is not actually assigned, will return 404.
      * @summary Unassign Role From User
+     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserRoleRemove} userRoleRemove
+     * @param {boolean} [returnDeleted] Whether to return the deleted role assignment, status code will be 200 instead of the default 204 if true
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async unassignRoleFromUser(
+      userId: string,
       projId: string,
       envId: string,
-      userId: string,
       userRoleRemove: UserRoleRemove,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      returnDeleted?: boolean,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleAssignmentRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.unassignRoleFromUser(
+        userId,
         projId,
         envId,
-        userId,
         userRoleRemove,
+        returnDeleted,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UsersApi.unassignRoleFromUser']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
      * Partially updates the user definition. Fields that will be provided will be completely overwritten.
      * @summary Update User
+     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
      * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
      * @param {UserUpdate} userUpdate
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     async updateUser(
+      userId: string,
       projId: string,
       envId: string,
-      userId: string,
       userUpdate: UserUpdate,
-      options?: AxiosRequestConfig,
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserRead>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.updateUser(
+        userId,
         projId,
         envId,
-        userId,
         userUpdate,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['UsersApi.updateUser']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
     },
   };
 };
 
 /**
  * UsersApi - factory interface
- * @export
  */
 export const UsersApiFactory = function (
   configuration?: Configuration,
@@ -779,157 +873,171 @@ export const UsersApiFactory = function (
     /**
      * Assigns a role to the user within the tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.
      * @summary Assign Role To User
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-     * @param {UserRoleCreate} userRoleCreate
+     * @param {UsersApiAssignRoleToUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     assignRoleToUser(
-      projId: string,
-      envId: string,
-      userId: string,
-      userRoleCreate: UserRoleCreate,
-      options?: any,
+      requestParameters: UsersApiAssignRoleToUserRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<RoleAssignmentRead> {
       return localVarFp
-        .assignRoleToUser(projId, envId, userId, userRoleCreate, options)
+        .assignRoleToUser(
+          requestParameters.userId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.userRoleCreate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
-     * Creates a new user inside the Permit.io system, from that point forward you may run permission checks on that user.  If the user is already created: will return 200 instead of 201, and will return the existing user object in the response body.
+     * Creates a new user inside the Permit.io system, from that point forward you may run permission checks on that user.  Returns 201 if the user is created, 409 if the user already exists or if an inline role assignment names a tenant other than the one its resource instance already exists in. User is identified by its key, and you can only create one user with the same key inside a Permit environment.
      * @summary Create User
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {UserCreate} userCreate
+     * @param {UsersApiCreateUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     createUser(
-      projId: string,
-      envId: string,
-      userCreate: UserCreate,
-      options?: any,
+      requestParameters: UsersApiCreateUserRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<UserRead> {
       return localVarFp
-        .createUser(projId, envId, userCreate, options)
+        .createUser(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.userCreate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Deletes the user and all its related data.
      * @summary Delete User
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+     * @param {UsersApiDeleteUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    deleteUser(projId: string, envId: string, userId: string, options?: any): AxiosPromise<void> {
+    deleteUser(
+      requestParameters: UsersApiDeleteUserRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<void> {
       return localVarFp
-        .deleteUser(projId, envId, userId, options)
+        .deleteUser(
+          requestParameters.userId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Gets a user, if such user exists. Otherwise returns 404.
      * @summary Get User
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+     * @param {UsersApiGetUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
-    getUser(projId: string, envId: string, userId: string, options?: any): AxiosPromise<UserRead> {
+    getUser(
+      requestParameters: UsersApiGetUserRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<UserRead> {
       return localVarFp
-        .getUser(projId, envId, userId, options)
+        .getUser(
+          requestParameters.userId,
+          requestParameters.projId,
+          requestParameters.envId,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Lists all the users defined within an environment.
      * @summary List Users
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} [search] Text search for the email field
-     * @param {string} [role] Match users with a specific role
-     * @param {number} [page] Page number of the results to fetch, starting at 1.
-     * @param {number} [perPage] The number of results per page (max 100).
+     * @param {UsersApiListUsersRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     listUsers(
-      projId: string,
-      envId: string,
-      search?: string,
-      role?: string,
-      page?: number,
-      perPage?: number,
-      options?: any,
+      requestParameters: UsersApiListUsersRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<PaginatedResultUserRead> {
       return localVarFp
-        .listUsers(projId, envId, search, role, page, perPage, options)
+        .listUsers(
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.search,
+          requestParameters.searchOperator,
+          requestParameters.role,
+          requestParameters.includeResourceInstanceRoles,
+          requestParameters.page,
+          requestParameters.perPage,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     * Replace User / Sync User upsert a user in the system. If the user already exists, it will update the user with the new data. If the user does not exist, it will create a new user with the provided data.  The user is identified by its key, and you can only create one user with the same key inside a Permit environment. A 200 status code will be returned if the user already exists, and a 201 status code will be returned if the user is created.
      * @summary Replace User
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-     * @param {UserCreate} userCreate
+     * @param {UsersApiReplaceUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     replaceUser(
-      projId: string,
-      envId: string,
-      userId: string,
-      userCreate: UserCreate,
-      options?: any,
+      requestParameters: UsersApiReplaceUserRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<UserRead> {
       return localVarFp
-        .replaceUser(projId, envId, userId, userCreate, options)
+        .replaceUser(
+          requestParameters.userId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.userCreate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Unassigns the role from the user within the tenant.  The tenant defines the scope of the assignment. In other words, the role is effective only within the tenant.  If the role is not actually assigned, will return 404.
      * @summary Unassign Role From User
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-     * @param {UserRoleRemove} userRoleRemove
+     * @param {UsersApiUnassignRoleFromUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     unassignRoleFromUser(
-      projId: string,
-      envId: string,
-      userId: string,
-      userRoleRemove: UserRoleRemove,
-      options?: any,
-    ): AxiosPromise<void> {
+      requestParameters: UsersApiUnassignRoleFromUserRequest,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<RoleAssignmentRead> {
       return localVarFp
-        .unassignRoleFromUser(projId, envId, userId, userRoleRemove, options)
+        .unassignRoleFromUser(
+          requestParameters.userId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.userRoleRemove,
+          requestParameters.returnDeleted,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      * Partially updates the user definition. Fields that will be provided will be completely overwritten.
      * @summary Update User
-     * @param {string} projId Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-     * @param {string} envId Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-     * @param {string} userId Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-     * @param {UserUpdate} userUpdate
+     * @param {UsersApiUpdateUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
+     * @throws If a required parameter is missing.
      */
     updateUser(
-      projId: string,
-      envId: string,
-      userId: string,
-      userUpdate: UserUpdate,
-      options?: any,
+      requestParameters: UsersApiUpdateUserRequest,
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<UserRead> {
       return localVarFp
-        .updateUser(projId, envId, userId, userUpdate, options)
+        .updateUser(
+          requestParameters.userId,
+          requestParameters.projId,
+          requestParameters.envId,
+          requestParameters.userUpdate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
@@ -937,282 +1045,201 @@ export const UsersApiFactory = function (
 
 /**
  * Request parameters for assignRoleToUser operation in UsersApi.
- * @export
- * @interface UsersApiAssignRoleToUserRequest
  */
 export interface UsersApiAssignRoleToUserRequest {
   /**
+   * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+   */
+  readonly userId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiAssignRoleToUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiAssignRoleToUser
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiAssignRoleToUser
-   */
-  readonly userId: string;
-
-  /**
-   *
-   * @type {UserRoleCreate}
-   * @memberof UsersApiAssignRoleToUser
-   */
   readonly userRoleCreate: UserRoleCreate;
 }
 
 /**
  * Request parameters for createUser operation in UsersApi.
- * @export
- * @interface UsersApiCreateUserRequest
  */
 export interface UsersApiCreateUserRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiCreateUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiCreateUser
    */
   readonly envId: string;
 
-  /**
-   *
-   * @type {UserCreate}
-   * @memberof UsersApiCreateUser
-   */
   readonly userCreate: UserCreate;
 }
 
 /**
  * Request parameters for deleteUser operation in UsersApi.
- * @export
- * @interface UsersApiDeleteUserRequest
  */
 export interface UsersApiDeleteUserRequest {
   /**
+   * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+   */
+  readonly userId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiDeleteUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiDeleteUser
    */
   readonly envId: string;
-
-  /**
-   * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiDeleteUser
-   */
-  readonly userId: string;
 }
 
 /**
  * Request parameters for getUser operation in UsersApi.
- * @export
- * @interface UsersApiGetUserRequest
  */
 export interface UsersApiGetUserRequest {
   /**
+   * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+   */
+  readonly userId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiGetUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiGetUser
    */
   readonly envId: string;
-
-  /**
-   * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiGetUser
-   */
-  readonly userId: string;
 }
 
 /**
  * Request parameters for listUsers operation in UsersApi.
- * @export
- * @interface UsersApiListUsersRequest
  */
 export interface UsersApiListUsersRequest {
   /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiListUsers
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiListUsers
    */
   readonly envId: string;
 
   /**
-   * Text search for the email field
-   * @type {string}
-   * @memberof UsersApiListUsers
+   * Text search for the user
    */
   readonly search?: string;
 
   /**
-   * Match users with a specific role
-   * @type {string}
-   * @memberof UsersApiListUsers
+   * The search operator to use. &#x60;contains&#x60; performs a substring match on email, key, first_name, and last_name. &#x60;startswith&#x60; performs a prefix match on email, key, first_name, and last_name.
+   */
+  readonly searchOperator?: SearchOperator;
+
+  /**
+   * Match users with a specific role. To filter users without any roles, send an empty string.
    */
   readonly role?: string;
 
   /**
+   * Should add resource instance roles
+   */
+  readonly includeResourceInstanceRoles?: boolean;
+
+  /**
    * Page number of the results to fetch, starting at 1.
-   * @type {number}
-   * @memberof UsersApiListUsers
    */
   readonly page?: number;
 
   /**
    * The number of results per page (max 100).
-   * @type {number}
-   * @memberof UsersApiListUsers
    */
   readonly perPage?: number;
 }
 
 /**
  * Request parameters for replaceUser operation in UsersApi.
- * @export
- * @interface UsersApiReplaceUserRequest
  */
 export interface UsersApiReplaceUserRequest {
   /**
+   * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+   */
+  readonly userId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiReplaceUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiReplaceUser
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiReplaceUser
-   */
-  readonly userId: string;
-
-  /**
-   *
-   * @type {UserCreate}
-   * @memberof UsersApiReplaceUser
-   */
   readonly userCreate: UserCreate;
 }
 
 /**
  * Request parameters for unassignRoleFromUser operation in UsersApi.
- * @export
- * @interface UsersApiUnassignRoleFromUserRequest
  */
 export interface UsersApiUnassignRoleFromUserRequest {
   /**
+   * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+   */
+  readonly userId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiUnassignRoleFromUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiUnassignRoleFromUser
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiUnassignRoleFromUser
-   */
-  readonly userId: string;
+  readonly userRoleRemove: UserRoleRemove;
 
   /**
-   *
-   * @type {UserRoleRemove}
-   * @memberof UsersApiUnassignRoleFromUser
+   * Whether to return the deleted role assignment, status code will be 200 instead of the default 204 if true
    */
-  readonly userRoleRemove: UserRoleRemove;
+  readonly returnDeleted?: boolean;
 }
 
 /**
  * Request parameters for updateUser operation in UsersApi.
- * @export
- * @interface UsersApiUpdateUserRequest
  */
 export interface UsersApiUpdateUserRequest {
   /**
+   * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
+   */
+  readonly userId: string;
+
+  /**
    * Either the unique id of the project, or the URL-friendly key of the project (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiUpdateUser
    */
   readonly projId: string;
 
   /**
    * Either the unique id of the environment, or the URL-friendly key of the environment (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiUpdateUser
    */
   readonly envId: string;
 
-  /**
-   * Either the unique id of the user, or the URL-friendly key of the user (i.e: the \&quot;slug\&quot;).
-   * @type {string}
-   * @memberof UsersApiUpdateUser
-   */
-  readonly userId: string;
-
-  /**
-   *
-   * @type {UserUpdate}
-   * @memberof UsersApiUpdateUser
-   */
   readonly userUpdate: UserUpdate;
 }
 
 /**
  * UsersApi - object-oriented interface
- * @export
- * @class UsersApi
- * @extends {BaseAPI}
  */
 export class UsersApi extends BaseAPI {
   /**
@@ -1220,18 +1247,17 @@ export class UsersApi extends BaseAPI {
    * @summary Assign Role To User
    * @param {UsersApiAssignRoleToUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UsersApi
+   * @throws If a required parameter is missing.
    */
   public assignRoleToUser(
     requestParameters: UsersApiAssignRoleToUserRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return UsersApiFp(this.configuration)
       .assignRoleToUser(
+        requestParameters.userId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.userId,
         requestParameters.userRoleCreate,
         options,
       )
@@ -1239,14 +1265,13 @@ export class UsersApi extends BaseAPI {
   }
 
   /**
-   * Creates a new user inside the Permit.io system, from that point forward you may run permission checks on that user.  If the user is already created: will return 200 instead of 201, and will return the existing user object in the response body.
+   * Creates a new user inside the Permit.io system, from that point forward you may run permission checks on that user.  Returns 201 if the user is created, 409 if the user already exists or if an inline role assignment names a tenant other than the one its resource instance already exists in. User is identified by its key, and you can only create one user with the same key inside a Permit environment.
    * @summary Create User
    * @param {UsersApiCreateUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UsersApi
+   * @throws If a required parameter is missing.
    */
-  public createUser(requestParameters: UsersApiCreateUserRequest, options?: AxiosRequestConfig) {
+  public createUser(requestParameters: UsersApiCreateUserRequest, options?: RawAxiosRequestConfig) {
     return UsersApiFp(this.configuration)
       .createUser(
         requestParameters.projId,
@@ -1262,15 +1287,14 @@ export class UsersApi extends BaseAPI {
    * @summary Delete User
    * @param {UsersApiDeleteUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UsersApi
+   * @throws If a required parameter is missing.
    */
-  public deleteUser(requestParameters: UsersApiDeleteUserRequest, options?: AxiosRequestConfig) {
+  public deleteUser(requestParameters: UsersApiDeleteUserRequest, options?: RawAxiosRequestConfig) {
     return UsersApiFp(this.configuration)
       .deleteUser(
+        requestParameters.userId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.userId,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1281,12 +1305,11 @@ export class UsersApi extends BaseAPI {
    * @summary Get User
    * @param {UsersApiGetUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UsersApi
+   * @throws If a required parameter is missing.
    */
-  public getUser(requestParameters: UsersApiGetUserRequest, options?: AxiosRequestConfig) {
+  public getUser(requestParameters: UsersApiGetUserRequest, options?: RawAxiosRequestConfig) {
     return UsersApiFp(this.configuration)
-      .getUser(requestParameters.projId, requestParameters.envId, requestParameters.userId, options)
+      .getUser(requestParameters.userId, requestParameters.projId, requestParameters.envId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -1295,16 +1318,17 @@ export class UsersApi extends BaseAPI {
    * @summary List Users
    * @param {UsersApiListUsersRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UsersApi
+   * @throws If a required parameter is missing.
    */
-  public listUsers(requestParameters: UsersApiListUsersRequest, options?: AxiosRequestConfig) {
+  public listUsers(requestParameters: UsersApiListUsersRequest, options?: RawAxiosRequestConfig) {
     return UsersApiFp(this.configuration)
       .listUsers(
         requestParameters.projId,
         requestParameters.envId,
         requestParameters.search,
+        requestParameters.searchOperator,
         requestParameters.role,
+        requestParameters.includeResourceInstanceRoles,
         requestParameters.page,
         requestParameters.perPage,
         options,
@@ -1313,19 +1337,21 @@ export class UsersApi extends BaseAPI {
   }
 
   /**
-   *
+   * Replace User / Sync User upsert a user in the system. If the user already exists, it will update the user with the new data. If the user does not exist, it will create a new user with the provided data.  The user is identified by its key, and you can only create one user with the same key inside a Permit environment. A 200 status code will be returned if the user already exists, and a 201 status code will be returned if the user is created.
    * @summary Replace User
    * @param {UsersApiReplaceUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UsersApi
+   * @throws If a required parameter is missing.
    */
-  public replaceUser(requestParameters: UsersApiReplaceUserRequest, options?: AxiosRequestConfig) {
+  public replaceUser(
+    requestParameters: UsersApiReplaceUserRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
     return UsersApiFp(this.configuration)
       .replaceUser(
+        requestParameters.userId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.userId,
         requestParameters.userCreate,
         options,
       )
@@ -1337,19 +1363,19 @@ export class UsersApi extends BaseAPI {
    * @summary Unassign Role From User
    * @param {UsersApiUnassignRoleFromUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UsersApi
+   * @throws If a required parameter is missing.
    */
   public unassignRoleFromUser(
     requestParameters: UsersApiUnassignRoleFromUserRequest,
-    options?: AxiosRequestConfig,
+    options?: RawAxiosRequestConfig,
   ) {
     return UsersApiFp(this.configuration)
       .unassignRoleFromUser(
+        requestParameters.userId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.userId,
         requestParameters.userRoleRemove,
+        requestParameters.returnDeleted,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -1360,15 +1386,14 @@ export class UsersApi extends BaseAPI {
    * @summary Update User
    * @param {UsersApiUpdateUserRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UsersApi
+   * @throws If a required parameter is missing.
    */
-  public updateUser(requestParameters: UsersApiUpdateUserRequest, options?: AxiosRequestConfig) {
+  public updateUser(requestParameters: UsersApiUpdateUserRequest, options?: RawAxiosRequestConfig) {
     return UsersApiFp(this.configuration)
       .updateUser(
+        requestParameters.userId,
         requestParameters.projId,
         requestParameters.envId,
-        requestParameters.userId,
         requestParameters.userUpdate,
         options,
       )

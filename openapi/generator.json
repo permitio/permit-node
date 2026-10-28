@@ -1,0 +1,18 @@
+{
+  "generatorName": "typescript-axios",
+  "additionalProperties": {
+    "useSingleRequestParameter": true,
+    "withSeparateModelsAndApi": true,
+    "apiPackage": "api",
+    "modelPackage": "types"
+  },
+  "globalProperties": {
+    "apiDocs": "false",
+    "modelDocs": "false",
+    "apiTests": "false",
+    "modelTests": "false"
+  },
+  "typeMappings": {
+    "set": "Array"
+  }
+}

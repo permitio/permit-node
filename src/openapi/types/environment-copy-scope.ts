@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,46 +11,27 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { ResourceSets } from './resource-sets';
-// May contain unused imports in some cases
-// @ts-ignore
-import { Resources } from './resources';
-// May contain unused imports in some cases
-// @ts-ignore
-import { Roles } from './roles';
-// May contain unused imports in some cases
-// @ts-ignore
-import { UserSets } from './user-sets';
+import type { EnvironmentCopyScopeFilters } from './environment-copy-scope-filters';
 
-/**
- *
- * @export
- * @interface EnvironmentCopyScope
- */
 export interface EnvironmentCopyScope {
   /**
-   *
-   * @type {Resources}
-   * @memberof EnvironmentCopyScope
+   * Resources to copy
    */
-  resources?: Resources;
+  resources?: EnvironmentCopyScopeFilters;
   /**
-   *
-   * @type {Roles}
-   * @memberof EnvironmentCopyScope
+   * Roles to copy
    */
-  roles?: Roles;
+  roles?: EnvironmentCopyScopeFilters;
   /**
-   *
-   * @type {UserSets}
-   * @memberof EnvironmentCopyScope
+   * User sets to copy
    */
-  user_sets?: UserSets;
+  user_sets?: EnvironmentCopyScopeFilters;
   /**
-   *
-   * @type {ResourceSets}
-   * @memberof EnvironmentCopyScope
+   * Resource sets to copy
    */
-  resource_sets?: ResourceSets;
+  resource_sets?: EnvironmentCopyScopeFilters;
+  /**
+   * Custom policies to copy
+   */
+  custom_policies?: EnvironmentCopyScopeFilters;
 }

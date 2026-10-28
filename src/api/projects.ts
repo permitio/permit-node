@@ -1,18 +1,18 @@
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 import {
   ProjectsApi as AutogenProjectsApi,
-  ProjectCreate,
-  ProjectRead,
-  ProjectUpdate,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+  type ProjectCreate,
+  type ProjectRead,
+  type ProjectUpdate,
+} from '#src/openapi/index';
+import { BASE_PATH } from '#src/openapi/base';
 
-import { BasePermitApi, IPagination } from './base';
-import { ApiContextLevel, ApiKeyLevel } from './context';
+import { BasePermitApi, type IPagination } from '#src/api/base';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
 
-export { ProjectCreate, ProjectRead, ProjectUpdate } from '../openapi';
+export { type ProjectCreate, type ProjectRead, type ProjectUpdate } from '#src/openapi/index';
 
 export interface IProjectsApi {
   /**

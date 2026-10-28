@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,40 +10,24 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface ActionBlockRead
- */
 export interface ActionBlockRead {
   /**
    * a more descriptive name for the action
-   * @type {string}
-   * @memberof ActionBlockRead
    */
   name?: string;
   /**
    * optional description string explaining what this action represents in your system
-   * @type {string}
-   * @memberof ActionBlockRead
    */
   description?: string;
-  /**
-   *
-   * @type {object}
-   * @memberof ActionBlockRead
-   */
   attributes?: object;
+  v1compat_path?: string;
+  v1compat_name?: string;
   /**
    * Unique id of the action
-   * @type {string}
-   * @memberof ActionBlockRead
    */
   id: string;
   /**
    * action key
-   * @type {string}
-   * @memberof ActionBlockRead
    */
   key?: string;
 }

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,13 +12,12 @@
 
 /**
  * An enumeration.
- * @export
- * @enum {string}
  */
 
 export const Engine = {
   Opa: 'OPA',
   Avp: 'AVP',
+  Generic: 'GENERIC',
 } as const;
 
 export type Engine = (typeof Engine)[keyof typeof Engine];

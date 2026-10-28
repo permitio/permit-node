@@ -1,6 +1,6 @@
-import test from 'ava';
+import { expect, test } from 'vitest';
 
-import { Permit } from '../../index';
+import { Permit } from '#src/index';
 
 type RoleCreate = Parameters<Permit['api']['roles']['create']>[0];
 type RoleRead = Awaited<ReturnType<Permit['api']['roles']['get']>>;
@@ -9,13 +9,12 @@ type ResourceRoleCreate = Parameters<Permit['api']['resourceRoles']['create']>[1
 type ResourceRoleRead = Awaited<ReturnType<Permit['api']['resourceRoles']['get']>>;
 type ResourceRoleUpdate = Parameters<Permit['api']['resourceRoles']['update']>[2];
 
-type IsExact<A, B> = (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2
-  ? true
-  : false;
+type IsExact<A, B> =
+  (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;
 type Assert<T extends true> = T;
 type Inheritance = { extends?: Array<string> };
 
-// yarn test:unit runs build:types before AVA. Pick preserves the optional modifier, and exact
+// lint:types checks these contracts. Pick preserves the optional modifier, and exact
 // equality rejects any, null, non-array values, and a required property (even with undefined).
 export type RoleInheritanceContracts = [
   Assert<IsExact<Pick<RoleCreate, 'extends'>, Inheritance>>,
@@ -76,7 +75,7 @@ const cases: Array<{ name: string; inheritance: Inheritance }> = [
 ];
 
 for (const { name, inheritance } of cases) {
-  test(`roles create/update/get preserve ${name}`, async (t) => {
+  test(`roles create/update/get preserve ${name}`, async () => {
     const { permit, requests } = createClient(inheritance);
     const created = await permit.api.roles.create({
       key: 'editor',
@@ -86,10 +85,10 @@ for (const { name, inheritance } of cases) {
     const updated = await permit.api.roles.update('editor', { ...inheritance });
     const fetched = await permit.api.roles.get('editor');
 
-    t.deepEqual(created.extends, inheritance.extends);
-    t.deepEqual(updated.extends, inheritance.extends);
-    t.deepEqual(fetched.extends, inheritance.extends);
-    t.deepEqual(requests, [
+    expect(created.extends).toStrictEqual(inheritance.extends);
+    expect(updated.extends).toStrictEqual(inheritance.extends);
+    expect(fetched.extends).toStrictEqual(inheritance.extends);
+    expect(requests).toStrictEqual([
       {
         method: 'post',
         url: 'https://api.permit.io/v2/schema/proj/env/roles',
@@ -108,7 +107,7 @@ for (const { name, inheritance } of cases) {
     ]);
   });
 
-  test(`resource roles create/update/get preserve ${name}`, async (t) => {
+  test(`resource roles create/update/get preserve ${name}`, async () => {
     const { permit, requests } = createClient(inheritance);
     const created = await permit.api.resourceRoles.create('doc', {
       key: 'editor',
@@ -118,10 +117,10 @@ for (const { name, inheritance } of cases) {
     const updated = await permit.api.resourceRoles.update('doc', 'editor', { ...inheritance });
     const fetched = await permit.api.resourceRoles.get('doc', 'editor');
 
-    t.deepEqual(created.extends, inheritance.extends);
-    t.deepEqual(updated.extends, inheritance.extends);
-    t.deepEqual(fetched.extends, inheritance.extends);
-    t.deepEqual(requests, [
+    expect(created.extends).toStrictEqual(inheritance.extends);
+    expect(updated.extends).toStrictEqual(inheritance.extends);
+    expect(fetched.extends).toStrictEqual(inheritance.extends);
+    expect(requests).toStrictEqual([
       {
         method: 'post',
         url: 'https://api.permit.io/v2/schema/proj/env/resources/doc/roles',

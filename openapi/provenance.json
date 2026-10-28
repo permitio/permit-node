@@ -1,0 +1,18 @@
+{
+  "source": "https://api.permit.io/v2/openapi.json",
+  "capturedAt": "2026-09-30",
+  "sha256": "1a29f1c75002d214b442a678a2b9f178db83a28f5fd1032322aa26d1eb835655",
+  "counts": {
+    "paths": 164,
+    "operations": 263,
+    "schemas": 333
+  },
+  "generator": "7.25.0",
+  "generatorSha256": "41ce4f6b07f196676439d710759fa1ced7a08066d06ff1bf314681470289efae",
+  "javaMajor": 17,
+  "elementsLogin": {
+    "capturedAt": "2026-09-30",
+    "source": "Existing Elements login route and schemas verified against backend OpenAPI",
+    "sha256": "597a200e78d5e971ab97bcb0780090bd9e9063baf36d6013ed10140bd5c2d380"
+  }
+}

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,34 +10,21 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface RoleAssignmentCreate
- */
 export interface RoleAssignmentCreate {
   /**
    * the role that will be assigned (accepts either the role id or the role key)
-   * @type {string}
-   * @memberof RoleAssignmentCreate
    */
   role: string;
   /**
    * the tenant the role is associated with (accepts either the tenant id or the tenant key)
-   * @type {string}
-   * @memberof RoleAssignmentCreate
    */
   tenant?: string;
   /**
-   * the resource instance the role is associated with (accepts either the resource instance id or key using this format resource_type:resource_instance)
-   * @type {string}
-   * @memberof RoleAssignmentCreate
+   * the resource instance the role is associated with (accepts either the resource instance id or key using this format resource_type:resource_instance)The resource instance will be implicitly created if the tenant parameter is specified and the resource instance does not exist.
    */
   resource_instance?: string;
   /**
    * the user the role will be assigned to (accepts either the user id or the user key)
-   * @type {string}
-   * @memberof RoleAssignmentCreate
    */
   user: string;
 }

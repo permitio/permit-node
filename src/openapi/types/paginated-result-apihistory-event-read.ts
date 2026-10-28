@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,31 +11,13 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { APIHistoryEventRead } from './apihistory-event-read';
+import type { APIHistoryEventRead } from './apihistory-event-read';
 
-/**
- *
- * @export
- * @interface PaginatedResultAPIHistoryEventRead
- */
 export interface PaginatedResultAPIHistoryEventRead {
   /**
    * List of Api History Events
-   * @type {Array<APIHistoryEventRead>}
-   * @memberof PaginatedResultAPIHistoryEventRead
    */
   data: Array<APIHistoryEventRead>;
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedResultAPIHistoryEventRead
-   */
   total_count: number;
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedResultAPIHistoryEventRead
-   */
   page_count?: number;
 }

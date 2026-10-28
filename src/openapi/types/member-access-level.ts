@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,14 +12,13 @@
 
 /**
  * An enumeration.
- * @export
- * @enum {string}
  */
 
 export const MemberAccessLevel = {
   Admin: 'admin',
   Write: 'write',
   Read: 'read',
+  NoAccess: 'no_access',
 } as const;
 
 export type MemberAccessLevel = (typeof MemberAccessLevel)[keyof typeof MemberAccessLevel];

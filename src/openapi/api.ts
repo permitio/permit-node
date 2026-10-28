@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,25 +10,33 @@
  * Do not edit the class manually.
  */
 
+export * from './api/access-requests-eapapi';
+export * from './api/activity-log-api';
+export * from './api/apihistory-api';
 export * from './api/apikeys-api';
 export * from './api/audit-elements-data-api';
+export * from './api/audit-log-replay-api';
 export * from './api/audit-logs-api';
 export * from './api/authentication-api';
+export * from './api/bulk-operations-api';
 export * from './api/condition-set-rules-api';
 export * from './api/condition-sets-api';
-export * from './api/decision-logs-api';
-export * from './api/decision-logs-ingress-api';
+export * from './api/data-export-api';
 export * from './api/default-api';
-export * from './api/elements-configs-api';
+export * from './api/elements-configs-eapapi';
+export * from './api/email-configurations-api';
+export * from './api/email-templates-api';
 export * from './api/environments-api';
+export * from './api/groups-api';
 export * from './api/implicit-grants-api';
-export * from './api/instructions-api';
+export * from './api/invites-api';
 export * from './api/members-api';
-export * from './api/opaldata-api';
+export * from './api/opaldata-eapapi';
+export * from './api/operation-approval-eapapi';
 export * from './api/organizations-api';
-export * from './api/policy-api';
 export * from './api/policy-decision-points-api';
 export * from './api/policy-git-repositories-api';
+export * from './api/policy-guards-eapapi';
 export * from './api/projects-api';
 export * from './api/proxy-config-api';
 export * from './api/relationship-tuples-api';
@@ -43,7 +49,9 @@ export * from './api/resource-roles-api';
 export * from './api/resources-api';
 export * from './api/role-assignments-api';
 export * from './api/roles-api';
+export * from './api/scope-configurations-api';
 export * from './api/tenants-api';
 export * from './api/user-attributes-api';
+export * from './api/user-invites-api';
 export * from './api/users-api';
 export * from './api/users-elements-data-api';

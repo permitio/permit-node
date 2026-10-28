@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -13,25 +11,12 @@
  */
 
 // May contain unused imports in some cases
-// @ts-ignore
-import { Engine } from './engine';
+import type { Engine } from './engine';
 
 /**
  * dummy engine class in case we couldn\'t parse the log but we didn\'t want to drop it
- * @export
- * @interface DummyEngineModel
  */
 export interface DummyEngineModel {
-  /**
-   *
-   * @type {Engine}
-   * @memberof DummyEngineModel
-   */
-  engine?: Engine;
-  /**
-   *
-   * @type {string}
-   * @memberof DummyEngineModel
-   */
-  timestamp?: string;
+  engine?: Engine | null;
+  timestamp?: string | null;
 }

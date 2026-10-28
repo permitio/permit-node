@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -14,8 +12,6 @@
 
 /**
  * An enumeration.
- * @export
- * @enum {string}
  */
 
 export const ConditionSetType = {

@@ -1,5 +1,3 @@
-/* tslint:disable */
-/* eslint-disable */
 /**
  * Permit.io API
  *  Authorization as a service
@@ -12,22 +10,7 @@
  * Do not edit the class manually.
  */
 
-/**
- *
- * @export
- * @interface OPALabels
- */
 export interface OPALabels {
-  /**
-   *
-   * @type {string}
-   * @memberof OPALabels
-   */
   id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof OPALabels
-   */
   version: string;
 }

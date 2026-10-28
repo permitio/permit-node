@@ -1,33 +1,41 @@
-import { Logger } from 'pino';
+import { type Logger } from 'pino';
 
-import { IPermitConfig } from '../config';
+import { type IPermitConfig } from '#src/config';
 import {
   ConditionSetRulesApi as AutogenConditionSetRulesApi,
-  ConditionSetRuleCreate,
-  ConditionSetRuleRead,
-  ConditionSetRuleRemove,
-} from '../openapi';
-import { BASE_PATH } from '../openapi/base';
+  type ConditionSetRuleCreate,
+  type ConditionSetRuleRead,
+  type ConditionSetRuleRemove,
+} from '#src/openapi/index';
+import { BASE_PATH } from '#src/openapi/base';
 
-import { BasePermitApi, IPagination, PermitApiError } from './base'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ApiContext, ApiContextLevel, ApiKeyLevel, PermitContextError } from './context'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { BasePermitApi, type IPagination } from '#src/api/base';
+// oxlint-disable-next-line no-unused-vars -- Type imports resolve public TSDoc error/context links.
+import type { PermitApiError } from '#src/api/base';
+import { ApiContextLevel, ApiKeyLevel } from '#src/api/context';
+// oxlint-disable-next-line no-unused-vars -- Type imports resolve public TSDoc error/context links.
+import type { ApiContext, PermitContextError } from '#src/api/context';
 
-export { ConditionSetRuleCreate, ConditionSetRuleRead, ConditionSetRuleRemove } from '../openapi';
+export {
+  type ConditionSetRuleCreate,
+  type ConditionSetRuleRead,
+  type ConditionSetRuleRemove,
+} from '#src/openapi/index';
 
 export interface IListConditionSetRules extends IPagination {
   /**
    * the key of the userset, if used only rules matching that userset will be fetched.
    */
-  userSetKey: string;
+  userSetKey?: string;
   /**
-   * the key of the permission, formatted as <resource>:<action>.
-   * if used only rules granting that permission will be fetched.
+   * The action key or ID used to filter rule permissions, for example `write`.
+   * Rule create/read permissions use `resource:action`; this GET filter uses the action.
    */
-  permissionKey: string;
+  permissionKey?: string;
   /**
    * the key of the resourceset, if used only rules matching that resourceset will be fetched.
    */
-  resourceSetKey: string;
+  resourceSetKey?: string;
 }
 
 /**
@@ -42,7 +50,7 @@ export interface IConditionSetRulesApi {
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  list(params: IListConditionSetRules): Promise<ConditionSetRuleRead[]>;
+  list(params?: IListConditionSetRules): Promise<ConditionSetRuleRead[]>;
 
   /**
    * Creates a new condition set rule.
@@ -90,17 +98,17 @@ export class ConditionSetRulesApi extends BasePermitApi implements IConditionSet
    * @throws {@link PermitApiError} If the API returns an error HTTP status code.
    * @throws {@link PermitContextError} If the configured {@link ApiContext} does not match the required endpoint context.
    */
-  public async list(params: IListConditionSetRules): Promise<ConditionSetRuleRead[]> {
+  public async list(params?: IListConditionSetRules): Promise<ConditionSetRuleRead[]> {
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
-    const { userSetKey, permissionKey, resourceSetKey, page = 1, perPage = 100 } = params;
+    const { userSetKey, permissionKey, resourceSetKey, page = 1, perPage = 100 } = params ?? {};
     try {
       return (
         await this.setRules.listSetPermissions({
           ...this.config.apiContext.environmentContext,
-          userSet: userSetKey,
-          permission: permissionKey,
-          resourceSet: resourceSetKey,
+          ...(userSetKey !== undefined && { userSet: userSetKey }),
+          ...(permissionKey !== undefined && { permission: permissionKey }),
+          ...(resourceSetKey !== undefined && { resourceSet: resourceSetKey }),
           page,
           perPage,
         })
@@ -122,12 +130,18 @@ export class ConditionSetRulesApi extends BasePermitApi implements IConditionSet
     await this.ensureAccessLevel(ApiKeyLevel.ENVIRONMENT_LEVEL_API_KEY);
     await this.ensureContext(ApiContextLevel.ENVIRONMENT);
     try {
-      return (
+      const created = (
         await this.setRules.assignSetPermissions({
           ...this.config.apiContext.environmentContext,
           conditionSetRuleCreate: rule,
         })
       ).data[0];
+      if (created === undefined) {
+        throw new Error(
+          'Creating a condition set rule returned no rule; inspect the API response.',
+        );
+      }
+      return created;
     } catch (err) {
       this.handleApiError(err);
     }
