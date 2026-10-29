@@ -6,13 +6,17 @@ import test from 'ava';
 import axios, { AxiosError, AxiosHeaders, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 
 import { PermitApiError } from '../../api/base';
+import { IPermitConfig } from '../../config';
+import { LoggerFactory } from '../../logger';
 
 // A token value that only this test uses.
 const TOKEN = 'permit_key_exposure_test_0123456789abcdef';
 
 interface PermitInternals {
+  logger: unknown;
   enforcer: {
     client: AxiosInstance;
+    logger: unknown;
     contextStore: { add: (context: Record<string, unknown>) => void };
   };
   checkAllTenants: (
@@ -39,20 +43,23 @@ async function withServer(
   }
 }
 
-// A 127.0.0.1 URL that refuses connections: a port that was just free.
-async function refusedUrl(): Promise<string> {
-  let url = '';
-  await withServer(
-    (_req, res) => res.end(),
-    async (serverUrl) => {
-      url = serverUrl;
-    },
-  );
-  return url;
+// A 127.0.0.1 server that drops every connection before any response. It stays listening
+// while `run` uses it, so no other listener can take the port in between.
+async function withDroppingServer(run: (url: string) => Promise<void>): Promise<void> {
+  const server = http.createServer();
+  server.on('connection', (socket) => socket.destroy());
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+  try {
+    await run(`http://127.0.0.1:${(server.address() as AddressInfo).port}`);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
 }
 
 function assertNoToken(t: { false: (actual: boolean, message?: string) => void }, err: unknown) {
   t.false(util.inspect(err, { depth: 10 }).includes(TOKEN), 'util.inspect');
+  // Hidden (non-enumerable) properties too, as some inspection modes show them.
+  t.false(util.inspect(err, { depth: 10, showHidden: true }).includes(TOKEN), 'showHidden');
   t.false(JSON.stringify(err).includes(TOKEN), 'JSON.stringify');
   t.false(String(err).includes(TOKEN), 'String');
 }
@@ -95,15 +102,48 @@ test('checkAllTenants sends the query in the body and the key only in the header
   t.false(String(sent?.data).includes(TOKEN));
 });
 
-for (const failure of ['an error status', 'a refused connection']) {
-  test(`checkAllTenants rethrows ${failure} without the key`, async (t) => {
+for (const failure of ['an error status', 'a dropped connection']) {
+  test(`checkAllTenants rethrows ${failure} without the key, and logs it once`, async (t) => {
     const { Permit } = await import('../../index');
+    const lines: string[] = [];
+    const logger = LoggerFactory.createLogger(
+      { log: { level: 'info', label: 'test', json: false } } as IPermitConfig,
+      { write: (line: string) => lines.push(line) },
+    );
     const check = async (pdp: string) => {
       const permit = new Permit({ token: TOKEN, pdp }) as unknown as PermitInternals;
+      permit.logger = logger;
+      permit.enforcer.logger = logger;
       const err = await t.throwsAsync(permit.checkAllTenants('user-1', 'read', 'document'));
       // The error callers got before: the axios error itself.
       t.true(axios.isAxiosError(err));
       assertNoToken(t, err);
+
+      const logged = lines
+        .map((line) => JSON.parse(line))
+        .filter((record) => record.msg === 'Error fetching all tenants');
+      t.is(logged.length, 1);
+      if (failure === 'an error status') {
+        t.is(logged[0].err.status, 500);
+      }
+      t.truthy(logged[0].err.code);
+      t.false(lines.join('').includes(TOKEN));
+
+      // The redaction edits that failed request's config, not the client's: the next call
+      // still sends the key.
+      let authorization: string | undefined;
+      await withServer(
+        (req, res) => {
+          authorization = req.headers.authorization;
+          res.setHeader('Content-Type', 'application/json');
+          res.end('{"allowed_tenants":[]}');
+        },
+        async (url) => {
+          permit.enforcer.client.defaults.baseURL = `${url}/`;
+          t.deepEqual(await permit.checkAllTenants('user-1', 'read', 'document'), []);
+        },
+      );
+      t.is(authorization, `Bearer ${TOKEN}`);
     };
     if (failure === 'an error status') {
       await withServer((_req, res) => {
@@ -111,31 +151,33 @@ for (const failure of ['an error status', 'a refused connection']) {
         res.end('{}');
       }, check);
     } else {
-      await check(await refusedUrl());
+      await withDroppingServer(check);
     }
   });
 }
 
 test('a PDP connection error names the PDP URL without its credentials', async (t) => {
   const { Permit, PermitConnectionError } = await import('../../index');
-  const refused = new URL(await refusedUrl());
-  const permit = new Permit({
-    token: TOKEN,
-    pdp: `http://pdp-user:pdp-password@${refused.host}/prefix?sig=query-secret`,
-    throwOnError: true,
-  });
+  await withDroppingServer(async (url) => {
+    const { host } = new URL(url);
+    const permit = new Permit({
+      token: TOKEN,
+      pdp: `http://pdp-user:pdp-password@${host}/prefix?sig=query-secret`,
+      throwOnError: true,
+    });
 
-  for (const call of [
-    () => permit.check('user-1', 'read', 'document'),
-    () => permit.bulkCheck([{ user: 'user-1', action: 'read', resource: 'document' }]),
-    () => permit.getUserPermissions('user-1'),
-  ]) {
-    const err = await t.throwsAsync(call(), { instanceOf: PermitConnectionError });
-    t.true(err.message.includes(`PDP is running at http://${refused.host}/prefix and`));
-    for (const secret of [TOKEN, 'pdp-user', 'pdp-password', 'query-secret']) {
-      t.false(err.message.includes(secret), secret);
+    for (const call of [
+      () => permit.check('user-1', 'read', 'document'),
+      () => permit.bulkCheck([{ user: 'user-1', action: 'read', resource: 'document' }]),
+      () => permit.getUserPermissions('user-1'),
+    ]) {
+      const err = await t.throwsAsync(call(), { instanceOf: PermitConnectionError });
+      t.true(err.message.includes(`PDP is running at http://${host}/prefix and`));
+      for (const secret of [TOKEN, 'pdp-user', 'pdp-password', 'query-secret']) {
+        t.false(err.message.includes(secret), secret);
+      }
     }
-  }
+  });
 });
 
 // A REST API that grants an environment-level scope, and fails the call that follows with
@@ -237,6 +279,10 @@ test('an API error neither prints nor keeps the key', (t) => {
   t.false(Object.prototype.propertyIsEnumerable.call(error, 'originalError'));
   t.false(Object.prototype.propertyIsEnumerable.call(axiosError, 'request'));
   t.false(Object.prototype.propertyIsEnumerable.call(axiosError.response, 'request'));
+  // An accessor, so even inspecting hidden properties doesn't print the request.
+  t.false(util.inspect(axiosError, { depth: 10, showHidden: true }).includes('GET /v2'));
+  axiosError.request = { replaced: true };
+  t.deepEqual(axiosError.request, { replaced: true });
   // And writable, as a public field was before.
   const other = new AxiosError('other');
   error.originalError = other;

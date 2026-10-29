@@ -15,10 +15,11 @@ interface FormattedAxiosError<T> {
 }
 // An axios error keeps the request's headers, the Authorization header with the API key
 // included, in its config and in the live Node request object. Replace that header's value in
-// the configs and in the request's raw header text, and make `request` non-enumerable on the
-// error and its response, as axios's own toJSON() already leaves it out: printing, inspecting
-// or serializing the error then doesn't show the key. `error.request` stays readable, and
-// inspecting that object itself still shows the headers Node keeps inside it.
+// the configs and in the request's raw header text, and turn `request` on the error and its
+// response into a non-enumerable accessor (axios's own toJSON() already leaves it out). Printing,
+// inspecting (with hidden properties too: an accessor shows as [Getter/Setter] without being
+// called) or serializing the error then doesn't show the key. `error.request` stays readable
+// and writable, and inspecting that object itself still shows the headers Node keeps inside it.
 export function redactAuthorization(error: AxiosError): void {
   for (const config of [error.config, error.response?.config]) {
     const headers = config?.headers as Record<string, unknown> | undefined;
@@ -46,10 +47,13 @@ export function redactAuthorization(error: AxiosError): void {
   }
   for (const holder of [error, error.response]) {
     if (holder?.request !== undefined) {
+      let held: unknown = holder.request;
       Object.defineProperty(holder, 'request', {
-        value: holder.request,
+        get: () => held,
+        set: (value: unknown) => {
+          held = value;
+        },
         enumerable: false,
-        writable: true,
         configurable: true,
       });
     }
