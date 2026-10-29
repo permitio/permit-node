@@ -4,40 +4,21 @@
 // `localhost:7766`, is kept as it is, less any of those parts.
 export function redactUrl(url: string): string {
   const trimmed = url.trim();
-  // One or more slashes, as Node's URL parser (which axios uses) accepts `http:/host`.
-  const scheme = /^[a-z][a-z0-9+.-]*:\/+/i.exec(trimmed)?.[0] ?? '';
-  let rest = trimmed.slice(scheme.length);
-  if (scheme && isValidUrl(trimmed)) {
-    // Read as the parser reads it, which is where requests go: a '?' or '#' starts the query
-    // or fragment, so an '@' after one isn't user info.
-    rest = withoutQuery(rest);
-    rest = rest.slice(rest.lastIndexOf('@', authorityEnd(rest)) + 1);
-  } else if (scheme) {
-    // Not a valid URL, so remove more rather than less: everything up to the last '@', which
-    // also covers a '/', '?' or '#' in a password.
-    rest = withoutQuery(rest.slice(rest.lastIndexOf('@') + 1));
-  } else {
-    // No scheme, such as `user:pass@localhost:7766`: the user info up to the last '@' before
-    // the path, then the query and fragment.
-    rest = withoutQuery(rest.slice(rest.lastIndexOf('@', authorityEnd(rest)) + 1));
-  }
-  return scheme + rest;
-}
-
-function isValidUrl(url: string): boolean {
   try {
-    new URL(url);
-    return true;
+    // An http(s) URL, the only kind axios requests, is rebuilt from what Node's URL parser
+    // (which axios uses) reads, after its own clean-up of the text: where requests go, without
+    // the user info, query or fragment.
+    const parsed = new URL(trimmed);
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      const path = parsed.pathname === '/' ? '' : parsed.pathname;
+      return `${parsed.protocol}//${parsed.host}${path}`;
+    }
   } catch {
-    return false;
+    // Not a URL the parser accepts: handled below.
   }
-}
-
-function authorityEnd(rest: string): number {
-  const slash = rest.indexOf('/');
-  return slash === -1 ? rest.length : slash;
-}
-
-function withoutQuery(rest: string): string {
-  return rest.split(/[?#]/, 1)[0];
+  // Anything else removes more rather than less: everything up to the last '@', then the
+  // query and fragment. A scheme in front is kept, so the value stays recognisable.
+  const scheme = /^[a-z][a-z0-9+.-]*:\/+/i.exec(trimmed)?.[0] ?? '';
+  const rest = trimmed.slice(scheme.length);
+  return scheme + rest.slice(rest.lastIndexOf('@') + 1).split(/[?#]/, 1)[0];
 }

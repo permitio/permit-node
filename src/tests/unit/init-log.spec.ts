@@ -56,7 +56,7 @@ test('the debug init line carries the endpoints and settings, nothing else', (t)
   const init = records.find((record) => record.msg === 'Permit.io SDK initialized');
   t.truthy(init, output);
   t.is(init.pdp, 'http://pdp.example.com:7766/path');
-  t.is(init.apiUrl, 'https://api.example.com/');
+  t.is(init.apiUrl, 'https://api.example.com');
   t.is(init.timeout, 1234);
   t.deepEqual(init.retry, { maxRetries: 2 });
   t.deepEqual(init.pdpRetry, { maxRetries: 1 });
