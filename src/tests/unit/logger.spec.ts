@@ -77,20 +77,59 @@ test('the SDK logger serializes an axios error without its config, request or re
   });
 });
 
-test('the SDK logger redacts a token or Authorization header passed in an object', (t) => {
+// One case per redact path, so each path is pinned: the logged object, and where the
+// censored value ends up in the record.
+for (const [path, logged, read] of [
+  ['token', { token: TOKEN }, (r: any) => r.token],
+  ['*.token', { client: { token: TOKEN } }, (r: any) => r.client.token],
+  [
+    'headers.Authorization',
+    { headers: { Authorization: `Bearer ${TOKEN}` } },
+    (r: any) => r.headers.Authorization,
+  ],
+  [
+    'headers.authorization',
+    { headers: { authorization: `Bearer ${TOKEN}` } },
+    (r: any) => r.headers.authorization,
+  ],
+  [
+    '*.headers.Authorization',
+    { request: { headers: { Authorization: `Bearer ${TOKEN}` } } },
+    (r: any) => r.request.headers.Authorization,
+  ],
+  [
+    '*.headers.authorization',
+    { request: { headers: { authorization: `Bearer ${TOKEN}` } } },
+    (r: any) => r.request.headers.authorization,
+  ],
+] as Array<[string, Record<string, unknown>, (record: any) => unknown]>) {
+  test(`the SDK logger redacts ${path}`, (t) => {
+    const { logger, lines, records } = capturingLogger();
+
+    logger.info(logged);
+
+    t.false(lines.join('').includes(TOKEN));
+    t.is(read(records()[0]), '[REDACTED]');
+  });
+}
+
+test('any other error keeps no URL credentials in its input field', (t) => {
+  let invalid: unknown;
+  try {
+    new URL('http://user:password@host:bad/path?sig=query-secret');
+  } catch (err) {
+    invalid = err;
+  }
+  t.is((invalid as { code?: string }).code, 'ERR_INVALID_URL');
   const { logger, lines, records } = capturingLogger();
 
-  logger.info({ token: TOKEN });
-  logger.info({ client: { token: TOKEN } });
-  logger.info({ headers: { Authorization: `Bearer ${TOKEN}` } });
-  logger.info({ request: { headers: { authorization: `Bearer ${TOKEN}` } } });
+  logger.error({ err: invalid }, 'failed');
 
-  t.false(lines.join('').includes(TOKEN));
-  const [top, nested, header, nestedHeader] = records();
-  t.is(top.token, '[REDACTED]');
-  t.is(nested.client.token, '[REDACTED]');
-  t.is(header.headers.Authorization, '[REDACTED]');
-  t.is(nestedHeader.request.headers.authorization, '[REDACTED]');
+  for (const secret of ['user:', 'password', 'query-secret']) {
+    t.false(lines.join('').includes(secret), secret);
+  }
+  t.is(records()[0].err.input, 'http://host:bad/path');
+  t.is(records()[0].err.code, 'ERR_INVALID_URL');
 });
 
 test('the HTTP debug lines show a URL without its credentials or query', async (t) => {

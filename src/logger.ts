@@ -24,7 +24,13 @@ export function serializeError(error: unknown): unknown {
       url: error.config?.url === undefined ? undefined : redactUrl(error.config.url),
     };
   }
-  return pino.stdSerializers.err(error as Error);
+  // Any other error is copied field by field. Node's ERR_INVALID_URL, which axios rejects with
+  // for a URL it can't parse, carries that whole URL in `input`.
+  const serialized = pino.stdSerializers.err(error as Error);
+  if (typeof serialized?.input === 'string') {
+    serialized.input = redactUrl(serialized.input);
+  }
+  return serialized;
 }
 
 export class LoggerFactory {
