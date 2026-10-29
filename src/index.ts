@@ -15,6 +15,7 @@ import {
 import { LoggerFactory } from './logger';
 import { CheckConfig, Context } from './utils/context';
 import { AxiosLoggingInterceptor } from './utils/http-logger';
+import { redactUrl } from './utils/redact-url';
 import { resolveRetryConfig } from './utils/retry';
 import { AxiosRetryInterceptor } from './utils/retry-interceptor';
 import { RecursivePartial } from './utils/types';
@@ -45,6 +46,23 @@ export interface IPermitClient extends IEnforcer {
    * Access the Permit Elements API using this property.
    */
   elements: IPermitElementsApi;
+}
+
+// What the init line logs: the endpoints, without credentials, and the settings that change
+// the SDK's behaviour. Not the config itself, whose token and axios instances stay out of logs.
+function initLogFields(config: IPermitConfig): Record<string, unknown> {
+  return {
+    pdp: redactUrl(config.pdp),
+    apiUrl: redactUrl(config.apiUrl),
+    timeout: config.timeout,
+    throwOnError: config.throwOnError,
+    multiTenancy: config.multiTenancy,
+    proxyFactsViaPdp: config.proxyFactsViaPdp,
+    factsSyncTimeout: config.factsSyncTimeout,
+    factsSyncTimeoutPolicy: config.factsSyncTimeoutPolicy,
+    retry: config.retry,
+    pdpRetry: config.pdpRetry,
+  };
 }
 
 /**
@@ -92,33 +110,6 @@ export interface IPermitClient extends IEnforcer {
  * }
  * ```
  */
-// The URL's scheme, host and port: no user, password, path or query, which can carry
-// credentials.
-function urlOrigin(url: string): string {
-  try {
-    return new URL(url).origin;
-  } catch {
-    return '<invalid URL>';
-  }
-}
-
-// What the init line logs: the endpoints' origins and the settings that change the SDK's
-// behaviour. Not the config itself, whose token and axios instances stay out of logs.
-function initLogFields(config: IPermitConfig): Record<string, unknown> {
-  return {
-    pdp: urlOrigin(config.pdp),
-    apiUrl: urlOrigin(config.apiUrl),
-    timeout: config.timeout,
-    throwOnError: config.throwOnError,
-    multiTenancy: config.multiTenancy,
-    proxyFactsViaPdp: config.proxyFactsViaPdp,
-    factsSyncTimeout: config.factsSyncTimeout,
-    factsSyncTimeoutPolicy: config.factsSyncTimeoutPolicy,
-    retry: config.retry,
-    pdpRetry: config.pdpRetry,
-  };
-}
-
 export class Permit implements IPermitClient {
   private logger: pino.Logger;
   private enforcer: IEnforcer;

@@ -3,6 +3,14 @@
 // so a misconfigured URL is still recognisable. A string that isn't a URL, such as
 // `localhost:7766`, is kept as it is, less any of those parts.
 export function redactUrl(url: string): string {
-  const withoutQuery = url.split(/[?#]/, 1)[0];
-  return withoutQuery.replace(/^([a-z][a-z0-9+.-]*:\/\/)?[^/]*@/i, '$1');
+  const scheme = /^[a-z][a-z0-9+.-]*:\/\//i.exec(url)?.[0] ?? '';
+  let rest = url.slice(scheme.length);
+  // The user info first, up to the last '@' before the path, so that a '?' or '#' in a
+  // password can't hide the '@'; then the query and fragment.
+  const slash = rest.indexOf('/');
+  const at = rest.lastIndexOf('@', slash === -1 ? rest.length : slash);
+  if (at !== -1) {
+    rest = rest.slice(at + 1);
+  }
+  return scheme + rest.split(/[?#]/, 1)[0];
 }
