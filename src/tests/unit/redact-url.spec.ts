@@ -15,6 +15,15 @@ for (const [url, expected] of [
   // An '@' after the host belongs to the path or query, not to user info.
   ['http://host:7766/users/a@example.com', 'http://host:7766/users/a@example.com'],
   ['http://host:7766/path?email=a@example.com', 'http://host:7766/path'],
+  // An '@' in the query or fragment of a URL without a path isn't user info.
+  ['http://host:7766?a=b@c', 'http://host:7766'],
+  ['http://pdp?sig=a@b/c', 'http://pdp'],
+  ['http://host#x@y', 'http://host'],
+  // A '/' in the password: not a valid URL, so everything up to the last '@' goes.
+  ['http://user:pa/ss@host:7766', 'http://host:7766'],
+  // What Node's URL parser accepts: surrounding whitespace, and one slash after the scheme.
+  [' http://user:pass@pdp:7766\n', 'http://pdp:7766'],
+  ['http:/user:pass@pdp:7766', 'http:/pdp:7766'],
   // Not a URL, but recognisable.
   ['localhost:7766', 'localhost:7766'],
   ['user:password@localhost:7766', 'localhost:7766'],
