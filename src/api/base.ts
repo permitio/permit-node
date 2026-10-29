@@ -14,8 +14,11 @@ interface FormattedAxiosError<T> {
   status?: number;
 }
 // An axios error keeps the request's headers, the Authorization header with the API key
-// included, in its config and in the raw request's header text. Replace that header's value
-// in place, so neither the error nor anything logging it shows the key.
+// included, in its config and in the live Node request object. Replace that header's value in
+// the configs and in the request's raw header text, and make `request` non-enumerable on the
+// error and its response, as axios's own toJSON() already leaves it out: printing, inspecting
+// or serializing the error then doesn't show the key. `error.request` stays readable, and
+// inspecting that object itself still shows the headers Node keeps inside it.
 export function redactAuthorization(error: AxiosError): void {
   for (const config of [error.config, error.response?.config]) {
     const headers = config?.headers as Record<string, unknown> | undefined;
@@ -41,17 +44,34 @@ export function redactAuthorization(error: AxiosError): void {
       )
       .join('\n');
   }
+  for (const holder of [error, error.response]) {
+    if (holder?.request !== undefined) {
+      Object.defineProperty(holder, 'request', {
+        value: holder.request,
+        enumerable: false,
+        writable: true,
+        configurable: true,
+      });
+    }
+  }
 }
 
 export class PermitApiError<T> extends Error {
   // Not enumerable, so logging or inspecting the error prints the message, not the whole
-  // axios error. Still readable as before; its Authorization header is redacted.
-  public readonly originalError!: AxiosError<T>;
+  // axios error. Still readable and writable as before; its Authorization header is redacted.
+  public originalError!: AxiosError<T>;
 
   constructor(message: string, originalError: AxiosError<T>) {
-    super(message);
+    // A failure without a response (a refused connection, a timeout) has no API message:
+    // axios's message says what happened, and carries no header.
+    super(message || originalError.message);
     redactAuthorization(originalError);
-    Object.defineProperty(this, 'originalError', { value: originalError, enumerable: false });
+    Object.defineProperty(this, 'originalError', {
+      value: originalError,
+      enumerable: false,
+      writable: true,
+      configurable: true,
+    });
   }
 
   public get formattedAxiosError(): FormattedAxiosError<T> {

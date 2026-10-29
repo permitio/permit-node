@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import { Logger } from 'pino';
 import URL from 'url-parse';
 
+import { redactAuthorization } from '../api/base';
 import { IPermitConfig } from '../config';
 import { CheckConfig, Context, ContextStore } from '../utils/context';
 import { AxiosLoggingInterceptor } from '../utils/http-logger';
@@ -383,7 +384,11 @@ export class Enforcer implements IEnforcer {
       });
       return response.data.allowed_tenants.map((item) => item.tenant);
     } catch (error) {
-      this.logger.error('Error fetching all tenants:', error);
+      // Rethrown as it is, so callers keep the error type they get today, less the key.
+      if (axios.isAxiosError(error)) {
+        redactAuthorization(error);
+      }
+      this.logger.error({ err: error }, 'Error fetching all tenants');
       throw error;
     }
   }

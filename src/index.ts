@@ -254,7 +254,7 @@ export class Permit implements IPermitClient {
     try {
       return await this.enforcer.checkAllTenants(user, action, resource, context, sdk);
     } catch (error) {
-      this.logger.error('Error fetching all tenants:', error);
+      this.logger.error({ err: error }, 'Error fetching all tenants');
       throw error;
     }
   }
