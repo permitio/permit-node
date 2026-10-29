@@ -28,15 +28,17 @@ export function serializeError(error: unknown): unknown {
 }
 
 export class LoggerFactory {
-  static createLogger(config: IPermitConfig): pino.Logger {
-    // pino 8 has no prettyPrint option and throws on a truthy one, so `log.json` no longer
-    // reaches pino: the output is JSON whatever it says, as it already was by default.
-    return pino({
+  // `destination` defaults to stdout, as before; tests pass a stream to read the output.
+  static createLogger(config: IPermitConfig, destination?: pino.DestinationStream): pino.Logger {
+    const options: pino.LoggerOptions = {
       level: config.log.level,
       base: { label: config.log.label },
       timestamp: pino.stdTimeFunctions.isoTime,
       serializers: { err: serializeError },
-      // A backstop for a credential that a log call passes in an object.
+      // A backstop for a credential that a log call passes in an object: a `token` field, or
+      // an `Authorization` / `authorization` header in a `headers` field, at the top level of
+      // that object or one level down. fast-redact has no recursive wildcard, so deeper fields
+      // and other spellings aren't covered; errors go through `serializeError` instead.
       redact: {
         paths: [
           'token',
@@ -48,6 +50,9 @@ export class LoggerFactory {
         ],
         censor: '[REDACTED]',
       },
-    });
+    };
+    // pino 8 has no prettyPrint option and throws on a truthy one, so `log.json` no longer
+    // reaches pino: the output is JSON whatever it says, as it already was by default.
+    return destination ? pino(options, destination) : pino(options);
   }
 }
