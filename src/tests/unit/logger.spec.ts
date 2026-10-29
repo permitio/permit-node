@@ -132,6 +132,19 @@ test('any other error keeps no URL credentials in its input field', (t) => {
   t.is(records()[0].err.code, 'ERR_INVALID_URL');
 });
 
+test('the input redaction never writes to the logged value', (t) => {
+  // Not error-like (no message), so pino hands back this same object; frozen, so a write
+  // would throw.
+  const value = Object.freeze({ code: 'X', input: 'http://user:password@host:7766/path' });
+  const { logger, lines, records } = capturingLogger();
+
+  t.notThrows(() => logger.error({ err: value }, 'failed'));
+
+  t.is(value.input, 'http://user:password@host:7766/path');
+  t.false(lines.join('').includes('password'));
+  t.is(records()[0].err.input, 'http://host:7766/path');
+});
+
 test('the HTTP debug lines show a URL without its credentials or query', async (t) => {
   const { logger, lines, records } = capturingLogger('debug');
   const client = axios.create();
