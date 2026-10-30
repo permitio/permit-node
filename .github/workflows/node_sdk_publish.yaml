@@ -16,16 +16,17 @@ jobs:
       id-token: write # Required for npm Trusted Publishing (OIDC)
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: '20'
+          # Trusted Publishing needs Node 22.14+ and npm 11.5.1+; Node 24.5.0 and later ship both.
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-
-      - name: Upgrade npm for Trusted Publishing
-        run: npm install -g npm@latest && npm --version
+          package-manager-cache: false
 
       - name: Set git user
         run: |
