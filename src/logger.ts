@@ -21,7 +21,7 @@ export function serializeError(error: unknown): unknown {
       code: error.code,
       status: error.response?.status,
       method: error.config?.method?.toUpperCase(),
-      url: error.config?.url === undefined ? undefined : redactUrl(error.config.url),
+      url: error.config?.url == null ? undefined : redactUrl(String(error.config.url)),
     };
   }
   // Any other error is copied field by field. Node's ERR_INVALID_URL, which axios rejects with

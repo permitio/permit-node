@@ -302,3 +302,23 @@ test('the HTTP lines are not built when debug is off', async (t) => {
 
   t.is(built, 0);
 });
+
+for (const [name, url, expected] of [
+  [
+    'a URL object',
+    new URL('http://user:password@pdp.example.com:7766/allowed?sig=query-secret'),
+    'http://pdp.example.com:7766/allowed',
+  ],
+  ['a number', 42, '42'],
+  ['null', null, undefined],
+] as const) {
+  test(`an axios error whose config.url is ${name} is still logged`, (t) => {
+    const error = axiosErrorWithTheToken();
+    (error.config as { url?: unknown }).url = url;
+
+    const serialized = serializeError(error) as Record<string, unknown>;
+
+    t.is(serialized.url, expected);
+    t.false(JSON.stringify(serialized).includes('password'));
+  });
+}
