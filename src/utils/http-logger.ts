@@ -4,7 +4,10 @@ import pino from 'pino';
 import { redactUrl } from './redact-url';
 
 // The URL a request goes to, `baseURL` included: a relative `url` on its own isn't a URL, so
-// redactUrl would cut it at its last '@' (e.g. `/users/a@example.com/x`).
+// redactUrl would cut it at its last '@' (e.g. `/users/a@example.com/x`). Built without
+// `params` (`null`: `undefined` falls back to the instance's), which the line doesn't show,
+// so an app's `paramsSerializer` doesn't run for it. `getUri` returns undefined for a
+// request with neither `url` nor `baseURL`, whatever its type says.
 function requestedUrl(
   axiosInstance: AxiosInstance,
   config: InternalAxiosRequestConfig | undefined,
@@ -13,7 +16,7 @@ function requestedUrl(
     return '';
   }
   try {
-    return axiosInstance.getUri(config);
+    return (axiosInstance.getUri({ ...config, params: null }) as string | undefined) ?? '';
   } catch {
     return config.url ?? '';
   }

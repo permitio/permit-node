@@ -1,5 +1,12 @@
 import test from 'ava';
-import axios, { AxiosError, AxiosHeaders, InternalAxiosRequestConfig } from 'axios';
+import axios, {
+  AxiosError,
+  AxiosHeaders,
+  AxiosInstance,
+  CreateAxiosDefaults,
+  InternalAxiosRequestConfig,
+} from 'axios';
+import pino from 'pino';
 
 import { IPermitConfig } from '../../config';
 import { LoggerFactory, serializeError } from '../../logger';
@@ -194,5 +201,68 @@ test('the HTTP debug lines show the URL a relative path goes to, an @ in its pat
       'Sending HTTP request: GET http://pdp.example.com:7766/users/a@example.com/x',
       'Received HTTP response: GET http://pdp.example.com:7766/users/a@example.com/x, status: 200',
     ],
+  );
+});
+
+function stubbedClient(logger: pino.Logger, config: CreateAxiosDefaults = {}): AxiosInstance {
+  const client = axios.create(config);
+  AxiosLoggingInterceptor.setupInterceptor(client, logger);
+  client.defaults.adapter = async (sent: InternalAxiosRequestConfig) => ({
+    status: 200,
+    statusText: 'OK',
+    headers: {},
+    config: sent,
+    data: {},
+  });
+  return client;
+}
+
+test('the HTTP debug lines show config.url, redacted, when getUri throws', async (t) => {
+  const { logger, records } = capturingLogger('debug');
+  const client = stubbedClient(logger);
+  client.getUri = () => {
+    throw new Error('getUri');
+  };
+
+  await client.get('http://user:password@pdp.example.com:7766/allowed?sig=query-secret');
+
+  t.deepEqual(
+    records().map((record) => record.msg),
+    [
+      'Sending HTTP request: GET http://pdp.example.com:7766/allowed',
+      'Received HTTP response: GET http://pdp.example.com:7766/allowed, status: 200',
+    ],
+  );
+});
+
+test('the HTTP debug lines build their URL without the params', async (t) => {
+  const { logger, records } = capturingLogger('debug');
+  let serialized = 0;
+  const client = stubbedClient(logger, {
+    params: { sig: 'query-secret' },
+    paramsSerializer: {
+      serialize: () => {
+        serialized += 1;
+        return 'sig=query-secret';
+      },
+    },
+  });
+
+  await client.get('http://pdp.example.com:7766/allowed');
+
+  // The stub adapter never builds the URL, so any call is the debug lines'.
+  t.is(serialized, 0);
+  t.is(records().length, 2);
+});
+
+test('a request with neither url nor baseURL logs an empty URL', async (t) => {
+  const { logger, records } = capturingLogger('debug');
+  const client = stubbedClient(logger);
+
+  await client.request({ method: 'get' });
+
+  t.deepEqual(
+    records().map((record) => record.msg),
+    ['Sending HTTP request: GET ', 'Received HTTP response: GET , status: 200'],
   );
 });
