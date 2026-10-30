@@ -266,3 +266,39 @@ test('a request with neither url nor baseURL logs an empty URL', async (t) => {
     ['Sending HTTP request: GET ', 'Received HTTP response: GET , status: 200'],
   );
 });
+
+for (const level of ['warn', 'debug']) {
+  test(`a url given as a URL object is sent and logged (level ${level})`, async (t) => {
+    const { logger, records } = capturingLogger(level);
+    const client = stubbedClient(logger);
+
+    const response = await client.get(
+      new URL('http://user:password@pdp.example.com:7766/allowed') as unknown as string,
+    );
+
+    t.is(response.status, 200);
+    t.deepEqual(
+      records().map((record) => record.msg),
+      level === 'debug'
+        ? [
+            'Sending HTTP request: GET http://pdp.example.com:7766/allowed',
+            'Received HTTP response: GET http://pdp.example.com:7766/allowed, status: 200',
+          ]
+        : [],
+    );
+  });
+}
+
+test('the HTTP lines are not built when debug is off', async (t) => {
+  const { logger } = capturingLogger('info');
+  const client = stubbedClient(logger);
+  let built = 0;
+  client.getUri = () => {
+    built += 1;
+    return 'http://pdp.example.com:7766/allowed';
+  };
+
+  await client.get('http://pdp.example.com:7766/allowed');
+
+  t.is(built, 0);
+});
