@@ -2,9 +2,11 @@ import axios, { AxiosInstance } from 'axios';
 import { Logger } from 'pino';
 import URL from 'url-parse';
 
+import { redactAuthorization } from '../api/base';
 import { IPermitConfig } from '../config';
 import { CheckConfig, Context, ContextStore } from '../utils/context';
 import { AxiosLoggingInterceptor } from '../utils/http-logger';
+import { redactUrl } from '../utils/redact-url';
 import { resolveRetryConfig } from '../utils/retry';
 import { AxiosRetryInterceptor } from '../utils/retry-interceptor';
 
@@ -253,7 +255,7 @@ export class Enforcer implements IEnforcer {
         }
         throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
           and cannot connect to the PDP, please check your configuration and make sure the
-          PDP is running at ${this.config.pdp} and accepting requests. \n
+          PDP is running at ${redactUrl(this.config.pdp)} and accepting requests. \n
           Read more about setting up the PDP at https://docs.permit.io`);
       });
   }
@@ -350,7 +352,7 @@ export class Enforcer implements IEnforcer {
         }
         throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
           and cannot connect to the PDP, please check your configuration and make sure the
-          PDP is running at ${this.config.pdp} and accepting requests. \n
+          PDP is running at ${redactUrl(this.config.pdp)} and accepting requests. \n
           Read more about setting up the PDP at https://docs.permit.io`);
       });
   }
@@ -362,22 +364,31 @@ export class Enforcer implements IEnforcer {
     context: Context = {}, // default to empty context if not provided
     sdk = 'node', // default to "node" if not provided
   ): Promise<TenantDetails[]> {
+    // The query goes in the body, as for check(), and the key in the Authorization header.
+    // The resource keeps the tenant it names: the answer lists every tenant it is allowed in,
+    // so the default tenant is not filled in.
+    const resourceObj = isString(resource) ? Enforcer.resourceFromString(resource) : resource;
+    const input: ICheckInput = {
+      user: isString(user) ? { key: user } : user,
+      action,
+      resource: resourceObj,
+      context: this.contextStore.getDerivedContext(context),
+    };
     try {
-      const response = await this.client.post<AllTenantsResponse>('/allowed/all-tenants', {
+      const response = await this.client.post<AllTenantsResponse>('allowed/all-tenants', input, {
         headers: {
           Authorization: `Bearer ${this.config.token}`,
           'X-Permit-Sdk-Language': sdk,
         },
-        params: {
-          user,
-          action,
-          resource,
-          context,
-        },
+        timeout: this.config.timeout,
       });
-      return response.data.allowedTenants.map((item) => item.tenant);
+      return response.data.allowed_tenants.map((item) => item.tenant);
     } catch (error) {
-      this.logger.error('Error fetching all tenants:', error);
+      // Rethrown as it is, so callers keep the error type they get today, less the key.
+      if (axios.isAxiosError(error)) {
+        redactAuthorization(error);
+      }
+      this.logger.error({ err: error }, 'Error fetching all tenants');
       throw error;
     }
   }
@@ -454,7 +465,9 @@ export class Enforcer implements IEnforcer {
           this.logger.error(`${errorMessage}\n${error}`);
         }
         throw new PermitConnectionError(`Permit SDK got error: \n ${error.message} \n
-          and cannot connect to the PDP, please check your configuration and make sure the PDP is running at ${this.config.pdp} and accepting requests. \n
+          and cannot connect to the PDP, please check your configuration and make sure the PDP is running at ${redactUrl(
+            this.config.pdp,
+          )} and accepting requests. \n
           Read more about setting up the PDP at https://docs.permit.io`);
       });
   }

@@ -142,7 +142,7 @@ export interface AllTenantsCheckResponse {
 }
 
 export interface AllTenantsResponse {
-  allowedTenants: AllTenantsCheckResponse[];
+  allowed_tenants: AllTenantsCheckResponse[];
 }
 
 interface TenantPermissions {

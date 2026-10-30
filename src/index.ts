@@ -15,6 +15,7 @@ import {
 import { LoggerFactory } from './logger';
 import { CheckConfig, Context } from './utils/context';
 import { AxiosLoggingInterceptor } from './utils/http-logger';
+import { redactUrl } from './utils/redact-url';
 import { resolveRetryConfig } from './utils/retry';
 import { AxiosRetryInterceptor } from './utils/retry-interceptor';
 import { RecursivePartial } from './utils/types';
@@ -45,6 +46,23 @@ export interface IPermitClient extends IEnforcer {
    * Access the Permit Elements API using this property.
    */
   elements: IPermitElementsApi;
+}
+
+// What the init line logs: the endpoints, without credentials, and the settings that change
+// the SDK's behaviour. Not the config itself, whose token and axios instances stay out of logs.
+function initLogFields(config: IPermitConfig): Record<string, unknown> {
+  return {
+    pdp: redactUrl(config.pdp),
+    apiUrl: redactUrl(config.apiUrl),
+    timeout: config.timeout,
+    throwOnError: config.throwOnError,
+    multiTenancy: config.multiTenancy,
+    proxyFactsViaPdp: config.proxyFactsViaPdp,
+    factsSyncTimeout: config.factsSyncTimeout,
+    factsSyncTimeoutPolicy: config.factsSyncTimeoutPolicy,
+    retry: config.retry,
+    pdpRetry: config.pdpRetry,
+  };
 }
 
 /**
@@ -168,9 +186,7 @@ export class Permit implements IPermitClient {
     this.enforcer = new Enforcer(this.config, this.logger);
     this.elements = new ElementsClient(this.config, this.logger);
 
-    this.logger.debug(
-      `Permit.io SDK initialized with config:\n${JSON.stringify(this.config, undefined, 2)}`,
-    );
+    this.logger.debug(initLogFields(this.config), 'Permit.io SDK initialized');
   }
 
   /**
@@ -226,12 +242,8 @@ export class Permit implements IPermitClient {
     context?: Context | undefined,
     sdk?: string | undefined,
   ): Promise<TenantDetails[]> {
-    try {
-      return await this.enforcer.checkAllTenants(user, action, resource, context, sdk);
-    } catch (error) {
-      this.logger.error('Error fetching all tenants:', error);
-      throw error;
-    }
+    // The enforcer logs a failure, once, before rethrowing it.
+    return await this.enforcer.checkAllTenants(user, action, resource, context, sdk);
   }
 
   /**

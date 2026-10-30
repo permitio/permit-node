@@ -13,9 +13,69 @@ interface FormattedAxiosError<T> {
   error?: T;
   status?: number;
 }
+// An axios error keeps the request's headers, the Authorization header with the API key
+// included, in its config and in the live Node request object. Replace that header's value in
+// the configs and in the request's raw header text, and turn `request` on the error and its
+// response into a non-enumerable accessor (axios's own toJSON() already leaves it out). Printing,
+// inspecting (with hidden properties too: an accessor shows as [Getter/Setter] without being
+// called) or serializing the error then doesn't show the key. `error.request` stays readable
+// and writable, and inspecting that object itself still shows the headers Node keeps inside it.
+export function redactAuthorization(error: AxiosError): void {
+  for (const config of [error.config, error.response?.config]) {
+    const headers = config?.headers as Record<string, unknown> | undefined;
+    if (!headers) {
+      continue;
+    }
+    for (const name of Object.keys(headers)) {
+      if (name.toLowerCase() === 'authorization') {
+        headers[name] = '[REDACTED]';
+      }
+    }
+  }
+  const request = error.request as { _header?: unknown } | undefined;
+  if (request && typeof request._header === 'string') {
+    // Line by line, not by regex: a pattern with two adjacent wildcards can backtrack
+    // polynomially on long header text.
+    request._header = request._header
+      .split('\n')
+      .map((line) =>
+        line.toLowerCase().startsWith('authorization:')
+          ? `Authorization: [REDACTED]${line.endsWith('\r') ? '\r' : ''}`
+          : line,
+      )
+      .join('\n');
+  }
+  for (const holder of [error, error.response]) {
+    if (holder?.request !== undefined) {
+      let held: unknown = holder.request;
+      Object.defineProperty(holder, 'request', {
+        get: () => held,
+        set: (value: unknown) => {
+          held = value;
+        },
+        enumerable: false,
+        configurable: true,
+      });
+    }
+  }
+}
+
 export class PermitApiError<T> extends Error {
-  constructor(message: string, public originalError: AxiosError<T>) {
-    super(message);
+  // Not enumerable, so logging or inspecting the error prints the message, not the whole
+  // axios error. Still readable and writable as before; its Authorization header is redacted.
+  public originalError!: AxiosError<T>;
+
+  constructor(message: string, originalError: AxiosError<T>) {
+    // A failure without a response (a refused connection, a timeout) has no API message:
+    // axios's message says what happened, and carries no header.
+    super(message || originalError.message);
+    redactAuthorization(originalError);
+    Object.defineProperty(this, 'originalError', {
+      value: originalError,
+      enumerable: false,
+      writable: true,
+      configurable: true,
+    });
   }
 
   public get formattedAxiosError(): FormattedAxiosError<T> {
