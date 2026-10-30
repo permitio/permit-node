@@ -30,13 +30,15 @@ for (const [url, expected] of [
   ['ht\ttp://user:pass@pdp:7766', 'http://pdp:7766'],
   ['http://pdp:7766/a\nb', 'http://pdp:7766/ab'],
   ['http:\\\\user:pass@pdp:7766\\path', 'http://pdp:7766/path'],
-  // No scheme the parser accepts, and a '/' before the '@': everything up to the last '@'.
+  // Not an http(s) URL to the parser, and a '/' before the '@': everything up to the last '@'.
   ['http//user:pass@pdp:7766', 'pdp:7766'],
+  ['http//user:p@ss@pdp:7766', 'pdp:7766'],
   ['htp:/x/user:pass@pdp:7766/path', 'htp:/pdp:7766/path'],
+  ['localhost:7766/a/user:pass@pdp', 'pdp'],
   // Not a URL, but recognisable.
   ['localhost:7766', 'localhost:7766'],
   ['user:password@localhost:7766', 'localhost:7766'],
-  ['localhost:7766/a/user:pass@pdp', 'pdp'],
+  ['user:p@ss@localhost:7766/path?x=y', 'localhost:7766/path'],
   ['', ''],
 ]) {
   test(`redactUrl(${JSON.stringify(url)})`, (t) => {

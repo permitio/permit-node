@@ -170,3 +170,29 @@ test('the HTTP debug lines show a URL without its credentials or query', async (
     ],
   );
 });
+
+test('the HTTP debug lines show the URL a relative path goes to, an @ in its path kept', async (t) => {
+  const { logger, lines, records } = capturingLogger('debug');
+  const client = axios.create({ baseURL: 'http://user:password@pdp.example.com:7766/' });
+  AxiosLoggingInterceptor.setupInterceptor(client, logger);
+  client.defaults.adapter = async (config: InternalAxiosRequestConfig) => ({
+    status: 200,
+    statusText: 'OK',
+    headers: {},
+    config,
+    data: {},
+  });
+
+  await client.get('/users/a@example.com/x', { params: { sig: 'query-secret' } });
+
+  for (const secret of ['user:', 'password', 'query-secret']) {
+    t.false(lines.join('').includes(secret), secret);
+  }
+  t.deepEqual(
+    records().map((record) => record.msg),
+    [
+      'Sending HTTP request: GET http://pdp.example.com:7766/users/a@example.com/x',
+      'Received HTTP response: GET http://pdp.example.com:7766/users/a@example.com/x, status: 200',
+    ],
+  );
+});

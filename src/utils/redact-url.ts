@@ -1,7 +1,7 @@
-// A URL fit for a log line or an error message: the user, password, query and fragment are
-// dropped, since any of them can carry a credential, and the scheme, host, port and path stay,
-// so a misconfigured URL is still recognisable. A string that isn't a URL, such as
-// `localhost:7766`, is kept as it is, less any of those parts.
+// A URL fit for a log line or an error message, without the user, password, query or
+// fragment, since any of them can carry a credential. An http(s) URL is rebuilt from what
+// Node's URL parser reads (scheme, host, port, path); anything else, such as
+// `localhost:7766`, loses everything up to its last '@', then its query and fragment.
 export function redactUrl(url: string): string {
   const trimmed = url.trim();
   try {
