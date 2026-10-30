@@ -21,11 +21,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # Trusted Publishing needs Node 22.14+ and npm 11.5.1+; Node 24 ships both.
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-
-      - name: Upgrade npm for Trusted Publishing
-        run: npm install -g npm@latest && npm --version
 
       - name: Set git user
         run: |
